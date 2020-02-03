@@ -1,0 +1,1 @@
+# powsybl-study-app
