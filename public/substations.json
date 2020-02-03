@@ -1,0 +1,28 @@
+[
+  {
+    "id": "TOTO",
+    "voltageLevels": [
+      {
+        "id": "TOTOP6",
+        "nominalVoltage": 225
+      },
+      {
+        "id": "TOTOP7",
+        "nominalVoltage": 380
+      }
+    ]
+  },
+  {
+    "id": "TUTU",
+    "voltageLevels": [
+      {
+        "id": "TUTUP3",
+        "nominalVoltage": 63
+      },
+      {
+        "id": "TUTUP6",
+        "nominalVoltage": 225
+      }
+    ]
+  }
+]
