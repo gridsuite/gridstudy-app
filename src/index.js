@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import "typeface-roboto";
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {createStore} from 'redux'
