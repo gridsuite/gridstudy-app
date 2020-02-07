@@ -15,7 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 
-import {removeVoltageLevelDiagram} from './actions';
+import {removeVoltageLevelDiagram} from '../redux/actions';
 import {useDispatch} from "react-redux";
 
 const useStyles = makeStyles(theme => ({
