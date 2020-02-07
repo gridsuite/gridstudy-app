@@ -1,0 +1,27 @@
+[
+  {
+    "studyName": "Study 1",
+    "description": "This is the first study",
+    "caseFormat": "CGMES"
+  },
+  {
+    "studyName": "Study 2",
+    "description": "This is the second study",
+    "caseFormat": "UCTE"
+  },
+  {
+    "studyName": "Study 3",
+    "description": "This is the third study",
+    "caseFormat": "XIIDM"
+  },
+  {
+    "studyName": "Study 4",
+    "description": "This is the fourth study",
+    "caseFormat": "IEEE-CDF"
+  },
+  {
+    "studyName": "Study 5",
+    "description": "This is the fifth study",
+    "caseFormat": "CGMES"
+  }
+]
