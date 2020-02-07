@@ -17,13 +17,21 @@ import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
 import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
 import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 import {loadStudiesSuccess} from '../redux/actions';
-import {fetchStudies} from '../utils/rest-api';
+import {fetchStudies, createStudy} from '../utils/rest-api';
 import {FormattedMessage} from "react-intl";
 
 const useStyles = makeStyles(theme => ({
@@ -84,6 +92,96 @@ const StudyCard = (props) => {
     );
 };
 
+const NewStudyForm = () => {
+    const [open, setOpen] = React.useState(false);
+    const [state, setState] = React.useState({
+        checked: true,
+    });
+
+    const classes = useStyles();
+
+    const handleChange = name => event => {
+        setState({ ...state, [name]: event.target.checked });
+    };
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleCreate = () => {
+        createStudy();
+        // do the job
+        // hide popup content and add success label
+        setOpen(false); // close the popUp
+    };
+
+    return (
+        <div>
+            <Button variant="contained" color="primary" className={classes.addButton} onClick={() => handleClickOpen() }>
+                <AddIcon className={classes.addIcon}/>
+                <FormattedMessage id="newStudy"/>
+            </Button>
+
+            <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Add new Study</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        To add a new study from an existing case you should enter the following informations :
+                    </DialogContentText>
+                    <FormControlLabel
+                        control = {<Switch
+                            checked={state.checked}
+                            onChange={handleChange('checked')}
+                            value="checked"
+                            color="primary"
+                            inputProps={{ 'aria-label': 'primary checkbox' }}
+                        />
+                        }
+                        label = "Does the case already exist ?"
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Study name"
+                        type="text"
+                        fullWidth
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Description"
+                        type="text"
+                        fullWidth
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Case name"
+                        type="text"
+                        fullWidth
+                    />
+                </DialogContent>
+
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleCreate} color="primary">
+                        Create
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
+    );
+};
+
 const StudyManager = (props) => {
 
     const dispatch = useDispatch();
@@ -99,16 +197,9 @@ const StudyManager = (props) => {
 
     const classes = useStyles();
 
-    function newStudy() {
-        // TODO
-    }
-
     return (
         <Container maxWidth="lg">
-            <Button variant="contained" color="primary" className={classes.addButton} onClick={() => newStudy() }>
-                <AddIcon className={classes.addIcon}/>
-                <FormattedMessage id="newStudy"/>
-            </Button>
+            <NewStudyForm/>
             <Grid container spacing={2} className={classes.grid}>
             {
                 studies.map(study =>
