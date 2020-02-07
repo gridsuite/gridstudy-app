@@ -21,20 +21,20 @@ import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import Drawer from '@material-ui/core/Drawer';
 
-import NetworkExplorer from './network-explorer';
+import NetworkExplorer from './network/network-explorer';
 import SingleLineDiagram from './single-line-diagram';
-import NetworkMap from './network-map';
+import NetworkMap from './network/network-map';
 import StudyManager from './study-manager';
-import Network from './network';
-import {ReactComponent as PowsyblLogo} from './images/powsybl_logo.svg';
+import Network from './network/network';
+import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
 import {
     loadNetworkSuccess,
     loadVoltageLevelDiagramSuccess,
     openStudy,
     removeVoltageLevelDiagram,
     selectDarkTheme
-} from './actions'
-import {fetchLines, fetchSubstationPositions, fetchSubstations, fetchVoltageLevelDiagram} from './rest-api'
+} from '../redux/actions'
+import {fetchLines, fetchSubstationPositions, fetchSubstations, fetchVoltageLevelDiagram} from '../utils/rest-api'
 
 const lightTheme = createMuiTheme({
     palette: {

@@ -5,10 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+// Routes
+const networksUrl = process.env.REACT_APP_API_NETWORK_STORE_SERVER + "/v1/networks"
+const studiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies"
+
 export function fetchStudies() {
     console.info("Fetching studies...");
     return fetch('studies.json')
         .then(response => response.json());
+}
+
+export function createStudy() {
+    console.info("Creating a new study...");
 }
 
 export function fetchVoltageLevelDiagram(studyName, voltageLevelId) {

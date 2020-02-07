@@ -1,4 +1,14 @@
 {
   "appName": "Explorateur de réseau",
-  "newStudy": "Nouvelle étude"
+  "newStudy": "Nouvelle étude",
+  "addNewStudy" : "Ajouter une nouvelle étude",
+  "addNewStudyDescription" : "Pour ajouter une étude, vous devez saisir les informations suivantes :",
+  "CaseExist" : "Le situation existe-t-elle déjà ?",
+  "studyName" : "nom de l'étude",
+  "studyDescription" : "description de l'étude",
+  "caseName" : "nom de la situation",
+
+  "cancel" : "ANNULER",
+  "create" : "CRÉER"
+
 }
