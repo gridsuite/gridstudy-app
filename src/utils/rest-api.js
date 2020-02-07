@@ -17,8 +17,6 @@ export function fetchStudies() {
 
 export function createStudy() {
     console.info("Creating a new study...");
-    //return fetch(process.env.REACT_APP_API_STUDY_SERVER + "")
-    //    .then(response => response.json());
 }
 
 export function fetchVoltageLevelDiagram(studyName, voltageLevelId) {
