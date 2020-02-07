@@ -1,4 +1,14 @@
 {
   "appName": "Grid Explorer",
-  "newStudy": "New study"
+  "newStudy": "New study",
+  "addNewStudy" : "Add new study",
+  "addNewStudyDescription" : "To add a new study, you should enter the following information:",
+  "CaseExist" : "Does the case already exist?",
+  "studyName" : "study name",
+  "studyDescription" : "study description",
+  "caseName" : "case name",
+
+
+  "cancel" : "CANCEL",
+  "create" : "CREATE"
 }

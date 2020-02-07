@@ -127,10 +127,10 @@ const NewStudyForm = () => {
             </Button>
 
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Add new Study</DialogTitle>
+                <DialogTitle id="form-dialog-title"><FormattedMessage id="addNewStudy"/></DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        To add a new study from an existing case you should enter the following informations :
+                        <FormattedMessage id="addNewStudyDescription"/>
                     </DialogContentText>
                     <FormControlLabel
                         control = {<Switch
@@ -141,13 +141,13 @@ const NewStudyForm = () => {
                             inputProps={{ 'aria-label': 'primary checkbox' }}
                         />
                         }
-                        label = "Does the case already exist ?"
+                        label = <FormattedMessage id="CaseExist"/>
                     />
                     <TextField
                         autoFocus
                         margin="dense"
                         id="name"
-                        label="Study name"
+                        label= <FormattedMessage id="studyName"/>
                         type="text"
                         fullWidth
                     />
@@ -155,7 +155,7 @@ const NewStudyForm = () => {
                         autoFocus
                         margin="dense"
                         id="name"
-                        label="Description"
+                        label= <FormattedMessage id="studyDescription"/>
                         type="text"
                         fullWidth
                     />
@@ -163,7 +163,7 @@ const NewStudyForm = () => {
                         autoFocus
                         margin="dense"
                         id="name"
-                        label="Case name"
+                        label= <FormattedMessage id="caseName"/>
                         type="text"
                         fullWidth
                     />
@@ -171,10 +171,10 @@ const NewStudyForm = () => {
 
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
-                        Cancel
+                        <FormattedMessage id="cancel"/>
                     </Button>
                     <Button onClick={handleCreate} color="primary">
-                        Create
+                        <FormattedMessage id="create"/>
                     </Button>
                 </DialogActions>
             </Dialog>
