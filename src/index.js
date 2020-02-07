@@ -21,8 +21,6 @@ import {reducer} from './redux/reducer';
 import messages_en from "./translations/en.json";
 import messages_fr from "./translations/fr.json";
 
-import * as serviceWorker from './serviceWorker';
-
 const store = createStore(reducer);
 
 const messages = {
