@@ -7,6 +7,7 @@
   "studyName" : "nom de l'étude",
   "studyDescription" : "description de l'étude",
   "caseName" : "nom de la situation",
+  "uploadCase" : "tèlécharger la situation",
 
   "cancel" : "ANNULER",
   "create" : "CRÉER"
