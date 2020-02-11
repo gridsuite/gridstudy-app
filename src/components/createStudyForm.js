@@ -25,7 +25,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 
 import {createStudy} from '../utils/rest-api';
-import {FormattedMessage} from "react-intl";
+import {useIntl, FormattedMessage} from "react-intl";
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -57,6 +57,7 @@ export const CreateStudyForm = () => {
     const [success, setSuccess] = React.useState('');
 
     const classes = useStyles();
+    const intl = useIntl();
 
     const handleClickOpenButton = () => {
         setOpen(true);
@@ -92,20 +93,19 @@ export const CreateStudyForm = () => {
         setStudyeName(e.target.value)
     }
 
-    const checkMimeType = (event) => {
+    const checkFileExtension = (event) => {
         //getting file object
         let files = event.target.files
         let fileExtension = files[0].name.split('.').pop().toUpperCase();
-        console.log('fileExtension: ' + fileExtension)
 
         // list allowed extensions
         const extensions = ['XIIDM', 'CGMES', 'UCTE', 'IEEE-CDF']
 
-        // compare file type find doesn't matach
+        // compare file extension find doesn't match
         if (extensions.every(type => fileExtension !== type)) {
-            // create error message and assign to container
-            setErr(fileExtension +' is not a supported format\n');
-            setFileName(<FormattedMessage id="uploadMessage"/>);
+            // create error message
+            setErr(fileExtension + intl.formatMessage({id : 'fileExtensionErrorMsg'}));
+            setFileName(intl.formatMessage({id : 'uploadMessage'}));
             event.target.value = null // discard selected file
             return false;
         }
@@ -115,19 +115,19 @@ export const CreateStudyForm = () => {
 
     const handleCreateNewStudy = () => {
         if (studyName === '') {
-            setErr('Study name should not be empty');
+            setErr(intl.formatMessage({id : 'studyNameErrorMsg'}));
             return;
         } else if (studyDescription === '') {
-            setErr("Study description should not be empty");
+            setErr(intl.formatMessage({id : 'studyDescriptionErrorMsg'}));
             return;
         } else if (caseExist && caseName === "") {
-            setErr("Please select the case name");
+            setErr(intl.formatMessage({id : 'caseNameErrorMsg'}));
             return;
         } else if (!caseExist && caseData === null) {
-            setErr("An error occured when importing the case")
+            setErr(intl.formatMessage({id : 'caseDataErrorMsg'}))
             return;
         }  else if (!caseExist && fileName === '') {
-            setErr('Please upload the case file');
+            setErr(intl.formatMessage({id : 'uploadErrorMsg'}));
             return;
         }
 
@@ -138,19 +138,17 @@ export const CreateStudyForm = () => {
             setFileName('')
             setCaseName('')
             setCaseData('')
-            setSuccess ('Study created');
+            setSuccess (intl.formatMessage({id : 'studyCreated'}));
 
         }
-        //setOpen(false); // close the popUp
     };
 
     const handleFileUpload = (e) => {
         let files = e.target.files;
         let reader = new FileReader()
         reader.readAsDataURL(files[0])
-        setFileName(files[0].name)
         reader.onload = (event) => { setCaseData(event.target.result);};
-        checkMimeType(e);
+        checkFileExtension(e);
     }
 
     return (
@@ -182,6 +180,7 @@ export const CreateStudyForm = () => {
                         autoFocus
                         margin="dense"
                         id="name"
+                        value={studyName}
                         label= <FormattedMessage id="studyName"/>
                     type="text"
                     fullWidth
@@ -191,6 +190,7 @@ export const CreateStudyForm = () => {
                         autoFocus
                         margin="dense"
                         id="name"
+                        value={studyDescription}
                         label= <FormattedMessage id="studyDescription"/>
                     type="text"
                     fullWidth
@@ -211,15 +211,12 @@ export const CreateStudyForm = () => {
                                     value={caseName}
                                     onChange={handleChangeSelectCase}
                                 >
-                                    <MenuItem value="case1.xiidm">
-                                        <em>case1.xiidm</em>
-                                    </MenuItem>
+                                    <MenuItem value="case1.xiidm">case1.xiidm</MenuItem>
                                     <MenuItem value="case2.xiidm">case2.xiidm</MenuItem>
                                     <MenuItem value="case3.xiidm">case3.xiidm</MenuItem>
                                 </Select>
                             </FormControl>
-                        </div>
-                    )
+                        </div>)
                     }
 
                     {
