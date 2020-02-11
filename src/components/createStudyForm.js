@@ -22,6 +22,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Alert from '@material-ui/lab/Alert';
 
 import {createStudy} from '../utils/rest-api';
 import {FormattedMessage} from "react-intl";
@@ -45,13 +46,15 @@ export const CreateStudyForm = () => {
     const [openSelectItems, setSelectItems] = React.useState(false);
 
     const [studyName, setStudyeName] = React.useState('');
-    const [caseDescription, setCaseDescription] = React.useState('');
+    const [studyDescription, setStudyDescription] = React.useState('');
 
     const [caseName, setCaseName] = React.useState('');
 
     const [fileName, setFileName] = React.useState('');
     const [caseData, setCaseData] = React.useState('');
 
+    const [err, setErr] = React.useState('');
+    const [success, setSuccess] = React.useState('');
 
     const classes = useStyles();
 
@@ -73,6 +76,7 @@ export const CreateStudyForm = () => {
 
     const handleChangeSwitch = (e) => {
         setCaseExist(e.target.checked);
+        setErr('');
     };
 
     const handleCloseDialog = () => {
@@ -80,25 +84,73 @@ export const CreateStudyForm = () => {
     };
 
 
-    function handleStudyDescriptionChanges(e) {
-        setCaseDescription(e.target.value)
+    const handleStudyDescriptionChanges = (e) => {
+        setStudyDescription(e.target.value)
     }
 
-    function handleStudyNameChanges(e) {
+    const handleStudyNameChanges = (e) => {
         setStudyeName(e.target.value)
     }
 
+    const checkMimeType = (event) => {
+        //getting file object
+        let files = event.target.files
+        let fileExtension = files[0].name.split('.').pop().toUpperCase();
+        console.log('fileExtension: ' + fileExtension)
+
+        // list allowed extensions
+        const extensions = ['XIIDM', 'CGMES', 'UCTE', 'IEEE-CDF']
+
+        // compare file type find doesn't matach
+        if (extensions.every(type => fileExtension !== type)) {
+            // create error message and assign to container
+            setErr(fileExtension +' is not a supported format\n');
+            setFileName(<FormattedMessage id="uploadMessage"/>);
+            event.target.value = null // discard selected file
+            return false;
+        }
+        setFileName(files[0].name);
+        return true;
+    }
+
     const handleCreateNewStudy = () => {
-        createStudy();
-        setOpen(false); // close the popUp
+        if (studyName === '') {
+            setErr('Study name should not be empty');
+            return;
+        } else if (studyDescription === '') {
+            setErr("Study description should not be empty");
+            return;
+        } else if (caseExist && caseName === "") {
+            setErr("Please select the case name");
+            return;
+        } else if (!caseExist && caseData === null) {
+            setErr("An error occured when importing the case")
+            return;
+        }  else if (!caseExist && fileName === '') {
+            setErr('Please upload the case file');
+            return;
+        }
+
+        if (createStudy(caseExist, studyName, studyDescription, caseName, caseData)) {
+            setErr('');
+            setStudyeName('');
+            setStudyDescription('');
+            setFileName('')
+            setCaseName('')
+            setCaseData('')
+            setSuccess ('Study created');
+
+        }
+        //setOpen(false); // close the popUp
     };
 
-    function handleFileUpload(e) {
+    const handleFileUpload = (e) => {
         let files = e.target.files;
         let reader = new FileReader()
         reader.readAsDataURL(files[0])
         setFileName(files[0].name)
-        reader.onload = (event) => console.log(event.target.result);
+        reader.onload = (event) => { setCaseData(event.target.result);};
+        checkMimeType(e);
     }
 
     return (
@@ -174,6 +226,7 @@ export const CreateStudyForm = () => {
                         !caseExist &&
                         (
                             <table>
+                                <tbody>
                                 <tr>
                                     <th>
                                         <Button  variant="contained" color="primary"  component="label" >
@@ -187,10 +240,19 @@ export const CreateStudyForm = () => {
                                         </Button>
                                     </th>
                                     <th>
-                                       <p>{fileName}</p>
+                                       <p>{fileName == '' ? <FormattedMessage id="uploadMessage"/> : fileName}</p>
                                     </th>
                                 </tr>
+                                 </tbody>
                             </table>
+                        )
+                    }
+                    { err != '' && (
+                      <Alert severity="error">{err}</Alert>
+                    )
+                    }
+                    { success != '' && (
+                        <Alert severity="success">{success}</Alert>
                         )
                     }
                 </DialogContent>
@@ -204,6 +266,7 @@ export const CreateStudyForm = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
         </div>
     );
 };

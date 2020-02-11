@@ -10,7 +10,7 @@
   "uploadCase" : "Upload case",
 
 
-
+  "uploadMessage" : " No file selected",
   "cancel" : "CANCEL",
   "create" : "CREATE"
 }

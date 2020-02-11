@@ -15,8 +15,21 @@ export function fetchStudies() {
         .then(response => response.json());
 }
 
-export function createStudy() {
+export function createStudy(caseExist, studyName, studyDescription, caseName, caseData) {
     console.info("Creating a new study...");
+    if (caseExist) {
+        console.log("case exist")
+        console.log("studyName: " + studyName)
+        console.log("studyDescription: " + studyDescription)
+        console.log("caseName: " + caseName)
+
+    } else {
+        console.log("case doesn't exist")
+        console.log("studyName: " + studyName)
+        console.log("studyDescription: " + studyDescription)
+        console.log("caseData: " + caseData)
+    }
+    return true;
 }
 
 export function fetchVoltageLevelDiagram(studyName, voltageLevelId) {

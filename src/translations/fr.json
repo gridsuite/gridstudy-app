@@ -9,6 +9,7 @@
   "caseName" : "nom de la situation",
   "uploadCase" : "tèlécharger la situation",
 
+  "uploadMessage" : " Aucun fichier sélectionné",
   "cancel" : "ANNULER",
   "create" : "CRÉER"
 
