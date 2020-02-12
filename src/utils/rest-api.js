@@ -6,17 +6,20 @@
  */
 
 // Routes
-const networksUrl = process.env.REACT_APP_API_NETWORK_STORE_SERVER + "/v1/networks"
 const studiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies"
 
 export function fetchStudies() {
     console.info("Fetching studies...");
-    return fetch('studies.json')
+    console.log(studiesUrl)
+    return fetch(studiesUrl)
         .then(response => response.json());
 }
 
 export function createStudy(caseExist, studyName, studyDescription, caseName, caseData) {
     console.info("Creating a new study...");
+    const createStudyWithExistingCase = process.env.REACT_APP_API_STUDY_SERVER + "/v1/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
+    console.log(createStudyWithExistingCase);
+
     if (caseExist) {
         console.log("case exist")
         console.log("studyName: " + studyName)

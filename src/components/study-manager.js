@@ -23,7 +23,7 @@ import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 import {loadStudiesSuccess} from '../redux/actions';
 import {fetchStudies} from '../utils/rest-api';
 
-import {CreateStudyForm} from './createStudyForm';
+import {CreateStudyForm} from './create-study-form';
 
 const useStyles = makeStyles(theme => ({
     addButton: {

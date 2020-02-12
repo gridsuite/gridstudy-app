@@ -82,6 +82,8 @@ export const CreateStudyForm = () => {
 
     const handleCloseDialog = () => {
         setOpen(false);
+        setSuccess('');
+        setErr('');
     };
 
 
