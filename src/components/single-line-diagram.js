@@ -22,6 +22,11 @@ const useStyles = makeStyles(theme => ({
     diagram: {
         width: 800,
         height: 600,
+        "& .component-label": {
+            fill: theme.palette.text.primary,
+            "font-size": 12,
+            "font-family": theme.typography.fontFamily
+        }
     },
     close: {
         padding: 0
