@@ -4,35 +4,50 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-// Routes
-const studiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies"
-
 export function fetchStudies() {
     console.info("Fetching studies...");
+    let studiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies"
     console.log(studiesUrl)
     return fetch(studiesUrl)
         .then(response => response.json());
 }
 
+export function fetchCases() {
+    console.info("Fetching cases...");
+    let casesUrl = process.env.REACT_APP_API_CASE_SERVER + "/v1/cases"
+    console.log(casesUrl)
+    return fetch(casesUrl)
+        .then(response => response.json());
+}
+
 export function createStudy(caseExist, studyName, studyDescription, caseName, caseData) {
     console.info("Creating a new study...");
-    const createStudyWithExistingCase = process.env.REACT_APP_API_STUDY_SERVER + "/v1/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
+    let createStudyWithExistingCase = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
+    let createStudyWithNewCase = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "?description=" + studyDescription;
     console.log(createStudyWithExistingCase);
+    console.log(createStudyWithNewCase);
 
     if (caseExist) {
         console.log("case exist")
         console.log("studyName: " + studyName)
         console.log("studyDescription: " + studyDescription)
         console.log("caseName: " + caseName)
+        return fetch(createStudyWithExistingCase, {method : 'post'});
 
     } else {
         console.log("case doesn't exist")
         console.log("studyName: " + studyName)
         console.log("studyDescription: " + studyDescription)
         console.log("caseData: " + caseData)
+        return fetch(createStudyWithExistingCase, {
+            method : 'post',
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                 mode: 'no-cors',
+                 body: JSON.stringify(caseData)
+            }
+        });
     }
-    return true;
 }
 
 export function fetchVoltageLevelDiagram(studyName, voltageLevelId) {

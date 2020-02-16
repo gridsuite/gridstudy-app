@@ -23,9 +23,12 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-import {createStudy} from '../utils/rest-api';
+import {createStudy, fetchCases, fetchStudies} from '../utils/rest-api';
 import {useIntl, FormattedMessage} from "react-intl";
+import {useDispatch} from "react-redux";
+import {loadStudiesSuccess} from "../redux/actions";
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -41,6 +44,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const CreateStudyForm = () => {
+    const dispatch = useDispatch();
+
     const [open, setOpen] = React.useState(false);
     const [caseExist, setCaseExist] = React.useState(false);
     const [openSelectItems, setSelectItems] = React.useState(false);
@@ -56,10 +61,14 @@ export const CreateStudyForm = () => {
     const [err, setErr] = React.useState('');
     const [success, setSuccess] = React.useState('');
 
+    const [cases, setCases] = React.useState([]);
+    const [loading, setLoading] = React.useState(false);
+
     const classes = useStyles();
     const intl = useIntl();
 
     const handleClickOpenButton = () => {
+        fetchCases().then(cazes => {console.log(cazes); setCases(cazes)});
         setOpen(true);
     };
 
@@ -132,17 +141,23 @@ export const CreateStudyForm = () => {
             setErr(intl.formatMessage({id : 'uploadErrorMsg'}));
             return;
         }
-
-        if (createStudy(caseExist, studyName, studyDescription, caseName, caseData)) {
-            setErr('');
-            setStudyeName('');
-            setStudyDescription('');
-            setFileName('')
-            setCaseName('')
-            setCaseData('')
-            setSuccess (intl.formatMessage({id : 'studyCreated'}));
-
-        }
+        setLoading(true);
+        createStudy(caseExist, studyName, studyDescription, caseName, caseData)
+            .then(res => {
+                console.log(res)
+                setErr('');
+                setStudyeName('');
+                setStudyDescription('');
+                setFileName('')
+                setCaseName('')
+                setCaseData('')
+                setSuccess (intl.formatMessage({id : 'studyCreated'}));
+                setLoading(false);
+                fetchStudies()
+                    .then(studies => {
+                        dispatch(loadStudiesSuccess(studies));
+                    })
+            });
     };
 
     const handleFileUpload = (e) => {
@@ -213,9 +228,9 @@ export const CreateStudyForm = () => {
                                     value={caseName}
                                     onChange={handleChangeSelectCase}
                                 >
-                                    <MenuItem value="case1.xiidm">case1.xiidm</MenuItem>
-                                    <MenuItem value="case2.xiidm">case2.xiidm</MenuItem>
-                                    <MenuItem value="case3.xiidm">case3.xiidm</MenuItem>
+                                    {
+                                        cases.map((function (element, index) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
+                                    }
                                 </Select>
                             </FormControl>
                         </div>)
@@ -239,19 +254,23 @@ export const CreateStudyForm = () => {
                                         </Button>
                                     </th>
                                     <th>
-                                       <p>{fileName == '' ? <FormattedMessage id="uploadMessage"/> : fileName}</p>
+                                       <p>{fileName === '' ? <FormattedMessage id="uploadMessage"/> : fileName}</p>
                                     </th>
                                 </tr>
                                  </tbody>
                             </table>
                         )
                     }
-                    { err != '' && (
+                    { err !== '' && (
                       <Alert severity="error">{err}</Alert>
                     )
                     }
-                    { success != '' && (
+                    { success !== '' && (
                         <Alert severity="success">{success}</Alert>
+                        )
+                    }
+                    { loading && (
+                        <CircularProgress className={classes.progress} />
                         )
                     }
                 </DialogContent>
