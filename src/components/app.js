@@ -131,6 +131,7 @@ const App = () => {
 
         Promise.all([substations, substationPositions, lines])
             .then(values => {
+                console.log(substations)
                 const network = new Network();
                 network.setSubstations(values[0]);
                 network.setLines(values[2]);
