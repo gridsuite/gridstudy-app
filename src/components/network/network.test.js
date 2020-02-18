@@ -6,6 +6,7 @@
  */
 
 import Network from './network';
+import 'core-js/es/array/flat-map';
 
 const substations = [
     {
