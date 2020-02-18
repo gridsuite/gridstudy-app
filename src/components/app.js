@@ -34,7 +34,7 @@ import {
     removeVoltageLevelDiagram,
     selectDarkTheme
 } from '../redux/actions'
-import {fetchLines, fetchSubstationPositions, fetchSubstations, fetchVoltageLevelDiagram} from '../utils/rest-api'
+import {fetchLines, fetchSubstationPositions, fetchSubstations, fetchVoltageLevelDiagram, fetchLinePositions} from '../utils/rest-api'
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -129,13 +129,16 @@ const App = () => {
 
         const lines = fetchLines(studyName);
 
-        Promise.all([substations, substationPositions, lines])
+        const linePositions = fetchLinePositions(studyName);
+
+        Promise.all([substations, substationPositions, lines, linePositions])
             .then(values => {
                 console.log(substations)
                 const network = new Network();
                 network.setSubstations(values[0]);
                 network.setLines(values[2]);
                 network.setSubstationPositions(values[1]);
+                network.setLinePositions(values[3]);
                 dispatch(loadNetworkSuccess(network));
             });
     }
