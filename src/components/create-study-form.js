@@ -57,6 +57,8 @@ export const CreateStudyForm = () => {
 
     const [fileName, setFileName] = React.useState('');
     const [caseData, setCaseData] = React.useState('');
+    const [selectedFile, setSelectedFile] = React.useState('');
+
 
     const [err, setErr] = React.useState('');
     const [success, setSuccess] = React.useState('');
@@ -142,7 +144,7 @@ export const CreateStudyForm = () => {
             return;
         }
         setLoading(true);
-        createStudy(caseExist, studyName, studyDescription, caseName, caseData)
+        createStudy(caseExist, studyName, studyDescription, caseName, caseData, selectedFile)
             .then(res => {
                 console.log(res)
                 setErr('');
@@ -161,9 +163,11 @@ export const CreateStudyForm = () => {
     };
 
     const handleFileUpload = (e) => {
+        e.preventDefault()
         let files = e.target.files;
         let reader = new FileReader()
         reader.readAsDataURL(files[0])
+        setSelectedFile(files[0])
         reader.onload = (event) => { setCaseData(event.target.result);};
         checkFileExtension(e);
     }
