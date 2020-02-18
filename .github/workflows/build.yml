@@ -1,5 +1,6 @@
-name: GitHub Actions Build and Deploy Demo
+name: GitHub Actions Build
 on: [push]
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -12,3 +13,4 @@ jobs:
         run: |
           npm install
           npm run-script build
+          npm run-script test
