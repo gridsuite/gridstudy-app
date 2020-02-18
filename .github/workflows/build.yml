@@ -1,23 +1,17 @@
-name: CI
+name: GitHub Actions Build and Deploy Demo
 on:
   push:
     branches:
       - master
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x, 12.x]
     steps:
-      - uses: actions/checkout@v1
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - name: Checkout
+        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install Packages
-        run: npm install
-      - name: Deploy to GH Pages
-        run: npm run deploy
-      - name: Updating Domain
-        run: echo "Update domain"
+          persist-credentials: false
+      - name: Install and Build
+        run: |
+          npm install
+          npm run-script build
