@@ -1,16 +1,25 @@
-name: GitHub Actions Build
+name: CI
+
 on: [push]
 
 jobs:
   build-and-deploy:
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
         with:
           persist-credentials: false
+
       - name: Install and Build
         run: |
           npm install
           npm run-script build
           npm run-script test
+
+      - name: Build Docker image
+#        if: github.ref == 'refs/heads/master'
+        run: >
+          docker build .
