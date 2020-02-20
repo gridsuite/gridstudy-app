@@ -20,7 +20,7 @@ jobs:
           npm run-script test
 
       - name: Build and publish Docker image
-#       if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: powsybl/study-app
