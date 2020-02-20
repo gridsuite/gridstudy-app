@@ -1,7 +1,4 @@
-FROM nginx:alpine
+FROM httpd:2.4
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY build /usr/share/nginx/html
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+COPY app-httpd.conf /usr/local/apache2/conf/
+COPY build /usr/local/apache2/htdocs/
