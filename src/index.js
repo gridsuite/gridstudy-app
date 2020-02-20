@@ -33,7 +33,7 @@ const language = navigator.language.split(/[-_]/)[0];  // language without regio
 ReactDOM.render(
     <IntlProvider locale={language} messages={messages[language]}>
         <Provider store={store}>
-            <BrowserRouter>
+            <BrowserRouter basename={window.location.pathname}>
                 <App />
             </BrowserRouter>
         </Provider>
