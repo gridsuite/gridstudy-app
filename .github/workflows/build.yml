@@ -20,9 +20,9 @@ jobs:
           npm run-script test
 
       - name: Build and publish Docker image
-#          if: github.ref == 'refs/heads/master'
-          uses: elgohr/Publish-Docker-Github-Action@master
-          with:
-            name: powsybl/study-app
-            username: powsyblci
-            password: ${{ secrets.DOCKERHUB_TOKEN }}
+#       if: github.ref == 'refs/heads/master'
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: powsybl/study-app
+          username: powsyblci
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
