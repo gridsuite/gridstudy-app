@@ -61,3 +61,7 @@ export function fetchLinePositions(studyName) {
         .then(response => response.json());
 }
 
+export function createStudy() {
+    console.info("Creating a new study...");
+}
+
