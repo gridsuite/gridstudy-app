@@ -87,15 +87,6 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, ca
         return fetch(createStudyWithNewCaseUrl, {
             method : 'post',
             body : formData
-        }).then(res => {
-                      if(res.ok) {
-                          console.log(res.data);
-                          alert("File uploaded successfully.")
-                      } else {
-                            console.log("fuckkkk!!")
-                            console.log(res)
-                      }
-                  });
-                  debugger;
+        })
     }
 }
