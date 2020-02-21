@@ -7,56 +7,56 @@
 
 export function fetchStudies() {
     console.info("Fetching studies...");
-    let fetchStudiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies"
-    console.log(fetchStudiesUrl)
+    const fetchStudiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies";
+    console.debug(fetchStudiesUrl)
     return fetch(fetchStudiesUrl)
         .then(response => response.json());
 }
 
 export function fetchCases() {
     console.info("Fetching cases...");
-    let fetchCasesUrl = process.env.REACT_APP_API_CASE_SERVER + "/v1/cases"
-    console.log(fetchCasesUrl)
+    const fetchCasesUrl = process.env.REACT_APP_API_CASE_SERVER + "/v1/cases";
+    console.debug(fetchCasesUrl)
     return fetch(fetchCasesUrl)
         .then(response => response.json());
 }
 
 export function fetchVoltageLevelDiagram(studyName, voltageLevelId) {
     console.info(`Fetching voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
-    const fetchVoltageLevelDiagramUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg"
-    console.log(fetchVoltageLevelDiagramUrl)
+    const fetchVoltageLevelDiagramUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg";
+    console.debug(fetchVoltageLevelDiagramUrl)
     return fetch(fetchVoltageLevelDiagramUrl)
         .then(response => response.text());
 }
 
 export function fetchSubstations(studyName) {
     console.info(`Fetching substations of study '${studyName}'...`);
-    const fetchSubstationsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-map/substations"
-    console.log(fetchSubstationsUrl)
+    const fetchSubstationsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-map/substations";
+    console.debug(fetchSubstationsUrl)
     return fetch(fetchSubstationsUrl)
         .then(response => response.json());
 }
 
 export function fetchSubstationPositions(studyName) {
     console.info(`Fetching substation positions of study '${studyName}'...`);
-    const fetchSubstationPositionsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/geo-data/substations"
-    console.log(fetchSubstationPositionsUrl)
+    const fetchSubstationPositionsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/geo-data/substations";
+    console.debug(fetchSubstationPositionsUrl)
     return fetch(fetchSubstationPositionsUrl)
         .then(response => response.json());
 }
 
 export function fetchLines(studyName) {
     console.info(`Fetching lines of study '${studyName}'...`);
-    const fetchLinesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-map/lines"
-    console.log(fetchLinesUrl)
+    const fetchLinesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-map/lines";
+    console.debug(fetchLinesUrl)
     return fetch(fetchLinesUrl)
         .then(response => response.json());
 }
 
 export function fetchLinePositions(studyName) {
     console.info(`Fetching line positions of study '${studyName}'...`);
-    const fetchLinePositionsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/geo-data/lines"
-    console.log(fetchLinePositionsUrl)
+    const fetchLinePositionsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/geo-data/lines";
+    console.debug(fetchLinePositionsUrl)
     return fetch(fetchLinePositionsUrl)
         .then(response => response.json());
 }
@@ -90,3 +90,4 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, ca
         })
     }
 }
+
