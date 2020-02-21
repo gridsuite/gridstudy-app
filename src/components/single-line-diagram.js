@@ -45,7 +45,7 @@ const SingleLineDiagram = (props) => {
             var bbox = svg.getBBox();
             svg.setAttribute("viewBox", 0 + " " + 0 + " " + (bbox.width + 20) + " " + (bbox.height + 20));
         }
-    }, [props]);
+    }, [props.svg]);
 
     const classes = useStyles();
 

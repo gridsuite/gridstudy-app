@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {createReducer} from "@reduxjs/toolkit";
-import {createStore} from 'redux'
 
 import {
     LOAD_NETWORK_SUCCESS,
@@ -49,4 +48,4 @@ export const reducer = createReducer(initialState, {
     }
 });
 
-export const store = createStore(reducer);
+

@@ -15,7 +15,8 @@ import {IntlProvider} from 'react-intl';
 
 import './index.css';
 import App from './components/app';
-import {reducer, store} from './redux/reducer';
+import {reducer} from './redux/reducer';
+import {store} from './redux/store';
 
 import messages_en from "./translations/en.json";
 import messages_fr from "./translations/fr.json";
