@@ -90,7 +90,7 @@ export default class Network {
     }
 
     getVoltageLevels() {
-        return Array.from(this.substations.values());
+        return Array.from(this.voltageLevelsById.values());
     }
 
     setLinePositions(positions) {
