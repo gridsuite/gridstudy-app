@@ -11,20 +11,29 @@ import {
     LOAD_STUDIES_SUCCESS,
     LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
     OPEN_STUDY, REMOVE_VOLTAGE_LEVEL_DIAGRAM,
-    SELECT_DARK_THEME
+    SELECT_DARK_THEME,
+    LOAD_CASES_SUCCESS,
+    SELECTED_CASE,
+    REMOVE_SELECTED_CASE
 } from "./actions";
 
 const initialState = {
     network: null,
     studies: [],
     diagram: null,
-    darkTheme: true
+    darkTheme: true,
+    cases : [],
+    selectedCase : null
 };
 
 export const reducer = createReducer(initialState, {
 
     [LOAD_STUDIES_SUCCESS]: (state, action) => {
         state.studies = action.studies;
+    },
+
+    [LOAD_CASES_SUCCESS]: (state, action) => {
+        state.cases = action.cases;
     },
 
     [OPEN_STUDY]: (state, action) => {
@@ -45,7 +54,17 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_VOLTAGE_LEVEL_DIAGRAM]: (state, action) => {
         state.diagram = null;
-    }
+    },
+
+    [SELECTED_CASE]: (state, action) => {
+        state.selectedCase = action.selectedCase;
+    },
+
+    [REMOVE_SELECTED_CASE]: (state, action) => {
+        state.selectedCase = null;
+    },
+
+
 });
 
 

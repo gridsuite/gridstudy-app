@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import {makeStyles} from "@material-ui/core/styles";
 import Button from '@material-ui/core/Button';
@@ -27,8 +27,10 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import {createStudy, fetchCases, fetchStudies} from '../utils/rest-api';
 import {useIntl, FormattedMessage} from "react-intl";
-import {useDispatch} from "react-redux";
-import {loadStudiesSuccess} from "../redux/actions";
+
+import {useDispatch, useSelector} from "react-redux";
+import {loadStudiesSuccess, loadCasesSuccess, selectedCase, removeSelectedCase} from "../redux/actions";
+import {store} from '../redux/store';
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -43,27 +45,76 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+const SelectCase = () => {
+    const [openSelectCase, setSelectCase] = React.useState(false);
+
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        fetchCases()
+            .then(cases => {
+                dispatch(loadCasesSuccess(cases));
+            });
+    }, []);
+
+    const cases = useSelector(state => state.cases);
+
+    const handleChangeSelectCase = event => {
+        dispatch(selectedCase(event.target.value));
+    };
+
+    const handleCloseSelectCase = () => {
+        setSelectCase(false);
+    };
+
+    const handleOpenSelectCase = () => {
+        setSelectCase(true);
+    };
+
+    return (
+        <div>
+           <FormControl fullWidth>
+               <InputLabel id="demo-controlled-open-select-label">
+                   <FormattedMessage id="caseName"/>
+               </InputLabel>
+               <Select
+                   labelId="demo-controlled-open-select-label"
+                   id="demo-controlled-open-select"
+                   open={openSelectCase}
+                   onClose={handleCloseSelectCase}
+                   onOpen={handleOpenSelectCase}
+                   value={store.getState().selectedCase != null ? store.getState().selectedCase : ""}
+                   onChange={handleChangeSelectCase}>
+                   {
+                       cases.map((function (element, index) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
+                   }
+               </Select>
+           </FormControl>
+        </div>
+    );
+};
+
 export const CreateStudyForm = () => {
     const dispatch = useDispatch();
 
     const [open, setOpen] = React.useState(false);
     const [caseExist, setCaseExist] = React.useState(false);
-    const [openSelectItems, setSelectItems] = React.useState(false);
+
     const [studyName, setStudyeName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
-    const [caseName, setCaseName] = React.useState('');
+
     const [fileName, setFileName] = React.useState('');
+
     const [selectedFile, setSelectedFile] = React.useState('');
     const [err, setErr] = React.useState('');
     const [success, setSuccess] = React.useState('');
-    const [cases, setCases] = React.useState([]);
+
     const [loading, setLoading] = React.useState(false);
 
     const classes = useStyles();
     const intl = useIntl();
 
     const handleClickOpenDialog = () => {
-        fetchCases().then(cazes => {setCases(cazes)});
         setOpen(true);
     };
 
@@ -72,18 +123,6 @@ export const CreateStudyForm = () => {
             setSuccess('');
             setErr('');
         };
-
-    const handleChangeSelectCase = event => {
-        setCaseName(event.target.value)
-    };
-
-    const handleCloseSelectCase = () => {
-        setSelectItems(false);
-    };
-
-    const handleOpenSelectCase = () => {
-        setSelectItems(true);
-    };
 
     const handleChangeSwitch = (e) => {
         setCaseExist(e.target.checked);
@@ -119,13 +158,14 @@ export const CreateStudyForm = () => {
     }
 
     const handleCreateNewStudy = () => {
+        const caseName = store.getState().selectedCase;
         if (studyName === '') {
             setErr(intl.formatMessage({id : 'studyNameErrorMsg'}));
             return;
         } else if (studyDescription === '') {
             setErr(intl.formatMessage({id : 'studyDescriptionErrorMsg'}));
             return;
-        } else if (caseExist && caseName === "") {
+        } else if (caseExist && caseName === null) {
             setErr(intl.formatMessage({id : 'caseNameErrorMsg'}));
             return;
         } else if (!caseExist && fileName === '') {
@@ -140,7 +180,7 @@ export const CreateStudyForm = () => {
                     setStudyeName('');
                     setStudyDescription('');
                     setFileName('')
-                    setCaseName('')
+                    dispatch(removeSelectedCase());
                     setSuccess (intl.formatMessage({id : 'studyCreated'}));
                     setLoading(false);
                     fetchStudies()
@@ -210,26 +250,8 @@ export const CreateStudyForm = () => {
                     />
 
                     {   caseExist && (
-                        <div>
-                            <FormControl className={classes.formControl} fullWidth>
-                                <InputLabel id="demo-controlled-open-select-label">
-                                    <FormattedMessage id="caseName"/>
-                                </InputLabel>
-                                <Select
-                                    labelId="demo-controlled-open-select-label"
-                                    id="demo-controlled-open-select"
-                                    open={openSelectItems}
-                                    onClose={handleCloseSelectCase}
-                                    onOpen={handleOpenSelectCase}
-                                    value={caseName}
-                                    onChange={handleChangeSelectCase}
-                                >
-                                    {
-                                        cases.map((function (element, index) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
-                                    }
-                                </Select>
-                            </FormControl>
-                        </div>)
+                            <SelectCase/>
+                        )
                     }
 
                     {
@@ -267,7 +289,7 @@ export const CreateStudyForm = () => {
                     }
                     { loading && (
                          <div style={{display: 'flex', justifyContent: 'center'}}>
-                            <CircularProgress className={classes.progress} fullWidth />
+                            <CircularProgress className={classes.progress}/>
                         </div>
                         )
                     }
@@ -286,3 +308,5 @@ export const CreateStudyForm = () => {
         </div>
     );
 };
+
+export default CreateStudyForm;

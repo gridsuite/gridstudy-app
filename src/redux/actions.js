@@ -43,8 +43,27 @@ export function loadStudiesSuccess(studies) {
     return { type: LOAD_STUDIES_SUCCESS, studies: studies };
 }
 
+export const LOAD_CASES_SUCCESS = 'LOAD_CASES_SUCCESS';
+
+export function loadCasesSuccess(cases) {
+    return { type: LOAD_CASES_SUCCESS, cases: cases };
+}
+
 export const OPEN_STUDY = 'OPEN_STUDY';
 
 export function openStudy(studyName) {
     return { type: OPEN_STUDY, studyName: studyName };
 }
+
+export const SELECTED_CASE = 'SELECTED_CASE';
+
+export function selectedCase(selectedCase) {
+    return { type: SELECTED_CASE, selectedCase: selectedCase };
+}
+
+export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
+
+export function removeSelectedCase() {
+    return { type: REMOVE_SELECTED_CASE};
+}
+
