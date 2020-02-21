@@ -61,28 +61,19 @@ export function fetchLinePositions(studyName) {
         .then(response => response.json());
 }
 
-export function createStudy(caseExist, studyName, studyDescription, caseName, caseData, selectedFile) {
+export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile) {
     console.info("Creating a new study...");
     const createStudyWithExistingCaseUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
     const createStudyWithNewCaseUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "?description=" + studyDescription;
 
     if (caseExist) {
-        console.log("case exist")
-        console.log("studyName: " + studyName)
-        console.log("studyDescription: " + studyDescription)
-        console.log("caseName: " + caseName)
-        console.log(createStudyWithExistingCaseUrl);
+        console.info(createStudyWithExistingCaseUrl);
         return fetch(createStudyWithExistingCaseUrl, {method : 'post'});
 
     } else {
         const formData = new FormData();
         formData.append('caseFile', selectedFile);
         console.log("selectedFile: " + selectedFile)
-
-        console.log("case doesn't exist")
-        console.log("studyName: " + studyName)
-        console.log("studyDescription: " + studyDescription)
-        //console.log("caseData: " + caseData)
         console.log(createStudyWithNewCaseUrl);
         return fetch(createStudyWithNewCaseUrl, {
             method : 'post',

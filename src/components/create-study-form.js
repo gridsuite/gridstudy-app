@@ -49,30 +49,29 @@ export const CreateStudyForm = () => {
     const [open, setOpen] = React.useState(false);
     const [caseExist, setCaseExist] = React.useState(false);
     const [openSelectItems, setSelectItems] = React.useState(false);
-
     const [studyName, setStudyeName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
-
     const [caseName, setCaseName] = React.useState('');
-
     const [fileName, setFileName] = React.useState('');
-    const [caseData, setCaseData] = React.useState('');
     const [selectedFile, setSelectedFile] = React.useState('');
-
-
     const [err, setErr] = React.useState('');
     const [success, setSuccess] = React.useState('');
-
     const [cases, setCases] = React.useState([]);
     const [loading, setLoading] = React.useState(false);
 
     const classes = useStyles();
     const intl = useIntl();
 
-    const handleClickOpenButton = () => {
-        fetchCases().then(cazes => {console.log(cazes); setCases(cazes)});
+    const handleClickOpenDialog = () => {
+        fetchCases().then(cazes => {setCases(cazes)});
         setOpen(true);
     };
+
+        const handleCloseDialog = () => {
+            setOpen(false);
+            setSuccess('');
+            setErr('');
+        };
 
     const handleChangeSelectCase = event => {
         setCaseName(event.target.value)
@@ -90,13 +89,6 @@ export const CreateStudyForm = () => {
         setCaseExist(e.target.checked);
         setErr('');
     };
-
-    const handleCloseDialog = () => {
-        setOpen(false);
-        setSuccess('');
-        setErr('');
-    };
-
 
     const handleStudyDescriptionChanges = (e) => {
         setStudyDescription(e.target.value)
@@ -136,29 +128,30 @@ export const CreateStudyForm = () => {
         } else if (caseExist && caseName === "") {
             setErr(intl.formatMessage({id : 'caseNameErrorMsg'}));
             return;
-        } else if (!caseExist && caseData === null) {
-            setErr(intl.formatMessage({id : 'caseDataErrorMsg'}))
-            return;
-        }  else if (!caseExist && fileName === '') {
+        } else if (!caseExist && fileName === '') {
             setErr(intl.formatMessage({id : 'uploadErrorMsg'}));
             return;
         }
         setLoading(true);
-        createStudy(caseExist, studyName, studyDescription, caseName, caseData, selectedFile)
+        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile)
             .then(res => {
-                console.log(res)
-                setErr('');
-                setStudyeName('');
-                setStudyDescription('');
-                setFileName('')
-                setCaseName('')
-                setCaseData('')
-                setSuccess (intl.formatMessage({id : 'studyCreated'}));
-                setLoading(false);
-                fetchStudies()
-                    .then(studies => {
-                        dispatch(loadStudiesSuccess(studies));
-                    })
+                if(res.ok) {
+                    setErr('');
+                    setStudyeName('');
+                    setStudyDescription('');
+                    setFileName('')
+                    setCaseName('')
+                    setSuccess (intl.formatMessage({id : 'studyCreated'}));
+                    setLoading(false);
+                    fetchStudies()
+                        .then(studies => {
+                            dispatch(loadStudiesSuccess(studies));
+                        })
+                } else {
+                    console.log('Error when creating the study')
+                    setErr(intl.formatMessage({id : 'studyCreatingError'}));
+                    setLoading(false);
+                }
             });
     };
 
@@ -168,13 +161,12 @@ export const CreateStudyForm = () => {
         let reader = new FileReader()
         reader.readAsDataURL(files[0])
         setSelectedFile(files[0])
-        reader.onload = (event) => { setCaseData(event.target.result);};
         checkFileExtension(e);
     }
 
     return (
         <div>
-            <Button variant="contained" color="primary" className={classes.addButton} onClick={() => handleClickOpenButton() }>
+            <Button variant="contained" color="primary" className={classes.addButton} onClick={() => handleClickOpenDialog() }>
                 <AddIcon className={classes.addIcon}/>
                 <FormattedMessage id="newStudy"/>
             </Button>
@@ -274,7 +266,9 @@ export const CreateStudyForm = () => {
                         )
                     }
                     { loading && (
-                        <CircularProgress className={classes.progress} />
+                         <div style={{display: 'flex', justifyContent: 'center'}}>
+                            <CircularProgress className={classes.progress} fullWidth />
+                        </div>
                         )
                     }
                 </DialogContent>
