@@ -37,8 +37,6 @@ export default class Network {
 
     lines = [];
 
-    voltageLevels = [];
-
     voltageLevelsByNominalVoltage = new Map();
 
     voltageLevelsById = new Map();
@@ -49,7 +47,6 @@ export default class Network {
 
     setSubstations(substations) {
         this.substations = substations;
-        console.log(substations)
 
         // add more infos
         substations.forEach(substation => {
@@ -57,8 +54,6 @@ export default class Network {
             substation.voltageLevels = substation.voltageLevels.sort((voltageLevel1, voltageLevel2) => voltageLevel1.nominalVoltage - voltageLevel2.nominalVoltage);
 
             substation.voltageLevels.forEach((voltageLevel, index) => {
-                 this.voltageLevels.push(voltageLevel)
-
                 // add substation id
                 voltageLevel.substationId = substation.id;
 
@@ -95,7 +90,7 @@ export default class Network {
     }
 
     getVoltageLevels() {
-        return Array.from(this.voltageLevels);
+        return Array.from(this.voltageLevelsById.values());
     }
 
     setLinePositions(positions) {
