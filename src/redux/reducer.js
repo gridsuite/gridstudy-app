@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {createReducer} from "@reduxjs/toolkit";
+import {createStore} from 'redux'
+
 import {
     LOAD_NETWORK_SUCCESS,
     LOAD_STUDIES_SUCCESS,
@@ -16,6 +18,7 @@ import {
 const initialState = {
     network: null,
     studies: [],
+    diagram: null,
     darkTheme: true
 };
 
@@ -45,3 +48,5 @@ export const reducer = createReducer(initialState, {
         state.diagram = null;
     }
 });
+
+export const store = createStore(reducer);
