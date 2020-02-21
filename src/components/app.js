@@ -133,7 +133,6 @@ const App = () => {
 
         Promise.all([substations, substationPositions, lines, linePositions])
             .then(values => {
-                console.log(substations)
                 const network = new Network();
                 network.setSubstations(values[0]);
                 network.setLines(values[2]);

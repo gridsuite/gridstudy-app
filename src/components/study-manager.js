@@ -42,10 +42,6 @@ const useStyles = makeStyles(theme => ({
     logo: {
         width: 64,
         height: 64,
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
     }
 }));
 
