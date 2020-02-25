@@ -9,6 +9,12 @@
   "caseName" : "nom de la situation",
 
   "cancel" : "ANNULER",
-  "create" : "CRÉER"
+  "create" : "CRÉER",
+  "delete" : "SUPPRIMER",
+
+  "deleteStudy" : "Supprimer l'étude",
+  "deleteStudyMsg" : "Pour confirmer la suppression, saisissez le nom de l'étude",
+  "studyNameDidNotMatchMsg" : "Le nom d'étude donné ne correspond pas à ",
+  "studyDeletedSuccessMsg" : "Etude supprimée"
 
 }

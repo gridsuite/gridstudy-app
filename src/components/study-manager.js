@@ -25,14 +25,16 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import Alert from '@material-ui/lab/Alert'
 
 import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
 import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
 import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 import {loadStudiesSuccess} from '../redux/actions';
-import {fetchStudies, createStudy} from '../utils/rest-api';
-import {FormattedMessage} from "react-intl";
+import {fetchStudies, createStudy, deleteStudy} from '../utils/rest-api';
+import {useIntl, FormattedMessage} from "react-intl"; ;
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -55,7 +57,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const StudyCard = (props) => {
+    const [open, setOpen] = React.useState(false);
+    const [studyToBeDeleted, setStudyToBeDeleted] = React.useState(null);
+    const [err, setErr] = React.useState(null);
+    const [success, setSucces] = React.useState(null);
 
+    const dispatch = useDispatch();
+    const intl = useIntl();
     const classes = useStyles();
 
     function logo(caseFormat) {
@@ -73,22 +81,93 @@ const StudyCard = (props) => {
         }
     }
 
+    const handleDeleteStudy = (e) => {
+        console.log(props.study)
+        setOpen(true);
+    }
+
+    const handleDeleteOk = () => {
+        if (studyToBeDeleted === props.study.studyName) {
+            deleteStudy(props.study.studyName).then(result => {
+                fetchStudies().then(studies => {
+                    dispatch(loadStudiesSuccess(studies));
+                })
+                    console.info(studyToBeDeleted + " study deleted")
+                    setErr(null);
+                    setSucces(intl.formatMessage({id : 'studyDeletedSuccessMsg'}))
+                }
+            );
+        } else {
+            console.log("study remains")
+            setErr(intl.formatMessage({id : 'studyNameDidNotMatchMsg'}) + props.study.studyName)
+        }
+    }
+
+    const handleCloseDialog = () => {
+        setOpen(false);
+        setErr(null);
+        setSucces(null);
+    }
+
+    const handleCancelDelete = () => {
+        setStudyToBeDeleted(null);
+        setOpen(false);
+        setErr(null);
+        setSucces(null);
+    }
+
+    const handleOnChange = (e) => {
+        setStudyToBeDeleted(e.target.value);
+        console.log(e.target.value)
+    }
+
     return (
-        <Card>
-            <CardActionArea onClick={() => props.onClick()} className={classes.card}>
-                <div>
-                    <CardContent>
-                        <Typography variant="h4">
-                            {props.study.studyName}
-                        </Typography>
-                        <Typography component="p">
-                            {props.study.description}
-                        </Typography>
-                    </CardContent>
-                </div>
-                { logo(props.study.caseFormat) }
-            </CardActionArea>
-        </Card>
+        <div>
+            <Card>
+                <CardActionArea onClick={() => props.onClick()} className={classes.card}>
+                    <div>
+                        <CardContent>
+                            <Typography variant="h4">
+                                {props.study.studyName}
+                            </Typography>
+                            <Typography component="p">
+                                {props.study.description}
+                            </Typography>
+                        </CardContent>
+                    </div>
+                    { logo(props.study.caseFormat) }
+                </CardActionArea>
+                <DeleteForeverIcon onClick={handleDeleteStudy}/>
+            </Card>
+
+            <Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title"><FormattedMessage id="deleteStudy"/></DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        <FormattedMessage id="deleteStudyMsg"/>
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="studyName"
+                        label=<FormattedMessage id="studyName"/>
+                        type="text"
+                        onChange={handleOnChange}
+                        fullWidth
+                    />
+                    {err != null && (<Alert severity="error">{err}</Alert>)}
+                    {success != null && (<Alert severity="success">{success}</Alert>)}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelDelete} color="primary">
+                        <FormattedMessage id="cancel"/>
+                    </Button>
+                    <Button onClick={handleDeleteOk} color="primary">
+                        <FormattedMessage id="delete"/>
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
     );
 };
 

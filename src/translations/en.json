@@ -10,5 +10,11 @@
 
 
   "cancel" : "CANCEL",
-  "create" : "CREATE"
+  "create" : "CREATE",
+  "delete" : "DELETE",
+
+  "deleteStudy" : "Delete Study",
+  "deleteStudyMsg" : "To confirm the deletion enter the study name",
+  "studyNameDidNotMatchMsg" : "The given study name did not match with ",
+  "studyDeletedSuccessMsg" : "Study deleted "
 }
