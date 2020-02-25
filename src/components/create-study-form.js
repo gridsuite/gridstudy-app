@@ -100,7 +100,7 @@ const SelectCase = () => {
     );
 };
 
-const UploadFile = () => {
+const UploadCase = () => {
     const dispatch = useDispatch();
     const selectedFile = useSelector(state => state.selectedFile);
     const intl = useIntl();
@@ -279,7 +279,7 @@ export const CreateStudyForm = () => {
                         fullWidth
                     />
                     {caseExist && (<SelectCase/>)}
-                    {!caseExist && (<UploadFile/>)}
+                    {!caseExist && (<UploadCase/>)}
                     {createStudyErr !== '' && (<Alert severity="error">{createStudyErr}</Alert>)}
                     {success !== '' && (<Alert severity="success">{success}</Alert>)}
                     { loading && (
