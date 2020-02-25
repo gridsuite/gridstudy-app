@@ -65,7 +65,6 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, se
     console.info("Creating a new study...");
     const createStudyWithExistingCaseUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
     const createStudyWithNewCaseUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "?description=" + studyDescription;
-    console.log(caseName)
     if (caseExist) {
         console.info(createStudyWithExistingCaseUrl);
         return fetch(createStudyWithExistingCaseUrl, {method : 'post'});

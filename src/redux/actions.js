@@ -55,15 +55,33 @@ export function openStudy(studyName) {
     return { type: OPEN_STUDY, studyName: studyName };
 }
 
-export const SELECTED_CASE = 'SELECTED_CASE';
+export const SELECT_CASE = 'SELECT_CASE';
 
-export function selectedCase(selectedCase) {
-    return { type: SELECTED_CASE, selectedCase: selectedCase };
+export function selectCase(selectedCase) {
+    return { type: SELECT_CASE, selectedCase: selectedCase };
 }
 
 export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
 
 export function removeSelectedCase() {
     return { type: REMOVE_SELECTED_CASE};
+}
+
+export const SELECT_FILE = 'SELECT_FILE';
+
+export function selectFile(selectedFile) {
+    return { type: SELECT_FILE, selectedFile: selectedFile };
+}
+
+export const REMOVE_SELECTED_FILE = 'REMOVE_SELECTED_FILE';
+
+export function removeSelectedFile() {
+    return { type: REMOVE_SELECTED_FILE};
+}
+
+export const CREATE_STUDY_FORM_ERR = 'CREATE_STUDY_FORM_ERR';
+
+export function setErr(err) {
+    return { type: CREATE_STUDY_FORM_ERR, createStudyErr: err };
 }
 

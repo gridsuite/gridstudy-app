@@ -13,8 +13,11 @@ import {
     OPEN_STUDY, REMOVE_VOLTAGE_LEVEL_DIAGRAM,
     SELECT_DARK_THEME,
     LOAD_CASES_SUCCESS,
-    SELECTED_CASE,
-    REMOVE_SELECTED_CASE
+    SELECT_CASE,
+    REMOVE_SELECTED_CASE,
+    SELECT_FILE,
+    REMOVE_SELECTED_FILE,
+    CREATE_STUDY_FORM_ERR
 } from "./actions";
 
 const initialState = {
@@ -23,7 +26,9 @@ const initialState = {
     diagram: null,
     darkTheme: true,
     cases : [],
-    selectedCase : null
+    selectedCase : null,
+    selectedFile : null,
+    createStudyErr : '',
 };
 
 export const reducer = createReducer(initialState, {
@@ -56,7 +61,7 @@ export const reducer = createReducer(initialState, {
         state.diagram = null;
     },
 
-    [SELECTED_CASE]: (state, action) => {
+    [SELECT_CASE]: (state, action) => {
         state.selectedCase = action.selectedCase;
     },
 
@@ -64,7 +69,17 @@ export const reducer = createReducer(initialState, {
         state.selectedCase = null;
     },
 
+    [SELECT_FILE]: (state, action) => {
+        state.selectedFile = action.selectedFile;
+    },
 
+    [REMOVE_SELECTED_FILE]: (state, action) => {
+        state.selectedFile = null;
+    },
+
+    [CREATE_STUDY_FORM_ERR]: (state, action) => {
+        state.createStudyErr = action.createStudyErr;
+    },
 });
 
 

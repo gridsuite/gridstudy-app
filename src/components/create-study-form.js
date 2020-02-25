@@ -29,7 +29,14 @@ import {createStudy, fetchCases, fetchStudies} from '../utils/rest-api';
 import {useIntl, FormattedMessage} from "react-intl";
 
 import {useDispatch, useSelector} from "react-redux";
-import {loadStudiesSuccess, loadCasesSuccess, selectedCase, removeSelectedCase} from "../redux/actions";
+import {
+    loadStudiesSuccess,
+    loadCasesSuccess,
+    selectCase,
+    selectFile,
+    removeSelectedFile,
+    setErr
+} from "../redux/actions";
 import {store} from '../redux/store';
 
 const useStyles = makeStyles(theme => ({
@@ -46,9 +53,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SelectCase = () => {
-    const [openSelectCase, setSelectCase] = React.useState(false);
-
     const dispatch = useDispatch();
+    const cases = useSelector(state => state.cases);
+
+    const [openSelectCase, setSelectCase] = React.useState(false);
 
     useEffect(() => {
         fetchCases()
@@ -57,10 +65,8 @@ const SelectCase = () => {
             });
     }, []);
 
-    const cases = useSelector(state => state.cases);
-
     const handleChangeSelectCase = event => {
-        dispatch(selectedCase(event.target.value));
+        dispatch(selectCase(event.target.value));
     };
 
     const handleCloseSelectCase = () => {
@@ -94,39 +100,91 @@ const SelectCase = () => {
     );
 };
 
-export const CreateStudyForm = () => {
+const UploadFile = () => {
     const dispatch = useDispatch();
+    const selectedFile = useSelector(state => state.selectedFile);
+    const intl = useIntl();
 
+    const checkFileExtension = (event) => {
+        let files = event.target.files
+        let fileExtension = files[0].name.split('.').pop().toUpperCase();
+        // allowed extensions
+        const extensions = ['XIIDM', 'CGMES', 'UCTE', 'IEEE-CDF']
+
+        // compare file extension find doesn't match
+        if (extensions.every(type => fileExtension !== type)) {
+            dispatch(setErr(fileExtension + intl.formatMessage({id : 'fileExtensionErrorMsg'})));
+            return false;
+        }
+        return true;
+    }
+
+    const handleFileUpload = (e) => {
+        e.preventDefault()
+        let files = e.target.files;
+        if(checkFileExtension(e)) {
+            dispatch(selectFile(files[0]))
+        }
+    }
+
+    return (
+        <table>
+            <tbody>
+            <tr>
+                <th>
+                    <Button  variant="contained" color="primary"  component="label" >
+                        <FormattedMessage id="uploadCase"/>
+                        <input
+                            type="file"
+                            name="file"
+                            onChange={(e) => handleFileUpload(e)}
+                            style={{ display: "none" }}
+                        />
+                    </Button>
+                </th>
+                <th>
+                    <p>{selectedFile === null ? <FormattedMessage id="uploadMessage"/> : selectedFile.name}</p>
+                </th>
+            </tr>
+            </tbody>
+        </table>
+    );
+};
+
+export const CreateStudyForm = () => {
     const [open, setOpen] = React.useState(false);
     const [caseExist, setCaseExist] = React.useState(false);
 
     const [studyName, setStudyeName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
 
-    const [fileName, setFileName] = React.useState('');
-
-    const [selectedFile, setSelectedFile] = React.useState('');
-    const [err, setErr] = React.useState('');
     const [success, setSuccess] = React.useState('');
 
     const [loading, setLoading] = React.useState(false);
 
     const classes = useStyles();
     const intl = useIntl();
+    const dispatch = useDispatch();
+
+    const selectedFile = useSelector(state => state.selectedFile);
+    const caseName = useSelector(state => state.selectedCase);
+    const createStudyErr = useSelector(state => state.createStudyErr);
+
 
     const handleClickOpenDialog = () => {
         setOpen(true);
     };
 
-        const handleCloseDialog = () => {
-            setOpen(false);
-            setSuccess('');
-            setErr('');
-        };
+    const handleCloseDialog = () => {
+        setOpen(false);
+        setSuccess('');
+        dispatch(setErr(''));
+    };
 
     const handleChangeSwitch = (e) => {
         setCaseExist(e.target.checked);
-        setErr('');
+        dispatch(setErr(''));
+        setSuccess('');
     };
 
     const handleStudyDescriptionChanges = (e) => {
@@ -137,50 +195,32 @@ export const CreateStudyForm = () => {
         setStudyeName(e.target.value)
     }
 
-    const checkFileExtension = (event) => {
-        //getting file object
-        let files = event.target.files
-        let fileExtension = files[0].name.split('.').pop().toUpperCase();
-
-        // list allowed extensions
-        const extensions = ['XIIDM', 'CGMES', 'UCTE', 'IEEE-CDF']
-
-        // compare file extension find doesn't match
-        if (extensions.every(type => fileExtension !== type)) {
-            // create error message
-            setErr(fileExtension + intl.formatMessage({id : 'fileExtensionErrorMsg'}));
-            setFileName(intl.formatMessage({id : 'uploadMessage'}));
-            event.target.value = null // discard selected file
-            return false;
-        }
-        setFileName(files[0].name);
-        return true;
-    }
-
     const handleCreateNewStudy = () => {
-        const caseName = store.getState().selectedCase;
         if (studyName === '') {
-            setErr(intl.formatMessage({id : 'studyNameErrorMsg'}));
+            dispatch(setErr(intl.formatMessage({id : 'studyNameErrorMsg'})));
+            setSuccess('');
             return;
         } else if (studyDescription === '') {
-            setErr(intl.formatMessage({id : 'studyDescriptionErrorMsg'}));
+            dispatch(setErr(intl.formatMessage({id : 'studyDescriptionErrorMsg'})));
+            setSuccess('');
             return;
         } else if (caseExist && caseName === null) {
-            setErr(intl.formatMessage({id : 'caseNameErrorMsg'}));
+            dispatch(setErr(intl.formatMessage({id : 'caseNameErrorMsg'})));
+            setSuccess('');
             return;
-        } else if (!caseExist && fileName === '') {
-            setErr(intl.formatMessage({id : 'uploadErrorMsg'}));
+        } else if (!caseExist && selectedFile === null) {
+            dispatch(setErr(intl.formatMessage({id : 'uploadErrorMsg'})));
+            setSuccess('');
             return;
         }
         setLoading(true);
         createStudy(caseExist, studyName, studyDescription, caseName, selectedFile)
             .then(res => {
                 if(res.ok) {
-                    setErr('');
+                    dispatch(setErr(''));
                     setStudyeName('');
                     setStudyDescription('');
-                    setFileName('')
-                    dispatch(removeSelectedCase());
+                    dispatch(removeSelectedFile())
                     setSuccess (intl.formatMessage({id : 'studyCreated'}));
                     setLoading(false);
                     fetchStudies()
@@ -189,20 +229,11 @@ export const CreateStudyForm = () => {
                         })
                 } else {
                     console.log('Error when creating the study')
-                    setErr(intl.formatMessage({id : 'studyCreatingError'}));
+                    dispatch(setErr(intl.formatMessage({id : 'studyCreatingError'})));
                     setLoading(false);
                 }
             });
     };
-
-    const handleFileUpload = (e) => {
-        e.preventDefault()
-        let files = e.target.files;
-        let reader = new FileReader()
-        reader.readAsDataURL(files[0])
-        setSelectedFile(files[0])
-        checkFileExtension(e);
-    }
 
     return (
         <div>
@@ -224,8 +255,7 @@ export const CreateStudyForm = () => {
                             value="checked"
                             color="primary"
                             inputProps={{ 'aria-label': 'primary checkbox' }}
-                        />
-                        }
+                        />}
                         label = <FormattedMessage id="CaseExist"/>
                     />
                     <TextField
@@ -235,8 +265,8 @@ export const CreateStudyForm = () => {
                         id="name"
                         value={studyName}
                         label= <FormattedMessage id="studyName"/>
-                    type="text"
-                    fullWidth
+                        type="text"
+                        fullWidth
                     />
                     <TextField
                         onChange={(e) => handleStudyDescriptionChanges(e)}
@@ -245,53 +275,17 @@ export const CreateStudyForm = () => {
                         id="name"
                         value={studyDescription}
                         label= <FormattedMessage id="studyDescription"/>
-                    type="text"
-                    fullWidth
+                        type="text"
+                        fullWidth
                     />
-
-                    {   caseExist && (
-                            <SelectCase/>
-                        )
-                    }
-
-                    {
-                        !caseExist &&
-                        (
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <th>
-                                        <Button  variant="contained" color="primary"  component="label" >
-                                            <FormattedMessage id="uploadCase"/>
-                                            <input
-                                                type="file"
-                                                name="file"
-                                                onChange={(e) => handleFileUpload(e)}
-                                                style={{ display: "none" }}
-                                            />
-                                        </Button>
-                                    </th>
-                                    <th>
-                                       <p>{fileName === '' ? <FormattedMessage id="uploadMessage"/> : fileName}</p>
-                                    </th>
-                                </tr>
-                                 </tbody>
-                            </table>
-                        )
-                    }
-                    { err !== '' && (
-                      <Alert severity="error">{err}</Alert>
-                    )
-                    }
-                    { success !== '' && (
-                        <Alert severity="success">{success}</Alert>
-                        )
-                    }
+                    {caseExist && (<SelectCase/>)}
+                    {!caseExist && (<UploadFile/>)}
+                    {createStudyErr !== '' && (<Alert severity="error">{createStudyErr}</Alert>)}
+                    {success !== '' && (<Alert severity="success">{success}</Alert>)}
                     { loading && (
-                         <div style={{display: 'flex', justifyContent: 'center'}}>
+                        <div style={{display: 'flex', justifyContent: 'center'}}>
                             <CircularProgress className={classes.progress}/>
-                        </div>
-                        )
+                        </div>)
                     }
                 </DialogContent>
 
