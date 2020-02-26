@@ -22,8 +22,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import Alert from '@material-ui/lab/Alert'
 
 import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
@@ -31,7 +32,7 @@ import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
 import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 import {loadStudiesSuccess} from '../redux/actions';
-import {fetchStudies, createStudy, deleteStudy} from '../utils/rest-api';
+import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import {useIntl, FormattedMessage} from "react-intl";
 
 import {CreateStudyForm} from './create-study-form';
@@ -57,6 +58,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const StudyCard = (props) => {
+    const mousePositionInitialState = {
+        mouseX: null,
+        mouseY: null,
+    };
+    const [mousePosition, setMousePosition] = React.useState(mousePositionInitialState);
     const [open, setOpen] = React.useState(false);
     const [studyToBeDeleted, setStudyToBeDeleted] = React.useState(null);
     const [err, setErr] = React.useState(null);
@@ -81,24 +87,36 @@ const StudyCard = (props) => {
         }
     }
 
+    const handleClick = event => {
+        event.preventDefault();
+        setMousePosition({
+            mouseX: event.clientX - 2,
+            mouseY: event.clientY - 4,
+        });
+    };
+
+    const handleClose = () => {
+        setMousePosition(mousePositionInitialState);
+    };
+
     const handleDeleteStudy = (e) => {
-        console.log(props.study)
+        setMousePosition(mousePositionInitialState);
         setOpen(true);
     }
 
-    const handleDeleteOk = () => {
+    const handleDeleteStudyConfirmed = () => {
         if (studyToBeDeleted === props.study.studyName) {
             deleteStudy(props.study.studyName).then(result => {
-                fetchStudies().then(studies => {
-                    dispatch(loadStudiesSuccess(studies));
-                })
-                    console.info(studyToBeDeleted + " study deleted")
+                    fetchStudies().then(studies => {
+                        dispatch(loadStudiesSuccess(studies));
+                    })
+                    console.debug(studyToBeDeleted + " study deleted")
                     setErr(null);
                     setSucces(intl.formatMessage({id : 'studyDeletedSuccessMsg'}))
                 }
             );
         } else {
-            console.log("study remains")
+            console.debug("study remains")
             setErr(intl.formatMessage({id : 'studyNameDidNotMatchMsg'}) + props.study.studyName)
         }
     }
@@ -118,11 +136,10 @@ const StudyCard = (props) => {
 
     const handleOnChange = (e) => {
         setStudyToBeDeleted(e.target.value);
-        console.log(e.target.value)
     }
 
     return (
-        <div>
+        <div onContextMenu={handleClick} style={{ cursor: 'context-menu' }}>
             <Card>
                 <CardActionArea onClick={() => props.onClick()} className={classes.card}>
                     <div>
@@ -137,8 +154,21 @@ const StudyCard = (props) => {
                     </div>
                     { logo(props.study.caseFormat) }
                 </CardActionArea>
-                <DeleteForeverIcon onClick={handleDeleteStudy}/>
             </Card>
+
+            <Menu
+                keepMounted
+                open={mousePosition.mouseY !== null}
+                onClose={handleClose}
+                anchorReference="anchorPosition"
+                anchorPosition={
+                    mousePosition.mouseY !== null && mousePosition.mouseX !== null
+                        ? { top: mousePosition.mouseY, left: mousePosition.mouseX }
+                        : undefined
+                }
+            >
+                <MenuItem onClick={handleDeleteStudy}><FormattedMessage id="delete"/></MenuItem>
+            </Menu>
 
             <Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title"><FormattedMessage id="deleteStudy"/></DialogTitle>
@@ -158,11 +188,12 @@ const StudyCard = (props) => {
                     {err != null && (<Alert severity="error">{err}</Alert>)}
                     {success != null && (<Alert severity="success">{success}</Alert>)}
                 </DialogContent>
+
                 <DialogActions>
                     <Button onClick={handleCancelDelete} color="primary">
                         <FormattedMessage id="cancel"/>
                     </Button>
-                    <Button onClick={handleDeleteOk} color="primary">
+                    <Button onClick={handleDeleteStudyConfirmed} color="primary">
                         <FormattedMessage id="delete"/>
                     </Button>
                 </DialogActions>
