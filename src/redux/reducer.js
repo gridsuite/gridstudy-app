@@ -17,7 +17,10 @@ import {
     REMOVE_SELECTED_CASE,
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
-    CREATE_STUDY_FORM_ERR
+    CREATE_STUDY_FORM_ERR,
+    ADD_SELECTED_STUDY,
+    REMOVE_SELECTED_STUDY,
+    REMOVE_ALL_SELECTED_STUDIES
 } from "./actions";
 
 const initialState = {
@@ -29,6 +32,7 @@ const initialState = {
     selectedCase : null,
     selectedFile : null,
     createStudyErr : '',
+    selectedStudies : []
 };
 
 export const reducer = createReducer(initialState, {
@@ -79,6 +83,18 @@ export const reducer = createReducer(initialState, {
 
     [CREATE_STUDY_FORM_ERR]: (state, action) => {
         state.createStudyErr = action.createStudyErr;
+    },
+
+    [ADD_SELECTED_STUDY]: (state, action) => {
+        state.selectedStudies.push(action.studyName);
+    },
+
+    [REMOVE_SELECTED_STUDY]: (state, action) => {
+        state.selectedStudies = state.selectedStudies.filter(e => e !== action.studyName);
+    },
+
+    [REMOVE_ALL_SELECTED_STUDIES]: (state, action) => {
+        state.selectedStudies = [];
     },
 });
 

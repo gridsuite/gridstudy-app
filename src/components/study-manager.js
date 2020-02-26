@@ -24,14 +24,15 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-
+import DeleteIcon from '@material-ui/icons/Delete';
+import KeyHandler, {KEYUP, KEYDOWN} from 'react-key-handler';
 import Alert from '@material-ui/lab/Alert'
 
 import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
 import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
 import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
-import {loadStudiesSuccess} from '../redux/actions';
+import {loadStudiesSuccess, addSelectedStudy, removeSelectedStudy, removeAllSelectedStudies} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import {useIntl, FormattedMessage} from "react-intl";
 
@@ -68,6 +69,10 @@ const StudyCard = (props) => {
     const [err, setErr] = React.useState(null);
     const [success, setSucces] = React.useState(null);
 
+    const [ctrlPressed, setCtrlPressed] = React.useState(false);
+
+    const selectedStudies = useSelector(state => state.selectedStudies);
+
     const dispatch = useDispatch();
     const intl = useIntl();
     const classes = useStyles();
@@ -94,6 +99,48 @@ const StudyCard = (props) => {
             mouseY: event.clientY - 4,
         });
     };
+
+    const handleSelectCard = event => {
+        if (selectedStudies.includes(props.study.studyName)) {
+            if (ctrlPressed) {
+                console.log("what")
+                dispatch(removeSelectedStudy(props.study.studyName));
+            } else {
+                console.log("yes")
+                dispatch(removeAllSelectedStudies());
+            }
+        } else {
+            if (ctrlPressed) {
+                dispatch(addSelectedStudy(props.study.studyName));
+            } else {
+                dispatch(removeAllSelectedStudies())
+                dispatch(addSelectedStudy(props.study.studyName));
+            }
+        }
+    };
+
+    const handleCtrlDown = event => {
+        event.preventDefault();
+        setCtrlPressed(true);
+    };
+
+    const handleCtrlUp = event => {
+        event.preventDefault();
+        setCtrlPressed(false);
+    };
+
+    const handleCtrlADown = event => {
+        event.preventDefault();
+        if (ctrlPressed) {
+            dispatch(addSelectedStudy(props.study.studyName))
+        }
+    };
+
+    const  handleEscapePressed = event => {
+        console.log("ok")
+        event.preventDefault();
+        dispatch(removeAllSelectedStudies())
+    }
 
     const handleClose = () => {
         setMousePosition(mousePositionInitialState);
@@ -141,10 +188,10 @@ const StudyCard = (props) => {
     return (
         <div onContextMenu={handleClick} style={{ cursor: 'context-menu' }}>
             <Card>
-                <CardActionArea onClick={() => props.onClick()} className={classes.card}>
+                <CardActionArea onDoubleClick={() => props.onDoubleClick()} onClick={handleSelectCard} className={classes.card}>
                     <div>
                         <CardContent>
-                            <Typography variant="h4">
+                            <Typography variant="h4" color={selectedStudies.includes(props.study.studyName) ? 'primary' : 'secondary'}>
                                 {props.study.studyName}
                             </Typography>
                             <Typography component="p">
@@ -155,6 +202,30 @@ const StudyCard = (props) => {
                     { logo(props.study.caseFormat) }
                 </CardActionArea>
             </Card>
+
+            <KeyHandler
+                keyEventName={KEYDOWN}
+                keyValue="Control"
+                onKeyHandle={handleCtrlDown}
+            />
+
+            <KeyHandler
+                keyEventName={KEYUP}
+                keyValue="Control"
+                onKeyHandle={handleCtrlUp}
+            />
+
+            <KeyHandler
+                keyEventName={KEYDOWN}
+                keyValue="a"
+                onKeyHandle={handleCtrlADown}
+            />
+
+            <KeyHandler
+                keyEventName={KEYDOWN}
+                keyValue="Escape"
+                onKeyHandle={handleEscapePressed}
+            />
 
             <Menu
                 keepMounted
@@ -206,6 +277,8 @@ const StudyManager = (props) => {
 
     const dispatch = useDispatch();
 
+    const [open, setOpen] = React.useState(false);
+
     useEffect(() => {
         fetchStudies()
             .then(studies => {
@@ -214,18 +287,81 @@ const StudyManager = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const studies = useSelector(state => state.studies);
-
     const classes = useStyles();
+    const studies = useSelector(state => state.studies);
+    const selectedStudies = useSelector(state => state.selectedStudies);
+
+    const deleteSelectedStudies = () => {
+        setOpen(true);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleAgree = () => {
+        selectedStudies.forEach((s, index) => {
+            deleteStudy(s);
+            if (index === selectedStudies.length - 1) {
+                deleteStudy(s).then(() => {
+                    console.log("Yes");
+                    fetchStudies()
+                        .then(studies => {
+                            dispatch(loadStudiesSuccess(studies));
+                        });
+                    dispatch(removeAllSelectedStudies())
+                })
+            } else {
+                deleteStudy(s);
+            }
+        })
+        setOpen(false);
+    };
 
     return (
         <Container maxWidth="lg">
-            <CreateStudyForm/>
+            <Grid container spacing={3} className={classes.grid}>
+                <Grid item   xs={3} key="createStudy"> <CreateStudyForm/> </Grid>
+                <Grid item   xs={3} key="deleteAll">
+                    <Button
+                    variant="contained"
+                    color="secondary"
+                    className={classes.addButton}
+                    startIcon={<DeleteIcon/>}
+                    onClick={deleteSelectedStudies}
+                     >
+                        Delete
+                     </Button>
+                </Grid>
+            </Grid>
+
+            <Dialog
+                fullScreen={false}
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="responsive-dialog-title"
+            >
+                <DialogTitle id="responsive-dialog-title">{"Are you sure to delete " + selectedStudies.length + " studies ?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                         Si vous cliquez ok on ne peut pas revenir en arriére.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={handleClose} color="primary">
+                        Disagree
+                    </Button>
+                    <Button onClick={handleAgree} color="primary" autoFocus>
+                        Agree
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <Grid container spacing={2} className={classes.grid}>
             {
                 studies.map(study =>
                     <Grid item xs={3} key={study.studyName}>
-                        <StudyCard study={study} onClick={() => props.onStudyClick(study.studyName)}/>
+                        <StudyCard study={study} onDoubleClick={() => props.onStudyClick(study.studyName)}/>
                     </Grid>
                 )
             }

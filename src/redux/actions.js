@@ -85,3 +85,23 @@ export function setErr(err) {
     return { type: CREATE_STUDY_FORM_ERR, createStudyErr: err };
 }
 
+export const ADD_SELECTED_STUDY = 'ADD_SELECTED_STUDY';
+
+export function addSelectedStudy(studyName) {
+    return { type: ADD_SELECTED_STUDY, studyName: studyName };
+}
+
+export const REMOVE_SELECTED_STUDY = 'REMOVE_SELECTED_STUDY';
+
+export function removeSelectedStudy(studyName) {
+    return { type: REMOVE_SELECTED_STUDY, studyName: studyName };
+}
+
+export const REMOVE_ALL_SELECTED_STUDIES = 'REMOVE_ALL_SELECTED_STUDIES';
+
+export function removeAllSelectedStudies() {
+    return { type: REMOVE_ALL_SELECTED_STUDIES };
+}
+
+
+
