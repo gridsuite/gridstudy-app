@@ -63,6 +63,7 @@ const SelectCase = () => {
             .then(cases => {
                 dispatch(loadCasesSuccess(cases));
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleChangeSelectCase = event => {

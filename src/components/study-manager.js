@@ -211,6 +211,7 @@ const StudyManager = (props) => {
             .then(studies => {
                 dispatch(loadStudiesSuccess(studies));
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const studies = useSelector(state => state.studies);
