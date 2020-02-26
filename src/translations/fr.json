@@ -7,8 +7,18 @@
   "studyName" : "nom de l'étude",
   "studyDescription" : "description de l'étude",
   "caseName" : "nom de la situation",
+  "uploadCase" : "tèlécharger la situation",
 
+  "uploadMessage" : " Aucun fichier sélectionné",
   "cancel" : "ANNULER",
-  "create" : "CRÉER"
+  "create" : "CRÉER",
 
+  "studyNameErrorMsg" : "Le nom de l'étude ne doit pas être vide",
+  "studyDescriptionErrorMsg" : "La description de l'étude ne doit pas être vide",
+  "caseNameErrorMsg" : "Veuillez sélectionner le nom de la situation",
+  "caseDataErrorMsg" : "Une erreur s'est produite lors de l'importation du fichier",
+  "uploadErrorMsg" : "Veuillez télécharger la situation",
+  "fileExtensionErrorMsg" : " n'est pas un format supporté",
+  "studyCreated": "Étude créée",
+  "studyCreatingError" : "Une erreur est survenue lors du création de l'étude"
 }

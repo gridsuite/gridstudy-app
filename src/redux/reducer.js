@@ -11,20 +11,34 @@ import {
     LOAD_STUDIES_SUCCESS,
     LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
     OPEN_STUDY, REMOVE_VOLTAGE_LEVEL_DIAGRAM,
-    SELECT_DARK_THEME
+    SELECT_DARK_THEME,
+    LOAD_CASES_SUCCESS,
+    SELECT_CASE,
+    REMOVE_SELECTED_CASE,
+    SELECT_FILE,
+    REMOVE_SELECTED_FILE,
+    CREATE_STUDY_FORM_ERR
 } from "./actions";
 
 const initialState = {
     network: null,
     studies: [],
     diagram: null,
-    darkTheme: true
+    darkTheme: true,
+    cases : [],
+    selectedCase : null,
+    selectedFile : null,
+    createStudyErr : '',
 };
 
 export const reducer = createReducer(initialState, {
 
     [LOAD_STUDIES_SUCCESS]: (state, action) => {
         state.studies = action.studies;
+    },
+
+    [LOAD_CASES_SUCCESS]: (state, action) => {
+        state.cases = action.cases;
     },
 
     [OPEN_STUDY]: (state, action) => {
@@ -45,7 +59,27 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_VOLTAGE_LEVEL_DIAGRAM]: (state, action) => {
         state.diagram = null;
-    }
+    },
+
+    [SELECT_CASE]: (state, action) => {
+        state.selectedCase = action.selectedCase;
+    },
+
+    [REMOVE_SELECTED_CASE]: (state, action) => {
+        state.selectedCase = null;
+    },
+
+    [SELECT_FILE]: (state, action) => {
+        state.selectedFile = action.selectedFile;
+    },
+
+    [REMOVE_SELECTED_FILE]: (state, action) => {
+        state.selectedFile = null;
+    },
+
+    [CREATE_STUDY_FORM_ERR]: (state, action) => {
+        state.createStudyErr = action.createStudyErr;
+    },
 });
 
 
