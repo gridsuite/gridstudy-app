@@ -7,8 +7,10 @@
   "studyName" : "study name",
   "studyDescription" : "study description",
   "caseName" : "case name",
+  "uploadCase" : "Upload case",
 
 
+  "uploadMessage" : " No file selected",
   "cancel" : "CANCEL",
   "create" : "CREATE",
   "delete" : "DELETE",
@@ -16,5 +18,14 @@
   "deleteStudy" : "Delete Study",
   "deleteStudyMsg" : "To confirm the deletion enter the study name",
   "studyNameDidNotMatchMsg" : "The given study name did not match with ",
-  "studyDeletedSuccessMsg" : "Study deleted "
+  "studyDeletedSuccessMsg" : "Study deleted ",
+
+  "studyNameErrorMsg" : "Study name should not be empty",
+  "studyDescriptionErrorMsg" : "Study description should not be empty",
+  "caseNameErrorMsg" : "Please select the case name",
+  "caseDataErrorMsg" : "An error occured when importing the case",
+  "uploadErrorMsg" : "Please upload the case file",
+  "fileExtensionErrorMsg" : " is not a supported format",
+  "studyCreated": "Study created",
+  "studyCreatingError" : "An error occurred while creating the study"
 }
