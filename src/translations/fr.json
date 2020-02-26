@@ -17,7 +17,7 @@
   "deleteStudy" : "Supprimer l'étude",
   "deleteStudyMsg" : "Pour confirmer la suppression, saisissez le nom de l'étude",
   "studyNameDidNotMatchMsg" : "Le nom d'étude donné ne correspond pas à ",
-  "studyDeletedSuccessMsg" : "Etude supprimée",
+  "studyDeletedSuccessMsg" : "Étude supprimée",
 
 
   "studyNameErrorMsg" : "Le nom de l'étude ne doit pas être vide",
