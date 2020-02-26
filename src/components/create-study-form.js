@@ -106,10 +106,10 @@ const UploadCase = () => {
     const intl = useIntl();
 
     const checkFileExtension = (event) => {
-        let files = event.target.files
-        let fileExtension = files[0].name.split('.').pop().toUpperCase();
+        const files = event.target.files;
+        const fileExtension = files[0].name.split('.').pop().toUpperCase();
         // allowed extensions
-        const extensions = ['XIIDM', 'CGMES', 'UCTE', 'IEEE-CDF']
+        const extensions = ['XIIDM', 'CGMES', 'UCTE', 'IEEE-CDF'];
 
         // compare file extension find doesn't match
         if (extensions.every(type => fileExtension !== type)) {
@@ -117,15 +117,15 @@ const UploadCase = () => {
             return false;
         }
         return true;
-    }
+    };
 
     const handleFileUpload = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         let files = e.target.files;
         if(checkFileExtension(e)) {
             dispatch(selectFile(files[0]))
         }
-    }
+    };
 
     return (
         <table>
@@ -155,7 +155,7 @@ export const CreateStudyForm = () => {
     const [open, setOpen] = React.useState(false);
     const [caseExist, setCaseExist] = React.useState(false);
 
-    const [studyName, setStudyeName] = React.useState('');
+    const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
 
     const [success, setSuccess] = React.useState('');
@@ -189,11 +189,11 @@ export const CreateStudyForm = () => {
 
     const handleStudyDescriptionChanges = (e) => {
         setStudyDescription(e.target.value)
-    }
+    };
 
     const handleStudyNameChanges = (e) => {
-        setStudyeName(e.target.value)
-    }
+        setStudyName(e.target.value)
+    };
 
     const handleCreateNewStudy = () => {
         if (studyName === '') {
@@ -218,7 +218,7 @@ export const CreateStudyForm = () => {
             .then(res => {
                 if(res.ok) {
                     dispatch(setErr(''));
-                    setStudyeName('');
+                    setStudyName('');
                     setStudyDescription('');
                     dispatch(removeSelectedFile())
                     setSuccess (intl.formatMessage({id : 'studyCreated'}));
