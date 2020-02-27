@@ -139,7 +139,9 @@ const StudyCard = (props) => {
     const handleCtrlADown = event => {
         event.preventDefault();
         if (ctrlPressed) {
-            dispatch(addSelectedStudy(props.study.studyName))
+            if (selectedStudies.filter(s => s === props.study.studyName).length === 0) {
+                dispatch(addSelectedStudy(props.study.studyName))
+            }
         }
     };
 
