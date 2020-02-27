@@ -36,10 +36,12 @@ import {
 } from '../redux/actions'
 import {fetchLines, fetchSubstationPositions, fetchSubstations, fetchVoltageLevelDiagram, fetchLinePositions} from '../utils/rest-api'
 
-const lightTheme = createMuiTheme({
+export const lightTheme = createMuiTheme({
     palette: {
         type: 'light',
     },
+    bgColor1: '#77B5FE',
+    bgColor2: 'grey',
     mapboxStyle: 'mapbox://styles/mapbox/light-v9'
 });
 
@@ -47,6 +49,8 @@ const darkTheme = createMuiTheme({
     palette: {
         type: 'dark',
     },
+    bgColor1: '#77B5FE',
+    bgColor2: 'grey',
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9'
 });
 

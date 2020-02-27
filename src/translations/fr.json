@@ -27,5 +27,11 @@
   "uploadErrorMsg" : "Veuillez télécharger la situation",
   "fileExtensionErrorMsg" : " n'est pas un format supporté",
   "studyCreated": "Étude créée",
-  "studyCreatingError" : "Une erreur est survenue lors du création de l'étude"
+  "studyCreatingError" : "Une erreur est survenue lors du création de l'étude",
+
+  "confirmDeleteStudiesMessage" : "l'opération est irréversible",
+  "deleteStudiesQuestion" : "Etes-vous sûr de vouloir supprimer",
+  "studies" : "études",
+  "study" : "étude"
+
 }

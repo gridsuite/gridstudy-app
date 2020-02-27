@@ -27,5 +27,10 @@
   "uploadErrorMsg" : "Please upload the case file",
   "fileExtensionErrorMsg" : " is not a supported format",
   "studyCreated": "Study created",
-  "studyCreatingError" : "An error occurred while creating the study"
+  "studyCreatingError" : "An error occurred while creating the study",
+
+  "confirmDeleteStudiesMessage" : "the operation is irreversible",
+  "deleteStudiesQuestion" : "Are you sure that you want to delete ?",
+  "studies" : "studies",
+  "study" : "study"
 }

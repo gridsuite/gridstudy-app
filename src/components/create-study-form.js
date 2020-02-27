@@ -37,7 +37,6 @@ import {
     removeSelectedFile,
     setErr
 } from "../redux/actions";
-import {store} from '../redux/store';
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -55,6 +54,7 @@ const useStyles = makeStyles(theme => ({
 const SelectCase = () => {
     const dispatch = useDispatch();
     const cases = useSelector(state => state.cases);
+    const selectedCase = useSelector(state => state.selectedCase);
 
     const [openSelectCase, setSelectCase] = React.useState(false);
 
@@ -90,10 +90,10 @@ const SelectCase = () => {
                    open={openSelectCase}
                    onClose={handleCloseSelectCase}
                    onOpen={handleOpenSelectCase}
-                   value={store.getState().selectedCase != null ? store.getState().selectedCase : ""}
+                   value={selectedCase != null ? selectedCase : ""}
                    onChange={handleChangeSelectCase}>
                    {
-                       cases.map((function (element, index) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
+                       cases.map((function (element) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
                    }
                </Select>
            </FormControl>
@@ -221,7 +221,7 @@ export const CreateStudyForm = () => {
                     dispatch(setErr(''));
                     setStudyName('');
                     setStudyDescription('');
-                    dispatch(removeSelectedFile())
+                    dispatch(removeSelectedFile());
                     setSuccess (intl.formatMessage({id : 'studyCreated'}));
                     setLoading(false);
                     fetchStudies()
@@ -229,7 +229,7 @@ export const CreateStudyForm = () => {
                             dispatch(loadStudiesSuccess(studies));
                         })
                 } else {
-                    console.log('Error when creating the study')
+                    console.log('Error when creating the study');
                     dispatch(setErr(intl.formatMessage({id : 'studyCreatingError'})));
                     setLoading(false);
                 }

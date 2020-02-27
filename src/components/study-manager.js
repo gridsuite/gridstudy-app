@@ -24,6 +24,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+
 import DeleteIcon from '@material-ui/icons/Delete';
 import KeyHandler, {KEYUP, KEYDOWN} from 'react-key-handler';
 import Alert from '@material-ui/lab/Alert'
@@ -32,6 +33,7 @@ import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
 import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
 import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
+
 import {loadStudiesSuccess, addSelectedStudy, removeSelectedStudy, removeAllSelectedStudies} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import {useIntl, FormattedMessage} from "react-intl";
@@ -55,6 +57,13 @@ const useStyles = makeStyles(theme => ({
     logo: {
         width: 64,
         height: 64,
+    },
+    ok : {
+        backgroundColor : theme.bgColor1
+    },
+
+    okk : {
+        backgroundColor : theme.bgColor2
     }
 }));
 
@@ -80,13 +89,13 @@ const StudyCard = (props) => {
     function logo(caseFormat) {
         switch (caseFormat) {
             case 'XIIDM':
-                return <PowsyblLogo className={classes.logo}/>
+                return <PowsyblLogo className={classes.logo}/>;
             case 'CGMES':
-                return <EntsoeLogo className={classes.logo}/>
+                return <EntsoeLogo className={classes.logo}/>;
             case 'UCTE':
-                return <UcteLogo className={classes.logo}/>
+                return <UcteLogo className={classes.logo}/>;
             case 'IEEE-CDF':
-                return <IeeeLogo className={classes.logo}/>
+                return <IeeeLogo className={classes.logo}/>;
             default:
                 break;
         }
@@ -100,20 +109,18 @@ const StudyCard = (props) => {
         });
     };
 
-    const handleSelectCard = event => {
+    const handleSelectCard = () => {
         if (selectedStudies.includes(props.study.studyName)) {
             if (ctrlPressed) {
-                console.log("what")
                 dispatch(removeSelectedStudy(props.study.studyName));
             } else {
-                console.log("yes")
                 dispatch(removeAllSelectedStudies());
             }
         } else {
             if (ctrlPressed) {
                 dispatch(addSelectedStudy(props.study.studyName));
             } else {
-                dispatch(removeAllSelectedStudies())
+                dispatch(removeAllSelectedStudies());
                 dispatch(addSelectedStudy(props.study.studyName));
             }
         }
@@ -137,61 +144,60 @@ const StudyCard = (props) => {
     };
 
     const  handleEscapePressed = event => {
-        console.log("ok")
         event.preventDefault();
         dispatch(removeAllSelectedStudies())
-    }
+    };
 
     const handleClose = () => {
         setMousePosition(mousePositionInitialState);
     };
 
-    const handleDeleteStudy = (e) => {
+    const handleDeleteStudy = () => {
         setMousePosition(mousePositionInitialState);
         setOpen(true);
-    }
+    };
 
     const handleDeleteStudyConfirmed = () => {
         if (studyToBeDeleted === props.study.studyName) {
-            deleteStudy(props.study.studyName).then(result => {
+            deleteStudy(props.study.studyName).then(() => {
                     fetchStudies().then(studies => {
                         dispatch(loadStudiesSuccess(studies));
-                    })
-                    console.debug(studyToBeDeleted + " study deleted")
+                    });
+                    console.debug(studyToBeDeleted + " study deleted");
                     setErr(null);
                     setSucces(intl.formatMessage({id : 'studyDeletedSuccessMsg'}))
                 }
             );
         } else {
-            console.debug("study remains")
+            console.debug("study remains");
             setErr(intl.formatMessage({id : 'studyNameDidNotMatchMsg'}) + props.study.studyName)
         }
-    }
+    };
 
     const handleCloseDialog = () => {
         setOpen(false);
         setErr(null);
         setSucces(null);
-    }
+    };
 
     const handleCancelDelete = () => {
         setStudyToBeDeleted(null);
         setOpen(false);
         setErr(null);
         setSucces(null);
-    }
+    };
 
     const handleOnChange = (e) => {
         setStudyToBeDeleted(e.target.value);
-    }
+    };
 
     return (
         <div onContextMenu={handleClick} style={{ cursor: 'context-menu' }}>
-            <Card>
+            <Card className={selectedStudies.includes(props.study.studyName) ? classes.ok : classes.okk}>
                 <CardActionArea onDoubleClick={() => props.onDoubleClick()} onClick={handleSelectCard} className={classes.card}>
                     <div>
                         <CardContent>
-                            <Typography variant="h4" color={selectedStudies.includes(props.study.studyName) ? 'primary' : 'secondary'}>
+                            <Typography variant="h4">
                                 {props.study.studyName}
                             </Typography>
                             <Typography component="p">
@@ -250,7 +256,6 @@ const StudyCard = (props) => {
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="studyName"
                         label=<FormattedMessage id="studyName"/>
                         type="text"
                         onChange={handleOnChange}
@@ -290,10 +295,14 @@ const StudyManager = (props) => {
     const classes = useStyles();
     const studies = useSelector(state => state.studies);
     const selectedStudies = useSelector(state => state.selectedStudies);
+    const intl = useIntl();
+
+    const tmp =   selectedStudies.length > 1 ?  intl.formatMessage({id : 'studies'})  :  intl.formatMessage({id : 'study'});
+    const deleteMessage = intl.formatMessage({id : 'deleteStudiesQuestion'}) + " " + selectedStudies.length + " "+ tmp +  "?";
 
     const deleteSelectedStudies = () => {
         setOpen(true);
-    }
+    };
 
     const handleClose = () => {
         setOpen(false);
@@ -301,7 +310,10 @@ const StudyManager = (props) => {
 
     const handleAgree = () => {
         selectedStudies.forEach((s, index) => {
-            deleteStudy(s);
+                deleteStudy(s).then(r => {if(r.ok) {
+                    console.debug("study" + s.studyName + "deleted");
+                }}
+            );
             if (index === selectedStudies.length - 1) {
                 deleteStudy(s).then(() => {
                     console.log("Yes");
@@ -312,25 +324,30 @@ const StudyManager = (props) => {
                     dispatch(removeAllSelectedStudies())
                 })
             } else {
-                deleteStudy(s);
+                deleteStudy(s).then(r => {if(r.ok) {
+                        console.debug("study" + s.studyName + "deleted");
+                    }}
+                );
             }
-        })
+        });
         setOpen(false);
     };
 
     return (
         <Container maxWidth="lg">
             <Grid container spacing={3} className={classes.grid}>
-                <Grid item   xs={3} key="createStudy"> <CreateStudyForm/> </Grid>
-                <Grid item   xs={3} key="deleteAll">
+                <Grid item   xs={3} key="createStudy"> <CreateStudyForm/>
+                </Grid>
+                <Grid item   xs={2} key="deleteAll">
                     <Button
                     variant="contained"
                     color="secondary"
                     className={classes.addButton}
                     startIcon={<DeleteIcon/>}
                     onClick={deleteSelectedStudies}
+                    disabled={selectedStudies.length === 0}
                      >
-                        Delete
+                        <FormattedMessage id="delete"/>
                      </Button>
                 </Grid>
             </Grid>
@@ -341,10 +358,10 @@ const StudyManager = (props) => {
                 onClose={handleClose}
                 aria-labelledby="responsive-dialog-title"
             >
-                <DialogTitle id="responsive-dialog-title">{"Are you sure to delete " + selectedStudies.length + " studies ?"}</DialogTitle>
+                <DialogTitle id="responsive-dialog-title">{deleteMessage}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                         Si vous cliquez ok on ne peut pas revenir en arriére.
+                        <FormattedMessage id="confirmDeleteStudiesMessage"/>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
