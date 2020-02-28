@@ -14,7 +14,6 @@
   "create" : "CRÉER",
 
   "studyNameErrorMsg" : "Le nom de l'étude ne doit pas être vide",
-  "studyDescriptionErrorMsg" : "La description de l'étude ne doit pas être vide",
   "caseNameErrorMsg" : "Veuillez sélectionner le nom de la situation",
   "caseDataErrorMsg" : "Une erreur s'est produite lors de l'importation du fichier",
   "uploadErrorMsg" : "Veuillez télécharger la situation",
