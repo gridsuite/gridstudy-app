@@ -15,7 +15,6 @@
   "create" : "CREATE",
 
   "studyNameErrorMsg" : "Study name should not be empty",
-  "studyDescriptionErrorMsg" : "Study description should not be empty",
   "caseNameErrorMsg" : "Please select the case name",
   "caseDataErrorMsg" : "An error occured when importing the case",
   "uploadErrorMsg" : "Please upload the case file",
