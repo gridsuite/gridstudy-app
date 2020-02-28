@@ -34,8 +34,7 @@ import {
     loadCasesSuccess,
     selectCase,
     selectFile,
-    removeSelectedFile,
-    setErr
+    removeSelectedFile
 } from "../redux/actions";
 import {store} from '../redux/store';
 
@@ -92,7 +91,7 @@ const SelectCase = () => {
                    value={store.getState().selectedCase != null ? store.getState().selectedCase : ""}
                    onChange={handleChangeSelectCase}>
                    {
-                       cases.map((function (element, index) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
+                       cases.map((function (element) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
                    }
                </Select>
            </FormControl>
@@ -103,28 +102,11 @@ const SelectCase = () => {
 const UploadCase = () => {
     const dispatch = useDispatch();
     const selectedFile = useSelector(state => state.selectedFile);
-    const intl = useIntl();
-
-    const checkFileExtension = (event) => {
-        const files = event.target.files;
-        const fileExtension = files[0].name.split('.').pop().toUpperCase();
-        // allowed extensions
-        const extensions = ['XIIDM', 'CGMES', 'UCTE', 'IEEE-CDF'];
-
-        // compare file extension find doesn't match
-        if (extensions.every(type => fileExtension !== type)) {
-            dispatch(setErr(fileExtension + intl.formatMessage({id : 'fileExtensionErrorMsg'})));
-            return false;
-        }
-        return true;
-    };
 
     const handleFileUpload = (e) => {
         e.preventDefault();
         let files = e.target.files;
-        if(checkFileExtension(e)) {
-            dispatch(selectFile(files[0]))
-        }
+        dispatch(selectFile(files[0]))
     };
 
     return (
@@ -157,6 +139,7 @@ export const CreateStudyForm = () => {
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
+    const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [success, setSuccess] = React.useState('');
 
@@ -168,8 +151,6 @@ export const CreateStudyForm = () => {
 
     const selectedFile = useSelector(state => state.selectedFile);
     const caseName = useSelector(state => state.selectedCase);
-    const createStudyErr = useSelector(state => state.createStudyErr);
-
 
     const handleClickOpenDialog = () => {
         setOpen(true);
@@ -178,12 +159,12 @@ export const CreateStudyForm = () => {
     const handleCloseDialog = () => {
         setOpen(false);
         setSuccess('');
-        dispatch(setErr(''));
+        setCreateStudyErr('');
     };
 
     const handleChangeSwitch = (e) => {
         setCaseExist(e.target.checked);
-        dispatch(setErr(''));
+        setCreateStudyErr('');
         setSuccess('');
     };
 
@@ -197,15 +178,15 @@ export const CreateStudyForm = () => {
 
     const handleCreateNewStudy = () => {
         if (studyName === '') {
-            dispatch(setErr(intl.formatMessage({id : 'studyNameErrorMsg'})));
+            setCreateStudyErr(intl.formatMessage({id : 'studyNameErrorMsg'}));
             setSuccess('');
             return;
         } else if (caseExist && caseName === null) {
-            dispatch(setErr(intl.formatMessage({id : 'caseNameErrorMsg'})));
+            setCreateStudyErr(intl.formatMessage({id : 'caseNameErrorMsg'}));
             setSuccess('');
             return;
         } else if (!caseExist && selectedFile === null) {
-            dispatch(setErr(intl.formatMessage({id : 'uploadErrorMsg'})));
+            setCreateStudyErr(intl.formatMessage({id : 'uploadErrorMsg'}));
             setSuccess('');
             return;
         }
@@ -213,10 +194,10 @@ export const CreateStudyForm = () => {
         createStudy(caseExist, studyName, studyDescription, caseName, selectedFile)
             .then(res => {
                 if(res.ok) {
-                    dispatch(setErr(''));
+                    setCreateStudyErr('');
                     setStudyName('');
                     setStudyDescription('');
-                    dispatch(removeSelectedFile())
+                    dispatch(removeSelectedFile());
                     setSuccess (intl.formatMessage({id : 'studyCreated'}));
                     setLoading(false);
                     fetchStudies()
@@ -224,8 +205,8 @@ export const CreateStudyForm = () => {
                             dispatch(loadStudiesSuccess(studies));
                         })
                 } else {
-                    console.log('Error when creating the study')
-                    dispatch(setErr(intl.formatMessage({id : 'studyCreatingError'})));
+                    console.debug('Error when creating the study');
+                    setCreateStudyErr(intl.formatMessage({id : 'studyCreatingError'}));
                     setLoading(false);
                 }
             });

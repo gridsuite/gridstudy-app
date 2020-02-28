@@ -18,7 +18,6 @@
   "caseNameErrorMsg" : "Please select the case name",
   "caseDataErrorMsg" : "An error occured when importing the case",
   "uploadErrorMsg" : "Please upload the case file",
-  "fileExtensionErrorMsg" : " is not a supported format",
   "studyCreated": "Study created",
   "studyCreatingError" : "An error occurred while creating the study"
 }
