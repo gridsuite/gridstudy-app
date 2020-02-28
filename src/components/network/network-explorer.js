@@ -5,34 +5,50 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from "prop-types";
 import {FixedSizeList} from 'react-window';
 
 import ListItem from '@material-ui/core/ListItem';
+import TextField from '@material-ui/core/TextField';
 
 import Network from "./network";
 
 const itemSize = 35;
 
 const NetworkExplorer = (props) => {
-    const voltageLevels = props.network.getVoltageLevels();
+    const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState([]);
+
+    useEffect(() => {
+        setFilteredVoltageLevels(props.network.getVoltageLevels())
+    }, [props.network]);
 
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => props.onSubstationClick(voltageLevels[index].id)}>
-            {voltageLevels[index].id}
+        <ListItem button style={style} key={index} onClick={() => props.onSubstationClick(filteredVoltageLevels[index].id)}>
+            {filteredVoltageLevels[index].id}
         </ListItem>
     );
 
+    const filter = (event) => {
+        let entry = event.target.value.toLowerCase();
+        setFilteredVoltageLevels(props.network.getVoltageLevels().filter(item => {
+            const lc = item.id.toLowerCase();
+            return lc.includes(entry);
+        }));
+    };
+
     return (
-        <FixedSizeList
-            height={30 * itemSize}
-            itemCount={voltageLevels.length}
-            itemSize={itemSize}
-            width="100%"
-        >
-            {Row}
-        </FixedSizeList>
+        <div>
+            <TextField id="standard-basic" label="Search..." onChange={filter} fullWidth={true}/>
+            <FixedSizeList
+                height={29 * itemSize}
+                itemCount={filteredVoltageLevels.length}
+                itemSize={itemSize}
+                width="100%"
+            >
+                {Row}
+            </FixedSizeList>
+        </div>
     )
 };
 
