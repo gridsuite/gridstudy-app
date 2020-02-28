@@ -79,12 +79,6 @@ export function removeSelectedFile() {
     return { type: REMOVE_SELECTED_FILE};
 }
 
-export const CREATE_STUDY_FORM_ERR = 'CREATE_STUDY_FORM_ERR';
-
-export function setErr(err) {
-    return { type: CREATE_STUDY_FORM_ERR, createStudyErr: err };
-}
-
 export const ADD_SELECTED_STUDY = 'ADD_SELECTED_STUDY';
 
 export function addSelectedStudy(studyName) {
@@ -102,6 +96,5 @@ export const REMOVE_ALL_SELECTED_STUDIES = 'REMOVE_ALL_SELECTED_STUDIES';
 export function removeAllSelectedStudies() {
     return { type: REMOVE_ALL_SELECTED_STUDIES };
 }
-
 
 
