@@ -141,8 +141,6 @@ export const CreateStudyForm = () => {
     const [studyDescription, setStudyDescription] = React.useState('');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
-    const [success, setSuccess] = React.useState('');
-
     const [loading, setLoading] = React.useState(false);
 
     const classes = useStyles();
@@ -158,14 +156,12 @@ export const CreateStudyForm = () => {
 
     const handleCloseDialog = () => {
         setOpen(false);
-        setSuccess('');
         setCreateStudyErr('');
     };
 
     const handleChangeSwitch = (e) => {
         setCaseExist(e.target.checked);
         setCreateStudyErr('');
-        setSuccess('');
     };
 
     const handleStudyDescriptionChanges = (e) => {
@@ -179,15 +175,12 @@ export const CreateStudyForm = () => {
     const handleCreateNewStudy = () => {
         if (studyName === '') {
             setCreateStudyErr(intl.formatMessage({id : 'studyNameErrorMsg'}));
-            setSuccess('');
             return;
         } else if (caseExist && caseName === null) {
             setCreateStudyErr(intl.formatMessage({id : 'caseNameErrorMsg'}));
-            setSuccess('');
             return;
         } else if (!caseExist && selectedFile === null) {
             setCreateStudyErr(intl.formatMessage({id : 'uploadErrorMsg'}));
-            setSuccess('');
             return;
         }
         setLoading(true);
@@ -198,8 +191,8 @@ export const CreateStudyForm = () => {
                     setStudyName('');
                     setStudyDescription('');
                     dispatch(removeSelectedFile());
-                    setSuccess (intl.formatMessage({id : 'studyCreated'}));
                     setLoading(false);
+                    setOpen(false);
                     fetchStudies()
                         .then(studies => {
                             dispatch(loadStudiesSuccess(studies));
@@ -258,7 +251,6 @@ export const CreateStudyForm = () => {
                     {caseExist && (<SelectCase/>)}
                     {!caseExist && (<UploadCase/>)}
                     {createStudyErr !== '' && (<Alert severity="error">{createStudyErr}</Alert>)}
-                    {success !== '' && (<Alert severity="success">{success}</Alert>)}
                     { loading && (
                         <div style={{display: 'flex', justifyContent: 'center'}}>
                             <CircularProgress className={classes.progress}/>
