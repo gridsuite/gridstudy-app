@@ -71,7 +71,7 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, se
         const createStudyWithNewCaseUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "?description=" + studyDescription;
         const formData = new FormData();
         formData.append('caseFile', selectedFile);
-        console.debug("selectedFile: " + selectedFile);
+        console.debug("selectedFile: " + selectedFile.name);
         console.debug(createStudyWithNewCaseUrl);
         return fetch(createStudyWithNewCaseUrl, {
             method : 'post',
