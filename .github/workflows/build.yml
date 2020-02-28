@@ -26,3 +26,10 @@ jobs:
           name: powsybl/study-app
           username: powsyblci
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Broadcast update event
+        if: github.ref == 'refs/heads/master'
+        uses: geofjamg/broadcast-event@master
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          event-type: study_app_updated
