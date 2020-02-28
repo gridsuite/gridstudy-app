@@ -12,6 +12,7 @@
   "uploadMessage" : " Aucun fichier sélectionné",
   "cancel" : "ANNULER",
   "create" : "CRÉER",
+  "ok" : "OK",
   "delete" : "SUPPRIMER",
 
   "deleteStudy" : "Supprimer l'étude",

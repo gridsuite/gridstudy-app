@@ -338,19 +338,19 @@ const StudyManager = (props) => {
     return (
         <Container maxWidth="lg">
             <Grid container spacing={3} className={classes.grid}>
-                <Grid item   xs={3} key="createStudy"> <CreateStudyForm/>
-                </Grid>
-                <Grid item   xs={2} key="deleteAll">
+                <Grid item   xs={11} key="createStudy"> <CreateStudyForm/></Grid>
+                 <Grid item   xs={1} key="deleteAll">
+                     { selectedStudies.length !== 0 && (
                     <Button
-                    variant="contained"
-                    color="secondary"
-                    className={classes.addButton}
-                    startIcon={<DeleteIcon/>}
-                    onClick={deleteSelectedStudies}
-                    disabled={selectedStudies.length === 0}
-                     >
-                        <FormattedMessage id="delete"/>
-                     </Button>
+                        size="small"
+                        variant="contained"
+                        color="secondary"
+                        className={classes.addButton}
+                        startIcon={<DeleteIcon size="large"/>}
+                        onClick={deleteSelectedStudies}
+                        disabled={selectedStudies.length === 0}
+                    />)
+                    }
                 </Grid>
             </Grid>
 
@@ -368,10 +368,10 @@ const StudyManager = (props) => {
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={handleClose} color="primary">
-                        Disagree
+                        <FormattedMessage id="cancel"/>
                     </Button>
                     <Button onClick={handleAgree} color="primary" autoFocus>
-                        Agree
+                        <FormattedMessage id="delete"/>
                     </Button>
                 </DialogActions>
             </Dialog>
