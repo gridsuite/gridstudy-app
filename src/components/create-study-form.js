@@ -158,8 +158,6 @@ export const CreateStudyForm = () => {
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
 
-    const [success, setSuccess] = React.useState('');
-
     const [loading, setLoading] = React.useState(false);
 
     const classes = useStyles();
@@ -177,14 +175,12 @@ export const CreateStudyForm = () => {
 
     const handleCloseDialog = () => {
         setOpen(false);
-        setSuccess('');
         dispatch(setErr(''));
     };
 
     const handleChangeSwitch = (e) => {
         setCaseExist(e.target.checked);
         dispatch(setErr(''));
-        setSuccess('');
     };
 
     const handleStudyDescriptionChanges = (e) => {
@@ -198,15 +194,12 @@ export const CreateStudyForm = () => {
     const handleCreateNewStudy = () => {
         if (studyName === '') {
             dispatch(setErr(intl.formatMessage({id : 'studyNameErrorMsg'})));
-            setSuccess('');
             return;
         } else if (caseExist && caseName === null) {
             dispatch(setErr(intl.formatMessage({id : 'caseNameErrorMsg'})));
-            setSuccess('');
             return;
         } else if (!caseExist && selectedFile === null) {
             dispatch(setErr(intl.formatMessage({id : 'uploadErrorMsg'})));
-            setSuccess('');
             return;
         }
         setLoading(true);
@@ -217,14 +210,14 @@ export const CreateStudyForm = () => {
                     setStudyName('');
                     setStudyDescription('');
                     dispatch(removeSelectedFile())
-                    setSuccess (intl.formatMessage({id : 'studyCreated'}));
                     setLoading(false);
+                    setOpen(false);
                     fetchStudies()
                         .then(studies => {
                             dispatch(loadStudiesSuccess(studies));
                         })
                 } else {
-                    console.log('Error when creating the study')
+                    console.log('Error when creating the study');
                     dispatch(setErr(intl.formatMessage({id : 'studyCreatingError'})));
                     setLoading(false);
                 }
@@ -277,7 +270,6 @@ export const CreateStudyForm = () => {
                     {caseExist && (<SelectCase/>)}
                     {!caseExist && (<UploadCase/>)}
                     {createStudyErr !== '' && (<Alert severity="error">{createStudyErr}</Alert>)}
-                    {success !== '' && (<Alert severity="success">{success}</Alert>)}
                     { loading && (
                         <div style={{display: 'flex', justifyContent: 'center'}}>
                             <CircularProgress className={classes.progress}/>
