@@ -200,10 +200,6 @@ export const CreateStudyForm = () => {
             dispatch(setErr(intl.formatMessage({id : 'studyNameErrorMsg'})));
             setSuccess('');
             return;
-        } else if (studyDescription === '') {
-            dispatch(setErr(intl.formatMessage({id : 'studyDescriptionErrorMsg'})));
-            setSuccess('');
-            return;
         } else if (caseExist && caseName === null) {
             dispatch(setErr(intl.formatMessage({id : 'caseNameErrorMsg'})));
             setSuccess('');
