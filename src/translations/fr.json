@@ -18,7 +18,6 @@
   "caseNameErrorMsg" : "Veuillez sélectionner le nom de la situation",
   "caseDataErrorMsg" : "Une erreur s'est produite lors de l'importation du fichier",
   "uploadErrorMsg" : "Veuillez télécharger la situation",
-  "fileExtensionErrorMsg" : " n'est pas un format supporté",
   "studyCreated": "Étude créée",
   "studyCreatingError" : "Une erreur est survenue lors du création de l'étude"
 }

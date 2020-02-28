@@ -91,7 +91,7 @@ const SelectCase = () => {
                    value={store.getState().selectedCase != null ? store.getState().selectedCase : ""}
                    onChange={handleChangeSelectCase}>
                    {
-                       cases.map((function (element, index) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
+                       cases.map((function (element) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
                    }
                </Select>
            </FormControl>
@@ -102,7 +102,6 @@ const SelectCase = () => {
 const UploadCase = () => {
     const dispatch = useDispatch();
     const selectedFile = useSelector(state => state.selectedFile);
-    const intl = useIntl();
 
     const handleFileUpload = (e) => {
         e.preventDefault();
@@ -202,7 +201,7 @@ export const CreateStudyForm = () => {
                     setCreateStudyErr('');
                     setStudyName('');
                     setStudyDescription('');
-                    dispatch(removeSelectedFile())
+                    dispatch(removeSelectedFile());
                     setSuccess (intl.formatMessage({id : 'studyCreated'}));
                     setLoading(false);
                     fetchStudies()
