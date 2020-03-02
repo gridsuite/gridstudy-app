@@ -60,11 +60,11 @@ const useStyles = makeStyles(theme => ({
         width: 64,
         height: 64,
     },
-    ok : {
+    button_style_1 : {
         backgroundColor : theme.bgColor1
     },
 
-    okk : {
+    button_style_2 : {
         backgroundColor : theme.bgColor2
     }
 }));
@@ -197,7 +197,7 @@ const StudyCard = (props) => {
 
     return (
         <div onContextMenu={handleClick} style={{ cursor: 'context-menu' }}>
-            <Card className={selectedStudies.includes(props.study.studyName) ? classes.ok : classes.okk}>
+            <Card className={selectedStudies.includes(props.study.studyName) ? classes.button_style_1 : classes.button_style_2}>
                 <CardActionArea onDoubleClick={() => props.onDoubleClick()} onClick={handleSelectCard} className={classes.card}>
                     <div>
                         <CardContent>
