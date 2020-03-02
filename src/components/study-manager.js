@@ -39,6 +39,8 @@ import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import {useIntl, FormattedMessage} from "react-intl";
 
 import {CreateStudyForm} from './create-study-form';
+import PropTypes from "prop-types";
+import SingleLineDiagram from "./single-line-diagram";
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -338,17 +340,17 @@ const StudyManager = (props) => {
     return (
         <Container maxWidth="lg">
             <Grid container spacing={3} className={classes.grid}>
-                <Grid item   xs={11} key="createStudy"> <CreateStudyForm/></Grid>
-                 <Grid item   xs={1} key="deleteAll">
+                <Grid item   xs={9} key="createStudy"> <CreateStudyForm/></Grid>
+                 <Grid item   xs={3} key="deleteAll">
                      { selectedStudies.length !== 0 && (
                     <Button
+                        children={[]}
                         size="small"
                         variant="contained"
                         color="secondary"
                         className={classes.addButton}
                         startIcon={<DeleteIcon size="large"/>}
                         onClick={deleteSelectedStudies}
-                        disabled={selectedStudies.length === 0}
                     />)
                     }
                 </Grid>
@@ -380,7 +382,7 @@ const StudyManager = (props) => {
             {
                 studies.map(study =>
                     <Grid item xs={3} key={study.studyName}>
-                        <StudyCard study={study} onDoubleClick={() => props.onStudyClick(study.studyName)}/>
+                        <StudyCard study={study} onDoubleClick={() => props.onStudyDoubleClick(study.studyName)}/>
                     </Grid>
                 )
             }
@@ -388,5 +390,10 @@ const StudyManager = (props) => {
         </Container>
     );
 };
+
+StudyCard.propTypes = {
+    study: PropTypes.object.isRequired,
+};
+
 
 export default StudyManager;

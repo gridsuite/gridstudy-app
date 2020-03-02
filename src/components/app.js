@@ -206,7 +206,7 @@ const App = () => {
             <Box className={classes.main}>
                 <Switch>
                     <Route exact path="/">
-                        <StudyManager onStudyClick={ name => studyClicked(name) }/>
+                        <StudyManager onStudyDoubleClick={ name => studyClicked(name) }/>
                     </Route>
                     <Route exact path="/map">
                         { network ? createNetworkPane() : <Redirect to="/" /> }
