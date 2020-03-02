@@ -16,8 +16,7 @@ import {
     SELECT_CASE,
     REMOVE_SELECTED_CASE,
     SELECT_FILE,
-    REMOVE_SELECTED_FILE,
-    CREATE_STUDY_FORM_ERR
+    REMOVE_SELECTED_FILE
 } from "./actions";
 
 const initialState = {
@@ -28,7 +27,6 @@ const initialState = {
     cases : [],
     selectedCase : null,
     selectedFile : null,
-    createStudyErr : '',
 };
 
 export const reducer = createReducer(initialState, {
@@ -75,11 +73,7 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_SELECTED_FILE]: (state, action) => {
         state.selectedFile = null;
-    },
-
-    [CREATE_STUDY_FORM_ERR]: (state, action) => {
-        state.createStudyErr = action.createStudyErr;
-    },
+    }
 });
 
 

@@ -78,10 +78,3 @@ export const REMOVE_SELECTED_FILE = 'REMOVE_SELECTED_FILE';
 export function removeSelectedFile() {
     return { type: REMOVE_SELECTED_FILE};
 }
-
-export const CREATE_STUDY_FORM_ERR = 'CREATE_STUDY_FORM_ERR';
-
-export function setErr(err) {
-    return { type: CREATE_STUDY_FORM_ERR, createStudyErr: err };
-}
-
