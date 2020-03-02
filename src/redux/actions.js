@@ -19,12 +19,14 @@ export function selectDarkTheme(dark) {
 
 export const LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS = 'LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS';
 
-export function loadVoltageLevelDiagramSuccess(id, svg) {
+export function loadVoltageLevelDiagramSuccess(id, svg, name) {
+    console.log(name);
     return {
         type: LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
         diagram: {
             id: id,
-            svg: svg
+            svg: svg,
+            name : name
         }
     };
 }

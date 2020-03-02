@@ -199,7 +199,6 @@ export const CreateStudyForm = () => {
                             dispatch(loadStudiesSuccess(studies));
                         })
                 } else {
-
                     console.debug('Error when creating the study');
                     setCreateStudyErr(intl.formatMessage({id : 'studyCreatingError'}));
                     setLoading(false);

@@ -84,7 +84,8 @@ export default class Network {
     getSubstationPosition(substation) {
         const position = this.substationPositionsById.get(substation);
         if (!position) {
-            throw new Error(`Position not found for ${substation}`);
+            return [0, 0, 0];
+            //throw new Error(`Position not found for ${substation}`);
         }
         return [position.lon, position.lat, 0];
     }

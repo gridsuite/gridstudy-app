@@ -19,8 +19,8 @@ const NetworkExplorer = (props) => {
     const voltageLevels = props.network.getVoltageLevels();
 
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => props.onSubstationClick(voltageLevels[index].id)}>
-            {voltageLevels[index].id}
+        <ListItem button style={style} key={index} onClick={() => props.onSubstationClick(voltageLevels[index].id, voltageLevels[index].name)}>
+            {voltageLevels[index].name}
         </ListItem>
     );
 
