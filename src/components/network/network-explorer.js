@@ -13,19 +13,35 @@ import ListItem from '@material-ui/core/ListItem';
 import TextField from '@material-ui/core/TextField';
 
 import Network from "./network";
+import {useDispatch, useSelector} from "react-redux";
+import {toggleUseNameState} from "../../redux/actions";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Grid from "@material-ui/core/Grid";
+import Switch from "@material-ui/core/Switch";
 
 const itemSize = 35;
 
 const NetworkExplorer = (props) => {
+    const intl = useIntl();
+    const dispatch = useDispatch();
+    let useName = useSelector(state => state.useName);
+    const searchMsg = intl.formatMessage({id : 'search'}) + "...";
+
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState([]);
+    const [currentIndex, setCurrentIndex] = React.useState(-1);
 
     useEffect(() => {
         setFilteredVoltageLevels(props.network.getVoltageLevels())
     }, [props.network]);
 
+    useEffect(() => {
+        if (currentIndex !== -1)
+        {props.onSubstationClick(filteredVoltageLevels[currentIndex].id, filteredVoltageLevels[currentIndex].name);}
+    }, [useName]);
+
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => props.onSubstationClick(filteredVoltageLevels[index].id)}>
-            {filteredVoltageLevels[index].id}
+        <ListItem button style={style} key={index} onClick={() => {props.onSubstationClick(filteredVoltageLevels[index].id, filteredVoltageLevels[index].name); setCurrentIndex(index)}}>
+            {useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id}
         </ListItem>
     );
 
@@ -37,9 +53,31 @@ const NetworkExplorer = (props) => {
         }));
     };
 
+    const handleToggleUseName = () => {
+        dispatch(toggleUseNameState());
+    };
+
+
     return (
         <div>
-            <TextField id="standard-basic" label="Search..." onChange={filter} fullWidth={true}/>
+            <Grid container spacing={2}>
+                <Grid item xs={7}>
+                    <TextField id="standard-basic" label={searchMsg} onChange={filter} fullWidth={true}/>
+                </Grid>
+                <Grid item xs={5}>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={useName}
+                                onChange={handleToggleUseName}
+                                value={useName}
+                                color="primary"
+                            />
+                        }
+                        label=""
+                    />
+                </Grid>
+            </Grid>
             <FixedSizeList
                 height={29 * itemSize}
                 itemCount={filteredVoltageLevels.length}

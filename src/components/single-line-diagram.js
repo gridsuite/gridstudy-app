@@ -16,7 +16,7 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 
 import {removeVoltageLevelDiagram} from '../redux/actions';
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 const useStyles = makeStyles(theme => ({
     diagram: {
@@ -37,6 +37,8 @@ const SingleLineDiagram = (props) => {
 
     const dispatch = useDispatch();
 
+    const useName = useSelector(state => state.useName);
+
     useEffect(() => {
         var svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
         if (svg) {
@@ -53,7 +55,7 @@ const SingleLineDiagram = (props) => {
         <Paper elevation={1} variant='outlined' className={classes.diagram}>
             <Box display="flex" flexDirection="row">
                 <Box flexGrow={1}>
-                    <Typography>{props.diagramId}</Typography>
+                    <Typography>{useName ? props.diagramName : props.diagramId}</Typography>
                 </Box>
                 <IconButton className={classes.close} onClick={() => dispatch(removeVoltageLevelDiagram())}>
                     <CloseIcon/>

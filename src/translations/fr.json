@@ -12,6 +12,7 @@
   "uploadMessage" : " Aucun fichier sélectionné",
   "cancel" : "ANNULER",
   "create" : "CRÉER",
+  "search" : "Chercher",
 
   "studyNameErrorMsg" : "Le nom de l'étude ne doit pas être vide",
   "caseNameErrorMsg" : "Veuillez sélectionner le nom de la situation",
