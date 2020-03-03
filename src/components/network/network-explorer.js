@@ -25,17 +25,23 @@ const itemSize = 35;
 const NetworkExplorer = (props) => {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const useName = useSelector(state => state.useName);
+    let useName = useSelector(state => state.useName);
     const searchMsg = intl.formatMessage({id : 'search'}) + "...";
 
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState([]);
+    const [currentIndex, setCurrentIndex] = React.useState(-1);
 
     useEffect(() => {
         setFilteredVoltageLevels(props.network.getVoltageLevels())
     }, [props.network]);
 
+    useEffect(() => {
+        if (currentIndex !== -1)
+        {props.onSubstationClick(filteredVoltageLevels[currentIndex].id, filteredVoltageLevels[currentIndex].name);}
+    }, [useName]);
+
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => props.onSubstationClick(filteredVoltageLevels[index].id, filteredVoltageLevels[index].name)}>
+        <ListItem button style={style} key={index} onClick={() => {props.onSubstationClick(filteredVoltageLevels[index].id, filteredVoltageLevels[index].name); setCurrentIndex(index)}}>
             {useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id}
         </ListItem>
     );
