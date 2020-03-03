@@ -18,6 +18,7 @@ import {toggleUseNameState} from "../../redux/actions";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Grid from "@material-ui/core/Grid";
 import Switch from "@material-ui/core/Switch";
+import {useIntl} from "react-intl";
 
 const itemSize = 35;
 
