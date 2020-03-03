@@ -19,7 +19,8 @@ import {
     REMOVE_SELECTED_FILE,
     ADD_SELECTED_STUDY,
     REMOVE_SELECTED_STUDY,
-    REMOVE_ALL_SELECTED_STUDIES
+    REMOVE_ALL_SELECTED_STUDIES,
+    VOLTAGE_LEVELS_USE_NAME
 } from "./actions";
 
 const initialState = {
@@ -30,7 +31,8 @@ const initialState = {
     cases : [],
     selectedCase : null,
     selectedFile : null,
-    selectedStudies : []
+    selectedStudies : [],
+    useName : false
 };
 
 export const reducer = createReducer(initialState, {
@@ -89,6 +91,10 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_ALL_SELECTED_STUDIES]: (state, action) => {
         state.selectedStudies = [];
+    },
+
+    [VOLTAGE_LEVELS_USE_NAME]: (state, action) => {
+        state.useName = !state.useName;
     },
 });
 

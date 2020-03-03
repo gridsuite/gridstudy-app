@@ -114,6 +114,8 @@ const App = () => {
 
     const classes = useStyles();
 
+    const useName = useSelector(state => state.useName);
+
     function switchTheme() {
         dispatch(selectDarkTheme(!dark));
     }
@@ -154,7 +156,7 @@ const App = () => {
 
     function showVoltageLevelDiagram(voltageLevelId, voltageLevelName) {
         // load svg
-        fetchVoltageLevelDiagram(openedStudyName, voltageLevelId, true)
+        fetchVoltageLevelDiagram(openedStudyName, voltageLevelId, useName)
             .then(svg => {
                 dispatch(loadVoltageLevelDiagramSuccess(voltageLevelId, svg, voltageLevelName));
             });

@@ -98,4 +98,10 @@ export function removeAllSelectedStudies() {
     return { type: REMOVE_ALL_SELECTED_STUDIES };
 }
 
+export const VOLTAGE_LEVELS_USE_NAME = 'VOLTAGE_LEVELS_USE_NAME';
+
+export function toggleUseNameState() {
+    return { type: VOLTAGE_LEVELS_USE_NAME };
+}
+
 

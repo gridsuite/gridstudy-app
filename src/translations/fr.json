@@ -14,6 +14,7 @@
   "create" : "CRÉER",
   "ok" : "OK",
   "delete" : "SUPPRIMER",
+  "search" : "Chercher",
 
   "deleteStudy" : "Supprimer l'étude",
   "deleteStudyMsg" : "Pour confirmer la suppression, saisissez le nom de l'étude",
