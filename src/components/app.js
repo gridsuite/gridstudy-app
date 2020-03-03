@@ -154,7 +154,7 @@ const App = () => {
 
     function showVoltageLevelDiagram(voltageLevelId, voltageLevelName) {
         // load svg
-        fetchVoltageLevelDiagram(openedStudyName, voltageLevelId)
+        fetchVoltageLevelDiagram(openedStudyName, voltageLevelId, true)
             .then(svg => {
                 dispatch(loadVoltageLevelDiagramSuccess(voltageLevelId, svg, voltageLevelName));
             });
