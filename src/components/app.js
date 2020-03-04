@@ -110,6 +110,8 @@ const App = () => {
 
     const classes = useStyles();
 
+    const useName = useSelector(state => state.useName);
+
     function switchTheme() {
         dispatch(selectDarkTheme(!dark));
     }
@@ -148,11 +150,11 @@ const App = () => {
         loadNetwork(studyName);
     }
 
-    function showVoltageLevelDiagram(voltageLevelId) {
+    function showVoltageLevelDiagram(voltageLevelId, voltageLevelName) {
         // load svg
-        fetchVoltageLevelDiagram(openedStudyName, voltageLevelId)
+        fetchVoltageLevelDiagram(openedStudyName, voltageLevelId, useName)
             .then(svg => {
-                dispatch(loadVoltageLevelDiagramSuccess(voltageLevelId, svg));
+                dispatch(loadVoltageLevelDiagramSuccess(voltageLevelId, svg, voltageLevelName));
             });
     }
 
@@ -179,18 +181,19 @@ const App = () => {
                 <Drawer className={classes.drawer} classes={{ paper: classes.drawerPaper }} variant="permanent" anchor="left">
                     { /* to force drawer content to start below appbar */ }
                     <div className={classes.toolbar} />
-                    <NetworkExplorer network={ network }
-                                     onSubstationClick={ id => showVoltageLevelDiagram(id) }/>
+                    <NetworkExplorer network={network}
+                                     onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) }/>
                 </Drawer>
                 <NetworkMap network={ network }
                             labelsZoomThreshold={8}
+                            useName={useName}
                             initialPosition={[2.5, 46.6]}
                             initialZoom={6}
-                            onSubstationClick={ id => showVoltageLevelDiagram(id) } />
+                            onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) } />
                 {
                     diagram &&
                     <div style={{ position: "absolute", left: 250, top: 10, zIndex: 1 }}>
-                        <SingleLineDiagram diagramId={diagram.id} svg={ diagram.svg } />
+                        <SingleLineDiagram diagramId={useName ? diagram.name : diagram.id} svg={ diagram.svg } />
                     </div>
                 }
             </div>

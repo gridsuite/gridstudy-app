@@ -16,7 +16,8 @@ import {
     SELECT_CASE,
     REMOVE_SELECTED_CASE,
     SELECT_FILE,
-    REMOVE_SELECTED_FILE
+    REMOVE_SELECTED_FILE,
+    VOLTAGE_LEVELS_USE_NAME
 } from "./actions";
 
 const initialState = {
@@ -27,6 +28,7 @@ const initialState = {
     cases : [],
     selectedCase : null,
     selectedFile : null,
+    useName : false
 };
 
 export const reducer = createReducer(initialState, {
@@ -73,7 +75,11 @@ export const reducer = createReducer(initialState, {
 
     [REMOVE_SELECTED_FILE]: (state, action) => {
         state.selectedFile = null;
-    }
+    },
+
+    [VOLTAGE_LEVELS_USE_NAME]: (state, action) => {
+        state.useName = !state.useName;
+    },
 });
 
 
