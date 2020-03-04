@@ -113,6 +113,9 @@ const NetworkMap = (props) => {
         getAlignmentBaseline: 'center',
         getPixelOffset: [20, 0],
         visible: labelsVisible,
+        updateTriggers : {
+            getText : props.useName
+        }
     });
     layers.push(substationLabelsLayer);
 
@@ -160,7 +163,6 @@ const NetworkMap = (props) => {
                 <div style={{ position: "absolute", right: 10, top: 10, zIndex: 1 }}>
                     <NavigationControl />
                 </div>
-                { props.children }
             </StaticMap>
         </DeckGL>;
 };
