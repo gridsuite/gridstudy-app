@@ -12,7 +12,13 @@
   "uploadMessage" : " Aucun fichier sélectionné",
   "cancel" : "ANNULER",
   "create" : "CRÉER",
+  "delete" : "SUPPRIMER",
   "search" : "Chercher",
+
+  "deleteStudy" : "Supprimer l'étude",
+  "deleteStudyMsg" : "Etes vous sur de vouloir supprimer l'étude?",
+  "studyNameDidNotMatchMsg" : "Le nom d'étude donné ne correspond pas à ",
+  "studyDeletedSuccessMsg" : "Étude supprimée",
 
   "studyNameErrorMsg" : "Le nom de l'étude ne doit pas être vide",
   "caseNameErrorMsg" : "Veuillez sélectionner le nom de la situation",

@@ -79,3 +79,10 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, se
     }
 }
 
+export function deleteStudy(studyName) {
+    console.info("Deleting study" + studyName + " ...");
+    const deleteStudyUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName;
+    console.debug(deleteStudyUrl)
+    return fetch(deleteStudyUrl, {method:'delete'});
+}
+
