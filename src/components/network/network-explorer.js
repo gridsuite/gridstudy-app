@@ -25,23 +25,27 @@ const itemSize = 35;
 const NetworkExplorer = (props) => {
     const intl = useIntl();
     const dispatch = useDispatch();
-    let useName = useSelector(state => state.useName);
+    const useName = useSelector(state => state.useName);
+    const diagram = useSelector(state => state.diagram);
+
     const searchMsg = intl.formatMessage({id : 'search'}) + "...";
 
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState([]);
-    const [currentIndex, setCurrentIndex] = React.useState(-1);
+    const [currentVoltageLevel, setCurrentVoltageLevel] = React.useState(null);
 
     useEffect(() => {
         setFilteredVoltageLevels(props.network.getVoltageLevels())
     }, [props.network]);
 
     useEffect(() => {
-        if (currentIndex !== -1)
-        {props.onSubstationClick(filteredVoltageLevels[currentIndex].id, filteredVoltageLevels[currentIndex].name);}
+        if (diagram !== null)
+        {
+            props.onSubstationClick(currentVoltageLevel.id, currentVoltageLevel.name);
+        }
     }, [useName]);
 
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => {props.onSubstationClick(filteredVoltageLevels[index].id, filteredVoltageLevels[index].name); setCurrentIndex(index)}}>
+        <ListItem button style={style} key={index} onClick={() => {props.onSubstationClick(filteredVoltageLevels[index].id, filteredVoltageLevels[index].name); setCurrentVoltageLevel(filteredVoltageLevels[index])}}>
             {useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id}
         </ListItem>
     );
@@ -49,7 +53,7 @@ const NetworkExplorer = (props) => {
     const filter = (event) => {
         let entry = event.target.value.toLowerCase();
         setFilteredVoltageLevels(props.network.getVoltageLevels().filter(item => {
-            const lc = item.id.toLowerCase();
+            const lc = useName ? item.name.toLowerCase() : item.id.toLowerCase();
             return lc.includes(entry);
         }));
     };
@@ -73,7 +77,6 @@ const NetworkExplorer = (props) => {
                             />
                         }
                         label="Use name"
-                        fullWidth={true}
                     />
                 </Grid>
                 <Grid item xs={12}>

@@ -105,7 +105,7 @@ const NetworkMap = (props) => {
         data: props.network.substations,
         pickable: true,
         getPosition: substation => props.network.getSubstationPosition(substation.id),
-        getText: substation => substation.id,
+        getText: substation => props.useName ? substation.name : substation.id,
         getColor: labelColor,
         getSize: 16,
         getAngle: 0,
@@ -128,7 +128,7 @@ const NetworkMap = (props) => {
         getWidth: 2,
         onHover: ({object, x, y}) => {
             setTooltip({
-                message: object ? object.id : null,
+                message: object ? (props.useName? object.name : object.id) : null,
                 pointerX: x,
                 pointerY: y
             });

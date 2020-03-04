@@ -181,11 +181,12 @@ const App = () => {
                 <Drawer className={classes.drawer} classes={{ paper: classes.drawerPaper }} variant="permanent" anchor="left">
                     { /* to force drawer content to start below appbar */ }
                     <div className={classes.toolbar} />
-                    <NetworkExplorer network={ network }
+                    <NetworkExplorer network={network}
                                      onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) }/>
                 </Drawer>
                 <NetworkMap network={ network }
                             labelsZoomThreshold={8}
+                            useName={useName}
                             initialPosition={[2.5, 46.6]}
                             initialZoom={6}
                             onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) } />
