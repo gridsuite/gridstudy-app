@@ -17,7 +17,6 @@
   "delete" : "DELETE",
   "search" : "Search",
 
-
   "deleteStudy" : "Delete Study",
   "deleteStudyMsg" : "To confirm the deletion enter the study name",
   "studyNameDidNotMatchMsg" : "The given study name did not match with ",

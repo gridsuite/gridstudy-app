@@ -68,6 +68,7 @@ const NetworkMap = (props) => {
         if (info.layer && info.layer.id.startsWith(SUBSTATIONS_LAYER_PREFIX)) {
             if (props.onSubstationClick) {
                 props.onSubstationClick(info.object.id, info.object.name);
+
             }
         }
     }
@@ -105,7 +106,7 @@ const NetworkMap = (props) => {
         data: props.network.substations,
         pickable: true,
         getPosition: substation => props.network.getSubstationPosition(substation.id),
-        getText: substation => substation.id,
+        getText: substation => props.useName ? substation.name : substation.id,
         getColor: labelColor,
         getSize: 16,
         getAngle: 0,
@@ -128,7 +129,7 @@ const NetworkMap = (props) => {
         getWidth: 2,
         onHover: ({object, x, y}) => {
             setTooltip({
-                message: object ? object.id : null,
+                message: object ? (props.useName? object.name : object.id) : null,
                 pointerX: x,
                 pointerY: y
             });
