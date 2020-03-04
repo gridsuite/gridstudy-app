@@ -55,7 +55,7 @@ const SingleLineDiagram = (props) => {
         <Paper elevation={1} variant='outlined' className={classes.diagram}>
             <Box display="flex" flexDirection="row">
                 <Box flexGrow={1}>
-                    <Typography>{useName ? props.diagramName : props.diagramId}</Typography>
+                    <Typography>{props.diagramId}</Typography>
                 </Box>
                 <IconButton className={classes.close} onClick={() => dispatch(removeVoltageLevelDiagram())}>
                     <CloseIcon/>
