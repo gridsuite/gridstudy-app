@@ -192,7 +192,7 @@ const App = () => {
                 {
                     diagram &&
                     <div style={{ position: "absolute", left: 250, top: 10, zIndex: 1 }}>
-                        <SingleLineDiagram diagramName={diagram.name} diagramId={diagram.id} svg={ diagram.svg } />
+                        <SingleLineDiagram diagramId={useName ? diagram.name : diagram.id} svg={ diagram.svg } />
                     </div>
                 }
             </div>

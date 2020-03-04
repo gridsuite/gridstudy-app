@@ -62,10 +62,7 @@ const NetworkExplorer = (props) => {
     return (
         <div>
             <Grid container spacing={2}>
-                <Grid item xs={7}>
-                    <TextField id="standard-basic" label={searchMsg} onChange={filter} fullWidth={true}/>
-                </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={12}>
                     <FormControlLabel
                         control={
                             <Switch
@@ -75,8 +72,12 @@ const NetworkExplorer = (props) => {
                                 color="primary"
                             />
                         }
-                        label=""
+                        label="Use name"
+                        fullWidth={true}
                     />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField id="standard-basic" label={searchMsg} onChange={filter} fullWidth={true}/>
                 </Grid>
             </Grid>
             <FixedSizeList
