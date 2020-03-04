@@ -42,6 +42,7 @@ const NetworkExplorer = (props) => {
         {
             props.onSubstationClick(currentVoltageLevel.id, currentVoltageLevel.name);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [useName]);
 
     const Row = ({ index, style }) => (

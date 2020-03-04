@@ -113,6 +113,9 @@ const NetworkMap = (props) => {
         getAlignmentBaseline: 'center',
         getPixelOffset: [20, 0],
         visible: labelsVisible,
+        updateTriggers : {
+            getText : props.useName
+        }
     });
     layers.push(substationLabelsLayer);
 

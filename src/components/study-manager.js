@@ -14,7 +14,6 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -22,7 +21,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Alert from '@material-ui/lab/Alert'
 
 import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
 import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
@@ -31,7 +29,7 @@ import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 
 import {loadStudiesSuccess} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
-import {useIntl, FormattedMessage} from "react-intl";
+import {FormattedMessage} from "react-intl";
 import CreateStudyForm from "./create-study-form";
 
 const useStyles = makeStyles(theme => ({
