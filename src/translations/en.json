@@ -22,6 +22,7 @@
   "studyNameDidNotMatchMsg" : "The given study name did not match with ",
   "studyDeletedSuccessMsg" : "Study deleted ",
 
+
   "studyNameErrorMsg" : "Study name should not be empty",
   "caseNameErrorMsg" : "Please select the case name",
   "caseDataErrorMsg" : "An error occured when importing the case",

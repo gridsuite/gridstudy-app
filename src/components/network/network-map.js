@@ -68,7 +68,6 @@ const NetworkMap = (props) => {
         if (info.layer && info.layer.id.startsWith(SUBSTATIONS_LAYER_PREFIX)) {
             if (props.onSubstationClick) {
                 props.onSubstationClick(info.object.id, info.object.name);
-
             }
         }
     }
