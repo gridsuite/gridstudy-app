@@ -15,6 +15,7 @@ import {useTheme} from '@material-ui/styles';
 import {decomposeColor} from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
+import {useSelector} from "react-redux";
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug'; // eslint-disable-line
 
@@ -29,6 +30,8 @@ const NetworkMap = (props) => {
     const [tooltip, setTooltip] = useState({});
 
     const theme = useTheme();
+
+    const useName = useSelector(state => state.useName);
 
     function getNominalVoltageColor(nominalVoltage) {
         if (nominalVoltage >= 300) {
@@ -105,7 +108,7 @@ const NetworkMap = (props) => {
         data: props.network.substations,
         pickable: true,
         getPosition: substation => props.network.getSubstationPosition(substation.id),
-        getText: substation => props.useName ? substation.name : substation.id,
+        getText: substation => useName ? substation.name : substation.id,
         getColor: labelColor,
         getSize: 16,
         getAngle: 0,
@@ -114,7 +117,7 @@ const NetworkMap = (props) => {
         getPixelOffset: [20, 0],
         visible: labelsVisible,
         updateTriggers : {
-            getText : props.useName
+            getText : useName
         }
     });
     layers.push(substationLabelsLayer);
@@ -131,7 +134,7 @@ const NetworkMap = (props) => {
         getWidth: 2,
         onHover: ({object, x, y}) => {
             setTooltip({
-                message: object ? (props.useName? object.name : object.id) : null,
+                message: object ? (useName? object.name : object.id) : null,
                 pointerX: x,
                 pointerY: y
             });
