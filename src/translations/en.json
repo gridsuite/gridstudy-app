@@ -3,18 +3,17 @@
   "newStudy": "New study",
   "addNewStudy" : "Add new study",
   "addNewStudyDescription" : "To add a new study, you should enter the following information:",
-  "CaseExist" : "Does the case already exist?",
+  "caseExist": "Does the case already exist?",
   "studyName" : "study name",
   "studyDescription" : "study description",
   "caseName" : "case name",
   "uploadCase" : "Upload case",
 
-
   "uploadMessage" : " No file selected",
   "cancel" : "CANCEL",
   "create" : "CREATE",
   "delete" : "DELETE",
-  "search" : "Search",
+  "filter" : "Filter",
 
   "deleteStudy" : "Delete Study",
   "deleteStudyMsg" : "Are you sure you want to delete the study?",

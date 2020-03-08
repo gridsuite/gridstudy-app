@@ -11,8 +11,7 @@ import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
 
 import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Box from '@material-ui/core/Box';
-import Drawer from '@material-ui/core/Drawer';
+import Grid from "@material-ui/core/Grid";
 
 import NetworkExplorer from './network/network-explorer';
 import SingleLineDiagram from './single-line-diagram';
@@ -48,22 +47,8 @@ const darkTheme = createMuiTheme({
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9'
 });
 
-const drawerWidth = 240;
-
 const useStyles = makeStyles(theme => ({
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0,
-    },
-    drawerPaper: {
-        width: drawerWidth,
-    },
-    grow: {
-        flexGrow: 1,
-    },
-    toolbar: theme.mixins.toolbar,
     main: {
-        flexGrow: 1,
         position: "absolute",
         width:"100%",
         height: 'calc(100vh - 56px)',
@@ -73,7 +58,6 @@ const useStyles = makeStyles(theme => ({
         [theme.breakpoints.up('sm')]: {
             height: 'calc(100vh - 64px)'
         },
-        bgcolor: "background.default"
     }
 }));
 
@@ -139,40 +123,40 @@ const App = () => {
 
     function createNetworkPane() {
         return (
-            <div>
-                <Drawer className={classes.drawer} classes={{ paper: classes.drawerPaper }} variant="permanent" anchor="left">
-                    { /* to force drawer content to start below appbar */ }
-                    <div className={classes.toolbar} />
+            <Grid container className={classes.main}>
+                <Grid item xs={12} md={2} key="explorer">
                     <NetworkExplorer network={network}
                                      onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) }/>
-                </Drawer>
-                <NetworkMap network={ network }
-                            labelsZoomThreshold={8}
-                            initialPosition={[2.5, 46.6]}
-                            initialZoom={6}
-                            onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) } />
-                {
-                    diagram &&
-                    <div style={{ position: "absolute", left: 250, top: 10, zIndex: 1 }}>
-                        <SingleLineDiagram diagramId={useName ? diagram.name : diagram.id} svg={ diagram.svg } />
+                </Grid>
+                <Grid item xs={12} md={10} key="map">
+                    <div style={{position:"relative", width:"100%", height: "100%"}}>
+                        <NetworkMap network={ network }
+                                    labelsZoomThreshold={8}
+                                    initialPosition={[2.5, 46.6]}
+                                    initialZoom={6}
+                                    onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) } />
+                        {
+                            diagram &&
+                            <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
+                                <SingleLineDiagram diagramId={useName ? diagram.name : diagram.id} svg={ diagram.svg } />
+                            </div>
+                        }
                     </div>
-                }
-            </div>
+                </Grid>
+            </Grid>
         )
     }
 
     function createApp() {
         return (
-            <Box className={classes.main}>
-                <Switch>
-                    <Route exact path="/">
-                        <StudyManager onStudyClick={ name => studyClicked(name) }/>
-                    </Route>
-                    <Route exact path="/map">
-                        { network ? createNetworkPane() : <Redirect to="/" /> }
-                    </Route>
-                </Switch>
-            </Box>
+            <Switch>
+                <Route exact path="/">
+                    <StudyManager onStudyClick={ name => studyClicked(name) }/>
+                </Route>
+                <Route exact path="/map">
+                    { network ? createNetworkPane() : <Redirect to="/" /> }
+                </Route>
+            </Switch>
         )
     }
 
@@ -180,7 +164,7 @@ const App = () => {
         <ThemeProvider theme={dark ? darkTheme : lightTheme}>
             <React.Fragment>
                 <CssBaseline />
-                    <TopBar />
+                <TopBar />
                 { createApp() }
             </React.Fragment>
         </ThemeProvider>

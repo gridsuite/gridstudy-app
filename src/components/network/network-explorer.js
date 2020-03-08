@@ -7,23 +7,37 @@
 
 import React, {useEffect} from 'react';
 import PropTypes from "prop-types";
-import {FixedSizeList} from 'react-window';
 
+import InputAdornment from '@material-ui/core/InputAdornment';
 import ListItem from '@material-ui/core/ListItem';
 import TextField from '@material-ui/core/TextField';
+import SearchIcon from '@material-ui/icons/Search';
+
+import {FixedSizeList} from 'react-window';
 
 import Network from "./network";
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {useIntl} from "react-intl";
+import {makeStyles} from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
 
 const itemSize = 35;
 
+const useStyles = makeStyles(theme => ({
+    textField: {
+        margin: theme.spacing(1),
+    },
+}));
+
 const NetworkExplorer = (props) => {
+
     const intl = useIntl();
     const useName = useSelector(state => state.useName);
     const diagram = useSelector(state => state.diagram);
 
-    const searchMsg = intl.formatMessage({id : 'search'}) + "...";
+    const filterMsg = intl.formatMessage({id : 'filter'}) + "...";
+
+    const classes = useStyles();
 
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState([]);
     const [currentVoltageLevel, setCurrentVoltageLevel] = React.useState(null);
@@ -33,8 +47,7 @@ const NetworkExplorer = (props) => {
     }, [props.network]);
 
     useEffect(() => {
-        if (diagram !== null)
-        {
+        if (diagram !== null) {
             props.onSubstationClick(currentVoltageLevel.id, currentVoltageLevel.name);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,7 +60,7 @@ const NetworkExplorer = (props) => {
     );
 
     const filter = (event) => {
-        let entry = event.target.value.toLowerCase();
+        const entry = event.target.value.toLowerCase();
         setFilteredVoltageLevels(props.network.getVoltageLevels().filter(item => {
             const lc = useName ? item.name.toLowerCase() : item.id.toLowerCase();
             return lc.includes(entry);
@@ -55,17 +68,27 @@ const NetworkExplorer = (props) => {
     };
 
     return (
-        <div>
-            <TextField id="standard-basic" label={searchMsg} onChange={filter} fullWidth={true}/>
-            <FixedSizeList
-                height={29 * itemSize}
-                itemCount={filteredVoltageLevels.length}
-                itemSize={itemSize}
-                width="100%"
-            >
-                {Row}
-            </FixedSizeList>
-        </div>
+        <Grid container direction="column">
+            <Grid item xs={12} key="filter">
+                <TextField className={classes.textField} size="small" placeholder={filterMsg} onChange={filter} variant="outlined" InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    ),
+                }} />
+            </Grid>
+            <Grid item xs={12} key="list">
+                <FixedSizeList
+                    height={23 * itemSize}
+                    itemCount={filteredVoltageLevels.length}
+                    itemSize={itemSize}
+                    width="100%"
+                >
+                    {Row}
+                </FixedSizeList>
+            </Grid>
+        </Grid>
     )
 };
 
