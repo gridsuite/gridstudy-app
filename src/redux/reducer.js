@@ -4,31 +4,34 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import {createReducer} from "@reduxjs/toolkit";
 
 import {
     LOAD_NETWORK_SUCCESS,
+    LOAD_GEO_DATA_SUCCESS,
     LOAD_STUDIES_SUCCESS,
     LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
-    OPEN_STUDY, REMOVE_VOLTAGE_LEVEL_DIAGRAM,
+    OPEN_STUDY,
+    CLOSE_STUDY,
+    REMOVE_VOLTAGE_LEVEL_DIAGRAM,
     SELECT_DARK_THEME,
     LOAD_CASES_SUCCESS,
     SELECT_CASE,
     REMOVE_SELECTED_CASE,
     SELECT_FILE,
     REMOVE_SELECTED_FILE,
-    VOLTAGE_LEVELS_USE_NAME
+    USE_NAME
 } from "./actions";
 
 const initialState = {
-    network: null,
     studies: [],
-    diagram: null,
+    study: null,
     darkTheme: true,
     cases : [],
     selectedCase : null,
     selectedFile : null,
-    useName : false
+    useName : true
 };
 
 export const reducer = createReducer(initialState, {
@@ -42,23 +45,31 @@ export const reducer = createReducer(initialState, {
     },
 
     [OPEN_STUDY]: (state, action) => {
-        state.openedStudyName = action.studyName;
+        state.study = { name: action.studyName };
+    },
+
+    [CLOSE_STUDY]: (state, action) => {
+        state.study = null;
     },
 
     [LOAD_NETWORK_SUCCESS]: (state, action) => {
-        state.network = action.network;
+        state.study.network = action.network;
+    },
+
+    [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
+        state.study.geoData = action.geoData;
+    },
+
+    [LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS]: (state, action) => {
+        state.study.diagram = action.diagram;
+    },
+
+    [REMOVE_VOLTAGE_LEVEL_DIAGRAM]: (state, action) => {
+        state.study.diagram = null;
     },
 
     [SELECT_DARK_THEME]: (state, action) => {
         state.darkTheme = action.darkTheme;
-    },
-
-    [LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS]: (state, action) => {
-        state.diagram = action.diagram;
-    },
-
-    [REMOVE_VOLTAGE_LEVEL_DIAGRAM]: (state, action) => {
-        state.diagram = null;
     },
 
     [SELECT_CASE]: (state, action) => {
@@ -77,9 +88,7 @@ export const reducer = createReducer(initialState, {
         state.selectedFile = null;
     },
 
-    [VOLTAGE_LEVELS_USE_NAME]: (state, action) => {
+    [USE_NAME]: (state, action) => {
         state.useName = !state.useName;
     },
 });
-
-

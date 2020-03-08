@@ -4,8 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
+
+import {FormattedMessage} from "react-intl";
+
 import Grid from '@material-ui/core/Grid';
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
@@ -29,7 +33,6 @@ import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 
 import {loadStudiesSuccess} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
-import {FormattedMessage} from "react-intl";
 import CreateStudyForm from "./create-study-form";
 
 const useStyles = makeStyles(theme => ({
@@ -183,7 +186,7 @@ const StudyManager = (props) => {
             <Grid container spacing={2} className={classes.grid}>
             {
                 studies.map(study =>
-                    <Grid item xs={3} key={study.studyName}>
+                    <Grid item xs={12} sm={6} md={3} key={study.studyName}>
                         <StudyCard study={study} onClick={() => props.onStudyClick(study.studyName)}/>
                     </Grid>
                 )

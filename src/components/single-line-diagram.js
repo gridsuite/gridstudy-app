@@ -8,15 +8,12 @@
 import React, {useEffect} from 'react';
 import PropTypes from "prop-types";
 
+import Box from '@material-ui/core/Box';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-
-import {removeVoltageLevelDiagram} from '../redux/actions';
-import {useDispatch} from "react-redux";
 
 const useStyles = makeStyles(theme => ({
     diagram: {
@@ -35,8 +32,6 @@ const useStyles = makeStyles(theme => ({
 
 const SingleLineDiagram = (props) => {
 
-    const dispatch = useDispatch();
-
     useEffect(() => {
         var svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
         if (svg) {
@@ -49,13 +44,19 @@ const SingleLineDiagram = (props) => {
 
     const classes = useStyles();
 
+    function onClickHandler() {
+        if (props.onClose !== null) {
+            props.onClose();
+        }
+    }
+
     return (
         <Paper elevation={1} variant='outlined' className={classes.diagram}>
             <Box display="flex" flexDirection="row">
                 <Box flexGrow={1}>
-                    <Typography>{props.diagramId}</Typography>
+                    <Typography>{props.diagramTitle}</Typography>
                 </Box>
-                <IconButton className={classes.close} onClick={() => dispatch(removeVoltageLevelDiagram())}>
+                <IconButton className={classes.close} onClick={() => onClickHandler()}>
                     <CloseIcon/>
                 </IconButton>
             </Box>
@@ -65,8 +66,9 @@ const SingleLineDiagram = (props) => {
 };
 
 SingleLineDiagram.propTypes = {
-    diagramId: PropTypes.string.isRequired,
-    svg: PropTypes.string.isRequired
+    diagramTitle: PropTypes.string.isRequired,
+    svg: PropTypes.string.isRequired,
+    onClose: PropTypes.func
 };
 
 export default SingleLineDiagram;

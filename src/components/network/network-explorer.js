@@ -7,92 +7,102 @@
 
 import React, {useEffect} from 'react';
 import PropTypes from "prop-types";
-import {FixedSizeList} from 'react-window';
 
+import {useSelector} from "react-redux";
+
+import {useIntl} from "react-intl";
+
+import Grid from "@material-ui/core/Grid";
+import InputAdornment from '@material-ui/core/InputAdornment';
+import {makeStyles} from "@material-ui/core/styles";
 import ListItem from '@material-ui/core/ListItem';
+import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 
+import {FixedSizeList} from 'react-window';
+
 import Network from "./network";
-import {useDispatch, useSelector} from "react-redux";
-import {toggleUseNameState} from "../../redux/actions";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Grid from "@material-ui/core/Grid";
-import Switch from "@material-ui/core/Switch";
-import {useIntl} from "react-intl";
 
 const itemSize = 35;
 
-const NetworkExplorer = (props) => {
-    const intl = useIntl();
-    const dispatch = useDispatch();
-    const useName = useSelector(state => state.useName);
-    const diagram = useSelector(state => state.diagram);
+const useStyles = makeStyles(theme => ({
+    textField: {
+        margin: theme.spacing(1),
+    },
+}));
 
-    const searchMsg = intl.formatMessage({id : 'search'}) + "...";
+const NetworkExplorer = (props) => {
+
+    const intl = useIntl();
+
+    const useName = useSelector(state => state.useName);
+
+    const filterMsg = intl.formatMessage({id : 'filter'}) + "...";
+
+    const classes = useStyles();
 
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState([]);
     const [currentVoltageLevel, setCurrentVoltageLevel] = React.useState(null);
 
+    const voltageLevelComparator = (vl1, vl2) => {
+        return useName ? vl1.name.localeCompare(vl2.name) : vl1.id.localeCompare(vl2.id);
+    };
+
     useEffect(() => {
-        setFilteredVoltageLevels(props.network.getVoltageLevels())
+        setFilteredVoltageLevels(props.network.getVoltageLevels().sort(voltageLevelComparator))
     }, [props.network]);
 
     useEffect(() => {
-        if (diagram !== null)
-        {
-            props.onSubstationClick(currentVoltageLevel.id, currentVoltageLevel.name);
+        if (currentVoltageLevel !== null) {
+            props.onVoltageLevelClick(currentVoltageLevel.id, currentVoltageLevel.name);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [useName]);
 
+    function onClickHandler(index) {
+        if (props.onVoltageLevelClick !== null) {
+            const vl = filteredVoltageLevels[index];
+            props.onVoltageLevelClick(vl.id, vl.name);
+            setCurrentVoltageLevel(vl);
+        }
+    }
+
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => {props.onSubstationClick(filteredVoltageLevels[index].id, filteredVoltageLevels[index].name); setCurrentVoltageLevel(filteredVoltageLevels[index])}}>
+        <ListItem button style={style} key={index} onClick={() => onClickHandler(index)}>
             {useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id}
         </ListItem>
     );
 
     const filter = (event) => {
-        let entry = event.target.value.toLowerCase();
+        const entry = event.target.value.toLowerCase();
         setFilteredVoltageLevels(props.network.getVoltageLevels().filter(item => {
             const lc = useName ? item.name.toLowerCase() : item.id.toLowerCase();
             return lc.includes(entry);
-        }));
+        }).sort(voltageLevelComparator));
     };
-
-    const handleToggleUseName = () => {
-        dispatch(toggleUseNameState());
-    };
-
 
     return (
-        <div>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                checked={useName}
-                                onChange={handleToggleUseName}
-                                value={useName}
-                                color="primary"
-                            />
-                        }
-                        label="Use name"
-                    />
-                </Grid>
-                <Grid item xs={12}>
-                    <TextField id="standard-basic" label={searchMsg} onChange={filter} fullWidth={true}/>
-                </Grid>
+        <Grid container direction="column">
+            <Grid item xs={12} key="filter">
+                <TextField className={classes.textField} size="small" placeholder={filterMsg} onChange={filter} variant="outlined" InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    ),
+                }} />
             </Grid>
-            <FixedSizeList
-                height={29 * itemSize}
-                itemCount={filteredVoltageLevels.length}
-                itemSize={itemSize}
-                width="100%"
-            >
-                {Row}
-            </FixedSizeList>
-        </div>
+            <Grid item xs={12} key="list">
+                <FixedSizeList
+                    height={23 * itemSize}
+                    itemCount={filteredVoltageLevels.length}
+                    itemSize={itemSize}
+                    width="100%"
+                >
+                    {Row}
+                </FixedSizeList>
+            </Grid>
+        </Grid>
     )
 };
 
@@ -102,7 +112,7 @@ NetworkExplorer.defaultProps = {
 
 NetworkExplorer.propTypes = {
     network: PropTypes.instanceOf(Network).isRequired,
-    onSubstationClick: PropTypes.func
+    onVoltageLevelClick: PropTypes.func
 };
 
 export default NetworkExplorer;

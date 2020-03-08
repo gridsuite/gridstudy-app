@@ -227,7 +227,7 @@ export const CreateStudyForm = () => {
                             color="primary"
                             inputProps={{ 'aria-label': 'primary checkbox' }}
                         />}
-                        label = <FormattedMessage id="CaseExist"/>
+                        label = <FormattedMessage id="caseExist"/>
                     />
                     <TextField
                         onChange={(e) => handleStudyNameChanges(e)}

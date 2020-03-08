@@ -11,6 +11,12 @@ export function loadNetworkSuccess(network) {
     return { type: LOAD_NETWORK_SUCCESS, network: network };
 }
 
+export const LOAD_GEO_DATA_SUCCESS = 'LOAD_GEO_DATA_SUCCESS';
+
+export function loadGeoDataSuccess(geoData) {
+    return { type: LOAD_GEO_DATA_SUCCESS, geoData: geoData };
+}
+
 export const SELECT_DARK_THEME = 'SELECT_DARK_THEME';
 
 export function selectDarkTheme(dark) {
@@ -19,13 +25,13 @@ export function selectDarkTheme(dark) {
 
 export const LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS = 'LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS';
 
-export function loadVoltageLevelDiagramSuccess(id, svg, name) {
+export function loadVoltageLevelDiagramSuccess(id, name, svg) {
     return {
         type: LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
         diagram: {
             id: id,
-            svg: svg,
-            name : name
+            name : name,
+            svg: svg
         }
     };
 }
@@ -56,6 +62,12 @@ export function openStudy(studyName) {
     return { type: OPEN_STUDY, studyName: studyName };
 }
 
+export const CLOSE_STUDY = 'CLOSE_STUDY';
+
+export function closeStudy() {
+    return { type: CLOSE_STUDY };
+}
+
 export const SELECT_CASE = 'SELECT_CASE';
 
 export function selectCase(selectedCase) {
@@ -80,9 +92,8 @@ export function removeSelectedFile() {
     return { type: REMOVE_SELECTED_FILE};
 }
 
-
-export const VOLTAGE_LEVELS_USE_NAME = 'VOLTAGE_LEVELS_USE_NAME';
+export const USE_NAME = 'VOLTAGE_LEVELS_USE_NAME';
 
 export function toggleUseNameState() {
-    return { type: VOLTAGE_LEVELS_USE_NAME };
+    return { type: USE_NAME };
 }
