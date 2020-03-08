@@ -55,14 +55,16 @@ const NetworkExplorer = (props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [useName]);
 
-    function onVoltageLevelClick(index) {
-        const vl = filteredVoltageLevels[index];
-        props.onVoltageLevelClick(vl.id, vl.name);
-        setCurrentVoltageLevel(vl);
+    function onClickHandler(index) {
+        if (props.onVoltageLevelClick !== null) {
+            const vl = filteredVoltageLevels[index];
+            props.onVoltageLevelClick(vl.id, vl.name);
+            setCurrentVoltageLevel(vl);
+        }
     }
 
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => onVoltageLevelClick(index)}>
+        <ListItem button style={style} key={index} onClick={() => onClickHandler(index)}>
             {useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id}
         </ListItem>
     );

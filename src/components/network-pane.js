@@ -16,7 +16,7 @@ import NetworkExplorer from "./network/network-explorer";
 import NetworkMap from "./network/network-map";
 import SingleLineDiagram from "./single-line-diagram";
 import {fetchVoltageLevelDiagram} from "../utils/rest-api";
-import {loadVoltageLevelDiagramSuccess} from "../redux/actions";
+import {loadVoltageLevelDiagramSuccess, removeVoltageLevelDiagram} from "../redux/actions";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -50,6 +50,10 @@ const NetworkPane = () => {
             });
     }
 
+    function closeVoltageLevelDiagram() {
+        dispatch(removeVoltageLevelDiagram());
+    }
+
     return (
         <Grid container className={classes.main}>
             <Grid item xs={12} md={2} key="explorer">
@@ -67,7 +71,9 @@ const NetworkPane = () => {
                     {
                         study.diagram &&
                         <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
-                            <SingleLineDiagram diagramTitle={useName ? study.diagram.name : study.diagram.id} svg={ study.diagram.svg } />
+                            <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
+                                               diagramTitle={useName ? study.diagram.name : study.diagram.id}
+                                               svg={ study.diagram.svg } />
                         </div>
                     }
                 </div>
