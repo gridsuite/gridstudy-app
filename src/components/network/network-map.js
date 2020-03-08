@@ -15,6 +15,7 @@ import {useTheme} from '@material-ui/styles';
 import {decomposeColor} from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
+import GeoData from './geo-data';
 import {useSelector} from "react-redux";
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug'; // eslint-disable-line
@@ -81,66 +82,68 @@ const NetworkMap = (props) => {
 
     let layers = [];
 
-    // create one substation layer per nominal voltage, starting from higher to lower nominal voltage
-    Array.from(props.network.voltageLevelsByNominalVoltage.entries())
-        .map(e => { return { nominalVoltage: e[0], voltageLevels: e[1] };})
-        .sort((a, b) => b.nominalVoltage - a.nominalVoltage)
-        .forEach(e => {
-        const color = getNominalVoltageColor(e.nominalVoltage);
+    if (props.network !== null && props.geoData !== null) {
+        // create one substation layer per nominal voltage, starting from higher to lower nominal voltage
+        Array.from(props.network.voltageLevelsByNominalVoltage.entries())
+            .map(e => { return { nominalVoltage: e[0], voltageLevels: e[1] };})
+            .sort((a, b) => b.nominalVoltage - a.nominalVoltage)
+            .forEach(e => {
+                const color = getNominalVoltageColor(e.nominalVoltage);
 
-        const substationsLayer = new ScatterplotLayer({
-            id: SUBSTATIONS_LAYER_PREFIX + e.nominalVoltage,
-            data: e.voltageLevels,
-            radiusMinPixels: 1,
-            getPosition: voltageLevel => props.network.getSubstationPosition(voltageLevel.substationId),
-            getFillColor: color,
-            getRadius: voltageLevel => getVoltageLevelRadius(SUBSTATION_RADIUS, voltageLevel),
-            pickable: true
-        });
-        layers.push(substationsLayer);
-    });
-
-    const labelColor = decomposeColor(theme.palette.text.primary).values;
-    labelColor[3] *= 255;
-
-    const substationLabelsLayer = new TextLayer({
-        id: 'labels',
-        data: props.network.substations,
-        pickable: true,
-        getPosition: substation => props.network.getSubstationPosition(substation.id),
-        getText: substation => useName ? substation.name : substation.id,
-        getColor: labelColor,
-        getSize: 16,
-        getAngle: 0,
-        getTextAnchor: 'start',
-        getAlignmentBaseline: 'center',
-        getPixelOffset: [20, 0],
-        visible: labelsVisible,
-        updateTriggers : {
-            getText : useName
-        }
-    });
-    layers.push(substationLabelsLayer);
-
-    const lineLayer = new PathLayer({
-        id: 'lines',
-        data: props.network.lines,
-        pickable: true,
-        widthScale: 20,
-        widthMinPixels: 1,
-        widthMaxPixels: 2,
-        getPath: line => props.network.getLinePositions(line),
-        getColor: line => getNominalVoltageColor(props.network.voltageLevelsById.get(line.voltageLevelId1).nominalVoltage),
-        getWidth: 2,
-        onHover: ({object, x, y}) => {
-            setTooltip({
-                message: object ? (useName? object.name : object.id) : null,
-                pointerX: x,
-                pointerY: y
+                const substationsLayer = new ScatterplotLayer({
+                    id: SUBSTATIONS_LAYER_PREFIX + e.nominalVoltage,
+                    data: e.voltageLevels,
+                    radiusMinPixels: 1,
+                    getPosition: voltageLevel => props.geoData.getSubstationPosition(voltageLevel.substationId),
+                    getFillColor: color,
+                    getRadius: voltageLevel => getVoltageLevelRadius(SUBSTATION_RADIUS, voltageLevel),
+                    pickable: true
+                });
+                layers.push(substationsLayer);
             });
-        }
-    });
-    layers.push(lineLayer);
+
+        const labelColor = decomposeColor(theme.palette.text.primary).values;
+        labelColor[3] *= 255;
+
+        const substationLabelsLayer = new TextLayer({
+            id: 'labels',
+            data: props.network.substations,
+            pickable: true,
+            getPosition: substation => props.geoData.getSubstationPosition(substation.id),
+            getText: substation => useName ? substation.name : substation.id,
+            getColor: labelColor,
+            getSize: 16,
+            getAngle: 0,
+            getTextAnchor: 'start',
+            getAlignmentBaseline: 'center',
+            getPixelOffset: [20, 0],
+            visible: labelsVisible,
+            updateTriggers : {
+                getText : useName
+            }
+        });
+        layers.push(substationLabelsLayer);
+
+        const lineLayer = new PathLayer({
+            id: 'lines',
+            data: props.network.lines,
+            pickable: true,
+            widthScale: 20,
+            widthMinPixels: 1,
+            widthMaxPixels: 2,
+            getPath: line => props.geoData.getLinePositions(props.network, line),
+            getColor: line => getNominalVoltageColor(props.network.voltageLevelsById.get(line.voltageLevelId1).nominalVoltage),
+            getWidth: 2,
+            onHover: ({object, x, y}) => {
+                setTooltip({
+                    message: object ? (useName? object.name : object.id) : null,
+                    pointerX: x,
+                    pointerY: y
+                });
+            }
+        });
+        layers.push(lineLayer);
+    }
 
     const initialViewState = {
         longitude: props.initialPosition[0],
@@ -172,14 +175,16 @@ const NetworkMap = (props) => {
 };
 
 NetworkMap.defaultProps = {
-    network: new Network(),
+    network: null,
+    geoData: null,
     labelsZoomThreshold: 7,
     initialZoom: 5,
     initialPosition: [0, 0]
 };
 
 NetworkMap.propTypes = {
-    network: PropTypes.instanceOf(Network).isRequired,
+    network: PropTypes.instanceOf(Network),
+    geoData: PropTypes.instanceOf(GeoData),
     labelsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,

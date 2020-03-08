@@ -36,11 +36,7 @@ const NetworkPane = () => {
 
     const dispatch = useDispatch();
 
-    const network = useSelector(state => state.network);
-
-    const openedStudyName = useSelector(state => state.openedStudyName);
-
-    const diagram = useSelector(state => state.diagram);
+    const study = useSelector(state => state.study);
 
     const useName = useSelector(state => state.useName);
 
@@ -48,29 +44,30 @@ const NetworkPane = () => {
 
     function showVoltageLevelDiagram(voltageLevelId, voltageLevelName) {
         // load svg
-        fetchVoltageLevelDiagram(openedStudyName, voltageLevelId, useName)
+        fetchVoltageLevelDiagram(study.name, voltageLevelId, useName)
             .then(svg => {
-                dispatch(loadVoltageLevelDiagramSuccess(voltageLevelId, svg, voltageLevelName));
+                dispatch(loadVoltageLevelDiagramSuccess(voltageLevelId, voltageLevelName, svg));
             });
     }
 
     return (
         <Grid container className={classes.main}>
             <Grid item xs={12} md={2} key="explorer">
-                <NetworkExplorer network={network}
+                <NetworkExplorer network={study.network}
                                  onVoltageLevelClick={ (id, name) => showVoltageLevelDiagram(id, name) }/>
             </Grid>
             <Grid item xs={12} md={10} key="map">
                 <div style={{position:"relative", width:"100%", height: "100%"}}>
-                    <NetworkMap network={network}
+                    <NetworkMap network={study.network}
+                                geoData={study.geoData}
                                 labelsZoomThreshold={8}
                                 initialPosition={[2.5, 46.6]}
                                 initialZoom={6}
                                 onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) } />
                     {
-                        diagram &&
+                        study.diagram &&
                         <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
-                            <SingleLineDiagram diagramTitle={useName ? diagram.name : diagram.id} svg={ diagram.svg } />
+                            <SingleLineDiagram diagramTitle={useName ? study.diagram.name : study.diagram.id} svg={ study.diagram.svg } />
                         </div>
                     }
                 </div>

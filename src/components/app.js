@@ -18,8 +18,9 @@ import Network from './network/network';
 import NetworkPane from './network-pane';
 import StudyManager from './study-manager';
 import TopBar from './top-bar';
-import {loadNetworkSuccess, openStudy, removeVoltageLevelDiagram} from '../redux/actions'
+import {loadNetworkSuccess, loadGeoDataSuccess, openStudy, closeStudy, removeVoltageLevelDiagram} from '../redux/actions'
 import {fetchLinePositions, fetchLines, fetchSubstationPositions, fetchSubstations} from '../utils/rest-api'
+import GeoData from "./network/geo-data";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -39,14 +40,14 @@ const App = () => {
 
     const dispatch = useDispatch();
 
-    const network = useSelector(state => state.network);
+    const study = useSelector(state => state.study);
 
     const dark = useSelector(state => state.darkTheme);
 
     const history = useHistory();
 
     function resetStudy(studyName) {
-        dispatch(removeVoltageLevelDiagram());
+        dispatch(closeStudy());
         dispatch(openStudy(studyName));
         dispatch(loadNetworkSuccess(new Network()));
     }
@@ -56,20 +57,30 @@ const App = () => {
 
         const substations = fetchSubstations(studyName);
 
-        const substationPositions = fetchSubstationPositions(studyName);
-
         const lines = fetchLines(studyName);
 
-        const linePositions = fetchLinePositions(studyName);
-
-        Promise.all([substations, substationPositions, lines, linePositions])
+        Promise.all([substations, lines])
             .then(values => {
                 const network = new Network();
                 network.setSubstations(values[0]);
-                network.setLines(values[2]);
-                network.setSubstationPositions(values[1]);
-                network.setLinePositions(values[3]);
+                network.setLines(values[1]);
                 dispatch(loadNetworkSuccess(network));
+            });
+    }
+
+    function loadGeoData(studyName) {
+        console.info(`Loading geo data of study '${studyName}'...`);
+
+        const substationPositions = fetchSubstationPositions(studyName);
+
+        const linePositions = fetchLinePositions(studyName);
+
+        Promise.all([substationPositions, linePositions])
+            .then(values => {
+                const geoData = new GeoData();
+                geoData.setSubstationPositions(values[0]);
+                geoData.setLinePositions(values[1]);
+                dispatch(loadGeoDataSuccess(geoData));
             });
     }
 
@@ -77,6 +88,7 @@ const App = () => {
         resetStudy(studyName);
         history.push("/map");
         loadNetwork(studyName);
+        loadGeoData(studyName);
     }
 
     return (
@@ -89,7 +101,7 @@ const App = () => {
                         <StudyManager onStudyClick={ name => studyClicked(name) }/>
                     </Route>
                     <Route exact path="/map">
-                        { network ? <NetworkPane /> : <Redirect to="/" /> }
+                        { study ? <NetworkPane /> : <Redirect to="/" /> }
                     </Route>
                 </Switch>
             </React.Fragment>

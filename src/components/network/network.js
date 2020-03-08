@@ -21,16 +21,6 @@ const voltageLevelIdIndexer = (map, voltageLevel) => {
     return map;
 };
 
-const substationPositionByIdIndexer = (map, substation) => {
-    map.set(substation.id, substation.coordinate);
-    return map;
-};
-
-const linePositionIndexer = (map, line) => {
-    map.set(line.id, line.coordinates);
-    return map;
-};
-
 export default class Network {
 
     substations = [];
@@ -40,10 +30,6 @@ export default class Network {
     voltageLevelsByNominalVoltage = new Map();
 
     voltageLevelsById = new Map();
-
-    substationPositionsById = new Map();
-
-    linePositions = new Map();
 
     setSubstations(substations) {
         this.substations = substations;
@@ -76,41 +62,9 @@ export default class Network {
         this.lines = lines;
     }
 
-    setSubstationPositions(positions) {
-        // index positions by substation id
-        this.substationPositionsById = positions.reduce(substationPositionByIdIndexer, new Map());
-    }
-
-    getSubstationPosition(substation) {
-        const position = this.substationPositionsById.get(substation);
-        if (!position) {
-            console.warn(`Position not found for ${substation}`);
-            return [0, 0, 0];
-        }
-        return [position.lon, position.lat, 0];
-    }
-
     getVoltageLevels() {
         return Array.from(this.voltageLevelsById.values());
     }
-
-    setLinePositions(positions) {
-        // index positions by line id
-        this.linePositions = positions.reduce(linePositionIndexer, new Map());
-    }
-
-    getLinePositions(line) {
-        const linePosition = this.linePositions.get(line.id);
-        if (linePosition) {
-            return linePosition.map(c => [c.lon, c.lat]);
-        } else {
-            const voltageLevel1 = this.getVoltageLevel(line.voltageLevelId1);
-            const voltageLevel2 = this.getVoltageLevel(line.voltageLevelId2);
-            const substationPosition1 = this.getSubstationPosition(voltageLevel1.substationId);
-            const substationPosition2 = this.getSubstationPosition(voltageLevel2.substationId);
-            return [ substationPosition1, substationPosition2 ];
-        }
-    };
 
     getVoltageLevel(id) {
         const voltageLevel = this.voltageLevelsById.get(id);
