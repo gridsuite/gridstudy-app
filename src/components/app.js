@@ -15,7 +15,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 
 import Network from './network/network';
-import NetworkPane from './network-pane';
+import StudyPane from './study-pane';
 import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {loadNetworkSuccess, loadGeoDataSuccess, openStudy, closeStudy, removeVoltageLevelDiagram} from '../redux/actions'
@@ -49,7 +49,6 @@ const App = () => {
     function resetStudy(studyName) {
         dispatch(closeStudy());
         dispatch(openStudy(studyName));
-        dispatch(loadNetworkSuccess(new Network()));
     }
 
     function loadNetwork(studyName) {
@@ -84,7 +83,7 @@ const App = () => {
             });
     }
 
-    function studyClicked(studyName) {
+    function studyClickHandler(studyName) {
         resetStudy(studyName);
         history.push("/map");
         loadNetwork(studyName);
@@ -98,10 +97,10 @@ const App = () => {
                 <TopBar />
                 <Switch>
                     <Route exact path="/">
-                        <StudyManager onStudyClick={ name => studyClicked(name) }/>
+                        <StudyManager onStudyClick={ name => studyClickHandler(name) }/>
                     </Route>
                     <Route exact path="/map">
-                        { study ? <NetworkPane /> : <Redirect to="/" /> }
+                        { study ? <StudyPane /> : <Redirect to="/" /> }
                     </Route>
                 </Switch>
             </React.Fragment>

@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const NetworkPane = () => {
+const StudyPane = () => {
 
     const dispatch = useDispatch();
 
@@ -82,4 +82,4 @@ const NetworkPane = () => {
     );
 };
 
-export default NetworkPane;
+export default StudyPane;
