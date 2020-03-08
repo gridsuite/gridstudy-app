@@ -44,8 +44,12 @@ const NetworkExplorer = (props) => {
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState([]);
     const [currentVoltageLevel, setCurrentVoltageLevel] = React.useState(null);
 
+    const voltageLevelComparator = (vl1, vl2) => {
+        return useName ? vl1.name.localeCompare(vl2.name) : vl1.id.localeCompare(vl2.id);
+    };
+
     useEffect(() => {
-        setFilteredVoltageLevels(props.network.getVoltageLevels())
+        setFilteredVoltageLevels(props.network.getVoltageLevels().sort(voltageLevelComparator))
     }, [props.network]);
 
     useEffect(() => {
@@ -74,7 +78,7 @@ const NetworkExplorer = (props) => {
         setFilteredVoltageLevels(props.network.getVoltageLevels().filter(item => {
             const lc = useName ? item.name.toLowerCase() : item.id.toLowerCase();
             return lc.includes(entry);
-        }));
+        }).sort(voltageLevelComparator));
     };
 
     return (
