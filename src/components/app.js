@@ -6,32 +6,20 @@
  */
 
 import React from 'react';
+
 import {useDispatch, useSelector} from 'react-redux'
+
 import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
 
-import {createMuiTheme, makeStyles, ThemeProvider} from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Grid from "@material-ui/core/Grid";
+import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 
-import NetworkExplorer from './network/network-explorer';
-import SingleLineDiagram from './single-line-diagram';
-import NetworkMap from './network/network-map';
-import StudyManager from './study-manager';
 import Network from './network/network';
+import NetworkPane from './network-pane';
+import StudyManager from './study-manager';
 import TopBar from './top-bar';
-import {
-    loadNetworkSuccess,
-    loadVoltageLevelDiagramSuccess,
-    openStudy,
-    removeVoltageLevelDiagram
-} from '../redux/actions'
-import {
-    fetchLinePositions,
-    fetchLines,
-    fetchSubstationPositions,
-    fetchSubstations,
-    fetchVoltageLevelDiagram
-} from '../utils/rest-api'
+import {loadNetworkSuccess, openStudy, removeVoltageLevelDiagram} from '../redux/actions'
+import {fetchLinePositions, fetchLines, fetchSubstationPositions, fetchSubstations} from '../utils/rest-api'
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -47,37 +35,15 @@ const darkTheme = createMuiTheme({
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9'
 });
 
-const useStyles = makeStyles(theme => ({
-    main: {
-        position: "absolute",
-        width:"100%",
-        height: 'calc(100vh - 56px)',
-        [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
-            height: 'calc(100vh - 48px)'
-        },
-        [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 64px)'
-        },
-    }
-}));
-
 const App = () => {
 
     const dispatch = useDispatch();
 
-    const openedStudyName = useSelector(state => state.openedStudyName);
-
     const network = useSelector(state => state.network);
-
-    const diagram = useSelector(state => state.diagram);
 
     const dark = useSelector(state => state.darkTheme);
 
-    const useName = useSelector(state => state.useName);
-
     const history = useHistory();
-
-    const classes = useStyles();
 
     function resetStudy(studyName) {
         dispatch(removeVoltageLevelDiagram());
@@ -113,59 +79,19 @@ const App = () => {
         loadNetwork(studyName);
     }
 
-    function showVoltageLevelDiagram(voltageLevelId, voltageLevelName) {
-        // load svg
-        fetchVoltageLevelDiagram(openedStudyName, voltageLevelId, useName)
-            .then(svg => {
-                dispatch(loadVoltageLevelDiagramSuccess(voltageLevelId, svg, voltageLevelName));
-            });
-    }
-
-    function createNetworkPane() {
-        return (
-            <Grid container className={classes.main}>
-                <Grid item xs={12} md={2} key="explorer">
-                    <NetworkExplorer network={network}
-                                     onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) }/>
-                </Grid>
-                <Grid item xs={12} md={10} key="map">
-                    <div style={{position:"relative", width:"100%", height: "100%"}}>
-                        <NetworkMap network={ network }
-                                    labelsZoomThreshold={8}
-                                    initialPosition={[2.5, 46.6]}
-                                    initialZoom={6}
-                                    onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) } />
-                        {
-                            diagram &&
-                            <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
-                                <SingleLineDiagram diagramId={useName ? diagram.name : diagram.id} svg={ diagram.svg } />
-                            </div>
-                        }
-                    </div>
-                </Grid>
-            </Grid>
-        )
-    }
-
-    function createApp() {
-        return (
-            <Switch>
-                <Route exact path="/">
-                    <StudyManager onStudyClick={ name => studyClicked(name) }/>
-                </Route>
-                <Route exact path="/map">
-                    { network ? createNetworkPane() : <Redirect to="/" /> }
-                </Route>
-            </Switch>
-        )
-    }
-
     return (
         <ThemeProvider theme={dark ? darkTheme : lightTheme}>
             <React.Fragment>
                 <CssBaseline />
                 <TopBar />
-                { createApp() }
+                <Switch>
+                    <Route exact path="/">
+                        <StudyManager onStudyClick={ name => studyClicked(name) }/>
+                    </Route>
+                    <Route exact path="/map">
+                        { network ? <NetworkPane /> : <Redirect to="/" /> }
+                    </Route>
+                </Switch>
             </React.Fragment>
         </ThemeProvider>
     )

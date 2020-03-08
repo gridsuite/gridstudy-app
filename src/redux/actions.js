@@ -80,7 +80,6 @@ export function removeSelectedFile() {
     return { type: REMOVE_SELECTED_FILE};
 }
 
-
 export const VOLTAGE_LEVELS_USE_NAME = 'VOLTAGE_LEVELS_USE_NAME';
 
 export function toggleUseNameState() {

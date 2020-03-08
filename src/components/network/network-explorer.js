@@ -8,18 +8,20 @@
 import React, {useEffect} from 'react';
 import PropTypes from "prop-types";
 
+import {useSelector} from "react-redux";
+
+import {useIntl} from "react-intl";
+
+import Grid from "@material-ui/core/Grid";
 import InputAdornment from '@material-ui/core/InputAdornment';
+import {makeStyles} from "@material-ui/core/styles";
 import ListItem from '@material-ui/core/ListItem';
-import TextField from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';
+import TextField from '@material-ui/core/TextField';
 
 import {FixedSizeList} from 'react-window';
 
 import Network from "./network";
-import {useSelector} from "react-redux";
-import {useIntl} from "react-intl";
-import {makeStyles} from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
 
 const itemSize = 35;
 
@@ -32,8 +34,8 @@ const useStyles = makeStyles(theme => ({
 const NetworkExplorer = (props) => {
 
     const intl = useIntl();
+
     const useName = useSelector(state => state.useName);
-    const diagram = useSelector(state => state.diagram);
 
     const filterMsg = intl.formatMessage({id : 'filter'}) + "...";
 
@@ -47,14 +49,20 @@ const NetworkExplorer = (props) => {
     }, [props.network]);
 
     useEffect(() => {
-        if (diagram !== null) {
-            props.onSubstationClick(currentVoltageLevel.id, currentVoltageLevel.name);
+        if (currentVoltageLevel !== null) {
+            props.onVoltageLevelClick(currentVoltageLevel.id, currentVoltageLevel.name);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [useName]);
 
+    function onVoltageLevelClick(index) {
+        const vl = filteredVoltageLevels[index];
+        props.onVoltageLevelClick(vl.id, vl.name);
+        setCurrentVoltageLevel(vl);
+    }
+
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => {props.onSubstationClick(filteredVoltageLevels[index].id, filteredVoltageLevels[index].name); setCurrentVoltageLevel(filteredVoltageLevels[index])}}>
+        <ListItem button style={style} key={index} onClick={() => onVoltageLevelClick(index)}>
             {useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id}
         </ListItem>
     );
@@ -98,7 +106,7 @@ NetworkExplorer.defaultProps = {
 
 NetworkExplorer.propTypes = {
     network: PropTypes.instanceOf(Network).isRequired,
-    onSubstationClick: PropTypes.func
+    onVoltageLevelClick: PropTypes.func
 };
 
 export default NetworkExplorer;
