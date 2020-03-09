@@ -9,7 +9,7 @@ import React from "react";
 
 import {useDispatch, useSelector} from "react-redux";
 
-import {FormattedMessage} from "react-intl";
+import {FormattedMessage, useIntl} from "react-intl";
 
 import AppBar from "@material-ui/core/AppBar";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -48,6 +48,8 @@ const TopBar = () => {
 
     const useName = useSelector(state => state.useName);
 
+    const intl = useIntl();
+
     const classes = useStyles();
 
     function switchTheme() {
@@ -57,6 +59,8 @@ const TopBar = () => {
     const handleToggleUseName = () => {
         dispatch(toggleUseNameState());
     };
+
+    const useNameLabel = intl.formatMessage({id : 'useName'});
 
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
@@ -75,7 +79,7 @@ const TopBar = () => {
                             color="primary"
                         />
                     }
-                    label="Use name"
+                    label={useNameLabel}
                 />
                 <IconButton aria-label="Change theme" color="inherit" onClick={() => switchTheme()}>
                     { dark ? <BrightnessLowIcon /> : <BrightnessHighIcon /> }

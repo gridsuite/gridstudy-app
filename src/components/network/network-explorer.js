@@ -28,6 +28,7 @@ const itemSize = 35;
 const useStyles = makeStyles(theme => ({
     textField: {
         margin: theme.spacing(1),
+        width: 'calc(100% - 16px)', // to fix an issue with fullWidth of textfield
     },
 }));
 
