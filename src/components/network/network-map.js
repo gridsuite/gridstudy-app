@@ -28,6 +28,9 @@ const NetworkMap = (props) => {
 
     const [labelsVisible, setLabelsVisible] = useState(false);
 
+    const [deck, setDeck] = useState(null);
+    const [centered, setCentered] = useState(false);
+
     const [tooltip, setTooltip] = useState({});
 
     const theme = useTheme();
@@ -50,6 +53,42 @@ const NetworkMap = (props) => {
         } else {
             return [171, 175, 40];
         }
+    }
+
+    // Do this in onAfterRender because when doing it in useEffect (triggered by calling setDeck()),
+    // it doesn't work in the case of using the browser backward/forward buttons (because in this particular case,
+    // we get the ref to the deck and it has not yet initialized..)
+    function onAfterRender() {
+            //use centered and deck to execute this block only once when the data is ready and deckgl is initialized
+            if (!centered && deck !== null && deck.viewManager != null && props.geoData !== null) {
+                if (props.geoData.substationPositionsById.size > 0) {
+                    const coords = Array.from(props.geoData.substationPositionsById.entries()).map(x => x[1]);
+                    const maxlon = Math.max.apply(null, coords.map(x => x.lon));
+                    const minlon = Math.min.apply(null, coords.map(x => x.lon));
+                    const maxlat = Math.max.apply(null, coords.map(x => x.lat));
+                    const minlat = Math.min.apply(null, coords.map(x => x.lat));
+                    const marginlon = (maxlon - minlon)/10;
+                    const marginlat = (maxlat - minlat)/10;
+                    const viewport = deck.getViewports()[0];
+                    const boundedViewport = viewport.fitBounds([
+                            [minlon - marginlon/2, minlat - marginlat/2],
+                            [maxlon + marginlon/2, maxlat + marginlat/2]
+                    ]);
+                    //TODO, replace the next lines with setProps( { initialViewState } ) when we upgrade to 8.1.0
+                    //see https://github.com/uber/deck.gl/pull/4038
+                    //This is a hack because it accesses the properties of deck directly but for now it works
+                    deck.viewState = {
+                            longitude: boundedViewport.longitude,
+                            latitude: boundedViewport.latitude,
+                            zoom: Math.min(deck.viewState.maxZoom, boundedViewport.zoom),
+                            maxZoom: deck.viewState.maxZoom,
+                            pitch: deck.viewState.pitch,
+                            bearing: deck.viewState.bearing
+                    };
+                    deck.setProps({});
+                }
+                setCentered(true);
+            }
     }
 
     function onViewStateChange(info) {
@@ -155,7 +194,12 @@ const NetworkMap = (props) => {
     };
 
     return <DeckGL onViewStateChange={onViewStateChange}
+                   ref={ref => {
+                       // save a reference to the Deck instance to be able to center in onAfterRender
+                       setDeck(ref && ref.deck);
+                   }}
                    onClick={onClickHandler}
+                   onAfterRender={onAfterRender}
                    layers={layers}
                    initialViewState={initialViewState}
                    controller={{ doubleClickZoom: false }}
