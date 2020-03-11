@@ -166,11 +166,10 @@ const NetworkMap = (props) => {
                 preventStyleDiffing={true}
                 mapboxApiAccessToken={MAPBOX_TOKEN}>
                 { renderTooltip() }
-                <div style={{ position: "absolute", right: 10, top: 10, zIndex: 1 }}>
-                    <NavigationControl />
-                </div>
-                { props.children }
             </StaticMap>
+            <div style={{ position: "absolute", right: 10, top: 10, zIndex: 1 }}>
+                <NavigationControl />
+            </div>
         </DeckGL>;
 };
 
