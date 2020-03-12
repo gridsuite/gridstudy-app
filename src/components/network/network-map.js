@@ -212,7 +212,10 @@ const NetworkMap = (props) => {
                 { renderTooltip() }
             </StaticMap>
             <div style={{ position: "absolute", right: 10, top: 10, zIndex: 1 }}>
-                <NavigationControl />
+                <NavigationControl ref={ ref => {
+                    // Workaround, remove when https://github.com/uber/deck.gl/issues/4383 is resolved
+                    if (ref != null) {ref._uiVersion = 2;}
+                }}/>
             </div>
         </DeckGL>;
 };
