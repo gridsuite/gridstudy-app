@@ -13,7 +13,7 @@
   "cancel" : "ANNULER",
   "create" : "CRÉER",
   "delete" : "SUPPRIMER",
-  "filter" : "Filter",
+  "filter" : "Filtre",
 
   "deleteStudy" : "Supprimer l'étude",
   "deleteStudyMsg" : "Etes vous sur de vouloir supprimer l'étude?",
@@ -27,5 +27,8 @@
   "studyCreated": "Étude créée",
   "studyCreatingError" : "Une erreur est survenue lors du création de l'étude",
 
-  "useName": "Utiliser nom"
+  "useName": "Utiliser le nom à la place de l'identifiant",
+
+  "parameters": "Paramètres",
+  "theme": "Thème"
 }

@@ -7,31 +7,33 @@
 
 import {createReducer} from "@reduxjs/toolkit";
 
+import {getLocalStorageTheme, getLocalStorageUseName} from "./local-storage";
+
 import {
-    LOAD_NETWORK_SUCCESS,
+    CLOSE_STUDY,
+    LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
+    LOAD_NETWORK_SUCCESS,
     LOAD_STUDIES_SUCCESS,
     LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
     OPEN_STUDY,
-    CLOSE_STUDY,
-    REMOVE_VOLTAGE_LEVEL_DIAGRAM,
-    SELECT_DARK_THEME,
-    LOAD_CASES_SUCCESS,
-    SELECT_CASE,
     REMOVE_SELECTED_CASE,
-    SELECT_FILE,
     REMOVE_SELECTED_FILE,
+    REMOVE_VOLTAGE_LEVEL_DIAGRAM,
+    SELECT_CASE,
+    SELECT_FILE,
+    SELECT_THEME,
     USE_NAME
 } from "./actions";
 
 const initialState = {
     studies: [],
     study: null,
-    darkTheme: true,
+    theme: getLocalStorageTheme(),
     cases : [],
     selectedCase : null,
     selectedFile : null,
-    useName : true
+    useName : getLocalStorageUseName()
 };
 
 export const reducer = createReducer(initialState, {
@@ -68,8 +70,8 @@ export const reducer = createReducer(initialState, {
         state.study.diagram = null;
     },
 
-    [SELECT_DARK_THEME]: (state, action) => {
-        state.darkTheme = action.darkTheme;
+    [SELECT_THEME]: (state, action) => {
+        state.theme = action.theme;
     },
 
     [SELECT_CASE]: (state, action) => {

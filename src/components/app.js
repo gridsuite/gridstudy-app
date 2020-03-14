@@ -18,9 +18,10 @@ import Network from './network/network';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
 import TopBar from './top-bar';
-import {loadNetworkSuccess, loadGeoDataSuccess, openStudy, closeStudy, removeVoltageLevelDiagram} from '../redux/actions'
+import {closeStudy, LIGHT_THEME, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from '../redux/actions'
 import {fetchLinePositions, fetchLines, fetchSubstationPositions, fetchSubstations} from '../utils/rest-api'
 import GeoData from "./network/geo-data";
+import Parameters from "./parameters";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -36,13 +37,21 @@ const darkTheme = createMuiTheme({
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9'
 });
 
+const getMuiTheme = (theme) => {
+    if (theme === LIGHT_THEME) {
+        return lightTheme;
+    } else {
+        return darkTheme;
+    }
+}
+
 const App = () => {
 
     const dispatch = useDispatch();
 
     const study = useSelector(state => state.study);
 
-    const dark = useSelector(state => state.darkTheme);
+    const theme = useSelector(state => state.theme);
 
     const history = useHistory();
 
@@ -83,6 +92,10 @@ const App = () => {
             });
     }
 
+    function showParameters() {
+        history.push("/parameters");
+    }
+
     function studyClickHandler(studyName) {
         resetStudy(studyName);
         history.push("/map");
@@ -91,16 +104,19 @@ const App = () => {
     }
 
     return (
-        <ThemeProvider theme={dark ? darkTheme : lightTheme}>
+        <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar />
+                <TopBar onParametersClick={ () => showParameters() }/>
                 <Switch>
                     <Route exact path="/">
                         <StudyManager onStudyClick={ name => studyClickHandler(name) }/>
                     </Route>
                     <Route exact path="/map">
                         { study ? <StudyPane /> : <Redirect to="/" /> }
+                    </Route>
+                    <Route exact path="/parameters">
+                        <Parameters/>
                     </Route>
                 </Switch>
             </React.Fragment>
