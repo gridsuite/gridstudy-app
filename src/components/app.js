@@ -43,7 +43,7 @@ const getMuiTheme = (theme) => {
     } else {
         return darkTheme;
     }
-}
+};
 
 const App = () => {
 
