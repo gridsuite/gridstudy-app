@@ -73,16 +73,6 @@ const StudyPane = () => {
 
     const history = useHistory();
 
-    // set voltage level single line diagram coming from query parameter
-    if (study && study.network && !init) {
-        setInit(true);
-        const queryParams = parse(location.search, { ignoreQueryPrefix: true });
-        const initialVoltageLevelId = queryParams["voltageLeveLId"];
-        if (initialVoltageLevelId) {
-            dispatch(addVoltageLevelSingleLineDiagram(initialVoltageLevelId));
-        }
-    }
-
     useEffect(() => {
         dispatch(openStudy(studyName));
         loadNetwork(studyName);
@@ -98,14 +88,25 @@ const StudyPane = () => {
             history.replace("/studies/" + studyName + stringify({ voltageLeveLId: voltageLevelId }, { addQueryPrefix: true }))
 
             // load svg
-            fetchVoltageLevelSingleLineDiagram(study.name, voltageLevelId, useName)
+            fetchVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName)
                 .then(svg => {
                     setSvg(svg);
                 });
         } else {
-            setSvg(null);
+            if (init) {
+                setSvg(null);
+            } else {
+                setInit(true);
+
+                // set voltage level single line diagram coming from query parameter
+                const queryParams = parse(location.search, { ignoreQueryPrefix: true });
+                const initialVoltageLevelId = queryParams["voltageLeveLId"];
+                if (initialVoltageLevelId) {
+                    dispatch(addVoltageLevelSingleLineDiagram(initialVoltageLevelId));
+                }
+            }
         }
-    }, [study, voltageLevelId, useName]);
+    }, [voltageLevelId, useName]);
 
     function loadNetwork(studyName) {
         console.info(`Loading network of study '${studyName}'...`);
