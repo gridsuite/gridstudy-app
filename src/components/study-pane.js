@@ -145,6 +145,7 @@ const StudyPane = () => {
     }
 
     function closeVoltageLevelDiagram() {
+        history.replace("/studies/" + studyName)
         dispatch(removeVoltageLevelSingleLineDiagram());
     }
 
