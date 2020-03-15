@@ -26,13 +26,12 @@ const messages = {
     'fr': messages_fr
 };
 
-
 const language = navigator.language.split(/[-_]/)[0];  // language without region code
 
 ReactDOM.render(
     <IntlProvider locale={language} messages={messages[language]}>
         <Provider store={store}>
-            <BrowserRouter basename={window.location.pathname}>
+            <BrowserRouter>
                 <App />
             </BrowserRouter>
         </Provider>
