@@ -65,7 +65,7 @@ const NetworkExplorer = (props) => {
     function onClickHandler(index) {
         if (props.onVoltageLevelClick !== null) {
             const vl = filteredVoltageLevels[index];
-            props.onVoltageLevelClick(vl.id, vl.name);
+            props.onVoltageLevelClick(vl.id);
             setCurrentVoltageLevel(vl);
         }
     }

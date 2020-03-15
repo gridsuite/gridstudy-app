@@ -23,24 +23,20 @@ export function selectDarkTheme(dark) {
     return { type: SELECT_DARK_THEME, darkTheme: dark };
 }
 
-export const LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS = 'LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS';
+export const ADD_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM = 'ADD_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM';
 
-export function loadVoltageLevelDiagramSuccess(id, name, svg) {
+export function addVoltageLevelSingleLineDiagram(id) {
     return {
-        type: LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
-        diagram: {
-            id: id,
-            name : name,
-            svg: svg
-        }
+        type: ADD_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM,
+        id: id
     };
 }
 
-export const REMOVE_VOLTAGE_LEVEL_DIAGRAM = 'REMOVE_VOLTAGE_LEVEL_DIAGRAM';
+export const REMOVE_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM = 'REMOVE_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM';
 
-export function removeVoltageLevelDiagram() {
+export function removeVoltageLevelSingleLineDiagram() {
     return {
-        type: REMOVE_VOLTAGE_LEVEL_DIAGRAM
+        type: REMOVE_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM
     };
 }
 

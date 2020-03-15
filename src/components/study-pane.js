@@ -5,11 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 
 import {useDispatch, useSelector} from "react-redux";
 
-import {useRouteMatch} from 'react-router-dom';
+import {useHistory, useLocation, useParams} from 'react-router-dom';
+
+import {parse, stringify} from "qs";
 
 import Grid from "@material-ui/core/Grid";
 import {makeStyles} from "@material-ui/core/styles";
@@ -22,15 +24,15 @@ import {
     fetchLines,
     fetchSubstationPositions,
     fetchSubstations,
-    fetchVoltageLevelDiagram
+    fetchVoltageLevelSingleLineDiagram
 } from "../utils/rest-api";
 import {
+    addVoltageLevelSingleLineDiagram,
     closeStudy,
     loadGeoDataSuccess,
     loadNetworkSuccess,
-    loadVoltageLevelDiagramSuccess,
     openStudy,
-    removeVoltageLevelDiagram
+    removeVoltageLevelSingleLineDiagram
 } from "../redux/actions";
 import Network from "./network/network";
 import GeoData from "./network/geo-data";
@@ -55,12 +57,31 @@ const StudyPane = () => {
 
     const study = useSelector(state => state.study);
 
+    const voltageLevelId = useSelector(state => state.study ? state.study.singleLineDiagram.voltageLevelId : null);
+
     const useName = useSelector(state => state.useName);
+
+    const [svg, setSvg] = useState(null);
+
+    const [init, setInit] = useState(false);
 
     const classes = useStyles();
 
-    const match = useRouteMatch("/studies/:studyName");
-    const studyName = match.params.studyName;
+    const { studyName } = useParams();
+
+    const location = useLocation();
+
+    const history = useHistory();
+
+    // set voltage level single line diagram coming from query parameter
+    if (study && study.network && !init) {
+        setInit(true);
+        const queryParams = parse(location.search, { ignoreQueryPrefix: true });
+        const initialVoltageLevelId = queryParams["voltageLeveLId"];
+        if (initialVoltageLevelId) {
+            dispatch(addVoltageLevelSingleLineDiagram(initialVoltageLevelId));
+        }
+    }
 
     useEffect(() => {
         dispatch(openStudy(studyName));
@@ -71,6 +92,20 @@ const StudyPane = () => {
             dispatch(closeStudy());
         }
     }, [studyName]);
+
+    useEffect(() => {
+        if (voltageLevelId) {
+            history.replace("/studies/" + studyName + stringify({ voltageLeveLId: voltageLevelId }, { addQueryPrefix: true }))
+
+            // load svg
+            fetchVoltageLevelSingleLineDiagram(study.name, voltageLevelId, useName)
+                .then(svg => {
+                    setSvg(svg);
+                });
+        } else {
+            setSvg(null);
+        }
+    }, [study, voltageLevelId, useName]);
 
     function loadNetwork(studyName) {
         console.info(`Loading network of study '${studyName}'...`);
@@ -104,16 +139,17 @@ const StudyPane = () => {
             });
     }
 
-    function showVoltageLevelDiagram(voltageLevelId, voltageLevelName) {
-        // load svg
-        fetchVoltageLevelDiagram(study.name, voltageLevelId, useName)
-            .then(svg => {
-                dispatch(loadVoltageLevelDiagramSuccess(voltageLevelId, voltageLevelName, svg));
-            });
+    function showVoltageLevelDiagram(voltageLevelId) {
+        dispatch(addVoltageLevelSingleLineDiagram(voltageLevelId));
     }
 
     function closeVoltageLevelDiagram() {
-        dispatch(removeVoltageLevelDiagram());
+        dispatch(removeVoltageLevelSingleLineDiagram());
+    }
+
+    function getDiagramTitle() {
+        return useName ? study.network.getVoltageLevel(study.singleLineDiagram.voltageLevelId).name
+                       : study.singleLineDiagram.voltageLevelId;
     }
 
     return (
@@ -121,7 +157,7 @@ const StudyPane = () => {
         <Grid container className={classes.main}>
             <Grid item xs={12} md={2} key="explorer">
                 <NetworkExplorer network={study.network}
-                                 onVoltageLevelClick={ (id, name) => showVoltageLevelDiagram(id, name) }/>
+                                 onVoltageLevelClick={ id => showVoltageLevelDiagram(id) }/>
             </Grid>
             <Grid item xs={12} md={10} key="map">
                 <div style={{position:"relative", width:"100%", height: "100%"}}>
@@ -130,13 +166,14 @@ const StudyPane = () => {
                                 labelsZoomThreshold={8}
                                 initialPosition={[2.5, 46.6]}
                                 initialZoom={6}
-                                onSubstationClick={ (id, name) => showVoltageLevelDiagram(id, name) } />
+                                onSubstationClick={ id => showVoltageLevelDiagram(id) } />
                     {
-                        study.diagram &&
+                        voltageLevelId &&
+                        svg &&
                         <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                             <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
-                                               diagramTitle={useName ? study.diagram.name : study.diagram.id}
-                                               svg={ study.diagram.svg } />
+                                               diagramTitle={getDiagramTitle()}
+                                               svg={ svg } />
                         </div>
                     }
                 </div>
