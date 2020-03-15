@@ -24,6 +24,8 @@ import Typography from "@material-ui/core/Typography";
 
 import {DARK_THEME, LIGHT_THEME, selectTheme, toggleUseNameState} from "../redux/actions";
 import {saveLocalStorageTheme, saveLocalStorageUseName} from "../redux/local-storage";
+import Button from "@material-ui/core/Button";
+import {useHistory} from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -37,6 +39,8 @@ const useStyles = makeStyles(theme => ({
 const Parameters = () => {
 
     const dispatch = useDispatch();
+
+    const history = useHistory();
 
     const classes = useStyles();
 
@@ -53,6 +57,10 @@ const Parameters = () => {
         const theme = event.target.value;
         dispatch(selectTheme(theme));
         saveLocalStorageTheme(theme);
+    };
+
+    const handleClose = () => {
+        history.goBack();
     };
 
     return (
@@ -95,6 +103,16 @@ const Parameters = () => {
                         <FormControlLabel value={DARK_THEME} control={<Radio color="primary"/>} label={DARK_THEME} />
                         <FormControlLabel value={LIGHT_THEME} control={<Radio color="primary"/>} label={LIGHT_THEME} />
                     </RadioGroup>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Divider/>
+                </Grid>
+
+                <Grid item xs={12}>
+                    <Button onClick={handleClose} variant="contained" color="primary">
+                        <FormattedMessage id="close"/>
+                    </Button>
                 </Grid>
             </Grid>
         </Container>

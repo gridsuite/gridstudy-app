@@ -29,5 +29,6 @@
 
   "useName": "Use the name instead of the identifier",
   "parameters": "Parameters",
-  "theme": "Theme"
+  "theme": "Theme",
+  "close": "Close"
 }
