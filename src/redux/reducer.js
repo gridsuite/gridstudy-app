@@ -8,7 +8,6 @@
 import {createReducer} from "@reduxjs/toolkit";
 
 import {
-    ADD_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM,
     CLOSE_STUDY,
     LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
@@ -17,7 +16,6 @@ import {
     OPEN_STUDY,
     REMOVE_SELECTED_CASE,
     REMOVE_SELECTED_FILE,
-    REMOVE_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM,
     SELECT_CASE,
     SELECT_DARK_THEME,
     SELECT_FILE,
@@ -26,7 +24,9 @@ import {
 
 const initialState = {
     studies: [],
-    study: null,
+    studyName: null,
+    network: null,
+    geoData: null,
     darkTheme: true,
     cases : [],
     selectedCase : null,
@@ -45,32 +45,21 @@ export const reducer = createReducer(initialState, {
     },
 
     [OPEN_STUDY]: (state, action) => {
-        state.study = {
-            name: action.studyName,
-            singleLineDiagram: {
-                voltageLevelId: null,
-            }
-        };
+        state.studyName = action.studyName;
     },
 
     [CLOSE_STUDY]: (state) => {
-        state.study = null;
+        state.studyName = null;
+        state.network = null;
+        state.geoData = null;
     },
 
     [LOAD_NETWORK_SUCCESS]: (state, action) => {
-        state.study.network = action.network;
+        state.network = action.network;
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
-        state.study.geoData = action.geoData;
-    },
-
-    [ADD_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM]: (state, action) => {
-        state.study.singleLineDiagram.voltageLevelId = action.id;
-    },
-
-    [REMOVE_VOLTAGE_LEVEL_SINGLE_LINE_DIAGRAM]: (state) => {
-        state.study.singleLineDiagram.voltageLevelId = null;
+        state.geoData = action.geoData;
     },
 
     [SELECT_DARK_THEME]: (state, action) => {
