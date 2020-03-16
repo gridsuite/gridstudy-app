@@ -175,37 +175,36 @@ const StudyPane = () => {
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
     } else {
-        if (network && geoData) {
-            const voltageLevel = voltageLevelId ? network.getVoltageLevel(voltageLevelId) : null;
-            return (
-                <Grid container className={classes.main}>
-                    <Grid item xs={12} md={2} key="explorer">
-                        <NetworkExplorer network={network}
-                                         onVoltageLevelClick={ id => showVoltageLevelDiagram(id) }/>
-                    </Grid>
-                    <Grid item xs={12} md={10} key="map">
-                        <div style={{position:"relative", width:"100%", height: "100%"}}>
-                            <NetworkMap network={network}
-                                        geoData={geoData}
-                                        labelsZoomThreshold={8}
-                                        initialPosition={[2.5, 46.6]}
-                                        initialZoom={6}
-                                        onSubstationClick={ id => showVoltageLevelDiagram(id) } />
-                            {
-                                voltageLevel &&
-                                <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
-                                    <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
-                                                       diagramTitle={useName ? voltageLevel.name : voltageLevelId}
-                                                       svg={svg} />
-                                </div>
-                            }
-                        </div>
-                    </Grid>
-                </Grid>
-            );
-        } else {
-            return false;
+        let voltageLevel = null;
+        if (voltageLevelId && network) {
+            voltageLevel = network.getVoltageLevel(voltageLevelId);
         }
+        return (
+            <Grid container className={classes.main}>
+                <Grid item xs={12} md={2} key="explorer">
+                    <NetworkExplorer network={network}
+                                     onVoltageLevelClick={ id => showVoltageLevelDiagram(id) }/>
+                </Grid>
+                <Grid item xs={12} md={10} key="map">
+                    <div style={{position:"relative", width:"100%", height: "100%"}}>
+                        <NetworkMap network={network}
+                                    geoData={geoData}
+                                    labelsZoomThreshold={8}
+                                    initialPosition={[2.5, 46.6]}
+                                    initialZoom={6}
+                                    onSubstationClick={ id => showVoltageLevelDiagram(id) } />
+                        {
+                            voltageLevel &&
+                            <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
+                                <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
+                                                   diagramTitle={useName ? voltageLevel.name : voltageLevelId}
+                                                   svg={svg} />
+                            </div>
+                        }
+                    </div>
+                </Grid>
+            </Grid>
+        );
     }
 };
 
