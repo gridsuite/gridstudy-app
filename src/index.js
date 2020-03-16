@@ -28,10 +28,13 @@ const messages = {
 
 const language = navigator.language.split(/[-_]/)[0];  // language without region code
 
+const base = document.querySelector('base');
+const basename = base && base.href && new URL(base.href).pathname || process.env.PUBLIC_URL && new URL(process.env.PUBLIC_URL).pathname || '/';
+
 ReactDOM.render(
     <IntlProvider locale={language} messages={messages[language]}>
         <Provider store={store}>
-            <BrowserRouter>
+            <BrowserRouter basename={basename}>
                 <App />
             </BrowserRouter>
         </Provider>

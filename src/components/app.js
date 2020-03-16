@@ -53,6 +53,9 @@ const App = () => {
                     <Route exact path="/studies/:studyName">
                         <StudyPane/>
                     </Route>
+                    <Route>
+                        <h1>Error: bad URL; No matched Route.</h1>
+                    </Route>
                 </Switch>
             </React.Fragment>
         </ThemeProvider>
