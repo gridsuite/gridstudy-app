@@ -16,14 +16,20 @@ import {makeStyles} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
+    div: {
+        overflowX: 'auto',
+        overflowY: 'auto'
+    },
     diagram: {
-        width: 800,
-        height: 600,
+        maxWidth: 800,
+        maxHeight: 700,
+        overflowX: 'auto',
+        overflowY: 'auto',
         "& .component-label": {
             fill: theme.palette.text.primary,
             "font-size": 12,
             "font-family": theme.typography.fontFamily
-        }
+        },
     },
     close: {
         padding: 0
@@ -33,13 +39,16 @@ const useStyles = makeStyles(theme => ({
 const SingleLineDiagram = (props) => {
 
     useEffect(() => {
-        var svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
+        let svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
         if (svg) {
-            svg.style.height = "100%";
-            svg.style.width = "100%";
-            var bbox = svg.getBBox();
-            svg.setAttribute("viewBox", 0 + " " + 0 + " " + (bbox.width + 20) + " " + (bbox.height + 20));
-        }
+            let bbox = svg.getBBox();
+            let svgWidth = bbox.width + 20;
+            let svgHeight = bbox.height + 20;
+            svg.setAttribute("width", svgWidth);
+            svg.setAttribute("height", svgHeight);
+            svg.style.width = svgWidth;
+            svg.style.height = svgHeight;
+       }
     }, [props.svg]);
 
     const classes = useStyles();
@@ -60,7 +69,7 @@ const SingleLineDiagram = (props) => {
                     <CloseIcon/>
                 </IconButton>
             </Box>
-            <div id="sld-svg" style={{height : '100%'}} dangerouslySetInnerHTML={{__html:props.svg}}/>
+            <div id="sld-svg" style={{height : '100%'}} className={classes.div} dangerouslySetInnerHTML={{__html:props.svg}}/>
         </Paper>
     );
 };
