@@ -23,27 +23,6 @@ export function selectDarkTheme(dark) {
     return { type: SELECT_DARK_THEME, darkTheme: dark };
 }
 
-export const LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS = 'LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS';
-
-export function loadVoltageLevelDiagramSuccess(id, name, svg) {
-    return {
-        type: LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
-        diagram: {
-            id: id,
-            name : name,
-            svg: svg
-        }
-    };
-}
-
-export const REMOVE_VOLTAGE_LEVEL_DIAGRAM = 'REMOVE_VOLTAGE_LEVEL_DIAGRAM';
-
-export function removeVoltageLevelDiagram() {
-    return {
-        type: REMOVE_VOLTAGE_LEVEL_DIAGRAM
-    };
-}
-
 export const LOAD_STUDIES_SUCCESS = 'LOAD_STUDIES_SUCCESS';
 
 export function loadStudiesSuccess(studies) {
@@ -92,7 +71,7 @@ export function removeSelectedFile() {
     return { type: REMOVE_SELECTED_FILE};
 }
 
-export const USE_NAME = 'VOLTAGE_LEVELS_USE_NAME';
+export const USE_NAME = 'USE_NAME';
 
 export function toggleUseNameState() {
     return { type: USE_NAME };

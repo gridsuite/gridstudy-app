@@ -67,10 +67,6 @@ export default class Network {
     }
 
     getVoltageLevel(id) {
-        const voltageLevel = this.voltageLevelsById.get(id);
-        if (!voltageLevel) {
-            throw new Error(`Voltage level ${id} not found`);
-        }
-        return voltageLevel;
+        return this.voltageLevelsById.get(id);
     }
 }

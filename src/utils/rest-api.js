@@ -21,7 +21,7 @@ export function fetchCases() {
         .then(response => response.json());
 }
 
-export function fetchVoltageLevelDiagram(studyName, voltageLevelId, useName) {
+export function fetchVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName) {
     console.info(`Fetching voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
     const fetchVoltageLevelDiagramUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg?useName=" + useName;
     console.debug(fetchVoltageLevelDiagramUrl);

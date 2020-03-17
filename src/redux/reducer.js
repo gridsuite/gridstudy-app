@@ -8,25 +8,25 @@
 import {createReducer} from "@reduxjs/toolkit";
 
 import {
-    LOAD_NETWORK_SUCCESS,
-    LOAD_GEO_DATA_SUCCESS,
-    LOAD_STUDIES_SUCCESS,
-    LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS,
-    OPEN_STUDY,
     CLOSE_STUDY,
-    REMOVE_VOLTAGE_LEVEL_DIAGRAM,
-    SELECT_DARK_THEME,
     LOAD_CASES_SUCCESS,
-    SELECT_CASE,
+    LOAD_GEO_DATA_SUCCESS,
+    LOAD_NETWORK_SUCCESS,
+    LOAD_STUDIES_SUCCESS,
+    OPEN_STUDY,
     REMOVE_SELECTED_CASE,
-    SELECT_FILE,
     REMOVE_SELECTED_FILE,
+    SELECT_CASE,
+    SELECT_DARK_THEME,
+    SELECT_FILE,
     USE_NAME
 } from "./actions";
 
 const initialState = {
     studies: [],
-    study: null,
+    studyName: null,
+    network: null,
+    geoData: null,
     darkTheme: true,
     cases : [],
     selectedCase : null,
@@ -45,27 +45,21 @@ export const reducer = createReducer(initialState, {
     },
 
     [OPEN_STUDY]: (state, action) => {
-        state.study = { name: action.studyName };
+        state.studyName = action.studyName;
     },
 
-    [CLOSE_STUDY]: (state, action) => {
-        state.study = null;
+    [CLOSE_STUDY]: (state) => {
+        state.studyName = null;
+        state.network = null;
+        state.geoData = null;
     },
 
     [LOAD_NETWORK_SUCCESS]: (state, action) => {
-        state.study.network = action.network;
+        state.network = action.network;
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
-        state.study.geoData = action.geoData;
-    },
-
-    [LOAD_VOLTAGE_LEVEL_DIAGRAM_SUCCESS]: (state, action) => {
-        state.study.diagram = action.diagram;
-    },
-
-    [REMOVE_VOLTAGE_LEVEL_DIAGRAM]: (state, action) => {
-        state.study.diagram = null;
+        state.geoData = action.geoData;
     },
 
     [SELECT_DARK_THEME]: (state, action) => {
