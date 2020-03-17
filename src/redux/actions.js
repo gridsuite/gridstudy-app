@@ -17,7 +17,7 @@ export function loadGeoDataSuccess(geoData) {
     return { type: LOAD_GEO_DATA_SUCCESS, geoData: geoData };
 }
 
-export const SELECT_THEME = 'SELECT_DARK_THEME';
+export const SELECT_THEME = 'SELECT_THEME';
 export const DARK_THEME = 'Dark';
 export const LIGHT_THEME = 'Light';
 

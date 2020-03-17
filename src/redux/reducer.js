@@ -7,7 +7,12 @@
 
 import {createReducer} from "@reduxjs/toolkit";
 
-import {getLocalStorageTheme, getLocalStorageUseName} from "./local-storage";
+import {
+    getLocalStorageTheme,
+    getLocalStorageUseName,
+    saveLocalStorageTheme,
+    saveLocalStorageUseName
+} from "./local-storage";
 
 import {
     CLOSE_STUDY,
@@ -66,6 +71,7 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_THEME]: (state, action) => {
         state.theme = action.theme;
+        saveLocalStorageTheme(state.theme);
     },
 
     [SELECT_CASE]: (state, action) => {
@@ -86,5 +92,6 @@ export const reducer = createReducer(initialState, {
 
     [USE_NAME]: (state, action) => {
         state.useName = !state.useName;
+        saveLocalStorageUseName(state.useName);
     },
 });

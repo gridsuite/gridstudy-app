@@ -11,7 +11,10 @@ import {FormattedMessage} from "react-intl";
 
 import {useDispatch, useSelector} from "react-redux";
 
+import {useHistory} from "react-router-dom";
+
 import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import Divider from "@material-ui/core/Divider";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -23,9 +26,6 @@ import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 
 import {DARK_THEME, LIGHT_THEME, selectTheme, toggleUseNameState} from "../redux/actions";
-import {saveLocalStorageTheme, saveLocalStorageUseName} from "../redux/local-storage";
-import Button from "@material-ui/core/Button";
-import {useHistory} from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -50,13 +50,11 @@ const Parameters = () => {
 
     const handleToggleUseName = () => {
         dispatch(toggleUseNameState());
-        saveLocalStorageUseName(!useName);
     };
 
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
         dispatch(selectTheme(theme));
-        saveLocalStorageTheme(theme);
     };
 
     const handleClose = () => {

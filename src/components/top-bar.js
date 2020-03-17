@@ -36,6 +36,12 @@ const TopBar = (props) => {
 
     const classes = useStyles();
 
+    const onParametersClick = () => {
+      if (props.onParametersClick) {
+          props.onParametersClick();
+      }
+    };
+
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
             <Toolbar>
@@ -44,7 +50,7 @@ const TopBar = (props) => {
                     <FormattedMessage id="appName"/>
                 </Typography>
                 <div className={classes.grow} />
-                <IconButton aria-label="Parameters" color="inherit" onClick={() => props.onParametersClick()}>
+                <IconButton aria-label="Parameters" color="inherit" onClick={onParametersClick}>
                     <SettingsIcon />
                 </IconButton>
             </Toolbar>
