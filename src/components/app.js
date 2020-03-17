@@ -41,10 +41,6 @@ const getMuiTheme = (theme) => {
     }
 };
 
-function showParameters() {
-    history.push("/parameters");
-}
-
 const App = () => {
 
     const theme = useSelector(state => state.theme);
@@ -53,6 +49,10 @@ const App = () => {
 
     function studyClickHandler(studyName) {
         history.push("/studies/" + studyName);
+    }
+
+    function showParameters() {
+        history.push("/parameters");
     }
 
     return (

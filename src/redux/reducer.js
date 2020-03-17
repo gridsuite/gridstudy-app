@@ -19,8 +19,8 @@ import {
     REMOVE_SELECTED_CASE,
     REMOVE_SELECTED_FILE,
     SELECT_CASE,
-    SELECT_THEME,
     SELECT_FILE,
+    SELECT_THEME,
     USE_NAME
 } from "./actions";
 
