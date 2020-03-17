@@ -39,11 +39,11 @@ const useStyles = makeStyles(theme => ({
 const SingleLineDiagram = (props) => {
 
     useEffect(() => {
-        let svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
+        const svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
         if (svg) {
-            let bbox = svg.getBBox();
-            let svgWidth = bbox.width + 20;
-            let svgHeight = bbox.height + 20;
+            const bbox = svg.getBBox();
+            const svgWidth = bbox.width + 20;
+            const svgHeight = bbox.height + 20;
             svg.setAttribute("width", svgWidth);
             svg.setAttribute("height", svgHeight);
             svg.style.width = svgWidth;
