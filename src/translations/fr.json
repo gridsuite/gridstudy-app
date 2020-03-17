@@ -32,5 +32,6 @@
   "studyNotFound": "L'étude ''{studyName}'' n'a pas été trouvée",
 
   "parameters": "Paramètres",
-  "theme": "Thème"
+  "theme": "Thème",
+  "close": "Fermer"
 }
