@@ -46,7 +46,13 @@ export default class GeoData {
             return linePosition.map(c => [c.lon, c.lat]);
         } else {
             const voltageLevel1 = network.getVoltageLevel(line.voltageLevelId1);
+            if (!voltageLevel1) {
+                throw new Error(`Voltage level side 1 '${line.voltageLevelId1}' not found`);
+            }
             const voltageLevel2 = network.getVoltageLevel(line.voltageLevelId2);
+            if (!voltageLevel2) {
+                throw new Error(`Voltage level side 2 '${line.voltageLevelId1}' not found`);
+            }
             const substationPosition1 = this.getSubstationPosition(voltageLevel1.substationId);
             const substationPosition2 = this.getSubstationPosition(voltageLevel2.substationId);
             return [ substationPosition1, substationPosition2 ];

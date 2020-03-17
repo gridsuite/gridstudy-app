@@ -50,7 +50,9 @@ const NetworkExplorer = (props) => {
     };
 
     useEffect(() => {
-        setFilteredVoltageLevels(props.network.getVoltageLevels().sort(voltageLevelComparator))
+        if (props.network) {
+            setFilteredVoltageLevels(props.network.getVoltageLevels().sort(voltageLevelComparator))
+        }
     }, [props.network]);
 
     useEffect(() => {
@@ -63,7 +65,7 @@ const NetworkExplorer = (props) => {
     function onClickHandler(index) {
         if (props.onVoltageLevelClick !== null) {
             const vl = filteredVoltageLevels[index];
-            props.onVoltageLevelClick(vl.id, vl.name);
+            props.onVoltageLevelClick(vl.id);
             setCurrentVoltageLevel(vl);
         }
     }
@@ -108,11 +110,11 @@ const NetworkExplorer = (props) => {
 };
 
 NetworkExplorer.defaultProps = {
-    network: new Network()
+    network: null
 };
 
 NetworkExplorer.propTypes = {
-    network: PropTypes.instanceOf(Network).isRequired,
+    network: PropTypes.instanceOf(Network),
     onVoltageLevelClick: PropTypes.func
 };
 

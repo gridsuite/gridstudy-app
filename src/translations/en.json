@@ -28,6 +28,9 @@
   "studyCreatingError" : "An error occurred while creating the study",
 
   "useName": "Use the name instead of the identifier",
+
+  "studyNotFound": "Study '{studyName}' has not been found"
+
   "parameters": "Parameters",
   "theme": "Theme"
 }
