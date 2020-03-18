@@ -28,7 +28,7 @@ import {
     fetchLines,
     fetchSubstationPositions,
     fetchSubstations,
-    fetchVoltageLevelSingleLineDiagram
+    getVoltageLevelSingleLineDiagram
 } from "../utils/rest-api";
 import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
 import Network from "./network/network";
@@ -78,8 +78,6 @@ const StudyPane = () => {
 
     const [voltageLevelId, setVoltageLevelId] = useState(null);
 
-    const [svg, setSvg] = useState(null);
-
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -109,20 +107,6 @@ const StudyPane = () => {
         const newVoltageLevelId = queryParams["voltageLevelId"];
         setVoltageLevelId(newVoltageLevelId ? newVoltageLevelId : null);
     }, [location.search]);
-
-    // voltage level single line diagram svg loading, called when location search changed (query parameters containing
-    // voltage level id
-    useEffect(() => {
-        if (voltageLevelId) {
-            // load svg
-            fetchVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName)
-                .then(svg => {
-                    setSvg(svg);
-                });
-        } else {
-            setSvg(null);
-        }
-    }, [studyName, voltageLevelId, useName]);
 
     function loadNetwork(studyName) {
         console.info(`Loading network of study '${studyName}'...`);
@@ -198,7 +182,7 @@ const StudyPane = () => {
                             <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    diagramTitle={useName ? voltageLevel.name : voltageLevelId}
-                                                   svg={svg} />
+                                                   svgUrl={voltageLevelId ? getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName) : null} />
                             </div>
                         }
                     </div>
