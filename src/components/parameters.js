@@ -32,7 +32,10 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(2)
     },
     grid: {
-        padding: theme.spacing(2)
+        padding: theme.spacing(2),
+    },
+    controlItem: {
+        justifyContent: 'flex-end'
     }
 }));
 
@@ -75,7 +78,7 @@ const Parameters = () => {
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item container xs={6} className={classes.controlItem}>
                     <Switch
                         checked={useName}
                         onChange={handleToggleUseName}
@@ -96,7 +99,7 @@ const Parameters = () => {
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item container xs={6} className={classes.controlItem}>
                     <RadioGroup row value={theme} onChange={handleChangeTheme}>
                         <FormControlLabel value={DARK_THEME} control={<Radio color="primary"/>} label={DARK_THEME} />
                         <FormControlLabel value={LIGHT_THEME} control={<Radio color="primary"/>} label={LIGHT_THEME} />
