@@ -21,11 +21,14 @@ export function fetchCases() {
         .then(response => response.json());
 }
 
-export function fetchVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName) {
-    console.info(`Fetching voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
-    const fetchVoltageLevelDiagramUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg?useName=" + useName;
-    console.debug(fetchVoltageLevelDiagramUrl);
-    return fetch(fetchVoltageLevelDiagramUrl)
+export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName) {
+    console.info(`Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
+    return process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg?useName=" + useName;
+}
+
+export function fetchSvg(svgUrl) {
+    console.debug(svgUrl);
+    return fetch(svgUrl)
         .then(response => response.text());
 }
 
