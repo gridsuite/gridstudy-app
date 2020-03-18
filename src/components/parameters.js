@@ -68,14 +68,14 @@ const Parameters = () => {
             </Typography>
             <Divider/>
             <Grid container spacing={2} className={classes.grid}>
-                <Grid item xs={3}>
+                <Grid item xs={6}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
                             <FormattedMessage id="useName"/>:
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item xs={9}>
+                <Grid item xs={6}>
                     <Switch
                         checked={useName}
                         onChange={handleToggleUseName}
@@ -89,14 +89,14 @@ const Parameters = () => {
                     <Divider/>
                 </Grid>
 
-                <Grid item xs={3}>
+                <Grid item xs={6}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
                             <FormattedMessage id="theme"/>:
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item xs={9}>
+                <Grid item xs={6}>
                     <RadioGroup row value={theme} onChange={handleChangeTheme}>
                         <FormControlLabel value={DARK_THEME} control={<Radio color="primary"/>} label={DARK_THEME} />
                         <FormControlLabel value={LIGHT_THEME} control={<Radio color="primary"/>} label={LIGHT_THEME} />

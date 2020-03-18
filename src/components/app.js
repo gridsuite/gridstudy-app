@@ -9,7 +9,7 @@ import React from 'react';
 
 import {useSelector} from 'react-redux'
 
-import {Route, Switch, useHistory} from 'react-router-dom';
+import {Route, Switch, useHistory, useLocation} from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
@@ -47,12 +47,19 @@ const App = () => {
 
     const history = useHistory();
 
+    const location = useLocation();
+
     function studyClickHandler(studyName) {
         history.push("/studies/" + studyName);
     }
 
     function showParameters() {
-        history.push("/parameters");
+        if (location.pathname === "/parameters") {
+            // if already at parameters go back to study
+            history.goBack();
+        } else {
+            history.push("/parameters");
+        }
     }
 
     return (
