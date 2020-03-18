@@ -30,6 +30,7 @@
   "useName": "Utiliser le nom à la place de l'identifiant",
 
   "studyNotFound": "L'étude ''{studyName}'' n'a pas été trouvée",
+  "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
 
   "parameters": "Paramètres",
   "theme": "Thème",
