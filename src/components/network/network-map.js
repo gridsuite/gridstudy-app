@@ -86,6 +86,7 @@ const NetworkMap = (props) => {
                             bearing: deck.viewState.bearing
                     };
                     deck.setProps({});
+                    deck._onViewStateChange({viewState: deck.viewState});
                 }
                 setCentered(true);
             }
