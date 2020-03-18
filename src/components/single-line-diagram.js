@@ -17,14 +17,20 @@ import Typography from '@material-ui/core/Typography';
 import { fetchSvg } from "../utils/rest-api";
 
 const useStyles = makeStyles(theme => ({
+    div: {
+        overflowX: 'auto',
+        overflowY: 'auto'
+    },
     diagram: {
-        width: 800,
-        height: 600,
+        maxWidth: 800,
+        maxHeight: 700,
+        overflowX: 'auto',
+        overflowY: 'auto',
         "& .component-label": {
             fill: theme.palette.text.primary,
             "font-size": 12,
             "font-family": theme.typography.fontFamily
-        }
+        },
     },
     close: {
         padding: 0
@@ -47,13 +53,16 @@ const SingleLineDiagram = (props) => {
     }, [props.svgUrl]);
 
     useEffect(() => {
-        var svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
+        const svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
         if (svg) {
-            svg.style.height = "100%";
-            svg.style.width = "100%";
-            var bbox = svg.getBBox();
-            svg.setAttribute("viewBox", 0 + " " + 0 + " " + (bbox.width + 20) + " " + (bbox.height + 20));
-        }
+            const bbox = svg.getBBox();
+            const svgWidth = bbox.width + 20;
+            const svgHeight = bbox.height + 20;
+            svg.setAttribute("width", svgWidth);
+            svg.setAttribute("height", svgHeight);
+            svg.style.width = svgWidth;
+            svg.style.height = svgHeight;
+       }
     }, [svg]);
 
     const classes = useStyles();
@@ -74,7 +83,7 @@ const SingleLineDiagram = (props) => {
                     <CloseIcon/>
                 </IconButton>
             </Box>
-            <div id="sld-svg" style={{height : '100%'}} dangerouslySetInnerHTML={{__html:svg}}/>
+            <div id="sld-svg" style={{height : '100%'}} className={classes.div} dangerouslySetInnerHTML={{__html:svg}}/>
         </Paper>
     );
 };

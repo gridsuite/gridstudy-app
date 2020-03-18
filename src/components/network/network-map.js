@@ -92,10 +92,14 @@ const NetworkMap = (props) => {
     }
 
     function onViewStateChange(info) {
-        if (info.viewState.zoom >= props.labelsZoomThreshold && !labelsVisible) {
-            setLabelsVisible(true);
-        } else if (info.viewState.zoom < props.labelsZoomThreshold && labelsVisible) {
-            setLabelsVisible(false);
+        if (!info.interactionState || // first event of before an animation (e.g. clicking the +/- buttons of the navigation controls, gives the target
+            info.interactionState && !info.interactionState.inTransition // Any event not part of a animation (mouse panning or zooming)
+        ) {
+            if (info.viewState.zoom >= props.labelsZoomThreshold && !labelsVisible) {
+                setLabelsVisible(true);
+            } else if (info.viewState.zoom < props.labelsZoomThreshold && labelsVisible) {
+                setLabelsVisible(false);
+            }
         }
     }
 

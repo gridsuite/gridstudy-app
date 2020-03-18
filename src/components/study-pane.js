@@ -104,7 +104,7 @@ const StudyPane = () => {
     useEffect(() => {
         // parse query parameter
         const queryParams = parse(location.search, { ignoreQueryPrefix: true });
-        const newVoltageLevelId = queryParams["voltageLeveLId"];
+        const newVoltageLevelId = queryParams["voltageLevelId"];
         setVoltageLevelId(newVoltageLevelId ? newVoltageLevelId : null);
     }, [location.search]);
 
@@ -149,7 +149,7 @@ const StudyPane = () => {
     }
 
     function showVoltageLevelDiagram(voltageLevelId) {
-        history.replace("/studies/" + studyName + stringify({ voltageLeveLId: voltageLevelId }, { addQueryPrefix: true }));
+        history.replace("/studies/" + studyName + stringify({ voltageLevelId: voltageLevelId }, { addQueryPrefix: true }));
     }
 
     function closeVoltageLevelDiagram() {
