@@ -17,10 +17,12 @@ export function loadGeoDataSuccess(geoData) {
     return { type: LOAD_GEO_DATA_SUCCESS, geoData: geoData };
 }
 
-export const SELECT_DARK_THEME = 'SELECT_DARK_THEME';
+export const SELECT_THEME = 'SELECT_THEME';
+export const DARK_THEME = 'Dark';
+export const LIGHT_THEME = 'Light';
 
-export function selectDarkTheme(dark) {
-    return { type: SELECT_DARK_THEME, darkTheme: dark };
+export function selectTheme(theme) {
+    return { type: SELECT_THEME, theme: theme };
 }
 
 export const LOAD_STUDIES_SUCCESS = 'LOAD_STUDIES_SUCCESS';

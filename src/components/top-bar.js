@@ -7,27 +7,19 @@
 
 import React from "react";
 
-import {useDispatch, useSelector} from "react-redux";
-
-import {FormattedMessage, useIntl} from "react-intl";
+import {FormattedMessage} from "react-intl";
 
 import AppBar from "@material-ui/core/AppBar";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import IconButton from "@material-ui/core/IconButton";
 import {makeStyles} from "@material-ui/core/styles";
-import Switch from "@material-ui/core/Switch";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import BrightnessLowIcon from "@material-ui/icons/BrightnessLow";
-import BrightnessHighIcon from "@material-ui/icons/BrightnessHigh";
+import SettingsIcon from '@material-ui/icons/Settings';
 
-import {selectDarkTheme, toggleUseNameState} from "../redux/actions";
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles(theme => ({
-    appBar: {
-        zIndex: theme.zIndex.drawer + 1,
-    },
     grow: {
         flexGrow: 1,
     },
@@ -40,27 +32,15 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const TopBar = () => {
-
-    const dispatch = useDispatch();
-
-    const dark = useSelector(state => state.darkTheme);
-
-    const useName = useSelector(state => state.useName);
-
-    const intl = useIntl();
+const TopBar = (props) => {
 
     const classes = useStyles();
 
-    function switchTheme() {
-        dispatch(selectDarkTheme(!dark));
-    }
-
-    const handleToggleUseName = () => {
-        dispatch(toggleUseNameState());
+    const onParametersClick = () => {
+      if (props.onParametersClick) {
+          props.onParametersClick();
+      }
     };
-
-    const useNameLabel = intl.formatMessage({id : 'useName'});
 
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
@@ -70,23 +50,16 @@ const TopBar = () => {
                     <FormattedMessage id="appName"/>
                 </Typography>
                 <div className={classes.grow} />
-                <FormControlLabel
-                    control={
-                        <Switch
-                            checked={useName}
-                            onChange={handleToggleUseName}
-                            value={useName}
-                            color="primary"
-                        />
-                    }
-                    label={useNameLabel}
-                />
-                <IconButton aria-label="Change theme" color="inherit" onClick={() => switchTheme()}>
-                    { dark ? <BrightnessLowIcon /> : <BrightnessHighIcon /> }
+                <IconButton aria-label="Parameters" color="inherit" onClick={onParametersClick}>
+                    <SettingsIcon />
                 </IconButton>
             </Toolbar>
         </AppBar>
     )
+};
+
+TopBar.propTypes = {
+    onParametersClick: PropTypes.func
 };
 
 export default TopBar;

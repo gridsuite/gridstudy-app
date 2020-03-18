@@ -8,6 +8,13 @@
 import {createReducer} from "@reduxjs/toolkit";
 
 import {
+    getLocalStorageTheme,
+    getLocalStorageUseName,
+    saveLocalStorageTheme,
+    saveLocalStorageUseName
+} from "./local-storage";
+
+import {
     CLOSE_STUDY,
     LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
@@ -17,8 +24,8 @@ import {
     REMOVE_SELECTED_CASE,
     REMOVE_SELECTED_FILE,
     SELECT_CASE,
-    SELECT_DARK_THEME,
     SELECT_FILE,
+    SELECT_THEME,
     USE_NAME
 } from "./actions";
 
@@ -27,11 +34,11 @@ const initialState = {
     studyName: null,
     network: null,
     geoData: null,
-    darkTheme: true,
+    theme: getLocalStorageTheme(),
     cases : [],
     selectedCase : null,
     selectedFile : null,
-    useName : true
+    useName : getLocalStorageUseName()
 };
 
 export const reducer = createReducer(initialState, {
@@ -62,8 +69,9 @@ export const reducer = createReducer(initialState, {
         state.geoData = action.geoData;
     },
 
-    [SELECT_DARK_THEME]: (state, action) => {
-        state.darkTheme = action.darkTheme;
+    [SELECT_THEME]: (state, action) => {
+        state.theme = action.theme;
+        saveLocalStorageTheme(state.theme);
     },
 
     [SELECT_CASE]: (state, action) => {
@@ -84,5 +92,6 @@ export const reducer = createReducer(initialState, {
 
     [USE_NAME]: (state, action) => {
         state.useName = !state.useName;
+        saveLocalStorageUseName(state.useName);
     },
 });
