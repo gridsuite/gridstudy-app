@@ -178,11 +178,11 @@ const StudyPane = () => {
                                     initialZoom={6}
                                     onSubstationClick={ id => showVoltageLevelDiagram(id) } />
                         {
-                            voltageLevel &&
+                            voltageLevelId &&
                             <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
-                                                   diagramTitle={useName ? voltageLevel.name : voltageLevelId}
-                                                   svgUrl={voltageLevelId ? getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName) : null} />
+                                                   diagramTitle={useName && voltageLevel ? voltageLevel.name : voltageLevelId}
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName)} />
                             </div>
                         }
                     </div>

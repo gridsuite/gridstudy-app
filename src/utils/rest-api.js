@@ -29,7 +29,10 @@ export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useN
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
     return fetch(svgUrl)
-        .then(response => response.text());
+        .then(response => response.ok ?
+                            response.text() :
+                            response.json().then( error =>
+                                Promise.reject(new Error(error.error))));
 }
 
 export function fetchSubstations(studyName) {
