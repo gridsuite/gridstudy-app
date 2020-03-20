@@ -8,6 +8,9 @@
 import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 
+import {FormattedMessage} from "react-intl";
+
+import Container from "@material-ui/core/Container";
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
@@ -16,14 +19,16 @@ import {makeStyles} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
 import { fetchSvg } from "../utils/rest-api";
 
+const maxWidth = 800;
+const maxHeight = 700;
 const useStyles = makeStyles(theme => ({
     div: {
         overflowX: 'auto',
         overflowY: 'auto'
     },
     diagram: {
-        maxWidth: 800,
-        maxHeight: 700,
+        maxWidth,
+        maxHeight,
         overflowX: 'auto',
         overflowY: 'auto',
         "& .component-label": {
@@ -34,27 +39,49 @@ const useStyles = makeStyles(theme => ({
     },
     close: {
         padding: 0
-    }
+    },
+    error: {
+        maxWidth,
+        maxHeight,
+    },
 }));
+
+const SvgNotFound = (props) => {
+
+    const classes = useStyles();
+    return (
+        <Container className={classes.error}>
+            <Typography variant="h5">
+                <FormattedMessage id="svgNotFound" values={ {"svgUrl": props.svgUrl, "error": props.error.message} }/>
+            </Typography>
+        </Container>
+    );
+};
+
+const nosvg = {svg: null, error: null, svgUrl: null};
 
 const SingleLineDiagram = (props) => {
 
-    const [svg, setSvg] = useState(null);
+    const [svg, setSvg] = useState(nosvg);
 
     useEffect(() => {
-        if (props.svgUrl != null) {
+        if (props.svgUrl) {
             fetchSvg(props.svgUrl)
                 .then(svg => {
-                    setSvg(svg);
+                    setSvg({svg, error:null, svgUrl: props.svgUrl});
+                })
+                .catch(function(error) {
+                    console.error(error.message);
+                    setSvg({svg: null, error, svgUrl: props.svgUrl});
                 });
         } else {
-            setSvg(null);
+            setSvg(nosvg);
         }
     }, [props.svgUrl]);
 
     useEffect(() => {
-        const svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
-        if (svg) {
+        if (svg.svg) {
+            const svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
             const bbox = svg.getBBox();
             const svgWidth = bbox.width + 20;
             const svgHeight = bbox.height + 20;
@@ -62,7 +89,7 @@ const SingleLineDiagram = (props) => {
             svg.setAttribute("height", svgHeight);
             svg.style.width = svgWidth;
             svg.style.height = svgHeight;
-       }
+        }
     }, [svg]);
 
     const classes = useStyles();
@@ -73,17 +100,26 @@ const SingleLineDiagram = (props) => {
         }
     }
 
+    let inner;
+    let finalClasses;
+    if (svg.error) {
+        finalClasses = classes.error
+        inner = <SvgNotFound svgUrl={svg.svgUrl} error={svg.error}/>;
+    } else {
+        finalClasses = classes.diagram
+        inner = <div id="sld-svg" style={{height : '100%'}} className={classes.div} dangerouslySetInnerHTML={{__html:svg.svg}}/>
+    }
     return (
-        <Paper elevation={1} variant='outlined' className={classes.diagram}>
-            <Box display="flex" flexDirection="row">
-                <Box flexGrow={1}>
-                    <Typography>{props.diagramTitle}</Typography>
+        <Paper elevation={1} variant='outlined' className={finalClasses}>
+                <Box display="flex" flexDirection="row">
+                    <Box flexGrow={1}>
+                        <Typography>{props.diagramTitle}</Typography>
+                    </Box>
+                    <IconButton className={classes.close} onClick={() => onClickHandler()}>
+                        <CloseIcon/>
+                    </IconButton>
                 </Box>
-                <IconButton className={classes.close} onClick={() => onClickHandler()}>
-                    <CloseIcon/>
-                </IconButton>
-            </Box>
-            <div id="sld-svg" style={{height : '100%'}} className={classes.div} dangerouslySetInnerHTML={{__html:svg}}/>
+                {inner}
         </Paper>
     );
 };

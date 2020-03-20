@@ -30,6 +30,7 @@
   "useName": "Use the name instead of the identifier",
 
   "studyNotFound": "Study '{studyName}' has not been found",
+  "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
 
   "parameters": "Parameters",
   "theme": "Theme",
