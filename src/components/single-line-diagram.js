@@ -58,7 +58,7 @@ const SvgNotFound = (props) => {
     );
 };
 
-const nosvg = {svg: null, error: null, svgUrl: null};
+const nosvg = {svg: null, metadata: null, error: null, svgUrl: null};
 
 const SingleLineDiagram = (props) => {
 
@@ -67,12 +67,12 @@ const SingleLineDiagram = (props) => {
     useEffect(() => {
         if (props.svgUrl) {
             fetchSvg(props.svgUrl)
-                .then(svg => {
-                    setSvg({svg, error:null, svgUrl: props.svgUrl});
+                .then(data => {
+                    setSvg({svg: data.svg, metadata: data.metadata, error: null, svgUrl: props.svgUrl});
                 })
                 .catch(function(error) {
                     console.error(error.message);
-                    setSvg({svg: null, error, svgUrl: props.svgUrl});
+                    setSvg({svg: null, metadata: null, error, svgUrl: props.svgUrl});
                 });
         } else {
             setSvg(nosvg);
@@ -81,14 +81,23 @@ const SingleLineDiagram = (props) => {
 
     useEffect(() => {
         if (svg.svg) {
-            const svg = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
-            const bbox = svg.getBBox();
+            const svgEl = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
+            const bbox = svgEl.getBBox();
             const svgWidth = bbox.width + 20;
             const svgHeight = bbox.height + 20;
-            svg.setAttribute("width", svgWidth);
-            svg.setAttribute("height", svgHeight);
-            svg.style.width = svgWidth;
-            svg.style.height = svgHeight;
+            svgEl.setAttribute("width", svgWidth);
+            svgEl.setAttribute("height", svgHeight);
+            svgEl.style.width = svgWidth;
+            svgEl.style.height = svgHeight;
+            const elements = svg.metadata.nodes.filter(el => el.nextVId !== null);
+            elements.forEach(el => {
+                const domEl = document.getElementById(el.id);
+                domEl.style.cursor = "pointer";
+                domEl.addEventListener("click", function(e) {
+                    const id = e.target.parentElement.id;
+                    const meta = svg.metadata.nodes.find( other => other.id === id );
+                    props.onNextVoltageLevelClick(meta.nextVId);
+                })});
         }
     }, [svg]);
 
