@@ -181,7 +181,7 @@ const StudyPane = () => {
                             voltageLevelId &&
                             <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
-                                                   onNextVoltageLevelClick={(nextId) => setVoltageLevelId(nextId)}
+                                                   onNextVoltageLevelClick={ id => showVoltageLevelDiagram(id) }
                                                    diagramTitle={useName && voltageLevel ? voltageLevel.name : voltageLevelId}
                                                    svgUrl={getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName)} />
                             </div>
