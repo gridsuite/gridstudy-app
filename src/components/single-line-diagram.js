@@ -19,23 +19,25 @@ import {makeStyles} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
 import { fetchSvg } from "../utils/rest-api";
 
+import { SVG } from "@svgdotjs/svg.js";
+import "@svgdotjs/svg.panzoom.js";
+
 const maxWidth = 800;
 const maxHeight = 700;
+
 const useStyles = makeStyles(theme => ({
     div: {
+        maxWidth,
+        maxHeight,
         overflowX: 'auto',
         overflowY: 'auto'
     },
     diagram: {
-        maxWidth,
-        maxHeight,
-        overflowX: 'auto',
-        overflowY: 'auto',
         "& .component-label": {
             fill: theme.palette.text.primary,
             "font-size": 12,
             "font-family": theme.typography.fontFamily
-        },
+        }
     },
     close: {
         padding: 0
@@ -81,14 +83,19 @@ const SingleLineDiagram = (props) => {
 
     useLayoutEffect(() => {
         if (svg.svg) {
-            const svgEl = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
+            // calculate svg width and height
+            const divElt = document.getElementById("sld-svg");
+            const svgEl = divElt.getElementsByTagName("svg")[0];
             const bbox = svgEl.getBBox();
             const svgWidth = bbox.width + 20;
             const svgHeight = bbox.height + 20;
-            svgEl.setAttribute("width", svgWidth);
-            svgEl.setAttribute("height", svgHeight);
-            svgEl.style.width = svgWidth;
-            svgEl.style.height = svgHeight;
+
+            // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
+            divElt.innerHTML = ""; // clear the previous svg in div element before replacing
+            const draw = SVG().addTo('#sld-svg').size(svgWidth, svgHeight).viewbox(0, 0, svgWidth, svgHeight).panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.2});
+            draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
+
+            // handling the navigation between voltage levels
             const elements = svg.metadata.nodes.filter(el => el.nextVId !== null);
             elements.forEach(el => {
                 const domEl = document.getElementById(el.id);
@@ -103,28 +110,29 @@ const SingleLineDiagram = (props) => {
 
     const classes = useStyles();
 
-    function onClickHandler() {
+    const onCloseHandler = () => {
         if (props.onClose !== null) {
             props.onClose();
         }
-    }
+    };
 
     let inner;
     let finalClasses;
     if (svg.error) {
-        finalClasses = classes.error
+        finalClasses = classes.error;
         inner = <SvgNotFound svgUrl={svg.svgUrl} error={svg.error}/>;
     } else {
-        finalClasses = classes.diagram
+        finalClasses = classes.diagram;
         inner = <div id="sld-svg" style={{height : '100%'}} className={classes.div} dangerouslySetInnerHTML={{__html:svg.svg}}/>
     }
+
     return (
         <Paper elevation={1} variant='outlined' className={finalClasses}>
                 <Box display="flex" flexDirection="row">
                     <Box flexGrow={1}>
                         <Typography>{props.diagramTitle}</Typography>
                     </Box>
-                    <IconButton className={classes.close} onClick={() => onClickHandler()}>
+                    <IconButton className={classes.close} onClick={onCloseHandler}>
                         <CloseIcon/>
                     </IconButton>
                 </Box>
