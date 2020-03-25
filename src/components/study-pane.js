@@ -202,6 +202,7 @@ const StudyPane = () => {
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={6}
                                     filteredNominalVoltages={filteredNominalVoltages}
+                                    centeredSubstationId={voltageLevel && voltageLevel.substationId}
                                     onSubstationClick={showVoltageLevelDiagram} />
                         {
                             voltageLevelId &&
