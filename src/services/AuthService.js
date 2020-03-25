@@ -4,7 +4,6 @@ export class AuthService {
   userManager;
 
   constructor() {
-    console.log("hello");
     const settings = {
       authority: process.env.REACT_APP_STS_AUTHORITY,
       client_id: process.env.REACT_APP_CLIENT_ID,
