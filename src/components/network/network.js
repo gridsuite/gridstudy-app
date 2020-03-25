@@ -31,6 +31,8 @@ export default class Network {
 
     voltageLevelsById = new Map();
 
+    linesByNominalVoltage = new Map();
+
     setSubstations(substations) {
         this.substations = substations;
 
@@ -60,6 +62,17 @@ export default class Network {
 
     setLines(lines) {
         this.lines = lines;
+        this.lines.forEach(line => {
+            const vl = this.getVoltageLevel(line.voltageLevelId1) || this.getVoltageLevel(line.voltageLevelId2);
+            if (vl) {
+                let list = this.linesByNominalVoltage.get(vl.nominalVoltage);
+                if (!list) {
+                    list = [];
+                    this.linesByNominalVoltage.set(vl.nominalVoltage, list);
+                }
+                list.push(line);
+            }
+        })
     }
 
     getVoltageLevels() {

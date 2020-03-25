@@ -21,6 +21,8 @@ import {useSelector} from "react-redux";
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug'; // eslint-disable-line
 
 const SUBSTATIONS_LAYER_PREFIX = "substationsLayer";
+const SUBSTATIONS_LABELS_LAYER_PREFIX = "substationsLabelsLayer";
+const SUBSTATIONS_LINES_LAYER_PREFIX = "substationsLinesLayer";
 
 const SUBSTATION_RADIUS = 500;
 
@@ -127,13 +129,14 @@ const NetworkMap = (props) => {
     let layers = [];
 
     if (props.network !== null && props.geoData !== null) {
-        // create one substation layer per nominal voltage, starting from higher to lower nominal voltage
+        // substations : create one layer per nominal voltage, starting from higher to lower nominal voltage
         Array.from(props.network.voltageLevelsByNominalVoltage.entries())
             .map(e => { return { nominalVoltage: e[0], voltageLevels: e[1] };})
             .sort((a, b) => b.nominalVoltage - a.nominalVoltage)
             .forEach(e => {
                 const color = getNominalVoltageColor(e.nominalVoltage);
 
+                // substations
                 const substationsLayer = new ScatterplotLayer({
                     id: SUBSTATIONS_LAYER_PREFIX + e.nominalVoltage,
                     data: e.voltageLevels,
@@ -141,17 +144,28 @@ const NetworkMap = (props) => {
                     getPosition: voltageLevel => props.geoData.getSubstationPosition(voltageLevel.substationId),
                     getFillColor: color,
                     getRadius: voltageLevel => getVoltageLevelRadius(SUBSTATION_RADIUS, voltageLevel),
-                    pickable: true
+                    pickable: true,
+                    visible: props.filteredVoltageLevels.includes(e.nominalVoltage)
                 });
                 layers.push(substationsLayer);
             });
+
+        // substations labels : create one layer
+        // First, we construct the substations where there is at least one voltage level with a nominal voltage
+        // present in the filteredVoltageLevels property, in order to handle correctly the substations labels visibility
+        let substationsLabelsVisible = [];
+        props.network.substations.forEach(substation => {
+            if (substation.voltageLevels.find(v => props.filteredVoltageLevels.includes(v.nominalVoltage)) !== undefined) {
+                substationsLabelsVisible.push(substation);
+            }
+        });
 
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
 
         const substationLabelsLayer = new TextLayer({
-            id: 'labels',
-            data: props.network.substations,
+            id: SUBSTATIONS_LABELS_LAYER_PREFIX,
+            data: substationsLabelsVisible,
             pickable: true,
             getPosition: substation => props.geoData.getSubstationPosition(substation.id),
             getText: substation => useName ? substation.name : substation.id,
@@ -162,31 +176,40 @@ const NetworkMap = (props) => {
             getAlignmentBaseline: 'center',
             getPixelOffset: [20, 0],
             visible: labelsVisible,
-            updateTriggers : {
-                getText : useName
+            updateTriggers: {
+                getText: useName
             }
         });
         layers.push(substationLabelsLayer);
 
-        const lineLayer = new PathLayer({
-            id: 'lines',
-            data: props.network.lines,
-            pickable: true,
-            widthScale: 20,
-            widthMinPixels: 1,
-            widthMaxPixels: 2,
-            getPath: line => props.geoData.getLinePositions(props.network, line),
-            getColor: line => getNominalVoltageColor(props.network.voltageLevelsById.get(line.voltageLevelId1).nominalVoltage),
-            getWidth: 2,
-            onHover: ({object, x, y}) => {
-                setTooltip({
-                    message: object ? (useName? object.name : object.id) : null,
-                    pointerX: x,
-                    pointerY: y
+        // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
+        Array.from(props.network.linesByNominalVoltage.entries())
+            .map(e => { return { nominalVoltage: e[0], lines: e[1] };})
+            .sort((a, b) => b.nominalVoltage - a.nominalVoltage)
+            .forEach(e => {
+                const color = getNominalVoltageColor(e.nominalVoltage);
+
+                const lineLayer = new PathLayer({
+                    id: SUBSTATIONS_LINES_LAYER_PREFIX + e.nominalVoltage,
+                    data: e.lines,
+                    pickable: true,
+                    widthScale: 20,
+                    widthMinPixels: 1,
+                    widthMaxPixels: 2,
+                    getPath: line => props.geoData.getLinePositions(props.network, line),
+                    getColor: color,
+                    getWidth: 2,
+                    onHover: ({object, x, y}) => {
+                        setTooltip({
+                            message: object ? (useName ? object.name : object.id) : null,
+                            pointerX: x,
+                            pointerY: y
+                        });
+                    },
+                    visible: props.filteredVoltageLevels.includes(e.nominalVoltage)
                 });
-            }
-        });
-        layers.push(lineLayer);
+                layers.push(lineLayer);
+            });
     }
 
     const initialViewState = {
@@ -230,6 +253,7 @@ NetworkMap.defaultProps = {
     geoData: null,
     labelsZoomThreshold: 7,
     initialZoom: 5,
+    filteredVoltageLevels: null,
     initialPosition: [0, 0]
 };
 
@@ -238,6 +262,7 @@ NetworkMap.propTypes = {
     geoData: PropTypes.instanceOf(GeoData),
     labelsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
+    filteredVoltageLevels: PropTypes.instanceOf(Array),
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func
 };
