@@ -25,8 +25,6 @@ import { withStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
-
-
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
 
@@ -46,21 +44,20 @@ const useStyles = makeStyles(theme => ({
 const StyledMenu = withStyles({
     paper: {
         border: '1px solid #d3d4d5',
-    },
-})(props => (
-    <Menu
-        elevation={0}
-        getContentAnchorEl={null}
-        anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-        }}
-        transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-        }}
-        {...props}
-    />
+    },})(props => (
+        <Menu
+            elevation={0}
+            getContentAnchorEl={null}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+            }}
+            {...props}
+        />
 ));
 
 const StyledMenuItem = withStyles(theme => ({

@@ -77,13 +77,12 @@ const App = () => {
     function  getUser() {
         authService.getUser().then(user => {
             if (user) {
-                console.log('User has been successfully loaded from store.');
+                console.debug('User has been successfully loaded from store.');
             } else {
-                console.log('You are not logged in.');
+                console.debug('You are not logged in.');
                 login();
             }
             setUser(user);
-            console.log(user);
         });
     }
 
