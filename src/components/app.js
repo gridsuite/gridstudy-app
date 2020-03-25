@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import {useSelector} from 'react-redux'
 
@@ -18,6 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
+import { AuthService } from '../services/AuthService';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -42,12 +43,19 @@ const getMuiTheme = (theme) => {
 };
 
 const App = () => {
+    const  authService = new AuthService();
 
     const theme = useSelector(state => state.theme);
+
+    const [user, setUser] = React.useState(null);
 
     const history = useHistory();
 
     const location = useLocation();
+
+    useEffect(() => {
+        getUser();
+    }, []);
 
     function studyClickHandler(studyName) {
         history.push("/studies/" + studyName);
@@ -62,11 +70,44 @@ const App = () => {
         }
     }
 
+    function login() {
+        authService.login();
+    }
+
+    function  getUser() {
+        authService.getUser().then(user => {
+            if (user) {
+                console.log('User has been successfully loaded from store.');
+            } else {
+                console.log('You are not logged in.');
+                login();
+            }
+            setUser(user);
+            console.log(user);
+        });
+    }
+
+    function  renewToken()  {
+        authService
+            .renewToken()
+            .then(user => {
+                console.debug('Token has been sucessfully renewed. :-)');
+                this.getUser();
+            })
+            .catch(error => {
+                console.debug(error);
+            });
+    }
+
+    function  logout() {
+        authService.logout();
+    }
+
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={ () => showParameters() }/>
+                <TopBar name={user !== null ? user.profile.name :""} onParametersClick={ () => showParameters() } onLogoutClick={() => logout()}/>
                 <Switch>
                     <Route exact path="/">
                         <StudyManager onStudyClick={ name => studyClickHandler(name) }/>
