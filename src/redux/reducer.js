@@ -26,7 +26,8 @@ import {
     SELECT_CASE,
     SELECT_FILE,
     SELECT_THEME,
-    USE_NAME
+    USE_NAME,
+    USER
 } from "./actions";
 
 const initialState = {
@@ -38,7 +39,8 @@ const initialState = {
     cases : [],
     selectedCase : null,
     selectedFile : null,
-    useName : getLocalStorageUseName()
+    useName : getLocalStorageUseName(),
+    user : null,
 };
 
 export const reducer = createReducer(initialState, {
@@ -93,5 +95,9 @@ export const reducer = createReducer(initialState, {
     [USE_NAME]: (state, action) => {
         state.useName = !state.useName;
         saveLocalStorageUseName(state.useName);
+    },
+
+    [USER]: (state, action) => {
+        state.user = action.user;
     },
 });

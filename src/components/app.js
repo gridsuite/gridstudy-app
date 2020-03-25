@@ -19,6 +19,8 @@ import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
 import { AuthService } from '../services/AuthService';
+import { UserManager } from 'oidc-client';
+
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -42,20 +44,61 @@ const getMuiTheme = (theme) => {
     }
 };
 
+const SignInCallback = () => {
+
+    function handleCallback() {
+        console.debug("handleCallback");
+        new UserManager({
+            response_mode: "fragment",
+        }).signinRedirectCallback().then(function () {
+            window.location = "/";
+        }).catch(function (e) {
+            console.error(e);
+        });
+    }
+
+    useEffect(() => {
+        handleCallback();
+    }, []);
+
+    return (
+        <h1>Authentication callback processing...</h1>
+    )
+};
+
+const SilentRenew = () => {
+
+    function handleCallback() {
+        console.debug("SilentRenew");
+        new UserManager({
+            response_mode: "fragment",
+        }).signinSilentCallback().then(function () {
+            window.location = "/";
+        }).catch(function (e) {
+            console.error(e);
+        });
+    }
+
+    useEffect(() => {
+        handleCallback();
+    }, []);
+
+    return (
+        <h1>Silent callback processing...</h1>
+    )
+};
+
 const App = () => {
     const  authService = new AuthService();
 
     const theme = useSelector(state => state.theme);
 
     const [user, setUser] = React.useState(null);
+    const [logOut, setLogOut] = React.useState(false);
 
     const history = useHistory();
 
     const location = useLocation();
-
-    useEffect(() => {
-        getUser();
-    }, []);
 
     function studyClickHandler(studyName) {
         history.push("/studies/" + studyName);
@@ -70,52 +113,30 @@ const App = () => {
         }
     }
 
-    function login() {
-        authService.login();
-    }
-
-    function  getUser() {
-        authService.getUser().then(user => {
-            if (user) {
-                console.debug('User has been successfully loaded from store.');
-            } else {
-                console.debug('You are not logged in.');
-                login();
-            }
-            setUser(user);
-        });
-    }
-
-    function  renewToken()  {
-        authService
-            .renewToken()
-            .then(user => {
-                console.debug('Token has been sucessfully renewed. :-)');
-                this.getUser();
-            })
-            .catch(error => {
-                console.debug(error);
-            });
-    }
-
     function  logout() {
-        authService.logout();
+        setLogOut(true);
     }
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar name={user !== null ? user.profile.name :""} onParametersClick={ () => showParameters() } onLogoutClick={() => logout()}/>
+                <TopBar onParametersClick={ () => showParameters() } onLogoutClick={() => logout()}/>
                 <Switch>
                     <Route exact path="/">
-                        <StudyManager onStudyClick={ name => studyClickHandler(name) }/>
+                        <StudyManager logout={logOut} onStudyClick={ name => studyClickHandler(name) }/>
                     </Route>
                     <Route exact path="/studies/:studyName">
                         <StudyPane/>
                     </Route>
                     <Route exact path="/parameters">
                         <Parameters/>
+                    </Route>
+                    <Route exact path="/sign-in-callback">
+                        <SignInCallback/>
+                    </Route>
+                    <Route exact path="/silent-renew">
+                        <SilentRenew/>
                     </Route>
                     <Route>
                         <h1>Error: bad URL; No matched Route.</h1>

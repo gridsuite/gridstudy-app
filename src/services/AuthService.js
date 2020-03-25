@@ -7,8 +7,8 @@ export class AuthService {
     const settings = {
       authority: process.env.REACT_APP_STS_AUTHORITY,
       client_id: process.env.REACT_APP_CLIENT_ID,
-      redirect_uri: `${process.env.REACT_APP_CLIENT_ROOT}signin-callback.html`,
-      silent_redirect_uri: `${process.env.REACT_APP_CLIENT_ROOT}silent-renew.html`,
+      redirect_uri: `${process.env.REACT_APP_CLIENT_ROOT}sign-in-callback`,
+      silent_redirect_uri: `${process.env.REACT_APP_CLIENT_ROOT}silent-renew`,
       // tslint:disable-next-line:object-literal-sort-keys
       post_logout_redirect_uri: `${process.env.REACT_APP_CLIENT_ROOT}`,
       response_mode : 'fragment',

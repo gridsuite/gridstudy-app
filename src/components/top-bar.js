@@ -27,6 +27,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
+import {useSelector} from "react-redux";
 
 const useStyles = makeStyles(theme => ({
     grow: {
@@ -73,10 +74,11 @@ const StyledMenuItem = withStyles(theme => ({
 
 const TopBar = (props) => {
 
+    const user = useSelector(state => state.user);
+
     const classes = useStyles();
 
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
 
     const handleClick = event => {
         setAnchorEl(event.currentTarget);
@@ -100,7 +102,7 @@ const TopBar = (props) => {
                     <FormattedMessage id="appName"/>
                 </Typography>
                 <div className={classes.grow} />
-                <h3>{props.name}</h3>
+                <h3>{user !== null ? user.profile.name : ""}</h3>
 
                 <div>
                     <Button

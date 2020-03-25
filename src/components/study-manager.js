@@ -31,9 +31,10 @@ import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
 import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 
-import {loadStudiesSuccess} from '../redux/actions';
+import {loadStudiesSuccess, setLoggedUser} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import CreateStudyForm from "./create-study-form";
+import {AuthService} from "../services/AuthService";
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -165,16 +166,62 @@ const StudyCard = (props) => {
 };
 
 const StudyManager = (props) => {
+    const  authService = new AuthService();
+
+    const [user, setUser] = React.useState(null);
 
     const dispatch = useDispatch();
 
+    function login() {
+        authService.login();
+    }
+
+    function  getUser() {
+        authService.getUser().then(user => {
+            if (user) {
+                dispatch(setLoggedUser(user));
+                console.debug('User has been successfully loaded from store.');
+            } else {
+                console.debug('You are not logged in.');
+                login();
+            }
+            setUser(user);
+        });
+    }
+
+    function  renewToken()  {
+        authService
+            .renewToken()
+            .then(user => {
+                console.debug('Token has been sucessfully renewed. :-)');
+                getUser();
+            })
+            .catch(error => {
+                console.debug(error);
+            });
+    }
+
+    function  logout() {
+        authService.logout();
+    }
+
     useEffect(() => {
+        getUser();
         fetchStudies()
             .then(studies => {
                 dispatch(loadStudiesSuccess(studies));
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (props.logout === true) {
+            console.debug("logout");
+            dispatch(setLoggedUser(null));
+            logout();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.logout]);
 
     const studies = useSelector(state => state.studies);
 
