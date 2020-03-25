@@ -22,7 +22,6 @@
     "react-scripts": "3.3.0",
     "react-window": "^1.8.5",
     "redux": "^4.0.5",
-    "toastr": "^2.1.4",
     "typeface-roboto": "0.0.75"
   },
   "scripts": {
