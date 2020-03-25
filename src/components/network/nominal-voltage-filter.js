@@ -20,6 +20,7 @@ import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles(theme => ({
     nominalVoltageZone: {
+        minWidth: 90,
         maxHeight : 300,
         overflowY : 'auto',
     },
