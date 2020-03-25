@@ -8,6 +8,7 @@
 import React from "react";
 
 import {FormattedMessage} from "react-intl";
+import {useHistory} from 'react-router-dom';
 
 import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
@@ -36,16 +37,22 @@ const TopBar = (props) => {
 
     const classes = useStyles();
 
+    const history = useHistory();
+
     const onParametersClick = () => {
       if (props.onParametersClick) {
           props.onParametersClick();
       }
     };
 
+    const onLogoClick = () => {
+        history.replace("/");
+    }
+
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
             <Toolbar>
-                <PowsyblLogo className={classes.logo}/>
+                <PowsyblLogo className={classes.logo} onClick={onLogoClick}/>
                 <Typography variant="h6" className={classes.title}>
                     <FormattedMessage id="appName"/>
                 </Typography>
