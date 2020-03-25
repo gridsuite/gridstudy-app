@@ -53,10 +53,16 @@ export const reducer = createReducer(initialState, {
 
     [OPEN_STUDY]: (state, action) => {
         state.studyName = action.studyName;
+        state.description = action.description;
+        state.caseFormat = action.caseFormat;
+        state.caseDate = action.caseDate;
     },
 
     [CLOSE_STUDY]: (state) => {
         state.studyName = null;
+        state.description = null;
+        state.caseFormat = null;
+        state.caseDate = null;
         state.network = null;
         state.geoData = null;
     },
