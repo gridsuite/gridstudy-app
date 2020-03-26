@@ -14,8 +14,6 @@
   "create" : "CREATE",
   "delete" : "Delete",
   "filter" : "Filter",
-  "export" : "Export",
-  "move" : "Move",
 
   "deleteStudy" : "Delete Study",
   "deleteStudyMsg" : "Are you sure you want to delete the study?",

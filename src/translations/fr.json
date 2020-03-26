@@ -14,8 +14,6 @@
   "create" : "CRÉER",
   "delete" : "Supprimer",
   "filter" : "Filtre",
-  "export" : "Exporter",
-  "move" : "Déplacer",
 
   "deleteStudy" : "Supprimer l'étude",
   "deleteStudyMsg" : "Etes vous sur de vouloir supprimer l'étude?",

@@ -45,8 +45,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DeleteIcon from '@material-ui/icons/Delete';
-import ExportIcon from '@material-ui/icons/ImportExport';
-import MoveIcon from '@material-ui/icons/TrendingFlat';
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -75,6 +73,9 @@ const useStyles = makeStyles(theme => ({
     },
     expandOpen: {
         transform: 'rotate(180deg)',
+    },
+    actions: {
+        padding: theme.spacing(0.5),
     }
 }));
 
@@ -128,13 +129,13 @@ const StudyCard = ({study, onClick}) => {
         setAnchorEl(null);
     };
 
-    const handleDeleteStudy = (e) => {
+    const handleDeleteStudy = () => {
         setAnchorEl(null);
         setOpen(true);
     };
 
     const handleDeleteStudyConfirmed = () => {
-        deleteStudy(study.studyName).then(result => {
+        deleteStudy(study.studyName).then(() => {
             fetchStudies().then(studies => {
                 dispatch(loadStudiesSuccess(studies));
             });
@@ -157,7 +158,7 @@ const StudyCard = ({study, onClick}) => {
 
     return (
         <div>
-            <Card onContextMenu={handleClick} style={{ cursor: 'context-menu', minHeight: '19vh' }} className={classes.root}>
+            <Card className={classes.root}>
                 <CardActionArea onClick={() => onClick()} className={classes.card}>
                     <CardHeader
                         avatar={
@@ -175,7 +176,7 @@ const StudyCard = ({study, onClick}) => {
                         }
                     />
                 </CardActionArea>
-                <CardActions disableSpacing>
+                <CardActions className={classes.actions}>
                     <IconButton
                         className={clsx(classes.expand, {
                             [classes.expandOpen]: expanded,
@@ -183,7 +184,6 @@ const StudyCard = ({study, onClick}) => {
                         onClick={handleExpandClick}
                         aria-expanded={expanded}
                         aria-label="show more"
-                        disabled={!study.description}
                     >
                         <ExpandMoreIcon />
                     </IconButton>
@@ -202,18 +202,6 @@ const StudyCard = ({study, onClick}) => {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
-                        <MenuItem>
-                            <ListItemIcon>
-                                <ExportIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText primary={<FormattedMessage id="export"/>} />
-                        </MenuItem>
-                        <MenuItem>
-                            <ListItemIcon>
-                                <MoveIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText primary={<FormattedMessage id="move"/>} />
-                        </MenuItem>
                         <MenuItem onClick={handleDeleteStudy}>
                             <ListItemIcon>
                                 <DeleteIcon fontSize="small" />
@@ -224,11 +212,17 @@ const StudyCard = ({study, onClick}) => {
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
-                        <Typography variant="overline" fontWeight="fontWeightBold">
+                        <Typography variant="button" >
+                            <FormattedMessage id="studyName" />
+                        </Typography>
+                        <Typography variant="body2" paragraph>
+                            {study.studyName}
+                        </Typography>
+                        <Typography variant="button">
                             <FormattedMessage id="studyDescription" />
                         </Typography>
-                        <Typography variant="subtitle2">
-                            {study.description}
+                        <Typography variant="body2" paragraph>
+                            {study.description?study.description:"—"}
                         </Typography>
                     </CardContent>
                 </Collapse>
