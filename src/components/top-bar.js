@@ -27,13 +27,10 @@ const useStyles = makeStyles(theme => ({
     logo: {
         width: 48,
         height: 48,
-        float: 'left'
+        cursor: 'pointer'
     },
     title: {
         marginLeft: 18,
-        float: 'right'
-    },
-    logoZone: {
         cursor: 'pointer'
     }
 }));
@@ -57,15 +54,13 @@ const TopBar = (props) => {
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
             <Toolbar>
-                <div className={classes.logoZone} onClick={onLogoClick}>
-                    <PowsyblLogo className={classes.logo}/>
-                    <Typography variant="h6" className={classes.title}>
-                        <FormattedMessage id="appName"/>
-                    </Typography>
-                </div>
-                <div className={classes.grow} />
+                <PowsyblLogo className={classes.logo} onClick={onLogoClick}/>
+                <Typography variant="h6" className={classes.title} onClick={onLogoClick}>
+                    <FormattedMessage id="appName"/>
+                </Typography>
+                <div className={classes.grow}/>
                 <IconButton aria-label="Parameters" color="inherit" onClick={onParametersClick}>
-                    <SettingsIcon />
+                    <SettingsIcon/>
                 </IconButton>
             </Toolbar>
         </AppBar>
