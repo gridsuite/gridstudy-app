@@ -22,7 +22,8 @@
     "react-scripts": "3.3.0",
     "react-window": "^1.8.5",
     "redux": "^4.0.5",
-    "typeface-roboto": "0.0.75"
+    "typeface-roboto": "0.0.75",
+    "clsx": "latest"
   },
   "scripts": {
     "start": "react-scripts start",
