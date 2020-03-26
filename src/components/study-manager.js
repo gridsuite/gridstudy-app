@@ -168,8 +168,6 @@ const StudyCard = (props) => {
 const StudyManager = (props) => {
     const  authService = new AuthService();
 
-    const [user, setUser] = React.useState(null);
-
     const dispatch = useDispatch();
 
     function login() {
@@ -183,9 +181,13 @@ const StudyManager = (props) => {
                 console.debug('User has been successfully loaded from store.');
             } else {
                 console.debug('You are not logged in.');
-                login();
+                if (process.env.REACT_APP_USE_AUTHENTICATION === "false") {
+                    console.debug("authentication not required");
+                } else  {
+                    console.debug("authentication required");
+                    login();
+                }
             }
-            setUser(user);
         });
     }
 
