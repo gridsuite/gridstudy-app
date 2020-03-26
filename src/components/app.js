@@ -18,9 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
-import { AuthService } from '../services/AuthService';
-import { UserManager } from 'oidc-client';
-
+import { UserManagerHelper } from '../authentication/UserManagerHelper';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -45,13 +43,12 @@ const getMuiTheme = (theme) => {
 };
 
 const SignInCallback = () => {
+    const history = useHistory();
 
     function handleCallback() {
-        console.debug("handleCallback");
-        new UserManager({
-            response_mode: "fragment",
-        }).signinRedirectCallback().then(function () {
-            window.location = "/";
+        new UserManagerHelper().getUserManagerInstance()
+            .signinRedirectCallback().then(function () {
+            history.push("/");
         }).catch(function (e) {
             console.error(e);
         });
@@ -67,12 +64,9 @@ const SignInCallback = () => {
 };
 
 const SilentRenew = () => {
-
     function handleCallback() {
         console.debug("SilentRenew");
-        new UserManager({
-            response_mode: "fragment",
-        }).signinSilentCallback().then(function () {
+        new UserManagerHelper().getUserManagerInstance().signinSilentCallback().then(function () {
             window.location = "/";
         }).catch(function (e) {
             console.error(e);
@@ -89,11 +83,8 @@ const SilentRenew = () => {
 };
 
 const App = () => {
-    const  authService = new AuthService();
-
     const theme = useSelector(state => state.theme);
 
-    const [user, setUser] = React.useState(null);
     const [logOut, setLogOut] = React.useState(false);
 
     const history = useHistory();

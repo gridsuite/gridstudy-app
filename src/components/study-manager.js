@@ -34,7 +34,7 @@ import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 import {loadStudiesSuccess, setLoggedUser} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import CreateStudyForm from "./create-study-form";
-import {AuthService} from "../services/AuthService";
+import {UserManagerHelper} from "../authentication/UserManagerHelper";
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -166,34 +166,30 @@ const StudyCard = (props) => {
 };
 
 const StudyManager = (props) => {
-    const  authService = new AuthService();
+    const  userManagerHelper = new UserManagerHelper();
 
     const dispatch = useDispatch();
 
     function login() {
-        authService.login();
+        userManagerHelper.getUserManagerInstance().signinRedirect();
     }
 
     function  getUser() {
-        authService.getUser().then(user => {
+        userManagerHelper.getUserManagerInstance().getUser().then(user => {
             if (user) {
                 dispatch(setLoggedUser(user));
                 console.debug('User has been successfully loaded from store.');
             } else {
                 console.debug('You are not logged in.');
-                if (process.env.REACT_APP_USE_AUTHENTICATION === "false") {
-                    console.debug("authentication not required");
-                } else  {
-                    console.debug("authentication required");
-                    login();
-                }
+                login()
             }
         });
     }
 
     function  renewToken()  {
-        authService
-            .renewToken()
+        userManagerHelper
+            .getUserManagerInstance()
+            .signinSilent()
             .then(user => {
                 console.debug('Token has been sucessfully renewed. :-)');
                 getUser();
@@ -204,7 +200,7 @@ const StudyManager = (props) => {
     }
 
     function  logout() {
-        authService.logout();
+        userManagerHelper.getUserManagerInstance().signoutRedirect();
     }
 
     useEffect(() => {

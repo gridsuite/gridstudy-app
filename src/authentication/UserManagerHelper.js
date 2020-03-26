@@ -1,7 +1,12 @@
 import { Log, UserManager } from 'oidc-client';
+import {UserManagerMock} from "./UserManagerMock";
 
-export class AuthService {
+export class UserManagerHelper {
   userManager;
+
+  getUserManagerInstance() {
+    return this.userManager;
+  }
 
   constructor() {
     const settings = {
@@ -15,24 +20,12 @@ export class AuthService {
       response_type: 'id_token token',
       scope: process.env.REACT_APP_SCOPE,
     };
-    this.userManager = new UserManager(settings);
+    if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
+      this.userManager = new UserManager(settings);
+    } else {
+      this.userManager = new UserManagerMock(settings);
+    }
     Log.logger = console;
     Log.level = Log.INFO;
-  }
-
-  getUser() {
-    return this.userManager.getUser();
-  }
-
-  login() {
-    return this.userManager.signinRedirect();
-  }
-
-  renewToken() {
-    return this.userManager.signinSilent();
-  }
-
-  logout() {
-    return this.userManager.signoutRedirect();
   }
 }
