@@ -22,7 +22,8 @@
     "react-window": "^1.8.5",
     "redux": "^4.0.5",
     "typeface-roboto": "0.0.75",
-    "clsx": "latest"
+    "prop-types": "15.7.2",
+    "react-router": "^5.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

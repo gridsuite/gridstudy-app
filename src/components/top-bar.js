@@ -8,6 +8,7 @@
 import React from "react";
 
 import {FormattedMessage} from "react-intl";
+import {useHistory} from 'react-router-dom';
 
 import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
@@ -19,16 +20,18 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     grow: {
         flexGrow: 1,
     },
     logo: {
         width: 48,
         height: 48,
+        cursor: 'pointer'
     },
     title: {
-        marginLeft: 18
+        marginLeft: 18,
+        cursor: 'pointer'
     }
 }));
 
@@ -36,22 +39,28 @@ const TopBar = (props) => {
 
     const classes = useStyles();
 
+    const history = useHistory();
+
     const onParametersClick = () => {
       if (props.onParametersClick) {
           props.onParametersClick();
       }
     };
 
+    const onLogoClick = () => {
+        history.replace("/");
+    };
+
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
             <Toolbar>
-                <PowsyblLogo className={classes.logo}/>
-                <Typography variant="h6" className={classes.title}>
+                <PowsyblLogo className={classes.logo} onClick={onLogoClick}/>
+                <Typography variant="h6" className={classes.title} onClick={onLogoClick}>
                     <FormattedMessage id="appName"/>
                 </Typography>
-                <div className={classes.grow} />
+                <div className={classes.grow}/>
                 <IconButton aria-label="Parameters" color="inherit" onClick={onParametersClick}>
-                    <SettingsIcon />
+                    <SettingsIcon/>
                 </IconButton>
             </Toolbar>
         </AppBar>
