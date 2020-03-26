@@ -53,16 +53,10 @@ export const reducer = createReducer(initialState, {
 
     [OPEN_STUDY]: (state, action) => {
         state.studyName = action.studyName;
-        state.description = action.description;
-        state.caseFormat = action.caseFormat;
-        state.caseDate = action.caseDate;
     },
 
     [CLOSE_STUDY]: (state) => {
         state.studyName = null;
-        state.description = null;
-        state.caseFormat = null;
-        state.caseDate = null;
         state.network = null;
         state.geoData = null;
     },
@@ -84,7 +78,7 @@ export const reducer = createReducer(initialState, {
         state.selectedCase = action.selectedCase;
     },
 
-    [REMOVE_SELECTED_CASE]: (state, action) => {
+    [REMOVE_SELECTED_CASE]: (state) => {
         state.selectedCase = null;
     },
 
@@ -92,11 +86,11 @@ export const reducer = createReducer(initialState, {
         state.selectedFile = action.selectedFile;
     },
 
-    [REMOVE_SELECTED_FILE]: (state, action) => {
+    [REMOVE_SELECTED_FILE]: (state) => {
         state.selectedFile = null;
     },
 
-    [USE_NAME]: (state, action) => {
+    [USE_NAME]: (state) => {
         state.useName = !state.useName;
         saveLocalStorageUseName(state.useName);
     },
