@@ -20,7 +20,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     grow: {
         flexGrow: 1,
     },
@@ -49,7 +49,7 @@ const TopBar = (props) => {
 
     const onLogoClick = () => {
         history.replace("/");
-    }
+    };
 
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
