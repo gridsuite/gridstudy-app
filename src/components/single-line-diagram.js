@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useLayoutEffect, useState} from "react";
 import PropTypes from "prop-types";
 
 import {FormattedMessage} from "react-intl";
@@ -79,7 +79,7 @@ const SingleLineDiagram = (props) => {
         }
     }, [props.svgUrl]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         if (svg.svg) {
             const svgEl = document.getElementById("sld-svg").getElementsByTagName("svg")[0];
             const bbox = svgEl.getBBox();
