@@ -6,7 +6,7 @@ export class UserManagerMock {
     }
 
     getUser() {
-        return Promise.resolve(JSON.parse(sessionStorage.getItem("user")));
+        return Promise.resolve(JSON.parse(sessionStorage.getItem("powsybl-study-app-mock-user")));
     }
 
     signinRedirect() {
@@ -19,12 +19,12 @@ export class UserManagerMock {
     }
 
     signoutRedirect() {
-        sessionStorage.setItem("user", null);
+        sessionStorage.setItem("powsybl-study-app-mock-user", null);
         window.location = "/";
         return Promise.resolve(null);
     }
     signinRedirectCallback() {
-        sessionStorage.setItem("user",  JSON.stringify({profile:{name:"John Doe"}}));
+        sessionStorage.setItem("powsybl-study-app-mock-user",  JSON.stringify({profile:{name:"John Doe"}}));
         return Promise.resolve("");
     }
 }

@@ -18,7 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
-import { UserManagerHelper } from '../authentication/UserManagerHelper';
+import { AuthService } from '../authentication/AuthService';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -46,7 +46,7 @@ const SignInCallback = () => {
     const history = useHistory();
 
     function handleCallback() {
-        new UserManagerHelper().getUserManagerInstance()
+        new AuthService().getUserManagerInstance()
             .signinRedirectCallback().then(function () {
             history.push("/");
         }).catch(function (e) {
@@ -63,29 +63,10 @@ const SignInCallback = () => {
     )
 };
 
-const SilentRenew = () => {
-    function handleCallback() {
-        console.debug("SilentRenew");
-        new UserManagerHelper().getUserManagerInstance().signinSilentCallback().then(function () {
-            window.location = "/";
-        }).catch(function (e) {
-            console.error(e);
-        });
-    }
-
-    useEffect(() => {
-        handleCallback();
-    }, []);
-
-    return (
-        <h1>Silent callback processing...</h1>
-    )
-};
-
 const App = () => {
     const theme = useSelector(state => state.theme);
 
-    const [logOut, setLogOut] = React.useState(false);
+    const [loggedOut, setLoggedOut] = React.useState(false);
 
     const history = useHistory();
 
@@ -105,7 +86,7 @@ const App = () => {
     }
 
     function  logout() {
-        setLogOut(true);
+        setLoggedOut(true);
     }
 
     return (
@@ -115,7 +96,7 @@ const App = () => {
                 <TopBar onParametersClick={ () => showParameters() } onLogoutClick={() => logout()}/>
                 <Switch>
                     <Route exact path="/">
-                        <StudyManager logout={logOut} onStudyClick={ name => studyClickHandler(name) }/>
+                        <StudyManager loggedOut={loggedOut} onStudyClick={ name => studyClickHandler(name) }/>
                     </Route>
                     <Route exact path="/studies/:studyName">
                         <StudyPane/>
@@ -125,9 +106,6 @@ const App = () => {
                     </Route>
                     <Route exact path="/sign-in-callback">
                         <SignInCallback/>
-                    </Route>
-                    <Route exact path="/silent-renew">
-                        <SilentRenew/>
                     </Route>
                     <Route>
                         <h1>Error: bad URL; No matched Route.</h1>

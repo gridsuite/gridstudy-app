@@ -35,7 +35,7 @@ import {loadStudiesSuccess, setLoggedUser} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import CreateStudyForm from "./create-study-form";
 
-import {UserManagerHelper} from "../authentication/UserManagerHelper";
+import {AuthService} from "../authentication/AuthService";
 import {CardHeader} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -249,8 +249,8 @@ const StudyCard = ({study, onClick}) => {
     );
 };
 
-const StudyManager = ({onStudyClick}) => {
-    const  userManagerHelper = new UserManagerHelper();
+const StudyManager = ({loggedOut, onStudyClick}) => {
+    const  userManagerHelper = new AuthService();
     const dispatch = useDispatch();
 
     function login() {
@@ -269,19 +269,6 @@ const StudyManager = ({onStudyClick}) => {
         });
     }
 
-    function  renewToken()  {
-        userManagerHelper
-            .getUserManagerInstance()
-            .signinSilent()
-            .then(user => {
-                console.debug('Token has been sucessfully renewed. :-)');
-                getUser();
-            })
-            .catch(error => {
-                console.debug(error);
-            });
-    }
-
     function  logout() {
         userManagerHelper.getUserManagerInstance().signoutRedirect();
     }
@@ -296,13 +283,13 @@ const StudyManager = ({onStudyClick}) => {
     }, []);
 
     useEffect(() => {
-        if (props.logout === true) {
+        if (loggedOut === true) {
             console.debug("logout");
             dispatch(setLoggedUser(null));
             logout();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [props.logout]);
+    }, [loggedOut]);
 
     const studies = useSelector(state => state.studies);
 

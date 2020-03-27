@@ -1,7 +1,7 @@
 import { Log, UserManager } from 'oidc-client';
 import {UserManagerMock} from "./UserManagerMock";
 
-export class UserManagerHelper {
+export class AuthService {
   userManager;
 
   getUserManagerInstance() {
