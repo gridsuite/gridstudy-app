@@ -46,8 +46,7 @@ const SignInCallback = () => {
     const history = useHistory();
 
     function handleCallback() {
-        new AuthService().getUserManagerInstance()
-            .signinRedirectCallback().then(function () {
+        AuthService.getUserManager().signinRedirectCallback().then(function () {
             history.push("/");
         }).catch(function (e) {
             console.error(e);

@@ -250,15 +250,14 @@ const StudyCard = ({study, onClick}) => {
 };
 
 const StudyManager = ({loggedOut, onStudyClick}) => {
-    const  userManagerHelper = new AuthService();
     const dispatch = useDispatch();
 
     function login() {
-        userManagerHelper.getUserManagerInstance().signinRedirect();
+        AuthService.getUserManager().signinRedirect();
     }
 
     function  getUser() {
-        userManagerHelper.getUserManagerInstance().getUser().then(user => {
+        AuthService.getUserManager().getUser().then(user => {
             if (user) {
                 dispatch(setLoggedUser(user));
                 console.debug('User has been successfully loaded from store.');
@@ -270,7 +269,7 @@ const StudyManager = ({loggedOut, onStudyClick}) => {
     }
 
     function  logout() {
-        userManagerHelper.getUserManagerInstance().signoutRedirect();
+        AuthService.getUserManager().signoutRedirect();
     }
 
     useEffect(() => {
