@@ -127,10 +127,14 @@ const App = () => {
                         }
                     </Route>
                     <Route exact path="/studies/:studyName">
-                        <StudyPane/>
+                        {
+                            user !== null ? (<StudyPane/>) : (<Authentication onLoginClick={() => login()}/>)
+                        }
                     </Route>
                     <Route exact path="/parameters">
-                        <Parameters/>
+                        {
+                            user !== null ? (<Parameters/>) : (<Authentication onLoginClick={() => login()}/>)
+                        }
                     </Route>
                     <Route exact path="/sign-in-callback">
                         <SignInCallback getUser={getUser}/>

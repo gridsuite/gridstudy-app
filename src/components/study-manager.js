@@ -251,8 +251,6 @@ const StudyCard = ({study, onClick}) => {
 const StudyManager = ({onStudyClick}) => {
     const dispatch = useDispatch();
 
-    const user = useSelector(state => state.user);
-
     useEffect(() => {
         fetchStudies()
             .then(studies => {
