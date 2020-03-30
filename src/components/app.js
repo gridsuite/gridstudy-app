@@ -65,8 +65,6 @@ const SignInCallback = ({getUser}) => {
 };
 
 const App = () => {
-    console.log(userManager);
-
     const theme = useSelector(state => state.theme);
 
     const user = useSelector(state => state.user);
