@@ -22,6 +22,9 @@ import TextField from '@material-ui/core/TextField';
 import {FixedSizeList as List} from 'react-window';
 
 import Network from "./network";
+import ListItemText from "@material-ui/core/ListItemText";
+import IconButton from "@material-ui/core/IconButton";
+import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import Divider from "@material-ui/core/Divider";
 import {AutoSizer} from "react-virtualized";
 
@@ -34,7 +37,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const NetworkExplorer = ({network, onVoltageLevelClick}) => {
+const NetworkExplorer = ({network, onVoltageLevelDisplayClick, onVoltageLevelFocusClick}) => {
 
     const intl = useIntl();
 
@@ -59,22 +62,33 @@ const NetworkExplorer = ({network, onVoltageLevelClick}) => {
 
     useEffect(() => {
         if (currentVoltageLevel !== null) {
-            onVoltageLevelClick(currentVoltageLevel.id, currentVoltageLevel.name);
+            onVoltageLevelDisplayClick(currentVoltageLevel.id, currentVoltageLevel.name);
+            onVoltageLevelFocusClick(currentVoltageLevel.id, currentVoltageLevel.name);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [useName]);
 
-    function onClickHandler(index) {
-        if (onVoltageLevelClick !== null) {
+    function onDisplayClickHandler(index) {
+        if (onVoltageLevelDisplayClick !== null) {
             const vl = filteredVoltageLevels[index];
-            onVoltageLevelClick(vl.id);
+            onVoltageLevelDisplayClick(vl.id);
             setCurrentVoltageLevel(vl);
         }
     }
 
+    function onFocusClickHandler(index) {
+        if (onVoltageLevelFocusClick !== null) {
+            const vl = filteredVoltageLevels[index];
+            onVoltageLevelFocusClick(vl.id);
+        }
+    }
+
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} onClick={() => onClickHandler(index)}>
-            {useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id}
+        <ListItem button style={style} key={index} >
+            <ListItemText primary={useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id} onClick={() => onDisplayClickHandler(index)} />
+            <IconButton onClick={() => onFocusClickHandler(index)}>
+                <GpsFixedIcon />
+            </IconButton>
         </ListItem>
     );
 

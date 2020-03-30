@@ -79,7 +79,9 @@ const StudyPane = () => {
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
-    const [voltageLevelId, setVoltageLevelId] = useState(null);
+    const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
+
+    const [focusedVoltageLevelId, setFocusedVoltageLevelId] = useState(null);
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
@@ -110,7 +112,7 @@ const StudyPane = () => {
         // parse query parameter
         const queryParams = parse(location.search, { ignoreQueryPrefix: true });
         const newVoltageLevelId = queryParams["voltageLevelId"];
-        setVoltageLevelId(newVoltageLevelId ? newVoltageLevelId : null);
+        setDisplayedVoltageLevelId(newVoltageLevelId ? newVoltageLevelId : null);
     }, [location.search]);
 
     useEffect(() => {
@@ -184,15 +186,21 @@ const StudyPane = () => {
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
     } else {
-        let voltageLevel = null;
-        if (voltageLevelId && network) {
-            voltageLevel = network.getVoltageLevel(voltageLevelId);
+        let displayedVoltageLevel, focusedVoltageLevel = null;
+        if (network) {
+            if (displayedVoltageLevelId) {
+                displayedVoltageLevel = network.getVoltageLevel(displayedVoltageLevelId);
+            }
+            if (focusedVoltageLevelId) {
+                focusedVoltageLevel = network.getVoltageLevel(focusedVoltageLevelId);
+            }
         }
         return (
             <Grid container className={classes.main}>
                 <Grid item xs={12} md={2} key="explorer">
                     <NetworkExplorer network={network}
-                                     onVoltageLevelClick={showVoltageLevelDiagram}/>
+                                     onVoltageLevelDisplayClick={ id => showVoltageLevelDiagram(id) }
+                                     onVoltageLevelFocusClick={ id => setFocusedVoltageLevelId(id)} />
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
@@ -202,15 +210,15 @@ const StudyPane = () => {
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={6}
                                     filteredNominalVoltages={filteredNominalVoltages}
-                                    centeredSubstationId={voltageLevel && voltageLevel.substationId}
+                                    centeredSubstationId={focusedVoltageLevel && focusedVoltageLevel.substationId}
                                     onSubstationClick={showVoltageLevelDiagram} />
                         {
-                            voltageLevelId &&
+                            displayedVoltageLevelId &&
                             <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
-                                                   diagramTitle={useName && voltageLevel ? voltageLevel.name : voltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName)} />
+                                                   diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevel, useName)} />
                             </div>
                         }
                         {
