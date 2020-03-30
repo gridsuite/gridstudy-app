@@ -18,7 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
-import { AuthService } from '../authentication/AuthService';
+import { AuthService } from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({

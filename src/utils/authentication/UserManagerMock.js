@@ -10,7 +10,7 @@ export class UserManagerMock {
     }
 
     signinRedirect() {
-        window.location = "/sign-in-callback";
+        window.location = "./sign-in-callback";
         return Promise.resolve(null);
     }
 
@@ -20,7 +20,7 @@ export class UserManagerMock {
 
     signoutRedirect() {
         sessionStorage.setItem("powsybl-study-app-mock-user", null);
-        window.location = "/";
+        window.location = ".";
         return Promise.resolve(null);
     }
     signinRedirectCallback() {
