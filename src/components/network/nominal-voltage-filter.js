@@ -10,8 +10,6 @@ import PropTypes from "prop-types";
 
 import {makeStyles} from "@material-ui/core/styles";
 
-import Network from "./network";
-
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Checkbox from "@material-ui/core/Checkbox";
@@ -37,18 +35,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const NominalVoltageFilter = (props) => {
+
     const classes = useStyles();
+
     const [checkedNominalVoltages, setCheckedNominalVoltages] = useState([]);
-    const [nominalVoltages, setNominalVoltages] = useState([]);
 
     useEffect(() => {
-        if (props.network) {
-            setNominalVoltages(Array.from(props.network.voltageLevelsByNominalVoltage.keys()).sort((a, b) => b - a));
-        }
-        if (props.filteredVoltageLevels) {
-            setCheckedNominalVoltages(props.filteredVoltageLevels);
-        }
-    }, [props.network, props.filteredVoltageLevels]);
+        setCheckedNominalVoltages(props.filteredNominalVoltages);
+    }, [props.filteredNominalVoltages]);
 
     const handleToggle = value => () => {
         const currentIndex = checkedNominalVoltages.indexOf(value);
@@ -69,7 +63,7 @@ const NominalVoltageFilter = (props) => {
     return (
         <Paper>
             <List className={classes.nominalVoltageZone}> {
-                nominalVoltages.map(value => {
+                props.nominalVoltages.map(value => {
                     return (
                         <ListItem className={classes.nominalVoltageItem}
                             key={value}
@@ -87,15 +81,22 @@ const NominalVoltageFilter = (props) => {
 };
 
 NominalVoltageFilter.defaultProps = {
-    network: null,
-    filteredVoltageLevels: null,
+    nominalVoltages: [],
+    filteredNominalVoltages: [],
     onNominalVoltageFilter: null
 };
 
 NominalVoltageFilter.propTypes = {
-    network: PropTypes.instanceOf(Network),
-    filteredVoltageLevels: PropTypes.instanceOf(Array),
+    nominalVoltages: PropTypes.array,
+    filteredNominalVoltages: PropTypes.array,
     onNominalVoltageFilter: PropTypes.func
 };
 
-export default NominalVoltageFilter;
+function areEqual(prevProps, nextProps) {
+    // dont't check for onNominalVoltageFilter equality as the function will change at every render
+    // of the parent
+    return prevProps.nominalVoltages === nextProps.nominalVoltages
+        && prevProps.filteredNominalVoltages === nextProps.filteredNominalVoltages;
+}
+
+export default React.memo(NominalVoltageFilter, areEqual);

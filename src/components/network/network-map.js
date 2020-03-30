@@ -145,7 +145,7 @@ const NetworkMap = (props) => {
                     getFillColor: color,
                     getRadius: voltageLevel => getVoltageLevelRadius(SUBSTATION_RADIUS, voltageLevel),
                     pickable: true,
-                    visible: props.filteredVoltageLevels.includes(e.nominalVoltage)
+                    visible: props.filteredNominalVoltages.includes(e.nominalVoltage)
                 });
                 layers.push(substationsLayer);
             });
@@ -155,7 +155,7 @@ const NetworkMap = (props) => {
         // present in the filteredVoltageLevels property, in order to handle correctly the substations labels visibility
         let substationsLabelsVisible = [];
         props.network.substations.forEach(substation => {
-            if (substation.voltageLevels.find(v => props.filteredVoltageLevels.includes(v.nominalVoltage)) !== undefined) {
+            if (substation.voltageLevels.find(v => props.filteredNominalVoltages.includes(v.nominalVoltage)) !== undefined) {
                 substationsLabelsVisible.push(substation);
             }
         });
@@ -206,7 +206,7 @@ const NetworkMap = (props) => {
                             pointerY: y
                         });
                     },
-                    visible: props.filteredVoltageLevels.includes(e.nominalVoltage)
+                    visible: props.filteredNominalVoltages.includes(e.nominalVoltage)
                 });
                 layers.push(lineLayer);
             });
@@ -253,7 +253,7 @@ NetworkMap.defaultProps = {
     geoData: null,
     labelsZoomThreshold: 7,
     initialZoom: 5,
-    filteredVoltageLevels: null,
+    filteredNominalVoltages: null,
     initialPosition: [0, 0]
 };
 
@@ -262,9 +262,20 @@ NetworkMap.propTypes = {
     geoData: PropTypes.instanceOf(GeoData),
     labelsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
-    filteredVoltageLevels: PropTypes.instanceOf(Array),
+    filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func
 };
 
-export default NetworkMap;
+function areEqual(prevProps, nextProps) {
+    // dont't check for onSubstationClick equality as the function will change at every render
+    // of the parent
+    return prevProps.network === nextProps.network
+        && prevProps.geoData === nextProps.geoData
+        && prevProps.labelsZoomThreshold === nextProps.labelsZoomThreshold
+        && prevProps.initialZoom === nextProps.initialZoom
+        && prevProps.filteredNominalVoltages === nextProps.filteredNominalVoltages
+        && prevProps.initialPosition === nextProps.initialPosition;
+}
+
+export default React.memo(NetworkMap, areEqual);
