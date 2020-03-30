@@ -30,7 +30,8 @@ const useStyles = makeStyles((theme) => ({
     },
     submit: {
         margin: theme.spacing(3, 0, 2),
-    },
+        borderRadius: '30px'
+        },
     logo: {
         width: 64,
         height: 64,
@@ -66,14 +67,13 @@ const Authentication = (props) => {
                 </Typography>
 
                 <Button
-                    type="submit"
                     fullWidth
                     variant="contained"
                     color="primary"
                     className={classes.submit}
                     onClick={props.onLoginClick}
                 >
-                    Connexion
+                    <FormattedMessage id="connection"/>
                 </Button>
             </div>
             <Box mt={2}>
