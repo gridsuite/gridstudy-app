@@ -22,6 +22,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuIcon from '@material-ui/icons/Menu';
 import { withStyles } from '@material-ui/core/styles';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
 
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -111,7 +112,7 @@ const TopBar = (props) => {
                     <FormattedMessage id="appName"/>
                 </Typography>
                 <div className={classes.grow} />
-                <h3>{user !== null ? user.profile.name : ""}</h3>
+                <h3>{user !== null ? user.profile.name : "User Not logged"}</h3>
 
                 <div>
                     <Button
@@ -129,6 +130,14 @@ const TopBar = (props) => {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
+                        <StyledMenuItem onClick={props.onLoginClick}>
+                            <ListItemIcon>
+                                <VpnKeyIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText >
+                                <FormattedMessage id="login"/>
+                            </ListItemText>
+                        </StyledMenuItem>
                         <StyledMenuItem onClick={onParametersClick}>
                             <ListItemIcon>
                                 <SettingsIcon fontSize="small" />

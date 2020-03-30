@@ -31,11 +31,10 @@ import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
 import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 
-import {loadStudiesSuccess, setLoggedUser} from '../redux/actions';
+import {loadStudiesSuccess} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import CreateStudyForm from "./create-study-form";
 
-import {AuthService} from "../authentication/AuthService";
 import {CardHeader} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -249,28 +248,10 @@ const StudyCard = ({study, onClick}) => {
     );
 };
 
-const StudyManager = ({loggedOut, onStudyClick}) => {
+const StudyManager = ({getUser, loggedOut, onStudyClick}) => {
     const dispatch = useDispatch();
 
-    function login() {
-        AuthService.getUserManager().signinRedirect();
-    }
-
-    function  getUser() {
-        AuthService.getUserManager().getUser().then(user => {
-            if (user) {
-                dispatch(setLoggedUser(user));
-                console.debug('User has been successfully loaded from store.');
-            } else {
-                console.debug('You are not logged in.');
-                login()
-            }
-        });
-    }
-
-    function  logout() {
-        AuthService.getUserManager().signoutRedirect();
-    }
+    const user = useSelector(state => state.user);
 
     useEffect(() => {
         getUser();
@@ -281,33 +262,28 @@ const StudyManager = ({loggedOut, onStudyClick}) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        if (loggedOut === true) {
-            console.debug("logout");
-            dispatch(setLoggedUser(null));
-            logout();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loggedOut]);
-
     const studies = useSelector(state => state.studies);
 
     const classes = useStyles();
 
-    return (
-        <Container maxWidth="lg">
-            <CreateStudyForm />
-            <Grid container spacing={2} className={classes.grid}>
-                {
-                    studies.map(study =>
-                        <Grid item xs={12} sm={6} md={3} key={study.studyName}>
-                            <StudyCard study={study} onClick={() => onStudyClick(study.studyName)} />
-                        </Grid>
-                    )
-                }
-            </Grid>
-        </Container>
-    );
+    if (user !== null) {
+        return (
+            <Container maxWidth="lg">
+                <CreateStudyForm/>
+                <Grid container spacing={2} className={classes.grid}>
+                    {
+                        studies.map(study =>
+                            <Grid item xs={12} sm={6} md={3} key={study.studyName}>
+                                <StudyCard study={study} onClick={() => onStudyClick(study.studyName)}/>
+                            </Grid>
+                        )
+                    }
+                </Grid>
+            </Container>
+        );
+    } else {
+        return (<h1>User Should be logged</h1>);
+    }
 };
 
 export default StudyManager;

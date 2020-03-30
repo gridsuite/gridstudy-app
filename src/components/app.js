@@ -7,7 +7,7 @@
 
 import React, {useEffect} from 'react';
 
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 
 import {Route, Switch, useHistory, useLocation} from 'react-router-dom';
 
@@ -16,7 +16,7 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
 import TopBar from './top-bar';
-import {LIGHT_THEME} from '../redux/actions'
+import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
 import { AuthService } from '../authentication/AuthService';
 
@@ -65,9 +65,9 @@ const SignInCallback = () => {
 const App = () => {
     const theme = useSelector(state => state.theme);
 
-    const [loggedOut, setLoggedOut] = React.useState(false);
-
     const history = useHistory();
+
+    const dispatch = useDispatch();
 
     const location = useLocation();
 
@@ -84,18 +84,34 @@ const App = () => {
         }
     }
 
+    function login() {
+        AuthService.getUserManager().signinRedirect().then(() => console.debug("login"));
+    }
+
+    function  getUser() {
+        AuthService.getUserManager().getUser().then(user => {
+            if (user) {
+                dispatch(setLoggedUser(user));
+                console.debug('User has been successfully loaded from store.');
+            } else {
+                console.debug('You are not logged in.');
+            }
+        });
+    }
+
     function  logout() {
-        setLoggedOut(true);
+        dispatch(setLoggedUser(null));
+        AuthService.getUserManager().signoutRedirect().then(() => console.debug("logged out"));
     }
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={ () => showParameters() } onLogoutClick={() => logout()}/>
+                <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout()} onLoginClick={() => login()}/>
                 <Switch>
                     <Route exact path="/">
-                        <StudyManager loggedOut={loggedOut} onStudyClick={ name => studyClickHandler(name) }/>
+                        <StudyManager getUser={getUser} onStudyClick={ name => studyClickHandler(name) }/>
                     </Route>
                     <Route exact path="/studies/:studyName">
                         <StudyPane/>

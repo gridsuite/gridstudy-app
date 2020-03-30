@@ -18,6 +18,7 @@
 
   "settings" : "Settings",
   "logout" : "Logout",
+  "login" : "Login",
 
   "deleteStudy" : "Delete Study",
   "deleteStudyMsg" : "Are you sure you want to delete the study?",
