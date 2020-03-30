@@ -19,6 +19,7 @@ import TopBar from './top-bar';
 import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
 import { AuthService } from '../authentication/AuthService';
+import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -42,11 +43,12 @@ const getMuiTheme = (theme) => {
     }
 };
 
-const SignInCallback = () => {
+const SignInCallback = ({getUser}) => {
     const history = useHistory();
 
     function handleCallback() {
         AuthService.getUserManager().signinRedirectCallback().then(function () {
+            getUser();
             history.push("/");
         }).catch(function (e) {
             console.error(e);
@@ -58,12 +60,14 @@ const SignInCallback = () => {
     }, []);
 
     return (
-        <h1>Authentication callback processing...</h1>
+        <h1> </h1>
     )
 };
 
 const App = () => {
     const theme = useSelector(state => state.theme);
+
+    const user = useSelector(state => state.user);
 
     const history = useHistory();
 
@@ -101,17 +105,24 @@ const App = () => {
 
     function  logout() {
         dispatch(setLoggedUser(null));
-        AuthService.getUserManager().signoutRedirect().then(() => console.debug("logged out"));
+        AuthService.getUserManager().signoutRedirect().then(
+            () => console.debug("logged out"));
     }
+
+    useEffect(() => {
+        getUser();
+    }, []);
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout()} onLoginClick={() => login()}/>
+                <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout()}/>
                 <Switch>
                     <Route exact path="/">
-                        <StudyManager getUser={getUser} onStudyClick={ name => studyClickHandler(name) }/>
+                        {
+                            user !== null ? (<StudyManager onStudyClick={name => studyClickHandler(name)}/>) : (<Authentication onLoginClick={() => login()}/>)
+                        }
                     </Route>
                     <Route exact path="/studies/:studyName">
                         <StudyPane/>
@@ -120,7 +131,7 @@ const App = () => {
                         <Parameters/>
                     </Route>
                     <Route exact path="/sign-in-callback">
-                        <SignInCallback/>
+                        <SignInCallback getUser={getUser}/>
                     </Route>
                     <Route>
                         <h1>Error: bad URL; No matched Route.</h1>

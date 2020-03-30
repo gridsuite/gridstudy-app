@@ -248,13 +248,12 @@ const StudyCard = ({study, onClick}) => {
     );
 };
 
-const StudyManager = ({getUser, loggedOut, onStudyClick}) => {
+const StudyManager = ({onStudyClick}) => {
     const dispatch = useDispatch();
 
     const user = useSelector(state => state.user);
 
     useEffect(() => {
-        getUser();
         fetchStudies()
             .then(studies => {
                 dispatch(loadStudiesSuccess(studies));
@@ -266,24 +265,20 @@ const StudyManager = ({getUser, loggedOut, onStudyClick}) => {
 
     const classes = useStyles();
 
-    if (user !== null) {
-        return (
-            <Container maxWidth="lg">
-                <CreateStudyForm/>
-                <Grid container spacing={2} className={classes.grid}>
-                    {
-                        studies.map(study =>
-                            <Grid item xs={12} sm={6} md={3} key={study.studyName}>
-                                <StudyCard study={study} onClick={() => onStudyClick(study.studyName)}/>
-                            </Grid>
-                        )
-                    }
-                </Grid>
-            </Container>
-        );
-    } else {
-        return (<h1>User Should be logged</h1>);
-    }
+    return (
+        <Container maxWidth="lg">
+            <CreateStudyForm/>
+            <Grid container spacing={2} className={classes.grid}>
+                {
+                    studies.map(study =>
+                        <Grid item xs={12} sm={6} md={3} key={study.studyName}>
+                            <StudyCard study={study} onClick={() => onStudyClick(study.studyName)}/>
+                        </Grid>
+                    )
+                }
+            </Grid>
+        </Container>
+    );
 };
 
 export default StudyManager;

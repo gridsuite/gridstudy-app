@@ -112,8 +112,9 @@ const TopBar = (props) => {
                     <FormattedMessage id="appName"/>
                 </Typography>
                 <div className={classes.grow} />
-                <h3>{user !== null ? user.profile.name : "User Not logged"}</h3>
+                <h3>{user !== null ? user.profile.name : ""}</h3>
 
+                {user && (
                 <div>
                     <Button
                         aria-controls="customized-menu"
@@ -123,21 +124,13 @@ const TopBar = (props) => {
                         <MenuIcon/>
                     </Button>
 
-                    <StyledMenu
+                  <StyledMenu
                         id="customized-menu"
                         anchorEl={anchorEl}
                         keepMounted
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
-                        <StyledMenuItem onClick={props.onLoginClick}>
-                            <ListItemIcon>
-                                <VpnKeyIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText >
-                                <FormattedMessage id="login"/>
-                            </ListItemText>
-                        </StyledMenuItem>
                         <StyledMenuItem onClick={onParametersClick}>
                             <ListItemIcon>
                                 <SettingsIcon fontSize="small" />
@@ -155,8 +148,8 @@ const TopBar = (props) => {
                             </ListItemText>
                         </StyledMenuItem>
                     </StyledMenu>
-
                 </div>
+                    )}
             </Toolbar>
         </AppBar>
     )
