@@ -18,7 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
-import { AuthService } from '../utils/authentication/AuthService';
+import { userManager } from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
@@ -47,7 +47,7 @@ const SignInCallback = ({getUser}) => {
     const history = useHistory();
 
     function handleCallback() {
-        AuthService.getUserManager().signinRedirectCallback().then(function () {
+        userManager.signinRedirectCallback().then(function () {
             getUser();
             history.push("/");
         }).catch(function (e) {
@@ -65,6 +65,8 @@ const SignInCallback = ({getUser}) => {
 };
 
 const App = () => {
+    console.log(userManager);
+
     const theme = useSelector(state => state.theme);
 
     const user = useSelector(state => state.user);
@@ -89,11 +91,11 @@ const App = () => {
     }
 
     function login() {
-        AuthService.getUserManager().signinRedirect().then(() => console.debug("login"));
+        userManager.signinRedirect().then(() => console.debug("login"));
     }
 
     function  getUser() {
-        AuthService.getUserManager().getUser().then(user => {
+        userManager.getUser().then(user => {
             if (user) {
                 dispatch(setLoggedUser(user));
                 console.debug('User has been successfully loaded from store.');
@@ -105,7 +107,7 @@ const App = () => {
 
     function  logout() {
         dispatch(setLoggedUser(null));
-        AuthService.getUserManager().signoutRedirect().then(
+        userManager.signoutRedirect().then(
             () => console.debug("logged out"));
     }
 
