@@ -49,7 +49,8 @@ const SignInCallback = ({getUser}) => {
     function handleCallback() {
         userManager.signinRedirectCallback().then(function () {
             getUser();
-            history.push("/");
+            const previousPath = sessionStorage.getItem("powsybl-study-app-current-path");
+            history.push(previousPath);
         }).catch(function (e) {
             console.error(e);
         });
@@ -89,6 +90,8 @@ const App = () => {
     }
 
     function login() {
+        sessionStorage.setItem("powsybl-study-app-current-path",  window.location.pathname);
+        console.log(window.location.pathname);
         userManager.signinRedirect().then(() => console.debug("login"));
     }
 
