@@ -267,15 +267,4 @@ NetworkMap.propTypes = {
     onSubstationClick: PropTypes.func
 };
 
-function areEqual(prevProps, nextProps) {
-    // dont't check for onSubstationClick equality as the function will change at every render
-    // of the parent
-    return prevProps.network === nextProps.network
-        && prevProps.geoData === nextProps.geoData
-        && prevProps.labelsZoomThreshold === nextProps.labelsZoomThreshold
-        && prevProps.initialZoom === nextProps.initialZoom
-        && prevProps.filteredNominalVoltages === nextProps.filteredNominalVoltages
-        && prevProps.initialPosition === nextProps.initialPosition;
-}
-
-export default React.memo(NetworkMap, areEqual);
+export default React.memo(NetworkMap);

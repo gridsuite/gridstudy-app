@@ -92,11 +92,4 @@ NominalVoltageFilter.propTypes = {
     onNominalVoltageFilter: PropTypes.func
 };
 
-function areEqual(prevProps, nextProps) {
-    // dont't check for onNominalVoltageFilter equality as the function will change at every render
-    // of the parent
-    return prevProps.nominalVoltages === nextProps.nominalVoltages
-        && prevProps.filteredNominalVoltages === nextProps.filteredNominalVoltages;
-}
-
-export default React.memo(NominalVoltageFilter, areEqual);
+export default React.memo(NominalVoltageFilter);
