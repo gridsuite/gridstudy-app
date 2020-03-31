@@ -109,10 +109,6 @@ const App = () => {
             () => console.debug("logged out"));
     }
 
-    useEffect(() => {
-        getUser();
-    }, []);
-
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
