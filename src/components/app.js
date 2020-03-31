@@ -90,8 +90,7 @@ const App = () => {
     }
 
     function login() {
-        sessionStorage.setItem("powsybl-study-app-current-path",  window.location.pathname);
-        console.log(window.location.pathname);
+        sessionStorage.setItem("powsybl-study-app-current-path",  location.pathname + location.search);
         userManager.signinRedirect().then(() => console.debug("login"));
     }
 
@@ -117,29 +116,31 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout()}/>
-                <Switch>
-                    <Route exact path="/">
-                        {
-                            user !== null ? (<StudyManager onStudyClick={name => studyClickHandler(name)}/>) : (<Authentication onLoginClick={() => login()}/>)
-                        }
-                    </Route>
-                    <Route exact path="/studies/:studyName">
-                        {
-                            user !== null ? (<StudyPane/>) : (<Authentication onLoginClick={() => login()}/>)
-                        }
-                    </Route>
-                    <Route exact path="/parameters">
-                        {
-                            user !== null ? (<Parameters/>) : (<Authentication onLoginClick={() => login()}/>)
-                        }
-                    </Route>
-                    <Route exact path="/sign-in-callback">
-                        <SignInCallback getUser={getUser}/>
-                    </Route>
-                    <Route>
-                        <h1>Error: bad URL; No matched Route.</h1>
-                    </Route>
-                </Switch>
+                    { user !== null ? (
+                        <Switch>
+                            <Route exact path="/">
+                                  <StudyManager onStudyClick={name => studyClickHandler(name)}/>)
+                            </Route>
+                            <Route exact path="/studies/:studyName">
+                               <StudyPane/>
+                            </Route>
+                            <Route exact path="/parameters">
+                              <Parameters/>
+                            </Route>
+                            <Route>
+                                <h1>Error: bad URL; No matched Route.</h1>
+                            </Route>
+                        </Switch>)
+                        : (
+                            <Switch>
+                                <Route exact path="/sign-in-callback">
+                                    <SignInCallback getUser={getUser}/>
+                                </Route>
+                                <Route>
+                                    <Authentication onLoginClick={() => login()}/>
+                                </Route>
+                            </Switch>
+                        )}
             </React.Fragment>
         </ThemeProvider>
     )
