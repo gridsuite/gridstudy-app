@@ -19,9 +19,11 @@ import ListItem from '@material-ui/core/ListItem';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 
-import {FixedSizeList} from 'react-window';
+import {FixedSizeList as List} from 'react-window';
 
 import Network from "./network";
+import Divider from "@material-ui/core/Divider";
+import {AutoSizer} from "react-virtualized";
 
 const itemSize = 35;
 
@@ -32,7 +34,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const NetworkExplorer = (props) => {
+const NetworkExplorer = ({network, onVoltageLevelClick}) => {
 
     const intl = useIntl();
 
@@ -50,22 +52,22 @@ const NetworkExplorer = (props) => {
     };
 
     useEffect(() => {
-        if (props.network) {
-            setFilteredVoltageLevels(props.network.getVoltageLevels().sort(voltageLevelComparator))
+        if (network) {
+            setFilteredVoltageLevels(network.getVoltageLevels().sort(voltageLevelComparator))
         }
-    }, [props.network]);
+    }, [network]);
 
     useEffect(() => {
         if (currentVoltageLevel !== null) {
-            props.onVoltageLevelClick(currentVoltageLevel.id, currentVoltageLevel.name);
+            onVoltageLevelClick(currentVoltageLevel.id, currentVoltageLevel.name);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [useName]);
 
     function onClickHandler(index) {
-        if (props.onVoltageLevelClick !== null) {
+        if (onVoltageLevelClick !== null) {
             const vl = filteredVoltageLevels[index];
-            props.onVoltageLevelClick(vl.id);
+            onVoltageLevelClick(vl.id);
             setCurrentVoltageLevel(vl);
         }
     }
@@ -78,34 +80,41 @@ const NetworkExplorer = (props) => {
 
     const filter = (event) => {
         const entry = event.target.value.toLowerCase();
-        setFilteredVoltageLevels(props.network.getVoltageLevels().filter(item => {
+        setFilteredVoltageLevels(network.getVoltageLevels().filter(item => {
             const lc = useName ? item.name.toLowerCase() : item.id.toLowerCase();
             return lc.includes(entry);
         }).sort(voltageLevelComparator));
     };
 
     return (
-        <Grid container direction="column">
-            <Grid item xs={12} key="filter">
-                <TextField className={classes.textField} size="small" placeholder={filterMsg} onChange={filter} variant="outlined" InputProps={{
-                    startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon />
-                        </InputAdornment>
-                    ),
-                }} />
-            </Grid>
-            <Grid item xs={12} key="list">
-                <FixedSizeList
-                    height={23 * itemSize}
-                    itemCount={filteredVoltageLevels.length}
-                    itemSize={itemSize}
-                    width="100%"
-                >
-                    {Row}
-                </FixedSizeList>
-            </Grid>
-        </Grid>
+        <AutoSizer>
+            {({width, height}) => (
+                <div style={{width:width, height:height}}>
+                    <Grid container direction="column">
+                        <Grid item>
+                             <TextField className={classes.textField} size="small" placeholder={filterMsg} onChange={filter} variant="outlined" InputProps={{
+                                 startAdornment: (
+                                     <InputAdornment position="start">
+                                         <SearchIcon />
+                                     </InputAdornment>
+                                 ),
+                             }} />
+                        </Grid>
+                        <Divider />
+                        <Grid item>
+                            <List
+                                height={height-57}
+                                itemCount={filteredVoltageLevels.length}
+                                itemSize={itemSize}
+                                width="100%"
+                            >
+                                {Row}
+                            </List>
+                        </Grid>
+                    </Grid>
+                 </div>
+            )}
+        </AutoSizer>
     )
 };
 
