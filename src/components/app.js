@@ -91,14 +91,14 @@ const App = () => {
 
     function login() {
         sessionStorage.setItem("powsybl-study-app-current-path",  location.pathname + location.search);
-        userManager.signinRedirect().then(() => console.debug("login"));
+        return userManager.signinRedirect().then(() => console.debug("login"));
     }
 
-    function  getUser() {
-        userManager.getUser().then(user => {
+    function dispatchUser() {
+       return userManager.getUser().then(user => {
             if (user) {
-                dispatch(setLoggedUser(user));
                 console.debug('User has been successfully loaded from store.');
+                return dispatch(setLoggedUser(user));
             } else {
                 console.debug('You are not logged in.');
             }
@@ -107,7 +107,7 @@ const App = () => {
 
     function  logout() {
         dispatch(setLoggedUser(null));
-        userManager.signoutRedirect().then(
+        return userManager.signoutRedirect().then(
             () => console.debug("logged out"));
     }
 
@@ -134,7 +134,7 @@ const App = () => {
                         : (
                             <Switch>
                                 <Route exact path="/sign-in-callback">
-                                    <SignInCallback getUser={getUser}/>
+                                    <SignInCallback getUser={dispatchUser}/>
                                 </Route>
                                 <Route>
                                     <Authentication onLoginClick={() => login()}/>
