@@ -14,10 +14,6 @@ export class UserManagerMock {
         return Promise.resolve(null);
     }
 
-    signinSilent() {
-        return Promise.resolve(null);
-    }
-
     signoutRedirect() {
         sessionStorage.setItem("powsybl-study-app-mock-user", null);
         window.location = ".";
