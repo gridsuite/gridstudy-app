@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {useDispatch, useSelector} from 'react-redux'
 
@@ -18,7 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
-import { userManager } from '../utils/authentication/AuthService';
+import {userManagerPromise} from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
@@ -43,38 +43,55 @@ const getMuiTheme = (theme) => {
     }
 };
 
-const SignInCallback = ({getUser}) => {
+const SignInCallback = (props) => {
     const history = useHistory();
 
     function handleCallback() {
-        userManager.signinRedirectCallback().then(function () {
-            getUser();
-            const previousPath = sessionStorage.getItem("powsybl-study-app-current-path");
-            history.push(previousPath);
-        }).catch(function (e) {
-            console.error(e);
-        });
+        if (props.userManager.instance && !props.userManager.error) {
+            props.userManager.instance.signinRedirectCallback().then(function () {
+                props.getUser();
+                const previousPath = sessionStorage.getItem("powsybl-study-app-current-path");
+                history.push(previousPath);
+            }).catch(function (e) {
+                console.error(e);
+            });
+        }
     }
 
     useEffect(() => {
         handleCallback();
-    }, []);
+    }, [props.userManager]);
 
     return (
         <h1> </h1>
     )
 };
 
+const noUserManager = {instance: null, error: null};
+
 const App = () => {
     const theme = useSelector(state => state.theme);
 
     const user = useSelector(state => state.user);
+
+    const [userManager, setUserManager] = useState(noUserManager);
 
     const history = useHistory();
 
     const dispatch = useDispatch();
 
     const location = useLocation();
+
+    useEffect(() => {
+        userManagerPromise
+            .then(userManager => {
+                setUserManager({instance : userManager, error : null });
+            })
+            .catch(function(error) {
+                setUserManager({instance : null, error : error.message});
+                console.debug("error when importing the idp settings")
+             });
+    }, []);
 
     function studyClickHandler(studyName) {
         history.push("/studies/" + studyName);
@@ -91,24 +108,30 @@ const App = () => {
 
     function login() {
         sessionStorage.setItem("powsybl-study-app-current-path",  location.pathname + location.search);
-        return userManager.signinRedirect().then(() => console.debug("login"));
+        if (userManager.instance && !userManager.error) {
+            return userManager.instance.signinRedirect().then(() => console.debug("login"));
+        }
     }
 
     function dispatchUser() {
-       return userManager.getUser().then(user => {
-            if (user) {
-                console.debug('User has been successfully loaded from store.');
-                return dispatch(setLoggedUser(user));
-            } else {
-                console.debug('You are not logged in.');
-            }
-        });
+        if (userManager.instance && !userManager.error) {
+            return userManager.instance.getUser().then(user => {
+                if (user) {
+                    console.debug('User has been successfully loaded from store.');
+                    return dispatch(setLoggedUser(user));
+                } else {
+                    console.debug('You are not logged in.');
+                }
+            });
+        }
     }
 
     function  logout() {
-        dispatch(setLoggedUser(null));
-        return userManager.signoutRedirect().then(
-            () => console.debug("logged out"));
+        if (userManager.instance && !userManager.error) {
+            dispatch(setLoggedUser(null));
+            return userManager.instance.signoutRedirect().then(
+                () => console.debug("logged out"));
+        }
     }
 
     return (
@@ -134,7 +157,7 @@ const App = () => {
                         : (
                             <Switch>
                                 <Route exact path="/sign-in-callback">
-                                    <SignInCallback getUser={dispatchUser}/>
+                                    <SignInCallback userManager={userManager} getUser={dispatchUser}/>
                                 </Route>
                                 <Route>
                                     <Authentication onLoginClick={() => login()}/>
