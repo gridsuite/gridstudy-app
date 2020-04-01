@@ -27,8 +27,8 @@ const maxHeight = 700;
 
 const useStyles = makeStyles(theme => ({
     div: {
-        maxWidth,
-        maxHeight,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
         overflowX: 'auto',
         overflowY: 'auto'
     },
@@ -43,8 +43,8 @@ const useStyles = makeStyles(theme => ({
         padding: 0
     },
     error: {
-        maxWidth,
-        maxHeight,
+        maxWidth: maxWidth,
+        maxHeight: maxHeight,
     },
 }));
 
