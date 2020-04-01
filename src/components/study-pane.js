@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 
 import {useDispatch, useSelector} from "react-redux";
 
@@ -65,6 +65,8 @@ const StudyNotFound = (props) => {
     );
 };
 
+const INITIAL_POSITION = [2.5, 46.6];
+
 const StudyPane = () => {
 
     const { studyName } = useParams();
@@ -79,7 +81,7 @@ const StudyPane = () => {
 
     const [voltageLevelId, setVoltageLevelId] = useState(null);
 
-    const [filteredVoltageLevels, setFilteredVoltageLevels] = useState(null);
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
     const dispatch = useDispatch();
 
@@ -111,6 +113,14 @@ const StudyPane = () => {
         setVoltageLevelId(newVoltageLevelId ? newVoltageLevelId : null);
     }, [location.search]);
 
+    useEffect(() => {
+        if (network) {
+            setFilteredNominalVoltages(network.getNominalVoltages());
+        } else {
+            setFilteredNominalVoltages([]);
+        }
+    }, [network]);
+
     function loadNetwork(studyName) {
         console.info(`Loading network of study '${studyName}'...`);
 
@@ -122,7 +132,6 @@ const StudyPane = () => {
             .then(values => {
                 const network = new Network();
                 network.setSubstations(values[0]);
-                setFilteredVoltageLevels(Array.from(network.voltageLevelsByNominalVoltage.keys()).sort((a, b) => b - a));
                 network.setLines(values[1]);
                 dispatch(loadNetworkSuccess(network));
             })
@@ -152,25 +161,25 @@ const StudyPane = () => {
             });
     }
 
-    function showVoltageLevelDiagram(voltageLevelId) {
+    const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
         history.replace("/studies/" + studyName + stringify({ voltageLevelId: voltageLevelId }, { addQueryPrefix: true }));
-    }
+    }, []);
 
     function closeVoltageLevelDiagram() {
         history.replace("/studies/" + studyName)
     }
 
-    function filterNominalVoltage(vnom) {
+    const updateFilteredNominalVoltages = (vnom) => {
         // filter on nominal voltage
-        const currentIndex = filteredVoltageLevels.indexOf(vnom);
-        const newFiltered = [...filteredVoltageLevels];
+        const currentIndex = filteredNominalVoltages.indexOf(vnom);
+        const newFiltered = [...filteredNominalVoltages];
         if (currentIndex === -1) {
             newFiltered.push(vnom);
         } else {
             newFiltered.splice(currentIndex, 1);
         }
-        setFilteredVoltageLevels(newFiltered);
-    }
+        setFilteredNominalVoltages(newFiltered);
+    };
 
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
@@ -183,33 +192,34 @@ const StudyPane = () => {
             <Grid container className={classes.main}>
                 <Grid item xs={12} md={2} key="explorer">
                     <NetworkExplorer network={network}
-                                     onVoltageLevelClick={ id => showVoltageLevelDiagram(id) }/>
+                                     onVoltageLevelClick={showVoltageLevelDiagram}/>
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
                         <NetworkMap network={network}
                                     geoData={geoData}
                                     labelsZoomThreshold={8}
-                                    initialPosition={[2.5, 46.6]}
+                                    initialPosition={INITIAL_POSITION}
                                     initialZoom={6}
-                                    filteredVoltageLevels={filteredVoltageLevels}
-                                    onSubstationClick={ id => showVoltageLevelDiagram(id) } />
+                                    filteredNominalVoltages={filteredNominalVoltages}
+                                    onSubstationClick={showVoltageLevelDiagram} />
                         {
                             voltageLevelId &&
                             <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
-                                                   onNextVoltageLevelClick={ id => showVoltageLevelDiagram(id) }
+                                                   onNextVoltageLevelClick={showVoltageLevelDiagram}
                                                    diagramTitle={useName && voltageLevel ? voltageLevel.name : voltageLevelId}
                                                    svgUrl={getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName)} />
                             </div>
-                    }
-                    <div style={{position: "absolute", right: 10, bottom: 30, zIndex: 1}}>
-                        <NominalVoltageFilter network={network}
-                                              filteredVoltageLevels={filteredVoltageLevels}
-                                              onNominalVoltageFilter={(vnom) => filterNominalVoltage(vnom)}>
-
-                        </NominalVoltageFilter>
-                    </div>
+                        }
+                        {
+                            network &&
+                            <div style={{position: "absolute", right: 10, bottom: 30, zIndex: 1}}>
+                                <NominalVoltageFilter nominalVoltages={network.getNominalVoltages()}
+                                                      filteredNominalVoltages={filteredNominalVoltages}
+                                                      onNominalVoltageFilterChange={updateFilteredNominalVoltages} />
+                            </div>
+                        }
                 </div>
             </Grid>
         </Grid>

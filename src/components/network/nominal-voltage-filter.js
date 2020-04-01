@@ -5,12 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import PropTypes from "prop-types";
 
 import {makeStyles} from "@material-ui/core/styles";
-
-import Network from "./network";
 
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -37,46 +35,26 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const NominalVoltageFilter = (props) => {
-    const classes = useStyles();
-    const [checkedNominalVoltages, setCheckedNominalVoltages] = useState([]);
-    const [nominalVoltages, setNominalVoltages] = useState([]);
 
-    useEffect(() => {
-        if (props.network) {
-            setNominalVoltages(Array.from(props.network.voltageLevelsByNominalVoltage.keys()).sort((a, b) => b - a));
-        }
-        if (props.filteredVoltageLevels) {
-            setCheckedNominalVoltages(props.filteredVoltageLevels);
-        }
-    }, [props.network, props.filteredVoltageLevels]);
+    const classes = useStyles();
 
     const handleToggle = value => () => {
-        const currentIndex = checkedNominalVoltages.indexOf(value);
-        const newChecked = [...checkedNominalVoltages];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-        setCheckedNominalVoltages(newChecked);
-
-        if (props.onNominalVoltageFilter !== null) {
-            props.onNominalVoltageFilter(value);
+        if (props.onNominalVoltageFilterChange !== null) {
+            props.onNominalVoltageFilterChange(value);
         }
     };
 
     return (
         <Paper>
             <List className={classes.nominalVoltageZone}> {
-                nominalVoltages.map(value => {
+                props.nominalVoltages.map(value => {
                     return (
                         <ListItem className={classes.nominalVoltageItem}
                             key={value}
                             button
                             onClick={handleToggle(value)}
                         >
-                            <Checkbox color="default" className={classes.nominalVoltageCheck} checked={checkedNominalVoltages.indexOf(value) !== -1}/>
+                            <Checkbox color="default" className={classes.nominalVoltageCheck} checked={props.filteredNominalVoltages.indexOf(value) !== -1}/>
                             <ListItemText className={classes.nominalVoltageText} disableTypography primary={`${value}`}/>
                         </ListItem>
                     );
@@ -87,15 +65,15 @@ const NominalVoltageFilter = (props) => {
 };
 
 NominalVoltageFilter.defaultProps = {
-    network: null,
-    filteredVoltageLevels: null,
-    onNominalVoltageFilter: null
+    nominalVoltages: [],
+    filteredNominalVoltages: [],
+    onNominalVoltageFilterChange: null
 };
 
 NominalVoltageFilter.propTypes = {
-    network: PropTypes.instanceOf(Network),
-    filteredVoltageLevels: PropTypes.instanceOf(Array),
-    onNominalVoltageFilter: PropTypes.func
+    nominalVoltages: PropTypes.array,
+    filteredNominalVoltages: PropTypes.array,
+    onNominalVoltageFilterChange: PropTypes.func
 };
 
 export default NominalVoltageFilter;

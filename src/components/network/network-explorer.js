@@ -127,4 +127,4 @@ NetworkExplorer.propTypes = {
     onVoltageLevelClick: PropTypes.func
 };
 
-export default NetworkExplorer;
+export default React.memo(NetworkExplorer);
