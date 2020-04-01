@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import PropTypes from "prop-types";
 
 import {makeStyles} from "@material-ui/core/styles";
@@ -38,23 +38,7 @@ const NominalVoltageFilter = (props) => {
 
     const classes = useStyles();
 
-    const [checkedNominalVoltages, setCheckedNominalVoltages] = useState([]);
-
-    useEffect(() => {
-        setCheckedNominalVoltages(props.filteredNominalVoltages);
-    }, [props.filteredNominalVoltages]);
-
     const handleToggle = value => () => {
-        const currentIndex = checkedNominalVoltages.indexOf(value);
-        const newChecked = [...checkedNominalVoltages];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-        setCheckedNominalVoltages(newChecked);
-
         if (props.onNominalVoltageFilter !== null) {
             props.onNominalVoltageFilter(value);
         }
@@ -70,7 +54,7 @@ const NominalVoltageFilter = (props) => {
                             button
                             onClick={handleToggle(value)}
                         >
-                            <Checkbox color="default" className={classes.nominalVoltageCheck} checked={checkedNominalVoltages.indexOf(value) !== -1}/>
+                            <Checkbox color="default" className={classes.nominalVoltageCheck} checked={props.filteredNominalVoltages.indexOf(value) !== -1}/>
                             <ListItemText className={classes.nominalVoltageText} disableTypography primary={`${value}`}/>
                         </ListItem>
                     );
@@ -92,4 +76,4 @@ NominalVoltageFilter.propTypes = {
     onNominalVoltageFilter: PropTypes.func
 };
 
-export default React.memo(NominalVoltageFilter);
+export default NominalVoltageFilter;
