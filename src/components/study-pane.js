@@ -169,7 +169,7 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
-    const updateNominalVoltageFilter = (vnom) => {
+    const updateFilteredNominalVoltages = (vnom) => {
         // filter on nominal voltage
         const currentIndex = filteredNominalVoltages.indexOf(vnom);
         const newFiltered = [...filteredNominalVoltages];
@@ -217,7 +217,7 @@ const StudyPane = () => {
                             <div style={{position: "absolute", right: 10, bottom: 30, zIndex: 1}}>
                                 <NominalVoltageFilter nominalVoltages={network.getNominalVoltages()}
                                                       filteredNominalVoltages={filteredNominalVoltages}
-                                                      onNominalVoltageFilterChange={updateNominalVoltageFilter} />
+                                                      onNominalVoltageFilterChange={updateFilteredNominalVoltages} />
                             </div>
                         }
                 </div>
