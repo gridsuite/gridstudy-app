@@ -39,8 +39,8 @@ const NominalVoltageFilter = (props) => {
     const classes = useStyles();
 
     const handleToggle = value => () => {
-        if (props.onNominalVoltageFilter !== null) {
-            props.onNominalVoltageFilter(value);
+        if (props.onNominalVoltageFilterChange !== null) {
+            props.onNominalVoltageFilterChange(value);
         }
     };
 
@@ -67,13 +67,13 @@ const NominalVoltageFilter = (props) => {
 NominalVoltageFilter.defaultProps = {
     nominalVoltages: [],
     filteredNominalVoltages: [],
-    onNominalVoltageFilter: null
+    onNominalVoltageFilterChange: null
 };
 
 NominalVoltageFilter.propTypes = {
     nominalVoltages: PropTypes.array,
     filteredNominalVoltages: PropTypes.array,
-    onNominalVoltageFilter: PropTypes.func
+    onNominalVoltageFilterChange: PropTypes.func
 };
 
 export default NominalVoltageFilter;

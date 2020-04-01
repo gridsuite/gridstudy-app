@@ -169,7 +169,7 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
-    const filterNominalVoltage = useCallback((vnom) => {
+    const updateNominalVoltageFilter = (vnom) => {
         // filter on nominal voltage
         const currentIndex = filteredNominalVoltages.indexOf(vnom);
         const newFiltered = [...filteredNominalVoltages];
@@ -179,7 +179,7 @@ const StudyPane = () => {
             newFiltered.splice(currentIndex, 1);
         }
         setFilteredNominalVoltages(newFiltered);
-    }, [filteredNominalVoltages, setFilteredNominalVoltages]);
+    };
 
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
@@ -217,7 +217,7 @@ const StudyPane = () => {
                             <div style={{position: "absolute", right: 10, bottom: 30, zIndex: 1}}>
                                 <NominalVoltageFilter nominalVoltages={network.getNominalVoltages()}
                                                       filteredNominalVoltages={filteredNominalVoltages}
-                                                      onNominalVoltageFilter={filterNominalVoltage} />
+                                                      onNominalVoltageFilterChange={updateNominalVoltageFilter} />
                             </div>
                         }
                 </div>
