@@ -199,7 +199,7 @@ const StudyPane = () => {
             <Grid container className={classes.main}>
                 <Grid item xs={12} md={2} key="explorer">
                     <NetworkExplorer network={network}
-                                     onVoltageLevelDisplayClick={ id => showVoltageLevelDiagram(id) }
+                                     onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                                      onVoltageLevelFocusClick={ id => setFocusedVoltageLevelId(id)} />
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
@@ -218,7 +218,7 @@ const StudyPane = () => {
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevel, useName)} />
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevel.id, useName)} />
                             </div>
                         }
                         {

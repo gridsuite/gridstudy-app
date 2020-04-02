@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 
 import {useSelector} from "react-redux";
 
-import {useIntl} from "react-intl";
+import {FormattedMessage, useIntl} from "react-intl";
 
 import Grid from "@material-ui/core/Grid";
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -22,13 +22,19 @@ import TextField from '@material-ui/core/TextField';
 import {FixedSizeList as List} from 'react-window';
 
 import Network from "./network";
-import ListItemText from "@material-ui/core/ListItemText";
-import IconButton from "@material-ui/core/IconButton";
-import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import Divider from "@material-ui/core/Divider";
 import {AutoSizer} from "react-virtualized";
+import ListItemText from "@material-ui/core/ListItemText";
+import IconButton from "@material-ui/core/IconButton";
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Typography from "@material-ui/core/Typography";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import GpsFixedIcon from '@material-ui/icons/GpsFixed';
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 
-const itemSize = 35;
+const itemSize = 48;
 
 const useStyles = makeStyles(theme => ({
     textField: {
@@ -50,6 +56,9 @@ const NetworkExplorer = ({network, onVoltageLevelDisplayClick, onVoltageLevelFoc
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState([]);
     const [currentVoltageLevel, setCurrentVoltageLevel] = React.useState(null);
 
+    const buttonRef = React.useRef();
+    const [voltageLevelMenuIndex, setVoltageLevelMenuIndex] = React.useState(-1);
+
     const voltageLevelComparator = (vl1, vl2) => {
         return useName ? vl1.name.localeCompare(vl2.name) : vl1.id.localeCompare(vl2.id);
     };
@@ -63,31 +72,59 @@ const NetworkExplorer = ({network, onVoltageLevelDisplayClick, onVoltageLevelFoc
     useEffect(() => {
         if (currentVoltageLevel !== null) {
             onVoltageLevelDisplayClick(currentVoltageLevel.id, currentVoltageLevel.name);
-            onVoltageLevelFocusClick(currentVoltageLevel.id, currentVoltageLevel.name);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [useName]);
 
-    function onDisplayClickHandler(index) {
+    function handleClick(index) {
+        setVoltageLevelMenuIndex(index);
+    }
+
+    function handleClose() {
+        setVoltageLevelMenuIndex(-1);
+    }
+
+    function onDisplayClickHandler(index = voltageLevelMenuIndex) {
         if (onVoltageLevelDisplayClick !== null) {
             const vl = filteredVoltageLevels[index];
             onVoltageLevelDisplayClick(vl.id);
             setCurrentVoltageLevel(vl);
         }
+        handleClose();
     }
 
-    function onFocusClickHandler(index) {
+    function onFocusClickHandler() {
         if (onVoltageLevelFocusClick !== null) {
-            const vl = filteredVoltageLevels[index];
+            const vl = filteredVoltageLevels[voltageLevelMenuIndex];
             onVoltageLevelFocusClick(vl.id);
         }
+        handleClose();
     }
 
+    const voltagelevelInfo = index => {
+        if (network.getSubstation(filteredVoltageLevels[index].substationId)) {
+            return network.getSubstation(filteredVoltageLevels[index].substationId).countryName + " - " + filteredVoltageLevels[index].nominalVoltage + " kV";
+        }
+    };
+
     const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index} >
-            <ListItemText primary={useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id} onClick={() => onDisplayClickHandler(index)} />
-            <IconButton onClick={() => onFocusClickHandler(index)}>
-                <GpsFixedIcon />
+        <ListItem button style={style} key={index}>
+            <ListItemText
+                primary={
+                    <Typography color="textPrimary" noWrap>{useName ? filteredVoltageLevels[index].name : filteredVoltageLevels[index].id}</Typography>
+                }
+                secondary={
+                    <Typography style={{fontSize:"small"}} color="textSecondary" noWrap>{voltagelevelInfo(index)}</Typography>
+                }
+                onClick={() => onDisplayClickHandler(index)}
+            />
+            <IconButton
+                aria-owns={(voltageLevelMenuIndex === index) ? "simple-menu" : undefined}
+                aria-haspopup="true"
+                ref={(voltageLevelMenuIndex === index) ? buttonRef : undefined}
+                onClick={() => handleClick(index)}
+            >
+                <MoreVertIcon />
             </IconButton>
         </ListItem>
     );
@@ -126,7 +163,26 @@ const NetworkExplorer = ({network, onVoltageLevelDisplayClick, onVoltageLevelFoc
                             </List>
                         </Grid>
                     </Grid>
-                 </div>
+                    <Menu
+                        id="simple-menu"
+                        anchorEl={() => buttonRef.current}
+                        open={voltageLevelMenuIndex !== -1}
+                        onClose={handleClose}
+                    >
+                        <MenuItem onClick={onFocusClickHandler}>
+                            <ListItemIcon>
+                                <GpsFixedIcon />
+                            </ListItemIcon>
+                            <ListItemText><FormattedMessage id="centerOnMap" /></ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={() => onDisplayClickHandler()}>
+                            <ListItemIcon>
+                                <DeviceHubIcon />
+                            </ListItemIcon>
+                            <ListItemText><FormattedMessage id="openVoltageLevel" /></ListItemText>
+                        </MenuItem>
+                    </Menu>
+                </div>
             )}
         </AutoSizer>
     )
@@ -138,7 +194,8 @@ NetworkExplorer.defaultProps = {
 
 NetworkExplorer.propTypes = {
     network: PropTypes.instanceOf(Network),
-    onVoltageLevelClick: PropTypes.func
+    onVoltageLevelDisplayClick: PropTypes.func,
+    onVoltageLevelFocusClick: PropTypes.func
 };
 
 export default React.memo(NetworkExplorer);
