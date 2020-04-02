@@ -44,22 +44,9 @@ const getMuiTheme = (theme) => {
 };
 
 const SignInCallback = (props) => {
-    const history = useHistory();
-
-    function handleCallback() {
-        if (props.userManager.instance && !props.userManager.error) {
-            props.userManager.instance.signinRedirectCallback().then(function () {
-                props.getUser();
-                const previousPath = sessionStorage.getItem("powsybl-study-app-current-path");
-                history.push(previousPath);
-            }).catch(function (e) {
-                console.error(e);
-            });
-        }
-    }
 
     useEffect(() => {
-        handleCallback();
+        props.handleSigninCallback();
     }, [props.userManager]);
 
     return (
@@ -134,6 +121,18 @@ const App = () => {
         }
     }
 
+    function handleSigninCallback() {
+        if (userManager.instance && !userManager.error) {
+            userManager.instance.signinRedirectCallback().then(function () {
+                dispatchUser();
+                const previousPath = sessionStorage.getItem("powsybl-study-app-current-path");
+                history.push(previousPath);
+            }).catch(function (e) {
+                console.error(e);
+            });
+        }
+    }
+
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
@@ -157,7 +156,7 @@ const App = () => {
                         : (
                             <Switch>
                                 <Route exact path="/sign-in-callback">
-                                    <SignInCallback userManager={userManager} getUser={dispatchUser}/>
+                                    <SignInCallback userManager={userManager} handleSigninCallback={handleSigninCallback}/>
                                 </Route>
                                 <Route>
                                     <Authentication onLoginClick={() => login()}/>
