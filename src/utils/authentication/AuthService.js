@@ -13,7 +13,6 @@ const userManagerPromise = fetch('idpSettings.json')
         let settings = {
             authority: idpSettings.authority,
             client_id: idpSettings.client_id,
-            client_secret: idpSettings.client_secret,
             redirect_uri: idpSettings.redirect_uri,
             post_logout_redirect_uri: idpSettings.post_logout_redirect_uri,
             response_mode : 'fragment',
