@@ -1,6 +1,7 @@
 {
-    "authority" : "https://login.microsoftonline.com/7502dad5-d64c-46c7-9d47-b16f580fcfa9/v2.0",
-    "client_id" : "9c402461-b2ab-4767-9db3-66859bb0fcd0",
+    "authority" : "http://localhost:9090",
+    "client_id" : "my-client",
+    "client_secret" : "my-secret",
     "redirect_uri": "http://localhost:3000/sign-in-callback",
     "post_logout_redirect_uri" : "http://localhost:3000",
     "scope" : "openid User.read email"

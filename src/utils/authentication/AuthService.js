@@ -13,11 +13,12 @@ const userManagerPromise = fetch('idpSettings.json')
         let settings = {
             authority: idpSettings.authority,
             client_id: idpSettings.client_id,
+            client_secret: idpSettings.client_secret,
             redirect_uri: idpSettings.redirect_uri,
             post_logout_redirect_uri: idpSettings.post_logout_redirect_uri,
             response_mode : 'fragment',
             response_type: 'id_token token',
-            scope: process.env.REACT_APP_SCOPE,
+            scope: idpSettings.scope,
         };
         return process.env.REACT_APP_USE_AUTHENTICATION === "true" ? new UserManager(settings) : new UserManagerMock(settings);
     });
