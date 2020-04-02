@@ -95,6 +95,13 @@ const SingleLineDiagram = (props) => {
             const draw = SVG().addTo(divElt).size(svgWidth, svgHeight).viewbox(0, 0, svgWidth, svgHeight).panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.2});
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
 
+            draw.on('panStart', function (evt) {
+                divElt.style.cursor = "move";
+            });
+            draw.on('panEnd', function (evt) {
+                divElt.style.cursor = "default";
+            });
+
             // handling the navigation between voltage levels
             const elements = svg.metadata.nodes.filter(el => el.nextVId !== null);
             elements.forEach(el => {
