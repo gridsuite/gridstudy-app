@@ -92,7 +92,11 @@ const SingleLineDiagram = (props) => {
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ""; // clear the previous svg in div element before replacing
-            const draw = SVG().addTo(divElt).size(svgWidth, svgHeight).viewbox(0, 0, svgWidth, svgHeight).panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.2});
+            const draw = SVG()
+                .addTo(divElt)
+                .size(svgWidth, svgHeight)
+                .viewbox(0, 0, svgWidth, svgHeight)
+                .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.2, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
 
             draw.on('panStart', function (evt) {
