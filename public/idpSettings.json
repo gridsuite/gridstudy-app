@@ -1,7 +1,7 @@
 {
-    "authority" : "http://localhost:9080",
-    "client_id" : "my-client",
-    "redirect_uri": "http://localhost:3000/sign-in-callback",
-    "post_logout_redirect_uri" : "http://localhost:3000",
-    "scope" : "openid User.read email"
+    "authority" : "#",
+    "client_id" : "#",
+    "redirect_uri": "#",
+    "post_logout_redirect_uri" : "#",
+    "scope" : "#"
 }
