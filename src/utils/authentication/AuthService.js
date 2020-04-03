@@ -55,10 +55,10 @@ function handleSigninCallback(dispatch, history, userManagerInstance) {
     userManagerInstance.signinRedirectCallback().then(function () {
         dispatchUser(dispatch, userManagerInstance);
         const previousPath = sessionStorage.getItem(pathKey);
-        history.push(previousPath);
+        history.replace(previousPath);
     }).catch(function (e) {
         console.error(e);
     });
 }
 
-export {userManagerPromise, login, logout, handleSigninCallback}
+export {userManagerPromise, login, logout, dispatchUser, handleSigninCallback}
