@@ -16,9 +16,9 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
 import TopBar from './top-bar';
-import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
+import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
-import {userManagerPromise} from '../utils/authentication/AuthService';
+import {userManagerPromise, login, logout, handleSigninCallback} from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
@@ -91,43 +91,11 @@ const App = () => {
         }
     }
 
-    function login() {
-        sessionStorage.setItem("powsybl-study-app-current-path",  location.pathname + location.search);
-        return userManager.instance.signinRedirect().then(() => console.debug("login"));
-    }
-
-    function dispatchUser() {
-        return userManager.instance.getUser().then(user => {
-            if (user) {
-                console.debug('User has been successfully loaded from store.');
-                return dispatch(setLoggedUser(user));
-            } else {
-                console.debug('You are not logged in.');
-            }
-        });
-    }
-
-    function logout() {
-        dispatch(setLoggedUser(null));
-        return userManager.instance.signoutRedirect().then(
-            () => console.debug("logged out"));
-    }
-
-    function handleSigninCallback() {
-        userManager.instance.signinRedirectCallback().then(function () {
-            dispatchUser();
-            const previousPath = sessionStorage.getItem("powsybl-study-app-current-path");
-            history.push(previousPath);
-        }).catch(function (e) {
-            console.error(e);
-        });
-    }
-
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout()}/>
+                <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
                     { user !== null ? (
                         <Switch>
                             <Route exact path="/">
@@ -146,11 +114,11 @@ const App = () => {
                         : (
                             <Switch>
                                 <Route exact path="/sign-in-callback">
-                                    <SignInCallback userManager={userManager} handleSigninCallback={handleSigninCallback}/>
+                                    <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
                                 </Route>
                                 <Route>
                                     {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
-                                    {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login()}/>)}
+                                    {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login(location, userManager.instance)}/>)}
                                 </Route>
                             </Switch>
                         )}
