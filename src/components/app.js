@@ -115,9 +115,12 @@ const App = () => {
 
     function  logout() {
         if (userManager.instance && !userManager.error) {
-            dispatch(setLoggedUser(null));
+
             return userManager.instance.signoutRedirect().then(
-                () => console.debug("logged out"));
+                () => {
+                    dispatch(setLoggedUser(null));
+                    console.debug("logged out");
+                });
         }
     }
 
@@ -159,7 +162,7 @@ const App = () => {
                                     <SignInCallback userManager={userManager} handleSigninCallback={handleSigninCallback}/>
                                 </Route>
                                 <Route>
-                                    <Authentication onLoginClick={() => login()}/>
+                                    <Authentication userManager={userManager} onLoginClick={() => login()}/>
                                 </Route>
                             </Switch>
                         )}

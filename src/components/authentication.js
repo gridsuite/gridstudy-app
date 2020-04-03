@@ -67,6 +67,7 @@ const Authentication = (props) => {
                 </Typography>
 
                 <Button
+                    disabled={props.userManager.instance === null}
                     fullWidth
                     variant="contained"
                     color="primary"
