@@ -7,13 +7,32 @@
 import {UserManager} from 'oidc-client';
 import {UserManagerMock} from "./UserManagerMock";
 import {setLoggedUser} from "../../redux/actions";
+import jwtDecode from 'jwt-decode';
+
 let userManagerPromise;
 if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
     userManagerPromise = fetch('idpSettings.json')
         .then(r => r.json())
         .then(idpSettings => {
+
+            /* hack to ignore the iss check. XXX TODO to remove */
+            const regextoken=/id_token=[^&]*/;
+            const regexstate=/state=[^&]*/;
+            let authority;
+            if (window.location.hash) {
+                const id_token=window.location.hash.match(regextoken)[0].split('=')[1];
+                authority = jwtDecode(id_token).iss
+                const state=window.location.hash.match(regexstate)[0].split('=')[1];
+                const strState = localStorage.getItem("oidc." + state);
+                console.log(strState);
+                const storedState = JSON.parse(strState);
+                storedState.authority=authority;
+                localStorage.setItem("oidc." + state, storedState);
+            };
+            authority = authority || idpSettings.authority
+
             let settings = {
-                authority: idpSettings.authority,
+                authority,
                 client_id: idpSettings.client_id,
                 redirect_uri: idpSettings.redirect_uri,
                 post_logout_redirect_uri: idpSettings.post_logout_redirect_uri,
