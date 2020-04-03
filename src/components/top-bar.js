@@ -94,6 +94,7 @@ const TopBar = (props) => {
 
 
     const onParametersClick = () => {
+        handleClose();
       if (props.onParametersClick) {
           props.onParametersClick();
       }
