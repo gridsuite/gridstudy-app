@@ -18,7 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
-import {userManagerPromise, login, logout, handleSigninCallback} from '../utils/authentication/AuthService';
+import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser} from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
@@ -74,6 +74,7 @@ const App = () => {
         userManagerPromise
             .then(userManager => {
                 setUserManager({instance : userManager, error : null });
+                dispatchUser(dispatch, userManager);
             })
             .catch(function(error) {
                 setUserManager({instance : null, error : error.message});
