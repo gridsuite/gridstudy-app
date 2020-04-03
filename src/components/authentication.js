@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -67,7 +67,7 @@ const Authentication = (props) => {
                 </Typography>
 
                 <Button
-                    disabled={props.userManager.instance === null}
+                    disabled={props.disabled}
                     fullWidth
                     variant="contained"
                     color="primary"
