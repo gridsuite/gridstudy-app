@@ -44,9 +44,10 @@ const getMuiTheme = (theme) => {
 };
 
 const SignInCallback = (props) => {
-
     useEffect(() => {
-        props.handleSigninCallback();
+        if (props.userManager !== null) {
+            props.handleSigninCallback();
+        }
     }, [props.userManager]);
 
     return (
@@ -95,42 +96,34 @@ const App = () => {
 
     function login() {
         sessionStorage.setItem("powsybl-study-app-current-path",  location.pathname + location.search);
-        if (userManager.instance && !userManager.error) {
-            return userManager.instance.signinRedirect().then(() => console.debug("login"));
-        }
+        return userManager.instance.signinRedirect().then(() => console.debug("login"));
     }
 
     function dispatchUser() {
-        if (userManager.instance && !userManager.error) {
-            return userManager.instance.getUser().then(user => {
-                if (user) {
-                    console.debug('User has been successfully loaded from store.');
-                    return dispatch(setLoggedUser(user));
-                } else {
-                    console.debug('You are not logged in.');
-                }
-            });
-        }
+        return userManager.instance.getUser().then(user => {
+            if (user) {
+                console.debug('User has been successfully loaded from store.');
+                return dispatch(setLoggedUser(user));
+            } else {
+                console.debug('You are not logged in.');
+            }
+        });
     }
 
-    function  logout() {
-        if (userManager.instance && !userManager.error) {
-            dispatch(setLoggedUser(null));
-            return userManager.instance.signoutRedirect().then(
-                () => console.debug("logged out"));
-        }
+    function logout() {
+        dispatch(setLoggedUser(null));
+        return userManager.instance.signoutRedirect().then(
+            () => console.debug("logged out"));
     }
 
     function handleSigninCallback() {
-        if (userManager.instance && !userManager.error) {
-            userManager.instance.signinRedirectCallback().then(function () {
-                dispatchUser();
-                const previousPath = sessionStorage.getItem("powsybl-study-app-current-path");
-                history.push(previousPath);
-            }).catch(function (e) {
-                console.error(e);
-            });
-        }
+        userManager.instance.signinRedirectCallback().then(function () {
+            dispatchUser();
+            const previousPath = sessionStorage.getItem("powsybl-study-app-current-path");
+            history.push(previousPath);
+        }).catch(function (e) {
+            console.error(e);
+        });
     }
 
     return (
