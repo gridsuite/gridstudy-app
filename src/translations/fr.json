@@ -15,6 +15,11 @@
   "delete" : "Supprimer",
   "filter" : "Filtre",
 
+  "settings" : "Paramètres",
+  "logout" : "Se déconnecter",
+  "login" : "Se connecter",
+  "connection": "Connexion",
+
   "deleteStudy" : "Supprimer l'étude",
   "deleteStudyMsg" : "Etes vous sur de vouloir supprimer l'étude?",
   "studyNameDidNotMatchMsg" : "Le nom d'étude donné ne correspond pas à ",

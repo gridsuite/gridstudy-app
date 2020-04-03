@@ -1,0 +1,7 @@
+{
+    "authority" : "#",
+    "client_id" : "#",
+    "redirect_uri": "#",
+    "post_logout_redirect_uri" : "#",
+    "scope" : "#"
+}

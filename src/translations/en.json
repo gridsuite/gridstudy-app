@@ -15,6 +15,12 @@
   "delete" : "Delete",
   "filter" : "Filter",
 
+
+  "settings" : "Settings",
+  "logout" : "Logout",
+  "login" : "Login",
+  "connection": "Connection",
+
   "deleteStudy" : "Delete Study",
   "deleteStudyMsg" : "Are you sure you want to delete the study?",
   "studyNameDidNotMatchMsg" : "The given study name did not match with ",
