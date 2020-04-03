@@ -45,7 +45,7 @@ const getMuiTheme = (theme) => {
 
 const SignInCallback = (props) => {
     useEffect(() => {
-        if (props.userManager !== null) {
+        if (props.userManager.instance !== null) {
             props.handleSigninCallback();
         }
     }, [props.userManager]);
