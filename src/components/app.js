@@ -86,10 +86,7 @@ const App = () => {
     }
 
     function showParameters() {
-        if (location.pathname === "/parameters") {
-            // if already at parameters go back to study
-            history.goBack();
-        } else {
+        if (location.pathname !== "/parameters") {
             history.push("/parameters");
         }
     }
