@@ -7,6 +7,9 @@
 
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
+
+import {useSelector} from "react-redux";
+
 import {_MapContext as MapContext, NavigationControl, StaticMap} from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
 import {PathLayer, ScatterplotLayer, TextLayer} from '@deck.gl/layers';
@@ -16,7 +19,7 @@ import {decomposeColor} from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
 import GeoData from './geo-data';
-import {useSelector} from "react-redux";
+import {getNominalVoltageColor} from '../../utils/colors'
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug'; // eslint-disable-line
 
@@ -38,24 +41,6 @@ const NetworkMap = (props) => {
     const theme = useTheme();
 
     const useName = useSelector(state => state.useName);
-
-    function getNominalVoltageColor(nominalVoltage) {
-        if (nominalVoltage >= 300) {
-            return [255, 0, 0];
-        } else if (nominalVoltage >= 170 && nominalVoltage < 300) {
-            return [34, 139, 34];
-        } else if (nominalVoltage >= 120 && nominalVoltage < 170) {
-            return [1, 175, 175];
-        } else if (nominalVoltage >= 70 && nominalVoltage < 120) {
-            return [204, 85, 0];
-        } else if (nominalVoltage >= 50 && nominalVoltage < 70) {
-            return [160, 32, 240];
-        } else if (nominalVoltage >= 30 && nominalVoltage < 50) {
-            return [255, 130, 144];
-        } else {
-            return [171, 175, 40];
-        }
-    }
 
     // Do this in onAfterRender because when doing it in useEffect (triggered by calling setDeck()),
     // it doesn't work in the case of using the browser backward/forward buttons (because in this particular case,
@@ -130,9 +115,7 @@ const NetworkMap = (props) => {
 
     if (props.network !== null && props.geoData !== null) {
         // substations : create one layer per nominal voltage, starting from higher to lower nominal voltage
-        Array.from(props.network.voltageLevelsByNominalVoltage.entries())
-            .map(e => { return { nominalVoltage: e[0], voltageLevels: e[1] };})
-            .sort((a, b) => b.nominalVoltage - a.nominalVoltage)
+        props.network.getVoltageLevelsBySortedNominalVoltage()
             .forEach(e => {
                 const color = getNominalVoltageColor(e.nominalVoltage);
 
@@ -153,12 +136,8 @@ const NetworkMap = (props) => {
         // substations labels : create one layer
         // First, we construct the substations where there is at least one voltage level with a nominal voltage
         // present in the filteredVoltageLevels property, in order to handle correctly the substations labels visibility
-        let substationsLabelsVisible = [];
-        props.network.substations.forEach(substation => {
-            if (substation.voltageLevels.find(v => props.filteredNominalVoltages.includes(v.nominalVoltage)) !== undefined) {
-                substationsLabelsVisible.push(substation);
-            }
-        });
+        const substationsLabelsVisible = props.network.substations
+            .filter(substation => substation.voltageLevels.find(v => props.filteredNominalVoltages.includes(v.nominalVoltage)) !== undefined);
 
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
@@ -170,6 +149,7 @@ const NetworkMap = (props) => {
             getPosition: substation => props.geoData.getSubstationPosition(substation.id),
             getText: substation => useName ? substation.name : substation.id,
             getColor: labelColor,
+            fontFamily: 'Roboto',
             getSize: 16,
             getAngle: 0,
             getTextAnchor: 'start',
@@ -183,9 +163,7 @@ const NetworkMap = (props) => {
         layers.push(substationLabelsLayer);
 
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
-        Array.from(props.network.linesByNominalVoltage.entries())
-            .map(e => { return { nominalVoltage: e[0], lines: e[1] };})
-            .sort((a, b) => b.nominalVoltage - a.nominalVoltage)
+        props.network.getLinesBySortedNominalVoltage()
             .forEach(e => {
                 const color = getNominalVoltageColor(e.nominalVoltage);
 
