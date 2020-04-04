@@ -120,7 +120,8 @@ const NetworkMap = (props) => {
             filteredNominalVoltages: props.filteredNominalVoltages,
             useName: useName,
             labelsVisible: labelsVisible,
-            labelColor: labelColor
+            labelColor: labelColor,
+            pickable: true
         }));
 
         layers.push(new LineLayer({
@@ -130,6 +131,7 @@ const NetworkMap = (props) => {
             getNominalVoltageColor: getNominalVoltageColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
             useName: useName,
+            pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({
                     message: object ? (useName ? object.name : object.id) : null,
