@@ -79,7 +79,7 @@ const App = () => {
             .catch(function(error) {
                 setUserManager({instance : null, error : error.message});
                 console.debug("error when importing the idp settings")
-             });
+            });
     }, []);
 
     function studyClickHandler(studyName) {
@@ -97,32 +97,33 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
-                    { user !== null ? (
+                { user !== null ? (
                         <Switch>
                             <Route exact path="/">
-                                  <StudyManager onStudyClick={name => studyClickHandler(name)}/>
+                                <StudyManager onStudyClick={name => studyClickHandler(name)}/>
                             </Route>
                             <Route exact path="/studies/:studyName">
-                               <StudyPane/>
+                                <StudyPane/>
                             </Route>
                             <Route exact path="/parameters">
-                              <Parameters/>
+                                <Parameters/>
                             </Route>
                             <Route>
                                 <h1>Error: bad URL; No matched Route.</h1>
                             </Route>
                         </Switch>)
-                        : (
+                    : ( <React.Fragment>
+                            {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
                             <Switch>
                                 <Route exact path="/sign-in-callback">
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
                                 </Route>
                                 <Route>
-                                    {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
                                     {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login(location, userManager.instance)}/>)}
                                 </Route>
                             </Switch>
-                        )}
+                        </React.Fragment>
+                    )}
             </React.Fragment>
         </ThemeProvider>
     )
