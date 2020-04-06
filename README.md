@@ -1,1 +1,1 @@
-# powsybl-study-app
+# study-app

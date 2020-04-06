@@ -29,7 +29,7 @@ jobs:
 
       - name: Broadcast update event
         if: github.ref == 'refs/heads/master'
-        uses: geofjamg/broadcast-event@master
+        uses: gridsuite/broadcast-event@master
         with:
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           event-type: study_app_updated
