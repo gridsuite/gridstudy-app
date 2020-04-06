@@ -34,6 +34,7 @@ import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 import {loadStudiesSuccess} from '../redux/actions';
 import {fetchStudies, deleteStudy} from '../utils/rest-api';
 import CreateStudyForm from "./create-study-form";
+
 import {CardHeader} from "@material-ui/core";
 import IconButton from "@material-ui/core/IconButton";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -248,7 +249,6 @@ const StudyCard = ({study, onClick}) => {
 };
 
 const StudyManager = ({onStudyClick}) => {
-
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -265,12 +265,12 @@ const StudyManager = ({onStudyClick}) => {
 
     return (
         <Container maxWidth="lg">
-            <CreateStudyForm />
+            <CreateStudyForm/>
             <Grid container spacing={2} className={classes.grid}>
                 {
                     studies.map(study =>
                         <Grid item xs={12} sm={6} md={3} key={study.studyName}>
-                            <StudyCard study={study} onClick={() => onStudyClick(study.studyName)} />
+                            <StudyCard study={study} onClick={() => onStudyClick(study.studyName)}/>
                         </Grid>
                     )
                 }

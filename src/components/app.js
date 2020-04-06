@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 
 import {Route, Switch, useHistory, useLocation} from 'react-router-dom';
 
@@ -18,6 +18,8 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
+import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser} from '../utils/authentication/AuthService';
+import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -41,23 +43,51 @@ const getMuiTheme = (theme) => {
     }
 };
 
-const App = () => {
+const SignInCallback = (props) => {
+    useEffect(() => {
+        if (props.userManager.instance !== null) {
+            props.handleSigninCallback();
+        }
+    }, [props.userManager]);
 
+    return (
+        <h1> </h1>
+    )
+};
+
+const noUserManager = {instance: null, error: null};
+
+const App = () => {
     const theme = useSelector(state => state.theme);
+
+    const user = useSelector(state => state.user);
+
+    const [userManager, setUserManager] = useState(noUserManager);
 
     const history = useHistory();
 
+    const dispatch = useDispatch();
+
     const location = useLocation();
+
+    useEffect(() => {
+        userManagerPromise
+            .then(userManager => {
+                setUserManager({instance : userManager, error : null });
+                dispatchUser(dispatch, userManager);
+            })
+            .catch(function(error) {
+                setUserManager({instance : null, error : error.message});
+                console.debug("error when importing the idp settings")
+             });
+    }, []);
 
     function studyClickHandler(studyName) {
         history.push("/studies/" + studyName);
     }
 
     function showParameters() {
-        if (location.pathname === "/parameters") {
-            // if already at parameters go back to study
-            history.goBack();
-        } else {
+        if (location.pathname !== "/parameters") {
             history.push("/parameters");
         }
     }
@@ -66,21 +96,33 @@ const App = () => {
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={ () => showParameters() }/>
-                <Switch>
-                    <Route exact path="/">
-                        <StudyManager onStudyClick={ name => studyClickHandler(name) }/>
-                    </Route>
-                    <Route exact path="/studies/:studyName">
-                        <StudyPane/>
-                    </Route>
-                    <Route exact path="/parameters">
-                        <Parameters/>
-                    </Route>
-                    <Route>
-                        <h1>Error: bad URL; No matched Route.</h1>
-                    </Route>
-                </Switch>
+                <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
+                    { user !== null ? (
+                        <Switch>
+                            <Route exact path="/">
+                                  <StudyManager onStudyClick={name => studyClickHandler(name)}/>
+                            </Route>
+                            <Route exact path="/studies/:studyName">
+                               <StudyPane/>
+                            </Route>
+                            <Route exact path="/parameters">
+                              <Parameters/>
+                            </Route>
+                            <Route>
+                                <h1>Error: bad URL; No matched Route.</h1>
+                            </Route>
+                        </Switch>)
+                        : (
+                            <Switch>
+                                <Route exact path="/sign-in-callback">
+                                    <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
+                                </Route>
+                                <Route>
+                                    {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
+                                    {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login(location, userManager.instance)}/>)}
+                                </Route>
+                            </Switch>
+                        )}
             </React.Fragment>
         </ThemeProvider>
     )

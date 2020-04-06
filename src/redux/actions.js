@@ -78,3 +78,9 @@ export const USE_NAME = 'USE_NAME';
 export function toggleUseNameState() {
     return { type: USE_NAME };
 }
+
+export const USER = 'USER';
+
+export function setLoggedUser(user) {
+    return { type: USER, user : user};
+}
