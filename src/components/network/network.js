@@ -31,6 +31,8 @@ export default class Network {
 
     voltageLevelsById = new Map();
 
+    substationsById = new Map();
+
     linesByNominalVoltage = new Map();
 
     nominalVoltages = [];
@@ -52,6 +54,9 @@ export default class Network {
 
                 // add count in substation
                 voltageLevel.voltageLevelCount = substation.voltageLevels.length;
+
+                // add the current item into the VL map by id
+                this.substationsById.set(substation.id, substation);
             });
         });
 
@@ -85,6 +90,14 @@ export default class Network {
 
     getVoltageLevel(id) {
         return this.voltageLevelsById.get(id);
+    }
+
+    getSubstations() {
+        return Array.from(this.substationsById.values());
+    }
+
+    getSubstation(id) {
+        return this.substationsById.get(id);
     }
 
     getNominalVoltages() {
