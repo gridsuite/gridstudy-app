@@ -77,6 +77,7 @@ const App = () => {
                 dispatchUser(dispatch, userManager);
             })
             .catch(function(error) {
+                debugger;
                 setUserManager({instance : null, error : error.message});
                 console.debug("error when importing the idp settings")
              });
@@ -112,16 +113,17 @@ const App = () => {
                                 <h1>Error: bad URL; No matched Route.</h1>
                             </Route>
                         </Switch>)
-                        : (
-                            <Switch>
-                                <Route exact path="/sign-in-callback">
-                                    <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
-                                </Route>
-                                <Route>
-                                    {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
-                                    {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login(location, userManager.instance)}/>)}
-                                </Route>
-                            </Switch>
+                        : ( <React.Fragment>
+                                {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
+                                <Switch>
+                                    <Route exact path="/sign-in-callback">
+                                        <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
+                                    </Route>
+                                    <Route>
+                                        {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login(location, userManager.instance)}/>)}
+                                    </Route>
+                                </Switch>
+                            </React.Fragment>
                         )}
             </React.Fragment>
         </ThemeProvider>
