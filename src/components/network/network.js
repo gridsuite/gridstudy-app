@@ -103,4 +103,16 @@ export default class Network {
     getNominalVoltages() {
         return this.nominalVoltages;
     }
+
+    getVoltageLevelsBySortedNominalVoltage() {
+        return Array.from(this.voltageLevelsByNominalVoltage.entries())
+            .map(e => { return { nominalVoltage: e[0], voltageLevels: e[1] };})
+            .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
+    }
+
+    getLinesBySortedNominalVoltage() {
+        return Array.from(this.linesByNominalVoltage.entries())
+            .map(e => { return { nominalVoltage: e[0], lines: e[1] };})
+            .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
+    }
 }
