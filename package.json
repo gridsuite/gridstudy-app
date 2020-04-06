@@ -14,7 +14,6 @@
     "mjolnir.js": "^2.4.0",
     "prop-types": "15.7.2",
     "qs": "^6.9.1",
-    "@svgdotjs/svg.draggable.js": "^3.0.2",
     "@svgdotjs/svg.js": "^3.0.12",
     "@svgdotjs/svg.panzoom.js": "^2.0.2",
     "react": "^16.12.0",
