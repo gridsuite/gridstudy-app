@@ -14,7 +14,6 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
     userManagerPromise = fetch('idpSettings.json')
         .then(r => r.json())
         .then(idpSettings => {
-
             /* hack to ignore the iss check. XXX TODO to remove */
             const regextoken=/id_token=[^&]*/;
             const regexstate=/state=[^&]*/;
@@ -24,12 +23,11 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                 authority = jwtDecode(id_token).iss
                 const state=window.location.hash.match(regexstate)[0].split('=')[1];
                 const strState = localStorage.getItem("oidc." + state);
-                console.log(strState);
                 const storedState = JSON.parse(strState);
                 storedState.authority=authority;
-                localStorage.setItem("oidc." + state, storedState);
-            };
-            authority = authority || idpSettings.authority
+                localStorage.setItem("oidc." + state, JSON.stringify(storedState));
+            }
+            authority = authority || idpSettings.authority;
 
             let settings = {
                 authority,
