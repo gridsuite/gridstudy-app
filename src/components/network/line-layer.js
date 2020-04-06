@@ -10,7 +10,7 @@ import {CompositeLayer, PathLayer} from 'deck.gl';
 class LineLayer extends CompositeLayer {
 
     renderLayers() {
-        let layers = [];
+        const layers = [];
 
         if (this.props.network != null && this.props.geoData != null) {
             // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
@@ -41,8 +41,7 @@ LineLayer.defaultProps = {
     network: null,
     geoData: null,
     getNominalVoltageColor: {type: 'accessor', value: [255, 255, 255]},
-    filteredNominalVoltages: [],
-    useName: true
+    filteredNominalVoltages: []
 };
 
 export default LineLayer;

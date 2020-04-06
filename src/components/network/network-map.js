@@ -132,7 +132,7 @@ const NetworkMap = (props) => {
         }
     }
 
-    let layers = [];
+    const layers = [];
 
     if (props.network !== null && props.geoData !== null) {
 
@@ -157,7 +157,6 @@ const NetworkMap = (props) => {
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
-            useName: useName,
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({

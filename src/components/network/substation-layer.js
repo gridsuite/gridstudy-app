@@ -16,7 +16,7 @@ function getVoltageLevelRadius(substationRadius, voltageLevel) {
 class SubstationLayer extends CompositeLayer {
 
     renderLayers() {
-        let layers = [];
+        const layers = [];
 
         if (this.props.network != null && this.props.geoData != null) {
             // substations : create one layer per nominal voltage, starting from higher to lower nominal voltage
