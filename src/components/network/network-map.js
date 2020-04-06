@@ -67,12 +67,12 @@ const NetworkMap = (props) => {
             //TODO, replace the next lines with setProps( { initialViewState } ) when we upgrade to 8.1.0
             //see https://github.com/uber/deck.gl/pull/4038
             //This is a hack because it accesses the properties of deck directly but for now it works
-            if ((!centered.centered || (props.centeredSubstationId && props.centeredSubstationId != centered.lastCenteredSubstation))
+            if ((!centered.centered || (props.centeredSubstationId && props.centeredSubstationId !== centered.lastCenteredSubstation))
                  && deck !== null && deck.viewManager != null && props.geoData !== null) {
                 if (props.geoData.substationPositionsById.size > 0) {
                     if (props.centeredSubstationId) {
                         const geodata = props.geoData.substationPositionsById.get(props.centeredSubstationId);
-                        const copyViewState = lastViewStateRef.current || deck.viewState
+                        const copyViewState = lastViewStateRef.current || deck.viewState;
                         const newViewState = {
                                 longitude: geodata.lon,
                                 latitude: geodata.lat,
@@ -281,7 +281,8 @@ NetworkMap.defaultProps = {
     labelsZoomThreshold: 7,
     initialZoom: 5,
     filteredNominalVoltages: null,
-    initialPosition: [0, 0]
+    initialPosition: [0, 0],
+    centeredSubstationId: null
 };
 
 NetworkMap.propTypes = {
@@ -291,7 +292,8 @@ NetworkMap.propTypes = {
     initialZoom: PropTypes.number.isRequired,
     filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
-    onSubstationClick: PropTypes.func
+    onSubstationClick: PropTypes.func,
+    centeredSubstationId: PropTypes.string
 };
 
 export default React.memo(NetworkMap);
