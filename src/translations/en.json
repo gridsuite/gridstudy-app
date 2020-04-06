@@ -40,5 +40,8 @@
 
   "parameters": "Parameters",
   "theme": "Theme",
-  "close": "Close"
+  "close": "Close",
+
+  "centerOnMap": "Center on the map",
+  "openVoltageLevel": "Open the voltage level"
 }

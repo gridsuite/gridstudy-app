@@ -39,5 +39,8 @@
 
   "parameters": "Paramètres",
   "theme": "Thème",
-  "close": "Fermer"
+  "close": "Fermer",
+
+  "centerOnMap": "Centrer sur la carte",
+  "openVoltageLevel": "Ouvrir le poste"
 }

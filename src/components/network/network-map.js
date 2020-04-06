@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import {_MapContext as MapContext, NavigationControl, StaticMap} from 'react-map-gl';
+import {FlyToInterpolator} from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 import {PathLayer, ScatterplotLayer, TextLayer} from '@deck.gl/layers';
 
@@ -31,7 +32,8 @@ const NetworkMap = (props) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
 
     const [deck, setDeck] = useState(null);
-    const [centered, setCentered] = useState(false);
+    const [centered, setCentered] = useState({lastCenteredSubstation: null, centered: false});
+    const lastViewStateRef = useRef(null);
 
     const [tooltip, setTooltip] = useState({});
 
@@ -62,39 +64,64 @@ const NetworkMap = (props) => {
     // we get the ref to the deck and it has not yet initialized..)
     function onAfterRender() {
             //use centered and deck to execute this block only once when the data is ready and deckgl is initialized
-            if (!centered && deck !== null && deck.viewManager != null && props.geoData !== null) {
+            //TODO, replace the next lines with setProps( { initialViewState } ) when we upgrade to 8.1.0
+            //see https://github.com/uber/deck.gl/pull/4038
+            //This is a hack because it accesses the properties of deck directly but for now it works
+            if ((!centered.centered || (props.centeredSubstationId && props.centeredSubstationId !== centered.lastCenteredSubstation))
+                 && deck !== null && deck.viewManager != null && props.geoData !== null) {
                 if (props.geoData.substationPositionsById.size > 0) {
-                    const coords = Array.from(props.geoData.substationPositionsById.entries()).map(x => x[1]);
-                    const maxlon = Math.max.apply(null, coords.map(x => x.lon));
-                    const minlon = Math.min.apply(null, coords.map(x => x.lon));
-                    const maxlat = Math.max.apply(null, coords.map(x => x.lat));
-                    const minlat = Math.min.apply(null, coords.map(x => x.lat));
-                    const marginlon = (maxlon - minlon)/10;
-                    const marginlat = (maxlat - minlat)/10;
-                    const viewport = deck.getViewports()[0];
-                    const boundedViewport = viewport.fitBounds([
-                            [minlon - marginlon/2, minlat - marginlat/2],
-                            [maxlon + marginlon/2, maxlat + marginlat/2]
-                    ]);
-                    //TODO, replace the next lines with setProps( { initialViewState } ) when we upgrade to 8.1.0
-                    //see https://github.com/uber/deck.gl/pull/4038
-                    //This is a hack because it accesses the properties of deck directly but for now it works
-                    deck.viewState = {
-                            longitude: boundedViewport.longitude,
-                            latitude: boundedViewport.latitude,
-                            zoom: Math.min(deck.viewState.maxZoom, boundedViewport.zoom),
-                            maxZoom: deck.viewState.maxZoom,
-                            pitch: deck.viewState.pitch,
-                            bearing: deck.viewState.bearing
-                    };
-                    deck.setProps({});
-                    deck._onViewStateChange({viewState: deck.viewState});
+                    if (props.centeredSubstationId) {
+                        const geodata = props.geoData.substationPositionsById.get(props.centeredSubstationId);
+                        const copyViewState = lastViewStateRef.current || deck.viewState;
+                        const newViewState = {
+                                longitude: geodata.lon,
+                                latitude: geodata.lat,
+                                zoom: copyViewState.zoom,
+                                maxZoom: deck.viewState.maxZoom,
+                                pitch: copyViewState.pitch,
+                                bearing: copyViewState.bearing
+                        };
+                        // if this is not the page load, use a fly to animation. On page load, we want to center directly
+                        if (centered.centered) {
+                            newViewState.transitionDuration = 2000;
+                            newViewState.transitionInterpolator = new FlyToInterpolator();
+                        }
+                        deck.viewState = newViewState;
+                        deck.setProps({});
+                        deck._onViewStateChange({viewState: deck.viewState});
+                        setCentered({lastCenteredSubstation: props.centeredSubstationId, centered: true});
+                    } else {
+                        const coords = Array.from(props.geoData.substationPositionsById.entries()).map(x => x[1]);
+                        const maxlon = Math.max.apply(null, coords.map(x => x.lon));
+                        const minlon = Math.min.apply(null, coords.map(x => x.lon));
+                        const maxlat = Math.max.apply(null, coords.map(x => x.lat));
+                        const minlat = Math.min.apply(null, coords.map(x => x.lat));
+                        const marginlon = (maxlon - minlon)/10;
+                        const marginlat = (maxlat - minlat)/10;
+                        const viewport = deck.getViewports()[0];
+                        const boundedViewport = viewport.fitBounds([
+                                [minlon - marginlon/2, minlat - marginlat/2],
+                                [maxlon + marginlon/2, maxlat + marginlat/2]
+                        ]);
+                        deck.viewState = {
+                                longitude: boundedViewport.longitude,
+                                latitude: boundedViewport.latitude,
+                                zoom: Math.min(deck.viewState.maxZoom, boundedViewport.zoom),
+                                maxZoom: deck.viewState.maxZoom,
+                                pitch: deck.viewState.pitch,
+                                bearing: deck.viewState.bearing
+                        };
+                        deck.setProps({});
+                        deck._onViewStateChange({viewState: deck.viewState});
+                        setCentered({lastCenteredSubstation: null, centered: true});
+                    }
                 }
-                setCentered(true);
             }
+
     }
 
     function onViewStateChange(info) {
+        lastViewStateRef.current = info.viewState;
         if (!info.interactionState || // first event of before an animation (e.g. clicking the +/- buttons of the navigation controls, gives the target
             info.interactionState && !info.interactionState.inTransition // Any event not part of a animation (mouse panning or zooming)
         ) {
@@ -254,7 +281,8 @@ NetworkMap.defaultProps = {
     labelsZoomThreshold: 7,
     initialZoom: 5,
     filteredNominalVoltages: null,
-    initialPosition: [0, 0]
+    initialPosition: [0, 0],
+    centeredSubstationId: null
 };
 
 NetworkMap.propTypes = {
@@ -264,7 +292,8 @@ NetworkMap.propTypes = {
     initialZoom: PropTypes.number.isRequired,
     filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
-    onSubstationClick: PropTypes.func
+    onSubstationClick: PropTypes.func,
+    centeredSubstationId: PropTypes.string
 };
 
 export default React.memo(NetworkMap);
