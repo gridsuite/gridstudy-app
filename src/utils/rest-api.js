@@ -21,9 +21,10 @@ export function fetchCases() {
         .then(response => response.json());
 }
 
-export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName) {
+export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel) {
     console.info(`Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
-    return process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg-and-metadata?useName=" + useName;
+    return process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg-and-metadata?useName=" + useName
+        + "&centerLabel=" + centerLabel + "&diagonalLabel=" + diagonalLabel;
 }
 
 export function fetchSvg(svgUrl) {
@@ -88,7 +89,7 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, se
 export function deleteStudy(studyName) {
     console.info("Deleting study" + studyName + " ...");
     const deleteStudyUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName;
-    console.debug(deleteStudyUrl)
+    console.debug(deleteStudyUrl);
     return fetch(deleteStudyUrl, {method:'delete'});
 }
 

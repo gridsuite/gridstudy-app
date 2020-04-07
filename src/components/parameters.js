@@ -25,7 +25,11 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 
-import {DARK_THEME, LIGHT_THEME, selectTheme, toggleUseNameState} from "../redux/actions";
+import {DARK_THEME, LIGHT_THEME, selectTheme, toggleUseNameState, toggleCenterLabelState, toggleDiagonalLabelState} from "../redux/actions";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -48,12 +52,11 @@ const Parameters = () => {
     const classes = useStyles();
 
     const useName = useSelector(state => state.useName);
+    const centerLabel = useSelector(state => state.centerLabel);
+    const diagonalLabel = useSelector(state => state.diagonalLabel);
+    const [tabIndex, setTabIndex] = React.useState(useSelector(state => state.parametersTabIndex));
 
     const theme = useSelector(state => state.theme);
-
-    const handleToggleUseName = () => {
-        dispatch(toggleUseNameState());
-    };
 
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
@@ -64,34 +67,58 @@ const Parameters = () => {
         history.goBack();
     };
 
-    return (
-        <Container maxWidth="md" >
-            <Typography variant="h5" className={classes.title}>
-                <FormattedMessage id="parameters"/>
+
+    function TabPanel(props) {
+        const { children, value, index, ...other } = props;
+
+        return (
+            <Typography
+                component="div"
+                role="tabpanel"
+                hidden={value !== index}
+                id={`simple-tabpanel-${index}`}
+                aria-labelledby={`simple-tab-${index}`}
+                {...other}
+            >
+                {value === index && <Box p={3}>{children}</Box>}
             </Typography>
+        );
+    }
+
+    function MakeSwitch( prop, label, callback){
+        return (
+            <>
+            <Grid item xs={6}>
+                <Typography component="span" variant="body1">
+                    <Box fontWeight="fontWeightBold" m={1}>
+                        <FormattedMessage id={label}/>:
+                    </Box>
+                </Typography>
+            </Grid>
+            <Grid item container xs={6} className={classes.controlItem}>
+            <Switch
+                checked={prop}
+                onChange={callback}
+                value={prop}
+                color="primary"
+                inputProps={{ 'aria-label': 'primary checkbox' }}
+            />
+            </Grid>
+            </>
+        );
+    }
+
+    function MakeLineSeparator(){
+        return (  <Grid item xs={12}>
             <Divider/>
+        </Grid>)
+    }
+
+    function GeneralTab(){
+        return (
             <Grid container spacing={2} className={classes.grid}>
-                <Grid item xs={6}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="useName"/>:
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
-                    <Switch
-                        checked={useName}
-                        onChange={handleToggleUseName}
-                        value={useName}
-                        color="primary"
-                        inputProps={{ 'aria-label': 'primary checkbox' }}
-                    />
-                </Grid>
-
-                <Grid item xs={12}>
-                    <Divider/>
-                </Grid>
-
+                {MakeSwitch(useName, "useName", ()=>dispatch(toggleUseNameState()))}
+                <MakeLineSeparator/>
                 <Grid item xs={6}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
@@ -105,19 +132,42 @@ const Parameters = () => {
                         <FormControlLabel value={LIGHT_THEME} control={<Radio color="primary"/>} label={LIGHT_THEME} />
                     </RadioGroup>
                 </Grid>
+            </Grid>
+        )
+    }
 
-                <Grid item xs={12}>
-                    <Divider/>
+    function SingleLineDiagramParameters() {
+        return (
+                <Grid container spacing={2} className={classes.grid}>
+                    {MakeSwitch(diagonalLabel, "diagonalLabel", ()=>dispatch(toggleDiagonalLabelState()))}
+                    <MakeLineSeparator/>
+                    {MakeSwitch(centerLabel, "centerLabel", ()=>dispatch(toggleCenterLabelState()))}
                 </Grid>
+            )
+    }
 
-                <Grid item xs={12}>
-                    <Button onClick={handleClose} variant="contained" color="primary">
-                        <FormattedMessage id="close"/>
-                    </Button>
-                </Grid>
+    return (
+        <Container maxWidth="md" >
+            <AppBar position="static">
+                <Tabs  value={tabIndex} onChange={(event, newValue)=> setTabIndex(newValue)} aria-label="parameters">
+                    <Tab label={<FormattedMessage id="General"/> } />
+                    <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
+                </Tabs>
+            </AppBar>
+
+            <TabPanel value={tabIndex} index={0}>
+                <GeneralTab/>
+            </TabPanel>
+            <TabPanel value={tabIndex} index={1}>
+                <SingleLineDiagramParameters/>
+            </TabPanel>
+            <Grid item xs={12}>
+                <Button onClick={handleClose} variant="contained" color="primary">
+                    <FormattedMessage id="close"/>
+                </Button>
             </Grid>
         </Container>
-    )
+            );
 };
 
 export default Parameters;

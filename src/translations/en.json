@@ -34,6 +34,10 @@
   "studyCreatingError" : "An error occurred while creating the study",
 
   "useName": "Use the name instead of the identifier",
+  "diagonalLabel": "Display name diagonaly",
+  "centerLabel": "Center name",
+  "General": "General",
+  "SingleLineDiagram": "Substation Driagram",
 
   "studyNotFound": "Study '{studyName}' has not been found",
   "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
