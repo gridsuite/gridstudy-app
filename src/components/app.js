@@ -9,7 +9,7 @@ import React, {useEffect, useState} from 'react';
 
 import {useDispatch, useSelector} from 'react-redux'
 
-import {Route, Switch, useHistory, useLocation} from 'react-router-dom';
+import {Redirect, Route, Switch, useHistory, useLocation} from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
@@ -107,6 +107,9 @@ const App = () => {
                             </Route>
                             <Route exact path="/parameters">
                                 <Parameters/>
+                            </Route>
+                            <Route exact path="/logout-callback">
+                                <Redirect to="/" />
                             </Route>
                             <Route>
                                 <h1>Error: bad URL; No matched Route.</h1>
