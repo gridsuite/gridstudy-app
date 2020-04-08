@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import getDistance from "geolib/es/getDistance";
+
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
     return map;
@@ -14,29 +16,6 @@ const linePositionIndexer = (map, line) => {
     map.set(line.id, line.coordinates);
     return map;
 };
-
-function distance(lat1, lon1, lat2, lon2, unit) {
-    if ((lat1 === lat2) && (lon1 === lon2)) {
-        return 0;
-    }
-    else {
-        const radlat1 = Math.PI * lat1/180;
-        const radlat2 = Math.PI * lat2/180;
-        const theta = lon1-lon2;
-        const radtheta = Math.PI * theta/180;
-        let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-        if (dist > 1) {
-            dist = 1;
-        }
-        dist = Math.acos(dist);
-        dist = dist * 180/Math.PI;
-        dist = dist * 60 * 1.1515;
-        if (unit==="K") { dist = dist * 1.609344 }
-        if (unit==="M") { dist = dist * 1609.344 }
-        if (unit==="N") { dist = dist * 0.8684 }
-        return dist;
-    }
-}
 
 export default class GeoData {
 
@@ -78,8 +57,8 @@ export default class GeoData {
 
         if (linePosition) {
             const positions = linePosition.map(c => [c.lon, c.lat]);
-            const distSub1 = distance(substationPosition1[1],substationPosition1[0],positions[0][1],positions[0][0], "M");
-            const distSub2 = distance(substationPosition2[1],substationPosition2[0],positions[0][1],positions[0][0], "M");
+            const distSub1 = getDistance({latitude : substationPosition1[1],longitude : substationPosition1[0]}, {latitude : positions[0][1],longitude : positions[0][0]});
+            const distSub2 = getDistance({latitude : substationPosition2[1],longitude : substationPosition2[0]}, {latitude : positions[0][1],longitude : positions[0][0]});
 
             if (distSub1 < distSub2) {
                 return [substationPosition1].concat(positions.concat([substationPosition2]));
