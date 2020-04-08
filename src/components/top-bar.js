@@ -25,10 +25,12 @@ import { withStyles } from '@material-ui/core/styles';
 
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import AppsIcon from '@material-ui/icons/Apps';
 
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
 import {useSelector} from "react-redux";
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles(() => ({
     grow: {
@@ -81,26 +83,36 @@ const TopBar = (props) => {
 
     const classes = useStyles();
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorElGeneralMenu, setAnchorElGeneralMenu] = React.useState(null);
 
-    const handleClick = event => {
-        setAnchorEl(event.currentTarget);
+    const [anchorElAppsMenu, setAnchorElAppsMenu] = React.useState(null);
+
+    const handleClickGeneralMenu = event => {
+        setAnchorElGeneralMenu(event.currentTarget);
     };
 
-    const handleClose = () => {
-        setAnchorEl(null);
+    const handleCloseGeneralMenu = () => {
+        setAnchorElGeneralMenu(null);
     };
+    const handleClickAppsMenu = event => {
+        setAnchorElAppsMenu(event.currentTarget);
+    };
+
+    const handleCloseAppsMenu = () => {
+        setAnchorElAppsMenu(null);
+    };
+
     const history = useHistory();
 
-
     const onParametersClick = () => {
-        handleClose();
+        handleCloseGeneralMenu();
       if (props.onParametersClick) {
           props.onParametersClick();
       }
     };
 
     const onLogoClick = () => {
+        handleCloseAppsMenu();
         history.replace("/");
     };
 
@@ -117,19 +129,19 @@ const TopBar = (props) => {
                 {user && (
                 <div>
                     <Button
-                        aria-controls="customized-menu"
+                        aria-controls="general-menu"
                         aria-haspopup="true"
-                        onClick={handleClick}
+                        onClick={handleClickGeneralMenu}
                     >
                         <MenuIcon/>
                     </Button>
 
-                  <StyledMenu
-                        id="customized-menu"
-                        anchorEl={anchorEl}
+                    <StyledMenu
+                        id="general-menu"
+                        anchorEl={anchorElGeneralMenu}
                         keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
+                        open={Boolean(anchorElGeneralMenu)}
+                        onClose={handleCloseGeneralMenu}
                     >
                         <StyledMenuItem onClick={onParametersClick}>
                             <ListItemIcon>
@@ -145,6 +157,31 @@ const TopBar = (props) => {
                             </ListItemIcon>
                             <ListItemText >
                                 <FormattedMessage id="logout"/>
+                            </ListItemText>
+                        </StyledMenuItem>
+                    </StyledMenu>
+
+                    <Button
+                        aria-controls="apps-menu"
+                        aria-haspopup="true"
+                        onClick={handleClickAppsMenu}
+                    >
+                        <AppsIcon/>
+                    </Button>
+
+                    <StyledMenu
+                        id="apps-menu"
+                        anchorEl={anchorElAppsMenu}
+                        keepMounted
+                        open={Boolean(anchorElAppsMenu)}
+                        onClose={handleCloseAppsMenu}
+                    >
+                        <StyledMenuItem onClick={onLogoClick}>
+                            <ListItemIcon>
+                                <PowsyblLogo className={classes.logo} />
+                            </ListItemIcon>
+                            <ListItemText >
+                                <FormattedMessage id="appName"/>
                             </ListItemText>
                         </StyledMenuItem>
                     </StyledMenu>
