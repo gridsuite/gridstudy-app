@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 
 import {useSelector} from "react-redux";
@@ -39,6 +39,13 @@ const NetworkMap = (props) => {
     const [tooltip, setTooltip] = useState({});
 
     const theme = useTheme();
+    const labelColor = useMemo(() => {
+        const labelColor = decomposeColor(theme.palette.text.primary).values;
+        labelColor[3] *= 255;
+        return labelColor
+    }, theme);
+
+
 
     const useName = useSelector(state => state.useName);
 
@@ -135,9 +142,6 @@ const NetworkMap = (props) => {
     const layers = [];
 
     if (props.network !== null && props.geoData !== null) {
-
-        const labelColor = decomposeColor(theme.palette.text.primary).values;
-        labelColor[3] *= 255;
 
         layers.push(new SubstationLayer({
             id: SUBSTATION_LAYER_PREFIX,
