@@ -87,15 +87,17 @@ const SingleLineDiagram = (props) => {
             const divElt = document.getElementById("sld-svg");
             const svgEl = divElt.getElementsByTagName("svg")[0];
             const bbox = svgEl.getBBox();
-            const svgWidth = bbox.width + 20;
-            const svgHeight = bbox.height + 20;
+            const xOrigin = bbox.x - 20;
+            const yOrigin = bbox.y - 20;
+            const svgWidth = bbox.width + 40;
+            const svgHeight = bbox.height + 40;
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ""; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
                 .size(svgWidth, svgHeight)
-                .viewbox(bbox.x, bbox.y, svgWidth, svgHeight)
+                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.2, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
 
