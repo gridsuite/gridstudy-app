@@ -76,14 +76,18 @@ function dispatchUser(dispatch, userManagerInstance) {
     });
 }
 
+function getPreLoginPath() {
+    return sessionStorage.getItem(pathKey);
+}
+
 function handleSigninCallback(dispatch, history, userManagerInstance) {
     userManagerInstance.signinRedirectCallback().then(function () {
         dispatchUser(dispatch, userManagerInstance);
-        const previousPath = sessionStorage.getItem(pathKey);
+        const previousPath = getPreLoginPath();
         history.replace(previousPath);
     }).catch(function (e) {
         console.error(e);
     });
 }
 
-export {userManagerPromise, login, logout, dispatchUser, handleSigninCallback}
+export {userManagerPromise, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
