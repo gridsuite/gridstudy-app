@@ -17,6 +17,7 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
             /* hack to ignore the iss check. XXX TODO to remove */
             const regextoken=/id_token=[^&]*/;
             const regexstate=/state=[^&]*/;
+            const hackauthoritykey = "oidc.hack.authority";
             let authority;
             if (window.location.hash) {
                 const matched_id_token=window.location.hash.match(regextoken);
@@ -30,10 +31,11 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                         const storedState = JSON.parse(strState);
                         storedState.authority=authority;
                         localStorage.setItem("oidc." + state, JSON.stringify(storedState));
+                        sessionStorage.setItem(hackauthoritykey, authority);
                     }
                 }
             }
-            authority = authority || idpSettings.authority;
+            authority = authority || sessionStorage.getItem(hackauthoritykey) || idpSettings.authority;
 
             let settings = {
                 authority,
