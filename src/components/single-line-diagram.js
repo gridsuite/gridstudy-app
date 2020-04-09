@@ -95,7 +95,7 @@ const SingleLineDiagram = (props) => {
             const draw = SVG()
                 .addTo(divElt)
                 .size(svgWidth, svgHeight)
-                .viewbox(0, 0, svgWidth, svgHeight)
+                .viewbox(bbox.x, bbox.y, svgWidth, svgHeight)
                 .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.2, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
 
