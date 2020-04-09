@@ -132,7 +132,9 @@ const NetworkMap = (props) => {
     }
 
     function onClickHandler(info) {
-        if (info.layer && info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX)) {
+        if (info.layer && info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX)
+         && info.object && info.object.substationId // is a voltage level marker, not a substation text
+        ) {
             if (props.onSubstationClick) {
                 props.onSubstationClick(info.object.id)
             }
