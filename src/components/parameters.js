@@ -117,7 +117,7 @@ const Parameters = () => {
     function GeneralTab(){
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(useName, "useName", ()=>dispatch(toggleUseNameState()))}
+                {MakeSwitch(useName, "useName", () => dispatch(toggleUseNameState()))}
                 <MakeLineSeparator/>
                 <Grid item xs={6}>
                     <Typography component="span" variant="body1">
@@ -139,9 +139,9 @@ const Parameters = () => {
     function SingleLineDiagramParameters() {
         return (
                 <Grid container spacing={2} className={classes.grid}>
-                    {MakeSwitch(diagonalLabel, "diagonalLabel", ()=>dispatch(toggleDiagonalLabelState()))}
+                    {MakeSwitch(diagonalLabel, "diagonalLabel", () => dispatch(toggleDiagonalLabelState()))}
                     <MakeLineSeparator/>
-                    {MakeSwitch(centerLabel, "centerLabel", ()=>dispatch(toggleCenterLabelState()))}
+                    {MakeSwitch(centerLabel, "centerLabel", () => dispatch(toggleCenterLabelState()))}
                 </Grid>
             )
     }
@@ -152,7 +152,7 @@ const Parameters = () => {
                 <FormattedMessage id="parameters"/>
             </Typography>
             <Tabs  value={tabIndex} indicatorColor="primary" textColor="default"
-                   onChange={(event, newValue)=> setTabIndex(newValue)} aria-label="parameters">
+                   onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
                 <Tab label={<FormattedMessage id="General"/> } />
                 <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
             </Tabs>
