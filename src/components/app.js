@@ -111,11 +111,11 @@ const App = () => {
                             <Route exact path="/parameters">
                                 <Parameters/>
                             </Route>
-                            <Route exact path="/logout-callback">
-                                <Redirect to="/" />
-                            </Route>
                             <Route exact path="/sign-in-callback">
                                 <Redirect to={getPreLoginPath() || "/"} />
+                            </Route>
+                            <Route exact path="/logout-callback">
+                                <h1>Error: logout failed; you are still logged in.</h1>
                             </Route>
                             <Route>
                                 <h1>Error: bad URL; No matched Route.</h1>
@@ -127,6 +127,9 @@ const App = () => {
                             <Switch>
                                 <Route exact path="/sign-in-callback">
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
+                                </Route>
+                                <Route exact path="/logout-callback">
+                                    <Redirect to="/" />
                                 </Route>
                                 <Route>
                                     {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login(location, userManager.instance)}/>)}
