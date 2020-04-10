@@ -148,8 +148,13 @@ const Parameters = () => {
 
     return (
         <Container maxWidth="md" >
-            <AppBar position="static">
-                <Tabs  value={tabIndex} onChange={(event, newValue)=> setTabIndex(newValue)} aria-label="parameters">
+            <Typography variant="h5" className={classes.title}>
+                <FormattedMessage id="parameters"/>
+            </Typography>
+            <Divider/>
+            <AppBar position="static" color="default">
+                <Tabs  value={tabIndex} indicatorColor="primary" textColor="default"
+                       onChange={(event, newValue)=> setTabIndex(newValue)} aria-label="parameters">
                     <Tab label={<FormattedMessage id="General"/> } />
                     <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
                 </Tabs>

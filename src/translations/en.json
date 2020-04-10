@@ -37,7 +37,7 @@
   "diagonalLabel": "Display name diagonaly",
   "centerLabel": "Center name",
   "General": "General",
-  "SingleLineDiagram": "Substation Driagram",
+  "SingleLineDiagram": "Substation Diargram",
 
   "studyNotFound": "Study '{studyName}' has not been found",
   "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
