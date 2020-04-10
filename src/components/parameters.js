@@ -54,7 +54,7 @@ const Parameters = () => {
     const useName = useSelector(state => state.useName);
     const centerLabel = useSelector(state => state.centerLabel);
     const diagonalLabel = useSelector(state => state.diagonalLabel);
-    const [tabIndex, setTabIndex] = React.useState(useSelector(state => state.parametersTabIndex));
+    const [tabIndex, setTabIndex] = React.useState(0);
 
     const theme = useSelector(state => state.theme);
 

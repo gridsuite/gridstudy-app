@@ -46,7 +46,6 @@ const initialState = {
     user : null,
     centerLabel : false,
     diagonalLabel : false,
-    parametersTabIndex: 0,
     signInCallbackError : null
 };
 
