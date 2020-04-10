@@ -36,7 +36,7 @@
   "diagonalLabel": "Afficher les noms en diagonal",
   "centerLabel": "Centrer les noms",
   "General": "Général",
-  "SingleLineDiagram": "Diagramme de Poste",
+  "SingleLineDiagram": "Schéma unifilaire",
 
   "studyNotFound": "L'étude ''{studyName}'' n'a pas été trouvée",
   "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",

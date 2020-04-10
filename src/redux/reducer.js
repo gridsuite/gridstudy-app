@@ -8,8 +8,12 @@
 import {createReducer} from "@reduxjs/toolkit";
 
 import {
+    getLocalStorageCenterLabel,
+    getLocalStorageDiagonalLabel,
     getLocalStorageTheme,
     getLocalStorageUseName,
+    saveLocalStorageCenterLabel,
+    saveLocalStorageDiagonalLabel,
     saveLocalStorageTheme,
     saveLocalStorageUseName
 } from "./local-storage";
@@ -44,8 +48,8 @@ const initialState = {
     selectedFile : null,
     useName : getLocalStorageUseName(),
     user : null,
-    centerLabel : false,
-    diagonalLabel : false,
+    centerLabel : getLocalStorageCenterLabel(),
+    diagonalLabel : getLocalStorageDiagonalLabel(),
     signInCallbackError : null
 };
 
@@ -106,15 +110,15 @@ export const reducer = createReducer(initialState, {
     [USER]: (state, action) => {
         state.user = action.user;
     },
-  
+
     [CENTER_LABEL]: (state) => {
         state.centerLabel = !state.centerLabel;
-        saveLocalStorageUseName(state.centerLabel);
+        saveLocalStorageCenterLabel(state.centerLabel);
     },
 
     [DIAGONAL_LABEL]: (state) => {
         state.diagonalLabel = !state.diagonalLabel;
-        saveLocalStorageUseName(state.diagonalLabel);
+        saveLocalStorageDiagonalLabel(state.diagonalLabel);
     },
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
