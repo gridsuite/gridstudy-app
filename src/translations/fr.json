@@ -33,6 +33,10 @@
   "studyCreatingError" : "Une erreur est survenue lors du création de l'étude",
 
   "useName": "Utiliser le nom à la place de l'identifiant",
+  "diagonalLabel": "Afficher les noms en diagonal",
+  "centerLabel": "Centrer les noms",
+  "General": "Général",
+  "SingleLineDiagram": "Schéma unifilaire",
 
   "studyNotFound": "L'étude ''{studyName}'' n'a pas été trouvée",
   "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
