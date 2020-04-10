@@ -27,7 +27,8 @@ import {
     SELECT_FILE,
     SELECT_THEME,
     USE_NAME,
-    USER
+    USER,
+    SIGNIN_CALLBACK_ERROR
 } from "./actions";
 
 const initialState = {
@@ -41,6 +42,7 @@ const initialState = {
     selectedFile : null,
     useName : getLocalStorageUseName(),
     user : null,
+    signInCallbackError : null
 };
 
 export const reducer = createReducer(initialState, {
@@ -99,5 +101,9 @@ export const reducer = createReducer(initialState, {
 
     [USER]: (state, action) => {
         state.user = action.user;
+    },
+
+    [SIGNIN_CALLBACK_ERROR]: (state, action) => {
+        state.signInCallbackError = action.signInCallbackError;
     },
 });

@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import getDistance from "geolib/es/getDistance";
+
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
     return map;
@@ -42,17 +44,28 @@ export default class GeoData {
 
     getLinePositions(network, line) {
         const linePosition = this.linePositions.get(line.id);
+        const voltageLevel1 = network.getVoltageLevel(line.voltageLevelId1);
+        if (!voltageLevel1) {
+            throw new Error(`Voltage level side 1 '${line.voltageLevelId1}' not found`);
+        }
+        const voltageLevel2 = network.getVoltageLevel(line.voltageLevelId2);
+        if (!voltageLevel2) {
+            throw new Error(`Voltage level side 2 '${line.voltageLevelId1}' not found`);
+        }
+        const substationPosition1 = this.getSubstationPosition(voltageLevel1.substationId);
+        const substationPosition2 = this.getSubstationPosition(voltageLevel2.substationId);
+
         if (linePosition) {
-            return linePosition.map(c => [c.lon, c.lat]);
+            const positions = linePosition.map(c => [c.lon, c.lat]);
+            const distSub1 = getDistance({latitude : substationPosition1[1],longitude : substationPosition1[0]}, {latitude : positions[0][1],longitude : positions[0][0]});
+            const distSub2 = getDistance({latitude : substationPosition2[1],longitude : substationPosition2[0]}, {latitude : positions[0][1],longitude : positions[0][0]});
+
+            if (distSub1 < distSub2) {
+                return [substationPosition1].concat(positions.concat([substationPosition2]));
+            } else {
+                return [substationPosition2].concat(positions.concat([substationPosition1]));
+            }
         } else {
-            const voltageLevel1 = network.getVoltageLevel(line.voltageLevelId1);
-            if (!voltageLevel1) {
-                throw new Error(`Voltage level side 1 '${line.voltageLevelId1}' not found`);
-            }
-            const voltageLevel2 = network.getVoltageLevel(line.voltageLevelId2);
-            if (!voltageLevel2) {
-                throw new Error(`Voltage level side 2 '${line.voltageLevelId1}' not found`);
-            }
             const substationPosition1 = this.getSubstationPosition(voltageLevel1.substationId);
             const substationPosition2 = this.getSubstationPosition(voltageLevel2.substationId);
             return [ substationPosition1, substationPosition2 ];
