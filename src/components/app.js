@@ -62,6 +62,9 @@ const App = () => {
 
     const user = useSelector(state => state.user);
 
+    const signInCallbackError = useSelector(state => state.signInCallbackError);
+
+
     const [userManager, setUserManager] = useState(noUserManager);
 
     const history = useHistory();
@@ -120,6 +123,7 @@ const App = () => {
                         </Switch>)
                     : ( <React.Fragment>
                             {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
+                            {signInCallbackError !== null && (<h1>Error : SignIn Callback Error; {signInCallbackError.message}</h1>)}
                             <Switch>
                                 <Route exact path="/sign-in-callback">
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>

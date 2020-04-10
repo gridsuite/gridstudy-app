@@ -6,7 +6,7 @@
  */
 import {UserManager} from 'oidc-client';
 import {UserManagerMock} from "./UserManagerMock";
-import {setLoggedUser} from "../../redux/actions";
+import {setLoggedUser, setSignInCallbackError} from "../../redux/actions";
 import jwtDecode from 'jwt-decode';
 
 let userManagerPromise;
@@ -83,9 +83,11 @@ function getPreLoginPath() {
 function handleSigninCallback(dispatch, history, userManagerInstance) {
     userManagerInstance.signinRedirectCallback().then(function () {
         dispatchUser(dispatch, userManagerInstance);
+        dispatch(setSignInCallbackError(null));
         const previousPath = getPreLoginPath();
         history.replace(previousPath);
     }).catch(function (e) {
+        dispatch(setSignInCallbackError(e));
         console.error(e);
     });
 }
