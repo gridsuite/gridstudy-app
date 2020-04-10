@@ -92,7 +92,7 @@ const SelectCase = () => {
                    value={store.getState().selectedCase != null ? store.getState().selectedCase : ""}
                    onChange={handleChangeSelectCase}>
                    {
-                       cases.map((function (element) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
+                       cases.map((function (element) {return <MenuItem key={element.uuid} value={element.uuid}>{element.name}</MenuItem>}))
                    }
                </Select>
            </FormControl>
