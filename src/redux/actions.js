@@ -96,3 +96,9 @@ export const DIAGONAL_LABEL = 'DIAGONAL_LABEL';
 export function toggleDiagonalLabelState() {
     return { type: DIAGONAL_LABEL };
 }
+
+export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
+
+export function setSignInCallbackError(signInCallbackError) {
+    return { type: SIGNIN_CALLBACK_ERROR, signInCallbackError : signInCallbackError};
+}

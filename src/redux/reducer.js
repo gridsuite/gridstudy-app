@@ -29,7 +29,8 @@ import {
     SELECT_FILE,
     SELECT_THEME,
     USE_NAME,
-    USER
+    USER,
+    SIGNIN_CALLBACK_ERROR
 } from "./actions";
 
 const initialState = {
@@ -45,7 +46,8 @@ const initialState = {
     user : null,
     centerLabel : false,
     diagonalLabel : false,
-    parametersTabIndex: 0
+    parametersTabIndex: 0,
+    signInCallbackError : null
 };
 
 export const reducer = createReducer(initialState, {
@@ -105,7 +107,7 @@ export const reducer = createReducer(initialState, {
     [USER]: (state, action) => {
         state.user = action.user;
     },
-
+  
     [CENTER_LABEL]: (state) => {
         state.centerLabel = !state.centerLabel;
         saveLocalStorageUseName(state.centerLabel);
@@ -116,4 +118,7 @@ export const reducer = createReducer(initialState, {
         saveLocalStorageUseName(state.diagonalLabel);
     },
 
+    [SIGNIN_CALLBACK_ERROR]: (state, action) => {
+        state.signInCallbackError = action.signInCallbackError;
+    },
 });
