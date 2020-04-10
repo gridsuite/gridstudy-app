@@ -18,7 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
-import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser} from '../utils/authentication/AuthService';
+import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath} from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
@@ -110,6 +110,9 @@ const App = () => {
                             </Route>
                             <Route exact path="/logout-callback">
                                 <Redirect to="/" />
+                            </Route>
+                            <Route exact path="/sign-in-callback">
+                                <Redirect to={getPreLoginPath() || "/"} />
                             </Route>
                             <Route>
                                 <h1>Error: bad URL; No matched Route.</h1>

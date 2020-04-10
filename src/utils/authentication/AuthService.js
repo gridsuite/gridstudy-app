@@ -17,17 +17,25 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
             /* hack to ignore the iss check. XXX TODO to remove */
             const regextoken=/id_token=[^&]*/;
             const regexstate=/state=[^&]*/;
+            const hackauthoritykey = "oidc.hack.authority";
             let authority;
             if (window.location.hash) {
-                const id_token=window.location.hash.match(regextoken)[0].split('=')[1];
-                authority = jwtDecode(id_token).iss
-                const state=window.location.hash.match(regexstate)[0].split('=')[1];
-                const strState = localStorage.getItem("oidc." + state);
-                const storedState = JSON.parse(strState);
-                storedState.authority=authority;
-                localStorage.setItem("oidc." + state, JSON.stringify(storedState));
+                const matched_id_token=window.location.hash.match(regextoken);
+                const matched_state=window.location.hash.match(regexstate);
+                if (matched_id_token != null && matched_state != null) {
+                    const id_token = matched_id_token[0].split('=')[1];
+                    const state = matched_state[0].split('=')[1];
+                    const strState = localStorage.getItem("oidc." + state);
+                    if (strState != null) {
+                        authority = jwtDecode(id_token).iss
+                        const storedState = JSON.parse(strState);
+                        storedState.authority=authority;
+                        localStorage.setItem("oidc." + state, JSON.stringify(storedState));
+                        sessionStorage.setItem(hackauthoritykey, authority);
+                    }
+                }
             }
-            authority = authority || idpSettings.authority;
+            authority = authority || sessionStorage.getItem(hackauthoritykey) || idpSettings.authority;
 
             let settings = {
                 authority,
@@ -68,14 +76,18 @@ function dispatchUser(dispatch, userManagerInstance) {
     });
 }
 
+function getPreLoginPath() {
+    return sessionStorage.getItem(pathKey);
+}
+
 function handleSigninCallback(dispatch, history, userManagerInstance) {
     userManagerInstance.signinRedirectCallback().then(function () {
         dispatchUser(dispatch, userManagerInstance);
-        const previousPath = sessionStorage.getItem(pathKey);
+        const previousPath = getPreLoginPath();
         history.replace(previousPath);
     }).catch(function (e) {
         console.error(e);
     });
 }
 
-export {userManagerPromise, login, logout, dispatchUser, handleSigninCallback}
+export {userManagerPromise, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
