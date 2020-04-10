@@ -9,6 +9,8 @@ import {UserManagerMock} from "./UserManagerMock";
 import {setLoggedUser} from "../../redux/actions";
 import jwtDecode from 'jwt-decode';
 
+const hackauthoritykey = "oidc.hack.authority";
+
 let userManagerPromise;
 if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
     userManagerPromise = fetch('idpSettings.json')
@@ -17,7 +19,6 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
             /* hack to ignore the iss check. XXX TODO to remove */
             const regextoken=/id_token=[^&]*/;
             const regexstate=/state=[^&]*/;
-            const hackauthoritykey = "oidc.hack.authority";
             let authority;
             if (window.location.hash) {
                 const matched_id_token=window.location.hash.match(regextoken);
@@ -61,6 +62,7 @@ function login(location, userManagerInstance) {
 
 function logout(dispatch, userManagerInstance) {
     dispatch(setLoggedUser(null));
+    sessionStorage.removeItem(hackauthoritykey);//To remove when hack is removed
     return userManagerInstance.signoutRedirect().then(
         () => console.debug("logged out"));
 }
