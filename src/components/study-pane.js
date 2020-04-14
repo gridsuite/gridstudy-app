@@ -77,6 +77,10 @@ const StudyPane = () => {
 
     const useName = useSelector(state => state.useName);
 
+    const centerName = useSelector( state => state.centerLabel);
+
+    const diagonalName = useSelector( state => state.diagonalLabel);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
@@ -218,7 +222,7 @@ const StudyPane = () => {
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName)} />
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName)} />
                             </div>
                         }
                         {

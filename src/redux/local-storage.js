@@ -27,3 +27,25 @@ export const getLocalStorageUseName = () => {
 export const saveLocalStorageUseName = (useName) => {
     localStorage.setItem(LOCAL_STORAGE_USE_NAME_KEY, useName);
 };
+
+const LOCAL_STORAGE_CENTER_LABEL_KEY = "STUDY_APP_CENTER_LABEL";
+
+export const getLocalStorageCenterLabel = () => {
+    const value = localStorage.getItem(LOCAL_STORAGE_CENTER_LABEL_KEY);
+    return value === "true";
+};
+
+export const saveLocalStorageCenterLabel = (useName) => {
+    localStorage.setItem(LOCAL_STORAGE_CENTER_LABEL_KEY, useName);
+};
+
+const LOCAL_STORAGE_DIAGONAL_LABEL_KEY = "STUDY_APP_DIAGONAL_LABEL";
+
+export const getLocalStorageDiagonalLabel = () => {
+    const value = localStorage.getItem(LOCAL_STORAGE_DIAGONAL_LABEL_KEY);
+    return value === "true";
+};
+
+export const saveLocalStorageDiagonalLabel = (useName) => {
+    localStorage.setItem(LOCAL_STORAGE_DIAGONAL_LABEL_KEY, useName);
+};

@@ -85,6 +85,18 @@ export function setLoggedUser(user) {
     return { type: USER, user : user};
 }
 
+export const CENTER_LABEL = 'CENTER_LABEL';
+
+export function toggleCenterLabelState() {
+    return { type: CENTER_LABEL };
+}
+
+export const DIAGONAL_LABEL = 'DIAGONAL_LABEL';
+
+export function toggleDiagonalLabelState() {
+    return { type: DIAGONAL_LABEL };
+}
+
 export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
 
 export function setSignInCallbackError(signInCallbackError) {
