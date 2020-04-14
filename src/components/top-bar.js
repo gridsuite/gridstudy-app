@@ -124,6 +124,31 @@ const TopBar = (props) => {
                     <FormattedMessage id="appName"/>
                 </Typography>
                 <div className={classes.grow} />
+                <Button
+                    aria-controls="apps-menu"
+                    aria-haspopup="true"
+                    onClick={handleClickAppsMenu}
+                >
+                    <AppsIcon/>
+                </Button>
+
+                <StyledMenu
+                    id="apps-menu"
+                    anchorEl={anchorElAppsMenu}
+                    keepMounted
+                    open={Boolean(anchorElAppsMenu)}
+                    onClose={handleCloseAppsMenu}
+                >
+                    <StyledMenuItem onClick={onLogoClick}>
+                        <ListItemIcon>
+                            <PowsyblLogo className={classes.logo} />
+                        </ListItemIcon>
+                        <ListItemText >
+                            <FormattedMessage id="appName"/>
+                        </ListItemText>
+                    </StyledMenuItem>
+                </StyledMenu>
+
                 <h3>{user !== null ? user.profile.name : ""}</h3>
 
                 {user && (
@@ -157,31 +182,6 @@ const TopBar = (props) => {
                             </ListItemIcon>
                             <ListItemText >
                                 <FormattedMessage id="logout"/>
-                            </ListItemText>
-                        </StyledMenuItem>
-                    </StyledMenu>
-
-                    <Button
-                        aria-controls="apps-menu"
-                        aria-haspopup="true"
-                        onClick={handleClickAppsMenu}
-                    >
-                        <AppsIcon/>
-                    </Button>
-
-                    <StyledMenu
-                        id="apps-menu"
-                        anchorEl={anchorElAppsMenu}
-                        keepMounted
-                        open={Boolean(anchorElAppsMenu)}
-                        onClose={handleCloseAppsMenu}
-                    >
-                        <StyledMenuItem onClick={onLogoClick}>
-                            <ListItemIcon>
-                                <PowsyblLogo className={classes.logo} />
-                            </ListItemIcon>
-                            <ListItemText >
-                                <FormattedMessage id="appName"/>
                             </ListItemText>
                         </StyledMenuItem>
                     </StyledMenu>
