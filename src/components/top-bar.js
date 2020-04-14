@@ -41,6 +41,10 @@ const useStyles = makeStyles(() => ({
         height: 48,
         cursor: 'pointer'
     },
+    menuIcon: {
+        width: 24,
+        height: 24,
+    },
     title: {
         marginLeft: 18,
         cursor: 'pointer'
@@ -144,7 +148,7 @@ const TopBar = (props) => {
                         >
                             <StyledMenuItem onClick={onLogoClick}>
                                 <ListItemIcon>
-                                    <PowsyblLogo className={classes.logo}  />
+                                    <PowsyblLogo className={classes.menuIcon}  />
                                 </ListItemIcon>
                                 <ListItemText >
                                     <FormattedMessage id="appName"/>
