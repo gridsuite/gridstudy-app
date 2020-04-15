@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - This new CHANGELOG file can be used as a communication support for the users concerning our main exposed functionalities
 - Manage authentication from an Azure account
-- Create and view studies from UCT, iIDM, CGMES network files
+- Create and visualize studies from UCT, IIDM and CGMES network files
 - Geographical display of the imported networks
 - On-demand display of electrical substations
 
