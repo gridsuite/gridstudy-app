@@ -16,6 +16,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
 import Paper from "@material-ui/core/Paper";
 import {FormattedMessage} from "react-intl";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({
     nominalVoltageZone: {
@@ -36,6 +37,12 @@ const useStyles = makeStyles(theme => ({
     nominalVoltageSelectionControl : {
         fontSize: 12,
         textDecoration: "underline",
+        textTransform: 'none',
+        padding:'0px',
+        minWidth: "45%",
+        '&:hover, &:focus':{
+            textDecoration: "underline",
+        }
     },
 }));
 
@@ -52,12 +59,14 @@ const NominalVoltageFilter = (props) => {
     return (
         <Paper>
             <List className={classes.nominalVoltageZone}>
-                <ListItem className={classes.nominalVoltageItem} >
-                    <ListItemText disableTypography className={classes.nominalVoltageSelectionControl} onClick={ () => props.onCheckAll(true)}
-                        primary={<FormattedMessage id="CBAll"/>} />
-                    <ListItemText disableTypography className={classes.nominalVoltageText} primary={'/'}/>
-                    <ListItemText disableTypography className={classes.nominalVoltageSelectionControl} onClick={ () => props.onCheckAll(false)}
-                                  primary={<FormattedMessage id="CBNone"/>} />
+                <ListItem  className={classes.nominalVoltageItem} >
+                    <Button  size={'small'}  variant={'text'} className={classes.nominalVoltageSelectionControl} onClick={ () => props.onCheckAll(true)}>
+                        <FormattedMessage id="CBAll"/>
+                    </Button>
+                    <ListItemText className={classes.nominalVoltageText} secondary={'/'}/>
+                    <Button size={'small'} variant={"text"} className={classes.nominalVoltageSelectionControl} onClick={ () => props.onCheckAll(false)} >
+                        <FormattedMessage id="CBNone"/>
+                    </Button>
                 </ListItem>
                 {
                 props.nominalVoltages.map(value => {
