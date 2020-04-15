@@ -1,5 +1,3 @@
-import {useSelector} from "react-redux";
-
 /**
  * Copyright (c) 2020, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
