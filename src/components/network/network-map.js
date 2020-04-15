@@ -195,7 +195,6 @@ const NetworkMap = (props) => {
                    controller={{ doubleClickZoom: false }}
                    ContextProvider={MapContext.Provider}>
             <StaticMap
-                reuseMaps
                 mapStyle={ theme.mapboxStyle }
                 preventStyleDiffing={true}
                 mapboxApiAccessToken={MAPBOX_TOKEN}>
