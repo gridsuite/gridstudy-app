@@ -5,9 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+let PREFIX_CASE_QUERIES = null;
+let PREFIX_STUDY_QUERIES = null;
+if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
+    PREFIX_CASE_QUERIES = process.env.REACT_APP_API_CASE_SERVER;
+    PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_STUDY_SERVER;
+} else {
+    PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY;
+    PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY;
+}
+
 export function fetchStudies() {
     console.info("Fetching studies...");
-    const fetchStudiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies";
+    const fetchStudiesUrl = PREFIX_STUDY_QUERIES + "/v1/studies";
     console.debug(fetchStudiesUrl);
     return fetch(fetchStudiesUrl)
         .then(response => response.json());
@@ -15,7 +25,7 @@ export function fetchStudies() {
 
 export function fetchCases() {
     console.info("Fetching cases...");
-    const fetchCasesUrl = process.env.REACT_APP_API_CASE_SERVER + "/v1/cases";
+    const fetchCasesUrl = PREFIX_CASE_QUERIES + "/v1/cases";
     console.debug(fetchCasesUrl);
     return fetch(fetchCasesUrl)
         .then(response => response.json());
@@ -23,7 +33,7 @@ export function fetchCases() {
 
 export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel) {
     console.info(`Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
-    return process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg-and-metadata?useName=" + useName
+    return PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg-and-metadata?useName=" + useName
         + "&centerLabel=" + centerLabel + "&diagonalLabel=" + diagonalLabel;
 }
 
@@ -38,7 +48,7 @@ export function fetchSvg(svgUrl) {
 
 export function fetchSubstations(studyName) {
     console.info(`Fetching substations of study '${studyName}'...`);
-    const fetchSubstationsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-map/substations";
+    const fetchSubstationsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-map/substations";
     console.debug(fetchSubstationsUrl);
     return fetch(fetchSubstationsUrl)
         .then(response => response.json());
@@ -46,7 +56,7 @@ export function fetchSubstations(studyName) {
 
 export function fetchSubstationPositions(studyName) {
     console.info(`Fetching substation positions of study '${studyName}'...`);
-    const fetchSubstationPositionsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/geo-data/substations";
+    const fetchSubstationPositionsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/geo-data/substations";
     console.debug(fetchSubstationPositionsUrl);
     return fetch(fetchSubstationPositionsUrl)
         .then(response => response.json());
@@ -54,7 +64,7 @@ export function fetchSubstationPositions(studyName) {
 
 export function fetchLines(studyName) {
     console.info(`Fetching lines of study '${studyName}'...`);
-    const fetchLinesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-map/lines";
+    const fetchLinesUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-map/lines";
     console.debug(fetchLinesUrl);
     return fetch(fetchLinesUrl)
         .then(response => response.json());
@@ -62,7 +72,7 @@ export function fetchLines(studyName) {
 
 export function fetchLinePositions(studyName) {
     console.info(`Fetching line positions of study '${studyName}'...`);
-    const fetchLinePositionsUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/geo-data/lines";
+    const fetchLinePositionsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/geo-data/lines";
     console.debug(fetchLinePositionsUrl);
     return fetch(fetchLinePositionsUrl)
         .then(response => response.json());
@@ -71,11 +81,11 @@ export function fetchLinePositions(studyName) {
 export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile) {
     console.info("Creating a new study...");
     if (caseExist) {
-        const createStudyWithExistingCaseUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
+        const createStudyWithExistingCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
         console.debug(createStudyWithExistingCaseUrl);
         return fetch(createStudyWithExistingCaseUrl, {method : 'post'});
     } else {
-        const createStudyWithNewCaseUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "?description=" + studyDescription;
+        const createStudyWithNewCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "?description=" + studyDescription;
         const formData = new FormData();
         formData.append('caseFile', selectedFile);
         console.debug(createStudyWithNewCaseUrl);
@@ -88,7 +98,7 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, se
 
 export function deleteStudy(studyName) {
     console.info("Deleting study" + studyName + " ...");
-    const deleteStudyUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName;
+    const deleteStudyUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName;
     console.debug(deleteStudyUrl);
     return fetch(deleteStudyUrl, {method:'delete'});
 }
