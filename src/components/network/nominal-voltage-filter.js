@@ -15,6 +15,7 @@ import ListItem from "@material-ui/core/ListItem";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
 import Paper from "@material-ui/core/Paper";
+import {FormattedMessage} from "react-intl";
 
 const useStyles = makeStyles(theme => ({
     nominalVoltageZone: {
@@ -31,7 +32,11 @@ const useStyles = makeStyles(theme => ({
     },
     nominalVoltageText : {
         fontSize: 12
-    }
+    },
+    nominalVoltageSelectionControl : {
+        fontSize: 12,
+        textDecoration: "underline",
+    },
 }));
 
 const NominalVoltageFilter = (props) => {
@@ -46,7 +51,15 @@ const NominalVoltageFilter = (props) => {
 
     return (
         <Paper>
-            <List className={classes.nominalVoltageZone}> {
+            <List className={classes.nominalVoltageZone}>
+                <ListItem className={classes.nominalVoltageItem} >
+                    <ListItemText disableTypography className={classes.nominalVoltageSelectionControl} onClick={ () => props.onCheckAll(true)}
+                        primary={<FormattedMessage id="CBAll"/>} />
+                    <ListItemText disableTypography className={classes.nominalVoltageText} primary={'/'}/>
+                    <ListItemText disableTypography className={classes.nominalVoltageSelectionControl} onClick={ () => props.onCheckAll(false)}
+                                  primary={<FormattedMessage id="CBNone"/>} />
+                </ListItem>
+                {
                 props.nominalVoltages.map(value => {
                     return (
                         <ListItem className={classes.nominalVoltageItem}
@@ -55,7 +68,7 @@ const NominalVoltageFilter = (props) => {
                             onClick={handleToggle(value)}
                         >
                             <Checkbox color="default" className={classes.nominalVoltageCheck} checked={props.filteredNominalVoltages.indexOf(value) !== -1}/>
-                            <ListItemText className={classes.nominalVoltageText} disableTypography primary={`${value}`}/>
+                            <ListItemText className={classes.nominalVoltageText} disableTypography primary={`${value} kV`}/>
                         </ListItem>
                     );
                 })}
@@ -67,13 +80,15 @@ const NominalVoltageFilter = (props) => {
 NominalVoltageFilter.defaultProps = {
     nominalVoltages: [],
     filteredNominalVoltages: [],
-    onNominalVoltageFilterChange: null
+    onNominalVoltageFilterChange: null,
+    onCheckAll: null
 };
 
 NominalVoltageFilter.propTypes = {
     nominalVoltages: PropTypes.array,
     filteredNominalVoltages: PropTypes.array,
-    onNominalVoltageFilterChange: PropTypes.func
+    onNominalVoltageFilterChange: PropTypes.func,
+    onCheckAll: PropTypes.func
 };
 
 export default NominalVoltageFilter;

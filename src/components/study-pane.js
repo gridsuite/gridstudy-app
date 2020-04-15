@@ -187,6 +187,10 @@ const StudyPane = () => {
         setFilteredNominalVoltages(newFiltered);
     };
 
+    const toggleCheckAll = (toCheck) => {
+        setFilteredNominalVoltages(toCheck ? network.getNominalVoltages() : [] );
+    };
+
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
     } else {
@@ -230,7 +234,8 @@ const StudyPane = () => {
                             <div style={{position: "absolute", right: 10, bottom: 30, zIndex: 1}}>
                                 <NominalVoltageFilter nominalVoltages={network.getNominalVoltages()}
                                                       filteredNominalVoltages={filteredNominalVoltages}
-                                                      onNominalVoltageFilterChange={updateFilteredNominalVoltages} />
+                                                      onNominalVoltageFilterChange={updateFilteredNominalVoltages}
+                                                      onCheckAll={toggleCheckAll}/>
                             </div>
                         }
                 </div>

@@ -47,5 +47,8 @@
   "close": "Close",
 
   "centerOnMap": "Center on the map",
-  "openVoltageLevel": "Open the voltage level"
+  "openVoltageLevel": "Open the voltage level",
+  "CBAll" : "All",
+  "CBNone" : "None"
+
 }
