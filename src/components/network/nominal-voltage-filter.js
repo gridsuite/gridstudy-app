@@ -50,9 +50,9 @@ const NominalVoltageFilter = (props) => {
 
     const classes = useStyles();
 
-    const handleToggle = value => () => {
+    const handleToggle = (value, isToggle) => () => {
         if (props.onNominalVoltageFilterChange !== null) {
-            props.onNominalVoltageFilterChange(value);
+            props.onNominalVoltageFilterChange(value, isToggle);
         }
     };
 
@@ -60,11 +60,13 @@ const NominalVoltageFilter = (props) => {
         <Paper>
             <List className={classes.nominalVoltageZone}>
                 <ListItem  className={classes.nominalVoltageItem} >
-                    <Button  size={'small'}  variant={'text'} className={classes.nominalVoltageSelectionControl} onClick={ () => props.onCheckAll(true)}>
+                    <Button  size={'small'}  variant={'text'} className={classes.nominalVoltageSelectionControl}
+                             onClick={ handleToggle(props.nominalVoltages , false)}>
                         <FormattedMessage id="CBAll"/>
                     </Button>
                     <ListItemText className={classes.nominalVoltageText} secondary={'/'}/>
-                    <Button size={'small'} variant={"text"} className={classes.nominalVoltageSelectionControl} onClick={ () => props.onCheckAll(false)} >
+                    <Button size={'small'} variant={"text"} className={classes.nominalVoltageSelectionControl}
+                            onClick={ handleToggle([], false)} >
                         <FormattedMessage id="CBNone"/>
                     </Button>
                 </ListItem>
@@ -74,7 +76,7 @@ const NominalVoltageFilter = (props) => {
                         <ListItem className={classes.nominalVoltageItem}
                             key={value}
                             button
-                            onClick={handleToggle(value)}
+                            onClick={handleToggle([value], true)}
                         >
                             <Checkbox color="default" className={classes.nominalVoltageCheck} checked={props.filteredNominalVoltages.indexOf(value) !== -1}/>
                             <ListItemText className={classes.nominalVoltageText} disableTypography primary={`${value} kV`}/>
@@ -90,14 +92,12 @@ NominalVoltageFilter.defaultProps = {
     nominalVoltages: [],
     filteredNominalVoltages: [],
     onNominalVoltageFilterChange: null,
-    onCheckAll: null
 };
 
 NominalVoltageFilter.propTypes = {
     nominalVoltages: PropTypes.array,
     filteredNominalVoltages: PropTypes.array,
-    onNominalVoltageFilterChange: PropTypes.func,
-    onCheckAll: PropTypes.func
+    onNominalVoltageFilterChange: PropTypes.func
 };
 
 export default NominalVoltageFilter;
