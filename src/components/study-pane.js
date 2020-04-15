@@ -97,6 +97,8 @@ const StudyPane = () => {
 
     const history = useHistory();
 
+    const user = useSelector(state => state.user);
+
     // study creation, network and geo data loading: will be called only one time at creation mount event because
     // studyName won't change
     useEffect(() => {
@@ -130,9 +132,9 @@ const StudyPane = () => {
     function loadNetwork(studyName) {
         console.info(`Loading network of study '${studyName}'...`);
 
-        const substations = fetchSubstations(studyName);
+        const substations = fetchSubstations(studyName, user.id_token);
 
-        const lines = fetchLines(studyName);
+        const lines = fetchLines(studyName, user.id_token);
 
         Promise.all([substations, lines])
             .then(values => {
@@ -150,9 +152,9 @@ const StudyPane = () => {
     function loadGeoData(studyName) {
         console.info(`Loading geo data of study '${studyName}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyName);
+        const substationPositions = fetchSubstationPositions(studyName, user.id_token);
 
-        const linePositions = fetchLinePositions(studyName);
+        const linePositions = fetchLinePositions(studyName, user.id_token);
 
         Promise.all([substationPositions, linePositions])
             .then(values => {
