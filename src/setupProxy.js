@@ -5,9 +5,4 @@ module.exports = function(app) {
         pathRewrite: { '^/api/study-server/': '/' }
     })
   );
-  app.use(
-    createProxyMiddleware('http://localhost:5000/api/case-server', {
-        pathRewrite: { '^/api/case-server/': '/' }
-    })
-  );
 };

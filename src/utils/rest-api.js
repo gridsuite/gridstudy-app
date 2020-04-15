@@ -15,7 +15,7 @@ export function fetchStudies() {
 
 export function fetchCases() {
     console.info("Fetching cases...");
-    const fetchCasesUrl = process.env.REACT_APP_API_CASE_SERVER + "/v1/cases";
+    const fetchCasesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/cases";
     console.debug(fetchCasesUrl);
     return fetch(fetchCasesUrl)
         .then(response => response.json());
