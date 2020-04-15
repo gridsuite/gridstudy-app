@@ -65,7 +65,7 @@ const StudyNotFound = (props) => {
     );
 };
 
-const INITIAL_POSITION = [2.5, 46.6];
+const INITIAL_POSITION = [0, 0];
 
 const StudyPane = () => {
 
@@ -212,7 +212,7 @@ const StudyPane = () => {
                                     geoData={geoData}
                                     labelsZoomThreshold={8}
                                     initialPosition={INITIAL_POSITION}
-                                    initialZoom={6}
+                                    initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
                                     centeredSubstationId={focusedVoltageLevel && focusedVoltageLevel.substationId}
                                     onSubstationClick={showVoltageLevelDiagram} />
