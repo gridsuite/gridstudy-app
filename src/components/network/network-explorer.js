@@ -103,7 +103,11 @@ const NetworkExplorer = ({network, onVoltageLevelDisplayClick, onVoltageLevelFoc
 
     const voltagelevelInfo = index => {
         if (network.getSubstation(filteredVoltageLevels[index].substationId)) {
-            return filteredVoltageLevels[index].nominalVoltage + " kV — " + network.getSubstation(filteredVoltageLevels[index].substationId).countryName;
+            let info = filteredVoltageLevels[index].nominalVoltage + " kV";
+            if (network.getSubstation(filteredVoltageLevels[index].substationId).countryName !== undefined) {
+                info += " — " + network.getSubstation(filteredVoltageLevels[index].substationId).countryName;
+            }
+            return info;
         }
     };
 
