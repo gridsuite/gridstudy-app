@@ -102,6 +102,7 @@ const StudyCard = ({study, onClick}) => {
             case 'UCTE':
                 return <UcteLogo className={classes.logo}/>;
             case 'IEEE-CDF':
+            case 'IEEE CDF': // for powsybl <= 3.1 compatibility
                 return <IeeeLogo className={classes.logo}/>;
             default:
                 break;
