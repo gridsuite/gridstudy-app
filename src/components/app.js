@@ -146,7 +146,7 @@ const App = () => {
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
                                 </Route>
                                 <Route exact path="/silent-renew-callback">
-                                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(userManager.instance)}/>
+                                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(dispatch, userManager.instance)}/>
                                 </Route>
                                 <Route exact path="/logout-callback">
                                     <Redirect to="/" />
