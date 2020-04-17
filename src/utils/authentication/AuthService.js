@@ -43,6 +43,7 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                 client_id: idpSettings.client_id,
                 redirect_uri: idpSettings.redirect_uri,
                 post_logout_redirect_uri: idpSettings.post_logout_redirect_uri,
+                silent_redirect_uri: idpSettings.silent_redirect_uri,
                 response_mode: 'fragment',
                 response_type: 'id_token token',
                 scope: idpSettings.scope,
@@ -94,4 +95,21 @@ function handleSigninCallback(dispatch, history, userManagerInstance) {
     });
 }
 
-export {userManagerPromise, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
+function handleSilentRenewCallback(dispatch, history, userManagerInstance) {
+    userManagerInstance.signinSilentCallback().then(function () {
+    console.debug("Silent renew callback ...");
+    dispatchUser(dispatch, userManagerInstance);
+    dispatch(setSignInCallbackError(null));
+    const previousPath = getPreLoginPath();
+    history.replace(previousPath);
+}).catch(function (e) {
+    dispatch(setSignInCallbackError(e));
+    console.error(e);
+});
+}
+
+function renewToken(userManagerInstance) {
+    userManagerInstance.signinSilent().then(() => console.debug("silent renew token..."));
+}
+
+export {userManagerPromise, renewToken, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}

@@ -18,7 +18,15 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
-import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath} from '../utils/authentication/AuthService';
+import {
+    userManagerPromise,
+    login,
+    logout,
+    handleSigninCallback,
+    dispatchUser,
+    getPreLoginPath,
+    handleSilentRenewCallback, renewToken
+} from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
@@ -55,6 +63,18 @@ const SignInCallback = (props) => {
     )
 };
 
+const SilentRenewCallback = (props) => {
+    useEffect(() => {
+        if (props.userManager.instance !== null) {
+            props.handleSilentRenewCallback();
+        }
+    }, [props.userManager]);
+
+    return (
+        <h1> </h1>
+    )
+};
+
 const noUserManager = {instance: null, error: null};
 
 const App = () => {
@@ -76,6 +96,10 @@ const App = () => {
     useEffect(() => {
         userManagerPromise
             .then(userManager => {
+                userManager.events.addAccessTokenExpiring(function() {
+                    console.log("token expiring...");
+                    renewToken(userManager);
+                });
                 setUserManager({instance : userManager, error : null });
                 dispatchUser(dispatch, userManager);
             })
@@ -127,6 +151,9 @@ const App = () => {
                             <Switch>
                                 <Route exact path="/sign-in-callback">
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
+                                </Route>
+                                <Route exact path="/silent-renew-callback">
+                                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(dispatch, history, userManager.instance)}/>
                                 </Route>
                                 <Route exact path="/logout-callback">
                                     <Redirect to="/" />
