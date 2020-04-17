@@ -18,17 +18,10 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
-import {
-    userManagerPromise,
-    login,
-    logout,
-    handleSigninCallback,
-    dispatchUser,
-    getPreLoginPath,
-    handleSilentRenewCallback, renewToken
-} from '../utils/authentication/AuthService';
+
+import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath,  handleSilentRenewCallback, renewToken} from '../utils/authentication/AuthService';
+
 import Authentication from "./authentication";
-import Button from "@material-ui/core/Button";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -129,7 +122,6 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
-                <Button onClick={() => renewToken(userManager.instance)}>Renew Token</Button>
                 { user !== null ? (
                         <Switch>
                             <Route exact path="/">
@@ -159,7 +151,7 @@ const App = () => {
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
                                 </Route>
                                 <Route exact path="/silent-renew-callback">
-                                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(dispatch, history, userManager.instance)}/>
+                                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(userManager.instance)}/>
                                 </Route>
                                 <Route exact path="/logout-callback">
                                     <Redirect to="/" />
