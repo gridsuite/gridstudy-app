@@ -97,7 +97,7 @@ function handleSigninCallback(dispatch, history, userManagerInstance) {
     });
 }
 
-function handleSilentRenewCallback(dispatch, userManagerInstance) {
+function handleSilentRenewCallback(userManagerInstance) {
     userManagerInstance.signinSilentCallback();
 }
 
