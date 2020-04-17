@@ -19,7 +19,7 @@ import TopBar from './top-bar';
 import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
 
-import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath,  handleSilentRenewCallback, renewToken} from '../utils/authentication/AuthService';
+import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath,  handleSilentRenewCallback} from '../utils/authentication/AuthService';
 
 import Authentication from "./authentication";
 
@@ -90,11 +90,6 @@ const App = () => {
     useEffect(() => {
         userManagerPromise
             .then(userManager => {
-                userManager.events.addAccessTokenExpiring(function() {
-                    console.log("token expiring...");
-                    renewToken(userManager);
-                });
-
                 userManager.events.addUserLoaded((user) => {
                     dispatch(setLoggedUser(user));
                 });

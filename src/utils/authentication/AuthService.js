@@ -47,6 +47,7 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                 response_mode: 'fragment',
                 response_type: 'id_token token',
                 scope: idpSettings.scope,
+                automaticSilentRenew : true,
                 accessTokenExpiringNotificationTime : 60
             };
             return new UserManager(settings);
@@ -98,12 +99,8 @@ function handleSigninCallback(dispatch, history, userManagerInstance) {
 
 function handleSilentRenewCallback(userManagerInstance) {
     userManagerInstance.signinSilentCallback().catch(function (e) {
-    console.error(e);
-});
+        console.error(e);
+    });
 }
 
-function renewToken(userManagerInstance) {
-    userManagerInstance.signinSilent().then(() => console.debug("silent renew token..."));
-}
-
-export {userManagerPromise, renewToken, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
+export {userManagerPromise, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
