@@ -93,6 +93,12 @@ const App = () => {
                 userManager.events.addUserLoaded((user) => {
                     dispatch(setLoggedUser(user));
                 });
+
+                userManager.events.addSilentRenewError((error) => {
+                    console.debug(error);
+                    dispatch(setLoggedUser(null));
+                });
+
                 setUserManager({instance : userManager, error : null });
                 dispatchUser(dispatch, userManager);
             })

@@ -98,10 +98,7 @@ function handleSigninCallback(dispatch, history, userManagerInstance) {
 }
 
 function handleSilentRenewCallback(dispatch, userManagerInstance) {
-    userManagerInstance.signinSilentCallback().catch(function (e) {
-        dispatch(setLoggedUser(null));
-        console.error(e);
-    });
+    userManagerInstance.signinSilentCallback();
 }
 
 export {userManagerPromise, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
