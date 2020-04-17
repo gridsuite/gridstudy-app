@@ -47,6 +47,7 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                 response_mode: 'fragment',
                 response_type: 'id_token token',
                 scope: idpSettings.scope,
+                accessTokenExpiringNotificationTime : 60
             };
             return new UserManager(settings);
         });
@@ -96,14 +97,7 @@ function handleSigninCallback(dispatch, history, userManagerInstance) {
 }
 
 function handleSilentRenewCallback(dispatch, history, userManagerInstance) {
-    userManagerInstance.signinSilentCallback().then(function () {
-    console.debug("Silent renew callback ...");
-    dispatchUser(dispatch, userManagerInstance);
-    dispatch(setSignInCallbackError(null));
-    const previousPath = getPreLoginPath();
-    history.replace(previousPath);
-}).catch(function (e) {
-    dispatch(setSignInCallbackError(e));
+    userManagerInstance.signinSilentCallback().catch(function (e) {
     console.error(e);
 });
 }

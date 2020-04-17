@@ -16,7 +16,7 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
 import TopBar from './top-bar';
-import {LIGHT_THEME} from '../redux/actions'
+import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
 import {
     userManagerPromise,
@@ -28,6 +28,7 @@ import {
     handleSilentRenewCallback, renewToken
 } from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
+import Button from "@material-ui/core/Button";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -100,6 +101,10 @@ const App = () => {
                     console.log("token expiring...");
                     renewToken(userManager);
                 });
+
+                userManager.events.addUserLoaded((user) => {
+                    dispatch(setLoggedUser(user));
+                });
                 setUserManager({instance : userManager, error : null });
                 dispatchUser(dispatch, userManager);
             })
@@ -124,6 +129,7 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
+                <Button onClick={() => renewToken(userManager.instance)}>Renew Token</Button>
                 { user !== null ? (
                         <Switch>
                             <Route exact path="/">
