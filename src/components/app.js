@@ -25,10 +25,8 @@ import {
     handleSigninCallback,
     dispatchUser,
     getPreLoginPath,
-    handleSilentRenewCallback, renewToken
 } from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
-import Button from "@material-ui/core/Button";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -64,18 +62,6 @@ const SignInCallback = (props) => {
     )
 };
 
-const SilentRenewCallback = (props) => {
-    useEffect(() => {
-        if (props.userManager.instance !== null) {
-            props.handleSilentRenewCallback();
-        }
-    }, [props.userManager]);
-
-    return (
-        <h1> </h1>
-    )
-};
-
 const noUserManager = {instance: null, error: null};
 
 const App = () => {
@@ -98,7 +84,6 @@ const App = () => {
         userManagerPromise
             .then(userManager => {
                 userManager.events.addAccessTokenExpiring(function() {
-                    debugger;
                     console.log("token expiring...");
                     dispatch(setLoggedUser(null))
                 });
@@ -126,7 +111,6 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
-                <Button onClick={() => renewToken(userManager.instance)}>Renew Token</Button>
                 { user !== null ? (
                         <Switch>
                             <Route exact path="/">
@@ -154,9 +138,6 @@ const App = () => {
                             <Switch>
                                 <Route exact path="/sign-in-callback">
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
-                                </Route>
-                                <Route exact path="/silent-renew-callback">
-                                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(dispatch, history, userManager.instance)}/>
                                 </Route>
                                 <Route exact path="/logout-callback">
                                     <Redirect to="/" />

@@ -1,8 +1,7 @@
 {
-    "authority" : "http://localhost:9091/auth/realms/chmits",
-    "client_id" : "spa",
-    "redirect_uri": "http://localhost:3000/sign-in-callback",
-    "post_logout_redirect_uri" : "http://localhost:3000/logout-callback",
-    "silent_redirect_uri" : "http://localhost:3000/silent-renew-callback",
-    "scope" : "openid"
+    "authority" : "#",
+    "client_id" : "#",
+    "redirect_uri": "#",
+    "post_logout_redirect_uri" : "#",
+    "scope" : "#"
 }

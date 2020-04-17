@@ -97,21 +97,4 @@ function handleSigninCallback(dispatch, history, userManagerInstance) {
     });
 }
 
-function handleSilentRenewCallback(dispatch, history, userManagerInstance) {
-    userManagerInstance.signinSilentCallback().then(function () {
-        console.debug("Silent renew callback ...");
-        dispatchUser(dispatch, userManagerInstance);
-        dispatch(setSignInCallbackError(null));
-        const previousPath = getPreLoginPath();
-        history.replace(previousPath);
-    }).catch(function (e) {
-        dispatch(setSignInCallbackError(e));
-        console.error(e);
-    });
-}
-
-function renewToken(userManagerInstance){
-    userManagerInstance.signinSilent().then(() => console.debug("silent renew token..."));
-}
-
-export {userManagerPromise, renewToken, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
+export {userManagerPromise, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
