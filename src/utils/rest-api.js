@@ -92,3 +92,11 @@ export function deleteStudy(studyName) {
     return fetch(deleteStudyUrl, {method:'delete'});
 }
 
+export function renameStudy(studyName, newStudyName) {
+    console.info("Renaming study " + studyName);
+    const renameStudiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "?newStudyName=" + newStudyName;
+    console.debug(renameStudiesUrl);
+    return fetch(renameStudiesUrl, {method : 'PUT'})
+        .then(response => response.json());
+}
+

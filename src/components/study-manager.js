@@ -32,7 +32,7 @@ import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 
 import {loadStudiesSuccess} from '../redux/actions';
-import {fetchStudies, deleteStudy} from '../utils/rest-api';
+import {fetchStudies, deleteStudy, renameStudy} from '../utils/rest-api';
 import CreateStudyForm from "./create-study-form";
 
 import {CardHeader} from "@material-ui/core";
@@ -46,6 +46,9 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DeleteIcon from '@material-ui/icons/Delete';
+import SwapIcon from '@material-ui/icons/SwapHoriz';
+import TextField from "@material-ui/core/TextField";
+import InputLabel from "@material-ui/core/InputLabel";
 
 const useStyles = makeStyles(theme => ({
     addButton: {
@@ -81,7 +84,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const StudyCard = ({study, onClick}) => {
-    const [open, setOpen] = React.useState(false);
+    const [openDeleteDialog, setOpenDelete] = React.useState(false);
+    const [openRenameDialog, setOpenRename]  = React.useState(false);
+    const [newStudyNameValue, setNewStudyName] = React.useState(study.studyName);
     const dispatch = useDispatch();
     const classes = useStyles();
 
@@ -132,7 +137,7 @@ const StudyCard = ({study, onClick}) => {
 
     const handleDeleteStudy = () => {
         setAnchorEl(null);
-        setOpen(true);
+        setOpenDelete(true);
     };
 
     const handleDeleteStudyConfirmed = () => {
@@ -143,12 +148,40 @@ const StudyCard = ({study, onClick}) => {
         });
     };
 
-    const handleCloseDialog = () => {
-        setOpen(false);
+    const handleCloseDeleteDialog = () => {
+        setOpenDelete(false);
     };
 
     const handleCancelDelete = () => {
-        setOpen(false);
+        setOpenDelete(false);
+    };
+
+    const handleRenameStudy = () => {
+        setAnchorEl(null);
+        setOpenRename(true);
+    };
+
+    const handleRenameStudyConfirmed = () => {
+        renameStudy(study.studyName, newStudyNameValue)
+            .then(() => {
+                fetchStudies().then(studies => {
+                    dispatch(loadStudiesSuccess(studies));
+                });
+                setOpenRename(false);
+            });
+    };
+
+    const handleCancelRename = () => {
+        setOpenRename(false);
+    };
+
+    const handleCloseRenameDialog = () => {
+        setOpenDelete(false);
+    };
+
+    const updateStudyNameValue= (event) => {
+        setNewStudyName(event.target.value);
+        console.debug("newStudyName : " + newStudyNameValue);
     };
 
     const [expanded, setExpanded] = React.useState(false);
@@ -209,6 +242,14 @@ const StudyCard = ({study, onClick}) => {
                             </ListItemIcon>
                             <ListItemText primary={<FormattedMessage id="delete"/>} />
                         </MenuItem>
+
+                        <MenuItem onClick={handleRenameStudy}>
+                            <ListItemIcon>
+                                <SwapIcon fontSize="small"/>
+                            </ListItemIcon>
+                            <ListItemText primary={<FormattedMessage id="rename"/>} />
+                        </MenuItem>
+
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -228,7 +269,7 @@ const StudyCard = ({study, onClick}) => {
                     </CardContent>
                 </Collapse>
             </Card>
-            <Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
+            <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title"><FormattedMessage id="deleteStudy"/></DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -244,6 +285,23 @@ const StudyCard = ({study, onClick}) => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Dialog open={openRenameDialog} onClose={handleCloseRenameDialog} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title"><FormattedMessage id="renameStudy"/></DialogTitle>
+                <DialogContent>
+                    <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
+                    <TextField id="newStudyName" defaultValue={study.studyName} required={true} onChange={updateStudyNameValue}></TextField>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelRename} color="primary">
+                        <FormattedMessage id="cancel"/>
+                    </Button>
+                    <Button onClick={handleRenameStudyConfirmed} color="primary">
+                        <FormattedMessage id="rename"/>
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
         </div>
     );
 };
