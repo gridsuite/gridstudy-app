@@ -7,6 +7,10 @@
 
 import {CompositeLayer, PathLayer} from 'deck.gl';
 
+import ArrowLayer from "./layers/arrow-layer";
+
+const ARROW_COUNT = 3;
+
 class LineLayer extends CompositeLayer {
 
     renderLayers() {
@@ -16,18 +20,45 @@ class LineLayer extends CompositeLayer {
             // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
             this.props.network.getLinesBySortedNominalVoltage()
                 .forEach(e => {
+                    const color = this.props.getNominalVoltageColor(e.nominalVoltage);
+
                     const lineLayer = new PathLayer(this.getSubLayerProps({
-                        id: 'NominalVoltage' + e.nominalVoltage,
+                        id: 'LineNominalVoltage' + e.nominalVoltage,
                         data: e.lines,
                         widthScale: 20,
                         widthMinPixels: 1,
                         widthMaxPixels: 2,
                         getPath: line => this.props.geoData.getLinePositions(this.props.network, line),
-                        getColor: this.props.getNominalVoltageColor(e.nominalVoltage),
+                        getColor: color,
                         getWidth: 2,
                         visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
                     }));
                     layers.push(lineLayer);
+
+                    // create ARROW_COUNT per line
+                    const arrows = e.lines.flatMap(line => {
+                        return [...new Array(ARROW_COUNT).keys()].map(index => {
+                            return {
+                                number: index,
+                                line: line
+                            }
+                        });
+                    });
+
+                    const arrowLayer = new ArrowLayer(this.getSubLayerProps({
+                        id: 'ArrowNominalVoltage' + e.nominalVoltage,
+                        data: arrows,
+                        sizeMinPixels: 3,
+                        sizeMaxPixels: 10,
+                        getDistance: arrow => arrow.number / ARROW_COUNT,
+                        getLine: arrow => arrow.line,
+                        getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line),
+                        getColor: color,
+                        getSize: 1000,
+                        getSpeedFactor: 10,
+                        animated: true
+                    }));
+                    layers.push(arrowLayer);
                 });
         }
 
