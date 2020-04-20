@@ -15,6 +15,8 @@ import ListItem from "@material-ui/core/ListItem";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
 import Paper from "@material-ui/core/Paper";
+import {FormattedMessage} from "react-intl";
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({
     nominalVoltageZone: {
@@ -31,31 +33,53 @@ const useStyles = makeStyles(theme => ({
     },
     nominalVoltageText : {
         fontSize: 12
-    }
+    },
+    nominalVoltageSelectionControl : {
+        fontSize: 12,
+        textDecoration: "underline",
+        textTransform: 'none',
+        padding:'0px',
+        minWidth: "45%",
+        '&:hover, &:focus':{
+            textDecoration: "underline",
+        }
+    },
 }));
 
 const NominalVoltageFilter = (props) => {
 
     const classes = useStyles();
 
-    const handleToggle = value => () => {
+    const handleToggle = (value, isToggle) => () => {
         if (props.onNominalVoltageFilterChange !== null) {
-            props.onNominalVoltageFilterChange(value);
+            props.onNominalVoltageFilterChange(value, isToggle);
         }
     };
 
     return (
         <Paper>
-            <List className={classes.nominalVoltageZone}> {
+            <List className={classes.nominalVoltageZone}>
+                <ListItem  className={classes.nominalVoltageItem} >
+                    <Button  size={'small'}  variant={'text'} className={classes.nominalVoltageSelectionControl}
+                             onClick={ handleToggle(props.nominalVoltages , false)}>
+                        <FormattedMessage id="CBAll"/>
+                    </Button>
+                    <ListItemText className={classes.nominalVoltageText} secondary={'/'}/>
+                    <Button size={'small'} variant={"text"} className={classes.nominalVoltageSelectionControl}
+                            onClick={ handleToggle([], false)} >
+                        <FormattedMessage id="CBNone"/>
+                    </Button>
+                </ListItem>
+                {
                 props.nominalVoltages.map(value => {
                     return (
                         <ListItem className={classes.nominalVoltageItem}
                             key={value}
                             button
-                            onClick={handleToggle(value)}
+                            onClick={handleToggle([value], true)}
                         >
                             <Checkbox color="default" className={classes.nominalVoltageCheck} checked={props.filteredNominalVoltages.indexOf(value) !== -1}/>
-                            <ListItemText className={classes.nominalVoltageText} disableTypography primary={`${value}`}/>
+                            <ListItemText className={classes.nominalVoltageText} disableTypography primary={`${value} kV`}/>
                         </ListItem>
                     );
                 })}
@@ -67,7 +91,7 @@ const NominalVoltageFilter = (props) => {
 NominalVoltageFilter.defaultProps = {
     nominalVoltages: [],
     filteredNominalVoltages: [],
-    onNominalVoltageFilterChange: null
+    onNominalVoltageFilterChange: null,
 };
 
 NominalVoltageFilter.propTypes = {

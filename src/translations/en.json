@@ -1,6 +1,5 @@
 {
   "appName": "Grid Explorer",
-  "newStudy": "New study",
   "addNewStudy" : "Add new study",
   "addNewStudyDescription" : "To add a new study, you should enter the following information:",
   "caseExist": "Does the case already exist?",
@@ -24,7 +23,7 @@
   "deleteStudy" : "Delete Study",
   "deleteStudyMsg" : "Are you sure you want to delete the study?",
   "studyNameDidNotMatchMsg" : "The given study name did not match with ",
-  "studyDeletedSuccessMsg" : "Study deleted ",
+  "studyDeletedSuccessMsg" : "Study deleted",
 
   "studyNameErrorMsg" : "Study name should not be empty",
   "caseNameErrorMsg" : "Please select the case name",
@@ -34,6 +33,10 @@
   "studyCreatingError" : "An error occurred while creating the study",
 
   "useName": "Use the name instead of the identifier",
+  "diagonalLabel": "Display name diagonally",
+  "centerLabel": "Center name",
+  "General": "General",
+  "SingleLineDiagram": "Single line diagram",
 
   "studyNotFound": "Study '{studyName}' has not been found",
   "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
@@ -43,5 +46,8 @@
   "close": "Close",
 
   "centerOnMap": "Center on the map",
-  "openVoltageLevel": "Open the voltage level"
+  "openVoltageLevel": "Open the voltage level",
+  "CBAll" : "All",
+  "CBNone" : "None"
+
 }
