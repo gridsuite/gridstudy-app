@@ -1,3 +1,13 @@
+class Events {
+    addUserLoaded(callback) {
+        // Nothing to do
+    }
+
+    addSilentRenewError(callback) {
+        // Nothing to do
+    }
+}
+
 /**
  * Copyright (c) 2020, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -6,9 +16,11 @@
  */
 export class UserManagerMock {
     settings;
+    events;
 
     constructor(settings) {
         this.settings = settings;
+        this.events = new Events();
     }
 
     getUser() {
