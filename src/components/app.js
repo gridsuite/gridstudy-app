@@ -91,6 +91,7 @@ const App = () => {
         userManagerPromise
             .then(userManager => {
                 userManager.events.addUserLoaded((user) => {
+                    console.debug("user loaded");
                     dispatch(setLoggedUser(user));
                 });
 
@@ -100,6 +101,7 @@ const App = () => {
                 });
 
                 setUserManager({instance : userManager, error : null });
+                console.debug("dispatch user");
                 dispatchUser(dispatch, userManager);
             })
             .catch(function(error) {

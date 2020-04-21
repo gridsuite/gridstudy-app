@@ -87,7 +87,6 @@ function getPreLoginPath() {
 
 function handleSigninCallback(dispatch, history, userManagerInstance) {
     userManagerInstance.signinRedirectCallback().then(function () {
-        dispatchUser(dispatch, userManagerInstance);
         dispatch(setSignInCallbackError(null));
         const previousPath = getPreLoginPath();
         history.replace(previousPath);
