@@ -11,19 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- [Support for IEEE files](demo/v0.2.0/ieee14.webm)
-- [Creation of a main apps menu](demo/v0.2.0/apps-menu.webm)
-- [Pan in the substation window](demo/v0.2.0/pan-substation-view.webm)
-- [Center the map on a substation on user clicks](demo/v0.2.0/center-map.webm)
-- [All/none actions for the voltage levels on the map](demo/v0.2.0/all-none.webm)
+- [Support for IEEE files](https://gridsuite.github.io/demo/v0.2.0/ieee14.gif)
+- [Creation of a main apps menu](https://gridsuite.github.io/demo/v0.2.0/apps-menu.gif)
+- [Pan in the substation window](https://gridsuite.github.io/demo/v0.2.0/pan-substation-view.gif)
+- [Center the map on a substation on user clicks](https://gridsuite.github.io/demo/v0.2.0/center-map.gif)
+- [All/none actions for the voltage levels on the map](https://gridsuite.github.io/demo/v0.2.0/all-none.gif)
 
 ### Changed
 
-- [New fancy study-add button](demo/v0.2.0/add-button.webm)
-- [_undefined_ is no more displayed in the substation list when country info is not available](demo/v0.2.0/country-info.webm)
+- [New fancy study-add button](https://gridsuite.github.io/demo/v0.2.0/add-button.gif)
+- [_undefined_ is no more displayed in the substation list when country info is not available](https://gridsuite.github.io/demo/v0.2.0/country-info.gif)
 
 ### Fixed
-- [Fix authentication when reloading](demo/v0.2.0/fix-refresh.webm)
+- [Fix authentication when reloading](https://gridsuite.github.io/demo/v0.2.0/fix-refresh.gif)
 
 ## [0.1.0] - 2020-04-06
 
