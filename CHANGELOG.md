@@ -11,16 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for IEEE files [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/ieee14.gif)
+- Support of IEEE files [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/ieee14.gif)
 - Creation of a main apps menu [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/apps-menu.gif)
-- Pan in the substation window [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/pan-substation-view.gif)
+- Enable Pan/Zoom in a substation window [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/pan-substation-view.gif)
 - Center the map on a substation on user clicks [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/center-map.gif)
 - All/none actions for the voltage levels on the map [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/all-none.gif)
 
 ### Changed
 
 - New fancy study-add button [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/add-button.gif)
-- _undefined_ is no more displayed in the substation list when country info is not available [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/country-info.gif)
+- _undefined_ is no more displayed in the substation list when country info is unavailable [[feature demo]](https://gridsuite.github.io/demo/v0.2.0/country-info.gif)
 
 ### Fixed
 
