@@ -1,13 +1,12 @@
 {
   "appName": "Explorateur de réseau",
-  "newStudy": "Nouvelle étude",
   "addNewStudy" : "Ajouter une nouvelle étude",
   "addNewStudyDescription" : "Pour ajouter une étude, vous devez saisir les informations suivantes :",
-  "caseExist": "Le situation existe-t-elle déjà ?",
+  "caseExist": "La situation existe-t-elle déjà ?",
   "studyName" : "nom de l'étude",
   "studyDescription" : "description de l'étude",
   "caseName" : "nom de la situation",
-  "uploadCase" : "tèlécharger la situation",
+  "uploadCase" : "télécharger la situation",
 
   "uploadMessage" : " Aucun fichier sélectionné",
   "cancel" : "ANNULER",
@@ -22,7 +21,7 @@
   "connection": "Connexion",
 
   "deleteStudy" : "Supprimer l'étude",
-  "deleteStudyMsg" : "Etes vous sur de vouloir supprimer l'étude?",
+  "deleteStudyMsg" : "Êtes-vous sûr de vouloir supprimer l'étude ?",
   "studyNameDidNotMatchMsg" : "Le nom d'étude donné ne correspond pas à ",
   "studyDeletedSuccessMsg" : "Étude supprimée",
 
@@ -37,6 +36,10 @@
   "studyCreatingError" : "Une erreur est survenue lors du création de l'étude",
 
   "useName": "Utiliser le nom à la place de l'identifiant",
+  "diagonalLabel": "Afficher les noms en diagonal",
+  "centerLabel": "Centrer les noms",
+  "General": "Général",
+  "SingleLineDiagram": "Schéma unifilaire",
 
   "studyNotFound": "L'étude ''{studyName}'' n'a pas été trouvée",
   "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
@@ -46,5 +49,8 @@
   "close": "Fermer",
 
   "centerOnMap": "Centrer sur la carte",
-  "openVoltageLevel": "Ouvrir le poste"
+  "openVoltageLevel": "Ouvrir le poste",
+  "CBAll" : "Tous",
+  "CBNone" : "Aucun"
+
 }

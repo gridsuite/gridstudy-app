@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 
 import {useSelector} from "react-redux";
@@ -39,6 +39,13 @@ const NetworkMap = (props) => {
     const [tooltip, setTooltip] = useState({});
 
     const theme = useTheme();
+    const labelColor = useMemo(() => {
+        const labelColor = decomposeColor(theme.palette.text.primary).values;
+        labelColor[3] *= 255;
+        return labelColor
+    }, theme);
+
+
 
     const useName = useSelector(state => state.useName);
 
@@ -125,7 +132,9 @@ const NetworkMap = (props) => {
     }
 
     function onClickHandler(info) {
-        if (info.layer && info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX)) {
+        if (info.layer && info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX)
+         && info.object && info.object.substationId // is a voltage level marker, not a substation text
+        ) {
             if (props.onSubstationClick) {
                 props.onSubstationClick(info.object.id)
             }
@@ -135,9 +144,6 @@ const NetworkMap = (props) => {
     const layers = [];
 
     if (props.network !== null && props.geoData !== null) {
-
-        const labelColor = decomposeColor(theme.palette.text.primary).values;
-        labelColor[3] *= 255;
 
         layers.push(new SubstationLayer({
             id: SUBSTATION_LAYER_PREFIX,
@@ -189,7 +195,6 @@ const NetworkMap = (props) => {
                    controller={{ doubleClickZoom: false }}
                    ContextProvider={MapContext.Provider}>
             <StaticMap
-                reuseMaps
                 mapStyle={ theme.mapboxStyle }
                 preventStyleDiffing={true}
                 mapboxApiAccessToken={MAPBOX_TOKEN}>

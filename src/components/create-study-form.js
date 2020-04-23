@@ -26,29 +26,20 @@ import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import {createStudy, fetchCases, fetchStudies} from '../utils/rest-api';
-import {useIntl, FormattedMessage} from "react-intl";
+import {FormattedMessage, useIntl} from "react-intl";
 
 import {useDispatch, useSelector} from "react-redux";
-import {
-    loadStudiesSuccess,
-    loadCasesSuccess,
-    selectCase,
-    selectFile,
-    removeSelectedFile
-} from "../redux/actions";
+import {loadCasesSuccess, loadStudiesSuccess, removeSelectedFile, selectCase, selectFile} from "../redux/actions";
 import {store} from '../redux/store';
+import CardActionArea from "@material-ui/core/CardActionArea";
 
-const useStyles = makeStyles(theme => ({
-    addButton: {
-        margin: theme.spacing(2),
-    },
+const useStyles = makeStyles(() => ({
     addIcon: {
-        marginRight: theme.spacing(1),
+        fontSize: '64px',
     },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    }
+    addButtonArea: {
+        height:"150px",
+    },
 }));
 
 const SelectCase = () => {
@@ -92,7 +83,7 @@ const SelectCase = () => {
                    value={store.getState().selectedCase != null ? store.getState().selectedCase : ""}
                    onChange={handleChangeSelectCase}>
                    {
-                       cases.map((function (element) {return <MenuItem key={element.name} value={element.name}>{element.name}</MenuItem>}))
+                       cases.map((function (element) {return <MenuItem key={element.uuid} value={element.uuid}>{element.name}</MenuItem>}))
                    }
                </Select>
            </FormControl>
@@ -208,10 +199,9 @@ export const CreateStudyForm = () => {
 
     return (
         <div>
-            <Button variant="contained" color="primary" className={classes.addButton} onClick={() => handleClickOpenDialog() }>
-                <AddIcon className={classes.addIcon}/>
-                <FormattedMessage id="newStudy"/>
-            </Button>
+            <CardActionArea className={classes.addButtonArea} onClick={() => handleClickOpenDialog()}>
+                <AddIcon className={classes.addIcon} />
+            </CardActionArea>
 
             <Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title"><FormattedMessage id="addNewStudy"/></DialogTitle>
@@ -233,21 +223,19 @@ export const CreateStudyForm = () => {
                         onChange={(e) => handleStudyNameChanges(e)}
                         autoFocus
                         margin="dense"
-                        id="name"
                         value={studyName}
-                        label= <FormattedMessage id="studyName"/>
                         type="text"
                         fullWidth
+                        label= <FormattedMessage id="studyName" />
                     />
                     <TextField
                         onChange={(e) => handleStudyDescriptionChanges(e)}
                         autoFocus
                         margin="dense"
-                        id="name"
                         value={studyDescription}
-                        label= <FormattedMessage id="studyDescription"/>
                         type="text"
                         fullWidth
+                        label= <FormattedMessage id="studyDescription" />
                     />
                     {caseExist && (<SelectCase/>)}
                     {!caseExist && (<UploadCase/>)}
@@ -258,17 +246,15 @@ export const CreateStudyForm = () => {
                         </div>)
                     }
                 </DialogContent>
-
                 <DialogActions>
-                    <Button onClick={handleCloseDialog} color="primary">
+                    <Button onClick={() => handleCloseDialog()} color="primary">
                         <FormattedMessage id="cancel"/>
                     </Button>
-                    <Button onClick={handleCreateNewStudy} color="primary">
+                    <Button onClick={() => handleCreateNewStudy()} color="primary">
                         <FormattedMessage id="create"/>
                     </Button>
                 </DialogActions>
             </Dialog>
-
         </div>
     );
 };

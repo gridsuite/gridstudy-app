@@ -49,14 +49,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SwapIcon from '@material-ui/icons/SwapHoriz';
 import TextField from "@material-ui/core/TextField";
 import InputLabel from "@material-ui/core/InputLabel";
+import Box from "@material-ui/core/Box";
 
-const useStyles = makeStyles(theme => ({
-    addButton: {
-        margin: theme.spacing(2),
-    },
-    addIcon: {
-        marginRight: theme.spacing(1),
-    },
+const useStyles = makeStyles((theme) => ({
     card: {
         display: 'flex',
     },
@@ -80,7 +75,20 @@ const useStyles = makeStyles(theme => ({
     },
     actions: {
         padding: theme.spacing(0.5),
-    }
+    },
+    cardContainer: {
+        marginTop:"48px",
+    },
+    addButtonBox: {
+        borderStyle: 'dashed',
+        borderRadius: 1,
+        opacity:"0.3",
+    },
+    cardTitle: {
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        width: '11rem',
+    },
 }));
 
 const StudyCard = ({study, onClick}) => {
@@ -99,6 +107,7 @@ const StudyCard = ({study, onClick}) => {
             case 'UCTE':
                 return <UcteLogo className={classes.logo}/>;
             case 'IEEE-CDF':
+            case 'IEEE CDF': // for powsybl <= 3.1 compatibility
                 return <IeeeLogo className={classes.logo}/>;
             default:
                 break;
@@ -199,7 +208,7 @@ const StudyCard = ({study, onClick}) => {
                                 logo(study.caseFormat)
                         }
                         title={
-                            <div style={{overflow: "hidden", textOverflow: "ellipsis", width: '11rem'}}>
+                            <div className={classes.cardTitle}>
                                 <Typography noWrap variant="h4">
                                     {study.studyName}
                                 </Typography>
@@ -322,13 +331,17 @@ const StudyManager = ({onStudyClick}) => {
     const classes = useStyles();
 
     return (
-        <Container maxWidth="lg">
-            <CreateStudyForm/>
+        <Container maxWidth="lg" className={classes.cardContainer}>
             <Grid container spacing={2} className={classes.grid}>
+                <Grid item xs={12} sm={6} md={3} align="center" justify="center">
+                    <Box className={classes.addButtonBox}>
+                        <CreateStudyForm />
+                    </Box>
+                </Grid>
                 {
                     studies.map(study =>
                         <Grid item xs={12} sm={6} md={3} key={study.studyName}>
-                            <StudyCard study={study} onClick={() => onStudyClick(study.studyName)}/>
+                            <StudyCard study={study} onClick={() => onStudyClick(study.studyName)} />
                         </Grid>
                     )
                 }

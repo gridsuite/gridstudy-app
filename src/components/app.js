@@ -18,7 +18,7 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
-import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser} from '../utils/authentication/AuthService';
+import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath} from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
 
 const lightTheme = createMuiTheme({
@@ -61,6 +61,9 @@ const App = () => {
     const theme = useSelector(state => state.theme);
 
     const user = useSelector(state => state.user);
+
+    const signInCallbackError = useSelector(state => state.signInCallbackError);
+
 
     const [userManager, setUserManager] = useState(noUserManager);
 
@@ -108,8 +111,11 @@ const App = () => {
                             <Route exact path="/parameters">
                                 <Parameters/>
                             </Route>
+                            <Route exact path="/sign-in-callback">
+                                <Redirect to={getPreLoginPath() || "/"} />
+                            </Route>
                             <Route exact path="/logout-callback">
-                                <Redirect to="/" />
+                                <h1>Error: logout failed; you are still logged in.</h1>
                             </Route>
                             <Route>
                                 <h1>Error: bad URL; No matched Route.</h1>
@@ -117,9 +123,13 @@ const App = () => {
                         </Switch>)
                     : ( <React.Fragment>
                             {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
+                            {signInCallbackError !== null && (<h1>Error : SignIn Callback Error; {signInCallbackError.message}</h1>)}
                             <Switch>
                                 <Route exact path="/sign-in-callback">
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
+                                </Route>
+                                <Route exact path="/logout-callback">
+                                    <Redirect to="/" />
                                 </Route>
                                 <Route>
                                     {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login(location, userManager.instance)}/>)}

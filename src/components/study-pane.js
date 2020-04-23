@@ -65,7 +65,7 @@ const StudyNotFound = (props) => {
     );
 };
 
-const INITIAL_POSITION = [2.5, 46.6];
+const INITIAL_POSITION = [0, 0];
 
 const StudyPane = () => {
 
@@ -76,6 +76,10 @@ const StudyPane = () => {
     const geoData = useSelector(state => state.geoData);
 
     const useName = useSelector(state => state.useName);
+
+    const centerName = useSelector( state => state.centerLabel);
+
+    const diagonalName = useSelector( state => state.diagonalLabel);
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
@@ -171,14 +175,21 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
-    const updateFilteredNominalVoltages = (vnom) => {
+    const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
-        const currentIndex = filteredNominalVoltages.indexOf(vnom);
-        const newFiltered = [...filteredNominalVoltages];
-        if (currentIndex === -1) {
-            newFiltered.push(vnom);
+        let newFiltered;
+        if (isToggle) {
+            newFiltered = [...filteredNominalVoltages];
+            vnoms.map((vnom) => {
+                const currentIndex = filteredNominalVoltages.indexOf(vnom);
+                if (currentIndex === -1) {
+                    newFiltered.push(vnom);
+                } else {
+                    newFiltered.splice(currentIndex, 1);
+                }
+            });
         } else {
-            newFiltered.splice(currentIndex, 1);
+            newFiltered = [...vnoms];
         }
         setFilteredNominalVoltages(newFiltered);
     };
@@ -208,7 +219,7 @@ const StudyPane = () => {
                                     geoData={geoData}
                                     labelsZoomThreshold={8}
                                     initialPosition={INITIAL_POSITION}
-                                    initialZoom={6}
+                                    initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
                                     centeredSubstationId={focusedVoltageLevel && focusedVoltageLevel.substationId}
                                     onSubstationClick={showVoltageLevelDiagram} />
@@ -218,7 +229,7 @@ const StudyPane = () => {
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName)} />
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName)} />
                             </div>
                         }
                         {
@@ -226,7 +237,7 @@ const StudyPane = () => {
                             <div style={{position: "absolute", right: 10, bottom: 30, zIndex: 1}}>
                                 <NominalVoltageFilter nominalVoltages={network.getNominalVoltages()}
                                                       filteredNominalVoltages={filteredNominalVoltages}
-                                                      onNominalVoltageFilterChange={updateFilteredNominalVoltages} />
+                                                      onNominalVoltageFilterChange={updateFilteredNominalVoltages}/>
                             </div>
                         }
                 </div>
