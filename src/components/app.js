@@ -20,6 +20,7 @@ import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
 import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath} from '../utils/authentication/AuthService';
 import Authentication from "./authentication";
+import PageNotFound from "./PageNotFound";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -118,7 +119,7 @@ const App = () => {
                                 <h1>Error: logout failed; you are still logged in.</h1>
                             </Route>
                             <Route>
-                                <h1>Error: bad URL; No matched Route.</h1>
+                                <PageNotFound/>
                             </Route>
                         </Switch>)
                     : ( <React.Fragment>
