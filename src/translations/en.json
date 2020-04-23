@@ -44,6 +44,7 @@
   "parameters": "Parameters",
   "theme": "Theme",
   "close": "Close",
+  "fullScreen" : "Full screen",
 
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",

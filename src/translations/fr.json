@@ -43,10 +43,10 @@
   "parameters": "Paramètres",
   "theme": "Thème",
   "close": "Fermer",
+  "fullScreen" : "Plein écran",
 
   "centerOnMap": "Centrer sur la carte",
   "openVoltageLevel": "Ouvrir le poste",
   "CBAll" : "Tous",
   "CBNone" : "Aucun"
-
 }

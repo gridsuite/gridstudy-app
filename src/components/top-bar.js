@@ -30,7 +30,7 @@ import AppsIcon from '@material-ui/icons/Apps';
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
 import {useSelector} from "react-redux";
-import IconButton from "@material-ui/core/IconButton";
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 const useStyles = makeStyles(() => ({
     grow: {
@@ -120,6 +120,38 @@ const TopBar = (props) => {
         history.replace("/");
     };
 
+    function requestFullscreen (ele) {
+        if (ele.requestFullscreen) {
+            ele.requestFullscreen();
+        } else if (ele.webkitRequestFullscreen) {
+            ele.webkitRequestFullscreen();
+        } else if (ele.mozRequestFullScreen) {
+            ele.mozRequestFullScreen();
+        } else if (ele.msRequestFullscreen) {
+            ele.msRequestFullscreen();
+        } else {
+            console.log('Fullscreen API is not supported.');
+        }
+    }
+
+    function exitFullscreen () {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else {
+            console.log('Fullscreen API is not supported.');
+        }
+    }
+
+    const onFullScreenClicked = () => {
+        requestFullscreen(document.documentElement);
+    };
+
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
             <Toolbar>
@@ -183,6 +215,14 @@ const TopBar = (props) => {
                             </ListItemIcon>
                             <ListItemText>
                                 <FormattedMessage id="settings"/>
+                            </ListItemText>
+                        </StyledMenuItem>
+                        <StyledMenuItem onClick={onFullScreenClicked}>
+                            <ListItemIcon>
+                                <FullscreenIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>
+                                <FormattedMessage id="fullScreen"/>
                             </ListItemText>
                         </StyledMenuItem>
                         <StyledMenuItem onClick={props.onLogoutClick}>
