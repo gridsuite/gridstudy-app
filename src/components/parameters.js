@@ -26,18 +26,11 @@ import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 
 import {DARK_THEME, LIGHT_THEME, selectTheme, toggleUseNameState, toggleCenterLabelState, toggleDiagonalLabelState} from "../redux/actions";
-import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import TextField from "@material-ui/core/TextField";
-import Alert from "@material-ui/lab/Alert";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import DialogActions from "@material-ui/core/DialogActions";
-
 
 const useStyles = makeStyles(theme => ({
     title: {
