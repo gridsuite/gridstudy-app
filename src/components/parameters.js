@@ -153,7 +153,7 @@ const Parameters = (props) => {
 
     return (
 
-        <Dialog open={props.showParameters} onClose={handleCloseDialog} aria-labelledby="form-dialog-title" maxWidth={'lg'}>
+        <Dialog open={props.showParameters} onClose={handleCloseDialog} aria-labelledby="form-dialog-title" maxWidth={'md'} fullWidth={true}>
             <DialogTitle id="form-dialog-title">
                 <Typography variant="h5" className={classes.title}>
                     <FormattedMessage id="parameters"/>
