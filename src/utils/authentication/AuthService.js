@@ -101,4 +101,19 @@ function handleSilentRenewCallback(userManagerInstance) {
     userManagerInstance.signinSilentCallback();
 }
 
-export {getUserManagerPromise, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
+function initializeAuthentication(dispatch, userManager) {
+    userManager.events.addUserLoaded((user) => {
+        console.debug("user loaded");
+        dispatchUser(dispatch, userManager);
+    });
+
+    userManager.events.addSilentRenewError((error) => {
+        console.debug(error);
+        logout(dispatch, userManager);
+    });
+
+    console.debug("dispatch user");
+    dispatchUser(dispatch, userManager);
+}
+
+export {initializeAuthentication, getUserManagerPromise, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}

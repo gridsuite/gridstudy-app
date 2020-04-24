@@ -26,7 +26,7 @@ import {
     dispatchUser,
     getPreLoginPath,
     handleSilentRenewCallback,
-    getUserManagerPromise
+    getUserManagerPromise, initializeAuthentication
 } from '../utils/authentication/AuthService';
 
 import Authentication from "./authentication";
@@ -73,7 +73,7 @@ const SilentRenewCallback = (props) => {
     }, [props.userManager]);
 
     return (
-        <h1> </h1>
+        <h1>Technical token renew window, you should not see this</h1>
     )
 };
 
@@ -98,23 +98,12 @@ const App = () => {
     const location = useLocation();
 
     useEffect(() => {
-        let isSilentRenew = !window.location.href.includes("silent-renew-callback");
-        getUserManagerPromise(isSilentRenew)
+        let isSilentRenew = window.location.href.includes("silent-renew-callback");
+        getUserManagerPromise(!isSilentRenew)
             .then(userManager => {
                 setUserManager({instance: userManager, error: null});
-                if (isSilentRenew) {
-                    userManager.events.addUserLoaded((user) => {
-                        console.debug("user loaded");
-                        dispatchUser(dispatch, userManager);
-                    });
-
-                    userManager.events.addSilentRenewError((error) => {
-                        console.debug(error);
-                        logout(dispatch, userManager);
-                    });
-
-                    console.debug("dispatch user");
-                    dispatchUser(dispatch, userManager);
+                if (!isSilentRenew) {
+                    initializeAuthentication(dispatch, userManager);
                 }
             })
             .catch(function (error) {
