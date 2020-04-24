@@ -13,9 +13,15 @@ const hackauthoritykey = "oidc.hack.authority";
 
 const pathKey = "powsybl-study-app-current-path";
 
-function getUserManagerPromise(isSilentRenewUrl) {
+function initializeAuthentication(dispatch, matchSilentRenewCallbackUrl) {
+    let isSilentRenew = matchSilentRenewCallbackUrl != null && matchSilentRenewCallbackUrl.isExact;
+
     if (process.env.REACT_APP_USE_AUTHENTICATION === "false") {
-        return  Promise.resolve( new UserManagerMock({}));
+        let userManager = new UserManagerMock({});
+        if (!isSilentRenew) {
+            handleUser(dispatch, userManager);
+        }
+        return  Promise.resolve(userManager);
     } else {
         return fetch('idpSettings.json')
             .then(r => r.json())
@@ -51,10 +57,14 @@ function getUserManagerPromise(isSilentRenewUrl) {
                     response_mode: 'fragment',
                     response_type: 'id_token token',
                     scope: idpSettings.scope,
-                    automaticSilentRenew: isSilentRenewUrl,
+                    automaticSilentRenew: !isSilentRenew,
                     accessTokenExpiringNotificationTime: 60
                 };
-                return new UserManager(settings);
+                let userManager =  new UserManager(settings);
+                if (!isSilentRenew) {
+                    handleUser(dispatch, userManager);
+                }
+                return userManager;
             });
     }
 }
@@ -101,7 +111,7 @@ function handleSilentRenewCallback(userManagerInstance) {
     userManagerInstance.signinSilentCallback();
 }
 
-function initializeAuthentication(dispatch, userManager) {
+function handleUser(dispatch, userManager) {
     userManager.events.addUserLoaded((user) => {
         console.debug("user loaded");
         dispatchUser(dispatch, userManager);
@@ -116,4 +126,4 @@ function initializeAuthentication(dispatch, userManager) {
     dispatchUser(dispatch, userManager);
 }
 
-export {initializeAuthentication, getUserManagerPromise, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
+export {initializeAuthentication, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}

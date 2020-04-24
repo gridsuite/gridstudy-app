@@ -25,10 +25,11 @@ import {
     handleSigninCallback,
     getPreLoginPath,
     handleSilentRenewCallback,
-    getUserManagerPromise, initializeAuthentication
+    initializeAuthentication
 } from '../utils/authentication/AuthService';
 
 import Authentication from "./authentication";
+import {useRouteMatch} from "react-router";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -96,14 +97,16 @@ const App = () => {
 
     const location = useLocation();
 
+    let matchSilentRenewCallbackUrl= useRouteMatch({
+        path: '/silent-renew-callback',
+        strict: true,
+        sensitive: true
+    });
+
     useEffect(() => {
-        let isSilentRenew = window.location.href.includes("silent-renew-callback");
-        getUserManagerPromise(!isSilentRenew)
+        initializeAuthentication(dispatch, matchSilentRenewCallbackUrl)
             .then(userManager => {
                 setUserManager({instance: userManager, error: null});
-                if (!isSilentRenew) {
-                    initializeAuthentication(dispatch, userManager);
-                }
             })
             .catch(function (error) {
                 setUserManager({instance: null, error: error.message});
