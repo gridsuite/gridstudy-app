@@ -90,9 +90,11 @@ const App = () => {
     const location = useLocation();
 
     useEffect(() => {
-        if (!window.location.href.includes("silent-renew-callback")) {
-            userManagerPromise
-                .then(userManager => {
+        let shouldExecute = !window.location.href.includes("silent-renew-callback");
+        userManagerPromise
+            .then(userManager => {
+                setUserManager({instance: userManager, error: null});
+                if (shouldExecute) {
                     userManager.events.addUserLoaded((user) => {
                         console.debug("user loaded");
                         dispatch(setLoggedUser(user));
@@ -103,15 +105,14 @@ const App = () => {
                         dispatch(setLoggedUser(null));
                     });
 
-                    setUserManager({instance: userManager, error: null});
                     console.debug("dispatch user");
                     dispatchUser(dispatch, userManager);
-                })
-                .catch(function (error) {
-                    setUserManager({instance: null, error: error.message});
-                    console.debug("error when importing the idp settings")
-                });
-        }
+                }
+            })
+            .catch(function (error) {
+                setUserManager({instance: null, error: error.message});
+                console.debug("error when importing the idp settings")
+            });
     }, []);
 
     function studyClickHandler(studyName) {
