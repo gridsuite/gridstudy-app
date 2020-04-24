@@ -41,6 +41,9 @@ const useStyles = makeStyles(theme => ({
     },
     controlItem: {
         justifyContent: 'flex-end'
+    },
+    button: {
+        marginBottom: '30px'
     }
 }));
 
@@ -174,7 +177,7 @@ const Parameters = (props) => {
                         <SingleLineDiagramParameters/>
                     </TabPanel>
                     <Grid item xs={12}>
-                        <Button onClick={props.hideParameters} variant="contained" color="primary">
+                        <Button onClick={props.hideParameters} variant="contained" color="primary" className={classes.button}>
                             <FormattedMessage id="close"/>
                         </Button>
                     </Grid>
