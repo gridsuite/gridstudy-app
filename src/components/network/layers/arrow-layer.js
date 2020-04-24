@@ -108,9 +108,17 @@ export default class ArrowLayer extends Layer {
 
     createTexture2D(gl, data, elementSize, format) {
         const elementCount = data.length / elementSize;
+        const width = Math.min(elementCount, this.state.maxTextureSize);
+        const height = Math.ceil(elementCount / this.state.maxTextureSize);
+        console.info(`Creating texture of ${elementCount} elements (${width} * ${height})`);
+        if (data.length < width * height * elementSize) {
+            const oldLength = data.length;
+            data.length += (width * height * elementSize - data.length);
+            data.fill(0, oldLength, width * height * elementSize);
+        }
         return new Texture2D(gl, {
-            width: elementCount % this.state.maxTextureSize,
-            height: Math.trunc(elementCount / this.state.maxTextureSize) + 1,
+            width: width,
+            height: height,
             format: format,
             data: new Float32Array(data),
             parameters: {
