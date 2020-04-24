@@ -99,8 +99,7 @@ const App = () => {
 
     let matchSilentRenewCallbackUrl= useRouteMatch({
         path: '/silent-renew-callback',
-        strict: true,
-        sensitive: true
+        exact: true,
     });
 
     useEffect(() => {
