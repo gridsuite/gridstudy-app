@@ -90,11 +90,10 @@ const App = () => {
     const location = useLocation();
 
     useEffect(() => {
-        let shouldExecute = !window.location.href.includes("silent-renew-callback");
         userManagerPromise
             .then(userManager => {
                 setUserManager({instance: userManager, error: null});
-                if (shouldExecute) {
+                if (!window.location.href.includes("silent-renew-callback")) {
                     userManager.events.addUserLoaded((user) => {
                         console.debug("user loaded");
                         dispatch(setLoggedUser(user));

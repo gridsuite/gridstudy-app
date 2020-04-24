@@ -20,7 +20,6 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
             const regextoken=/id_token=[^&]*/;
             const regexstate=/state=[^&]*/;
             let authority;
-            let automaticSilentRenew = !window.location.href.includes("silent-renew-callback");
             if (window.location.hash) {
                 const matched_id_token=window.location.hash.match(regextoken);
                 const matched_state=window.location.hash.match(regexstate);
@@ -29,7 +28,7 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                     const state = matched_state[0].split('=')[1];
                     const strState = localStorage.getItem("oidc." + state);
                     if (strState != null) {
-                        authority = jwtDecode(id_token).iss
+                        authority = jwtDecode(id_token).iss;
                         const storedState = JSON.parse(strState);
                         storedState.authority=authority;
                         localStorage.setItem("oidc." + state, JSON.stringify(storedState));
@@ -48,7 +47,7 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                 response_mode: 'fragment',
                 response_type: 'id_token token',
                 scope: idpSettings.scope,
-                automaticSilentRenew : automaticSilentRenew,
+                automaticSilentRenew : !window.location.href.includes("silent-renew-callback"),
                 accessTokenExpiringNotificationTime : 60
             };
             return new UserManager(settings);
