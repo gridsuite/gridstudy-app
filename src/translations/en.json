@@ -44,8 +44,8 @@
   "parameters": "Parameters",
   "theme": "Theme",
   "close": "Close",
-  "fullScreen" : "Full screen",
-
+  "goFullScreen" : "Full screen",
+  "exitFullScreen" : "Exit full screen mode",
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",
   "CBAll" : "All",

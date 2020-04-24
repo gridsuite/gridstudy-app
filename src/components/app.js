@@ -64,7 +64,6 @@ const App = () => {
 
     const signInCallbackError = useSelector(state => state.signInCallbackError);
 
-
     const [userManager, setUserManager] = useState(noUserManager);
 
     const history = useHistory();
