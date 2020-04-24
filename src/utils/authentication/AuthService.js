@@ -47,7 +47,7 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                 response_mode: 'fragment',
                 response_type: 'id_token token',
                 scope: idpSettings.scope,
-                automaticSilentRenew : true,
+                automaticSilentRenew : !window.location.href.includes("sign-in-callback"),
                 accessTokenExpiringNotificationTime : 60
             };
             return new UserManager(settings);

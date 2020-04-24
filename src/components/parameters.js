@@ -26,10 +26,11 @@ import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 
 import {DARK_THEME, LIGHT_THEME, selectTheme, toggleUseNameState, toggleCenterLabelState, toggleDiagonalLabelState} from "../redux/actions";
-import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -40,14 +41,15 @@ const useStyles = makeStyles(theme => ({
     },
     controlItem: {
         justifyContent: 'flex-end'
+    },
+    button: {
+        marginBottom: '30px'
     }
 }));
 
-const Parameters = () => {
+const Parameters = ({showParameters, hideParameters}) => {
 
     const dispatch = useDispatch();
-
-    const history = useHistory();
 
     const classes = useStyles();
 
@@ -62,11 +64,6 @@ const Parameters = () => {
         const theme = event.target.value;
         dispatch(selectTheme(theme));
     };
-
-    const handleClose = () => {
-        history.goBack();
-    };
-
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -147,29 +144,36 @@ const Parameters = () => {
     }
 
     return (
-        <Container maxWidth="md" >
-            <Typography variant="h5" className={classes.title}>
-                <FormattedMessage id="parameters"/>
-            </Typography>
-            <Tabs  value={tabIndex} indicatorColor="primary" textColor="default"
-                   onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
-                <Tab label={<FormattedMessage id="General"/> } />
-                <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
-            </Tabs>
 
-            <TabPanel value={tabIndex} index={0}>
-                <GeneralTab/>
-            </TabPanel>
-            <TabPanel value={tabIndex} index={1}>
-                <SingleLineDiagramParameters/>
-            </TabPanel>
-            <Grid item xs={12}>
-                <Button onClick={handleClose} variant="contained" color="primary">
-                    <FormattedMessage id="close"/>
-                </Button>
-            </Grid>
-        </Container>
-            );
+        <Dialog open={showParameters} onClose={hideParameters} aria-labelledby="form-dialog-title" maxWidth={'md'} fullWidth={true}>
+            <DialogTitle id="form-dialog-title">
+                <Typography variant="h5" className={classes.title}>
+                    <FormattedMessage id="parameters"/>
+                </Typography>
+            </DialogTitle>
+            <DialogContent>
+                <Container maxWidth="md" >
+                    <Tabs  value={tabIndex} indicatorColor="primary" textColor="default"
+                           onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
+                        <Tab label={<FormattedMessage id="General"/> } />
+                        <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
+                    </Tabs>
+
+                    <TabPanel value={tabIndex} index={0}>
+                        <GeneralTab/>
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={1}>
+                        <SingleLineDiagramParameters/>
+                    </TabPanel>
+                    <Grid item xs={12}>
+                        <Button onClick={hideParameters} variant="contained" color="primary" className={classes.button}>
+                            <FormattedMessage id="close"/>
+                        </Button>
+                    </Grid>
+                </Container>
+            </DialogContent>
+        </Dialog>
+    );
 };
 
 export default Parameters;
