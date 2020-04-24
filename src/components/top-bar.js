@@ -136,7 +136,7 @@ const TopBar = (props) => {
 
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
-            <FullScreen ref={ref => setRef(ref)} onFullScreenChange={onFullScreenChange} onFullScreenError={() => console.log("error")}>
+            <FullScreen ref={ref => setRef(ref)} onFullScreenChange={onFullScreenChange} onFullScreenError={(e) => console.debug("full screen error : " + e.message)}>
             </FullScreen>
             <Toolbar>
                 <PowsyblLogo className={classes.logo} onClick={onLogoClick}/>
