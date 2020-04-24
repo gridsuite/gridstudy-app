@@ -49,7 +49,7 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
                 response_type: 'id_token token',
                 scope: idpSettings.scope,
                 automaticSilentRenew : automaticSilentRenew,
-                accessTokenExpiringNotificationTime : 3590
+                accessTokenExpiringNotificationTime : 60
             };
             return new UserManager(settings);
         });
