@@ -13,8 +13,7 @@ const hackauthoritykey = "oidc.hack.authority";
 
 const pathKey = "powsybl-study-app-current-path";
 
-function initializeAuthentication(dispatch, matchSilentRenewCallbackUrl) {
-    let isSilentRenew = matchSilentRenewCallbackUrl != null && matchSilentRenewCallbackUrl.isExact;
+function initializeAuthentication(dispatch, isSilentRenew) {
 
     if (process.env.REACT_APP_USE_AUTHENTICATION === "false") {
         let userManager = new UserManagerMock({});

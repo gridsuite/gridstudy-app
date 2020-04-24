@@ -103,7 +103,7 @@ const App = () => {
     });
 
     useEffect(() => {
-        initializeAuthentication(dispatch, matchSilentRenewCallbackUrl)
+        initializeAuthentication(dispatch, matchSilentRenewCallbackUrl != null)
             .then(userManager => {
                 setUserManager({instance: userManager, error: null});
             })
