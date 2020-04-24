@@ -274,8 +274,8 @@ const StudyManager = ({onStudyClick}) => {
 
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
-            <Grid container spacing={2} className={classes.grid}>
-                <Grid item xs={12} sm={6} md={3} align="center" justify="center">
+            <Grid container spacing={2} className={classes.grid} justify={'center'}>
+                <Grid item xs={12} sm={6} md={3} align="center">
                     <Box className={classes.addButtonBox}>
                         <CreateStudyForm />
                     </Box>

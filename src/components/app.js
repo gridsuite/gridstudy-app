@@ -18,8 +18,18 @@ import StudyManager from './study-manager';
 import TopBar from './top-bar';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
-import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath} from '../utils/authentication/AuthService';
+
+import {
+    login,
+    logout,
+    handleSigninCallback,
+    getPreLoginPath,
+    handleSilentRenewCallback,
+    initializeAuthentication
+} from '../utils/authentication/AuthService';
+
 import Authentication from "./authentication";
+import {useRouteMatch} from "react-router";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -55,6 +65,18 @@ const SignInCallback = (props) => {
     )
 };
 
+const SilentRenewCallback = (props) => {
+    useEffect(() => {
+        if (props.userManager.instance !== null) {
+            props.handleSilentRenewCallback();
+        }
+    }, [props.userManager]);
+
+    return (
+        <h1>Technical token renew window, you should not see this</h1>
+    )
+};
+
 const noUserManager = {instance: null, error: null};
 
 const App = () => {
@@ -67,20 +89,26 @@ const App = () => {
 
     const [userManager, setUserManager] = useState(noUserManager);
 
+    const [showParameters, setShowParameters] = useState(false);
+
     const history = useHistory();
 
     const dispatch = useDispatch();
 
     const location = useLocation();
 
+    let matchSilentRenewCallbackUrl= useRouteMatch({
+        path: '/silent-renew-callback',
+        exact: true,
+    });
+
     useEffect(() => {
-        userManagerPromise
+        initializeAuthentication(dispatch, matchSilentRenewCallbackUrl != null)
             .then(userManager => {
-                setUserManager({instance : userManager, error : null });
-                dispatchUser(dispatch, userManager);
+                setUserManager({instance: userManager, error: null});
             })
-            .catch(function(error) {
-                setUserManager({instance : null, error : error.message});
+            .catch(function (error) {
+                setUserManager({instance: null, error: error.message});
                 console.debug("error when importing the idp settings")
             });
     }, []);
@@ -89,17 +117,20 @@ const App = () => {
         history.push("/studies/" + studyName);
     }
 
-    function showParameters() {
-        if (location.pathname !== "/parameters") {
-            history.push("/parameters");
-        }
+    function showParametersClicked() {
+        setShowParameters(true);
+    }
+
+    function hideParameters() {
+        setShowParameters(false);
     }
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
+                <TopBar onParametersClick={() => showParametersClicked()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
+                <Parameters showParameters={showParameters} hideParameters={hideParameters}/>
                 { user !== null ? (
                         <Switch>
                             <Route exact path="/">
@@ -107,9 +138,6 @@ const App = () => {
                             </Route>
                             <Route exact path="/studies/:studyName">
                                 <StudyPane/>
-                            </Route>
-                            <Route exact path="/parameters">
-                                <Parameters/>
                             </Route>
                             <Route exact path="/sign-in-callback">
                                 <Redirect to={getPreLoginPath() || "/"} />
@@ -127,6 +155,9 @@ const App = () => {
                             <Switch>
                                 <Route exact path="/sign-in-callback">
                                     <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
+                                </Route>
+                                <Route exact path="/silent-renew-callback">
+                                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(userManager.instance)}/>
                                 </Route>
                                 <Route exact path="/logout-callback">
                                     <Redirect to="/" />
