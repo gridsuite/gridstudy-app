@@ -19,7 +19,15 @@ import TopBar from './top-bar';
 import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
 import Parameters from "./parameters";
 
-import {userManagerPromise, login, logout, handleSigninCallback, dispatchUser, getPreLoginPath,  handleSilentRenewCallback} from '../utils/authentication/AuthService';
+import {
+    login,
+    logout,
+    handleSigninCallback,
+    dispatchUser,
+    getPreLoginPath,
+    handleSilentRenewCallback,
+    getUserManagerPromise
+} from '../utils/authentication/AuthService';
 
 import Authentication from "./authentication";
 
@@ -90,18 +98,19 @@ const App = () => {
     const location = useLocation();
 
     useEffect(() => {
-        userManagerPromise
+        let isSilentRenew = !window.location.href.includes("silent-renew-callback");
+        getUserManagerPromise(isSilentRenew)
             .then(userManager => {
                 setUserManager({instance: userManager, error: null});
-                if (!window.location.href.includes("silent-renew-callback")) {
+                if (isSilentRenew) {
                     userManager.events.addUserLoaded((user) => {
                         console.debug("user loaded");
-                        dispatch(setLoggedUser(user));
+                        dispatchUser(dispatch, userManager);
                     });
 
                     userManager.events.addSilentRenewError((error) => {
                         console.debug(error);
-                        dispatch(setLoggedUser(null));
+                        logout(dispatch, userManager);
                     });
 
                     console.debug("dispatch user");
