@@ -30,8 +30,8 @@ const useStyles = makeStyles(theme => ({
     div: {
         maxWidth: maxWidth,
         maxHeight: maxHeight,
-        overflowX: 'auto',
-        overflowY: 'auto'
+        overflowX: 'hidden',
+        overflowY: 'hidden'
     },
     diagram: {
         "& .component-label": {
@@ -101,7 +101,7 @@ const SingleLineDiagram = (props) => {
                 .addTo(divElt)
                 .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
-                .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.2, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
+                .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.3, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
 
             draw.on('panStart', function (evt) {
