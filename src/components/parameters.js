@@ -47,11 +47,9 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const Parameters = (props) => {
+const Parameters = ({showParameters, hideParameters}) => {
 
     const dispatch = useDispatch();
-
-    const history = useHistory();
 
     const classes = useStyles();
 
@@ -66,11 +64,6 @@ const Parameters = (props) => {
         const theme = event.target.value;
         dispatch(selectTheme(theme));
     };
-
-    const handleClose = () => {
-
-    };
-
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -150,13 +143,9 @@ const Parameters = (props) => {
             )
     }
 
-    function handleCloseDialog() {
-
-    }
-
     return (
 
-        <Dialog open={props.showParameters} onClose={handleCloseDialog} aria-labelledby="form-dialog-title" maxWidth={'md'} fullWidth={true}>
+        <Dialog open={showParameters} onClose={hideParameters} aria-labelledby="form-dialog-title" maxWidth={'md'} fullWidth={true}>
             <DialogTitle id="form-dialog-title">
                 <Typography variant="h5" className={classes.title}>
                     <FormattedMessage id="parameters"/>
@@ -177,7 +166,7 @@ const Parameters = (props) => {
                         <SingleLineDiagramParameters/>
                     </TabPanel>
                     <Grid item xs={12}>
-                        <Button onClick={props.hideParameters} variant="contained" color="primary" className={classes.button}>
+                        <Button onClick={hideParameters} variant="contained" color="primary" className={classes.button}>
                             <FormattedMessage id="close"/>
                         </Button>
                     </Grid>
