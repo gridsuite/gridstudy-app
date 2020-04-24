@@ -72,7 +72,6 @@ function logout(dispatch, userManagerInstance) {
 function dispatchUser(dispatch, userManagerInstance) {
     return userManagerInstance.getUser().then(user => {
         if (user) {
-            console.log(user);
             console.debug('User has been successfully loaded from store.');
             return dispatch(setLoggedUser(user));
         } else {

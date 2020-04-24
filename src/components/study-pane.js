@@ -177,14 +177,21 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
-    const updateFilteredNominalVoltages = (vnom) => {
+    const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
-        const currentIndex = filteredNominalVoltages.indexOf(vnom);
-        const newFiltered = [...filteredNominalVoltages];
-        if (currentIndex === -1) {
-            newFiltered.push(vnom);
+        let newFiltered;
+        if (isToggle) {
+            newFiltered = [...filteredNominalVoltages];
+            vnoms.map((vnom) => {
+                const currentIndex = filteredNominalVoltages.indexOf(vnom);
+                if (currentIndex === -1) {
+                    newFiltered.push(vnom);
+                } else {
+                    newFiltered.splice(currentIndex, 1);
+                }
+            });
         } else {
-            newFiltered.splice(currentIndex, 1);
+            newFiltered = [...vnoms];
         }
         setFilteredNominalVoltages(newFiltered);
     };
@@ -232,7 +239,7 @@ const StudyPane = () => {
                             <div style={{position: "absolute", right: 10, bottom: 30, zIndex: 1}}>
                                 <NominalVoltageFilter nominalVoltages={network.getNominalVoltages()}
                                                       filteredNominalVoltages={filteredNominalVoltages}
-                                                      onNominalVoltageFilterChange={updateFilteredNominalVoltages} />
+                                                      onNominalVoltageFilterChange={updateFilteredNominalVoltages}/>
                             </div>
                         }
                 </div>
