@@ -30,7 +30,6 @@ import AppsIcon from '@material-ui/icons/Apps';
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
 import {useSelector} from "react-redux";
-import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles(() => ({
     grow: {
