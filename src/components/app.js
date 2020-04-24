@@ -16,14 +16,13 @@ import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
 import TopBar from './top-bar';
-import {LIGHT_THEME, setLoggedUser} from '../redux/actions'
+import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
 
 import {
     login,
     logout,
     handleSigninCallback,
-    dispatchUser,
     getPreLoginPath,
     handleSilentRenewCallback,
     getUserManagerPromise, initializeAuthentication
