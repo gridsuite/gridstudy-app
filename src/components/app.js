@@ -90,7 +90,7 @@ const App = () => {
     const location = useLocation();
 
     useEffect(() => {
-        if (!window.location.href.includes("sign-in-callback")) {
+        if (!window.location.href.includes("silent-renew-callback")) {
             userManagerPromise
                 .then(userManager => {
                     userManager.events.addUserLoaded((user) => {
