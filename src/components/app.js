@@ -66,6 +66,8 @@ const App = () => {
 
     const [userManager, setUserManager] = useState(noUserManager);
 
+    const [showParameters, setShowParameters] = useState(false);
+
     const history = useHistory();
 
     const dispatch = useDispatch();
@@ -88,17 +90,20 @@ const App = () => {
         history.push("/studies/" + studyName);
     }
 
-    function showParameters() {
-        if (location.pathname !== "/parameters") {
-            history.push("/parameters");
-        }
+    function showParametersClicked() {
+        setShowParameters(true);
+    }
+
+    function hideParameters() {
+        setShowParameters(false);
     }
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={() => showParameters()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
+                <TopBar onParametersClick={() => showParametersClicked()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
+                <Parameters showParameters={showParameters} hideParameters={hideParameters}/>
                 { user !== null ? (
                         <Switch>
                             <Route exact path="/">
@@ -106,9 +111,6 @@ const App = () => {
                             </Route>
                             <Route exact path="/studies/:studyName">
                                 <StudyPane/>
-                            </Route>
-                            <Route exact path="/parameters">
-                                <Parameters/>
                             </Route>
                             <Route exact path="/sign-in-callback">
                                 <Redirect to={getPreLoginPath() || "/"} />
