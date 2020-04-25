@@ -269,17 +269,20 @@ export default class ArrowLayer extends Layer {
     }
 
     _getModel(gl) {
-        const positions = [-1, -1, 0,
-                           0, 1, 0,
-                           1, -1, 0];
+        const positions = [-1, -1,  0,
+                           0,  1,   0,
+                           0,  -0.6, 0,
+                           1,  -1,  0,
+                           0,  1,   0,
+                           0,  -0.6, 0];
 
         return new Model(
             gl,
             Object.assign(this.getShaders(), {
                 id: this.props.id,
                 geometry: new Geometry({
-                    drawMode: GL.TRIANGLE_FAN,
-                    vertexCount: 3,
+                    drawMode: GL.TRIANGLES,
+                    vertexCount: 6,
                     attributes: {
                         positions: {size: 3, value: new Float32Array(positions)}
                     }
