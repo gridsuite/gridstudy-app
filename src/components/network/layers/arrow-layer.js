@@ -24,6 +24,7 @@ const defaultProps = {
     getSize: {type: 'accessor', value: 1},
     getColor: {type: 'accessor', value: DEFAULT_COLOR},
     getSpeedFactor: {type: 'accessor', value: 1.0},
+    isInvertDirection: {type: 'accessor', value: false},
     animated: {type: 'boolean', value: true}
 };
 
@@ -66,6 +67,13 @@ export default class ArrowLayer extends Layer {
                 accessor: 'getDistance',
                 type: GL.FLOAT,
                 defaultValue: 0
+            },
+            instanceIsInvertDirection: {
+                size: 1,
+                transition: true,
+                accessor: 'isInvertDirection',
+                transform: i => i ? 1.0 : 0.0, // convert to float because boolean at not supported in the GLSL
+                defaultValue: 0.0
             },
             instanceLineDistance: {
                 size: 1,

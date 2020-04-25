@@ -56,6 +56,7 @@ class LineLayer extends CompositeLayer {
                         getColor: color,
                         getSize: 700,
                         getSpeedFactor: 3,
+                        isInvertDirection: arrow => arrow.line.p1 > 0,
                         animated: true
                     }));
                     layers.push(arrowLayer);

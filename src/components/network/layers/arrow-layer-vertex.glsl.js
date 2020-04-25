@@ -12,6 +12,7 @@ in int instanceLinePositionsTextureOffset;
 in int instanceLineDistancesTextureOffset;
 in int instanceLinePointCount;
 in float instanceLineDistance;
+in float instanceIsInvertDirection; // nedd to be a float in GLSL
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
@@ -80,7 +81,7 @@ int findFirstLinePointAfterDistance(float distance) {
 
 void main(void) {
   // arrow distance from the line start shifted with current timestamp
-  float arrowDistance = mod(instanceLineDistance * instanceArrowDistance + timestamp * instanceSpeedFactor, instanceLineDistance);
+  float arrowDistance = mod(instanceLineDistance * instanceArrowDistance + (instanceIsInvertDirection < 0.5 ? 1.0 : -1.0) * timestamp * instanceSpeedFactor, instanceLineDistance);
 
   // look for first line point that is after arrow distance
   int linePoint = findFirstLinePointAfterDistance(arrowDistance);
@@ -95,7 +96,10 @@ void main(void) {
   float sizePixels = clamp(project_size_to_pixel(instanceSize), sizeMinPixels, sizeMaxPixels);
 
   // calculate rotation angle for aligning the arrow with the line segment
-  float angle = atan(linePosition1.x - linePosition2.x, linePosition1.y - linePosition2.y) + radians(180.0);
+  float angle = atan(linePosition1.x - linePosition2.x, linePosition1.y - linePosition2.y);
+  if (instanceIsInvertDirection < 0.5) {
+      angle += radians(180.0);
+  }
   mat3 rotation = mat3(cos(angle),  sin(angle),  0,
                        -sin(angle), cos(angle),  0,
                        0,           0,           0);
