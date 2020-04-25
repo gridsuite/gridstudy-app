@@ -107,16 +107,19 @@ export default class ArrowLayer extends Layer {
     }
 
     createTexture2D(gl, data, elementSize, format) {
+        const start = performance.now()
+
         const elementCount = data.length / elementSize;
         const width = Math.min(elementCount, this.state.maxTextureSize);
         const height = Math.ceil(elementCount / this.state.maxTextureSize);
-        console.info(`Creating texture of ${elementCount} elements (${width} * ${height})`);
+
         if (data.length < width * height * elementSize) {
             const oldLength = data.length;
             data.length += (width * height * elementSize - data.length);
             data.fill(0, oldLength, width * height * elementSize);
         }
-        return new Texture2D(gl, {
+
+        const texture2d = new Texture2D(gl, {
             width: width,
             height: height,
             format: format,
@@ -126,9 +129,16 @@ export default class ArrowLayer extends Layer {
                 [GL.TEXTURE_MIN_FILTER]: GL.NEAREST
             }
         });
+
+        const stop = performance.now()
+        console.info(`Texture of ${elementCount} elements (${width} * ${height}) created in ${stop -start} ms`);
+
+        return texture2d;
     }
 
     createTexturesStructure(props) {
+        const start = performance.now()
+
         const linePositionsTextureData = [];
         const lineDistancesTextureData = [];
         const lineAttributes = new Map();
@@ -169,6 +179,9 @@ export default class ArrowLayer extends Layer {
                 positionCount: linePositionCount
             });
         });
+
+        const stop = performance.now()
+        console.info(`Texture data created in ${stop -start} ms`);
 
         return {
             linePositionsTextureData,
