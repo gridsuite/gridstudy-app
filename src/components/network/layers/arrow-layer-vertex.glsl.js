@@ -32,7 +32,7 @@ ivec2 calulateTextureIndex(int flatIndex) {
 }
 
 /**
- * Fetch WG84 position from texture for a given point of the line.  
+ * Fetch WGS84 position from texture for a given point of the line.  
  */
 vec3 fetchLinePosition(int point) {
   int flatIndex = instanceLinePositionsTextureOffset + point;
@@ -77,12 +77,6 @@ void main(void) {
   // position for the line point just after the arrow
   vec3 linePosition2 = fetchLinePosition(linePoint);
 
-  // calculate arrow position by interpolation
-  float lineDistance1 = fetchLineDistance(linePoint - 1);
-  float lineDistance2 = fetchLineDistance(linePoint);
-  float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);    
-  vec3 arrowPosition = mix(linePosition1, linePosition2, interpolationValue);  
-
   // clamp to arrow size limits
   float sizePixels = clamp(project_size_to_pixel(instanceSize), sizeMinPixels, sizeMaxPixels);
 
@@ -92,10 +86,20 @@ void main(void) {
                        -sin(angle), cos(angle),  0,
                        0,           0,           0);
 
-  // project to clipspace 
+  // project the 2 line points position to clipspace 
   vec3 offset = positions * rotation * project_pixel_size(sizePixels);
-  vec3 arrowPosition64Low = vec3(0, 0, 0);
-  gl_Position = project_position_to_clipspace(arrowPosition, arrowPosition64Low, offset);
+  vec3 position64Low = vec3(0, 0, 0);
+  vec4 clipspacePosition1 = project_position_to_clipspace(linePosition1, position64Low, offset);
+  vec4 clipspacePosition2 = project_position_to_clipspace(linePosition2, position64Low, offset);
+
+  // calculate arrow position by interpolating the 2 line points position
+  float lineDistance1 = fetchLineDistance(linePoint - 1);
+  float lineDistance2 = fetchLineDistance(linePoint);
+  float interpolationValue = project_size_to_pixel(arrowDistance - lineDistance1) / project_size_to_pixel(lineDistance2 - lineDistance1);    
+  vec4 arrowPosition = mix(clipspacePosition1, clipspacePosition2, interpolationValue);  
+
+  // arrow vertex position
+  gl_Position = arrowPosition;
 
   // arrow fill color for fragment shader 
   vFillColor = instanceColor;
