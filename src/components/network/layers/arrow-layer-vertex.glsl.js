@@ -18,13 +18,14 @@ uniform float sizeMaxPixels;
 uniform float timestamp;
 uniform sampler2D linePositionsTexture;
 uniform sampler2D lineDistancesTexture;
-uniform int maxTextureSize;
+uniform float maxTextureSize;
 
 out vec4 vFillColor;
 
 ivec2 position(int i) {
-  int x = int(mod(float(i), float(maxTextureSize)));
-  int y = int(trunc(float(i) / float(maxTextureSize)));
+  float f = float(i);
+  int x = int(mod(f, maxTextureSize));
+  int y = int(trunc(f / maxTextureSize));
   return ivec2(x, y);
 }
 
