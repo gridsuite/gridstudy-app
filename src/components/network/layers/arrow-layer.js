@@ -148,7 +148,7 @@ export default class ArrowLayer extends Layer {
 
         lines.forEach(line => {
             const positions = props.getLinePositions(line);
-            const linePositionsTextureStartIndex = linePositionsTextureData.length;
+            const linePositionsTextureStartIndex = linePositionsTextureData.length / 2;
             const lineDistancesTextureStartIndex = lineDistancesTextureData.length;
             let linePositionCount = 0;
             let lineDistance = 0;
