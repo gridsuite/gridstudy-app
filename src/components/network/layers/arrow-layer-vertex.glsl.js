@@ -8,9 +8,9 @@ in float instanceSize;
 in float instanceDistance;
 in vec4 instanceColor;
 in float instanceSpeedFactor;
-in int instanceLinePositionsTextureStartIndex;
-in int instanceLineDistancesTextureStartIndex;
-in int instanceLinePositionCount;
+in int instanceLinePositionsTextureOffset;
+in int instanceLineDistancesTextureOffset;
+in int instanceLinePointCount;
 in float instanceLineDistance;
 
 uniform float sizeMinPixels;
@@ -22,46 +22,61 @@ uniform float maxTextureSize;
 
 out vec4 vFillColor;
 
-ivec2 position(int i) {
-  float f = float(i);
-  int x = int(mod(f, maxTextureSize));
-  int y = int(trunc(f / maxTextureSize));
+/**
+ * Calculate 2 dimensions texture index from flat index. 
+ */
+ivec2 calulateTextureIndex(int flatIndex) {
+  int x = int(mod(float(flatIndex), maxTextureSize));
+  int y = int(trunc(float(flatIndex) / maxTextureSize));
   return ivec2(x, y);
 }
 
-vec3 fetchLinePosition(int positionNumber) {
-  int i = instanceLinePositionsTextureStartIndex + positionNumber;
-  return vec3(texelFetch(linePositionsTexture, position(i), 0).xy, 0);
+/**
+ * Fetch WG84 position from texture for a given point of the line.  
+ */
+vec3 fetchLinePosition(int point) {
+  int flatIndex = instanceLinePositionsTextureOffset + point;
+  ivec2 textureIndex = calulateTextureIndex(flatIndex); 
+  return vec3(texelFetch(linePositionsTexture, textureIndex, 0).xy, 0);
 }
 
-float fetchLineDistance(int positionNumber) {
-  int i = instanceLineDistancesTextureStartIndex + positionNumber;
-  return texelFetch(lineDistancesTexture, position(i), 0).x;
+/**
+ * Fetch distance (in meters from the start of the line) from texture for a point of the line.  
+ */
+float fetchLineDistance(int point) {
+  int flatIndex = instanceLineDistancesTextureOffset + point;
+  ivec2 textureIndex = calulateTextureIndex(flatIndex);
+  return texelFetch(lineDistancesTexture, textureIndex, 0).x;
+}
+
+int findLinePointAfterDistance(float distance) {
+  int pointAfterDistance;
+  for (int point = 1; point < instanceLinePointCount; point++) {
+      float pointDistance = fetchLineDistance(point);
+      if (pointDistance > distance) {
+          pointAfterDistance = point;
+          break;
+      }
+  }
+  return pointAfterDistance;
 }
 
 void main(void) {
   // arrow distance from the line start
   float arrowDistance = mod(instanceLineDistance * instanceDistance + timestamp * instanceSpeedFactor, instanceLineDistance);
 
-  // look for first line position index that is further arrow distance
-  int positionNumber;
-  for (int i = 1; i < instanceLinePositionCount; i++) {
-      float distance = fetchLineDistance(i);
-      if (distance > arrowDistance) {
-          positionNumber = i;
-          break;
-      }
-  }
+  // look for first line point that is after arrow distance
+  int linePoint = findLinePointAfterDistance(arrowDistance);
 
   // line position just before the arrow
-  vec3 linePosition1 = fetchLinePosition(positionNumber - 1);
+  vec3 linePosition1 = fetchLinePosition(linePoint - 1);
 
   // line position just after the arrow
-  vec3 linePosition2 = fetchLinePosition(positionNumber);
+  vec3 linePosition2 = fetchLinePosition(linePoint);
 
   // calculate arrow position by interpolation
-  float lineDistance1 = fetchLineDistance(positionNumber - 1);
-  float lineDistance2 = fetchLineDistance(positionNumber);
+  float lineDistance1 = fetchLineDistance(linePoint - 1);
+  float lineDistance2 = fetchLineDistance(linePoint);
   float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);    
   vec3 arrowPosition = mix(linePosition1, linePosition2, interpolationValue);  
 

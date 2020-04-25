@@ -76,31 +76,31 @@ export default class ArrowLayer extends Layer {
                     return this.state.lineAttributes.get(line).distance;
                 }
             },
-            instanceLinePositionsTextureStartIndex: {
+            instanceLinePositionsTextureOffset: {
                 size: 1,
                 transition: true,
                 type: GL.INT,
                 accessor: arrow => {
                     const line = this.props.getLine(arrow);
-                    return this.state.lineAttributes.get(line).positionsTextureStartIndex;
+                    return this.state.lineAttributes.get(line).positionsTextureOffset;
                 }
             },
-            instanceLineDistancesTextureStartIndex: {
+            instanceLineDistancesTextureOffset: {
                 size: 1,
                 transition: true,
                 type: GL.INT,
                 accessor: arrow => {
                     const line = this.props.getLine(arrow);
-                    return this.state.lineAttributes.get(line).distancesTextureStartIndex;
+                    return this.state.lineAttributes.get(line).distancesTextureOffset;
                 }
             },
-            instanceLinePositionCount: {
+            instanceLinePointCount: {
                 size: 1,
                 transition: true,
                 type: GL.INT,
                 accessor: arrow => {
                     const line = this.props.getLine(arrow);
-                    return this.state.lineAttributes.get(line).positionCount;
+                    return this.state.lineAttributes.get(line).pointCount;
                 }
             }
         });
@@ -148,9 +148,9 @@ export default class ArrowLayer extends Layer {
 
         lines.forEach(line => {
             const positions = props.getLinePositions(line);
-            const linePositionsTextureStartIndex = linePositionsTextureData.length / 2;
-            const lineDistancesTextureStartIndex = lineDistancesTextureData.length;
-            let linePositionCount = 0;
+            const linePositionsTextureOffset = linePositionsTextureData.length / 2;
+            const lineDistancesTextureOffset = lineDistancesTextureData.length;
+            let linePointCount = 0;
             let lineDistance = 0;
             let prevPosition;
             positions.forEach((position, index) => {
@@ -166,7 +166,7 @@ export default class ArrowLayer extends Layer {
                 linePositionsTextureData.push(position[0]);
                 linePositionsTextureData.push(position[1]);
 
-                linePositionCount++;
+                linePointCount++;
 
                 // fill line distance texture
                 lineDistance += segmentDistance;
@@ -174,9 +174,9 @@ export default class ArrowLayer extends Layer {
             });
             lineAttributes.set(line, {
                 distance: lineDistance,
-                positionsTextureStartIndex: linePositionsTextureStartIndex,
-                distancesTextureStartIndex: lineDistancesTextureStartIndex,
-                positionCount: linePositionCount
+                positionsTextureOffset: linePositionsTextureOffset,
+                distancesTextureOffset: lineDistancesTextureOffset,
+                pointCount: linePointCount
             });
         });
 
