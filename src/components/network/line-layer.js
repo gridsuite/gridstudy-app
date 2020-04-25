@@ -55,7 +55,7 @@ class LineLayer extends CompositeLayer {
                         getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line),
                         getColor: color,
                         getSize: 700,
-                        getSpeedFactor: 10,
+                        getSpeedFactor: 3,
                         animated: true
                     }));
                     layers.push(arrowLayer);
