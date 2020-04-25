@@ -50,18 +50,32 @@ float fetchLineDistance(int point) {
 }
 
 /**
- * Find the first point of the line that is after a given distance from the start (first line point).   
+ * Find the first point of the line that is after a given distance from the start (first line point).
+ * (implemented using a binary search)
  */
 int findFirstLinePointAfterDistance(float distance) {
-  int pointAfterDistance;
-  for (int point = 1; point < instanceLinePointCount; point++) {
-      float pointDistance = fetchLineDistance(point);
-      if (pointDistance > distance) {
-          pointAfterDistance = point;
-          break;
+  int firstPoint = 1;
+  int lastPoint = instanceLinePointCount - 1;
+  if (firstPoint == lastPoint) {
+      return firstPoint;
+  }
+  for (int i = 0; i < instanceLinePointCount; i++) {
+      float firstPointDistance = fetchLineDistance(firstPoint);
+      if (firstPoint + 1 == lastPoint) {
+          if (firstPointDistance > distance) {
+              return firstPoint;
+          } else {
+              return lastPoint;
+          }
+      }
+      int middlePoint = int(ceil(float(firstPoint + lastPoint) / 2.0));
+      float middlePointDistance = fetchLineDistance(middlePoint);      
+      if (middlePointDistance < distance) {
+         firstPoint = middlePoint;
+      } else {
+         lastPoint = middlePoint;
       }
   }
-  return pointAfterDistance;
 }
 
 void main(void) {
