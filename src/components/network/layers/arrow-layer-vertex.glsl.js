@@ -5,7 +5,7 @@ export default `\
 in vec3 positions;
 
 in float instanceSize;
-in float instanceDistance;
+in float instanceArrowDistance;
 in vec4 instanceColor;
 in float instanceSpeedFactor;
 in int instanceLinePositionsTextureOffset;
@@ -49,7 +49,10 @@ float fetchLineDistance(int point) {
   return texelFetch(lineDistancesTexture, textureIndex, 0).x;
 }
 
-int findLinePointAfterDistance(float distance) {
+/**
+ * Find the first point of the line that is after a given distance from the start (first line point).   
+ */
+int findFirstLinePointAfterDistance(float distance) {
   int pointAfterDistance;
   for (int point = 1; point < instanceLinePointCount; point++) {
       float pointDistance = fetchLineDistance(point);
@@ -62,16 +65,16 @@ int findLinePointAfterDistance(float distance) {
 }
 
 void main(void) {
-  // arrow distance from the line start
-  float arrowDistance = mod(instanceLineDistance * instanceDistance + timestamp * instanceSpeedFactor, instanceLineDistance);
+  // arrow distance from the line start shifted with current timestamp
+  float arrowDistance = mod(instanceLineDistance * instanceArrowDistance + timestamp * instanceSpeedFactor, instanceLineDistance);
 
   // look for first line point that is after arrow distance
-  int linePoint = findLinePointAfterDistance(arrowDistance);
+  int linePoint = findFirstLinePointAfterDistance(arrowDistance);
 
-  // line position just before the arrow
+  // position for the line point just before the arrow
   vec3 linePosition1 = fetchLinePosition(linePoint - 1);
 
-  // line position just after the arrow
+  // position for the line point just after the arrow
   vec3 linePosition2 = fetchLinePosition(linePoint);
 
   // calculate arrow position by interpolation

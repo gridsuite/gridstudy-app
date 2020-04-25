@@ -60,7 +60,7 @@ export default class ArrowLayer extends Layer {
                 accessor: 'getSpeedFactor',
                 defaultValue: 1.0
             },
-            instanceDistance: {
+            instanceArrowDistance: {
                 size: 1,
                 transition: true,
                 accessor: 'getDistance',
