@@ -11,6 +11,12 @@ import ArrowLayer from "./layers/arrow-layer";
 
 const ARROW_COUNT = 3;
 
+export const ArrowMode = {
+    NONE: 'none',
+    STATIC: 'static',
+    ANIMATED: 'animated'
+}
+
 class LineLayer extends CompositeLayer {
 
     renderLayers() {
@@ -35,32 +41,34 @@ class LineLayer extends CompositeLayer {
                     }));
                     layers.push(lineLayer);
 
-                    // create ARROW_COUNT per line
-                    const arrows = e.lines.flatMap(line => {
-                        return [...new Array(ARROW_COUNT).keys()].map(index => {
-                            return {
-                                number: index,
-                                line: line
-                            }
+                    if (this.props.arrowMode !== ArrowMode.NONE) {
+                        // create ARROW_COUNT per line
+                        const arrows = e.lines.flatMap(line => {
+                            return [...new Array(ARROW_COUNT).keys()].map(index => {
+                                return {
+                                    number: index,
+                                    line: line
+                                }
+                            });
                         });
-                    });
 
-                    const arrowLayer = new ArrowLayer(this.getSubLayerProps({
-                        id: 'ArrowNominalVoltage' + e.nominalVoltage,
-                        data: arrows,
-                        sizeMinPixels: 3,
-                        sizeMaxPixels: 10,
-                        getDistance: arrow => arrow.number / ARROW_COUNT,
-                        getLine: arrow => arrow.line,
-                        getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line),
-                        getColor: color,
-                        getSize: 700,
-                        getSpeedFactor: 3,
-                        isInvertDirection: arrow => arrow.line.p1 > 0,
-                        animated: true,
-                        visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
-                    }));
-                    layers.push(arrowLayer);
+                        const arrowLayer = new ArrowLayer(this.getSubLayerProps({
+                            id: 'ArrowNominalVoltage' + e.nominalVoltage,
+                            data: arrows,
+                            sizeMinPixels: 3,
+                            sizeMaxPixels: 10,
+                            getDistance: arrow => arrow.number / ARROW_COUNT,
+                            getLine: arrow => arrow.line,
+                            getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line),
+                            getColor: color,
+                            getSize: 700,
+                            getSpeedFactor: 3,
+                            isInvertDirection: arrow => arrow.line.p1 > 0,
+                            animated: this.props.arrowMode === ArrowMode.ANIMATED,
+                            visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
+                        }));
+                        layers.push(arrowLayer);
+                    }
                 });
         }
 
@@ -74,7 +82,8 @@ LineLayer.defaultProps = {
     network: null,
     geoData: null,
     getNominalVoltageColor: {type: 'accessor', value: [255, 255, 255]},
-    filteredNominalVoltages: []
+    filteredNominalVoltages: [],
+    arrowMode: ArrowMode.NONE
 };
 
 export default LineLayer;

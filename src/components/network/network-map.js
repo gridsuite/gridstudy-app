@@ -19,7 +19,7 @@ import {decomposeColor} from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
 import GeoData from './geo-data';
-import LineLayer from './line-layer';
+import LineLayer, {ArrowMode} from './line-layer';
 import SubstationLayer from './substation-layer';
 import {getNominalVoltageColor} from '../../utils/colors'
 
@@ -163,6 +163,7 @@ const NetworkMap = (props) => {
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
+            arrowMode: ArrowMode.STATIC,
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({
