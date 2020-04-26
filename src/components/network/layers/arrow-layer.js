@@ -34,6 +34,18 @@ export default class ArrowLayer extends Layer {
         return super.getShaders({vs, fs, modules: [project32, picking]});
     }
 
+    getArrowLineAttributes(arrow) {
+        const line = this.props.getLine(arrow);
+        if (!line) {
+            throw new Error("Invalid line");
+        }
+        const attributes = this.state.lineAttributes.get(line);
+        if (!attributes) {
+            throw new Error(`Line ${line.id} not found`);
+        }
+        return attributes;
+    }
+
     initializeState() {
         const {gl} = this.context;
 
@@ -79,37 +91,25 @@ export default class ArrowLayer extends Layer {
                 size: 1,
                 transition: true,
                 type: GL.FLOAT,
-                accessor: arrow => {
-                    const line = this.props.getLine(arrow);
-                    return this.state.lineAttributes.get(line).distance;
-                }
+                accessor: arrow => this.getArrowLineAttributes(arrow).distance
             },
             instanceLinePositionsTextureOffset: {
                 size: 1,
                 transition: true,
                 type: GL.INT,
-                accessor: arrow => {
-                    const line = this.props.getLine(arrow);
-                    return this.state.lineAttributes.get(line).positionsTextureOffset;
-                }
+                accessor: arrow => this.getArrowLineAttributes(arrow).positionsTextureOffset
             },
             instanceLineDistancesTextureOffset: {
                 size: 1,
                 transition: true,
                 type: GL.INT,
-                accessor: arrow => {
-                    const line = this.props.getLine(arrow);
-                    return this.state.lineAttributes.get(line).distancesTextureOffset;
-                }
+                accessor: arrow => this.getArrowLineAttributes(arrow).distancesTextureOffset
             },
             instanceLinePointCount: {
                 size: 1,
                 transition: true,
                 type: GL.INT,
-                accessor: arrow => {
-                    const line = this.props.getLine(arrow);
-                    return this.state.lineAttributes.get(line).pointCount;
-                }
+                accessor: arrow => this.getArrowLineAttributes(arrow).pointCount
             }
         });
     }
@@ -163,6 +163,9 @@ export default class ArrowLayer extends Layer {
 
         lines.forEach(line => {
             const positions = props.getLinePositions(line);
+            if (!positions) {
+                throw new Error(`Invalid positions for line ${line.id}`);
+            }
             const linePositionsTextureOffset = linePositionsTextureData.length / 2;
             const lineDistancesTextureOffset = lineDistancesTextureData.length;
             let linePointCount = 0;
@@ -173,7 +176,7 @@ export default class ArrowLayer extends Layer {
                 let segmentDistance = 0;
                 if (prevPosition) {
                     segmentDistance = getDistance({ latitude : prevPosition[1], longitude : prevPosition[0]},
-                        { latitude : position[1], longitude : position[0]});
+                                                  { latitude : position[1], longitude : position[0]});
                 }
                 prevPosition = position;
 
