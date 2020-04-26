@@ -10,7 +10,7 @@ import {Model, Geometry, Texture2D} from '@luma.gl/core';
 
 import vs from './arrow-layer-vertex.glsl';
 import fs from './arrow-layer-fragment.glsl';
-import getDistance from "geolib/es/getDistance";
+import cheapRuler from 'cheap-ruler';
 
 const DEFAULT_COLOR = [0, 0, 0, 255];
 
@@ -170,26 +170,30 @@ export default class ArrowLayer extends Layer {
             const lineDistancesTextureOffset = lineDistancesTextureData.length;
             let linePointCount = 0;
             let lineDistance = 0;
-            let prevPosition;
-            positions.forEach((position, index) => {
-                // compute distance with previous position
-                let segmentDistance = 0;
-                if (prevPosition) {
-                    segmentDistance = getDistance({ latitude : prevPosition[1], longitude : prevPosition[0]},
-                                                  { latitude : position[1], longitude : position[0]});
-                }
-                prevPosition = position;
+            if (positions.length > 0) {
+                let ruler = cheapRuler(positions[0][1], 'meters');
+                let prevPosition;
+                positions.forEach((position, index) => {
+                    // compute distance with previous position
+                    let segmentDistance = 0;
+                    if (prevPosition) {
+                        ruler = cheapRuler(position[1], 'meters');
+                        segmentDistance = ruler.distance([prevPosition[1], prevPosition[0]],
+                                                         [position[1], position[0]]);
+                    }
+                    prevPosition = position;
 
-                // fill line positions texture
-                linePositionsTextureData.push(position[0]);
-                linePositionsTextureData.push(position[1]);
+                    // fill line positions texture
+                    linePositionsTextureData.push(position[0]);
+                    linePositionsTextureData.push(position[1]);
 
-                linePointCount++;
+                    linePointCount++;
 
-                // fill line distance texture
-                lineDistance += segmentDistance;
-                lineDistancesTextureData.push(lineDistance);
-            });
+                    // fill line distance texture
+                    lineDistance += segmentDistance;
+                    lineDistancesTextureData.push(lineDistance);
+                });
+            }
             lineAttributes.set(line, {
                 distance: lineDistance,
                 positionsTextureOffset: linePositionsTextureOffset,

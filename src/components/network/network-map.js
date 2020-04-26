@@ -163,7 +163,7 @@ const NetworkMap = (props) => {
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
-            arrowMode: ArrowMode.STATIC,
+            arrowMode: ArrowMode.ANIMATED,
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({
