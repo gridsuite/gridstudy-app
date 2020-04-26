@@ -31,6 +31,7 @@ const LINE_LAYER_PREFIX = "lineLayer";
 const NetworkMap = (props) => {
 
     const [labelsVisible, setLabelsVisible] = useState(false);
+    const [arrowMode, setArrowMode] = useState(ArrowMode.NONE);
 
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({lastCenteredSubstation: null, centered: false});
@@ -120,6 +121,12 @@ const NetworkMap = (props) => {
             } else if (info.viewState.zoom < props.labelsZoomThreshold && labelsVisible) {
                 setLabelsVisible(false);
             }
+
+            if (info.viewState.zoom >= props.arrowsZoomThreshold && arrowMode === ArrowMode.NONE) {
+                setArrowMode(ArrowMode.ANIMATED);
+            } else if (info.viewState.zoom < props.arrowsZoomThreshold && arrowMode === ArrowMode.ANIMATED) {
+                setArrowMode(ArrowMode.NONE);
+            }
         }
     }
 
@@ -163,7 +170,7 @@ const NetworkMap = (props) => {
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
-            arrowMode: ArrowMode.ANIMATED,
+            arrowMode: arrowMode,
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({
@@ -213,7 +220,8 @@ const NetworkMap = (props) => {
 NetworkMap.defaultProps = {
     network: null,
     geoData: null,
-    labelsZoomThreshold: 7,
+    labelsZoomThreshold: 9,
+    arrowsZoomThreshold: 8,
     initialZoom: 5,
     filteredNominalVoltages: null,
     initialPosition: [0, 0],
@@ -224,6 +232,7 @@ NetworkMap.propTypes = {
     network: PropTypes.instanceOf(Network),
     geoData: PropTypes.instanceOf(GeoData),
     labelsZoomThreshold: PropTypes.number.isRequired,
+    arrowsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
     filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,

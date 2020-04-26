@@ -217,7 +217,8 @@ const StudyPane = () => {
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
                         <NetworkMap network={network}
                                     geoData={geoData}
-                                    labelsZoomThreshold={8}
+                                    labelsZoomThreshold={9}
+                                    arrowZoomThreshold={8}
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
