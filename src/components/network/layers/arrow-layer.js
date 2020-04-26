@@ -117,10 +117,17 @@ export default class ArrowLayer extends Layer {
     createTexture2D(gl, data, elementSize, format) {
         const start = performance.now()
 
+        // we clamp the width to MAX_TEXTURE_SIZE (which is an property of the graphic card)
         const elementCount = data.length / elementSize;
-        const width = Math.min(elementCount, this.state.maxTextureSize);
-        const height = Math.ceil(elementCount / this.state.maxTextureSize);
+        const { maxTextureSize } = this.state;
+        const width = Math.min(elementCount, maxTextureSize);
+        const height = Math.ceil(elementCount / maxTextureSize);
+        if (height > maxTextureSize) {
+            throw new Error(`Texture height (${height}) cannot be greater that max texture size (${maxTextureSize})`);
+        }
 
+        // data length needs to be width * height (otherwise we get an error), so we pad the data array with zero until
+        // reaching the correct size.
         if (data.length < width * height * elementSize) {
             const oldLength = data.length;
             data.length += (width * height * elementSize - data.length);
