@@ -84,7 +84,7 @@ export default class ArrowLayer extends Layer {
                 size: 1,
                 transition: true,
                 accessor: 'isInvertDirection',
-                transform: i => i ? 1.0 : 0.0, // convert to float because boolean at not supported in the GLSL
+                transform: i => i ? 1.0 : 0.0, // convert to float because booleans are not supported in the GLSL
                 defaultValue: 0.0
             },
             instanceLineDistance: {
