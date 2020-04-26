@@ -57,7 +57,8 @@ class LineLayer extends CompositeLayer {
                         getSize: 700,
                         getSpeedFactor: 3,
                         isInvertDirection: arrow => arrow.line.p1 > 0,
-                        animated: true
+                        animated: true,
+                        visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
                     }));
                     layers.push(arrowLayer);
                 });
