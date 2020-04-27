@@ -1,6 +1,7 @@
 class Events {
+    userLoadedCallbacks = [];
     addUserLoaded(callback) {
-        // Nothing to do
+        this.userLoadedCallbacks.push(callback);
     }
 
     addSilentRenewError(callback) {
@@ -38,8 +39,7 @@ export class UserManagerMock {
         return Promise.resolve(null);
     }
     signinRedirectCallback() {
-        sessionStorage.setItem("powsybl-study-app-mock-user",  JSON.stringify(
-            {
+        const user = {
                 profile:{ name:"John Doe"},
                 id_token : "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IllNRUxIVDBndmIwbXhvU0RvWWZvbWpxZmpZVSJ9.eyJhdWQiOiI5YzQwMjQ2MS1iMmFiLTQ3NjctOWRiMy02Njg1OWJiMGZjZDAiLCJpc3MiOiJodHRwczovL2" +
                     "xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNzUwMmRhZDUtZDY0Yy00NmM3LTlkNDctYjE2ZjU4MGZjZmE5L3YyLjAiLCJpYXQiOjE1ODUzMzEyNDksIm5iZiI6MTU4NTMzMTI0OSwiZXhwIjoxNTg1MzM1MTQ5LCJhaW8iOiJBV1FB" +
@@ -64,8 +64,9 @@ export class UserManagerMock {
                 token_type : "Bearer",
                 scope : "scopes"
 
-            }
-                ));
+        };
+        sessionStorage.setItem("powsybl-study-app-mock-user", JSON.stringify(user));
+        this.events.userLoadedCallbacks.forEach(c => c(user));
         return Promise.resolve("");
     }
 }
