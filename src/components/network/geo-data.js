@@ -21,7 +21,7 @@ export default class GeoData {
 
     substationPositionsById = new Map();
 
-    linePositions = new Map();
+    linePositionsById = new Map();
 
     setSubstationPositions(positions) {
         // index positions by substation id
@@ -39,11 +39,14 @@ export default class GeoData {
 
     setLinePositions(positions) {
         // index positions by line id
-        this.linePositions = positions.reduce(linePositionIndexer, new Map());
+        this.linePositionsById = positions.reduce(linePositionIndexer, new Map());
     }
 
+    /**
+     * Get line positions always ordered from side 1 to side 2.
+     */
     getLinePositions(network, line) {
-        const linePosition = this.linePositions.get(line.id);
+        const linePositions = this.linePositionsById.get(line.id);
         const voltageLevel1 = network.getVoltageLevel(line.voltageLevelId1);
         if (!voltageLevel1) {
             throw new Error(`Voltage level side 1 '${line.voltageLevelId1}' not found`);
@@ -55,16 +58,30 @@ export default class GeoData {
         const substationPosition1 = this.getSubstationPosition(voltageLevel1.substationId);
         const substationPosition2 = this.getSubstationPosition(voltageLevel2.substationId);
 
-        if (linePosition) {
-            const positions = linePosition.map(c => [c.lon, c.lat]);
-            const distSub1 = getDistance({latitude : substationPosition1[1],longitude : substationPosition1[0]}, {latitude : positions[0][1],longitude : positions[0][0]});
-            const distSub2 = getDistance({latitude : substationPosition2[1],longitude : substationPosition2[0]}, {latitude : positions[0][1],longitude : positions[0][0]});
+        if (linePositions) {
+            const firstPosition = linePositions[0];
+            const distSub1 = getDistance({latitude : substationPosition1[1], longitude : substationPosition1[0]},
+                                         {latitude : firstPosition.lat, longitude : firstPosition.lon});
+            const distSub2 = getDistance({latitude : substationPosition2[1], longitude : substationPosition2[0]},
+                                         {latitude : firstPosition.lon, longitude : firstPosition.lon});
+
+            const positions = new Array(linePositions.length + 2);
 
             if (distSub1 < distSub2) {
-                return [substationPosition1].concat(positions.concat([substationPosition2]));
+                positions[0] = substationPosition1;
+                linePositions.forEach((position, index) => positions[index + 1] = [position.lon, position.lat]);
+                positions[positions.length - 1] = substationPosition2;
             } else {
-                return [substationPosition2].concat(positions.concat([substationPosition1]));
+                // reverse positions order to go from side 1 to 2
+                positions[0] = substationPosition2;
+                for (let index = linePositions.length - 1; index >= 0; index--) {
+                    const position = linePositions[index];
+                    positions[linePositions.length - index] = [position.lon, position.lat];
+                }
+                positions[positions.length - 1] = substationPosition1;
             }
+
+            return positions;
         } else {
             const substationPosition1 = this.getSubstationPosition(voltageLevel1.substationId);
             const substationPosition2 = this.getSubstationPosition(voltageLevel2.substationId);

@@ -12,7 +12,7 @@ in int instanceLinePositionsTextureOffset;
 in int instanceLineDistancesTextureOffset;
 in int instanceLinePointCount;
 in float instanceLineDistance;
-in float instanceIsInvertDirection; // nedd to be a float in GLSL
+in float instanceArrowDirection;
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
@@ -22,6 +22,7 @@ uniform sampler2D lineDistancesTexture;
 uniform float maxTextureSize;
 
 out vec4 vFillColor;
+out float shouldDiscard;
 
 /**
  * Calculate 2 dimensions texture index from flat index. 
@@ -82,46 +83,52 @@ int findFirstLinePointAfterDistance(float distance) {
 }
 
 void main(void) {
-  // arrow distance from the line start shifted with current timestamp
-  float arrowDistance = mod(instanceLineDistance * instanceArrowDistance + (instanceIsInvertDirection < 0.5 ? 1.0 : -1.0) * timestamp * instanceSpeedFactor, instanceLineDistance);
-
-  // look for first line point that is after arrow distance
-  int linePoint = findFirstLinePointAfterDistance(arrowDistance);
-
-  // position for the line point just before the arrow
-  vec3 linePosition1 = fetchLinePosition(linePoint - 1);
-
-  // position for the line point just after the arrow
-  vec3 linePosition2 = fetchLinePosition(linePoint);
-
-  // clamp to arrow size limits
-  float sizePixels = clamp(project_size_to_pixel(instanceSize), sizeMinPixels, sizeMaxPixels);
-
-  // calculate rotation angle for aligning the arrow with the line segment
-  float angle = atan(linePosition1.x - linePosition2.x, linePosition1.y - linePosition2.y);
-  if (instanceIsInvertDirection < 0.5) {
-      angle += radians(180.0);
+  if (instanceArrowDirection < 1.0) {
+      vFillColor = vec4(0, 0, 0, 0);
+      shouldDiscard = 1.0;
+  } else {
+      // arrow distance from the line start shifted with current timestamp
+      float arrowDistance = mod(instanceLineDistance * instanceArrowDistance + (instanceArrowDirection < 2.0 ? 1.0 : -1.0) * timestamp * instanceSpeedFactor, instanceLineDistance);
+    
+      // look for first line point that is after arrow distance
+      int linePoint = findFirstLinePointAfterDistance(arrowDistance);
+    
+      // position for the line point just before the arrow
+      vec3 linePosition1 = fetchLinePosition(linePoint - 1);
+    
+      // position for the line point just after the arrow
+      vec3 linePosition2 = fetchLinePosition(linePoint);
+    
+      // clamp to arrow size limits
+      float sizePixels = clamp(project_size_to_pixel(instanceSize), sizeMinPixels, sizeMaxPixels);
+    
+      // calculate rotation angle for aligning the arrow with the line segment
+      float angle = atan(linePosition1.x - linePosition2.x, linePosition1.y - linePosition2.y);
+      if (instanceArrowDirection < 2.0) {
+          angle += radians(180.0);
+      }
+      mat3 rotation = mat3(cos(angle),  sin(angle),  0,
+                           -sin(angle), cos(angle),  0,
+                           0,           0,           0);
+    
+      // project the 2 line points position to clipspace 
+      vec3 offset = positions * rotation * project_pixel_size(sizePixels);
+      vec3 position64Low = vec3(0, 0, 0);
+      vec4 clipspacePosition1 = project_position_to_clipspace(linePosition1, position64Low, offset);
+      vec4 clipspacePosition2 = project_position_to_clipspace(linePosition2, position64Low, offset);
+    
+      // calculate arrow position by interpolating the 2 line points position
+      float lineDistance1 = fetchLineDistance(linePoint - 1);
+      float lineDistance2 = fetchLineDistance(linePoint);
+      float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);    
+      vec4 arrowPosition = mix(clipspacePosition1, clipspacePosition2, interpolationValue);  
+    
+      // arrow vertex position
+      gl_Position = arrowPosition;
+    
+      // arrow fill color for fragment shader 
+      vFillColor = instanceColor;
+      shouldDiscard = 0.0;
   }
-  mat3 rotation = mat3(cos(angle),  sin(angle),  0,
-                       -sin(angle), cos(angle),  0,
-                       0,           0,           0);
-
-  // project the 2 line points position to clipspace 
-  vec3 offset = positions * rotation * project_pixel_size(sizePixels);
-  vec3 position64Low = vec3(0, 0, 0);
-  vec4 clipspacePosition1 = project_position_to_clipspace(linePosition1, position64Low, offset);
-  vec4 clipspacePosition2 = project_position_to_clipspace(linePosition2, position64Low, offset);
-
-  // calculate arrow position by interpolating the 2 line points position
-  float lineDistance1 = fetchLineDistance(linePoint - 1);
-  float lineDistance2 = fetchLineDistance(linePoint);
-  float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);    
-  vec4 arrowPosition = mix(clipspacePosition1, clipspacePosition2, interpolationValue);  
-
-  // arrow vertex position
-  gl_Position = arrowPosition;
-
-  // arrow fill color for fragment shader 
-  vFillColor = instanceColor;
 }
 `;

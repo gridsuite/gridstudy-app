@@ -7,7 +7,7 @@
 
 import {CompositeLayer, PathLayer} from 'deck.gl';
 
-import ArrowLayer from "./layers/arrow-layer";
+import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 
 const ARROW_COUNT = 3;
 
@@ -63,7 +63,15 @@ class LineLayer extends CompositeLayer {
                             getColor: color,
                             getSize: 700,
                             getSpeedFactor: 3,
-                            isInvertDirection: arrow => arrow.line.p1 > 0,
+                            getDirection: arrow => {
+                                if (arrow.line.p1 < 0) {
+                                    return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
+                                } else if (arrow.line.p1 > 0) {
+                                    return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
+                                } else {
+                                    return ArrowDirection.NONE;
+                                }
+                            },
                             animated: this.props.arrowMode === ArrowMode.ANIMATED,
                             visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
                         }));

@@ -5,9 +5,13 @@ export default `\
 precision highp float;
 
 in vec4 vFillColor;
+in float shouldDiscard;
 out vec4 fragmentColor;
 
 void main(void) {
-  fragmentColor = vFillColor;
+    if (shouldDiscard > 0.0) {
+        discard;
+    }
+    fragmentColor = vFillColor;
 }
 `;

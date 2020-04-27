@@ -14,6 +14,12 @@ import cheapRuler from 'cheap-ruler';
 
 const DEFAULT_COLOR = [0, 0, 0, 255];
 
+export const ArrowDirection = {
+    NONE: 'none',
+    FROM_SIDE_1_TO_SIDE_2: 'fromSide1ToSide2',
+    FROM_SIDE_2_TO_SIDE_1: 'fromSide2ToSide1'
+};
+
 const defaultProps = {
     sizeMinPixels: {type: 'number', min: 0, value: 0}, //  min size in pixels
     sizeMaxPixels: {type: 'number', min: 0, value: Number.MAX_SAFE_INTEGER}, // max size in pixels
@@ -24,7 +30,7 @@ const defaultProps = {
     getSize: {type: 'accessor', value: 1},
     getColor: {type: 'accessor', value: DEFAULT_COLOR},
     getSpeedFactor: {type: 'accessor', value: 1.0},
-    isInvertDirection: {type: 'accessor', value: false},
+    getDirection: {type: 'accessor', value: ArrowDirection.NONE},
     animated: {type: 'boolean', value: true}
 };
 
@@ -80,11 +86,20 @@ export default class ArrowLayer extends Layer {
                 type: GL.FLOAT,
                 defaultValue: 0
             },
-            instanceIsInvertDirection: {
+            instanceArrowDirection: {
                 size: 1,
                 transition: true,
-                accessor: 'isInvertDirection',
-                transform: i => i ? 1.0 : 0.0, // convert to float because booleans are not supported in the GLSL
+                accessor: 'getDirection',
+                transform: direction => {
+                    switch (direction) {
+                        case ArrowDirection.NONE:
+                            return 0.0;
+                        case ArrowDirection.FROM_SIDE_1_TO_SIDE_2:
+                            return 1.0;
+                        case ArrowDirection.FROM_SIDE_2_TO_SIDE_1:
+                            return 2.0;
+                    }
+                },
                 defaultValue: 0.0
             },
             instanceLineDistance: {
