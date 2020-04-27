@@ -130,7 +130,7 @@ export default class ArrowLayer extends Layer {
         // reaching the correct size.
         if (data.length < width * height * elementSize) {
             const oldLength = data.length;
-            data.length += (width * height * elementSize - data.length);
+            data.length = width * height * elementSize;
             data.fill(0, oldLength, width * height * elementSize);
         }
 
