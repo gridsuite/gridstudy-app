@@ -33,6 +33,7 @@
   "useName": "Utiliser le nom à la place de l'identifiant",
   "diagonalLabel": "Afficher les noms en diagonal",
   "centerLabel": "Centrer les noms",
+  "topologicalColoring": "Coloration topologique",
   "General": "Général",
   "SingleLineDiagram": "Schéma unifilaire",
 

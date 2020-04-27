@@ -11,8 +11,6 @@ import {FormattedMessage} from "react-intl";
 
 import {useDispatch, useSelector} from "react-redux";
 
-import {useHistory} from "react-router-dom";
-
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
@@ -25,7 +23,15 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import Switch from "@material-ui/core/Switch";
 import Typography from "@material-ui/core/Typography";
 
-import {DARK_THEME, LIGHT_THEME, selectTheme, toggleUseNameState, toggleCenterLabelState, toggleDiagonalLabelState} from "../redux/actions";
+import {
+    DARK_THEME,
+    LIGHT_THEME,
+    selectTheme,
+    toggleCenterLabelState,
+    toggleDiagonalLabelState,
+    toggleTopologicalColoringState,
+    toggleUseNameState
+} from "../redux/actions";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Dialog from "@material-ui/core/Dialog";
@@ -56,6 +62,7 @@ const Parameters = ({showParameters, hideParameters}) => {
     const useName = useSelector(state => state.useName);
     const centerLabel = useSelector(state => state.centerLabel);
     const diagonalLabel = useSelector(state => state.diagonalLabel);
+    const topologicalColoring = useSelector(state => state.topologicalColoring);
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const theme = useSelector(state => state.theme);
@@ -139,6 +146,8 @@ const Parameters = ({showParameters, hideParameters}) => {
                     {MakeSwitch(diagonalLabel, "diagonalLabel", () => dispatch(toggleDiagonalLabelState()))}
                     <MakeLineSeparator/>
                     {MakeSwitch(centerLabel, "centerLabel", () => dispatch(toggleCenterLabelState()))}
+                    <MakeLineSeparator/>
+                    {MakeSwitch(topologicalColoring, "topologicalColoring", () => dispatch(toggleTopologicalColoringState()))}
                 </Grid>
             )
     }
