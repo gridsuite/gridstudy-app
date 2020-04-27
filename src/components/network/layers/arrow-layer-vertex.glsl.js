@@ -63,16 +63,21 @@ int findFirstLinePointAfterDistance(float distance) {
   // variable length loops are not supported in GLSL, instanceLinePointCount is an upper bound that
   // will never be reached as binary search complexity is in O(log(instanceLinePointCount))
   for (int i = 0; i < instanceLinePointCount; i++) {
-      int middlePoint = int(floor(float(firstPoint + lastPoint) / 2.0));
+      float firstPointDistance = fetchLineDistance(firstPoint);
+      if (firstPoint + 1 == lastPoint) {
+          if (firstPointDistance > distance) {
+              return firstPoint;
+          } else {
+              return lastPoint;
+          }
+      }
+      int middlePoint = int(ceil(float(firstPoint + lastPoint) / 2.0));
       float middlePointDistance = fetchLineDistance(middlePoint);      
       if (middlePointDistance < distance) {
          firstPoint = middlePoint;
       } else {
          lastPoint = middlePoint;
       }
-      if (firstPoint == lastPoint - 1) {
-          return lastPoint;
-      }      
   }
 }
 
