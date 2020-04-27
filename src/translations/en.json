@@ -34,6 +34,7 @@
   "useName": "Use the name instead of the identifier",
   "diagonalLabel": "Display name diagonally",
   "centerLabel": "Center name",
+  "topologicalColoring": "Topological coloring",
   "General": "General",
   "SingleLineDiagram": "Single line diagram",
 

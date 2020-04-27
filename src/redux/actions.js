@@ -97,6 +97,12 @@ export function toggleDiagonalLabelState() {
     return { type: DIAGONAL_LABEL };
 }
 
+export const TOPOLOGICAL_COLORING = 'TOPOLOGICAL_COLORING';
+
+export function toggleTopologicalColoringState() {
+    return { type: TOPOLOGICAL_COLORING };
+}
+
 export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
 
 export function setSignInCallbackError(signInCallbackError) {
