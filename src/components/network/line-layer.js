@@ -8,8 +8,9 @@
 import {CompositeLayer, PathLayer} from 'deck.gl';
 
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
+import getDistance from "geolib/es/getDistance";
 
-const ARROW_COUNT = 3;
+const DISTANCE_BETWEEN_ARROWS = 10000.0;
 
 export const ArrowMode = {
     NONE: 'none',
@@ -44,9 +45,17 @@ class LineLayer extends CompositeLayer {
                     if (this.props.arrowMode !== ArrowMode.NONE) {
                         // create ARROW_COUNT per line
                         const arrows = e.lines.flatMap(line => {
-                            return [...new Array(ARROW_COUNT).keys()].map(index => {
+
+                            // calculate distance between 2 substations as a raw estimate of line size
+                            const positions = this.props.geoData.getLinePositions(this.props.network, line, false);
+                            const lineDistance = getDistance({latitude: positions[0][1], longitude: positions[0][0]},
+                                                             {latitude: positions[1][1], longitude: positions[1][0]});
+
+                            const arrowCount = Math.ceil(lineDistance / DISTANCE_BETWEEN_ARROWS);
+
+                            return [...new Array(arrowCount).keys()].map(index => {
                                 return {
-                                    number: index,
+                                    distance: index / arrowCount,
                                     line: line
                                 }
                             });
@@ -57,7 +66,7 @@ class LineLayer extends CompositeLayer {
                             data: arrows,
                             sizeMinPixels: 3,
                             sizeMaxPixels: 7,
-                            getDistance: arrow => arrow.number / ARROW_COUNT,
+                            getDistance: arrow => arrow.distance,
                             getLine: arrow => arrow.line,
                             getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line),
                             getColor: color,
