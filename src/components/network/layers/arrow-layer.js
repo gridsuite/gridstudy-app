@@ -114,6 +114,12 @@ export default class ArrowLayer extends Layer {
         });
     }
 
+    finalizeState() {
+        super.finalizeState();
+        // we do not use setState to avoid a redraw, it is just used to stop the animation
+        this.state.stop = true;
+    }
+
     createTexture2D(gl, data, elementSize, format) {
         const start = performance.now()
 
@@ -239,6 +245,7 @@ export default class ArrowLayer extends Layer {
                 lineDistancesTexture: lineDistancesTexture,
                 lineAttributes: lineAttributes,
                 timestamp: 0,
+                stop: false
             });
 
             this.getAttributeManager().invalidateAll();
@@ -250,12 +257,13 @@ export default class ArrowLayer extends Layer {
     }
 
     animate(timestamp) {
-        if ((timestamp - this.state.timestamp) > 20) { // 20ms => 50pfs
-            this.setState({
-                timestamp: timestamp,
-            });
+        if (this.state.stop) {
+            return;
         }
-        window.requestAnimationFrame(timestamp => this.animate(timestamp));
+        this.setState({
+            timestamp: timestamp,
+        });
+        this.startAnimation();
     };
 
     startAnimation() {

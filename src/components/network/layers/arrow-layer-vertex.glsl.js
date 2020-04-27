@@ -60,22 +60,19 @@ int findFirstLinePointAfterDistance(float distance) {
   if (firstPoint == lastPoint) {
       return firstPoint;
   }
+  // variable length loops are not supported in GLSL, instanceLinePointCount is an upper bound that
+  // will never be reached as binary search complexity is in O(log(instanceLinePointCount))
   for (int i = 0; i < instanceLinePointCount; i++) {
-      float firstPointDistance = fetchLineDistance(firstPoint);
-      if (firstPoint + 1 == lastPoint) {
-          if (firstPointDistance > distance) {
-              return firstPoint;
-          } else {
-              return lastPoint;
-          }
-      }
-      int middlePoint = int(ceil(float(firstPoint + lastPoint) / 2.0));
+      int middlePoint = int(floor(float(firstPoint + lastPoint) / 2.0));
       float middlePointDistance = fetchLineDistance(middlePoint);      
       if (middlePointDistance < distance) {
          firstPoint = middlePoint;
       } else {
          lastPoint = middlePoint;
       }
+      if (firstPoint == lastPoint - 1) {
+          return lastPoint;
+      }      
   }
 }
 
@@ -113,7 +110,7 @@ void main(void) {
   // calculate arrow position by interpolating the 2 line points position
   float lineDistance1 = fetchLineDistance(linePoint - 1);
   float lineDistance2 = fetchLineDistance(linePoint);
-  float interpolationValue = project_size_to_pixel(arrowDistance - lineDistance1) / project_size_to_pixel(lineDistance2 - lineDistance1);    
+  float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);    
   vec4 arrowPosition = mix(clipspacePosition1, clipspacePosition2, interpolationValue);  
 
   // arrow vertex position
