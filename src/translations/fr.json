@@ -1,5 +1,4 @@
 {
-  "appName": "Explorateur de réseau",
   "addNewStudy" : "Ajouter une nouvelle étude",
   "addNewStudyDescription" : "Pour ajouter une étude, vous devez saisir les informations suivantes :",
   "caseExist": "La situation existe-t-elle déjà ?",
@@ -34,6 +33,7 @@
   "useName": "Utiliser le nom à la place de l'identifiant",
   "diagonalLabel": "Afficher les noms en diagonal",
   "centerLabel": "Centrer les noms",
+  "topologicalColoring": "Coloration topologique",
   "General": "Général",
   "SingleLineDiagram": "Schéma unifilaire",
 
@@ -43,10 +43,11 @@
   "parameters": "Paramètres",
   "theme": "Thème",
   "close": "Fermer",
+  "goFullScreen" : "Plein écran",
+  "exitFullScreen" : "Quitter mode plein écran",
 
   "centerOnMap": "Centrer sur la carte",
   "openVoltageLevel": "Ouvrir le poste",
   "CBAll" : "Tous",
   "CBNone" : "Aucun"
-
 }

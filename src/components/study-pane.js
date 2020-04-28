@@ -81,6 +81,8 @@ const StudyPane = () => {
 
     const diagonalName = useSelector( state => state.diagonalLabel);
 
+    const topologicalColoring = useSelector( state => state.topologicalColoring);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
@@ -229,7 +231,7 @@ const StudyPane = () => {
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName)} />
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)} />
                             </div>
                         }
                         {
