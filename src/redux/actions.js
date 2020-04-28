@@ -109,6 +109,12 @@ export function toggleLineFullPathState() {
     return { type: LINE_FULL_PATH };
 }
 
+export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
+
+export function selectLineFlowMode(lineFlowMode) {
+    return { type: LINE_FLOW_MODE, lineFlowMode: lineFlowMode };
+}
+
 export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
 
 export function setSignInCallbackError(signInCallbackError) {

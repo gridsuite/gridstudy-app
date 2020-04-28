@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {forwardRef, useImperativeHandle, useMemo, useRef, useState} from 'react';
+import React, {forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 
 import {useSelector} from "react-redux";
@@ -19,7 +19,7 @@ import {decomposeColor} from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
 import GeoData from './geo-data';
-import LineLayer, {ArrowMode} from './line-layer';
+import LineLayer, {LineFlowMode} from './line-layer';
 import SubstationLayer from './substation-layer';
 import {getNominalVoltageColor} from '../../utils/colors'
 
@@ -31,7 +31,13 @@ const LINE_LAYER_PREFIX = "lineLayer";
 const NetworkMap = forwardRef((props, ref) => {
 
     const [labelsVisible, setLabelsVisible] = useState(false);
-    const [arrowMode, setArrowMode] = useState(ArrowMode.NONE);
+
+    const [lineFlowMode, setLineFlowMode] = useState(LineFlowMode.NONE);
+
+    // update lineFlowMode state in case of lineFlowMode prop change
+    useEffect(() => {
+        setLineFlowMode(props.lineFlowMode);
+    }, [props.lineFlowMode]);
 
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({lastCenteredSubstation: null, centeredSubstationId: null, centered: false});
@@ -126,10 +132,12 @@ const NetworkMap = forwardRef((props, ref) => {
                 setLabelsVisible(false);
             }
 
-            if (info.viewState.zoom >= props.arrowsZoomThreshold && arrowMode === ArrowMode.NONE) {
-                setArrowMode(ArrowMode.ANIMATED);
-            } else if (info.viewState.zoom < props.arrowsZoomThreshold && arrowMode === ArrowMode.ANIMATED) {
-                setArrowMode(ArrowMode.NONE);
+            if (props.lineFlowMode !== LineFlowMode.NONE) {
+                if (info.viewState.zoom >= props.arrowsZoomThreshold && lineFlowMode === LineFlowMode.NONE) {
+                    setLineFlowMode(props.lineFlowMode);
+                } else if (info.viewState.zoom < props.arrowsZoomThreshold && lineFlowMode !== LineFlowMode.NONE) {
+                    setLineFlowMode(LineFlowMode.NONE);
+                }
             }
         }
     }
@@ -174,7 +182,7 @@ const NetworkMap = forwardRef((props, ref) => {
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
-            arrowMode: arrowMode,
+            lineFlowMode: lineFlowMode,
             lineFullPath: props.lineFullPath,
             pickable: true,
             onHover: ({object, x, y}) => {
@@ -230,7 +238,8 @@ NetworkMap.defaultProps = {
     initialZoom: 5,
     filteredNominalVoltages: null,
     initialPosition: [0, 0],
-    lineFullPath: true
+    lineFullPath: true,
+    lineFlowMode: LineFlowMode.NONE
 };
 
 NetworkMap.propTypes = {
@@ -242,7 +251,8 @@ NetworkMap.propTypes = {
     filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
-    lineFullPath: PropTypes.bool
+    lineFullPath: PropTypes.bool,
+    lineFlowMode: PropTypes.instanceOf(LineFlowMode)
 };
 
 export default React.memo(NetworkMap);

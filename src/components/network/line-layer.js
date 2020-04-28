@@ -12,11 +12,11 @@ import getDistance from "geolib/es/getDistance";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 
-export const ArrowMode = {
+export const LineFlowMode = {
     NONE: 'none',
-    STATIC: 'static',
-    ANIMATED: 'animated'
-}
+    STATIC_ARROWS: 'staticArrows',
+    ANIMATED_ARROWS: 'animatedArrows'
+};
 
 class LineLayer extends CompositeLayer {
 
@@ -45,7 +45,7 @@ class LineLayer extends CompositeLayer {
                     }));
                     layers.push(lineLayer);
 
-                    if (this.props.arrowMode !== ArrowMode.NONE) {
+                    if (this.props.lineFlowMode !== LineFlowMode.NONE) {
                         // create one arrow each DISTANCE_BETWEEN_ARROWS
                         const arrows = e.lines.flatMap(line => {
 
@@ -84,11 +84,8 @@ class LineLayer extends CompositeLayer {
                                     return ArrowDirection.NONE;
                                 }
                             },
-                            animated: this.props.arrowMode === ArrowMode.ANIMATED,
+                            animated: this.props.lineFlowMode === LineFlowMode.ANIMATED_ARROWS,
                             visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage),
-                            updateTriggers: {
-                                getPath: [this.props.lineFullPath]
-                            }
                         }));
                         layers.push(arrowLayer);
                     }
@@ -106,7 +103,7 @@ LineLayer.defaultProps = {
     geoData: null,
     getNominalVoltageColor: {type: 'accessor', value: [255, 255, 255]},
     filteredNominalVoltages: [],
-    arrowMode: ArrowMode.NONE,
+    lneFlowMode: LineFlowMode.NONE,
     lineFullPath: true
 };
 

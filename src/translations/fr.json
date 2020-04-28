@@ -51,5 +51,9 @@
   "CBAll" : "Tous",
   "CBNone" : "Aucun",
   "Map": "Carte",
-  "lineFullPath": "Chemin complet des lignes"
+  "lineFullPath": "Chemin complet des lignes",
+  "LineFlowMode": "Mode de représentation des flux sur les lignes",
+  "None": "Aucun",
+  "StaticArrows": "Flèches statiques",
+  "AnimatedArrows": "Flèches animées"
 }

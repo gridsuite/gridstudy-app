@@ -85,6 +85,8 @@ const StudyPane = () => {
 
     const lineFullPath = useSelector( state => state.lineFullPath);
 
+    const lineFlowMode = useSelector( state => state.lineFlowMode);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
@@ -227,6 +229,7 @@ const StudyPane = () => {
                                     initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
                                     lineFullPath={lineFullPath}
+                                    lineFlowMode={lineFlowMode}
                                     ref={mapRef}
                                     onSubstationClick={showVoltageLevelDiagram} />
                         {

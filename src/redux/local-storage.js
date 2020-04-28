@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {DARK_THEME} from "./actions";
+import {DARK_THEME, LineFlowMode} from "./actions";
 
 const LOCAL_STORAGE_THEME_KEY = "STUDY_APP_THEME";
 
@@ -60,4 +60,15 @@ export const getLocalStorageLineFullPath = () => getLocalStorageBoolean(LOCAL_ST
 
 export const saveLocalStorageLineFullPath = (lineFullPath) => {
     localStorage.setItem(LOCAL_STORAGE_LINE_FULL_PATH_KEY, lineFullPath);
+};
+
+const LOCAL_STORAGE_LINE_FLOW_MODE_KEY = "STUDY_APP_LINE_FLOW_MODE";
+
+export const getLocalStorageLineFlowMode = () => {
+    const value = localStorage.getItem(LOCAL_STORAGE_LINE_FLOW_MODE_KEY);
+    return value || "none";
+};
+
+export const saveLocalStorageLineFlowMode = (lineFlowMode) => {
+    localStorage.setItem(LOCAL_STORAGE_LINE_FLOW_MODE_KEY, lineFlowMode);
 };
