@@ -93,7 +93,7 @@ const TopBar = (props) => {
 
     const [anchorElAppsMenu, setAnchorElAppsMenu] = React.useState(null);
 
-    const ref = useRef(null);
+    const fullScreenRef = useRef(null);
 
     const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -131,12 +131,12 @@ const TopBar = (props) => {
     }
 
     function requestOrExitFullScreen () {
-        ref.current.fullScreen();
+        fullScreenRef.current.fullScreen();
     }
 
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
-            <FullScreen ref={ref} onFullScreenChange={onFullScreenChange} onFullScreenError={(e) => console.debug("full screen error : " + e.message)}>
+            <FullScreen ref={fullScreenRef} onFullScreenChange={onFullScreenChange} onFullScreenError={(e) => console.debug("full screen error : " + e.message)}>
             </FullScreen>
             <Toolbar>
                 <PowsyblLogo className={classes.logo} onClick={onLogoClick}/>
