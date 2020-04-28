@@ -51,36 +51,40 @@ float fetchLineDistance(int point) {
   return texelFetch(lineDistancesTexture, textureIndex, 0).x;
 }
 
-/**
+/**            
  * Find the first point of the line that is after a given distance from the start (first line point).
  * (implemented using a binary search)
+ * The returned value is always between 1 and instanceLinePointCount - 1, even if the searched distance is out of bounds
+ * Here are example returned values for a path having points at distance 0.0, 10.0, 20.0
+ * -1 => 1
+ *  0 => 1
+ *  1 => 1
+ *  9 => 1
+ *  10 => 2
+ *  11 => 2
+ *  19 => 2
+ *  20 => 2
+ *  21 => 2
  */
 int findFirstLinePointAfterDistance(float distance) {
-  int firstPoint = 1;
+  int firstPoint = 0;
   int lastPoint = instanceLinePointCount - 1;
-  if (firstPoint == lastPoint) {
-      return firstPoint;
-  }
+  
   // variable length loops are not supported in GLSL, instanceLinePointCount is an upper bound that
   // will never be reached as binary search complexity is in O(log(instanceLinePointCount))
   for (int i = 0; i < instanceLinePointCount; i++) {
       if (firstPoint + 1 == lastPoint) {
-          float firstPointDistance = fetchLineDistance(firstPoint);
-          if (firstPointDistance > distance) {
-              return firstPoint;
-          } else {
-              return lastPoint;
-          }
-      }
-      int middlePoint = int(ceil(float(firstPoint + lastPoint) / 2.0));
+          return lastPoint; 
+      }   
+      int middlePoint = (firstPoint + lastPoint) / 2;           
       float middlePointDistance = fetchLineDistance(middlePoint);      
-      if (middlePointDistance < distance) {
+      if (middlePointDistance <= distance) {
          firstPoint = middlePoint;
       } else {
-         lastPoint = middlePoint;
-      }
-  }
-}
+         lastPoint = middlePoint;                            
+      }  
+  }   
+} 
 
 void main(void) {
   if (instanceArrowDirection < 1.0) {
