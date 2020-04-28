@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from "react";
+import React, {useRef, useState} from "react";
 
 import {FormattedMessage} from "react-intl";
 import {useHistory} from 'react-router-dom';
@@ -26,10 +26,13 @@ import { withStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import AppsIcon from '@material-ui/icons/Apps';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
 import {useSelector} from "react-redux";
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullScreen, {fullScreenSupported} from "react-request-fullscreen";
 
 const useStyles = makeStyles(() => ({
     grow: {
@@ -90,6 +93,12 @@ const TopBar = (props) => {
 
     const [anchorElAppsMenu, setAnchorElAppsMenu] = React.useState(null);
 
+    const fullScreenRef = useRef(null);
+
+    const [isFullScreen, setIsFullScreen] = useState(false);
+
+    const history = useHistory();
+
     const handleClickGeneralMenu = event => {
         setAnchorElGeneralMenu(event.currentTarget);
     };
@@ -105,8 +114,6 @@ const TopBar = (props) => {
         setAnchorElAppsMenu(null);
     };
 
-    const history = useHistory();
-
     const onParametersClick = () => {
         handleCloseGeneralMenu();
       if (props.onParametersClick) {
@@ -119,8 +126,18 @@ const TopBar = (props) => {
         history.replace("/");
     };
 
+    function onFullScreenChange (isFullScreen) {
+        setIsFullScreen(isFullScreen);
+    }
+
+    function requestOrExitFullScreen () {
+        fullScreenRef.current.fullScreen();
+    }
+
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
+            <FullScreen ref={fullScreenRef} onFullScreenChange={onFullScreenChange} onFullScreenError={(e) => console.debug("full screen error : " + e.message)}>
+            </FullScreen>
             <Toolbar>
                 <PowsyblLogo className={classes.logo} onClick={onLogoClick}/>
                 <Typography variant="h6" className={classes.title} onClick={onLogoClick}>
@@ -184,6 +201,26 @@ const TopBar = (props) => {
                                 <FormattedMessage id="settings"/>
                             </ListItemText>
                         </StyledMenuItem>
+                        {
+                            fullScreenSupported() ?  (
+                                <StyledMenuItem onClick={requestOrExitFullScreen}>
+                                {
+                                    isFullScreen ? (<>
+                                    <ListItemIcon>
+                                        <FullscreenExitIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText>
+                                        <FormattedMessage id="exitFullScreen"/>
+                                    </ListItemText> </>) : (<>
+                                    <ListItemIcon>
+                                        <FullscreenIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText>
+                                        <FormattedMessage id="goFullScreen"/>
+                                    </ListItemText></>)
+                                }
+                                </StyledMenuItem>) : <></>
+                        }
                         <StyledMenuItem onClick={props.onLogoutClick}>
                             <ListItemIcon>
                                 <ExitToAppIcon fontSize="small" />
