@@ -131,6 +131,7 @@ const TopBar = (props) => {
     }
 
     function requestOrExitFullScreen () {
+        setAnchorElGeneralMenu(null);
         fullScreenRef.current.fullScreen();
     }
 
