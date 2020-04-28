@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 
 import {FormattedMessage} from "react-intl";
 import {useHistory} from 'react-router-dom';
@@ -93,7 +93,7 @@ const TopBar = (props) => {
 
     const [anchorElAppsMenu, setAnchorElAppsMenu] = React.useState(null);
 
-    const [ref, setRef] = useState(null);
+    const ref = useRef(null);
 
     const [isFullScreen, setIsFullScreen] = useState(false);
 
@@ -131,12 +131,12 @@ const TopBar = (props) => {
     }
 
     function requestOrExitFullScreen () {
-        ref.fullScreen();
+        ref.current.fullScreen();
     }
 
     return (
         <AppBar position="static" color="default" className={classes.appBar}>
-            <FullScreen ref={ref => setRef(ref)} onFullScreenChange={onFullScreenChange} onFullScreenError={(e) => console.debug("full screen error : " + e.message)}>
+            <FullScreen ref={ref} onFullScreenChange={onFullScreenChange} onFullScreenError={(e) => console.debug("full screen error : " + e.message)}>
             </FullScreen>
             <Toolbar>
                 <PowsyblLogo className={classes.logo} onClick={onLogoClick}/>
