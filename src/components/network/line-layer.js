@@ -43,7 +43,7 @@ class LineLayer extends CompositeLayer {
                     layers.push(lineLayer);
 
                     if (this.props.arrowMode !== ArrowMode.NONE) {
-                        // create ARROW_COUNT per line
+                        // create one arrow each DISTANCE_BETWEEN_ARROWS
                         const arrows = e.lines.flatMap(line => {
 
                             // calculate distance between 2 substations as a raw estimate of line size
