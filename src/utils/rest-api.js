@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-let PREFIX_CASE_QUERIES = null;
-let PREFIX_STUDY_QUERIES = null;
+let PREFIX_CASE_QUERIES;
+let PREFIX_STUDY_QUERIES;
 if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
     PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + "/case";
     PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + "/study";
