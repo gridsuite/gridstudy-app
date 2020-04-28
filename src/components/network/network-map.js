@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useMemo, useRef, useState} from 'react';
+import React, {forwardRef, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 
 import {useSelector} from "react-redux";
@@ -28,13 +28,13 @@ const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd
 const SUBSTATION_LAYER_PREFIX = "substationLayer";
 const LINE_LAYER_PREFIX = "lineLayer";
 
-const NetworkMap = (props) => {
+const NetworkMap = forwardRef((props, ref) => {
 
     const [labelsVisible, setLabelsVisible] = useState(false);
     const [arrowMode, setArrowMode] = useState(ArrowMode.NONE);
 
     const [deck, setDeck] = useState(null);
-    const [centered, setCentered] = useState({lastCenteredSubstation: null, centered: false});
+    const [centered, setCentered] = useState({lastCenteredSubstation: null, centeredSubstationId: null, centered: false});
     const lastViewStateRef = useRef(null);
 
     const [tooltip, setTooltip] = useState({});
@@ -50,6 +50,12 @@ const NetworkMap = (props) => {
 
     const useName = useSelector(state => state.useName);
 
+    useImperativeHandle(ref, () => ({
+      centerSubstation: (substationId) => {
+        setCentered({lastCenteredSubstation: null, centeredSubstationId: substationId, centered: true});
+      }
+    }), [setCentered]);
+
     // Do this in onAfterRender because when doing it in useEffect (triggered by calling setDeck()),
     // it doesn't work in the case of using the browser backward/forward buttons (because in this particular case,
     // we get the ref to the deck and it has not yet initialized..)
@@ -58,11 +64,11 @@ const NetworkMap = (props) => {
             //TODO, replace the next lines with setProps( { initialViewState } ) when we upgrade to 8.1.0
             //see https://github.com/uber/deck.gl/pull/4038
             //This is a hack because it accesses the properties of deck directly but for now it works
-            if ((!centered.centered || (props.centeredSubstationId && props.centeredSubstationId !== centered.lastCenteredSubstation))
+            if ((!centered.centered || (centered.centeredSubstationId && centered.centeredSubstationId !== centered.lastCenteredSubstation))
                  && deck !== null && deck.viewManager != null && props.geoData !== null) {
                 if (props.geoData.substationPositionsById.size > 0) {
-                    if (props.centeredSubstationId) {
-                        const geodata = props.geoData.substationPositionsById.get(props.centeredSubstationId);
+                    if (centered.centeredSubstationId) {
+                        const geodata = props.geoData.substationPositionsById.get(centered.centeredSubstationId);
                         const copyViewState = lastViewStateRef.current || deck.viewState;
                         const newViewState = {
                                 longitude: geodata.lon,
@@ -80,7 +86,7 @@ const NetworkMap = (props) => {
                         deck.viewState = newViewState;
                         deck.setProps({});
                         deck._onViewStateChange({viewState: deck.viewState});
-                        setCentered({lastCenteredSubstation: props.centeredSubstationId, centered: true});
+                        setCentered({lastCenteredSubstation: centered.centeredSubstationId, centeredSubstationId: centered.centeredSubstationId, centered: true});
                     } else {
                         const coords = Array.from(props.geoData.substationPositionsById.entries()).map(x => x[1]);
                         const maxlon = Math.max.apply(null, coords.map(x => x.lon));
@@ -215,7 +221,7 @@ const NetworkMap = (props) => {
                 }}/>
             </div>
         </DeckGL>;
-};
+});
 
 NetworkMap.defaultProps = {
     network: null,
@@ -225,7 +231,6 @@ NetworkMap.defaultProps = {
     initialZoom: 5,
     filteredNominalVoltages: null,
     initialPosition: [0, 0],
-    centeredSubstationId: null
 };
 
 NetworkMap.propTypes = {
@@ -237,7 +242,6 @@ NetworkMap.propTypes = {
     filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
-    centeredSubstationId: PropTypes.string
 };
 
 export default React.memo(NetworkMap);
