@@ -103,7 +103,7 @@ LineLayer.defaultProps = {
     geoData: null,
     getNominalVoltageColor: {type: 'accessor', value: [255, 255, 255]},
     filteredNominalVoltages: [],
-    lneFlowMode: LineFlowMode.NONE,
+    lineFlowMode: LineFlowMode.NONE,
     lineFullPath: true
 };
 
