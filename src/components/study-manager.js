@@ -278,8 +278,8 @@ const StudyCard = ({study, onClick}) => {
                     </CardContent>
                 </Collapse>
             </Card>
-            <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title"><FormattedMessage id="deleteStudy"/></DialogTitle>
+            <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog} aria-labelledby="dialog-title-delete">
+                <DialogTitle id="dialog-title-delete"><FormattedMessage id="deleteStudy"/></DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         <FormattedMessage id="deleteStudyMsg"/>
@@ -294,8 +294,8 @@ const StudyCard = ({study, onClick}) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Dialog open={openRenameDialog} onClose={handleCloseRenameDialog} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title"><FormattedMessage id="renameStudy"/></DialogTitle>
+            <Dialog open={openRenameDialog} onClose={handleCloseRenameDialog} aria-labelledby="dialog-title-rename">
+                <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
                 <DialogContent>
                     <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
                     <TextField id="newStudyName" defaultValue={study.studyName} required={true} onChange={updateStudyNameValue}></TextField>
