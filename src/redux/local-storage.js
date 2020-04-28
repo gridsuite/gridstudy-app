@@ -49,3 +49,14 @@ export const getLocalStorageDiagonalLabel = () => {
 export const saveLocalStorageDiagonalLabel = (useName) => {
     localStorage.setItem(LOCAL_STORAGE_DIAGONAL_LABEL_KEY, useName);
 };
+
+const LOCAL_STORAGE_TOPOLOGICAL_COLORING_KEY = "STUDY_APP_TOPOLOGICAL_COLORING";
+
+export const getLocalStorageTopologicalColoring = () => {
+    const value = localStorage.getItem(LOCAL_STORAGE_TOPOLOGICAL_COLORING_KEY);
+    return value === "true";
+};
+
+export const saveLocalStorageTopologicalColoring = (topologicalColoring) => {
+    localStorage.setItem(LOCAL_STORAGE_TOPOLOGICAL_COLORING_KEY, topologicalColoring);
+};
