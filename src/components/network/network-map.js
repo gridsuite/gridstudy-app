@@ -46,8 +46,6 @@ const NetworkMap = forwardRef((props, ref) => {
         return labelColor
     }, theme);
 
-
-
     const useName = useSelector(state => state.useName);
 
     useImperativeHandle(ref, () => ({
@@ -177,6 +175,7 @@ const NetworkMap = forwardRef((props, ref) => {
             getNominalVoltageColor: getNominalVoltageColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
             arrowMode: arrowMode,
+            lineFullPath: props.lineFullPath,
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({
@@ -231,6 +230,7 @@ NetworkMap.defaultProps = {
     initialZoom: 5,
     filteredNominalVoltages: null,
     initialPosition: [0, 0],
+    lineFullPath: true
 };
 
 NetworkMap.propTypes = {
@@ -242,6 +242,7 @@ NetworkMap.propTypes = {
     filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
+    lineFullPath: PropTypes.bool
 };
 
 export default React.memo(NetworkMap);

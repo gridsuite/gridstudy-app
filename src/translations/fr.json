@@ -49,5 +49,7 @@
   "centerOnMap": "Centrer sur la carte",
   "openVoltageLevel": "Ouvrir le poste",
   "CBAll" : "Tous",
-  "CBNone" : "Aucun"
+  "CBNone" : "Aucun",
+  "Map": "Carte",
+  "lineFullPath": "Chemin complet des lignes"
 }

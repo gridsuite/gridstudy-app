@@ -29,6 +29,7 @@ import {
     selectTheme,
     toggleCenterLabelState,
     toggleDiagonalLabelState,
+    toggleLineFullPathState,
     toggleTopologicalColoringState,
     toggleUseNameState
 } from "../redux/actions";
@@ -63,6 +64,7 @@ const Parameters = ({showParameters, hideParameters}) => {
     const centerLabel = useSelector(state => state.centerLabel);
     const diagonalLabel = useSelector(state => state.diagonalLabel);
     const topologicalColoring = useSelector(state => state.topologicalColoring);
+    const lineFullPath = useSelector(state => state.lineFullPath);
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const theme = useSelector(state => state.theme);
@@ -152,20 +154,29 @@ const Parameters = ({showParameters, hideParameters}) => {
             )
     }
 
+    const MapParameters = () => {
+        return (
+            <Grid container spacing={2} className={classes.grid}>
+                {MakeSwitch(lineFullPath, "lineFullPath", () => dispatch(toggleLineFullPathState()))}
+            </Grid>
+        )
+    }
+
     return (
 
         <Dialog open={showParameters} onClose={hideParameters} aria-labelledby="form-dialog-title" maxWidth={'md'} fullWidth={true}>
             <DialogTitle id="form-dialog-title">
-                <Typography variant="h5" className={classes.title}>
+                <Typography component="span" variant="h5" className={classes.title}>
                     <FormattedMessage id="parameters"/>
                 </Typography>
             </DialogTitle>
             <DialogContent>
                 <Container maxWidth="md" >
-                    <Tabs  value={tabIndex} indicatorColor="primary" textColor="default"
+                    <Tabs value={tabIndex} indicatorColor="primary"
                            onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
                         <Tab label={<FormattedMessage id="General"/> } />
                         <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
+                        <Tab label={<FormattedMessage id="Map"/> }  />
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
@@ -173,6 +184,9 @@ const Parameters = ({showParameters, hideParameters}) => {
                     </TabPanel>
                     <TabPanel value={tabIndex} index={1}>
                         <SingleLineDiagramParameters/>
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={2}>
+                        <MapParameters/>
                     </TabPanel>
                     <Grid item xs={12}>
                         <Button onClick={hideParameters} variant="contained" color="primary" className={classes.button}>

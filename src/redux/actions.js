@@ -103,6 +103,12 @@ export function toggleTopologicalColoringState() {
     return { type: TOPOLOGICAL_COLORING };
 }
 
+export const LINE_FULL_PATH = 'LINE_FULL_PATH';
+
+export function toggleLineFullPathState() {
+    return { type: LINE_FULL_PATH };
+}
+
 export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
 
 export function setSignInCallbackError(signInCallbackError) {

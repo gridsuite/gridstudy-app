@@ -83,6 +83,8 @@ const StudyPane = () => {
 
     const topologicalColoring = useSelector( state => state.topologicalColoring);
 
+    const lineFullPath = useSelector( state => state.lineFullPath);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
@@ -224,6 +226,7 @@ const StudyPane = () => {
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
+                                    lineFullPath={lineFullPath}
                                     ref={mapRef}
                                     onSubstationClick={showVoltageLevelDiagram} />
                         {

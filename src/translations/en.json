@@ -49,6 +49,7 @@
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",
   "CBAll" : "All",
-  "CBNone" : "None"
-
+  "CBNone" : "None",
+  "Map": "Map",
+  "lineFullPath": "Line full path"
 }

@@ -35,10 +35,13 @@ class LineLayer extends CompositeLayer {
                         widthScale: 20,
                         widthMinPixels: 1,
                         widthMaxPixels: 2,
-                        getPath: line => this.props.geoData.getLinePositions(this.props.network, line),
+                        getPath: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
                         getColor: color,
                         getWidth: 2,
-                        visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
+                        visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage),
+                        updateTriggers: {
+                            getPath: [this.props.lineFullPath]
+                        }
                     }));
                     layers.push(lineLayer);
 
@@ -68,7 +71,7 @@ class LineLayer extends CompositeLayer {
                             sizeMaxPixels: 7,
                             getDistance: arrow => arrow.distance,
                             getLine: arrow => arrow.line,
-                            getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line),
+                            getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
                             getColor: color,
                             getSize: 700,
                             getSpeedFactor: 3,
@@ -82,7 +85,10 @@ class LineLayer extends CompositeLayer {
                                 }
                             },
                             animated: this.props.arrowMode === ArrowMode.ANIMATED,
-                            visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
+                            visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage),
+                            updateTriggers: {
+                                getPath: [this.props.lineFullPath]
+                            }
                         }));
                         layers.push(arrowLayer);
                     }
@@ -100,7 +106,8 @@ LineLayer.defaultProps = {
     geoData: null,
     getNominalVoltageColor: {type: 'accessor', value: [255, 255, 255]},
     filteredNominalVoltages: [],
-    arrowMode: ArrowMode.NONE
+    arrowMode: ArrowMode.NONE,
+    lineFullPath: true
 };
 
 export default LineLayer;
