@@ -11,49 +11,62 @@ import jwtDecode from 'jwt-decode';
 
 const hackauthoritykey = "oidc.hack.authority";
 
-let userManagerPromise;
-if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
-    userManagerPromise = fetch('idpSettings.json')
-        .then(r => r.json())
-        .then(idpSettings => {
-            /* hack to ignore the iss check. XXX TODO to remove */
-            const regextoken=/id_token=[^&]*/;
-            const regexstate=/state=[^&]*/;
-            let authority;
-            if (window.location.hash) {
-                const matched_id_token=window.location.hash.match(regextoken);
-                const matched_state=window.location.hash.match(regexstate);
-                if (matched_id_token != null && matched_state != null) {
-                    const id_token = matched_id_token[0].split('=')[1];
-                    const state = matched_state[0].split('=')[1];
-                    const strState = localStorage.getItem("oidc." + state);
-                    if (strState != null) {
-                        authority = jwtDecode(id_token).iss
-                        const storedState = JSON.parse(strState);
-                        storedState.authority=authority;
-                        localStorage.setItem("oidc." + state, JSON.stringify(storedState));
-                        sessionStorage.setItem(hackauthoritykey, authority);
+const pathKey = "powsybl-study-app-current-path";
+
+function initializeAuthentication(dispatch, isSilentRenew) {
+
+    if (process.env.REACT_APP_USE_AUTHENTICATION === "false") {
+        let userManager = new UserManagerMock({});
+        if (!isSilentRenew) {
+            handleUser(dispatch, userManager);
+        }
+        return  Promise.resolve(userManager);
+    } else {
+        return fetch('idpSettings.json')
+            .then(r => r.json())
+            .then(idpSettings => {
+                /* hack to ignore the iss check. XXX TODO to remove */
+                const regextoken = /id_token=[^&]*/;
+                const regexstate = /state=[^&]*/;
+                let authority;
+                if (window.location.hash) {
+                    const matched_id_token = window.location.hash.match(regextoken);
+                    const matched_state = window.location.hash.match(regexstate);
+                    if (matched_id_token != null && matched_state != null) {
+                        const id_token = matched_id_token[0].split('=')[1];
+                        const state = matched_state[0].split('=')[1];
+                        const strState = localStorage.getItem("oidc." + state);
+                        if (strState != null) {
+                            authority = jwtDecode(id_token).iss;
+                            const storedState = JSON.parse(strState);
+                            storedState.authority = authority;
+                            localStorage.setItem("oidc." + state, JSON.stringify(storedState));
+                            sessionStorage.setItem(hackauthoritykey, authority);
+                        }
                     }
                 }
-            }
-            authority = authority || sessionStorage.getItem(hackauthoritykey) || idpSettings.authority;
+                authority = authority || sessionStorage.getItem(hackauthoritykey) || idpSettings.authority;
 
-            let settings = {
-                authority,
-                client_id: idpSettings.client_id,
-                redirect_uri: idpSettings.redirect_uri,
-                post_logout_redirect_uri: idpSettings.post_logout_redirect_uri,
-                response_mode: 'fragment',
-                response_type: 'id_token token',
-                scope: idpSettings.scope,
-            };
-            return new UserManager(settings);
-        });
-} else {
-    userManagerPromise = Promise.resolve( new UserManagerMock({}));
+                let settings = {
+                    authority,
+                    client_id: idpSettings.client_id,
+                    redirect_uri: idpSettings.redirect_uri,
+                    post_logout_redirect_uri: idpSettings.post_logout_redirect_uri,
+                    silent_redirect_uri: idpSettings.silent_redirect_uri,
+                    response_mode: 'fragment',
+                    response_type: 'id_token token',
+                    scope: idpSettings.scope,
+                    automaticSilentRenew: !isSilentRenew,
+                    accessTokenExpiringNotificationTime: 60
+                };
+                let userManager =  new UserManager(settings);
+                if (!isSilentRenew) {
+                    handleUser(dispatch, userManager);
+                }
+                return userManager;
+            });
+    }
 }
-
-const pathKey = "powsybl-study-app-current-path";
 
 function login(location, userManagerInstance) {
     sessionStorage.setItem(pathKey,  location.pathname + location.search);
@@ -84,7 +97,6 @@ function getPreLoginPath() {
 
 function handleSigninCallback(dispatch, history, userManagerInstance) {
     userManagerInstance.signinRedirectCallback().then(function () {
-        dispatchUser(dispatch, userManagerInstance);
         dispatch(setSignInCallbackError(null));
         const previousPath = getPreLoginPath();
         history.replace(previousPath);
@@ -94,4 +106,23 @@ function handleSigninCallback(dispatch, history, userManagerInstance) {
     });
 }
 
-export {userManagerPromise, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
+function handleSilentRenewCallback(userManagerInstance) {
+    userManagerInstance.signinSilentCallback();
+}
+
+function handleUser(dispatch, userManager) {
+    userManager.events.addUserLoaded((user) => {
+        console.debug("user loaded");
+        dispatchUser(dispatch, userManager);
+    });
+
+    userManager.events.addSilentRenewError((error) => {
+        console.debug(error);
+        logout(dispatch, userManager);
+    });
+
+    console.debug("dispatch user");
+    dispatchUser(dispatch, userManager);
+}
+
+export {initializeAuthentication, handleSilentRenewCallback, login, logout, dispatchUser, handleSigninCallback, getPreLoginPath}
