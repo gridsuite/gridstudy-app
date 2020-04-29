@@ -28,7 +28,8 @@ import {
     fetchLines,
     fetchSubstationPositions,
     fetchSubstations,
-    getVoltageLevelSingleLineDiagram
+    getVoltageLevelSingleLineDiagram,
+    updateSwitchState
 } from "../utils/rest-api";
 import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
 import Network from "./network/network";
@@ -177,6 +178,23 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
+    const handleUpdateSwitchState = useCallback( (studyName, breakerId, open, clickedDomElement, breakerMetadata) => {
+        updateSwitchState(studyName, breakerId, open).then( response => response.ok ? updateSvgSwitch(clickedDomElement, open, breakerMetadata) : console.debug(response));
+    }, []);
+
+    function updateSvgSwitch(clickedDomElement, open, breakerMetadata) {
+        if (open) {
+            console.log(clickedDomElement.querySelectorAll(".open"));
+            console.log(clickedDomElement.querySelectorAll(".closed"));
+            clickedDomElement.querySelectorAll(".open")[0].style.visibility = "visible";
+            clickedDomElement.querySelectorAll(".closed")[0].style.visibility = "hidden";
+        } else {
+            clickedDomElement.querySelectorAll(".open")[0].style.visibility = "hidden";
+            clickedDomElement.querySelectorAll(".closed")[0].style.visibility = "visible";
+        }
+        breakerMetadata.open = open;
+    }
+
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
         let newFiltered;
@@ -230,6 +248,8 @@ const StudyPane = () => {
                             <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
+                                                   onBreakerClick={handleUpdateSwitchState}
+                                                   studyName={studyName}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
                                                    svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)} />
                             </div>

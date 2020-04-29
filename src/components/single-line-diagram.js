@@ -118,6 +118,24 @@ const SingleLineDiagram = (props) => {
                     const meta = svg.metadata.nodes.find( other => other.id === id );
                     props.onNextVoltageLevelClick(meta.nextVId);
                 })});
+
+            // handling the click on a breaker
+            const breakers = svg.metadata.nodes.filter(element => element.componentType === "BREAKER");
+            breakers.forEach(breaker => {
+                console.log(breaker);
+                const domEl = document.getElementById(breaker.id);
+                domEl.style.cursor = "pointer";
+                domEl.addEventListener("click", function(event) {
+                    const clickedElementId = event.currentTarget.id;
+                    console.debug("clickedElementId : " + clickedElementId);
+                    const breakerMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
+                    const breakerId = breakerMetadata.unescapedId;
+                    const open = breakerMetadata.open;
+                    console.debug("breaker unescaped id : " + breakerId);
+                    console.debug("breaker state : " + open);
+                    props.onBreakerClick(props.studyName, breakerId, !open, event.currentTarget, breakerMetadata);
+                });
+            });
         }
     }, [svg]);
 
@@ -141,15 +159,15 @@ const SingleLineDiagram = (props) => {
 
     return (
         <Paper elevation={1} variant='outlined' className={finalClasses}>
-                <Box display="flex" flexDirection="row">
-                    <Box flexGrow={1}>
-                        <Typography>{props.diagramTitle}</Typography>
-                    </Box>
-                    <IconButton className={classes.close} onClick={onCloseHandler}>
-                        <CloseIcon/>
-                    </IconButton>
+            <Box display="flex" flexDirection="row">
+                <Box flexGrow={1}>
+                    <Typography>{props.diagramTitle}</Typography>
                 </Box>
-                {inner}
+                <IconButton className={classes.close} onClick={onCloseHandler}>
+                    <CloseIcon/>
+                </IconButton>
+            </Box>
+            {inner}
         </Paper>
     );
 };

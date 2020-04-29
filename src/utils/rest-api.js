@@ -93,3 +93,10 @@ export function deleteStudy(studyName) {
     return fetch(deleteStudyUrl, {method:'delete'});
 }
 
+
+export function updateSwitchState(studyName, switchId, open) {
+    console.info("updating switch " + switchId + " ...");
+    const updateSwitchUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-modification/switches/" + switchId + "?open=" + open;
+    console.debug(updateSwitchUrl);
+    return fetch(updateSwitchUrl, {method : 'put'});
+}
