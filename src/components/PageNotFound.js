@@ -12,9 +12,10 @@ import Container from "@material-ui/core/Container";
 
 const PageNotFound = () => {
     return (
-        <Container  >
-             <h1 style={{textAlign:"center"}}>404 Not Found</h1>
-              <img src={ require('../images/PageNotFound.png') }  style={{display:"block", margin:"auto"}} alt={"page not found"}/>
+        <Container >
+            <br/>
+            <img src={ require('../images/404.png') }  style={{display:"block", margin:"auto"}} alt={"page not found"}/>
+            <h1 style={{textAlign:"center"}}>404 Not Found</h1>
         </Container>
             );
 };
