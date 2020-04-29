@@ -39,10 +39,10 @@ export function fetchCases(token) {
     }).then(response => response.json());
 }
 
-export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel) {
+export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel, topologicalColoring) {
     console.info(`Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
     return PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg-and-metadata?useName=" + useName
-        + "&centerLabel=" + centerLabel + "&diagonalLabel=" + diagonalLabel;
+        + "&centerLabel=" + centerLabel + "&diagonalLabel=" + diagonalLabel + "&topologicalColoring=" + topologicalColoring;
 }
 
 export function fetchSvg(svgUrl, token) {

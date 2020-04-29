@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useRef, useState, useCallback} from "react";
 
 import {useDispatch, useSelector} from "react-redux";
 
@@ -81,11 +81,11 @@ const StudyPane = () => {
 
     const diagonalName = useSelector( state => state.diagonalLabel);
 
+    const topologicalColoring = useSelector( state => state.topologicalColoring);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
-
-    const [focusedVoltageLevelId, setFocusedVoltageLevelId] = useState(null);
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
@@ -196,6 +196,11 @@ const StudyPane = () => {
         setFilteredNominalVoltages(newFiltered);
     };
 
+    const mapRef = useRef();
+    const centerSubstation = useCallback((id)=> {
+        mapRef.current.centerSubstation(network.getVoltageLevel(id).substationId);
+    }, [mapRef, network]);
+
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
     } else {
@@ -204,16 +209,13 @@ const StudyPane = () => {
             if (displayedVoltageLevelId) {
                 displayedVoltageLevel = network.getVoltageLevel(displayedVoltageLevelId);
             }
-            if (focusedVoltageLevelId) {
-                focusedVoltageLevel = network.getVoltageLevel(focusedVoltageLevelId);
-            }
         }
         return (
             <Grid container className={classes.main}>
                 <Grid item xs={12} md={2} key="explorer">
                     <NetworkExplorer network={network}
                                      onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                                     onVoltageLevelFocusClick={ id => setFocusedVoltageLevelId(id)} />
+                                     onVoltageLevelFocusClick={centerSubstation} />
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
@@ -223,7 +225,7 @@ const StudyPane = () => {
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
-                                    centeredSubstationId={focusedVoltageLevel && focusedVoltageLevel.substationId}
+                                    ref={mapRef}
                                     onSubstationClick={showVoltageLevelDiagram} />
                         {
                             displayedVoltageLevelId &&
@@ -231,7 +233,7 @@ const StudyPane = () => {
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName)} />
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)} />
                             </div>
                         }
                         {

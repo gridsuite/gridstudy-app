@@ -1,5 +1,4 @@
 {
-  "appName": "Grid Explorer",
   "addNewStudy" : "Add new study",
   "addNewStudyDescription" : "To add a new study, you should enter the following information:",
   "caseExist": "Does the case already exist?",
@@ -35,6 +34,7 @@
   "useName": "Use the name instead of the identifier",
   "diagonalLabel": "Display name diagonally",
   "centerLabel": "Center name",
+  "topologicalColoring": "Topological coloring",
   "General": "General",
   "SingleLineDiagram": "Single line diagram",
 
@@ -44,7 +44,8 @@
   "parameters": "Parameters",
   "theme": "Theme",
   "close": "Close",
-
+  "goFullScreen" : "Full screen",
+  "exitFullScreen" : "Exit full screen mode",
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",
   "CBAll" : "All",
