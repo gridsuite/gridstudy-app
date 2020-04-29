@@ -93,8 +93,6 @@ const StudyCard = ({study, onClick}) => {
     const dispatch = useDispatch();
     const classes = useStyles();
 
-    const user = useSelector(state => state.user);
-
     function logo(caseFormat) {
         switch (caseFormat) {
             case 'XIIDM':
@@ -147,8 +145,8 @@ const StudyCard = ({study, onClick}) => {
     };
 
     const handleDeleteStudyConfirmed = () => {
-        deleteStudy(study.studyName, user.id_token).then(() => {
-            fetchStudies(user.id_token).then(studies => {
+        deleteStudy(study.studyName).then(() => {
+            fetchStudies().then(studies => {
                 dispatch(loadStudiesSuccess(studies));
             });
         });
@@ -261,10 +259,9 @@ const StudyCard = ({study, onClick}) => {
 
 const StudyManager = ({onStudyClick}) => {
     const dispatch = useDispatch();
-    const user = useSelector(state => state.user);
 
     useEffect(() => {
-        fetchStudies(user.id_token)
+        fetchStudies()
             .then(studies => {
                 dispatch(loadStudiesSuccess(studies));
             });

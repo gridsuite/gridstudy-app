@@ -1,3 +1,4 @@
+import {store} from '../redux/store'
 /**
  * Copyright (c) 2020, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,27 +16,31 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
     PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_STUDY_SERVER;
 }
 
-export function fetchStudies(token) {
+function getHeaders() {
+    const state = store.getState();
+    const token = state.user.id_token;
+    return new Headers({
+        'Authorization': 'Bearer '+ token,
+    });
+}
+
+export function fetchStudies() {
     console.info("Fetching studies...");
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + "/v1/studies";
     console.debug(fetchStudiesUrl);
     return fetch(fetchStudiesUrl, {
         method: 'get',
-        headers: new Headers({
-            'Authorization': 'Bearer '+ token,
-        })
+        headers: getHeaders()
     }).then(response => response.json());
 }
 
-export function fetchCases(token) {
+export function fetchCases() {
     console.info("Fetching cases...");
     const fetchCasesUrl = PREFIX_CASE_QUERIES + "/v1/cases";
     console.debug(fetchCasesUrl);
     return fetch(fetchCasesUrl, {
         method: 'get',
-        headers: new Headers({
-            'Authorization': 'Bearer '+ token,
-        })
+        headers: getHeaders()
     }).then(response => response.json());
 }
 
@@ -45,76 +50,64 @@ export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useN
         + "&centerLabel=" + centerLabel + "&diagonalLabel=" + diagonalLabel + "&topologicalColoring=" + topologicalColoring;
 }
 
-export function fetchSvg(svgUrl, token) {
+export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
     return fetch(svgUrl, {
         method: 'get',
-        headers: new Headers({
-            'Authorization': 'Bearer '+ token,
-        })
+        headers: getHeaders()
     }).then(response => response.ok ?
                             response.json() :
                             response.json().then( error => Promise.reject(new Error(error.error))));
 }
 
-export function fetchSubstations(studyName, token) {
+export function fetchSubstations(studyName) {
     console.info(`Fetching substations of study '${studyName}'...`);
     const fetchSubstationsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-map/substations";
     console.debug(fetchSubstationsUrl);
     return fetch(fetchSubstationsUrl, {
         method: 'get',
-        headers: new Headers({
-            'Authorization': 'Bearer '+ token,
-        })
+        headers: getHeaders()
     }).then(response => response.json());
 }
 
-export function fetchSubstationPositions(studyName, token) {
+export function fetchSubstationPositions(studyName) {
     console.info(`Fetching substation positions of study '${studyName}'...`);
     const fetchSubstationPositionsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/geo-data/substations";
     console.debug(fetchSubstationPositionsUrl);
     return fetch(fetchSubstationPositionsUrl, {
         method: 'get',
-        headers: new Headers({
-            'Authorization': 'Bearer ' + token,
-        })
+        headers: getHeaders()
     }).then(response => response.json());
 }
 
-export function fetchLines(studyName, token) {
+export function fetchLines(studyName) {
     console.info(`Fetching lines of study '${studyName}'...`);
     const fetchLinesUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-map/lines";
     console.debug(fetchLinesUrl);
     return fetch(fetchLinesUrl, {
         method: 'get',
-        headers: new Headers({
-            'Authorization': 'Bearer ' + token,
-        })
+        headers: getHeaders()
     }).then(response => response.json());
 }
 
-export function fetchLinePositions(studyName, token) {
+export function fetchLinePositions(studyName) {
     console.info(`Fetching line positions of study '${studyName}'...`);
     const fetchLinePositionsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/geo-data/lines";
     console.debug(fetchLinePositionsUrl);
     return fetch(fetchLinePositionsUrl, {
         method: 'get',
-        headers: new Headers({
-            'Authorization': 'Bearer ' + token,
-        })
+        headers: getHeaders()
     }).then(response => response.json());
 }
 
-export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, token) {
+export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile) {
     console.info("Creating a new study...");
     if (caseExist) {
         const createStudyWithExistingCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
         console.debug(createStudyWithExistingCaseUrl);
         return fetch(createStudyWithExistingCaseUrl, {
             method : 'post',
-            headers: new Headers({
-                'Authorization': 'Bearer ' + token,
-            })
+            headers: getHeaders()
         });
     } else {
         const createStudyWithNewCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "?description=" + studyDescription;
@@ -123,23 +116,19 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, se
         console.debug(createStudyWithNewCaseUrl);
         return fetch(createStudyWithNewCaseUrl, {
             method : 'post',
-            headers: new Headers({
-                'Authorization': 'Bearer ' + token,
-            }),
+            headers: getHeaders(),
             body : formData
         })
     }
 }
 
-export function deleteStudy(studyName, token) {
+export function deleteStudy(studyName) {
     console.info("Deleting study" + studyName + " ...");
     const deleteStudyUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName;
     console.debug(deleteStudyUrl);
     return fetch(deleteStudyUrl,{
         method:'delete',
-        headers: new Headers({
-            'Authorization': 'Bearer ' + token,
-        })
+        headers: getHeaders()
     });
 }
 

@@ -21,7 +21,6 @@ import { fetchSvg } from "../utils/rest-api";
 
 import { SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.panzoom.js";
-import {useSelector} from "react-redux";
 
 const maxWidth = 800;
 const maxHeight = 700;
@@ -67,11 +66,9 @@ const SingleLineDiagram = (props) => {
 
     const [svg, setSvg] = useState(nosvg);
 
-    const user = useSelector(state => state.user);
-
     useEffect(() => {
         if (props.svgUrl) {
-            fetchSvg(props.svgUrl, user.id_token)
+            fetchSvg(props.svgUrl)
                 .then(data => {
                     setSvg({svg: data.svg, metadata: data.metadata, error: null, svgUrl: props.svgUrl});
                 })

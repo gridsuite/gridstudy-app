@@ -46,12 +46,10 @@ const SelectCase = () => {
     const dispatch = useDispatch();
     const cases = useSelector(state => state.cases);
 
-    const user = useSelector(state => state.user);
-
     const [openSelectCase, setSelectCase] = React.useState(false);
 
     useEffect(() => {
-        fetchCases(user.id_token)
+        fetchCases()
             .then(cases => {
                 dispatch(loadCasesSuccess(cases));
             });
@@ -137,8 +135,6 @@ export const CreateStudyForm = () => {
 
     const [loading, setLoading] = React.useState(false);
 
-    const user = useSelector(state => state.user);
-
     const classes = useStyles();
     const intl = useIntl();
     const dispatch = useDispatch();
@@ -180,7 +176,7 @@ export const CreateStudyForm = () => {
             return;
         }
         setLoading(true);
-        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, user.id_token)
+        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile)
             .then(res => {
                 if(res.ok) {
                     setCreateStudyErr('');
@@ -189,9 +185,8 @@ export const CreateStudyForm = () => {
                     dispatch(removeSelectedFile());
                     setLoading(false);
                     setOpen(false);
-                    fetchStudies(user.id_token)
+                    fetchStudies()
                         .then(studies => {
-                            console.log(studies);
                             dispatch(loadStudiesSuccess(studies));
                         })
                 } else {
