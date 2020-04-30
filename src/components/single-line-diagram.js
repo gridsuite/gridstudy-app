@@ -21,6 +21,8 @@ import { fetchSvg } from "../utils/rest-api";
 
 import { SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.panzoom.js";
+import {useDispatch, useSelector} from "react-redux";
+import {resetSvgDisplayInfo} from "../redux/actions";
 
 const maxWidth = 800;
 const maxHeight = 700;
@@ -60,11 +62,13 @@ const SvgNotFound = (props) => {
     );
 };
 
-const nosvg = {svg: null, metadata: null, error: null, svgUrl: null};
+const noSvg = {svg: null, metadata: null, error: null, svgUrl: null};
 
 const SingleLineDiagram = (props) => {
 
-    const [svg, setSvg] = useState(nosvg);
+    const dispatch = useDispatch();
+
+    const [svg, setSvg] = useState(noSvg);
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -77,9 +81,11 @@ const SingleLineDiagram = (props) => {
                     setSvg({svg: null, metadata: null, error, svgUrl: props.svgUrl});
                 });
         } else {
-            setSvg(nosvg);
+            setSvg(noSvg);
         }
-    }, [props.svgUrl]);
+    }, [props.svgUrl, useSelector(state => state.currentSvg)]);
+
+    const svgDisplayInfo = useSelector(state => state.svgDisplayInfo);
 
     useLayoutEffect(() => {
         if (svg.svg) {
@@ -91,7 +97,6 @@ const SingleLineDiagram = (props) => {
             const yOrigin = bbox.y - 20;
             const svgWidth = bbox.width + 40;
             const svgHeight = bbox.height + 40;
-
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ""; // clear the previous svg in div element before replacing
             const draw = SVG()
@@ -99,8 +104,13 @@ const SingleLineDiagram = (props) => {
                 .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.3, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
+            console.log(svgDisplayInfo);
+            if (svgDisplayInfo) {
+                draw.zoom(svgDisplayInfo);
+                draw.viewbox(svgDisplayInfo.viewBox.x, svgDisplayInfo.viewBox.y, svgDisplayInfo.viewBox.width, svgDisplayInfo.viewBox.height);
+                dispatch(resetSvgDisplayInfo())
+            }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
-
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = "move";
             });
@@ -127,13 +137,10 @@ const SingleLineDiagram = (props) => {
                 domEl.style.cursor = "pointer";
                 domEl.addEventListener("click", function(event) {
                     const clickedElementId = event.currentTarget.id;
-                    console.debug("clickedElementId : " + clickedElementId);
                     const breakerMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
                     const breakerId = breakerMetadata.unescapedId;
                     const open = breakerMetadata.open;
-                    console.debug("breaker unescaped id : " + breakerId);
-                    console.debug("breaker state : " + open);
-                    props.onBreakerClick(props.studyName, breakerId, !open, event.currentTarget, breakerMetadata);
+                    props.onBreakerClick(props.studyName, breakerId, !open, event.currentTarget, {viewBox :draw.viewbox(), zoom: draw.zoom()});
                 });
             });
         }

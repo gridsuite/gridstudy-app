@@ -27,11 +27,11 @@ import {
     fetchLinePositions,
     fetchLines,
     fetchSubstationPositions,
-    fetchSubstations,
+    fetchSubstations, fetchSvg,
     getVoltageLevelSingleLineDiagram,
     updateSwitchState
 } from "../utils/rest-api";
-import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
+import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy, updateCurrentSvg} from "../redux/actions";
 import Network from "./network/network";
 import GeoData from "./network/geo-data";
 import NominalVoltageFilter from "./network/nominal-voltage-filter";
@@ -178,22 +178,10 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
-    const handleUpdateSwitchState = useCallback( (studyName, breakerId, open, clickedDomElement, breakerMetadata) => {
-        updateSwitchState(studyName, breakerId, open).then( response => response.ok ? updateSvgSwitch(clickedDomElement, open, breakerMetadata) : console.debug(response));
+    const handleUpdateSwitchState = useCallback( (studyName, breakerId, open, svgUrl, svgDisplayInfo) => {
+        updateSwitchState(studyName, breakerId, open).then( response =>
+            response.ok ? dispatch(updateCurrentSvg(fetchSvg(svgUrl), svgDisplayInfo)) : console.error(response));
     }, []);
-
-    function updateSvgSwitch(clickedDomElement, open, breakerMetadata) {
-        if (open) {
-            console.log(clickedDomElement.querySelectorAll(".open"));
-            console.log(clickedDomElement.querySelectorAll(".closed"));
-            clickedDomElement.querySelectorAll(".open")[0].style.visibility = "visible";
-            clickedDomElement.querySelectorAll(".closed")[0].style.visibility = "hidden";
-        } else {
-            clickedDomElement.querySelectorAll(".open")[0].style.visibility = "hidden";
-            clickedDomElement.querySelectorAll(".closed")[0].style.visibility = "visible";
-        }
-        breakerMetadata.open = open;
-    }
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage

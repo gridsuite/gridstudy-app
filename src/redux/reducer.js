@@ -37,7 +37,7 @@ import {
     TOPOLOGICAL_COLORING,
     USE_NAME,
     USER,
-    SIGNIN_CALLBACK_ERROR
+    SIGNIN_CALLBACK_ERROR, LOAD_SVG_SUCCESS, SVG_DISPLAY_SUCCESS
 } from "./actions";
 
 const initialState = {
@@ -54,7 +54,8 @@ const initialState = {
     centerLabel : getLocalStorageCenterLabel(),
     diagonalLabel : getLocalStorageDiagonalLabel(),
     topologicalColoring : getLocalStorageTopologicalColoring(),
-    signInCallbackError : null
+    signInCallbackError : null,
+    svgDisplayInfo : null,
 };
 
 export const reducer = createReducer(initialState, {
@@ -133,4 +134,13 @@ export const reducer = createReducer(initialState, {
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
     },
+
+    [LOAD_SVG_SUCCESS]: (state, action) => {
+        state.currentSvg = action.currentSvg;
+        state.svgDisplayInfo = action.svgDisplayInfo;
+    },
+
+    [SVG_DISPLAY_SUCCESS] : (state) => {
+        state.svgDisplayInfo = null;
+    }
 });

@@ -108,3 +108,15 @@ export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
 export function setSignInCallbackError(signInCallbackError) {
     return { type: SIGNIN_CALLBACK_ERROR, signInCallbackError : signInCallbackError};
 }
+
+export const LOAD_SVG_SUCCESS = 'LOAD_SVG_SUCCESS';
+
+export function updateCurrentSvg(currentSvg, svgDisplayInfo) {
+    return { type: LOAD_SVG_SUCCESS, currentSvg : currentSvg, svgDisplayInfo: svgDisplayInfo};
+}
+
+export const SVG_DISPLAY_SUCCESS = 'SVG_DISPLAY_SUCCESS';
+
+export function resetSvgDisplayInfo() {
+    return { type: SVG_DISPLAY_SUCCESS, svgDisplayInfo: null};
+}
