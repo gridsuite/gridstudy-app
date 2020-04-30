@@ -21,8 +21,7 @@ import { fetchSvg } from "../utils/rest-api";
 
 import { SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.panzoom.js";
-import {useDispatch, useSelector} from "react-redux";
-import {resetSvgDisplayInfo} from "../redux/actions";
+import {useSelector} from "react-redux";
 
 const maxWidth = 800;
 const maxHeight = 700;
@@ -66,9 +65,9 @@ const noSvg = {svg: null, metadata: null, error: null, svgUrl: null};
 
 const SingleLineDiagram = (props) => {
 
-    const dispatch = useDispatch();
-
     const [svg, setSvg] = useState(noSvg);
+
+    const studyName = useSelector(state => state.studyName);
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -83,9 +82,9 @@ const SingleLineDiagram = (props) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, useSelector(state => state.currentSvg)]);
+    }, [props.svgUrl, props.currentSvg]);
 
-    const svgDisplayInfo = useSelector(state => state.svgDisplayInfo);
+    //const svgDisplayInfo = useSelector(state => state.svgDisplayInfo);
 
     useLayoutEffect(() => {
         if (svg.svg) {
@@ -104,11 +103,11 @@ const SingleLineDiagram = (props) => {
                 .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.3, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
-            console.log(svgDisplayInfo);
+            const svgDisplayInfo = props.svgDisplayInfo;
             if (svgDisplayInfo) {
                 draw.zoom(svgDisplayInfo);
                 draw.viewbox(svgDisplayInfo.viewBox.x, svgDisplayInfo.viewBox.y, svgDisplayInfo.viewBox.width, svgDisplayInfo.viewBox.height);
-                dispatch(resetSvgDisplayInfo())
+                props.resetSvgDisplayInfo();
             }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
             draw.on('panStart', function (evt) {
@@ -140,7 +139,7 @@ const SingleLineDiagram = (props) => {
                     const breakerMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
                     const breakerId = breakerMetadata.unescapedId;
                     const open = breakerMetadata.open;
-                    props.onBreakerClick(props.studyName, breakerId, !open, event.currentTarget, {viewBox :draw.viewbox(), zoom: draw.zoom()});
+                    props.onBreakerClick(studyName, breakerId, !open, event.currentTarget, {viewBox :draw.viewbox(), zoom: draw.zoom()});
                 });
             });
         }
