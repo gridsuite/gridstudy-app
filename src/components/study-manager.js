@@ -94,7 +94,6 @@ const useStyles = makeStyles((theme) => ({
 const StudyCard = ({study, onClick}) => {
     const [openDeleteDialog, setOpenDelete] = React.useState(false);
     const [openRenameDialog, setOpenRename]  = React.useState(false);
-    const [newStudyNameValue, setNewStudyName] = React.useState(study.studyName);
     const dispatch = useDispatch();
     const classes = useStyles();
 
@@ -170,7 +169,7 @@ const StudyCard = ({study, onClick}) => {
         setOpenRename(true);
     };
 
-    const handleRenameStudyConfirmed = () => {
+    const handleRenameStudyConfirmed = (newStudyNameValue) => {
         renameStudy(study.studyName, newStudyNameValue)
             .then(() => {
                 fetchStudies().then(studies => {
@@ -186,11 +185,6 @@ const StudyCard = ({study, onClick}) => {
 
     const handleCloseRenameDialog = () => {
         setOpenDelete(false);
-    };
-
-    const updateStudyNameValue= (event) => {
-        setNewStudyName(event.target.value);
-        console.debug("newStudyName : " + newStudyNameValue);
     };
 
     const [expanded, setExpanded] = React.useState(false);
@@ -294,24 +288,45 @@ const StudyCard = ({study, onClick}) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Dialog open={openRenameDialog} onClose={handleCloseRenameDialog} aria-labelledby="dialog-title-rename">
-                <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
-                <DialogContent>
-                    <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
-                    <TextField id="newStudyName" defaultValue={study.studyName} required={true} onChange={updateStudyNameValue}></TextField>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCancelRename} color="primary">
-                        <FormattedMessage id="cancel"/>
-                    </Button>
-                    <Button onClick={handleRenameStudyConfirmed} color="primary">
-                        <FormattedMessage id="rename"/>
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-
+            <RenameDialog study={study}
+                          openRenameDialog={openRenameDialog}
+                          handleCloseDialog={handleCloseRenameDialog}
+                          handleCancel={handleCancelRename}
+                          handleConfirm={handleRenameStudyConfirmed}/>
         </div>
+    );
+};
+
+const RenameDialog = (props) => {
+
+    const [newStudyNameValue, setNewStudyNameValue] = React.useState(props.study.studyName);
+
+    const updateStudyNameValue= (event) => {
+        setNewStudyNameValue(event.target.value);
+        console.debug("newStudyName : " + newStudyNameValue);
+    };
+
+    const handleClick = () => {
+        console.log(newStudyNameValue);
+        props.handleConfirm(newStudyNameValue);
+    };
+
+    return (
+        <Dialog open={props.openRenameDialog} onClose={props.handleCloseDialog} aria-labelledby="dialog-title-rename">
+            <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
+            <DialogContent>
+                <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
+                <TextField id="newStudyName" defaultValue={props.study.studyName} required={true} onChange={updateStudyNameValue}></TextField>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={props.handleCancel} color="primary">
+                    <FormattedMessage id="cancel"/>
+                </Button>
+                <Button onClick={handleClick} color="primary">
+                    <FormattedMessage id="rename"/>
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 
