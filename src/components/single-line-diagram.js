@@ -137,7 +137,7 @@ const SingleLineDiagram = (props) => {
                 domEl.addEventListener("click", function(event) {
                     const clickedElementId = event.currentTarget.id;
                     const breakerMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
-                    const breakerId = breakerMetadata.unescapedId;
+                    const breakerId = breakerMetadata.equipmentId;
                     const open = breakerMetadata.open;
                     props.onBreakerClick(studyName, breakerId, !open, event.currentTarget, {viewBox :draw.viewbox(), zoom: draw.zoom()});
                 });
