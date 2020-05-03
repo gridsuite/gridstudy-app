@@ -86,6 +86,16 @@ int findFirstLinePointAfterDistance(float distance) {
   }   
 } 
 
+mat3 calculateRotation(vec3 linePosition1, vec3 linePosition2) {
+      float angle = atan(linePosition1.x - linePosition2.x, linePosition1.y - linePosition2.y);
+      if (instanceArrowDirection < 2.0) {
+          angle += radians(180.0);
+      }
+      return mat3(cos(angle),  sin(angle),  0,
+                  -sin(angle), cos(angle),  0,
+                  0,           0,           0);
+}
+
 void main(void) {
   if (instanceArrowDirection < 1.0) {
       vFillColor = vec4(0, 0, 0, 0);
@@ -107,14 +117,8 @@ void main(void) {
       float sizePixels = clamp(project_size_to_pixel(instanceSize), sizeMinPixels, sizeMaxPixels);
     
       // calculate rotation angle for aligning the arrow with the line segment
-      float angle = atan(linePosition1.x - linePosition2.x, linePosition1.y - linePosition2.y);
-      if (instanceArrowDirection < 2.0) {
-          angle += radians(180.0);
-      }
-      mat3 rotation = mat3(cos(angle),  sin(angle),  0,
-                           -sin(angle), cos(angle),  0,
-                           0,           0,           0);
-    
+      mat3 rotation = calculateRotation(linePosition1, linePosition2);
+      
       // project the 2 line points position to clipspace 
       vec3 offset = positions * rotation * project_pixel_size(sizePixels);
       vec3 position64Low = vec3(0, 0, 0);
