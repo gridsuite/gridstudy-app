@@ -17,36 +17,35 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
 }
 
 function getHeaders() {
-    if (process.env.REACT_APP_USE_AUTHENTICATION === "false") {
-        return new Headers({});
+    if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
+        const state = store.getState();
+        const token = state.user.id_token;
+        return new Headers({
+            'Authorization': 'Bearer ' + token,
+        });
     }
-    const state = store.getState();
-    const token = state.user.id_token;
-    return new Headers({
-        'Authorization': 'Bearer '+ token,
-    });
 }
 
-function backendFetch(url, method, body) {
-    return fetch(url, {
-        method: method,
-        headers: getHeaders(),
-        body: body
-    })
+function backendFetch(url, init) {
+    return fetch(url, Object.assign({headers: getHeaders()}, init))
 }
 
 export function fetchStudies() {
     console.info("Fetching studies...");
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + "/v1/studies";
     console.debug(fetchStudiesUrl);
-    return backendFetch(fetchStudiesUrl, 'get').then(response => response.json());
+    return backendFetch(fetchStudiesUrl, {
+        method: 'get',
+    }).then(response => response.json());
 }
 
 export function fetchCases() {
     console.info("Fetching cases...");
     const fetchCasesUrl = PREFIX_CASE_QUERIES + "/v1/cases";
     console.debug(fetchCasesUrl);
-    return backendFetch(fetchCasesUrl, 'get').then(response => response.json());
+    return backendFetch(fetchCasesUrl, {
+        method: 'get',
+    }).then(response => response.json());
 }
 
 export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel, topologicalColoring) {
@@ -57,36 +56,47 @@ export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useN
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetch(svgUrl, 'get').then(response => response.ok ?
-        response.json() : response.json().then( error => Promise.reject(new Error(error.error))));
+    return backendFetch(svgUrl, {
+        method: 'get',
+    }).then(response => response.ok ?
+        response.json() :
+        response.json().then( error => Promise.reject(new Error(error.error))));
 }
 
 export function fetchSubstations(studyName) {
     console.info(`Fetching substations of study '${studyName}'...`);
     const fetchSubstationsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-map/substations";
     console.debug(fetchSubstationsUrl);
-    return backendFetch(fetchSubstationsUrl, 'get').then(response => response.json());
+    return backendFetch(fetchSubstationsUrl, {
+        method: 'get',
+    }).then(response => response.json());
 }
 
 export function fetchSubstationPositions(studyName) {
     console.info(`Fetching substation positions of study '${studyName}'...`);
     const fetchSubstationPositionsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/geo-data/substations";
     console.debug(fetchSubstationPositionsUrl);
-    return backendFetch(fetchSubstationPositionsUrl, 'get').then(response => response.json());
+    return backendFetch(fetchSubstationPositionsUrl, {
+        method: 'get',
+    }).then(response => response.json());
 }
 
 export function fetchLines(studyName) {
     console.info(`Fetching lines of study '${studyName}'...`);
     const fetchLinesUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-map/lines";
     console.debug(fetchLinesUrl);
-    return backendFetch(fetchLinesUrl, 'get').then(response => response.json());
+    return backendFetch(fetchLinesUrl, {
+        method: 'get',
+    }).then(response => response.json());
 }
 
 export function fetchLinePositions(studyName) {
     console.info(`Fetching line positions of study '${studyName}'...`);
     const fetchLinePositionsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/geo-data/lines";
     console.debug(fetchLinePositionsUrl);
-    return backendFetch(fetchLinePositionsUrl, 'get').then(response => response.json());
+    return backendFetch(fetchLinePositionsUrl, {
+        method: 'get',
+    }).then(response => response.json());
 }
 
 export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile) {
@@ -94,13 +104,18 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, se
     if (caseExist) {
         const createStudyWithExistingCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
         console.debug(createStudyWithExistingCaseUrl);
-        return backendFetch(createStudyWithExistingCaseUrl, 'post');
+        return backendFetch(createStudyWithExistingCaseUrl, {
+            method : 'post',
+        });
     } else {
         const createStudyWithNewCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "?description=" + studyDescription;
         const formData = new FormData();
         formData.append('caseFile', selectedFile);
         console.debug(createStudyWithNewCaseUrl);
-        return backendFetch(createStudyWithNewCaseUrl, 'post', formData);
+        return backendFetch(createStudyWithNewCaseUrl, {
+            method : 'post',
+            body : formData
+        })
     }
 }
 
@@ -108,14 +123,16 @@ export function deleteStudy(studyName) {
     console.info("Deleting study" + studyName + " ...");
     const deleteStudyUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName;
     console.debug(deleteStudyUrl);
-    return backendFetch(deleteStudyUrl, 'delete');
+    return backendFetch(deleteStudyUrl,{
+        method:'delete'
+    });
 }
 
 export function renameStudy(studyName, newStudyName) {
     console.info("Renaming study " + studyName);
     const renameStudiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/rename";
     console.debug(renameStudiesUrl);
-    return fetch(renameStudiesUrl, {
+    return backendFetch(renameStudiesUrl, {
         method : 'POST',
         headers : {
             'Accept' : 'application/json',
