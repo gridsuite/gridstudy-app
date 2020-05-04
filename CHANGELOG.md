@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Make the parameter window modal [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/parameters-popup.gif)
+- Make the parameter window modal [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/settings-window.gif)
 - New way to display transformers on substation images [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/transformers.gif)
 
 ### Fixed
