@@ -24,11 +24,12 @@ function getToken() {
 }
 
 function backendFetch(url, init) {
+    const initCopy = Object.assign({}, init);
     if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
-        init.headers === undefined ? init.headers = new Headers({'Authorization': 'Bearer ' + getToken()}) :
-            init.headers.append('Authorization', 'Bearer ' + getToken());
+        initCopy.headers = new Headers(initCopy.headers);
+        initCopy.headers.append("Authorization", "Bearer: " + getToken())
     }
-    return fetch(url, init);
+    return fetch(url, initCopy);
 }
 
 export function fetchStudies() {
