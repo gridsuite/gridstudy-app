@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Center a second time on a substation after a move on the map [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/fix-center-on-substation)
+- Center a second time on a substation after a move on the map [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/fix-center-on-substation.gif)
 
 ## [0.2.0] - 2020-04-20
 
