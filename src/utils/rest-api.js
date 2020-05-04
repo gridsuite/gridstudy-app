@@ -93,10 +93,23 @@ export function deleteStudy(studyName) {
     return fetch(deleteStudyUrl, {method:'delete'});
 }
 
-
 export function updateSwitchState(studyName, switchId, open) {
     console.info("updating switch " + switchId + " ...");
     const updateSwitchUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-modification/switches/" + switchId + "?open=" + open;
     console.debug(updateSwitchUrl);
     return fetch(updateSwitchUrl, {method : 'put'});
+}
+
+export function renameStudy(studyName, newStudyName) {
+    console.info("Renaming study " + studyName);
+    const renameStudiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/rename";
+    console.debug(renameStudiesUrl);
+    return fetch(renameStudiesUrl, {
+        method : 'POST',
+        headers : {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json'
+        },
+        body : JSON.stringify({newStudyName: newStudyName})
+    }).then(response => response.json());
 }
