@@ -37,18 +37,14 @@ export function fetchStudies() {
     console.info("Fetching studies...");
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + "/v1/studies";
     console.debug(fetchStudiesUrl);
-    return backendFetch(fetchStudiesUrl, {
-        method: 'get',
-    }).then(response => response.json());
+    return backendFetch(fetchStudiesUrl).then(response => response.json());
 }
 
 export function fetchCases() {
     console.info("Fetching cases...");
     const fetchCasesUrl = PREFIX_CASE_QUERIES + "/v1/cases";
     console.debug(fetchCasesUrl);
-    return backendFetch(fetchCasesUrl, {
-        method: 'get',
-    }).then(response => response.json());
+    return backendFetch(fetchCasesUrl).then(response => response.json());
 }
 
 export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel, topologicalColoring) {
@@ -59,9 +55,7 @@ export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useN
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetch(svgUrl, {
-        method: 'get',
-    }).then(response => response.ok ?
+    return backendFetch(svgUrl).then(response => response.ok ?
         response.json() :
         response.json().then( error => Promise.reject(new Error(error.error))));
 }
@@ -70,36 +64,28 @@ export function fetchSubstations(studyName) {
     console.info(`Fetching substations of study '${studyName}'...`);
     const fetchSubstationsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-map/substations";
     console.debug(fetchSubstationsUrl);
-    return backendFetch(fetchSubstationsUrl, {
-        method: 'get',
-    }).then(response => response.json());
+    return backendFetch(fetchSubstationsUrl).then(response => response.json());
 }
 
 export function fetchSubstationPositions(studyName) {
     console.info(`Fetching substation positions of study '${studyName}'...`);
     const fetchSubstationPositionsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/geo-data/substations";
     console.debug(fetchSubstationPositionsUrl);
-    return backendFetch(fetchSubstationPositionsUrl, {
-        method: 'get',
-    }).then(response => response.json());
+    return backendFetch(fetchSubstationPositionsUrl).then(response => response.json());
 }
 
 export function fetchLines(studyName) {
     console.info(`Fetching lines of study '${studyName}'...`);
     const fetchLinesUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-map/lines";
     console.debug(fetchLinesUrl);
-    return backendFetch(fetchLinesUrl, {
-        method: 'get',
-    }).then(response => response.json());
+    return backendFetch(fetchLinesUrl).then(response => response.json());
 }
 
 export function fetchLinePositions(studyName) {
     console.info(`Fetching line positions of study '${studyName}'...`);
     const fetchLinePositionsUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/geo-data/lines";
     console.debug(fetchLinePositionsUrl);
-    return backendFetch(fetchLinePositionsUrl, {
-        method: 'get',
-    }).then(response => response.json());
+    return backendFetch(fetchLinePositionsUrl).then(response => response.json());
 }
 
 export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile) {
