@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Enable a fullscreen mode [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/fullscreen.gif)
-- Renaming option in the menu for studies [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/rename.gif)
+- Renaming option in the study's menu [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/rename.gif)
 
 ### Changed
 
