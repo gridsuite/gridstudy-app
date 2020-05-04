@@ -24,6 +24,9 @@ function getToken() {
 }
 
 function backendFetch(url, init) {
+    if (! (typeof(init) == "undefined" || typeof(init) == "object") {
+        throw new TypeError("Argument 2 of backendFetch is not an object" + typeof(init));
+    }
     const initCopy = Object.assign({}, init);
     if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
         initCopy.headers = new Headers(initCopy.headers);
