@@ -288,7 +288,7 @@ const StudyCard = ({study, onClick}) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <RenameDialog study={study}
+            <RenameDialog studyName={study.studyName}
                           openRenameDialog={openRenameDialog}
                           handleCloseDialog={handleCloseRenameDialog}
                           handleCancel={handleCancelRename}
@@ -299,15 +299,14 @@ const StudyCard = ({study, onClick}) => {
 
 const RenameDialog = (props) => {
 
-    const [newStudyNameValue, setNewStudyNameValue] = React.useState(props.study.studyName);
+    const [newStudyNameValue, setNewStudyNameValue] = React.useState(props.studyName);
 
     const updateStudyNameValue= (event) => {
         setNewStudyNameValue(event.target.value);
-        console.debug("newStudyName : " + newStudyNameValue);
     };
 
     const handleClick = () => {
-        console.log(newStudyNameValue);
+        console.debug("newStudyName : " + newStudyNameValue);
         props.handleConfirm(newStudyNameValue);
     };
 
@@ -316,7 +315,7 @@ const RenameDialog = (props) => {
             <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
             <DialogContent>
                 <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
-                <TextField id="newStudyName" defaultValue={props.study.studyName} required={true} onChange={updateStudyNameValue}></TextField>
+                <TextField id="newStudyName" value={newStudyNameValue} required={true} onChange={updateStudyNameValue}></TextField>
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.handleCancel} color="primary">
