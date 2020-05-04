@@ -66,10 +66,12 @@ const noSvg = {svg: null, metadata: null, error: null, svgUrl: null};
 const SingleLineDiagram = forwardRef((props, ref)  => {
 
     const [svg, setSvg] = useState(noSvg);
+    const [svgDisplayInfo, setSvgDisplayInfo] = useState();
 
     useImperativeHandle(ref, () => ({
-        reloadSvg: (svgUrl) => {
+        reloadSvg: (svgUrl, svgDisplayInfo) => {
             fetchSvg(svgUrl).then(svg => setSvg(svg));
+            setSvgDisplayInfo(svgDisplayInfo);
         }
     }), []);
 
@@ -105,11 +107,10 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
                 .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.3, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
-            const svgDisplayInfo = props.svgDisplayInfo;
             if (svgDisplayInfo) {
                 draw.zoom(svgDisplayInfo);
                 draw.viewbox(svgDisplayInfo.viewBox.x, svgDisplayInfo.viewBox.y, svgDisplayInfo.viewBox.width, svgDisplayInfo.viewBox.height);
-                props.resetSvgDisplayInfo();
+                setSvgDisplayInfo(null);
             }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
             draw.on('panStart', function (evt) {

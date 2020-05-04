@@ -183,17 +183,12 @@ const StudyPane = () => {
     const handleUpdateSwitchState = useCallback( (breakerId, open, svgUrl, svgDisplayInfo) => {
         updateSwitchState(studyName, breakerId, open).then( response => {
             if (response.ok) {
-                setSvgDisplayInfo(svgDisplayInfo);
-                reloadSvg(svgUrl);
+                reloadSvg(svgUrl, svgDisplayInfo);
             }
             else {
                 console.error(response);
             }
         });
-    }, []);
-
-    const resetSvgDisplayInfo = useCallback(() => {
-        setSvgDisplayInfo(null);
     }, []);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
@@ -221,8 +216,8 @@ const StudyPane = () => {
     }, [mapRef, network]);
 
     const sldRef = useRef();
-    const reloadSvg = useCallback((svgUrl)=> {
-        sldRef.current.reloadSvg(svgUrl);
+    const reloadSvg = useCallback((svgUrl, svgDisplayInfo)=> {
+        sldRef.current.reloadSvg(svgUrl, svgDisplayInfo);
     }, [sldRef]);
 
     if (studyNotFound) {
@@ -259,10 +254,7 @@ const StudyPane = () => {
                                                    onBreakerClick={handleUpdateSwitchState}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
                                                    svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)}
-                                                   currentSvg={currentSvg}
-                                                   svgDisplayInfo = {svgDisplayInfo}
-                                                   resetSvgDisplayInfo = {resetSvgDisplayInfo}
-                                                   ref={sldRef}/>
+                                                   ref={sldRef} />
 
                             </div>
                         }
