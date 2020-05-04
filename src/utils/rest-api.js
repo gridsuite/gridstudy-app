@@ -16,18 +16,19 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
     PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_STUDY_SERVER;
 }
 
-function getHeaders() {
+function getToken() {
     if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
         const state = store.getState();
-        const token = state.user.id_token;
-        return new Headers({
-            'Authorization': 'Bearer ' + token,
-        });
+        return state.user.id_token;
     }
 }
 
 function backendFetch(url, init) {
-    return fetch(url, Object.assign({headers: getHeaders()}, init))
+    if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
+        init.headers === undefined ? init.headers = new Headers({'Authorization': 'Bearer ' + getToken()}) :
+            init.headers.append('Authorization', 'Bearer ' + getToken());
+    }
+    return fetch(url, init);
 }
 
 export function fetchStudies() {
