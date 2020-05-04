@@ -17,14 +17,12 @@ if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
 }
 
 function getToken() {
-    if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
-        const state = store.getState();
-        return state.user.id_token;
-    }
+    const state = store.getState();
+    return state.user.id_token;
 }
 
 function backendFetch(url, init) {
-    if (! (typeof(init) == "undefined" || typeof(init) == "object") {
+    if (! (typeof(init) == "undefined" || typeof(init) == "object")) {
         throw new TypeError("Argument 2 of backendFetch is not an object" + typeof(init));
     }
     const initCopy = Object.assign({}, init);
