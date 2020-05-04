@@ -111,3 +111,17 @@ export function deleteStudy(studyName) {
     return backendFetch(deleteStudyUrl, 'delete');
 }
 
+export function renameStudy(studyName, newStudyName) {
+    console.info("Renaming study " + studyName);
+    const renameStudiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/rename";
+    console.debug(renameStudiesUrl);
+    return fetch(renameStudiesUrl, {
+        method : 'POST',
+        headers : {
+            'Accept' : 'application/json',
+            'Content-Type' : 'application/json'
+        },
+        body : JSON.stringify({newStudyName: newStudyName})
+    }).then(response => response.json());
+}
+
