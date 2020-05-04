@@ -45,50 +45,48 @@ class LineLayer extends CompositeLayer {
                     }));
                     layers.push(lineLayer);
 
-                    if (this.props.lineFlowMode !== LineFlowMode.NONE) {
-                        // create one arrow each DISTANCE_BETWEEN_ARROWS
-                        const arrows = e.lines.flatMap(line => {
+                    // create one arrow each DISTANCE_BETWEEN_ARROWS
+                    const arrows = e.lines.flatMap(line => {
 
-                            // calculate distance between 2 substations as a raw estimate of line size
-                            const positions = this.props.geoData.getLinePositions(this.props.network, line, false);
-                            const lineDistance = getDistance({latitude: positions[0][1], longitude: positions[0][0]},
-                                                             {latitude: positions[1][1], longitude: positions[1][0]});
+                        // calculate distance between 2 substations as a raw estimate of line size
+                        const positions = this.props.geoData.getLinePositions(this.props.network, line, false);
+                        const lineDistance = getDistance({latitude: positions[0][1], longitude: positions[0][0]},
+                                                         {latitude: positions[1][1], longitude: positions[1][0]});
 
-                            const arrowCount = Math.ceil(lineDistance / DISTANCE_BETWEEN_ARROWS);
+                        const arrowCount = Math.ceil(lineDistance / DISTANCE_BETWEEN_ARROWS);
 
-                            return [...new Array(arrowCount).keys()].map(index => {
-                                return {
-                                    distance: index / arrowCount,
-                                    line: line
-                                }
-                            });
+                        return [...new Array(arrowCount).keys()].map(index => {
+                            return {
+                                distance: index / arrowCount,
+                                line: line
+                            }
                         });
+                    });
 
-                        const arrowLayer = new ArrowLayer(this.getSubLayerProps({
-                            id: 'ArrowNominalVoltage' + e.nominalVoltage,
-                            data: arrows,
-                            sizeMinPixels: 3,
-                            sizeMaxPixels: 7,
-                            getDistance: arrow => arrow.distance,
-                            getLine: arrow => arrow.line,
-                            getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
-                            getColor: color,
-                            getSize: 700,
-                            getSpeedFactor: 3,
-                            getDirection: arrow => {
-                                if (arrow.line.p1 < 0) {
-                                    return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
-                                } else if (arrow.line.p1 > 0) {
-                                    return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
-                                } else {
-                                    return ArrowDirection.NONE;
-                                }
-                            },
-                            animated: this.props.lineFlowMode === LineFlowMode.ANIMATED_ARROWS,
-                            visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage),
-                        }));
-                        layers.push(arrowLayer);
-                    }
+                    const arrowLayer = new ArrowLayer(this.getSubLayerProps({
+                        id: 'ArrowNominalVoltage' + e.nominalVoltage,
+                        data: arrows,
+                        sizeMinPixels: 3,
+                        sizeMaxPixels: 7,
+                        getDistance: arrow => arrow.distance,
+                        getLine: arrow => arrow.line,
+                        getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
+                        getColor: color,
+                        getSize: 700,
+                        getSpeedFactor: 3,
+                        getDirection: arrow => {
+                            if (arrow.line.p1 < 0) {
+                                return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
+                            } else if (arrow.line.p1 > 0) {
+                                return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
+                            } else {
+                                return ArrowDirection.NONE;
+                            }
+                        },
+                        animated: this.props.lineFlowMode === LineFlowMode.ANIMATED_ARROWS,
+                        visible: this.props.lineFlowMode !== LineFlowMode.NONE && this.props.filteredNominalVoltages.includes(e.nominalVoltage),
+                    }));
+                    layers.push(arrowLayer);
                 });
         }
 

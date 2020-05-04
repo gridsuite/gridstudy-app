@@ -235,7 +235,7 @@ export default class ArrowLayer extends Layer {
 
     updateState({props, oldProps, changeFlags}) {
         super.updateState({props, oldProps, changeFlags});
-        if (changeFlags.extensionsChanged || props.animated !== oldProps.animated) {
+        if (changeFlags.extensionsChanged) {
             const {gl} = this.context;
 
             const {
@@ -260,11 +260,15 @@ export default class ArrowLayer extends Layer {
                 lineDistancesTexture: lineDistancesTexture,
                 lineAttributes: lineAttributes,
                 timestamp: this.state.timestamp ? this.state.timestamp : 0, // to start/restart animation without "jump"
-                stop: !props.animated
             });
 
             this.getAttributeManager().invalidateAll();
+        }
 
+        if (props.animated !== oldProps.animated) {
+            this.setState({
+                stop: !props.animated
+            });
             if (props.animated) {
                 this.startAnimation();
             }
