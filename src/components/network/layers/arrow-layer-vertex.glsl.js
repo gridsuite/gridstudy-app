@@ -86,14 +86,14 @@ int findFirstLinePointAfterDistance(float distance) {
   }   
 } 
 
-mat3 calculateRotation(vec3 linePosition1, vec3 linePosition2) {
-      float angle = atan(linePosition1.x - linePosition2.x, linePosition1.y - linePosition2.y);
-      if (instanceArrowDirection < 2.0) {
-          angle += radians(180.0);
-      }
-      return mat3(cos(angle),  sin(angle),  0,
-                  -sin(angle), cos(angle),  0,
-                  0,           0,           0);
+mat3 calculateRotation(vec3 commonPosition1, vec3 commonPosition2) {
+  float angle = atan(commonPosition1.x - commonPosition2.x, commonPosition1.y - commonPosition2.y);
+  if (instanceArrowDirection < 2.0) {
+      angle += radians(180.0);
+  }
+  return mat3(cos(angle),  sin(angle),  0,
+              -sin(angle), cos(angle),  0,
+              0,           0,           0);
 }
 
 void main(void) {
@@ -115,25 +115,29 @@ void main(void) {
     
       // clamp to arrow size limits
       float sizePixels = clamp(project_size_to_pixel(instanceSize), sizeMinPixels, sizeMaxPixels);
-    
-      // calculate rotation angle for aligning the arrow with the line segment
-      mat3 rotation = calculateRotation(linePosition1, linePosition2);
-      
-      // project the 2 line points position to clipspace 
-      vec3 offset = positions * rotation * project_pixel_size(sizePixels);
+
+      // project the 2 line points position to common space 
       vec3 position64Low = vec3(0, 0, 0);
-      vec4 clipspacePosition1 = project_position_to_clipspace(linePosition1, position64Low, offset);
-      vec4 clipspacePosition2 = project_position_to_clipspace(linePosition2, position64Low, offset);
-    
-      // calculate arrow position by interpolating the 2 line points position
+      vec3 commonPosition1 = project_position(linePosition1, position64Low);
+      vec3 commonPosition2 = project_position(linePosition2, position64Low);
+
+      // calculate arrow position in the common space by interpolating the 2 line points position 
       float lineDistance1 = fetchLineDistance(linePoint - 1);
       float lineDistance2 = fetchLineDistance(linePoint);
       float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);    
-      vec4 arrowPosition = mix(clipspacePosition1, clipspacePosition2, interpolationValue);  
-    
-      // arrow vertex position
-      gl_Position = arrowPosition;
-    
+      vec3 arrowPosition = mix(commonPosition1, commonPosition2, interpolationValue);  
+
+      // calculate rotation angle for aligning the arrow with the line segment
+      // it has to be done in the common space to get the right angle!!!
+      mat3 rotation = calculateRotation(commonPosition1, commonPosition2);
+ 
+      // calculate vertex position in the clipspace
+      vec3 offset = positions * project_pixel_size(sizePixels) * rotation;
+      vec4 vertexPosition = project_common_position_to_clipspace(vec4(arrowPosition + offset, 1)); 
+
+      // vertex shader output
+      gl_Position = vertexPosition;
+
       // arrow fill color for fragment shader 
       vFillColor = instanceColor;
       shouldDiscard = 0.0;
