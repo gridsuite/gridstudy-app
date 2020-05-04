@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useLayoutEffect, useState} from "react";
+import React, {forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState} from "react";
 import PropTypes from "prop-types";
 
 import {FormattedMessage} from "react-intl";
@@ -63,11 +63,15 @@ const SvgNotFound = (props) => {
 
 const noSvg = {svg: null, metadata: null, error: null, svgUrl: null};
 
-const SingleLineDiagram = (props) => {
+const SingleLineDiagram = forwardRef((props, ref)  => {
 
     const [svg, setSvg] = useState(noSvg);
 
-    const studyName = useSelector(state => state.studyName);
+    useImperativeHandle(ref, () => ({
+        reloadSvg: (svgUrl) => {
+            fetchSvg(svgUrl).then(svg => setSvg(svg));
+        }
+    }), []);
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -82,9 +86,7 @@ const SingleLineDiagram = (props) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, props.currentSvg]);
-
-    //const svgDisplayInfo = useSelector(state => state.svgDisplayInfo);
+    }, [props.svgUrl]);
 
     useLayoutEffect(() => {
         if (svg.svg) {
@@ -139,7 +141,7 @@ const SingleLineDiagram = (props) => {
                     const breakerMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
                     const breakerId = breakerMetadata.equipmentId;
                     const open = breakerMetadata.open;
-                    props.onBreakerClick(studyName, breakerId, !open, event.currentTarget, {viewBox :draw.viewbox(), zoom: draw.zoom()});
+                    props.onBreakerClick(breakerId, !open, props.svgUrl, {viewBox :draw.viewbox(), zoom: draw.zoom()});
                 });
             });
         }
@@ -176,7 +178,7 @@ const SingleLineDiagram = (props) => {
             {inner}
         </Paper>
     );
-};
+});
 
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,

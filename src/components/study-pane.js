@@ -180,11 +180,11 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
-    const handleUpdateSwitchState = useCallback( (studyName, breakerId, open, svgUrl, svgDisplayInfo) => {
+    const handleUpdateSwitchState = useCallback( (breakerId, open, svgUrl, svgDisplayInfo) => {
         updateSwitchState(studyName, breakerId, open).then( response => {
             if (response.ok) {
-                setCurrentSvg(fetchSvg(svgUrl));
                 setSvgDisplayInfo(svgDisplayInfo);
+                reloadSvg(svgUrl);
             }
             else {
                 console.error(response);
@@ -219,6 +219,11 @@ const StudyPane = () => {
     const centerSubstation = useCallback((id)=> {
         mapRef.current.centerSubstation(network.getVoltageLevel(id).substationId);
     }, [mapRef, network]);
+
+    const sldRef = useRef();
+    const reloadSvg = useCallback((svgUrl)=> {
+        sldRef.current.reloadSvg(svgUrl);
+    }, [sldRef]);
 
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
@@ -256,7 +261,8 @@ const StudyPane = () => {
                                                    svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)}
                                                    currentSvg={currentSvg}
                                                    svgDisplayInfo = {svgDisplayInfo}
-                                                   resetSvgDisplayInfo = {resetSvgDisplayInfo} />
+                                                   resetSvgDisplayInfo = {resetSvgDisplayInfo}
+                                                   ref={sldRef}/>
 
                             </div>
                         }
