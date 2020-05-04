@@ -28,7 +28,7 @@ function backendFetch(url, init) {
     const initCopy = Object.assign({}, init);
     if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
         initCopy.headers = new Headers(initCopy.headers);
-        initCopy.headers.append("Authorization", "Bearer: " + getToken())
+        initCopy.headers.append("Authorization", "Bearer " + getToken())
     }
     return fetch(url, initCopy);
 }
