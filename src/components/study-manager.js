@@ -46,7 +46,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DeleteIcon from '@material-ui/icons/Delete';
-import SwapIcon from '@material-ui/icons/SwapHoriz';
+import EditIcon from '@material-ui/icons/Edit';
 import TextField from "@material-ui/core/TextField";
 import InputLabel from "@material-ui/core/InputLabel";
 import Box from "@material-ui/core/Box";
@@ -248,7 +248,7 @@ const StudyCard = ({study, onClick}) => {
 
                         <MenuItem onClick={handleRenameStudy}>
                             <ListItemIcon>
-                                <SwapIcon fontSize="small"/>
+                                <EditIcon fontSize="small"/>
                             </ListItemIcon>
                             <ListItemText primary={<FormattedMessage id="rename"/>} />
                         </MenuItem>
@@ -310,6 +310,11 @@ const RenameDialog = (props) => {
         props.handleConfirm(newStudyNameValue);
     };
 
+    const handleCancel = () => {
+        setNewStudyNameValue(props.studyName);
+        props.handleCancel();
+    };
+
     return (
         <Dialog open={props.openRenameDialog} onClose={props.handleCloseDialog} aria-labelledby="dialog-title-rename">
             <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
@@ -318,7 +323,7 @@ const RenameDialog = (props) => {
                 <TextField id="newStudyName" value={newStudyNameValue} required={true} onChange={updateStudyNameValue}></TextField>
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.handleCancel} color="primary">
+                <Button onClick={handleCancel} color="primary">
                     <FormattedMessage id="cancel"/>
                 </Button>
                 <Button onClick={handleClick} color="primary">
