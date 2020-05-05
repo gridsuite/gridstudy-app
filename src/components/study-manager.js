@@ -184,7 +184,7 @@ const StudyCard = ({study, onClick}) => {
     };
 
     const handleCloseRenameDialog = () => {
-        setOpenDelete(false);
+        setOpenRename(false);
     };
 
     const [expanded, setExpanded] = React.useState(false);
