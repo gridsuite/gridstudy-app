@@ -24,13 +24,13 @@ class LineLayer extends CompositeLayer {
         if (changeFlags.dataChanged) {
             let compositeData = [];
 
-            if (this.props.network != null && this.props.geoData != null) {
+            if (props.network != null && props.geoData != null) {
 
                 // group lines by nominal voltages
 
                 const lineNominalVoltageIndexer = (map, line) => {
-                    const vl = this.props.network.getVoltageLevel(line.voltageLevelId1)
-                        || this.props.network.getVoltageLevel(line.voltageLevelId2);
+                    const vl = props.network.getVoltageLevel(line.voltageLevelId1)
+                        || props.network.getVoltageLevel(line.voltageLevelId2);
                     let list = map.get(vl.nominalVoltage);
                     if (!list) {
                         list = [];
@@ -39,7 +39,7 @@ class LineLayer extends CompositeLayer {
                     list.push(line);
                     return map;
                 };
-                const linesByNominalVoltage = this.props.data.reduce(lineNominalVoltageIndexer, new Map());
+                const linesByNominalVoltage = props.data.reduce(lineNominalVoltageIndexer, new Map());
 
                 compositeData = Array.from(linesByNominalVoltage.entries())
                     .map(e => { return { nominalVoltage: e[0], lines: e[1] };})
@@ -51,7 +51,7 @@ class LineLayer extends CompositeLayer {
                     // create one arrow each DISTANCE_BETWEEN_ARROWS
                     compositeData.arrows = compositeData.lines.flatMap(line => {
                         // calculate distance between 2 substations as a raw estimate of line size
-                        const positions = this.props.geoData.getLinePositions(this.props.network, line, false);
+                        const positions = props.geoData.getLinePositions(props.network, line, false);
                         const lineDistance = getDistance({latitude: positions[0][1], longitude: positions[0][0]},
                                                          {latitude: positions[1][1], longitude: positions[1][0]});
 
@@ -65,8 +65,6 @@ class LineLayer extends CompositeLayer {
                         });
                     });
                 });
-
-                console.info(compositeData)
             }
 
             this.setState({compositeData: compositeData});
