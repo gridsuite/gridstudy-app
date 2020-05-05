@@ -310,20 +310,19 @@ const RenameDialog = (props) => {
         props.handleConfirm(newStudyNameValue);
     };
 
-    const handleCancel = () => {
+    const handleExited = () => {
         setNewStudyNameValue(props.studyName);
-        props.handleCancel();
     };
 
     return (
-        <Dialog open={props.openRenameDialog} onClose={props.handleCloseDialog} aria-labelledby="dialog-title-rename">
+        <Dialog open={props.openRenameDialog} onClose={props.handleCloseDialog} onExited={handleExited} aria-labelledby="dialog-title-rename">
             <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
             <DialogContent>
                 <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
                 <TextField id="newStudyName" value={newStudyNameValue} required={true} onChange={updateStudyNameValue}></TextField>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCancel} color="primary">
+                <Button onClick={props.handleCancel} color="primary">
                     <FormattedMessage id="cancel"/>
                 </Button>
                 <Button onClick={handleClick} color="primary">
