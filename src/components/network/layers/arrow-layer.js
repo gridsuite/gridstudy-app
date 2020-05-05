@@ -233,7 +233,7 @@ export default class ArrowLayer extends Layer {
         }
     }
 
-    updateGeometry({props, oldProps, changeFlags}) {
+    updateGeometry({props, changeFlags}) {
         const geometryChanged =
             changeFlags.dataChanged ||
             (changeFlags.updateTriggersChanged &&
@@ -255,7 +255,7 @@ export default class ArrowLayer extends Layer {
                 linePositionsTexture: linePositionsTexture,
                 lineDistancesTexture: lineDistancesTexture,
                 lineAttributes: lineAttributes,
-                timestamp: this.state.timestamp ? this.state.timestamp : 0, // to start/restart animation without "jump"
+                timestamp: 0
             });
 
             if (!changeFlags.dataChanged) {
@@ -264,7 +264,7 @@ export default class ArrowLayer extends Layer {
         }
     }
 
-    updateModel({props, oldProps, changeFlags}) {
+    updateModel({changeFlags}) {
         if (changeFlags.extensionsChanged) {
             const {gl} = this.context;
 
@@ -289,7 +289,7 @@ export default class ArrowLayer extends Layer {
         this.updateGeometry(updateParams);
         this.updateModel(updateParams);
 
-        const {props, oldProps, changeFlags} = updateParams;
+        const {props, oldProps} = updateParams;
 
         if (props.animated !== oldProps.animated) {
             this.setState({
