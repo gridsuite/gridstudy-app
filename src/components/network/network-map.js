@@ -36,7 +36,9 @@ const NetworkMap = forwardRef((props, ref) => {
 
     // update lineFlowMode state in case of lineFlowMode prop change
     useEffect(() => {
-        setLineFlowMode(props.lineFlowMode);
+        if (lastViewStateRef.current) {
+            updateLineFlowMode(lastViewStateRef.current);
+        }
     }, [props.lineFlowMode]);
 
     const [deck, setDeck] = useState(null);
@@ -121,6 +123,14 @@ const NetworkMap = forwardRef((props, ref) => {
 
     }
 
+    function updateLineFlowMode(viewState) {
+        if (viewState.zoom >= props.arrowsZoomThreshold) {
+            setLineFlowMode(props.lineFlowMode);
+        } else if (viewState.zoom < props.arrowsZoomThreshold) {
+            setLineFlowMode(LineFlowMode.NONE);
+        }
+    }
+
     function onViewStateChange(info) {
         lastViewStateRef.current = info.viewState;
         if (!info.interactionState || // first event of before an animation (e.g. clicking the +/- buttons of the navigation controls, gives the target
@@ -132,13 +142,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 setLabelsVisible(false);
             }
 
-            if (props.lineFlowMode !== LineFlowMode.NONE) {
-                if (info.viewState.zoom >= props.arrowsZoomThreshold && lineFlowMode === LineFlowMode.NONE) {
-                    setLineFlowMode(props.lineFlowMode);
-                } else if (info.viewState.zoom < props.arrowsZoomThreshold && lineFlowMode !== LineFlowMode.NONE) {
-                    setLineFlowMode(LineFlowMode.NONE);
-                }
-            }
+            updateLineFlowMode(info.viewState);
         }
     }
 
