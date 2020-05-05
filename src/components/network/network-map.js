@@ -178,6 +178,7 @@ const NetworkMap = forwardRef((props, ref) => {
 
         layers.push(new LineLayer({
             id: LINE_LAYER_PREFIX,
+            data: props.network.lines,
             network: props.network,
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,

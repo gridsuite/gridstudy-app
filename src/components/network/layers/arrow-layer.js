@@ -233,17 +233,14 @@ export default class ArrowLayer extends Layer {
         }
     }
 
-    updateState({props, oldProps, changeFlags}) {
-        super.updateState({props, oldProps, changeFlags});
-        if (changeFlags.extensionsChanged) {
-            const {gl} = this.context;
+    updateGeometry({props, oldProps, changeFlags}) {
+        const geometryChanged =
+            changeFlags.dataChanged ||
+            (changeFlags.updateTriggersChanged &&
+                (changeFlags.updateTriggersChanged.all || changeFlags.updateTriggersChanged.getLinePositions));
 
-            const {
-                model
-            } = this.state;
-            if (model) {
-                model.delete();
-            }
+        if (geometryChanged) {
+            const {gl} = this.context;
 
             const {
                 linePositionsTextureData,
@@ -255,15 +252,44 @@ export default class ArrowLayer extends Layer {
             const lineDistancesTexture = this.createTexture2D(gl, lineDistancesTextureData, 1, GL.R32F);
 
             this.setState({
-                model: this._getModel(gl),
                 linePositionsTexture: linePositionsTexture,
                 lineDistancesTexture: lineDistancesTexture,
                 lineAttributes: lineAttributes,
                 timestamp: this.state.timestamp ? this.state.timestamp : 0, // to start/restart animation without "jump"
             });
 
+            if (!changeFlags.dataChanged) {
+                this.getAttributeManager().invalidateAll();
+            }
+        }
+    }
+
+    updateModel({props, oldProps, changeFlags}) {
+        if (changeFlags.extensionsChanged) {
+            const {gl} = this.context;
+
+            const {
+                model
+            } = this.state;
+            if (model) {
+                model.delete();
+            }
+
+            this.setState({
+                model: this._getModel(gl)
+            });
+
             this.getAttributeManager().invalidateAll();
         }
+    }
+
+    updateState(updateParams) {
+        super.updateState(updateParams);
+
+        this.updateGeometry(updateParams);
+        this.updateModel(updateParams);
+
+        const {props, oldProps, changeFlags} = updateParams;
 
         if (props.animated !== oldProps.animated) {
             this.setState({

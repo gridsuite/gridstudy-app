@@ -20,34 +20,36 @@ export const LineFlowMode = {
 
 class LineLayer extends CompositeLayer {
 
-    renderLayers() {
-        const layers = [];
+    updateState({props, changeFlags}) {
+        if (changeFlags.dataChanged) {
+            let compositeData = [];
 
-        if (this.props.network != null && this.props.geoData != null) {
-            // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
-            this.props.network.getLinesBySortedNominalVoltage()
-                .forEach(e => {
-                    const color = this.props.getNominalVoltageColor(e.nominalVoltage);
+            if (this.props.network != null && this.props.geoData != null) {
 
-                    const lineLayer = new PathLayer(this.getSubLayerProps({
-                        id: 'LineNominalVoltage' + e.nominalVoltage,
-                        data: e.lines,
-                        widthScale: 20,
-                        widthMinPixels: 1,
-                        widthMaxPixels: 2,
-                        getPath: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
-                        getColor: color,
-                        getWidth: 2,
-                        visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage),
-                        updateTriggers: {
-                            getPath: [this.props.lineFullPath]
-                        }
-                    }));
-                    layers.push(lineLayer);
+                // group lines by nominal voltages
 
+                const lineNominalVoltageIndexer = (map, line) => {
+                    const vl = this.props.network.getVoltageLevel(line.voltageLevelId1)
+                        || this.props.network.getVoltageLevel(line.voltageLevelId2);
+                    let list = map.get(vl.nominalVoltage);
+                    if (!list) {
+                        list = [];
+                        map.set(vl.nominalVoltage, list);
+                    }
+                    list.push(line);
+                    return map;
+                };
+                const linesByNominalVoltage = this.props.data.reduce(lineNominalVoltageIndexer, new Map());
+
+                compositeData = Array.from(linesByNominalVoltage.entries())
+                    .map(e => { return { nominalVoltage: e[0], lines: e[1] };})
+                    .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
+
+                // add arrows
+
+                compositeData.forEach(compositeData => {
                     // create one arrow each DISTANCE_BETWEEN_ARROWS
-                    const arrows = e.lines.flatMap(line => {
-
+                    compositeData.arrows = compositeData.lines.flatMap(line => {
                         // calculate distance between 2 substations as a raw estimate of line size
                         const positions = this.props.geoData.getLinePositions(this.props.network, line, false);
                         const lineDistance = getDistance({latitude: positions[0][1], longitude: positions[0][0]},
@@ -62,33 +64,66 @@ class LineLayer extends CompositeLayer {
                             }
                         });
                     });
-
-                    const arrowLayer = new ArrowLayer(this.getSubLayerProps({
-                        id: 'ArrowNominalVoltage' + e.nominalVoltage,
-                        data: arrows,
-                        sizeMinPixels: 3,
-                        sizeMaxPixels: 7,
-                        getDistance: arrow => arrow.distance,
-                        getLine: arrow => arrow.line,
-                        getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
-                        getColor: color,
-                        getSize: 700,
-                        getSpeedFactor: 3,
-                        getDirection: arrow => {
-                            if (arrow.line.p1 < 0) {
-                                return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
-                            } else if (arrow.line.p1 > 0) {
-                                return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
-                            } else {
-                                return ArrowDirection.NONE;
-                            }
-                        },
-                        animated: this.props.lineFlowMode === LineFlowMode.ANIMATED_ARROWS,
-                        visible: this.props.lineFlowMode !== LineFlowMode.NONE && this.props.filteredNominalVoltages.includes(e.nominalVoltage),
-                    }));
-                    layers.push(arrowLayer);
                 });
+
+                console.info(compositeData)
+            }
+
+            this.setState({compositeData: compositeData});
         }
+    }
+
+    renderLayers() {
+        const layers = [];
+
+        // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
+        this.state.compositeData.forEach(compositeData => {
+            const color = this.props.getNominalVoltageColor(compositeData.nominalVoltage);
+
+            const lineLayer = new PathLayer(this.getSubLayerProps({
+                id: 'LineNominalVoltage' + compositeData.nominalVoltage,
+                data: compositeData.lines,
+                widthScale: 20,
+                widthMinPixels: 1,
+                widthMaxPixels: 2,
+                getPath: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
+                getColor: color,
+                getWidth: 2,
+                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
+                updateTriggers: {
+                    getPath: [this.props.lineFullPath]
+                }
+            }));
+            layers.push(lineLayer);
+
+            const arrowLayer = new ArrowLayer(this.getSubLayerProps({
+                id: 'ArrowNominalVoltage' + compositeData.nominalVoltage,
+                data: compositeData.arrows,
+                sizeMinPixels: 3,
+                sizeMaxPixels: 7,
+                getDistance: arrow => arrow.distance,
+                getLine: arrow => arrow.line,
+                getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
+                getColor: color,
+                getSize: 700,
+                getSpeedFactor: 3,
+                getDirection: arrow => {
+                    if (arrow.line.p1 < 0) {
+                        return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
+                    } else if (arrow.line.p1 > 0) {
+                        return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
+                    } else {
+                        return ArrowDirection.NONE;
+                    }
+                },
+                animated: this.props.lineFlowMode === LineFlowMode.ANIMATED_ARROWS,
+                visible: this.props.lineFlowMode !== LineFlowMode.NONE && this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
+                updateTriggers: {
+                    getLinePositions: [this.props.lineFullPath]
+                }
+            }));
+            layers.push(arrowLayer);
+        });
 
         return layers;
     }
