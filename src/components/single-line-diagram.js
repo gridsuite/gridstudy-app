@@ -66,13 +66,13 @@ const noSvg = {svg: null, metadata: null, error: null, svgUrl: null};
 const SingleLineDiagram = forwardRef((props, ref)  => {
 
     const [svg, setSvg] = useState(noSvg);
-    const [svgDisplayInfo, setSvgDisplayInfo] = useState();
+    const svgPrevViewbox = useRef();
+
+    const [forceState, updateState] = React.useState(false);
+    const forceUpdate = React.useCallback(() => updateState(s=>!s), []);
 
     useImperativeHandle(ref, () => ({
-        reloadSvg: (svgUrl, svgDisplayInfo) => {
-            fetchSvg(svgUrl).then(svg => setSvg(svg));
-            setSvgDisplayInfo(svgDisplayInfo);
-        }
+        reloadSvg: forceUpdate
     }), []);
 
     useEffect(() => {
@@ -88,7 +88,7 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl]);
+    }, [props.svgUrl, forceState]);
 
     useLayoutEffect(() => {
         if (svg.svg) {
@@ -107,10 +107,9 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
                 .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.3, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
-            if (svgDisplayInfo) {
-                draw.zoom(svgDisplayInfo);
-                draw.viewbox(svgDisplayInfo.viewBox.x, svgDisplayInfo.viewBox.y, svgDisplayInfo.viewBox.width, svgDisplayInfo.viewBox.height);
-                setSvgDisplayInfo(null);
+            if (svgPrevViewbox.current) {
+                draw.viewbox(svgPrevViewbox.current);
+                svgPrevViewbox.current = null;
             }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
             draw.on('panStart', function (evt) {
@@ -134,7 +133,6 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
             // handling the click on a breaker
             const breakers = svg.metadata.nodes.filter(element => element.componentType === "BREAKER");
             breakers.forEach(breaker => {
-                console.log(breaker);
                 const domEl = document.getElementById(breaker.id);
                 domEl.style.cursor = "pointer";
                 domEl.addEventListener("click", function(event) {
@@ -142,7 +140,8 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
                     const breakerMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
                     const breakerId = breakerMetadata.equipmentId;
                     const open = breakerMetadata.open;
-                    props.onBreakerClick(breakerId, !open, props.svgUrl, {viewBox :draw.viewbox(), zoom: draw.zoom()});
+                    svgPrevViewbox.current = draw.viewbox();
+                    props.onBreakerClick(breakerId, !open);
                 });
             });
         }

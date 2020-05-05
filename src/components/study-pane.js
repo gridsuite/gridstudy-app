@@ -90,10 +90,6 @@ const StudyPane = () => {
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
-    const [currentSvg, setCurrentSvg] = useState(null);
-
-    const [svgDisplayInfo, setSvgDisplayInfo] = useState(null);
-
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -180,16 +176,17 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
-    const handleUpdateSwitchState = useCallback( (breakerId, open, svgUrl, svgDisplayInfo) => {
+    const sldRef = useRef();
+    const handleUpdateSwitchState = useCallback( (breakerId, open) => {
         updateSwitchState(studyName, breakerId, open).then( response => {
             if (response.ok) {
-                reloadSvg(svgUrl, svgDisplayInfo);
+                sldRef.current.reloadSvg();
             }
             else {
                 console.error(response);
             }
         });
-    }, []);
+    }, [studyName]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
@@ -214,11 +211,6 @@ const StudyPane = () => {
     const centerSubstation = useCallback((id)=> {
         mapRef.current.centerSubstation(network.getVoltageLevel(id).substationId);
     }, [mapRef, network]);
-
-    const sldRef = useRef();
-    const reloadSvg = useCallback((svgUrl, svgDisplayInfo)=> {
-        sldRef.current.reloadSvg(svgUrl, svgDisplayInfo);
-    }, [sldRef]);
 
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
