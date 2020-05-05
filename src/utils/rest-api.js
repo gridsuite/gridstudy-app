@@ -119,9 +119,9 @@ export function deleteStudy(studyName) {
 
 export function updateSwitchState(studyName, switchId, open) {
     console.info("updating switch " + switchId + " ...");
-    const updateSwitchUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/network-modification/switches/" + switchId + "?open=" + open;
+    const updateSwitchUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-modification/switches/" + switchId + "?open=" + open;
     console.debug(updateSwitchUrl);
-    return fetch(updateSwitchUrl, {method : 'put'});
+    return backendFetch(updateSwitchUrl, {method : 'put'});
 }
 
 export function renameStudy(studyName, newStudyName) {
