@@ -166,6 +166,7 @@ const NetworkMap = forwardRef((props, ref) => {
 
         layers.push(new SubstationLayer({
             id: SUBSTATION_LAYER_PREFIX,
+            data: props.network.getVoltageLevels(),
             network: props.network,
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,

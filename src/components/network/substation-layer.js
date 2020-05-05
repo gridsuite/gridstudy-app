@@ -15,51 +15,96 @@ function getVoltageLevelRadius(substationRadius, voltageLevel) {
 
 class SubstationLayer extends CompositeLayer {
 
+    initializeState() {
+        super.initializeState();
+
+        this.state = {
+            compositeData: [],
+            substationsLabels: []
+        };
+    }
+
+    updateState({props, oldProps, changeFlags}) {
+
+        if (changeFlags.dataChanged) {
+            let compositeData = [];
+
+            if (props.network != null && props.geoData != null) {
+
+                // group voltage levels by nominal voltage
+
+                const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
+                    let list = map.get(voltageLevel.nominalVoltage);
+                    if (!list) {
+                        list = [];
+                        map.set(voltageLevel.nominalVoltage, list);
+                    }
+                    list.push(voltageLevel);
+                    return map;
+                };
+                const voltageLevelsByNominalVoltage = props.data.reduce(voltageLevelNominalVoltageIndexer, new Map());
+
+                compositeData = Array.from(voltageLevelsByNominalVoltage.entries())
+                    .map(e => {
+                        return {nominalVoltage: e[0], voltageLevels: e[1]};
+                    })
+                    .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
+            }
+
+            this.setState({compositeData});
+        }
+
+        if (props.filteredNominalVoltages !== oldProps.filteredNominalVoltages) {
+            let substationsLabels = [];
+
+            if (props.network != null && props.geoData != null) {
+                // we construct the substations where there is at least one voltage level with a nominal voltage
+                // present in the filteredVoltageLevels property, in order to handle correctly the substations labels visibility
+                substationsLabels = props.network.substations
+                    .filter(substation => substation.voltageLevels.find(v => props.filteredNominalVoltages.includes(v.nominalVoltage)) !== undefined);
+            }
+
+            this.setState({substationsLabels});
+        }
+    }
+
     renderLayers() {
         const layers = [];
 
-        if (this.props.network != null && this.props.geoData != null) {
-            // substations : create one layer per nominal voltage, starting from higher to lower nominal voltage
-            this.props.network.getVoltageLevelsBySortedNominalVoltage()
-                .forEach(e => {
-                    // substations
-                    const substationsLayer = new ScatterplotLayer(this.getSubLayerProps({
-                        id: 'NominalVoltage' + e.nominalVoltage,
-                        data: e.voltageLevels,
-                        radiusMinPixels: 1,
-                        getPosition: voltageLevel => this.props.geoData.getSubstationPosition(voltageLevel.substationId),
-                        getFillColor: this.props.getNominalVoltageColor(e.nominalVoltage),
-                        getRadius: voltageLevel => getVoltageLevelRadius(SUBSTATION_RADIUS, voltageLevel),
-                        visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
-                    }));
-                    layers.push(substationsLayer);
-                });
-
-            // substations labels : create one layer
-            // First, we construct the substations where there is at least one voltage level with a nominal voltage
-            // present in the filteredVoltageLevels property, in order to handle correctly the substations labels visibility
-            const substationsLabelsVisible = this.props.network.substations
-                .filter(substation => substation.voltageLevels.find(v => this.props.filteredNominalVoltages.includes(v.nominalVoltage)) !== undefined);
-
-            const substationLabelsLayer = new TextLayer(this.getSubLayerProps({
-                id: "Label",
-                data: substationsLabelsVisible,
-                getPosition: substation => this.props.geoData.getSubstationPosition(substation.id),
-                getText: substation => this.props.useName ? substation.name : substation.id,
-                getColor: this.props.labelColor,
-                fontFamily: 'Roboto',
-                getSize: 16,
-                getAngle: 0,
-                getTextAnchor: 'start',
-                getAlignmentBaseline: 'center',
-                getPixelOffset: [20, 0],
-                visible: this.props.labelsVisible,
-                updateTriggers: {
-                    getText: this.props.useName
-                }
+        // substations : create one layer per nominal voltage, starting from higher to lower nominal voltage
+        this.state.compositeData.forEach(compositeData => {
+            // substations
+            const substationsLayer = new ScatterplotLayer(this.getSubLayerProps({
+                id: 'NominalVoltage' + compositeData.nominalVoltage,
+                data: compositeData.voltageLevels,
+                radiusMinPixels: 1,
+                getPosition: voltageLevel => this.props.geoData.getSubstationPosition(voltageLevel.substationId),
+                getFillColor: this.props.getNominalVoltageColor(compositeData.nominalVoltage),
+                getRadius: voltageLevel => getVoltageLevelRadius(SUBSTATION_RADIUS, voltageLevel),
+                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage)
             }));
-            layers.push(substationLabelsLayer);
-        }
+            layers.push(substationsLayer);
+        });
+
+        // substations labels : create one layer
+        const substationLabelsLayer = new TextLayer(this.getSubLayerProps({
+            id: "Label",
+            data: this.state.substationsLabels,
+            getPosition: substation => this.props.geoData.getSubstationPosition(substation.id),
+            getText: substation => this.props.useName ? substation.name : substation.id,
+            getColor: this.props.labelColor,
+            fontFamily: 'Roboto',
+            getSize: 16,
+            getAngle: 0,
+            getTextAnchor: 'start',
+            getAlignmentBaseline: 'center',
+            getPixelOffset: [20, 0],
+            visible: this.props.labelsVisible,
+            updateTriggers: {
+                getText: this.props.useName
+            }
+        }));
+        layers.push(substationLabelsLayer);
 
         return layers;
     }

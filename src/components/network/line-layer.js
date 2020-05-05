@@ -20,13 +20,21 @@ export const LineFlowMode = {
 
 class LineLayer extends CompositeLayer {
 
+    initializeState() {
+        super.initializeState();
+
+        this.state = {
+            compositeData: []
+        };
+    }
+
     updateState({props, changeFlags}) {
         if (changeFlags.dataChanged) {
             let compositeData = [];
 
             if (props.network != null && props.geoData != null) {
 
-                // group lines by nominal voltages
+                // group lines by nominal voltage
 
                 const lineNominalVoltageIndexer = (map, line) => {
                     const vl = props.network.getVoltageLevel(line.voltageLevelId1)
