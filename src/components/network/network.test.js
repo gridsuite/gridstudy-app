@@ -52,9 +52,4 @@ test('network', () => {
     expect(network.getVoltageLevel("S1_7")).not.toBeNull();
     expect(network.getVoltageLevel("S2_6").id).toEqual("S2_6");
     expect(network.getVoltageLevels()).toHaveLength(3);
-
-    // Nominal voltage
-    expect(network.voltageLevelsByNominalVoltage.get(225)).toHaveLength(2);
-    expect(network.voltageLevelsByNominalVoltage.get(380)).toHaveLength(1);
-    expect(network.voltageLevelsByNominalVoltage.get(63)).toBeUndefined();
 });
