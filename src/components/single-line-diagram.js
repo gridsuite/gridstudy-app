@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useLayoutEffect, useState} from "react";
+import React, {forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState} from "react";
 import PropTypes from "prop-types";
 
 import {FormattedMessage} from "react-intl";
@@ -21,6 +21,7 @@ import { fetchSvg } from "../utils/rest-api";
 
 import { SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.panzoom.js";
+import {useSelector} from "react-redux";
 
 const maxWidth = 800;
 const maxHeight = 700;
@@ -60,11 +61,19 @@ const SvgNotFound = (props) => {
     );
 };
 
-const nosvg = {svg: null, metadata: null, error: null, svgUrl: null};
+const noSvg = {svg: null, metadata: null, error: null, svgUrl: null};
 
-const SingleLineDiagram = (props) => {
+const SingleLineDiagram = forwardRef((props, ref)  => {
 
-    const [svg, setSvg] = useState(nosvg);
+    const [svg, setSvg] = useState(noSvg);
+    const svgPrevViewbox = useRef();
+
+    const [forceState, updateState] = React.useState(false);
+    const forceUpdate = React.useCallback(() => updateState(s=>!s), []);
+
+    useImperativeHandle(ref, () => ({
+        reloadSvg: forceUpdate
+    }), []);
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -77,9 +86,9 @@ const SingleLineDiagram = (props) => {
                     setSvg({svg: null, metadata: null, error, svgUrl: props.svgUrl});
                 });
         } else {
-            setSvg(nosvg);
+            setSvg(noSvg);
         }
-    }, [props.svgUrl]);
+    }, [props.svgUrl, forceState]);
 
     useLayoutEffect(() => {
         if (svg.svg) {
@@ -91,7 +100,6 @@ const SingleLineDiagram = (props) => {
             const yOrigin = bbox.y - 20;
             const svgWidth = bbox.width + 40;
             const svgHeight = bbox.height + 40;
-
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ""; // clear the previous svg in div element before replacing
             const draw = SVG()
@@ -99,8 +107,11 @@ const SingleLineDiagram = (props) => {
                 .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({panning: true, zoomMin: 0.5, zoomMax: 10, zoomFactor: 0.3, margins: {top: svgHeight/4, left: svgWidth/4, bottom: svgHeight/4, right: svgWidth/4}});
+            if (svgPrevViewbox.current) {
+                draw.viewbox(svgPrevViewbox.current);
+                svgPrevViewbox.current = null;
+            }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = "visible";
-
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = "move";
             });
@@ -118,6 +129,21 @@ const SingleLineDiagram = (props) => {
                     const meta = svg.metadata.nodes.find( other => other.id === id );
                     props.onNextVoltageLevelClick(meta.nextVId);
                 })});
+
+            // handling the click on a breaker
+            const breakers = svg.metadata.nodes.filter(element => element.componentType === "BREAKER");
+            breakers.forEach(breaker => {
+                const domEl = document.getElementById(breaker.id);
+                domEl.style.cursor = "pointer";
+                domEl.addEventListener("click", function(event) {
+                    const clickedElementId = event.currentTarget.id;
+                    const breakerMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
+                    const breakerId = breakerMetadata.equipmentId;
+                    const open = breakerMetadata.open;
+                    svgPrevViewbox.current = draw.viewbox();
+                    props.onBreakerClick(breakerId, !open);
+                });
+            });
         }
     }, [svg]);
 
@@ -141,18 +167,18 @@ const SingleLineDiagram = (props) => {
 
     return (
         <Paper elevation={1} variant='outlined' className={finalClasses}>
-                <Box display="flex" flexDirection="row">
-                    <Box flexGrow={1}>
-                        <Typography>{props.diagramTitle}</Typography>
-                    </Box>
-                    <IconButton className={classes.close} onClick={onCloseHandler}>
-                        <CloseIcon/>
-                    </IconButton>
+            <Box display="flex" flexDirection="row">
+                <Box flexGrow={1}>
+                    <Typography>{props.diagramTitle}</Typography>
                 </Box>
-                {inner}
+                <IconButton className={classes.close} onClick={onCloseHandler}>
+                    <CloseIcon/>
+                </IconButton>
+            </Box>
+            {inner}
         </Paper>
     );
-};
+});
 
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,

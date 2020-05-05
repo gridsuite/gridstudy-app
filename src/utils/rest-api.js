@@ -117,6 +117,13 @@ export function deleteStudy(studyName) {
     });
 }
 
+export function updateSwitchState(studyName, switchId, open) {
+    console.info("updating switch " + switchId + " ...");
+    const updateSwitchUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-modification/switches/" + switchId + "?open=" + open;
+    console.debug(updateSwitchUrl);
+    return backendFetch(updateSwitchUrl, {method : 'put'});
+}
+
 export function renameStudy(studyName, newStudyName) {
     console.info("Renaming study " + studyName);
     const renameStudiesUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/rename";
@@ -130,4 +137,3 @@ export function renameStudy(studyName, newStudyName) {
         body : JSON.stringify({newStudyName: newStudyName})
     }).then(response => response.json());
 }
-

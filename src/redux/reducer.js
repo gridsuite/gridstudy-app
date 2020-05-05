@@ -37,7 +37,7 @@ import {
     TOPOLOGICAL_COLORING,
     USE_NAME,
     USER,
-    SIGNIN_CALLBACK_ERROR
+    SIGNIN_CALLBACK_ERROR,
 } from "./actions";
 
 const initialState = {
@@ -54,7 +54,7 @@ const initialState = {
     centerLabel : getLocalStorageCenterLabel(),
     diagonalLabel : getLocalStorageDiagonalLabel(),
     topologicalColoring : getLocalStorageTopologicalColoring(),
-    signInCallbackError : null
+    signInCallbackError : null,
 };
 
 export const reducer = createReducer(initialState, {
