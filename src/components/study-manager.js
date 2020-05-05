@@ -32,7 +32,7 @@ import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
 import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
 
 import {loadStudiesSuccess} from '../redux/actions';
-import {deleteStudy, fetchStudies} from '../utils/rest-api';
+import {fetchStudies, deleteStudy, renameStudy} from '../utils/rest-api';
 import CreateStudyForm from "./create-study-form";
 
 import {CardHeader} from "@material-ui/core";
@@ -46,6 +46,9 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import TextField from "@material-ui/core/TextField";
+import InputLabel from "@material-ui/core/InputLabel";
 import Box from "@material-ui/core/Box";
 
 const useStyles = makeStyles((theme) => ({
@@ -89,7 +92,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const StudyCard = ({study, onClick}) => {
-    const [open, setOpen] = React.useState(false);
+    const [openDeleteDialog, setOpenDelete] = React.useState(false);
+    const [openRenameDialog, setOpenRename]  = React.useState(false);
     const dispatch = useDispatch();
     const classes = useStyles();
 
@@ -141,7 +145,7 @@ const StudyCard = ({study, onClick}) => {
 
     const handleDeleteStudy = () => {
         setAnchorEl(null);
-        setOpen(true);
+        setOpenDelete(true);
     };
 
     const handleDeleteStudyConfirmed = () => {
@@ -152,12 +156,35 @@ const StudyCard = ({study, onClick}) => {
         });
     };
 
-    const handleCloseDialog = () => {
-        setOpen(false);
+    const handleCloseDeleteDialog = () => {
+        setOpenDelete(false);
     };
 
     const handleCancelDelete = () => {
-        setOpen(false);
+        setOpenDelete(false);
+    };
+
+    const handleRenameStudy = () => {
+        setAnchorEl(null);
+        setOpenRename(true);
+    };
+
+    const handleRenameStudyConfirmed = (newStudyNameValue) => {
+        renameStudy(study.studyName, newStudyNameValue)
+            .then(() => {
+                fetchStudies().then(studies => {
+                    dispatch(loadStudiesSuccess(studies));
+                });
+                setOpenRename(false);
+            });
+    };
+
+    const handleCancelRename = () => {
+        setOpenRename(false);
+    };
+
+    const handleCloseRenameDialog = () => {
+        setOpenRename(false);
     };
 
     const [expanded, setExpanded] = React.useState(false);
@@ -218,6 +245,14 @@ const StudyCard = ({study, onClick}) => {
                             </ListItemIcon>
                             <ListItemText primary={<FormattedMessage id="delete"/>} />
                         </MenuItem>
+
+                        <MenuItem onClick={handleRenameStudy}>
+                            <ListItemIcon>
+                                <EditIcon fontSize="small"/>
+                            </ListItemIcon>
+                            <ListItemText primary={<FormattedMessage id="rename"/>} />
+                        </MenuItem>
+
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -237,8 +272,8 @@ const StudyCard = ({study, onClick}) => {
                     </CardContent>
                 </Collapse>
             </Card>
-            <Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title"><FormattedMessage id="deleteStudy"/></DialogTitle>
+            <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog} aria-labelledby="dialog-title-delete">
+                <DialogTitle id="dialog-title-delete"><FormattedMessage id="deleteStudy"/></DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         <FormattedMessage id="deleteStudyMsg"/>
@@ -253,7 +288,48 @@ const StudyCard = ({study, onClick}) => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <RenameDialog studyName={study.studyName}
+                          openRenameDialog={openRenameDialog}
+                          handleCloseDialog={handleCloseRenameDialog}
+                          handleCancel={handleCancelRename}
+                          handleConfirm={handleRenameStudyConfirmed}/>
         </div>
+    );
+};
+
+const RenameDialog = (props) => {
+
+    const [newStudyNameValue, setNewStudyNameValue] = React.useState(props.studyName);
+
+    const updateStudyNameValue= (event) => {
+        setNewStudyNameValue(event.target.value);
+    };
+
+    const handleClick = () => {
+        console.debug("newStudyName : " + newStudyNameValue);
+        props.handleConfirm(newStudyNameValue);
+    };
+
+    const handleExited = () => {
+        setNewStudyNameValue(props.studyName);
+    };
+
+    return (
+        <Dialog open={props.openRenameDialog} onClose={props.handleCloseDialog} onExited={handleExited} aria-labelledby="dialog-title-rename">
+            <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
+            <DialogContent>
+                <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
+                <TextField id="newStudyName" value={newStudyNameValue} required={true} onChange={updateStudyNameValue}></TextField>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={props.handleCancel} color="primary">
+                    <FormattedMessage id="cancel"/>
+                </Button>
+                <Button onClick={handleClick} color="primary">
+                    <FormattedMessage id="rename"/>
+                </Button>
+            </DialogActions>
+        </Dialog>
     );
 };
 
@@ -274,7 +350,7 @@ const StudyManager = ({onStudyClick}) => {
 
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
-            <Grid container spacing={2} className={classes.grid} justify={'center'}>
+            <Grid container spacing={2} className={classes.grid}>
                 <Grid item xs={12} sm={6} md={3} align="center">
                     <Box className={classes.addButtonBox}>
                         <CreateStudyForm />

@@ -10,6 +10,7 @@
   "uploadMessage" : " Aucun fichier sélectionné",
   "cancel" : "ANNULER",
   "create" : "CRÉER",
+  "rename" : "Renommer",
   "delete" : "Supprimer",
   "filter" : "Filtre",
 
@@ -22,6 +23,9 @@
   "deleteStudyMsg" : "Êtes-vous sûr de vouloir supprimer l'étude ?",
   "studyNameDidNotMatchMsg" : "Le nom d'étude donné ne correspond pas à ",
   "studyDeletedSuccessMsg" : "Étude supprimée",
+
+  "renameStudyMsg" : "Nouveau nom de l'étude :",
+  "renameStudy" : "Renommer l'étude",
 
   "studyNameErrorMsg" : "Le nom de l'étude ne doit pas être vide",
   "caseNameErrorMsg" : "Veuillez sélectionner le nom de la situation",

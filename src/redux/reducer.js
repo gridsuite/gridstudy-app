@@ -62,7 +62,7 @@ const initialState = {
     topologicalColoring : getLocalStorageTopologicalColoring(),
     lineFullPath: getLocalStorageLineFullPath(),
     lineFlowMode: getLocalStorageLineFlowMode(),
-    signInCallbackError : null
+    signInCallbackError : null,
 };
 
 export const reducer = createReducer(initialState, {

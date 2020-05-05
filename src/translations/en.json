@@ -10,6 +10,7 @@
   "uploadMessage" : " No file selected",
   "cancel" : "CANCEL",
   "create" : "CREATE",
+  "rename" : "Rename",
   "delete" : "Delete",
   "filter" : "Filter",
 
@@ -23,6 +24,9 @@
   "deleteStudyMsg" : "Are you sure you want to delete the study?",
   "studyNameDidNotMatchMsg" : "The given study name did not match with ",
   "studyDeletedSuccessMsg" : "Study deleted",
+
+  "renameStudyMsg" : "New study name:",
+  "renameStudy" : "Rename study",
 
   "studyNameErrorMsg" : "Study name should not be empty",
   "caseNameErrorMsg" : "Please select the case name",
