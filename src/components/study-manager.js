@@ -284,11 +284,7 @@ const StudyCard = ({study, onClick}) => {
                 </Collapse>
             </Card>
             <DeleteDialog open={openDeleteDialog} onClose={handleCloseDelete} onClick={handleClickDelete} />
-            <RenameDialog studyName={study.studyName}
-                          openRenameDialog={openRenameDialog}
-                          handleCloseDialog={handleCloseRename}
-                          handleCancel={handleCloseRename}
-                          handleConfirm={handleClickRename}/>
+            <RenameDialog open={openRenameDialog} onClose={handleCloseRename} onClick={handleClickRename} studyName={study.studyName} />
         </div>
     );
 };
@@ -339,7 +335,7 @@ const RenameDialog = (props) => {
 
     const handleClick = () => {
         console.debug("newStudyName : " + newStudyNameValue);
-        props.handleConfirm(newStudyNameValue);
+        props.onClick(newStudyNameValue);
     };
 
     const handleExited = () => {
@@ -347,14 +343,14 @@ const RenameDialog = (props) => {
     };
 
     return (
-        <Dialog open={props.openRenameDialog} onClose={props.handleCloseDialog} onExited={handleExited} aria-labelledby="dialog-title-rename">
+        <Dialog open={props.open} onClose={props.onClose} onExited={handleExited} aria-labelledby="dialog-title-rename">
             <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
             <DialogContent>
                 <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
                 <TextField id="newStudyName" value={newStudyNameValue} required={true} onChange={updateStudyNameValue} />
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.handleCancel} color="primary">
+                <Button onClick={props.onClose} color="primary">
                     <FormattedMessage id="cancel"/>
                 </Button>
                 <Button onClick={handleClick} color="primary">
@@ -363,6 +359,13 @@ const RenameDialog = (props) => {
             </DialogActions>
         </Dialog>
     );
+};
+
+RenameDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
+    studyName: PropTypes.string.isRequired,
 };
 
 const StudyManager = ({onStudyClick}) => {
