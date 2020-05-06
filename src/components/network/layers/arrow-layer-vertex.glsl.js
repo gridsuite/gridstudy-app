@@ -102,6 +102,7 @@ void main(void) {
       shouldDiscard = 1.0;
   } else {
       // arrow distance from the line start shifted with current timestamp
+      // instanceArrowDistance: a float in interval [0,1] describing the initial position of the arrow along the full path between two substations (0: begin, 1.0 end)
       float arrowDistance = mod(instanceLineDistance * instanceArrowDistance + (instanceArrowDirection < 2.0 ? 1.0 : -1.0) * timestamp * instanceSpeedFactor, instanceLineDistance);
     
       // look for first line point that is after arrow distance
