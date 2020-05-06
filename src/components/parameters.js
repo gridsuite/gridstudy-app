@@ -14,29 +14,34 @@ import {useDispatch, useSelector} from "react-redux";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
+import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
 import Divider from "@material-ui/core/Divider";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Grid from "@material-ui/core/Grid";
 import {makeStyles} from "@material-ui/core/styles";
+import MenuItem from "@material-ui/core/MenuItem";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
+import Select from "@material-ui/core/Select";
 import Switch from "@material-ui/core/Switch";
+import Tab from "@material-ui/core/Tab";
+import Tabs from "@material-ui/core/Tabs";
 import Typography from "@material-ui/core/Typography";
 
 import {
     DARK_THEME,
     LIGHT_THEME,
+    selectLineFlowMode,
     selectTheme,
     toggleCenterLabelState,
     toggleDiagonalLabelState,
+    toggleLineFullPathState,
     toggleTopologicalColoringState,
     toggleUseNameState
 } from "../redux/actions";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
+import {LineFlowMode} from './network/line-layer';
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -63,6 +68,8 @@ const Parameters = ({showParameters, hideParameters}) => {
     const centerLabel = useSelector(state => state.centerLabel);
     const diagonalLabel = useSelector(state => state.diagonalLabel);
     const topologicalColoring = useSelector(state => state.topologicalColoring);
+    const lineFullPath = useSelector(state => state.lineFullPath);
+    const lineFlowMode = useSelector(state => state.lineFlowMode);
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const theme = useSelector(state => state.theme);
@@ -70,6 +77,11 @@ const Parameters = ({showParameters, hideParameters}) => {
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
         dispatch(selectTheme(theme));
+    };
+
+    const handleLineFlowModeChange = (event) => {
+        const lineFlowMode = event.target.value;
+        dispatch(selectLineFlowMode(lineFlowMode));
     };
 
     function TabPanel(props) {
@@ -152,20 +164,50 @@ const Parameters = ({showParameters, hideParameters}) => {
             )
     }
 
+    const MapParameters = () => {
+        return (
+            <Grid container spacing={2} className={classes.grid}>
+                {MakeSwitch(lineFullPath, "lineFullPath", () => dispatch(toggleLineFullPathState()))}
+                <MakeLineSeparator/>
+                <Grid item xs={6}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="LineFlowMode"/>:
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={6} className={classes.controlItem}>
+                    <Select labelId="line-flow-mode-select-label" value={lineFlowMode} onChange={handleLineFlowModeChange}>
+                        <MenuItem value={LineFlowMode.NONE}>
+                            <FormattedMessage id="None"/>
+                        </MenuItem>
+                        <MenuItem value={LineFlowMode.STATIC_ARROWS}>
+                            <FormattedMessage id="StaticArrows"/>
+                        </MenuItem>
+                        <MenuItem value={LineFlowMode.ANIMATED_ARROWS}>
+                            <FormattedMessage id="AnimatedArrows"/>
+                        </MenuItem>
+                    </Select>
+                </Grid>
+            </Grid>
+        )
+    }
+
     return (
 
         <Dialog open={showParameters} onClose={hideParameters} aria-labelledby="form-dialog-title" maxWidth={'md'} fullWidth={true}>
             <DialogTitle id="form-dialog-title">
-                <Typography variant="h5" className={classes.title}>
+                <Typography component="span" variant="h5" className={classes.title}>
                     <FormattedMessage id="parameters"/>
                 </Typography>
             </DialogTitle>
             <DialogContent>
                 <Container maxWidth="md" >
-                    <Tabs  value={tabIndex} indicatorColor="primary" textColor="default"
+                    <Tabs value={tabIndex} indicatorColor="primary"
                            onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
                         <Tab label={<FormattedMessage id="General"/> } />
                         <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
+                        <Tab label={<FormattedMessage id="Map"/> }  />
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
@@ -173,6 +215,9 @@ const Parameters = ({showParameters, hideParameters}) => {
                     </TabPanel>
                     <TabPanel value={tabIndex} index={1}>
                         <SingleLineDiagramParameters/>
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={2}>
+                        <MapParameters/>
                     </TabPanel>
                     <Grid item xs={12}>
                         <Button onClick={hideParameters} variant="contained" color="primary" className={classes.button}>

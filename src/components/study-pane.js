@@ -84,6 +84,10 @@ const StudyPane = () => {
 
     const topologicalColoring = useSelector( state => state.topologicalColoring);
 
+    const lineFullPath = useSelector( state => state.lineFullPath);
+
+    const lineFlowMode = useSelector( state => state.lineFlowMode);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
@@ -232,10 +236,13 @@ const StudyPane = () => {
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
                         <NetworkMap network={network}
                                     geoData={geoData}
-                                    labelsZoomThreshold={8}
+                                    labelsZoomThreshold={9}
+                                    arrowZoomThreshold={6}
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
+                                    lineFullPath={lineFullPath}
+                                    lineFlowMode={lineFlowMode}
                                     ref={mapRef}
                                     onSubstationClick={showVoltageLevelDiagram} />
                         {
