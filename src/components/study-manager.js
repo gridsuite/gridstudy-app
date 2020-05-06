@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const StudyCard = ({study, onClick}) => {
+const StudyCard = ({ study, onClick }) => {
 
     const dispatch = useDispatch();
     const classes = useStyles();
@@ -220,7 +220,7 @@ const StudyCard = ({study, onClick}) => {
                             </div>
                         }
                         subheader={
-                            study.caseDate
+                            study.caseDate && study.caseDate.toLocaleString()
                         }
                     />
                 </CardActionArea>
@@ -289,6 +289,16 @@ const StudyCard = ({study, onClick}) => {
     );
 };
 
+StudyCard.propTypes = {
+    study: PropTypes.shape({
+        studyName: PropTypes.string.isRequired,
+        caseFormat: PropTypes.string,
+        description: PropTypes.string,
+        caseDate: PropTypes.instanceOf(Date),
+    }),
+    onClick: PropTypes.func.isRequired,
+};
+
 const DeleteDialog = (props) => {
 
     const handleClose = () => {
@@ -296,6 +306,7 @@ const DeleteDialog = (props) => {
     };
 
     const handleClick = () => {
+        console.debug("Request for case deletion");
         props.onClick();
     };
 
@@ -334,23 +345,27 @@ const RenameDialog = (props) => {
     };
 
     const handleClick = () => {
-        console.debug("newStudyName : " + newStudyNameValue);
+        console.debug("Request for case renaming : " + props.studyName + " => " + newStudyNameValue);
         props.onClick(newStudyNameValue);
     };
+
+    const handleClose = () => {
+        props.onClose();
+    }
 
     const handleExited = () => {
         setNewStudyNameValue(props.studyName);
     };
 
     return (
-        <Dialog open={props.open} onClose={props.onClose} onExited={handleExited} aria-labelledby="dialog-title-rename">
+        <Dialog open={props.open} onClose={handleClose} onExited={handleExited} aria-labelledby="dialog-title-rename">
             <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
             <DialogContent>
                 <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
                 <TextField id="newStudyName" value={newStudyNameValue} required={true} onChange={updateStudyNameValue} />
             </DialogContent>
             <DialogActions>
-                <Button onClick={props.onClose} color="primary">
+                <Button onClick={handleClose} color="primary">
                     <FormattedMessage id="cancel"/>
                 </Button>
                 <Button onClick={handleClick} color="primary">
@@ -368,7 +383,7 @@ RenameDialog.propTypes = {
     studyName: PropTypes.string.isRequired,
 };
 
-const StudyManager = ({onStudyClick}) => {
+const StudyManager = ({ onStudyClick }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -401,6 +416,10 @@ const StudyManager = ({onStudyClick}) => {
             </Grid>
         </Container>
     );
+};
+
+StudyManager.propTypes = {
+    onStudyClick: PropTypes.func.isRequired,
 };
 
 export default StudyManager;
