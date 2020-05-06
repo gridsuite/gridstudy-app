@@ -6,6 +6,7 @@
  */
 
 import React, {useEffect} from 'react';
+import PropTypes from 'prop-types';
 import {useDispatch, useSelector} from "react-redux";
 
 import {FormattedMessage} from "react-intl";
@@ -92,8 +93,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const StudyCard = ({study, onClick}) => {
-    const [openDeleteDialog, setOpenDelete] = React.useState(false);
-    const [openRenameDialog, setOpenRename]  = React.useState(false);
+
     const dispatch = useDispatch();
     const classes = useStyles();
 
@@ -133,22 +133,32 @@ const StudyCard = ({study, onClick}) => {
         />
     ));
 
+    // ########################################################################
+    // ### Action menu ########################################################
+    // ########################################################################
+
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleClick = event => {
+    const handleOpenMenu = event => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
+    const handleCloseMenu = () => {
         setAnchorEl(null);
     };
 
-    const handleDeleteStudy = () => {
+    // ########################################################################
+    // ### Delete study #######################################################
+    // ########################################################################
+
+    const [openDeleteDialog, setOpenDelete] = React.useState(false);
+
+    const handleOpenDelete = () => {
         setAnchorEl(null);
         setOpenDelete(true);
     };
 
-    const handleDeleteStudyConfirmed = () => {
+    const handleClickDelete = () => {
         deleteStudy(study.studyName).then(() => {
             fetchStudies().then(studies => {
                 dispatch(loadStudiesSuccess(studies));
@@ -156,20 +166,22 @@ const StudyCard = ({study, onClick}) => {
         });
     };
 
-    const handleCloseDeleteDialog = () => {
+    const handleCloseDelete = () => {
         setOpenDelete(false);
     };
 
-    const handleCancelDelete = () => {
-        setOpenDelete(false);
-    };
+    // ########################################################################
+    // ### Rename study #######################################################
+    // ########################################################################
 
-    const handleRenameStudy = () => {
+    const [openRenameDialog, setOpenRename]  = React.useState(false);
+
+    const handleOpenRename = () => {
         setAnchorEl(null);
         setOpenRename(true);
     };
 
-    const handleRenameStudyConfirmed = (newStudyNameValue) => {
+    const handleClickRename = (newStudyNameValue) => {
         renameStudy(study.studyName, newStudyNameValue)
             .then(() => {
                 fetchStudies().then(studies => {
@@ -179,13 +191,12 @@ const StudyCard = ({study, onClick}) => {
             });
     };
 
-    const handleCancelRename = () => {
+    const handleCloseRename = () => {
         setOpenRename(false);
     };
 
-    const handleCloseRenameDialog = () => {
-        setOpenRename(false);
-    };
+    // ########################################################################
+    // ########################################################################
 
     const [expanded, setExpanded] = React.useState(false);
 
@@ -228,7 +239,7 @@ const StudyCard = ({study, onClick}) => {
                                 aria-controls="case-menu"
                                 aria-haspopup="true"
                                 variant="contained"
-                                onClick={handleClick}
+                                onClick={handleOpenMenu}
                     >
                         <MoreVertIcon />
                     </IconButton>
@@ -237,16 +248,16 @@ const StudyCard = ({study, onClick}) => {
                         anchorEl={anchorEl}
                         keepMounted
                         open={Boolean(anchorEl)}
-                        onClose={handleClose}
+                        onClose={handleCloseMenu}
                     >
-                        <MenuItem onClick={handleDeleteStudy}>
+                        <MenuItem onClick={handleOpenDelete}>
                             <ListItemIcon>
                                 <DeleteIcon fontSize="small" />
                             </ListItemIcon>
                             <ListItemText primary={<FormattedMessage id="delete"/>} />
                         </MenuItem>
 
-                        <MenuItem onClick={handleRenameStudy}>
+                        <MenuItem onClick={handleOpenRename}>
                             <ListItemIcon>
                                 <EditIcon fontSize="small"/>
                             </ListItemIcon>
@@ -272,29 +283,50 @@ const StudyCard = ({study, onClick}) => {
                     </CardContent>
                 </Collapse>
             </Card>
-            <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog} aria-labelledby="dialog-title-delete">
-                <DialogTitle id="dialog-title-delete"><FormattedMessage id="deleteStudy"/></DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        <FormattedMessage id="deleteStudyMsg"/>
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCancelDelete} color="primary">
-                        <FormattedMessage id="cancel"/>
-                    </Button>
-                    <Button onClick={handleDeleteStudyConfirmed} color="primary">
-                        <FormattedMessage id="delete"/>
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <DeleteDialog open={openDeleteDialog} onClose={handleCloseDelete} onClick={handleClickDelete} />
             <RenameDialog studyName={study.studyName}
                           openRenameDialog={openRenameDialog}
-                          handleCloseDialog={handleCloseRenameDialog}
-                          handleCancel={handleCancelRename}
-                          handleConfirm={handleRenameStudyConfirmed}/>
+                          handleCloseDialog={handleCloseRename}
+                          handleCancel={handleCloseRename}
+                          handleConfirm={handleClickRename}/>
         </div>
     );
+};
+
+const DeleteDialog = (props) => {
+
+    const handleClose = () => {
+        props.onClose();
+    };
+
+    const handleClick = () => {
+        props.onClick();
+    };
+
+    return (
+        <Dialog open={props.open} onClose={handleClose} aria-labelledby="dialog-title-delete">
+            <DialogTitle id="dialog-title-delete"><FormattedMessage id="deleteStudy"/></DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    <FormattedMessage id="deleteStudyMsg"/>
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                    <FormattedMessage id="cancel"/>
+                </Button>
+                <Button onClick={handleClick} color="primary">
+                    <FormattedMessage id="delete"/>
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+DeleteDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
 };
 
 const RenameDialog = (props) => {
@@ -319,7 +351,7 @@ const RenameDialog = (props) => {
             <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
             <DialogContent>
                 <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
-                <TextField id="newStudyName" value={newStudyNameValue} required={true} onChange={updateStudyNameValue}></TextField>
+                <TextField id="newStudyName" value={newStudyNameValue} required={true} onChange={updateStudyNameValue} />
             </DialogContent>
             <DialogActions>
                 <Button onClick={props.handleCancel} color="primary">
