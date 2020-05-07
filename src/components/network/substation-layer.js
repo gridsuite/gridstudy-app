@@ -5,13 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {CompositeLayer, ScatterplotLayer, TextLayer} from 'deck.gl';
+import {CompositeLayer, TextLayer} from 'deck.gl';
+import ScatterplotLayerExt from './layers/scatterplot-layer-ext'
 
 const SUBSTATION_RADIUS = 500;
 
-function getVoltageLevelRadius(substationRadius, voltageLevel) {
-    return substationRadius / voltageLevel.voltageLevelCount * (voltageLevel.voltageLevelIndex + 1)
-}
+const SUBSTATION_RADIUS_MAX_PIXEL = 5;
+
+const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
+    let list = map.get(voltageLevel.nominalVoltage);
+    if (!list) {
+        list = [];
+        map.set(voltageLevel.nominalVoltage, list);
+    }
+    list.push(voltageLevel);
+    return map;
+};
 
 class SubstationLayer extends CompositeLayer {
 
@@ -27,31 +36,46 @@ class SubstationLayer extends CompositeLayer {
     updateState({props, oldProps, changeFlags}) {
 
         if (changeFlags.dataChanged) {
-            let compositeData = [];
+            let metaVoltageLevelsByNominalVoltage = new Map();
 
             if (props.network != null && props.geoData != null) {
+                // create meta voltage levels
+                // a meta voltage level is made of:
+                //   - a list of voltage level that belong to same substation and with same nominal voltage
+                //   - list of distinct nominal voltages of the substation
+                //   - index of the voltage levels nominal voltage in the substation nominal voltage list
+                props.data.forEach(substation => {
+                    // index voltage levels of the current substation by its nominal voltage (this is because we might
+                    // have several voltage levels with the same nominal voltage in the same substation)
+                    const voltageLevelsByNominalVoltage = substation.voltageLevels.reduce(voltageLevelNominalVoltageIndexer, new Map());
 
-                // group voltage levels by nominal voltage
+                    // sorted nominal voltages
+                    const nominalVoltages = [...new Set(substation.voltageLevels.map(voltageLevel => voltageLevel.nominalVoltage)
+                                                                                .sort((nominalVoltage1, nominalVoltage2) => nominalVoltage1 - nominalVoltage2))];
 
-                const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
-                    let list = map.get(voltageLevel.nominalVoltage);
-                    if (!list) {
-                        list = [];
-                        map.set(voltageLevel.nominalVoltage, list);
-                    }
-                    list.push(voltageLevel);
-                    return map;
-                };
-                const voltageLevelsByNominalVoltage = props.data.reduce(voltageLevelNominalVoltageIndexer, new Map());
+                    Array.from(voltageLevelsByNominalVoltage.entries())
+                        .forEach(e => {
+                            const nominalVoltage = e[0];
+                            const voltageLevels = e[1];
 
-                compositeData = Array.from(voltageLevelsByNominalVoltage.entries())
-                    .map(e => {
-                        return {nominalVoltage: e[0], voltageLevels: e[1]};
-                    })
-                    .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
+                            let metaVoltageLevels = metaVoltageLevelsByNominalVoltage.get(nominalVoltage);
+                            if (!metaVoltageLevels) {
+                                metaVoltageLevels = [];
+                                metaVoltageLevelsByNominalVoltage.set(nominalVoltage, metaVoltageLevels);
+                            }
+                            metaVoltageLevels.push({
+                                voltageLevels,
+                                nominalVoltageIndex: nominalVoltages.indexOf(nominalVoltage)
+                            });
+                        });
+                });
             }
 
-            this.setState({compositeData});
+            const metaVoltageLevelsByNominalVoltageArray = Array.from(metaVoltageLevelsByNominalVoltage)
+                .map(e => { return {nominalVoltage: e[0], metaVoltageLevels: e[1]}; })
+                .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
+
+            this.setState({ metaVoltageLevelsByNominalVoltage: metaVoltageLevelsByNominalVoltageArray });
         }
 
         if (props.filteredNominalVoltages !== oldProps.filteredNominalVoltages) {
@@ -72,16 +96,16 @@ class SubstationLayer extends CompositeLayer {
         const layers = [];
 
         // substations : create one layer per nominal voltage, starting from higher to lower nominal voltage
-        this.state.compositeData.forEach(compositeData => {
-            // substations
-            const substationsLayer = new ScatterplotLayer(this.getSubLayerProps({
-                id: 'NominalVoltage' + compositeData.nominalVoltage,
-                data: compositeData.voltageLevels,
+        this.state.metaVoltageLevelsByNominalVoltage.forEach(e => {
+            const substationsLayer = new ScatterplotLayerExt(this.getSubLayerProps({
+                id: 'NominalVoltage' + e.nominalVoltage,
+                data: e.metaVoltageLevels,
                 radiusMinPixels: 1,
-                getPosition: voltageLevel => this.props.geoData.getSubstationPosition(voltageLevel.substationId),
-                getFillColor: this.props.getNominalVoltageColor(compositeData.nominalVoltage),
-                getRadius: voltageLevel => getVoltageLevelRadius(SUBSTATION_RADIUS, voltageLevel),
-                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage)
+                getRadiusMaxPixels: metaVoltageLevel => SUBSTATION_RADIUS_MAX_PIXEL * (metaVoltageLevel.nominalVoltageIndex + 1),
+                getPosition: metaVoltageLevel => this.props.geoData.getSubstationPosition(metaVoltageLevel.voltageLevels[0].substationId),
+                getFillColor: this.props.getNominalVoltageColor(e.nominalVoltage),
+                getRadius: voltageLevel => SUBSTATION_RADIUS * (voltageLevel.nominalVoltageIndex + 1),
+                visible: this.props.filteredNominalVoltages.includes(e.nominalVoltage)
             }));
             layers.push(substationsLayer);
         });
