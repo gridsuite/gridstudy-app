@@ -347,7 +347,7 @@ const StudyManager = ({ onClick }) => {
 };
 
 StudyManager.propTypes = {
-    onStudyClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
 };
 
 export default StudyManager;
