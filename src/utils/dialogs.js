@@ -36,15 +36,21 @@ const DeleteDialog = ({ open, onClose, onClick, title, message }) => {
         onClick();
     };
 
+    const handleKeyPressed = (event) => {
+        if (open && event.key === "Enter") {
+            handleClose();
+        }
+    };
+
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
+        <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete" onKeyPress={handleKeyPressed}>
             <DialogTitle id="dialog-title-delete">{title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>{message}</DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="primary"><FormattedMessage id="cancel" /></Button>
-                <Button onClick={handleClick} color="primary"><FormattedMessage id="delete" /></Button>
+                <Button onClick={handleClose} variant="outlined"><FormattedMessage id="cancel" /></Button>
+                <Button onClick={handleClick} variant="text"><FormattedMessage id="delete" /></Button>
             </DialogActions>
         </Dialog>
     )
@@ -76,8 +82,12 @@ const RenameDialog = ({ open, onClose, onClick, title, message, currentName }) =
     };
 
     const handleClick = () => {
-        console.debug("Request for renaming : " + currentName + " => " + newNameValue);
-        onClick(newNameValue);
+        if (currentName !== newNameValue) {
+            console.debug("Request for renaming : " + currentName + " => " + newNameValue);
+            onClick(newNameValue);
+        } else {
+            handleClose();
+        }
     };
 
     const handleClose = () => {
@@ -88,16 +98,22 @@ const RenameDialog = ({ open, onClose, onClick, title, message, currentName }) =
         setNewNameValue(currentName);
     };
 
+    const handleKeyPressed = (event) => {
+        if (open && event.key === "Enter") {
+            handleClick();
+        }
+    };
+
     return (
-        <Dialog open={open} onClose={handleClose} onExited={handleExited} aria-labelledby="dialog-title-rename">
+        <Dialog open={open} onClose={handleClose} onExited={handleExited} aria-labelledby="dialog-title-rename" onKeyPress={handleKeyPressed}>
             <DialogTitle id="dialog-title-rename">{title}</DialogTitle>
             <DialogContent>
                 <InputLabel htmlFor="newName">{message}</InputLabel>
-                <TextField id="newName" value={newNameValue} required={true} onChange={updateNameValue}  />
+                <TextField autoFocus id="newName" value={newNameValue} required={true} onChange={updateNameValue}  />
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="primary"><FormattedMessage id="cancel" /></Button>
-                <Button onClick={handleClick} color="primary"><FormattedMessage id="rename" /></Button>
+                <Button onClick={handleClose} variant="text"><FormattedMessage id="cancel" /></Button>
+                <Button onClick={handleClick} variant="outlined"><FormattedMessage id="rename"  /></Button>
             </DialogActions>
         </Dialog>
     );

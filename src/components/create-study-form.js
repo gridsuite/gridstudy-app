@@ -197,13 +197,19 @@ export const CreateStudyForm = () => {
             });
     };
 
+    const handleKeyPressed = (event) => {
+        if (event.key === "Enter") {
+            handleCreateNewStudy();
+        }
+    };
+
     return (
         <div>
             <CardActionArea className={classes.addButtonArea} onClick={() => handleClickOpenDialog()}>
                 <AddIcon className={classes.addIcon} />
             </CardActionArea>
 
-            <Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title">
+            <Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title" onKeyPress={handleKeyPressed}>
                 <DialogTitle id="form-dialog-title"><FormattedMessage id="addNewStudy"/></DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -230,7 +236,6 @@ export const CreateStudyForm = () => {
                     />
                     <TextField
                         onChange={(e) => handleStudyDescriptionChanges(e)}
-                        autoFocus
                         margin="dense"
                         value={studyDescription}
                         type="text"
@@ -247,10 +252,10 @@ export const CreateStudyForm = () => {
                     }
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleCloseDialog()} color="primary">
+                    <Button onClick={() => handleCloseDialog()} variant="text">
                         <FormattedMessage id="cancel"/>
                     </Button>
-                    <Button onClick={() => handleCreateNewStudy()} color="primary">
+                    <Button onClick={() => handleCreateNewStudy()} variant="outlined">
                         <FormattedMessage id="create"/>
                     </Button>
                 </DialogActions>
