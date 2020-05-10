@@ -44,14 +44,15 @@ class SubstationLayer extends CompositeLayer {
                 //   - a list of voltage level that belong to same substation and with same nominal voltage
                 //   - index of the voltage levels nominal voltage in the substation nominal voltage list
                 props.data.forEach(substation => {
-                    // index voltage levels of the current substation by its nominal voltage (this is because we might
+                    // index voltage levels of this substation by its nominal voltage (this is because we might
                     // have several voltage levels with the same nominal voltage in the same substation)
                     const voltageLevelsByNominalVoltage = substation.voltageLevels.reduce(voltageLevelNominalVoltageIndexer, new Map());
 
-                    // sorted nominal voltages
+                    // sorted distinct nominal voltages for this substation
                     const nominalVoltages = [...new Set(substation.voltageLevels.map(voltageLevel => voltageLevel.nominalVoltage)
                                                                                 .sort((nominalVoltage1, nominalVoltage2) => nominalVoltage1 - nominalVoltage2))];
 
+                    // add to global map of meta voltage levels indexed by nominal voltage
                     Array.from(voltageLevelsByNominalVoltage.entries())
                         .forEach(e => {
                             const nominalVoltage = e[0];
@@ -70,6 +71,7 @@ class SubstationLayer extends CompositeLayer {
                 });
             }
 
+            // sort the map by descending nominal voltages
             const metaVoltageLevelsByNominalVoltageArray = Array.from(metaVoltageLevelsByNominalVoltage)
                 .map(e => { return {nominalVoltage: e[0], metaVoltageLevels: e[1]}; })
                 .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
