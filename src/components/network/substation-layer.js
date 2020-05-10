@@ -42,7 +42,6 @@ class SubstationLayer extends CompositeLayer {
                 // create meta voltage levels
                 // a meta voltage level is made of:
                 //   - a list of voltage level that belong to same substation and with same nominal voltage
-                //   - list of distinct nominal voltages of the substation
                 //   - index of the voltage levels nominal voltage in the substation nominal voltage list
                 props.data.forEach(substation => {
                     // index voltage levels of the current substation by its nominal voltage (this is because we might
