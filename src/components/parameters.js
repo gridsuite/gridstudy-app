@@ -143,7 +143,7 @@ const Parameters = ({showParameters, hideParameters}) => {
                     </Typography>
                 </Grid>
                 <Grid item container xs={6} className={classes.controlItem}>
-                    <RadioGroup row value={theme} onChange={handleChangeTheme}>
+                    <RadioGroup row value={theme} onChange={handleChangeTheme} className={classes.controlItem} >
                         <FormControlLabel value={DARK_THEME} control={<Radio color="primary"/>} label={DARK_THEME} />
                         <FormControlLabel value={LIGHT_THEME} control={<Radio color="primary"/>} label={LIGHT_THEME} />
                     </RadioGroup>
@@ -204,7 +204,9 @@ const Parameters = ({showParameters, hideParameters}) => {
             <DialogContent>
                 <Container maxWidth="md" >
                     <Tabs value={tabIndex} indicatorColor="primary"
-                           onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
+                          variant="scrollable"
+                          scrollButtons="auto"
+                          onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
                         <Tab label={<FormattedMessage id="General"/> } />
                         <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
                         <Tab label={<FormattedMessage id="Map"/> }  />
