@@ -143,7 +143,7 @@ const Parameters = ({showParameters, hideParameters}) => {
                     </Typography>
                 </Grid>
                 <Grid item container xs={6} className={classes.controlItem}>
-                    <RadioGroup row value={theme} onChange={handleChangeTheme} className={classes.controlItem} >
+                    <RadioGroup row value={theme} onChange={handleChangeTheme}>
                         <FormControlLabel value={DARK_THEME} control={<Radio color="primary"/>} label={DARK_THEME} />
                         <FormControlLabel value={LIGHT_THEME} control={<Radio color="primary"/>} label={LIGHT_THEME} />
                     </RadioGroup>
