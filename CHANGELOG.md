@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2020-05-04
+
+### Added
+
+- Enable a fullscreen mode [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/fullscreen.gif)
+- Renaming option in the study's menu [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/rename.gif)
+
+### Changed
+
+- Make the parameter window modal [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/settings-window.gif)
+- New way to display transformers on substation images [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/transformers.gif)
+
+### Fixed
+
+- Recenter the map on a substation after a moving event [[feature demo]](https://gridsuite.github.io/demo/v0.3.0/fix-center-on-substation.gif)
+
 ## [0.2.0] - 2020-04-20
 
 ### Added
@@ -36,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Geographical display of the imported networks
 - On-demand display of electrical substations
 
-[unreleased]: https://github.com/gridsuite/study-app/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/gridsuite/study-app/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/gridsuite/study-app/releases/tag/v0.3.0
 [0.2.0]: https://github.com/gridsuite/study-app/releases/tag/v0.2.0
 [0.1.0]: https://github.com/gridsuite/study-app/releases/tag/v0.1.0
