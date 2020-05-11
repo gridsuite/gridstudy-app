@@ -204,7 +204,9 @@ const Parameters = ({showParameters, hideParameters}) => {
             <DialogContent>
                 <Container maxWidth="md" >
                     <Tabs value={tabIndex} indicatorColor="primary"
-                           onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
+                          variant="scrollable"
+                          scrollButtons="auto"
+                          onChange={(event, newValue) => setTabIndex(newValue)} aria-label="parameters">
                         <Tab label={<FormattedMessage id="General"/> } />
                         <Tab label={<FormattedMessage id="SingleLineDiagram"/> }  />
                         <Tab label={<FormattedMessage id="Map"/> }  />
