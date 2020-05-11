@@ -9,7 +9,7 @@ import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {useDispatch, useSelector} from "react-redux";
 
-import {FormattedMessage} from "react-intl";
+import {FormattedMessage, useIntl} from "react-intl";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -282,15 +282,15 @@ const StudyCard = ({ study, onClick }) => {
                 open={openDeleteDialog}
                 onClose={handleCloseDelete}
                 onClick={handleClickDelete}
-                title={<FormattedMessage id="deleteStudy" />}
-                message={<FormattedMessage id="deleteStudyMsg" />}
+                title={useIntl().formatMessage({id: "deleteStudy"})}
+                message={useIntl().formatMessage({id: "deleteStudyMsg"})}
             />
             <RenameDialog
                 open={openRenameDialog}
                 onClose={handleCloseRename}
                 onClick={handleClickRename}
-                title={<FormattedMessage id="renameStudy" />}
-                message={<FormattedMessage id="renameStudyMsg" />}
+                title={useIntl().formatMessage({id: "renameStudy"})}
+                message={useIntl().formatMessage({id: "renameStudyMsg"})}
                 currentName={study.studyName}
             />
         </div>
