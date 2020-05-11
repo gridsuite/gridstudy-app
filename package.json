@@ -10,6 +10,7 @@
     "@reduxjs/toolkit": "^1.2.3",
     "@svgdotjs/svg.js": "^3.0.12",
     "@svgdotjs/svg.panzoom.js": "^2.1.1",
+    "cheap-ruler": "^2.5.1",
     "core-js": "^3.6.4",
     "deck.gl": "^8.0.0",
     "geolib": "^3.2.1",

@@ -27,8 +27,9 @@ import {
     fetchLinePositions,
     fetchLines,
     fetchSubstationPositions,
-    fetchSubstations,
-    getVoltageLevelSingleLineDiagram
+    fetchSubstations, fetchSvg,
+    getVoltageLevelSingleLineDiagram,
+    updateSwitchState
 } from "../utils/rest-api";
 import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
 import Network from "./network/network";
@@ -82,6 +83,10 @@ const StudyPane = () => {
     const diagonalName = useSelector( state => state.diagonalLabel);
 
     const topologicalColoring = useSelector( state => state.topologicalColoring);
+
+    const lineFullPath = useSelector( state => state.lineFullPath);
+
+    const lineFlowMode = useSelector( state => state.lineFlowMode);
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
@@ -175,6 +180,18 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
+    const sldRef = useRef();
+    const handleUpdateSwitchState = useCallback( (breakerId, open) => {
+        updateSwitchState(studyName, breakerId, open).then( response => {
+            if (response.ok) {
+                sldRef.current.reloadSvg();
+            }
+            else {
+                console.error(response);
+            }
+        });
+    }, [studyName]);
+
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
         let newFiltered;
@@ -219,10 +236,13 @@ const StudyPane = () => {
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
                         <NetworkMap network={network}
                                     geoData={geoData}
-                                    labelsZoomThreshold={8}
+                                    labelsZoomThreshold={9}
+                                    arrowZoomThreshold={6}
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
+                                    lineFullPath={lineFullPath}
+                                    lineFlowMode={lineFlowMode}
                                     ref={mapRef}
                                     onSubstationClick={showVoltageLevelDiagram} />
                         {
@@ -230,8 +250,11 @@ const StudyPane = () => {
                             <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
+                                                   onBreakerClick={handleUpdateSwitchState}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)} />
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)}
+                                                   ref={sldRef} />
+
                             </div>
                         }
                         {

@@ -10,11 +10,15 @@ import {createReducer} from "@reduxjs/toolkit";
 import {
     getLocalStorageCenterLabel,
     getLocalStorageDiagonalLabel,
+    getLocalStorageLineFlowMode,
+    getLocalStorageLineFullPath,
     getLocalStorageTheme,
     getLocalStorageTopologicalColoring,
     getLocalStorageUseName,
     saveLocalStorageCenterLabel,
     saveLocalStorageDiagonalLabel,
+    saveLocalStorageLineFlowMode,
+    saveLocalStorageLineFullPath,
     saveLocalStorageTheme,
     saveLocalStorageTopologicalColoring,
     saveLocalStorageUseName
@@ -24,6 +28,8 @@ import {
     CENTER_LABEL,
     CLOSE_STUDY,
     DIAGONAL_LABEL,
+    LINE_FLOW_MODE,
+    LINE_FULL_PATH,
     LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
     LOAD_NETWORK_SUCCESS,
@@ -37,7 +43,7 @@ import {
     TOPOLOGICAL_COLORING,
     USE_NAME,
     USER,
-    SIGNIN_CALLBACK_ERROR
+    SIGNIN_CALLBACK_ERROR,
 } from "./actions";
 
 const initialState = {
@@ -54,7 +60,9 @@ const initialState = {
     centerLabel : getLocalStorageCenterLabel(),
     diagonalLabel : getLocalStorageDiagonalLabel(),
     topologicalColoring : getLocalStorageTopologicalColoring(),
-    signInCallbackError : null
+    lineFullPath: getLocalStorageLineFullPath(),
+    lineFlowMode: getLocalStorageLineFlowMode(),
+    signInCallbackError : null,
 };
 
 export const reducer = createReducer(initialState, {
@@ -128,6 +136,16 @@ export const reducer = createReducer(initialState, {
     [TOPOLOGICAL_COLORING]: (state) => {
         state.topologicalColoring = !state.topologicalColoring;
         saveLocalStorageTopologicalColoring(state.topologicalColoring);
+    },
+
+    [LINE_FULL_PATH]: (state) => {
+        state.lineFullPath = !state.lineFullPath;
+        saveLocalStorageLineFullPath(state.lineFullPath);
+    },
+
+    [LINE_FLOW_MODE]: (state, action) => {
+        state.lineFlowMode = action.lineFlowMode;
+        saveLocalStorageLineFlowMode(state.lineFlowMode);
     },
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {

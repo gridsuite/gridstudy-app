@@ -46,7 +46,7 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DeleteIcon from '@material-ui/icons/Delete';
-import SwapIcon from '@material-ui/icons/SwapHoriz';
+import EditIcon from '@material-ui/icons/Edit';
 import TextField from "@material-ui/core/TextField";
 import InputLabel from "@material-ui/core/InputLabel";
 import Box from "@material-ui/core/Box";
@@ -184,7 +184,7 @@ const StudyCard = ({study, onClick}) => {
     };
 
     const handleCloseRenameDialog = () => {
-        setOpenDelete(false);
+        setOpenRename(false);
     };
 
     const [expanded, setExpanded] = React.useState(false);
@@ -248,7 +248,7 @@ const StudyCard = ({study, onClick}) => {
 
                         <MenuItem onClick={handleRenameStudy}>
                             <ListItemIcon>
-                                <SwapIcon fontSize="small"/>
+                                <EditIcon fontSize="small"/>
                             </ListItemIcon>
                             <ListItemText primary={<FormattedMessage id="rename"/>} />
                         </MenuItem>
@@ -310,8 +310,12 @@ const RenameDialog = (props) => {
         props.handleConfirm(newStudyNameValue);
     };
 
+    const handleExited = () => {
+        setNewStudyNameValue(props.studyName);
+    };
+
     return (
-        <Dialog open={props.openRenameDialog} onClose={props.handleCloseDialog} aria-labelledby="dialog-title-rename">
+        <Dialog open={props.openRenameDialog} onClose={props.handleCloseDialog} onExited={handleExited} aria-labelledby="dialog-title-rename">
             <DialogTitle id="dialog-title-rename"><FormattedMessage id="renameStudy"/></DialogTitle>
             <DialogContent>
                 <InputLabel htmlFor="newStudyName"><FormattedMessage id="renameStudyMsg"/></InputLabel>
