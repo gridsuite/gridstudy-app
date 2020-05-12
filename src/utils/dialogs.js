@@ -18,17 +18,6 @@ import InputLabel from "@material-ui/core/InputLabel";
 import TextField from "@material-ui/core/TextField";
 
 /**
- * Concatenate one or more elements to generate a contextual id
- * @param stringList
- * @returns {string}
- */
-const createId = (...stringList) => {
-    return stringList.map((value) => {
-        return value.replace(/\W+/g, '-').toLowerCase();
-    }).join('-');
-}
-
-/**
  * Dialog to delete an element #TODO To be moved in the common-ui repository once it has been created
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
@@ -54,8 +43,8 @@ const DeleteDialog = ({ open, onClose, onClick, title, message }) => {
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} aria-labelledby={createId(title)} onKeyPress={handleKeyPressed}>
-            <DialogTitle id={createId(title)}>{title}</DialogTitle>
+        <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete" onKeyPress={handleKeyPressed}>
+            <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>{message}</DialogContentText>
             </DialogContent>
@@ -116,11 +105,11 @@ const RenameDialog = ({ open, onClose, onClick, title, message, currentName }) =
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} onExited={handleExited} aria-labelledby={createId(title)} onKeyPress={handleKeyPressed}>
-            <DialogTitle id={createId(title)}>{title}</DialogTitle>
+        <Dialog open={open} onClose={handleClose} onExited={handleExited} aria-labelledby="dialog-title-rename" onKeyPress={handleKeyPressed}>
+            <DialogTitle>{title}</DialogTitle>
             <DialogContent>
-                <InputLabel htmlFor={createId(title, "newName")}>{message}</InputLabel>
-                <TextField autoFocus id={createId(title, "newName")} value={newNameValue} required={true} onChange={updateNameValue}  />
+                <InputLabel htmlFor="newName">{message}</InputLabel>
+                <TextField autoFocus value={newNameValue} required={true} onChange={updateNameValue}  />
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="text"><FormattedMessage id="cancel" /></Button>
