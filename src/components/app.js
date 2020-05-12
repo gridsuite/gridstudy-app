@@ -133,7 +133,7 @@ const App = () => {
                 { user !== null ? (
                         <Switch>
                             <Route exact path="/">
-                                <StudyManager onStudyClick={name => studyClickHandler(name)}/>
+                                <StudyManager onClick={name => studyClickHandler(name)}/>
                             </Route>
                             <Route exact path="/studies/:studyName">
                                 <StudyPane/>
