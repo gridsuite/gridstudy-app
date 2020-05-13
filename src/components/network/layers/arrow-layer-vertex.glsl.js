@@ -84,9 +84,9 @@ int findFirstLinePointAfterDistance(float distance) {
   int lastPoint = int(instanceLinePointCount) - 1;
   
   // variable length loops are not supported in WebGL v1, it needs to be a constant and cannot be like in WebGL v2 an
-  // attribute, so we suppose here that we won't have more that maxPointCount points per line...
-  const int maxPointCount = 10000;
-  for (int i = 0; i < maxPointCount; i++) {
+  // attribute, so we suppose here that we won't have more that 2^log2MaxPointCount points per line...
+  const int log2MaxPointCount = 15;
+  for (int i = 0; i < log2MaxPointCount; i++) {
       if (firstPoint + 1 == lastPoint) {
           return lastPoint; 
       }
