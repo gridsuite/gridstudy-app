@@ -52,7 +52,7 @@ ivec2 calulateTextureIndex(int flatIndex) {
 vec3 fetchLinePosition(int point) {
   int flatIndex = int(instanceLinePositionsTextureOffset) + point;
   ivec2 textureIndex = calulateTextureIndex(flatIndex); 
-  return vec3(texelFetch(linePositionsTexture, textureIndex, linePositionsTextureSize).xy, 0);
+  return texelFetch(linePositionsTexture, textureIndex, linePositionsTextureSize).xyz;
 }
 
 /**
