@@ -2,6 +2,8 @@ export default `\
 #version 300 es
 #define SHADER_NAME arrow-layer-vertex-shader
 
+precision highp float;
+
 in vec3 positions;
 
 in float instanceSize;
@@ -24,6 +26,12 @@ uniform float maxTextureSize;
 out vec4 vFillColor;
 out float shouldDiscard;
 
+vec4 texelFetch2(sampler2D sampler, ivec2 index, ivec2 size) {
+  float x = (2.0 * float(index.x) + 1.0) / (2.0 * float(size.x));
+  float y = (2.0 * float(index.y) + 1.0) / (2.0 * float(size.y));
+  return texture(sampler, vec2(x, y));
+}
+
 /**
  * Calculate 2 dimensions texture index from flat index. 
  */
@@ -36,19 +44,19 @@ ivec2 calulateTextureIndex(int flatIndex) {
 /**
  * Fetch WGS84 position from texture for a given point of the line.  
  */
-vec3 fetchLinePosition(int point) {
+vec3 fetchLinePosition(int point, ivec2 linePositionsTextureSize) {
   int flatIndex = instanceLinePositionsTextureOffset + point;
   ivec2 textureIndex = calulateTextureIndex(flatIndex); 
-  return vec3(texelFetch(linePositionsTexture, textureIndex, 0).xy, 0);
+  return vec3(texelFetch2(linePositionsTexture, textureIndex, linePositionsTextureSize).xy, 0);
 }
 
 /**
  * Fetch distance (in meters from the start of the line) from texture for a point of the line.  
  */
-float fetchLineDistance(int point) {
+float fetchLineDistance(int point, ivec2 lineDistancesTextureSize) {
   int flatIndex = instanceLineDistancesTextureOffset + point;
   ivec2 textureIndex = calulateTextureIndex(flatIndex);
-  return texelFetch(lineDistancesTexture, textureIndex, 0).x;
+  return texelFetch2(lineDistancesTexture, textureIndex, lineDistancesTextureSize).x;
 }
 
 /**            
@@ -66,7 +74,7 @@ float fetchLineDistance(int point) {
  *  20 => 2
  *  21 => 2
  */
-int findFirstLinePointAfterDistance(float distance) {
+int findFirstLinePointAfterDistance(float distance, ivec2 lineDistancesTextureSize) {
   int firstPoint = 0;
   int lastPoint = instanceLinePointCount - 1;
   
@@ -77,7 +85,7 @@ int findFirstLinePointAfterDistance(float distance) {
           return lastPoint; 
       }   
       int middlePoint = (firstPoint + lastPoint) / 2;           
-      float middlePointDistance = fetchLineDistance(middlePoint);      
+      float middlePointDistance = fetchLineDistance(middlePoint, lineDistancesTextureSize);      
       if (middlePointDistance <= distance) {
          firstPoint = middlePoint;
       } else {
@@ -101,18 +109,21 @@ void main(void) {
       vFillColor = vec4(0, 0, 0, 0);
       shouldDiscard = 1.0;
   } else {
+      ivec2 linePositionsTextureSize = textureSize(linePositionsTexture, 0);
+      ivec2 lineDistancesTextureSize = textureSize(lineDistancesTexture, 0);
+
       // arrow distance from the line start shifted with current timestamp
       // instanceArrowDistance: a float in interval [0,1] describing the initial position of the arrow along the full path between two substations (0: begin, 1.0 end)
       float arrowDistance = mod(instanceLineDistance * instanceArrowDistance + (instanceArrowDirection < 2.0 ? 1.0 : -1.0) * timestamp * instanceSpeedFactor, instanceLineDistance);
     
       // look for first line point that is after arrow distance
-      int linePoint = findFirstLinePointAfterDistance(arrowDistance);
+      int linePoint = findFirstLinePointAfterDistance(arrowDistance, lineDistancesTextureSize);
     
       // position for the line point just before the arrow
-      vec3 linePosition1 = fetchLinePosition(linePoint - 1);
+      vec3 linePosition1 = fetchLinePosition(linePoint - 1, linePositionsTextureSize);
     
       // position for the line point just after the arrow
-      vec3 linePosition2 = fetchLinePosition(linePoint);
+      vec3 linePosition2 = fetchLinePosition(linePoint, linePositionsTextureSize);
     
       // clamp to arrow size limits
       float sizePixels = clamp(project_size_to_pixel(instanceSize), sizeMinPixels, sizeMaxPixels);
@@ -123,8 +134,8 @@ void main(void) {
       vec3 commonPosition2 = project_position(linePosition2, position64Low);
 
       // calculate arrow position in the common space by interpolating the 2 line points position 
-      float lineDistance1 = fetchLineDistance(linePoint - 1);
-      float lineDistance2 = fetchLineDistance(linePoint);
+      float lineDistance1 = fetchLineDistance(linePoint - 1, lineDistancesTextureSize);
+      float lineDistance2 = fetchLineDistance(linePoint, lineDistancesTextureSize);
       float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);    
       vec3 arrowPosition = mix(commonPosition1, commonPosition2, interpolationValue);  
 
