@@ -27,7 +27,7 @@ uniform ivec2 lineDistancesTextureSize;
 varying vec4 vFillColor;
 varying float shouldDiscard;
 
-vec4 texelFetch2(sampler2D sampler, ivec2 index, ivec2 size) {
+vec4 texelFetch(sampler2D sampler, ivec2 index, ivec2 size) {
   float x = (2.0 * float(index.x) + 1.0) / (2.0 * float(size.x));
   float y = (2.0 * float(index.y) + 1.0) / (2.0 * float(size.y));
   return texture2D(sampler, vec2(x, y));
@@ -52,7 +52,7 @@ ivec2 calulateTextureIndex(int flatIndex) {
 vec3 fetchLinePosition(int point) {
   int flatIndex = int(instanceLinePositionsTextureOffset) + point;
   ivec2 textureIndex = calulateTextureIndex(flatIndex); 
-  return vec3(texelFetch2(linePositionsTexture, textureIndex, linePositionsTextureSize).xy, 0);
+  return vec3(texelFetch(linePositionsTexture, textureIndex, linePositionsTextureSize).xy, 0);
 }
 
 /**
@@ -61,7 +61,7 @@ vec3 fetchLinePosition(int point) {
 float fetchLineDistance(int point) {
   int flatIndex = int(instanceLineDistancesTextureOffset) + point;
   ivec2 textureIndex = calulateTextureIndex(flatIndex);
-  return texelFetch2(lineDistancesTexture, textureIndex, lineDistancesTextureSize).x;
+  return texelFetch(lineDistancesTexture, textureIndex, lineDistancesTextureSize).x;
 }
 
 /**            
