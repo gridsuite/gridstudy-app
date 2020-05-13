@@ -14,6 +14,9 @@ import cheapRuler from 'cheap-ruler';
 
 const DEFAULT_COLOR = [0, 0, 0, 255];
 
+// this value has to be consistent with the one in vertex shader
+const MAX_LINE_POINT_COUNT = 2 ** 15;
+
 export const ArrowDirection = {
     NONE: 'none',
     FROM_SIDE_1_TO_SIDE_2: 'fromSide1ToSide2',
@@ -216,6 +219,9 @@ export default class ArrowLayer extends Layer {
                     lineDistance += segmentDistance;
                     lineDistancesTextureData.push(lineDistance);
                 });
+            }
+            if (linePointCount > MAX_LINE_POINT_COUNT) {
+                throw new Error(`Too many line point count (${linePointCount}), maximum is ${MAX_LINE_POINT_COUNT}`);
             }
             lineAttributes.set(line, {
                 distance: lineDistance,
