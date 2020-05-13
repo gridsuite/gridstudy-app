@@ -141,26 +141,27 @@ export default class ArrowLayer extends Layer {
     createTexture2D(gl, data, elementSize, format) {
         const start = performance.now()
 
-        // we clamp the width to MAX_TEXTURE_SIZE (which is an property of the graphic card)
+        // we calculate the smallest square texture that is a power of 2 but less or equals to MAX_TEXTURE_SIZE
+        // (which is an property of the graphic card)
         const elementCount = data.length / elementSize;
+        const n = Math.ceil(Math.log2(elementCount) / 2);
+        const textureSize = 2 ** n;
         const { maxTextureSize } = this.state;
-        const width = Math.min(elementCount, maxTextureSize);
-        const height = Math.ceil(elementCount / maxTextureSize);
-        if (height > maxTextureSize) {
-            throw new Error(`Texture height (${height}) cannot be greater that max texture size (${maxTextureSize})`);
+        if (textureSize > maxTextureSize) {
+            throw new Error(`Texture size (${textureSize}) cannot be greater than ${maxTextureSize}`);
         }
 
         // data length needs to be width * height (otherwise we get an error), so we pad the data array with zero until
         // reaching the correct size.
-        if (data.length < width * height * elementSize) {
+        if (data.length < textureSize * textureSize * elementSize) {
             const oldLength = data.length;
-            data.length = width * height * elementSize;
-            data.fill(0, oldLength, width * height * elementSize);
+            data.length = textureSize * textureSize * elementSize;
+            data.fill(0, oldLength, textureSize * textureSize * elementSize);
         }
 
         const texture2d = new Texture2D(gl, {
-            width: width,
-            height: height,
+            width: textureSize,
+            height: textureSize,
             format: format,
             data: new Float32Array(data),
             parameters: {
@@ -168,11 +169,12 @@ export default class ArrowLayer extends Layer {
                 [GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
                 [GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
                 [GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE
-            }
+            },
+            mipmaps: false
         });
 
         const stop = performance.now()
-        console.info(`Texture of ${elementCount} elements (${width} * ${height}) created in ${stop -start} ms`);
+        console.info(`Texture of ${elementCount} elements (${textureSize} * ${textureSize}) created in ${stop -start} ms`);
 
         return texture2d;
     }
@@ -332,7 +334,6 @@ export default class ArrowLayer extends Layer {
         } = this.props;
 
         const {
-            maxTextureSize,
             linePositionsTexture,
             lineDistancesTexture,
             timestamp
@@ -343,7 +344,6 @@ export default class ArrowLayer extends Layer {
             .setUniforms({
                 sizeMinPixels,
                 sizeMaxPixels,
-                maxTextureSize,
                 linePositionsTexture,
                 lineDistancesTexture,
                 linePositionsTextureSize: [linePositionsTexture.width, linePositionsTexture.height],

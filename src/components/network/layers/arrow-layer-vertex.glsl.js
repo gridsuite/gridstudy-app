@@ -20,7 +20,6 @@ uniform float sizeMaxPixels;
 uniform float timestamp;
 uniform sampler2D linePositionsTexture;
 uniform sampler2D lineDistancesTexture;
-uniform float maxTextureSize;
 uniform ivec2 linePositionsTextureSize;
 uniform ivec2 lineDistancesTextureSize;
 
@@ -40,9 +39,9 @@ float trunc(float v) {
 /**
  * Calculate 2 dimensions texture index from flat index. 
  */
-ivec2 calulateTextureIndex(int flatIndex) {
-  int x = int(mod(float(flatIndex), maxTextureSize));
-  int y = int(trunc(float(flatIndex) / maxTextureSize));
+ivec2 calulateTextureIndex(int flatIndex, ivec2 textureSize) {
+  int x = int(mod(float(flatIndex), float(textureSize.x)));
+  int y = int(trunc(float(flatIndex) / float(textureSize.y)));
   return ivec2(x, y);
 }
 
@@ -51,7 +50,7 @@ ivec2 calulateTextureIndex(int flatIndex) {
  */
 vec3 fetchLinePosition(int point) {
   int flatIndex = int(instanceLinePositionsTextureOffset) + point;
-  ivec2 textureIndex = calulateTextureIndex(flatIndex); 
+  ivec2 textureIndex = calulateTextureIndex(flatIndex, linePositionsTextureSize); 
   return vec3(texelFetch(linePositionsTexture, textureIndex, linePositionsTextureSize).xy, 0);
 }
 
@@ -60,7 +59,7 @@ vec3 fetchLinePosition(int point) {
  */
 float fetchLineDistance(int point) {
   int flatIndex = int(instanceLineDistancesTextureOffset) + point;
-  ivec2 textureIndex = calulateTextureIndex(flatIndex);
+  ivec2 textureIndex = calulateTextureIndex(flatIndex, lineDistancesTextureSize);
   return texelFetch(lineDistancesTexture, textureIndex, lineDistancesTextureSize).x;
 }
 
