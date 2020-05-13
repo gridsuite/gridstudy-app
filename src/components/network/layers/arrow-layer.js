@@ -340,6 +340,8 @@ export default class ArrowLayer extends Layer {
                 maxTextureSize,
                 linePositionsTexture,
                 lineDistancesTexture,
+                linePositionsTextureSize: [linePositionsTexture.width, linePositionsTexture.height],
+                lineDistancesTextureSize: [lineDistancesTexture.width, lineDistancesTexture.height],
                 timestamp
             })
             .draw();
