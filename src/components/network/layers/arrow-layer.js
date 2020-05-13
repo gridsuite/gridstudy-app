@@ -111,19 +111,19 @@ export default class ArrowLayer extends Layer {
             instanceLinePositionsTextureOffset: {
                 size: 1,
                 transition: true,
-                type: GL.INT,
+                type: GL.FLOAT,
                 accessor: arrow => this.getArrowLineAttributes(arrow).positionsTextureOffset
             },
             instanceLineDistancesTextureOffset: {
                 size: 1,
                 transition: true,
-                type: GL.INT,
+                type: GL.FLOAT,
                 accessor: arrow => this.getArrowLineAttributes(arrow).distancesTextureOffset
             },
             instanceLinePointCount: {
                 size: 1,
                 transition: true,
-                type: GL.INT,
+                type: GL.FLOAT,
                 accessor: arrow => this.getArrowLineAttributes(arrow).pointCount
             }
         });

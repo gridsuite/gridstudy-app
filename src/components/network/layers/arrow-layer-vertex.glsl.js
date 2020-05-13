@@ -10,9 +10,9 @@ in float instanceSize;
 in float instanceArrowDistance;
 in vec4 instanceColor;
 in float instanceSpeedFactor;
-in int instanceLinePositionsTextureOffset;
-in int instanceLineDistancesTextureOffset;
-in int instanceLinePointCount;
+in float instanceLinePositionsTextureOffset;
+in float instanceLineDistancesTextureOffset;
+in float instanceLinePointCount;
 in float instanceLineDistance;
 in float instanceArrowDirection;
 
@@ -45,7 +45,7 @@ ivec2 calulateTextureIndex(int flatIndex) {
  * Fetch WGS84 position from texture for a given point of the line.  
  */
 vec3 fetchLinePosition(int point, ivec2 linePositionsTextureSize) {
-  int flatIndex = instanceLinePositionsTextureOffset + point;
+  int flatIndex = int(instanceLinePositionsTextureOffset) + point;
   ivec2 textureIndex = calulateTextureIndex(flatIndex); 
   return vec3(texelFetch2(linePositionsTexture, textureIndex, linePositionsTextureSize).xy, 0);
 }
@@ -54,7 +54,7 @@ vec3 fetchLinePosition(int point, ivec2 linePositionsTextureSize) {
  * Fetch distance (in meters from the start of the line) from texture for a point of the line.  
  */
 float fetchLineDistance(int point, ivec2 lineDistancesTextureSize) {
-  int flatIndex = instanceLineDistancesTextureOffset + point;
+  int flatIndex = int(instanceLineDistancesTextureOffset) + point;
   ivec2 textureIndex = calulateTextureIndex(flatIndex);
   return texelFetch2(lineDistancesTexture, textureIndex, lineDistancesTextureSize).x;
 }
@@ -76,11 +76,11 @@ float fetchLineDistance(int point, ivec2 lineDistancesTextureSize) {
  */
 int findFirstLinePointAfterDistance(float distance, ivec2 lineDistancesTextureSize) {
   int firstPoint = 0;
-  int lastPoint = instanceLinePointCount - 1;
+  int lastPoint = int(instanceLinePointCount) - 1;
   
   // variable length loops are not supported in GLSL, instanceLinePointCount is an upper bound that
   // will never be reached as binary search complexity is in O(log(instanceLinePointCount))
-  for (int i = 0; i < instanceLinePointCount; i++) {
+  for (int i = 0; i < int(instanceLinePointCount); i++) {
       if (firstPoint + 1 == lastPoint) {
           return lastPoint; 
       }   
