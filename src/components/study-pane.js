@@ -25,14 +25,14 @@ import NetworkMap from "./network/network-map";
 import SingleLineDiagram from "./single-line-diagram";
 import {
     fetchLinePositions,
-    fetchLines, fetchStudies,
+    fetchLines,
     fetchSubstationPositions,
-    fetchSubstations, fetchSvg,
-    getVoltageLevelSingleLineDiagram, renameStudy,
+    fetchSubstations,
+    getVoltageLevelSingleLineDiagram,
     updateSwitchState,
     startLoadFlow
 } from "../utils/rest-api";
-import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, loadStudiesSuccess, openStudy} from "../redux/actions";
+import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
 import Network from "./network/network";
 import GeoData from "./network/geo-data";
 import NominalVoltageFilter from "./network/nominal-voltage-filter";
