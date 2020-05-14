@@ -276,7 +276,7 @@ const StudyPane = () => {
             <Grid container className={classes.main}>
                 <Grid container direction='column' xs={12} md={2} >
                     <Grid item key="loadFlowButton">
-                        <div style={{position:"relative", marginLeft:8, marginRight:8}}>
+                        <div style={{position:"relative", marginLeft:8, marginRight:8, marginTop:8}}>
                             <RunLoadFlowButton/>
                         </div>
                     </Grid>
