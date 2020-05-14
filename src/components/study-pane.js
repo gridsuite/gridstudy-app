@@ -215,7 +215,11 @@ const StudyPane = () => {
     };
 
     const handleClickStartLoadFlow = () => {
-        startLoadFlow(studyName);
+        startLoadFlow(studyName).then( () => {
+                //TODO reload data more intelligently
+                loadNetwork(studyName);
+                sldRef.current && sldRef.current.reloadSvg();
+        });
     };
 
     const mapRef = useRef();
