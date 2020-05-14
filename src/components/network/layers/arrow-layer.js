@@ -6,7 +6,7 @@
  */
 import {Layer, project32, picking} from '@deck.gl/core';
 import GL from '@luma.gl/constants';
-import {Model, Geometry, Texture2D} from '@luma.gl/core';
+import {Model, Geometry, Texture2D, FEATURES, hasFeatures, isWebGL2} from '@luma.gl/core';
 
 import vs from './arrow-layer-vertex.glsl';
 import fs from './arrow-layer-fragment.glsl';
@@ -57,6 +57,10 @@ export default class ArrowLayer extends Layer {
 
     initializeState() {
         const {gl} = this.context;
+
+        if (!hasFeatures(gl, [FEATURES.TEXTURE_FLOAT])) {
+            throw new Error("Arrow layer not supported on this browser");
+        }
 
         const maxTextureSize = gl.getParameter(GL.MAX_TEXTURE_SIZE);
         this.state.maxTextureSize = maxTextureSize;
@@ -138,7 +142,7 @@ export default class ArrowLayer extends Layer {
         this.state.stop = true;
     }
 
-    createTexture2D(gl, data, format) {
+    createTexture2D(gl, data) {
         const start = performance.now()
 
         // we calculate the smallest square texture that is a power of 2 but less or equals to MAX_TEXTURE_SIZE
@@ -150,19 +154,19 @@ export default class ArrowLayer extends Layer {
             throw new Error(`Texture size (${textureSize}) cannot be greater than ${maxTextureSize}`);
         }
 
-        // data length needs to be width * height (otherwise we get an error), so we pad the data array with zero until
-        // reaching the correct size.
-        if (data.length < textureSize * textureSize) {
-            const oldLength = data.length;
-            data.length = textureSize * textureSize;
-            data.fill(0, oldLength, textureSize * textureSize);
-        }
+        // rescale data to [value1, 0, 0, 0, value2, 0, 0, 0, ...] because required by the OES_texture_float extension
+        const rescaledData = new Float32Array(textureSize * textureSize * 4).fill(0);
+        data.forEach((value, index) => {
+            rescaledData[index * 4] = value;
+        });
 
         const texture2d = new Texture2D(gl, {
             width: textureSize,
             height: textureSize,
-            format: format,
-            data: new Float32Array(data),
+            format: isWebGL2(gl) ? GL.RGBA32F : GL.RGBA,
+            dataFormat: GL.RGBA,
+            type: GL.FLOAT,
+            data: rescaledData,
             parameters: {
                 [GL.TEXTURE_MAG_FILTER]: GL.NEAREST,
                 [GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
@@ -260,9 +264,9 @@ export default class ArrowLayer extends Layer {
                 lineAttributes
             } = this.createTexturesStructure(props);
 
-            const lineLongitudesTexture = this.createTexture2D(gl, lineLongitudesTextureData, GL.R32F);
-            const lineLatitudesTexture = this.createTexture2D(gl, lineLatitudesTextureData, GL.R32F);
-            const lineDistancesTexture = this.createTexture2D(gl, lineDistancesTextureData, GL.R32F);
+            const lineLongitudesTexture = this.createTexture2D(gl, lineLongitudesTextureData);
+            const lineLatitudesTexture = this.createTexture2D(gl, lineLatitudesTextureData);
+            const lineDistancesTexture = this.createTexture2D(gl, lineDistancesTextureData);
 
             this.setState({
                 lineLongitudesTexture,
