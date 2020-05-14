@@ -39,7 +39,6 @@ import NominalVoltageFilter from "./network/nominal-voltage-filter";
 import Button from "@material-ui/core/Button";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { green } from '@material-ui/core/colors';
-import {AutoSizer} from "react-virtualized";
 
 const useStyles = makeStyles(theme => ({
     main: {
