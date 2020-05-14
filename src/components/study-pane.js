@@ -35,6 +35,8 @@ import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../
 import Network from "./network/network";
 import GeoData from "./network/geo-data";
 import NominalVoltageFilter from "./network/nominal-voltage-filter";
+import Button from "@material-ui/core/Button";
+import PlayIcon from "@material-ui/icons/PlayArrow";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -227,10 +229,23 @@ const StudyPane = () => {
         }
         return (
             <Grid container className={classes.main}>
-                <Grid item xs={12} md={2} key="explorer">
-                    <NetworkExplorer network={network}
-                                     onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                                     onVoltageLevelFocusClick={centerSubstation} />
+                <Grid container direction='column' xs={12} md={2} >
+                    <Grid item key="loadFlowButton">
+                        <Button
+                            variant="contained"
+                            fullWidth={true}
+                            color="secondary"
+                            className={classes.button}
+                            startIcon={<PlayIcon />}
+                        >
+                            Start LoadFlow
+                        </Button>
+                    </Grid>
+                    <Grid item key="explorer">
+                        <NetworkExplorer network={network}
+                                         onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+                                         onVoltageLevelFocusClick={centerSubstation} />
+                    </Grid>
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
