@@ -63,6 +63,8 @@ const SvgNotFound = (props) => {
 
 const noSvg = {svg: null, metadata: null, error: null, svgUrl: null};
 
+const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
+
 const SingleLineDiagram = forwardRef((props, ref)  => {
 
     const [svg, setSvg] = useState(noSvg);
@@ -130,18 +132,18 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
                     props.onNextVoltageLevelClick(meta.nextVId);
                 })});
 
-            // handling the click on a breaker
-            const breakers = svg.metadata.nodes.filter(element => element.componentType === "BREAKER");
-            breakers.forEach(breaker => {
-                const domEl = document.getElementById(breaker.id);
+            // handling the click on a switch
+            const switches = svg.metadata.nodes.filter(element => SWITCH_COMPONENT_TYPES.includes(element.componentType));
+            switches.forEach(aSwitch => {
+                const domEl = document.getElementById(aSwitch.id);
                 domEl.style.cursor = "pointer";
                 domEl.addEventListener("click", function(event) {
                     const clickedElementId = event.currentTarget.id;
-                    const breakerMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
-                    const breakerId = breakerMetadata.equipmentId;
-                    const open = breakerMetadata.open;
+                    const switchMetadata = svg.metadata.nodes.find(value => value.id === clickedElementId);
+                    const switchId = switchMetadata.equipmentId;
+                    const open = switchMetadata.open;
                     svgPrevViewbox.current = draw.viewbox();
-                    props.onBreakerClick(breakerId, !open);
+                    props.onBreakerClick(switchId, !open);
                 });
             });
         }
