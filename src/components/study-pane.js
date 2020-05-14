@@ -25,13 +25,14 @@ import NetworkMap from "./network/network-map";
 import SingleLineDiagram from "./single-line-diagram";
 import {
     fetchLinePositions,
-    fetchLines,
+    fetchLines, fetchStudies,
     fetchSubstationPositions,
     fetchSubstations, fetchSvg,
-    getVoltageLevelSingleLineDiagram,
-    updateSwitchState
+    getVoltageLevelSingleLineDiagram, renameStudy,
+    updateSwitchState,
+    startLoadFlow
 } from "../utils/rest-api";
-import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
+import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, loadStudiesSuccess, openStudy} from "../redux/actions";
 import Network from "./network/network";
 import GeoData from "./network/geo-data";
 import NominalVoltageFilter from "./network/nominal-voltage-filter";
@@ -213,6 +214,10 @@ const StudyPane = () => {
         setFilteredNominalVoltages(newFiltered);
     };
 
+    const handleClickStartLoadFlow = () => {
+        startLoadFlow(studyName);
+    };
+
     const mapRef = useRef();
     const centerSubstation = useCallback((id)=> {
         mapRef.current.centerSubstation(network.getVoltageLevel(id).substationId);
@@ -237,6 +242,7 @@ const StudyPane = () => {
                             color="secondary"
                             className={classes.button}
                             startIcon={<PlayIcon />}
+                            onClick={handleClickStartLoadFlow}
                         >
                             Start LoadFlow
                         </Button>
