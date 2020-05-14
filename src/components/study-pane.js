@@ -38,6 +38,8 @@ import GeoData from "./network/geo-data";
 import NominalVoltageFilter from "./network/nominal-voltage-filter";
 import Button from "@material-ui/core/Button";
 import PlayIcon from "@material-ui/icons/PlayArrow";
+import { green } from '@material-ui/core/colors';
+import {AutoSizer} from "react-virtualized";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -216,7 +218,18 @@ const StudyPane = () => {
         setFilteredNominalVoltages(newFiltered);
     };
 
+    const loadFlowButtonStyles = makeStyles({
+        root: {
+            backgroundColor: green[500],
+            '&:hover': {
+                backgroundColor: green[700],
+            },
+        },
+    });
+
     function RunLoadFlowButton() {
+
+        const loadFlowButtonClasses = loadFlowButtonStyles();
 
         useEffect(() => {
             if (loadFlowRunning) {
@@ -236,8 +249,7 @@ const StudyPane = () => {
             <Button
                 variant="contained"
                 fullWidth={true}
-                color="secondary"
-                className={classes.button}
+                className={loadFlowButtonClasses.root}
                 startIcon={<PlayIcon />}
                 disabled={loadFlowRunning}
                 onClick={!loadFlowRunning ? handleClick : null}
@@ -265,7 +277,9 @@ const StudyPane = () => {
             <Grid container className={classes.main}>
                 <Grid container direction='column' xs={12} md={2} >
                     <Grid item key="loadFlowButton">
-                        <RunLoadFlowButton/>
+                        <div style={{position:"relative", marginLeft:8, marginRight:8}}>
+                            <RunLoadFlowButton/>
+                        </div>
                     </Grid>
                     <Grid item key="explorer">
                         <NetworkExplorer network={network}
