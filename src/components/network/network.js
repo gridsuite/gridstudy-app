@@ -37,12 +37,6 @@ export default class Network {
                 // add substation id
                 voltageLevel.substationId = substation.id;
 
-                // add index in substation
-                voltageLevel.voltageLevelIndex = index;
-
-                // add count in substation
-                voltageLevel.voltageLevelCount = substation.voltageLevels.length;
-
                 // add the current item into the VL map by id
                 this.substationsById.set(substation.id, substation);
 
