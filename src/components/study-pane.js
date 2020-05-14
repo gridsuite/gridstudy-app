@@ -97,6 +97,8 @@ const StudyPane = () => {
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
+    const [loadFlowRunning, setLoadFlowRunning] = useState(false);
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -214,13 +216,36 @@ const StudyPane = () => {
         setFilteredNominalVoltages(newFiltered);
     };
 
-    const handleClickStartLoadFlow = () => {
-        startLoadFlow(studyName).then( () => {
-                //TODO reload data more intelligently
-                loadNetwork(studyName);
-                sldRef.current && sldRef.current.reloadSvg();
-        });
-    };
+    function RunLoadFlowButton() {
+
+        useEffect(() => {
+            if (loadFlowRunning) {
+                startLoadFlow(studyName).then( () => {
+                    //TODO reload data more intelligently
+                    loadNetwork(studyName);
+                    sldRef.current && sldRef.current.reloadSvg();
+                }).then(() => {
+                    setLoadFlowRunning(false);
+                });
+            }
+        }, [loadFlowRunning]);
+
+        const handleClick = () => setLoadFlowRunning(true);
+
+        return (
+            <Button
+                variant="contained"
+                fullWidth={true}
+                color="secondary"
+                className={classes.button}
+                startIcon={<PlayIcon />}
+                disabled={loadFlowRunning}
+                onClick={!loadFlowRunning ? handleClick : null}
+            >
+                {loadFlowRunning ? 'LoadFlow running…' : 'Start LoadFlow'}
+            </Button>
+        );
+    }
 
     const mapRef = useRef();
     const centerSubstation = useCallback((id)=> {
@@ -240,16 +265,7 @@ const StudyPane = () => {
             <Grid container className={classes.main}>
                 <Grid container direction='column' xs={12} md={2} >
                     <Grid item key="loadFlowButton">
-                        <Button
-                            variant="contained"
-                            fullWidth={true}
-                            color="secondary"
-                            className={classes.button}
-                            startIcon={<PlayIcon />}
-                            onClick={handleClickStartLoadFlow}
-                        >
-                            Start LoadFlow
-                        </Button>
+                        <RunLoadFlowButton/>
                     </Grid>
                     <Grid item key="explorer">
                         <NetworkExplorer network={network}
