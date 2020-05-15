@@ -59,5 +59,7 @@
   "LineFlowMode": "Line flow mode",
   "None": "None",
   "StaticArrows": "Static arrows",
-  "AnimatedArrows": "Animated arrows"
+  "AnimatedArrows": "Animated arrows",
+
+  "PageNotFound": "Page not found"
 }
