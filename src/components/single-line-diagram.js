@@ -69,9 +69,16 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
 
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
+    const svgDraw = useRef();
 
     const [forceState, updateState] = React.useState(false);
-    const forceUpdate = React.useCallback(() => updateState(s=>!s), []);
+    const forceUpdate = React.useCallback(() => {
+            if (svgDraw.current) {
+                svgPrevViewbox.current = svgDraw.current.viewbox();
+            }
+            updateState(s=>!s)
+    }, []);
+
 
     useImperativeHandle(ref, () => ({
         reloadSvg: forceUpdate
@@ -146,6 +153,7 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
                     props.onBreakerClick(switchId, !open, event.currentTarget);
                 });
             });
+            svgDraw.current = draw;
         }
     }, [svg]);
 
