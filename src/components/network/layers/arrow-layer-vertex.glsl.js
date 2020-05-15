@@ -87,19 +87,24 @@ int findFirstLinePointAfterDistance(float distance) {
   
   // variable length loops are not supported in WebGL v1, it needs to be a constant and cannot be like in WebGL v2 an
   // attribute, so we suppose here that we won't have more that 2^log2MaxPointCount points per line...
+  // 
+  // WARNING!!!!
+  // also, we need to avoid break/return in the for loop even if search complete because with a WebGL1 browser
+  // it is not possible to call texture2D inside a non deterministic piece of code
+  // https://shadertoyunofficial.wordpress.com/2017/11/19/avoiding-compiler-crash-or-endless-compilation 
   const int log2MaxPointCount = 15;
   for (int i = 0; i < log2MaxPointCount; i++) {
-      if (firstPoint + 1 == lastPoint) {
-          return lastPoint; 
-      }
-      int middlePoint = (firstPoint + lastPoint) / 2;           
-      float middlePointDistance = fetchLineDistance(middlePoint);      
-      if (middlePointDistance <= distance) {
-         firstPoint = middlePoint;
-      } else {
-         lastPoint = middlePoint;                            
+      if (firstPoint + 1 != lastPoint) {
+          int middlePoint = (firstPoint + lastPoint) / 2;           
+          float middlePointDistance = fetchLineDistance(middlePoint);      
+          if (middlePointDistance <= distance) {
+             firstPoint = middlePoint;
+          } else {
+             lastPoint = middlePoint;                            
+          }
       }
   }
+  return lastPoint; 
 }
 
 mat3 calculateRotation(vec3 commonPosition1, vec3 commonPosition2) {
