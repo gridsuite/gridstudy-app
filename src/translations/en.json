@@ -1,5 +1,4 @@
 {
-  "appName": "Grid Explorer",
   "addNewStudy" : "Add new study",
   "addNewStudyDescription" : "To add a new study, you should enter the following information:",
   "caseExist": "Does the case already exist?",
@@ -11,6 +10,7 @@
   "uploadMessage" : " No file selected",
   "cancel" : "CANCEL",
   "create" : "CREATE",
+  "rename" : "Rename",
   "delete" : "Delete",
   "filter" : "Filter",
 
@@ -25,6 +25,9 @@
   "studyNameDidNotMatchMsg" : "The given study name did not match with ",
   "studyDeletedSuccessMsg" : "Study deleted",
 
+  "renameStudyMsg" : "New study name:",
+  "renameStudy" : "Rename study",
+
   "studyNameErrorMsg" : "Study name should not be empty",
   "caseNameErrorMsg" : "Please select the case name",
   "caseDataErrorMsg" : "An error occured when importing the case",
@@ -35,6 +38,7 @@
   "useName": "Use the name instead of the identifier",
   "diagonalLabel": "Display name diagonally",
   "centerLabel": "Center name",
+  "topologicalColoring": "Topological coloring",
   "General": "General",
   "SingleLineDiagram": "Single line diagram",
 
@@ -44,10 +48,16 @@
   "parameters": "Parameters",
   "theme": "Theme",
   "close": "Close",
-
+  "goFullScreen" : "Full screen",
+  "exitFullScreen" : "Exit full screen mode",
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",
   "CBAll" : "All",
-  "CBNone" : "None"
-
+  "CBNone" : "None",
+  "Map": "Map",
+  "lineFullPath": "Line full path",
+  "LineFlowMode": "Line flow mode",
+  "None": "None",
+  "StaticArrows": "Static arrows",
+  "AnimatedArrows": "Animated arrows"
 }

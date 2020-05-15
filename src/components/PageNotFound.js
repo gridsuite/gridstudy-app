@@ -8,13 +8,14 @@
 import React from 'react';
 
 import Container from "@material-ui/core/Container";
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 
 const PageNotFound = () => {
     return (
         <Container >
             <br/>
-            <img src={ require('../images/404.png') }  style={{display:"block", margin:"auto"}} alt={"page not found"}/>
+            <ErrorOutlineIcon/>
             <h1 style={{textAlign:"center"}}>404 Not Found</h1>
         </Container>
             );

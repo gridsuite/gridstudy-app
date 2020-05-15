@@ -1,5 +1,4 @@
 {
-  "appName": "Explorateur de réseau",
   "addNewStudy" : "Ajouter une nouvelle étude",
   "addNewStudyDescription" : "Pour ajouter une étude, vous devez saisir les informations suivantes :",
   "caseExist": "La situation existe-t-elle déjà ?",
@@ -11,6 +10,7 @@
   "uploadMessage" : " Aucun fichier sélectionné",
   "cancel" : "ANNULER",
   "create" : "CRÉER",
+  "rename" : "Renommer",
   "delete" : "Supprimer",
   "filter" : "Filtre",
 
@@ -24,6 +24,9 @@
   "studyNameDidNotMatchMsg" : "Le nom d'étude donné ne correspond pas à ",
   "studyDeletedSuccessMsg" : "Étude supprimée",
 
+  "renameStudyMsg" : "Nouveau nom de l'étude :",
+  "renameStudy" : "Renommer l'étude",
+
   "studyNameErrorMsg" : "Le nom de l'étude ne doit pas être vide",
   "caseNameErrorMsg" : "Veuillez sélectionner le nom de la situation",
   "caseDataErrorMsg" : "Une erreur s'est produite lors de l'importation du fichier",
@@ -34,6 +37,7 @@
   "useName": "Utiliser le nom à la place de l'identifiant",
   "diagonalLabel": "Afficher les noms en diagonal",
   "centerLabel": "Centrer les noms",
+  "topologicalColoring": "Coloration topologique",
   "General": "Général",
   "SingleLineDiagram": "Schéma unifilaire",
 
@@ -43,10 +47,17 @@
   "parameters": "Paramètres",
   "theme": "Thème",
   "close": "Fermer",
+  "goFullScreen" : "Plein écran",
+  "exitFullScreen" : "Quitter mode plein écran",
 
   "centerOnMap": "Centrer sur la carte",
   "openVoltageLevel": "Ouvrir le poste",
   "CBAll" : "Tous",
-  "CBNone" : "Aucun"
-
+  "CBNone" : "Aucun",
+  "Map": "Carte",
+  "lineFullPath": "Chemin complet des lignes",
+  "LineFlowMode": "Mode de représentation des flux sur les lignes",
+  "None": "Aucun",
+  "StaticArrows": "Flèches statiques",
+  "AnimatedArrows": "Flèches animées"
 }

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useMemo, useRef, useState} from 'react';
+import React, {forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 
 import {useSelector} from "react-redux";
@@ -19,7 +19,7 @@ import {decomposeColor} from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
 import GeoData from './geo-data';
-import LineLayer from './line-layer';
+import LineLayer, {LineFlowMode} from './line-layer';
 import SubstationLayer from './substation-layer';
 import {getNominalVoltageColor} from '../../utils/colors'
 
@@ -28,12 +28,21 @@ const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd
 const SUBSTATION_LAYER_PREFIX = "substationLayer";
 const LINE_LAYER_PREFIX = "lineLayer";
 
-const NetworkMap = (props) => {
+const NetworkMap = forwardRef((props, ref) => {
 
     const [labelsVisible, setLabelsVisible] = useState(false);
 
+    const [lineFlowMode, setLineFlowMode] = useState(LineFlowMode.NONE);
+
+    // update lineFlowMode state in case of lineFlowMode prop change
+    useEffect(() => {
+        if (lastViewStateRef.current) {
+            updateLineFlowMode(lastViewStateRef.current);
+        }
+    }, [props.lineFlowMode]);
+
     const [deck, setDeck] = useState(null);
-    const [centered, setCentered] = useState({lastCenteredSubstation: null, centered: false});
+    const [centered, setCentered] = useState({lastCenteredSubstation: null, centeredSubstationId: null, centered: false});
     const lastViewStateRef = useRef(null);
 
     const [tooltip, setTooltip] = useState({});
@@ -45,9 +54,13 @@ const NetworkMap = (props) => {
         return labelColor
     }, theme);
 
-
-
     const useName = useSelector(state => state.useName);
+
+    useImperativeHandle(ref, () => ({
+      centerSubstation: (substationId) => {
+        setCentered({lastCenteredSubstation: null, centeredSubstationId: substationId, centered: true});
+      }
+    }), [setCentered]);
 
     // Do this in onAfterRender because when doing it in useEffect (triggered by calling setDeck()),
     // it doesn't work in the case of using the browser backward/forward buttons (because in this particular case,
@@ -57,11 +70,11 @@ const NetworkMap = (props) => {
             //TODO, replace the next lines with setProps( { initialViewState } ) when we upgrade to 8.1.0
             //see https://github.com/uber/deck.gl/pull/4038
             //This is a hack because it accesses the properties of deck directly but for now it works
-            if ((!centered.centered || (props.centeredSubstationId && props.centeredSubstationId !== centered.lastCenteredSubstation))
+            if ((!centered.centered || (centered.centeredSubstationId && centered.centeredSubstationId !== centered.lastCenteredSubstation))
                  && deck !== null && deck.viewManager != null && props.geoData !== null) {
                 if (props.geoData.substationPositionsById.size > 0) {
-                    if (props.centeredSubstationId) {
-                        const geodata = props.geoData.substationPositionsById.get(props.centeredSubstationId);
+                    if (centered.centeredSubstationId) {
+                        const geodata = props.geoData.substationPositionsById.get(centered.centeredSubstationId);
                         const copyViewState = lastViewStateRef.current || deck.viewState;
                         const newViewState = {
                                 longitude: geodata.lon,
@@ -79,7 +92,7 @@ const NetworkMap = (props) => {
                         deck.viewState = newViewState;
                         deck.setProps({});
                         deck._onViewStateChange({viewState: deck.viewState});
-                        setCentered({lastCenteredSubstation: props.centeredSubstationId, centered: true});
+                        setCentered({lastCenteredSubstation: centered.centeredSubstationId, centeredSubstationId: centered.centeredSubstationId, centered: true});
                     } else {
                         const coords = Array.from(props.geoData.substationPositionsById.entries()).map(x => x[1]);
                         const maxlon = Math.max.apply(null, coords.map(x => x.lon));
@@ -110,6 +123,14 @@ const NetworkMap = (props) => {
 
     }
 
+    function updateLineFlowMode(viewState) {
+        if (viewState.zoom >= props.arrowsZoomThreshold) {
+            setLineFlowMode(props.lineFlowMode);
+        } else if (viewState.zoom < props.arrowsZoomThreshold) {
+            setLineFlowMode(LineFlowMode.NONE);
+        }
+    }
+
     function onViewStateChange(info) {
         lastViewStateRef.current = info.viewState;
         if (!info.interactionState || // first event of before an animation (e.g. clicking the +/- buttons of the navigation controls, gives the target
@@ -120,6 +141,8 @@ const NetworkMap = (props) => {
             } else if (info.viewState.zoom < props.labelsZoomThreshold && labelsVisible) {
                 setLabelsVisible(false);
             }
+
+            updateLineFlowMode(info.viewState);
         }
     }
 
@@ -147,6 +170,7 @@ const NetworkMap = (props) => {
 
         layers.push(new SubstationLayer({
             id: SUBSTATION_LAYER_PREFIX,
+            data: props.network.substations,
             network: props.network,
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
@@ -159,10 +183,13 @@ const NetworkMap = (props) => {
 
         layers.push(new LineLayer({
             id: LINE_LAYER_PREFIX,
+            data: props.network.lines,
             network: props.network,
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
+            lineFlowMode: lineFlowMode,
+            lineFullPath: props.lineFullPath,
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({
@@ -207,27 +234,31 @@ const NetworkMap = (props) => {
                 }}/>
             </div>
         </DeckGL>;
-};
+});
 
 NetworkMap.defaultProps = {
     network: null,
     geoData: null,
-    labelsZoomThreshold: 7,
+    labelsZoomThreshold: 9,
+    arrowsZoomThreshold: 8,
     initialZoom: 5,
     filteredNominalVoltages: null,
     initialPosition: [0, 0],
-    centeredSubstationId: null
+    lineFullPath: true,
+    lineFlowMode: LineFlowMode.NONE
 };
 
 NetworkMap.propTypes = {
     network: PropTypes.instanceOf(Network),
     geoData: PropTypes.instanceOf(GeoData),
     labelsZoomThreshold: PropTypes.number.isRequired,
+    arrowsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
     filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
-    centeredSubstationId: PropTypes.string
+    lineFullPath: PropTypes.bool,
+    lineFlowMode: PropTypes.instanceOf(LineFlowMode)
 };
 
 export default React.memo(NetworkMap);

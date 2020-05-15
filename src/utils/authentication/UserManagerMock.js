@@ -1,3 +1,14 @@
+class Events {
+    userLoadedCallbacks = [];
+    addUserLoaded(callback) {
+        this.userLoadedCallbacks.push(callback);
+    }
+
+    addSilentRenewError(callback) {
+        // Nothing to do
+    }
+}
+
 /**
  * Copyright (c) 2020, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -6,9 +17,11 @@
  */
 export class UserManagerMock {
     settings;
+    events;
 
     constructor(settings) {
         this.settings = settings;
+        this.events = new Events();
     }
 
     getUser() {
@@ -26,8 +39,7 @@ export class UserManagerMock {
         return Promise.resolve(null);
     }
     signinRedirectCallback() {
-        sessionStorage.setItem("powsybl-study-app-mock-user",  JSON.stringify(
-            {
+        const user = {
                 profile:{ name:"John Doe"},
                 id_token : "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IllNRUxIVDBndmIwbXhvU0RvWWZvbWpxZmpZVSJ9.eyJhdWQiOiI5YzQwMjQ2MS1iMmFiLTQ3NjctOWRiMy02Njg1OWJiMGZjZDAiLCJpc3MiOiJodHRwczovL2" +
                     "xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNzUwMmRhZDUtZDY0Yy00NmM3LTlkNDctYjE2ZjU4MGZjZmE5L3YyLjAiLCJpYXQiOjE1ODUzMzEyNDksIm5iZiI6MTU4NTMzMTI0OSwiZXhwIjoxNTg1MzM1MTQ5LCJhaW8iOiJBV1FB" +
@@ -52,8 +64,9 @@ export class UserManagerMock {
                 token_type : "Bearer",
                 scope : "scopes"
 
-            }
-                ));
+        };
+        sessionStorage.setItem("powsybl-study-app-mock-user", JSON.stringify(user));
+        this.events.userLoadedCallbacks.forEach(c => c(user));
         return Promise.resolve("");
     }
 }

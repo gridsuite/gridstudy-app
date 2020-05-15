@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useRef, useState, useCallback} from "react";
 
 import {useDispatch, useSelector} from "react-redux";
 
@@ -27,8 +27,9 @@ import {
     fetchLinePositions,
     fetchLines,
     fetchSubstationPositions,
-    fetchSubstations,
-    getVoltageLevelSingleLineDiagram
+    fetchSubstations, fetchSvg,
+    getVoltageLevelSingleLineDiagram,
+    updateSwitchState
 } from "../utils/rest-api";
 import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
 import Network from "./network/network";
@@ -81,11 +82,15 @@ const StudyPane = () => {
 
     const diagonalName = useSelector( state => state.diagonalLabel);
 
+    const topologicalColoring = useSelector( state => state.topologicalColoring);
+
+    const lineFullPath = useSelector( state => state.lineFullPath);
+
+    const lineFlowMode = useSelector( state => state.lineFlowMode);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
-
-    const [focusedVoltageLevelId, setFocusedVoltageLevelId] = useState(null);
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
@@ -175,6 +180,18 @@ const StudyPane = () => {
         history.replace("/studies/" + studyName)
     }
 
+    const sldRef = useRef();
+    const handleUpdateSwitchState = useCallback( (breakerId, open) => {
+        updateSwitchState(studyName, breakerId, open).then( response => {
+            if (response.ok) {
+                sldRef.current.reloadSvg();
+            }
+            else {
+                console.error(response);
+            }
+        });
+    }, [studyName]);
+
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
         let newFiltered;
@@ -194,6 +211,11 @@ const StudyPane = () => {
         setFilteredNominalVoltages(newFiltered);
     };
 
+    const mapRef = useRef();
+    const centerSubstation = useCallback((id)=> {
+        mapRef.current.centerSubstation(network.getVoltageLevel(id).substationId);
+    }, [mapRef, network]);
+
     if (studyNotFound) {
         return <StudyNotFound studyName={studyName}/>;
     } else {
@@ -202,34 +224,37 @@ const StudyPane = () => {
             if (displayedVoltageLevelId) {
                 displayedVoltageLevel = network.getVoltageLevel(displayedVoltageLevelId);
             }
-            if (focusedVoltageLevelId) {
-                focusedVoltageLevel = network.getVoltageLevel(focusedVoltageLevelId);
-            }
         }
         return (
             <Grid container className={classes.main}>
                 <Grid item xs={12} md={2} key="explorer">
                     <NetworkExplorer network={network}
                                      onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                                     onVoltageLevelFocusClick={ id => setFocusedVoltageLevelId(id)} />
+                                     onVoltageLevelFocusClick={centerSubstation} />
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
                         <NetworkMap network={network}
                                     geoData={geoData}
-                                    labelsZoomThreshold={8}
+                                    labelsZoomThreshold={9}
+                                    arrowZoomThreshold={6}
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
-                                    centeredSubstationId={focusedVoltageLevel && focusedVoltageLevel.substationId}
+                                    lineFullPath={lineFullPath}
+                                    lineFlowMode={lineFlowMode}
+                                    ref={mapRef}
                                     onSubstationClick={showVoltageLevelDiagram} />
                         {
                             displayedVoltageLevelId &&
                             <div style={{ position: "absolute", left: 10, top: 10, zIndex: 1 }}>
                                 <SingleLineDiagram onClose={() => closeVoltageLevelDiagram()}
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
+                                                   onBreakerClick={handleUpdateSwitchState}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName)} />
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)}
+                                                   ref={sldRef} />
+
                             </div>
                         }
                         {
