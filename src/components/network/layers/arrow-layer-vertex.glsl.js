@@ -1,35 +1,44 @@
 export default `\
-#version 300 es
 #define SHADER_NAME arrow-layer-vertex-shader
 
-in vec3 positions;
+precision highp float;
 
-in float instanceSize;
-in float instanceArrowDistance;
-in vec4 instanceColor;
-in float instanceSpeedFactor;
-in int instanceLinePositionsTextureOffset;
-in int instanceLineDistancesTextureOffset;
-in int instanceLinePointCount;
-in float instanceLineDistance;
-in float instanceArrowDirection;
+attribute vec3 positions;
+
+attribute float instanceSize;
+attribute float instanceArrowDistance;
+attribute vec4 instanceColor;
+attribute float instanceSpeedFactor;
+attribute float instanceLinePositionsTextureOffset;
+attribute float instanceLineDistancesTextureOffset;
+attribute float instanceLinePointCount;
+attribute float instanceLineDistance;
+attribute float instanceArrowDirection;
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
 uniform float timestamp;
 uniform sampler2D linePositionsTexture;
 uniform sampler2D lineDistancesTexture;
-uniform float maxTextureSize;
+uniform ivec2 linePositionsTextureSize;
+uniform ivec2 lineDistancesTextureSize;
+uniform float webgl2;
 
-out vec4 vFillColor;
-out float shouldDiscard;
+varying vec4 vFillColor;
+varying float shouldDiscard;
+
+vec4 texelFetch(sampler2D sampler, ivec2 index, ivec2 size) {
+  float x = (2.0 * float(index.x) + 1.0) / (2.0 * float(size.x));
+  float y = (2.0 * float(index.y) + 1.0) / (2.0 * float(size.y));
+  return texture2D(sampler, vec2(x, y));
+}
 
 /**
  * Calculate 2 dimensions texture index from flat index. 
  */
-ivec2 calulateTextureIndex(int flatIndex) {
-  int x = int(mod(float(flatIndex), maxTextureSize));
-  int y = int(trunc(float(flatIndex) / maxTextureSize));
+ivec2 calculateTextureIndex(int flatIndex, ivec2 textureSize) {
+  int x = flatIndex - flatIndex / textureSize.x * textureSize.x;
+  int y = flatIndex / textureSize.y;
   return ivec2(x, y);
 }
 
@@ -37,18 +46,21 @@ ivec2 calulateTextureIndex(int flatIndex) {
  * Fetch WGS84 position from texture for a given point of the line.  
  */
 vec3 fetchLinePosition(int point) {
-  int flatIndex = instanceLinePositionsTextureOffset + point;
-  ivec2 textureIndex = calulateTextureIndex(flatIndex); 
-  return vec3(texelFetch(linePositionsTexture, textureIndex, 0).xy, 0);
+  int flatIndex = int(instanceLinePositionsTextureOffset) + point;
+  ivec2 textureIndex = calculateTextureIndex(flatIndex, linePositionsTextureSize); 
+  vec4 color = texelFetch(linePositionsTexture, textureIndex, linePositionsTextureSize);
+  float x = color.r;
+  float y = webgl2 > 0.5 ? color.g : color.a;
+  return vec3(x, y, 0);
 }
 
 /**
  * Fetch distance (in meters from the start of the line) from texture for a point of the line.  
  */
 float fetchLineDistance(int point) {
-  int flatIndex = instanceLineDistancesTextureOffset + point;
-  ivec2 textureIndex = calulateTextureIndex(flatIndex);
-  return texelFetch(lineDistancesTexture, textureIndex, 0).x;
+  int flatIndex = int(instanceLineDistancesTextureOffset) + point;
+  ivec2 textureIndex = calculateTextureIndex(flatIndex, lineDistancesTextureSize);
+  return texelFetch(lineDistancesTexture, textureIndex, lineDistancesTextureSize).r;
 }
 
 /**            
@@ -68,23 +80,29 @@ float fetchLineDistance(int point) {
  */
 int findFirstLinePointAfterDistance(float distance) {
   int firstPoint = 0;
-  int lastPoint = instanceLinePointCount - 1;
+  int lastPoint = int(instanceLinePointCount) - 1;
   
-  // variable length loops are not supported in GLSL, instanceLinePointCount is an upper bound that
-  // will never be reached as binary search complexity is in O(log(instanceLinePointCount))
-  for (int i = 0; i < instanceLinePointCount; i++) {
-      if (firstPoint + 1 == lastPoint) {
-          return lastPoint; 
-      }   
-      int middlePoint = (firstPoint + lastPoint) / 2;           
-      float middlePointDistance = fetchLineDistance(middlePoint);      
-      if (middlePointDistance <= distance) {
-         firstPoint = middlePoint;
-      } else {
-         lastPoint = middlePoint;                            
-      }  
-  }   
-} 
+  // variable length loops are not supported in WebGL v1, it needs to be a constant and cannot be like in WebGL v2 an
+  // attribute, so we suppose here that we won't have more that 2^log2MaxPointCount points per line...
+  // 
+  // WARNING!!!!
+  // also, we need to avoid break/return in the for loop even if search complete because with a WebGL1 browser
+  // it is not possible to call texture2D inside a non deterministic piece of code
+  // https://shadertoyunofficial.wordpress.com/2017/11/19/avoiding-compiler-crash-or-endless-compilation 
+  const int log2MaxPointCount = 15;
+  for (int i = 0; i < log2MaxPointCount; i++) {
+      if (firstPoint + 1 != lastPoint) {
+          int middlePoint = (firstPoint + lastPoint) / 2;           
+          float middlePointDistance = fetchLineDistance(middlePoint);      
+          if (middlePointDistance <= distance) {
+             firstPoint = middlePoint;
+          } else {
+             lastPoint = middlePoint;                            
+          }
+      }
+  }
+  return lastPoint; 
+}
 
 mat3 calculateRotation(vec3 commonPosition1, vec3 commonPosition2) {
   float angle = atan(commonPosition1.x - commonPosition2.x, commonPosition1.y - commonPosition2.y);
