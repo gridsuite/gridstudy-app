@@ -143,7 +143,7 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
                     const switchId = switchMetadata.equipmentId;
                     const open = switchMetadata.open;
                     svgPrevViewbox.current = draw.viewbox();
-                    props.onBreakerClick(switchId, !open);
+                    props.onBreakerClick(switchId, !open, event.currentTarget);
                 });
             });
         }
