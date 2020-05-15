@@ -38,7 +38,7 @@ vec4 texelFetch(sampler2D sampler, ivec2 index, ivec2 size) {
  */
 ivec2 calulateTextureIndex(int flatIndex, ivec2 textureSize) {
   int x = int(mod(float(flatIndex), float(textureSize.x)));
-  int y = int(float(flatIndex) / float(textureSize.y));
+  int y = flatIndex / textureSize.y;
   return ivec2(x, y);
 }
 
