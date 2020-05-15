@@ -36,7 +36,7 @@ vec4 texelFetch(sampler2D sampler, ivec2 index, ivec2 size) {
 /**
  * Calculate 2 dimensions texture index from flat index. 
  */
-ivec2 calulateTextureIndex(int flatIndex, ivec2 textureSize) {
+ivec2 calculateTextureIndex(int flatIndex, ivec2 textureSize) {
   int x = int(mod(float(flatIndex), float(textureSize.x)));
   int y = flatIndex / textureSize.y;
   return ivec2(x, y);
@@ -47,7 +47,7 @@ ivec2 calulateTextureIndex(int flatIndex, ivec2 textureSize) {
  */
 vec3 fetchLinePosition(int point) {
   int flatIndex = int(instanceLinePositionsTextureOffset) + point;
-  ivec2 textureIndex = calulateTextureIndex(flatIndex, linePositionsTextureSize); 
+  ivec2 textureIndex = calculateTextureIndex(flatIndex, linePositionsTextureSize); 
   vec4 color = texelFetch(linePositionsTexture, textureIndex, linePositionsTextureSize);
   float x = color.r;
   float y = webgl2 > 0.5 ? color.g : color.a;
@@ -59,7 +59,7 @@ vec3 fetchLinePosition(int point) {
  */
 float fetchLineDistance(int point) {
   int flatIndex = int(instanceLineDistancesTextureOffset) + point;
-  ivec2 textureIndex = calulateTextureIndex(flatIndex, lineDistancesTextureSize);
+  ivec2 textureIndex = calculateTextureIndex(flatIndex, lineDistancesTextureSize);
   return texelFetch(lineDistancesTexture, textureIndex, lineDistancesTextureSize).r;
 }
 
