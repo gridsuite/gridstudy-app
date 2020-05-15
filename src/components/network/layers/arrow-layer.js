@@ -63,7 +63,10 @@ export default class ArrowLayer extends Layer {
         }
 
         const maxTextureSize = gl.getParameter(GL.MAX_TEXTURE_SIZE);
-        this.state.maxTextureSize = maxTextureSize;
+        this.state = {
+            maxTextureSize,
+            webgl2: isWebGL2(gl)
+        };
 
         this.getAttributeManager().addInstanced({
             instanceSize: {
@@ -142,31 +145,34 @@ export default class ArrowLayer extends Layer {
         this.state.stop = true;
     }
 
-    createTexture2D(gl, data) {
+    createTexture2D(gl, data, elementSize, format, dataFormat) {
         const start = performance.now()
 
         // we calculate the smallest square texture that is a power of 2 but less or equals to MAX_TEXTURE_SIZE
         // (which is an property of the graphic card)
-        const n = Math.ceil(Math.log2(data.length) / 2);
+        const elementCount = data.length / elementSize;
+        const n = Math.ceil(Math.log2(elementCount) / 2);
         const textureSize = 2 ** n;
         const { maxTextureSize } = this.state;
         if (textureSize > maxTextureSize) {
             throw new Error(`Texture size (${textureSize}) cannot be greater than ${maxTextureSize}`);
         }
 
-        // rescale data to [value1, 0, 0, 0, value2, 0, 0, 0, ...] because required by the OES_texture_float extension
-        const rescaledData = new Float32Array(textureSize * textureSize * 4).fill(0);
-        data.forEach((value, index) => {
-            rescaledData[index * 4] = value;
-        });
+        // data length needs to be width * height (otherwise we get an error), so we pad the data array with zero until
+        // reaching the correct size.
+        if (data.length < textureSize * textureSize * elementSize) {
+            const oldLength = data.length;
+            data.length = textureSize * textureSize * elementSize;
+            data.fill(0, oldLength, textureSize * textureSize * elementSize);
+        }
 
         const texture2d = new Texture2D(gl, {
             width: textureSize,
             height: textureSize,
-            format: isWebGL2(gl) ? GL.RGBA32F : GL.RGBA,
-            dataFormat: GL.RGBA,
+            format: format,
+            dataFormat: dataFormat,
             type: GL.FLOAT,
-            data: rescaledData,
+            data: new Float32Array(data),
             parameters: {
                 [GL.TEXTURE_MAG_FILTER]: GL.NEAREST,
                 [GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
@@ -176,8 +182,8 @@ export default class ArrowLayer extends Layer {
             mipmaps: false
         });
 
-        const stop = performance.now()
-        console.info(`Texture ${textureSize} * ${textureSize} created in ${stop -start} ms`);
+        const stop = performance.now();
+        console.info(`Texture of ${elementCount} elements (${textureSize} * ${textureSize}) created in ${stop -start} ms`);
 
         return texture2d;
     }
@@ -185,8 +191,7 @@ export default class ArrowLayer extends Layer {
     createTexturesStructure(props) {
         const start = performance.now()
 
-        const lineLongitudesTextureData = [];
-        const lineLatitudesTextureData = [];
+        const linePositionsTextureData = [];
         const lineDistancesTextureData = [];
         const lineAttributes = new Map();
 
@@ -198,7 +203,7 @@ export default class ArrowLayer extends Layer {
             if (!positions) {
                 throw new Error(`Invalid positions for line ${line.id}`);
             }
-            const linePositionsTextureOffset = lineLongitudesTextureData.length;
+            const linePositionsTextureOffset = linePositionsTextureData.length / 2;
             const lineDistancesTextureOffset = lineDistancesTextureData.length;
             let linePointCount = 0;
             let lineDistance = 0;
@@ -216,8 +221,8 @@ export default class ArrowLayer extends Layer {
                     prevPosition = position;
 
                     // fill line positions texture
-                    lineLongitudesTextureData.push(position[0]);
-                    lineLatitudesTextureData.push(position[1]);
+                    linePositionsTextureData.push(position[0]);
+                    linePositionsTextureData.push(position[1]);
 
                     linePointCount++;
 
@@ -241,8 +246,7 @@ export default class ArrowLayer extends Layer {
         console.info(`Texture data created in ${stop -start} ms`);
 
         return {
-            lineLongitudesTextureData,
-            lineLatitudesTextureData,
+            linePositionsTextureData,
             lineDistancesTextureData,
             lineAttributes
         }
@@ -258,19 +262,18 @@ export default class ArrowLayer extends Layer {
             const {gl} = this.context;
 
             const {
-                lineLongitudesTextureData,
-                lineLatitudesTextureData,
+                linePositionsTextureData,
                 lineDistancesTextureData,
                 lineAttributes
             } = this.createTexturesStructure(props);
 
-            const lineLongitudesTexture = this.createTexture2D(gl, lineLongitudesTextureData);
-            const lineLatitudesTexture = this.createTexture2D(gl, lineLatitudesTextureData);
-            const lineDistancesTexture = this.createTexture2D(gl, lineDistancesTextureData);
+            const linePositionsTexture = this.createTexture2D(gl, linePositionsTextureData, 2,
+                this.state.webgl2 ? GL.RG32F : GL.LUMINANCE_ALPHA, this.state.webgl2 ? GL.RG : GL.LUMINANCE_ALPHA);
+            const lineDistancesTexture = this.createTexture2D(gl, lineDistancesTextureData, 1,
+                this.state.webgl2 ? GL.R32F : GL.LUMINANCE, this.state.webgl2 ? GL.RED : GL.LUMINANCE);
 
             this.setState({
-                lineLongitudesTexture,
-                lineLatitudesTexture,
+                linePositionsTexture,
                 lineDistancesTexture,
                 lineAttributes,
                 timestamp: 0
@@ -342,10 +345,10 @@ export default class ArrowLayer extends Layer {
         } = this.props;
 
         const {
-            lineLongitudesTexture,
-            lineLatitudesTexture,
+            linePositionsTexture,
             lineDistancesTexture,
-            timestamp
+            timestamp,
+            webgl2
         } = this.state;
 
         this.state.model
@@ -353,12 +356,12 @@ export default class ArrowLayer extends Layer {
             .setUniforms({
                 sizeMinPixels,
                 sizeMaxPixels,
-                lineLongitudesTexture,
-                lineLatitudesTexture,
+                linePositionsTexture,
                 lineDistancesTexture,
-                linePositionsTextureSize: [lineLongitudesTexture.width, lineLongitudesTexture.height],
+                linePositionsTextureSize: [linePositionsTexture.width, linePositionsTexture.height],
                 lineDistancesTextureSize: [lineDistancesTexture.width, lineDistancesTexture.height],
-                timestamp
+                timestamp,
+                webgl2
             })
             .draw();
     }

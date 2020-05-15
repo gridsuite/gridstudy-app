@@ -18,11 +18,11 @@ attribute float instanceArrowDirection;
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
 uniform float timestamp;
-uniform sampler2D lineLongitudesTexture;
-uniform sampler2D lineLatitudesTexture;
+uniform sampler2D linePositionsTexture;
 uniform sampler2D lineDistancesTexture;
 uniform ivec2 linePositionsTextureSize;
 uniform ivec2 lineDistancesTextureSize;
+uniform float webgl2;
 
 varying vec4 vFillColor;
 varying float shouldDiscard;
@@ -52,9 +52,10 @@ ivec2 calulateTextureIndex(int flatIndex, ivec2 textureSize) {
 vec3 fetchLinePosition(int point) {
   int flatIndex = int(instanceLinePositionsTextureOffset) + point;
   ivec2 textureIndex = calulateTextureIndex(flatIndex, linePositionsTextureSize); 
-  return vec3(texelFetch(lineLongitudesTexture, textureIndex, linePositionsTextureSize).r,
-              texelFetch(lineLatitudesTexture, textureIndex, linePositionsTextureSize).r,
-              0);
+  vec4 color = texelFetch(linePositionsTexture, textureIndex, linePositionsTextureSize);
+  float x = color.r;
+  float y = webgl2 > 0.5 ? color.g : color.a;
+  return vec3(x, y, 0);
 }
 
 /**
