@@ -187,7 +187,10 @@ const StudyPane = () => {
     }
 
     const sldRef = useRef();
-    const handleUpdateSwitchState = useCallback( (breakerId, open) => {
+    const handleUpdateSwitchState = useCallback( (breakerId, open, switchElement) => {
+        switchElement.querySelector(".open").style.visibility = open ? "visible" : "hidden";
+        switchElement.querySelector(".closed").style.visibility = open ? "hidden" : "visible";
+
         updateSwitchState(studyName, breakerId, open).then( response => {
             if (response.ok) {
                 sldRef.current.reloadSvg();
