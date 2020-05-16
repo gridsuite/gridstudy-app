@@ -6,13 +6,16 @@
  */
 import {Layer, project32, picking} from '@deck.gl/core';
 import GL from '@luma.gl/constants';
-import {Model, Geometry, Texture2D} from '@luma.gl/core';
+import {Model, Geometry, Texture2D, FEATURES, hasFeatures, isWebGL2} from '@luma.gl/core';
 
 import vs from './arrow-layer-vertex.glsl';
 import fs from './arrow-layer-fragment.glsl';
 import cheapRuler from 'cheap-ruler';
 
 const DEFAULT_COLOR = [0, 0, 0, 255];
+
+// this value has to be consistent with the one in vertex shader
+const MAX_LINE_POINT_COUNT = 2 ** 15;
 
 export const ArrowDirection = {
     NONE: 'none',
@@ -55,8 +58,15 @@ export default class ArrowLayer extends Layer {
     initializeState() {
         const {gl} = this.context;
 
+        if (!hasFeatures(gl, [FEATURES.TEXTURE_FLOAT])) {
+            throw new Error("Arrow layer not supported on this browser");
+        }
+
         const maxTextureSize = gl.getParameter(GL.MAX_TEXTURE_SIZE);
-        this.state.maxTextureSize = maxTextureSize;
+        this.state = {
+            maxTextureSize,
+            webgl2: isWebGL2(gl)
+        };
 
         this.getAttributeManager().addInstanced({
             instanceSize: {
@@ -111,19 +121,19 @@ export default class ArrowLayer extends Layer {
             instanceLinePositionsTextureOffset: {
                 size: 1,
                 transition: true,
-                type: GL.INT,
+                type: GL.FLOAT,
                 accessor: arrow => this.getArrowLineAttributes(arrow).positionsTextureOffset
             },
             instanceLineDistancesTextureOffset: {
                 size: 1,
                 transition: true,
-                type: GL.INT,
+                type: GL.FLOAT,
                 accessor: arrow => this.getArrowLineAttributes(arrow).distancesTextureOffset
             },
             instanceLinePointCount: {
                 size: 1,
                 transition: true,
-                type: GL.INT,
+                type: GL.FLOAT,
                 accessor: arrow => this.getArrowLineAttributes(arrow).pointCount
             }
         });
@@ -135,39 +145,45 @@ export default class ArrowLayer extends Layer {
         this.state.stop = true;
     }
 
-    createTexture2D(gl, data, elementSize, format) {
+    createTexture2D(gl, data, elementSize, format, dataFormat) {
         const start = performance.now()
 
-        // we clamp the width to MAX_TEXTURE_SIZE (which is an property of the graphic card)
+        // we calculate the smallest square texture that is a power of 2 but less or equals to MAX_TEXTURE_SIZE
+        // (which is an property of the graphic card)
         const elementCount = data.length / elementSize;
+        const n = Math.ceil(Math.log2(elementCount) / 2);
+        const textureSize = 2 ** n;
         const { maxTextureSize } = this.state;
-        const width = Math.min(elementCount, maxTextureSize);
-        const height = Math.ceil(elementCount / maxTextureSize);
-        if (height > maxTextureSize) {
-            throw new Error(`Texture height (${height}) cannot be greater that max texture size (${maxTextureSize})`);
+        if (textureSize > maxTextureSize) {
+            throw new Error(`Texture size (${textureSize}) cannot be greater than ${maxTextureSize}`);
         }
 
         // data length needs to be width * height (otherwise we get an error), so we pad the data array with zero until
         // reaching the correct size.
-        if (data.length < width * height * elementSize) {
+        if (data.length < textureSize * textureSize * elementSize) {
             const oldLength = data.length;
-            data.length = width * height * elementSize;
-            data.fill(0, oldLength, width * height * elementSize);
+            data.length = textureSize * textureSize * elementSize;
+            data.fill(0, oldLength, textureSize * textureSize * elementSize);
         }
 
         const texture2d = new Texture2D(gl, {
-            width: width,
-            height: height,
+            width: textureSize,
+            height: textureSize,
             format: format,
+            dataFormat: dataFormat,
+            type: GL.FLOAT,
             data: new Float32Array(data),
             parameters: {
                 [GL.TEXTURE_MAG_FILTER]: GL.NEAREST,
-                [GL.TEXTURE_MIN_FILTER]: GL.NEAREST
-            }
+                [GL.TEXTURE_MIN_FILTER]: GL.NEAREST,
+                [GL.TEXTURE_WRAP_S]: GL.CLAMP_TO_EDGE,
+                [GL.TEXTURE_WRAP_T]: GL.CLAMP_TO_EDGE
+            },
+            mipmaps: false
         });
 
-        const stop = performance.now()
-        console.info(`Texture of ${elementCount} elements (${width} * ${height}) created in ${stop -start} ms`);
+        const stop = performance.now();
+        console.info(`Texture of ${elementCount} elements (${textureSize} * ${textureSize}) created in ${stop -start} ms`);
 
         return texture2d;
     }
@@ -215,6 +231,9 @@ export default class ArrowLayer extends Layer {
                     lineDistancesTextureData.push(lineDistance);
                 });
             }
+            if (linePointCount > MAX_LINE_POINT_COUNT) {
+                throw new Error(`Too many line point count (${linePointCount}), maximum is ${MAX_LINE_POINT_COUNT}`);
+            }
             lineAttributes.set(line, {
                 distance: lineDistance,
                 positionsTextureOffset: linePositionsTextureOffset,
@@ -248,13 +267,15 @@ export default class ArrowLayer extends Layer {
                 lineAttributes
             } = this.createTexturesStructure(props);
 
-            const linePositionsTexture = this.createTexture2D(gl, linePositionsTextureData, 2, GL.RG32F);
-            const lineDistancesTexture = this.createTexture2D(gl, lineDistancesTextureData, 1, GL.R32F);
+            const linePositionsTexture = this.createTexture2D(gl, linePositionsTextureData, 2,
+                this.state.webgl2 ? GL.RG32F : GL.LUMINANCE_ALPHA, this.state.webgl2 ? GL.RG : GL.LUMINANCE_ALPHA);
+            const lineDistancesTexture = this.createTexture2D(gl, lineDistancesTextureData, 1,
+                this.state.webgl2 ? GL.R32F : GL.LUMINANCE, this.state.webgl2 ? GL.RED : GL.LUMINANCE);
 
             this.setState({
-                linePositionsTexture: linePositionsTexture,
-                lineDistancesTexture: lineDistancesTexture,
-                lineAttributes: lineAttributes,
+                linePositionsTexture,
+                lineDistancesTexture,
+                lineAttributes,
                 timestamp: 0
             });
 
@@ -324,10 +345,10 @@ export default class ArrowLayer extends Layer {
         } = this.props;
 
         const {
-            maxTextureSize,
             linePositionsTexture,
             lineDistancesTexture,
-            timestamp
+            timestamp,
+            webgl2
         } = this.state;
 
         this.state.model
@@ -335,10 +356,12 @@ export default class ArrowLayer extends Layer {
             .setUniforms({
                 sizeMinPixels,
                 sizeMaxPixels,
-                maxTextureSize,
                 linePositionsTexture,
                 lineDistancesTexture,
-                timestamp
+                linePositionsTextureSize: [linePositionsTexture.width, linePositionsTexture.height],
+                lineDistancesTextureSize: [lineDistancesTexture.width, lineDistancesTexture.height],
+                timestamp,
+                webgl2
             })
             .draw();
     }

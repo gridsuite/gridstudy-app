@@ -27,14 +27,18 @@ import {
     fetchLinePositions,
     fetchLines,
     fetchSubstationPositions,
-    fetchSubstations, fetchSvg,
+    fetchSubstations,
     getVoltageLevelSingleLineDiagram,
-    updateSwitchState
+    updateSwitchState,
+    startLoadFlow
 } from "../utils/rest-api";
 import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
 import Network from "./network/network";
 import GeoData from "./network/geo-data";
 import NominalVoltageFilter from "./network/nominal-voltage-filter";
+import Button from "@material-ui/core/Button";
+import PlayIcon from "@material-ui/icons/PlayArrow";
+import { green } from '@material-ui/core/colors';
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -93,6 +97,8 @@ const StudyPane = () => {
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
+
+    const [loadFlowRunning, setLoadFlowRunning] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -181,7 +187,10 @@ const StudyPane = () => {
     }
 
     const sldRef = useRef();
-    const handleUpdateSwitchState = useCallback( (breakerId, open) => {
+    const handleUpdateSwitchState = useCallback( (breakerId, open, switchElement) => {
+        switchElement.querySelector(".open").style.visibility = open ? "visible" : "hidden";
+        switchElement.querySelector(".closed").style.visibility = open ? "hidden" : "visible";
+
         updateSwitchState(studyName, breakerId, open).then( response => {
             if (response.ok) {
                 sldRef.current.reloadSvg();
@@ -211,6 +220,47 @@ const StudyPane = () => {
         setFilteredNominalVoltages(newFiltered);
     };
 
+    const loadFlowButtonStyles = makeStyles({
+        root: {
+            backgroundColor: green[500],
+            '&:hover': {
+                backgroundColor: green[700],
+            },
+        },
+    });
+
+    function RunLoadFlowButton() {
+
+        const loadFlowButtonClasses = loadFlowButtonStyles();
+
+        useEffect(() => {
+            if (loadFlowRunning) {
+                startLoadFlow(studyName).then( () => {
+                    //TODO reload data more intelligently
+                    loadNetwork(studyName);
+                    sldRef.current && sldRef.current.reloadSvg();
+                }).then(() => {
+                    setLoadFlowRunning(false);
+                });
+            }
+        }, [loadFlowRunning]);
+
+        const handleClick = () => setLoadFlowRunning(true);
+
+        return (
+            <Button
+                variant="contained"
+                fullWidth={true}
+                className={loadFlowButtonClasses.root}
+                startIcon={<PlayIcon />}
+                disabled={loadFlowRunning}
+                onClick={!loadFlowRunning ? handleClick : null}
+            >
+                {loadFlowRunning ? 'LoadFlow running…' : 'Start LoadFlow'}
+            </Button>
+        );
+    }
+
     const mapRef = useRef();
     const centerSubstation = useCallback((id)=> {
         mapRef.current.centerSubstation(network.getVoltageLevel(id).substationId);
@@ -227,17 +277,24 @@ const StudyPane = () => {
         }
         return (
             <Grid container className={classes.main}>
-                <Grid item xs={12} md={2} key="explorer">
-                    <NetworkExplorer network={network}
-                                     onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                                     onVoltageLevelFocusClick={centerSubstation} />
+                <Grid container direction='column' xs={12} md={2} >
+                    <Grid item key="loadFlowButton">
+                        <div style={{position:"relative", marginLeft:8, marginRight:8, marginTop:8}}>
+                            <RunLoadFlowButton/>
+                        </div>
+                    </Grid>
+                    <Grid item key="explorer">
+                        <NetworkExplorer network={network}
+                                         onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+                                         onVoltageLevelFocusClick={centerSubstation} />
+                    </Grid>
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
                         <NetworkMap network={network}
                                     geoData={geoData}
                                     labelsZoomThreshold={9}
-                                    arrowZoomThreshold={6}
+                                    arrowsZoomThreshold={7}
                                     initialPosition={INITIAL_POSITION}
                                     initialZoom={1}
                                     filteredNominalVoltages={filteredNominalVoltages}
