@@ -5,8 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {PathLayer} from "deck.gl";
+import GL from '@luma.gl/constants';
 
 const defaultProps = {
+    getParallelIndex: {type: 'accessor', value: 0}
 };
 
 /**
@@ -17,8 +19,11 @@ export default class ParallelPathLayer extends PathLayer {
     getShaders() {
         const shaders = super.getShaders();
         shaders.inject = {
+            'vs:#decl': `\
+attribute float instanceParallelIndex;
+`,
             'vs:DECKGL_FILTER_GL_POSITION': `\
-position += vec4(0.1, 0.1, 0, 0);
+position += vec4(0.1 * instanceParallelIndex, 0.1 * instanceParallelIndex, 0, 0);
 `
         };
         return shaders;
@@ -28,6 +33,15 @@ position += vec4(0.1, 0.1, 0, 0);
         super.initializeState(params);
 
         const attributeManager = this.getAttributeManager();
+        attributeManager.addInstanced({
+            instanceParallelIndex: {
+                size: 1,
+                transition: true,
+                accessor: 'getParallelIndex',
+                type: GL.FLOAT,
+                defaultValue: 0
+            }
+        });
     }
 }
 

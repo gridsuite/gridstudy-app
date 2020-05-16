@@ -46,6 +46,47 @@ class LineLayer extends CompositeLayer {
 
             if (props.network != null && props.geoData != null) {
 
+                // group lines by substation ID
+                const lineBySubstationIdIndexer = (map, line) => {
+                    const substationId1 = props.network.getVoltageLevel(line.voltageLevelId1).substationId;
+                    const substationId2 = props.network.getVoltageLevel(line.voltageLevelId2).substationId;
+                    const key = substationId1 < substationId2 ? substationId1 + substationId2 : substationId2 + substationId1;
+                    let list = map.get(key);
+                    if (!list) {
+                        list = [];
+                        map.set(key, list);
+                    }
+                    list.push(line);
+                    return map;
+                };
+                const linesBySubstationId = props.data.reduce(lineBySubstationIdIndexer, new Map());
+
+                // add parallel index to each line
+                linesBySubstationId.forEach((lines) => {
+                    if (lines.length % 2 === 0) {
+                        lines.forEach((line, index) => {
+                            if (index % 2 === 0) {
+                                line.parallelIndex = (index + 2) / 2;
+                            } else {
+                                line.parallelIndex = -(index + 1) / 2;
+                            }
+                        })
+                    } else {
+                        lines.forEach((line, index) => {
+                            if (index === 0) {
+                                line.parallelIndex = 0;
+                            } else {
+                                if ((index - 1) % 2 === 0) {
+                                    line.parallelIndex = (index + 1) / 2;
+                                } else {
+                                    line.parallelIndex = -index / 2;
+                                }
+                            }
+                        })
+                    }
+                });
+                console.info(linesBySubstationId);
+
                 // group lines by nominal voltage
 
                 const lineNominalVoltageIndexer = (map, line) => {
@@ -105,6 +146,7 @@ class LineLayer extends CompositeLayer {
                 getPath: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
                 getColor: line=> isDisconnected(line) ? this.props.disconnectedLineColor: color,
                 getWidth: 2,
+                getParallelIndex: line => line.parallelIndex,
                 visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
                 updateTriggers: {
                     getPath: [this.props.lineFullPath],
