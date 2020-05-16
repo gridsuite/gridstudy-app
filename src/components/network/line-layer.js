@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {CompositeLayer, PathLayer} from 'deck.gl';
+import {CompositeLayer} from 'deck.gl';
 import {PathStyleExtension} from '@deck.gl/extensions'
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
+import ParallelPathLayer from './layers/parallel-path-layer';
 import getDistance from "geolib/es/getDistance";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
@@ -95,7 +96,7 @@ class LineLayer extends CompositeLayer {
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.compositeData.forEach(compositeData => {
             const color = this.props.getNominalVoltageColor(compositeData.nominalVoltage);
-            const lineLayer = new PathLayer(this.getSubLayerProps({
+            const lineLayer = new ParallelPathLayer(this.getSubLayerProps({
                 id: 'LineNominalVoltage' + compositeData.nominalVoltage,
                 data: compositeData.lines,
                 widthScale: 20,
