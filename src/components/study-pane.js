@@ -40,6 +40,7 @@ import Button from "@material-ui/core/Button";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { green } from '@material-ui/core/colors';
 import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
+import {CardHeader} from "@material-ui/core";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -228,6 +229,10 @@ const StudyPane = () => {
                 backgroundColor: green[700],
             },
         },
+        label: {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+        }
     });
 
     function RunLoadFlowButton() {
@@ -257,7 +262,11 @@ const StudyPane = () => {
                 disabled={loadFlowRunning}
                 onClick={!loadFlowRunning ? handleClick : null}
             >
-                {loadFlowRunning ? 'LoadFlow running…' : 'Start LoadFlow'}
+                <div className={loadFlowButtonClasses.label}>
+                    <Typography noWrap>
+                        {loadFlowRunning ? 'LoadFlow running…' : 'Start LoadFlow'}
+                    </Typography>
+                </div>
             </Button>
         );
     }
