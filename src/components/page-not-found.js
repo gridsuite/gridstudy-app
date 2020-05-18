@@ -23,13 +23,13 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const PageNotFound = () => {
+const PageNotFound = ({message}) => {
     const classes = useStyles();
     return (
         <Container className={classes.container} >
             <br/>
             <ErrorOutlineIcon className={classes.error}/>
-            <h1 style={{textAlign:"center"}}>404 <FormattedMessage id="PageNotFound"/></h1>
+            <h1 style={{textAlign:"center"}}>{message}</h1>
         </Container>
             );
 };

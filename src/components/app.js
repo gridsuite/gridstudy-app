@@ -31,6 +31,7 @@ import {
 import Authentication from "./authentication";
 import PageNotFound from "./page-not-found";
 import {useRouteMatch} from "react-router";
+import {FormattedMessage} from "react-intl";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -146,7 +147,7 @@ const App = () => {
                                 <h1>Error: logout failed; you are still logged in.</h1>
                             </Route>
                             <Route>
-                                <PageNotFound/>
+                                <PageNotFound message={<FormattedMessage id="PageNotFound"/>}/>
                             </Route>
                         </Switch>)
                     : ( <React.Fragment>
