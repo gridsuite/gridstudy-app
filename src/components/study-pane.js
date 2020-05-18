@@ -286,24 +286,27 @@ const StudyPane = () => {
             }
         }
         return (
-            <Grid container className={classes.main}>
-                <Grid container direction='column' xs={12} md={2} >
+            <Grid container direction='row' className={classes.main}>
+                <Grid item xs={12} md={2} >
                     <AutoSizer>
                         {({width, height}) => (
                             <div style={{width:width, height:height}}>
-                                <Grid item key="loadFlowButton">
-                                    <div style={{position:"relative", marginLeft:8, marginRight:8, marginTop:8}}>
-                                        <RunLoadFlowButton/>
-                                    </div>
+                                <Grid container direction='column'>
+                                    <Grid item key="loadFlowButton">
+                                        <div style={{position:"relative", marginLeft:8, marginRight:8, marginTop:8}}>
+                                            <RunLoadFlowButton/>
+                                        </div>
+                                    </Grid>
+                                    <Grid item key="explorer">
+                                        <div style={{position:"relative", height:height-44}}>
+                                            <NetworkExplorer network={network}
+                                                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+                                                             onVoltageLevelFocusClick={centerSubstation} />
+                                        </div>
+                                    </Grid>
                                 </Grid>
-                                <Grid item key="explorer">
-                                    <div style={{position:"relative", height:height-50}}>
-                                        <NetworkExplorer network={network}
-                                                         onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                                                         onVoltageLevelFocusClick={centerSubstation} />
-                                    </div>
-                                </Grid>
-                            </div>)}
+                            </div>
+                        )}
                     </AutoSizer>
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
