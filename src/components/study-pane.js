@@ -39,6 +39,7 @@ import NominalVoltageFilter from "./network/nominal-voltage-filter";
 import Button from "@material-ui/core/Button";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { green } from '@material-ui/core/colors';
+import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -278,16 +279,23 @@ const StudyPane = () => {
         return (
             <Grid container className={classes.main}>
                 <Grid container direction='column' xs={12} md={2} >
-                    <Grid item key="loadFlowButton">
-                        <div style={{position:"relative", marginLeft:8, marginRight:8, marginTop:8}}>
-                            <RunLoadFlowButton/>
-                        </div>
-                    </Grid>
-                    <Grid item key="explorer">
-                        <NetworkExplorer network={network}
-                                         onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                                         onVoltageLevelFocusClick={centerSubstation} />
-                    </Grid>
+                    <AutoSizer>
+                        {({width, height}) => (
+                            <div style={{width:width, height:height}}>
+                                <Grid item key="loadFlowButton">
+                                    <div style={{position:"relative", marginLeft:8, marginRight:8, marginTop:8}}>
+                                        <RunLoadFlowButton/>
+                                    </div>
+                                </Grid>
+                                <Grid item key="explorer">
+                                    <div style={{position:"relative", height:height-50}}>
+                                        <NetworkExplorer network={network}
+                                                         onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+                                                         onVoltageLevelFocusClick={centerSubstation} />
+                                    </div>
+                                </Grid>
+                            </div>)}
+                    </AutoSizer>
                 </Grid>
                 <Grid item xs={12} md={10} key="map">
                     <div style={{position:"relative", width:"100%", height: "100%"}}>
