@@ -29,7 +29,7 @@ import {
 } from '../utils/authentication/AuthService';
 
 import Authentication from "./authentication";
-import PageNotFound from "./PageNotFound";
+import PageNotFound from "./page-not-found";
 import {useRouteMatch} from "react-router";
 
 const lightTheme = createMuiTheme({
