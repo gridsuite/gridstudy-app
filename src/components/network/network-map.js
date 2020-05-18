@@ -240,7 +240,7 @@ NetworkMap.defaultProps = {
     network: null,
     geoData: null,
     labelsZoomThreshold: 9,
-    arrowsZoomThreshold: 8,
+    arrowsZoomThreshold: 7,
     initialZoom: 5,
     filteredNominalVoltages: null,
     initialPosition: [0, 0],

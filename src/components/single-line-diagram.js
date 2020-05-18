@@ -69,9 +69,16 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
 
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
+    const svgDraw = useRef();
 
     const [forceState, updateState] = React.useState(false);
-    const forceUpdate = React.useCallback(() => updateState(s=>!s), []);
+    const forceUpdate = React.useCallback(() => {
+            if (svgDraw.current) {
+                svgPrevViewbox.current = svgDraw.current.viewbox();
+            }
+            updateState(s=>!s)
+    }, []);
+
 
     useImperativeHandle(ref, () => ({
         reloadSvg: forceUpdate
@@ -143,9 +150,10 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
                     const switchId = switchMetadata.equipmentId;
                     const open = switchMetadata.open;
                     svgPrevViewbox.current = draw.viewbox();
-                    props.onBreakerClick(switchId, !open);
+                    props.onBreakerClick(switchId, !open, event.currentTarget);
                 });
             });
+            svgDraw.current = draw;
         }
     }, [svg]);
 
