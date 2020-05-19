@@ -17,6 +17,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
 import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
@@ -53,8 +54,8 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(2)
     },
     logo: {
-        width: 64,
-        height: 64,
+        width: 48,
+        height: 48,
     },
     expand: {
         transform: 'rotate(0deg)',
@@ -82,6 +83,9 @@ const useStyles = makeStyles((theme) => ({
         textOverflow: "ellipsis",
         width: '11rem',
     },
+    tooltip: {
+        fontSize: 18
+    }
 }));
 
 /**
@@ -203,21 +207,23 @@ const StudyCard = ({ study, onClick }) => {
         <div>
             <Card className={classes.root}>
                 <CardActionArea onClick={() => onClick()} className={classes.card}>
-                    <CardHeader
-                        avatar={
+                    <Tooltip title={study.studyName} placement="top" arrow classes={classes}>
+                        <CardHeader
+                            avatar={
                                 logo(study.caseFormat)
-                        }
-                        title={
-                            <div className={classes.cardTitle}>
-                                <Typography noWrap variant="h4">
-                                    {study.studyName}
-                                </Typography>
-                            </div>
-                        }
-                        subheader={
-                            study.caseDate && study.caseDate.toLocaleString()
-                        }
-                    />
+                            }
+                            title={
+                                <div className={classes.cardTitle}>
+                                    <Typography noWrap variant="h5">
+                                        {study.studyName}
+                                    </Typography>
+                                </div>
+                            }
+                            subheader={
+                                study.caseDate && study.caseDate.toLocaleString()
+                            }
+                        />
+                    </Tooltip>
                 </CardActionArea>
                 <CardActions className={classes.actions}>
                     <IconButton

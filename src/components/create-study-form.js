@@ -38,7 +38,7 @@ const useStyles = makeStyles(() => ({
         fontSize: '64px',
     },
     addButtonArea: {
-        height:"150px",
+        height:"136px",
     },
 }));
 
