@@ -207,7 +207,7 @@ const StudyCard = ({ study, onClick }) => {
         <div>
             <Card className={classes.root}>
                 <CardActionArea onClick={() => onClick()} className={classes.card}>
-                    <Tooltip title={study.studyName} placement="top" arrow classes={classes}>
+                    <Tooltip title={study.studyName} placement="top" arrow enterDelay={1000} enterNextDelay={1000} classes={classes}>
                         <CardHeader
                             avatar={
                                 logo(study.caseFormat)
