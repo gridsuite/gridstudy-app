@@ -25,7 +25,7 @@ export class UserManagerMock {
     }
 
     getUser() {
-        return Promise.resolve(JSON.parse(sessionStorage.getItem("powsybl-study-app-mock-user")));
+        return Promise.resolve(JSON.parse(sessionStorage.getItem("powsybl-gridstudy-mock-user")));
     }
 
     signinRedirect() {
@@ -34,7 +34,7 @@ export class UserManagerMock {
     }
 
     signoutRedirect() {
-        sessionStorage.setItem("powsybl-study-app-mock-user", null);
+        sessionStorage.setItem("powsybl-gridstudy-mock-user", null);
         window.location = ".";
         return Promise.resolve(null);
     }
@@ -65,7 +65,7 @@ export class UserManagerMock {
                 scope : "scopes"
 
         };
-        sessionStorage.setItem("powsybl-study-app-mock-user", JSON.stringify(user));
+        sessionStorage.setItem("powsybl-gridstudy-mock-user", JSON.stringify(user));
         this.events.userLoadedCallbacks.forEach(c => c(user));
         return Promise.resolve("");
     }

@@ -1,1 +1,1 @@
-# study-app
+# GridStudy

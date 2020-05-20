@@ -11,7 +11,7 @@ import jwtDecode from 'jwt-decode';
 
 const hackauthoritykey = "oidc.hack.authority";
 
-const pathKey = "powsybl-study-app-current-path";
+const pathKey = "powsybl-gridstudy-current-path";
 
 function initializeAuthentication(dispatch, isSilentRenew) {
 
