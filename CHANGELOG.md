@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2020-05-18
+
+### Added
+
+- Changing switch positions from the single line diagrams
+- Dynamic or static arrows on the lines to show the current direction
+- Button for executing a load flow on the open network
+
+### Changed
+
+- Reduction of the substation radius on the map
+
+### Fixed
+
+- Browser support from EDGE 44 and Firefox 68 ESR
+
 ## [0.3.0] - 2020-05-04
 
 ### Added
@@ -52,7 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Geographical display of the imported networks
 - On-demand display of electrical substations
 
-[unreleased]: https://github.com/gridsuite/study-app/compare/v0.3.0...HEAD
+[unreleased]: https://github.com/gridsuite/study-app/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/gridsuite/study-app/releases/tag/v0.4.0
 [0.3.0]: https://github.com/gridsuite/study-app/releases/tag/v0.3.0
 [0.2.0]: https://github.com/gridsuite/study-app/releases/tag/v0.2.0
 [0.1.0]: https://github.com/gridsuite/study-app/releases/tag/v0.1.0
