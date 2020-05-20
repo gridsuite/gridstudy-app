@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changing switch positions from the single line diagrams
 - Dynamic or static arrows on the lines to show the current direction
-- Button for executing a load flow on the open network
+- Button to execute a load flow on the opened network
 
 ### Changed
 
@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Browser support from EDGE 44 and Firefox 68 ESR
+- Browser support for EDGE 44 and Firefox 68 ESR
 
 ## [0.3.0] - 2020-05-04
 
