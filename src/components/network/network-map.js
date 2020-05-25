@@ -22,6 +22,7 @@ import GeoData from './geo-data';
 import LineLayer, {LineFlowMode} from './line-layer';
 import SubstationLayer from './substation-layer';
 import {getNominalVoltageColor} from '../../utils/colors'
+import {getLocalStorageTheme} from "../../redux/local-storage";
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug'; // eslint-disable-line
 
@@ -190,6 +191,8 @@ const NetworkMap = forwardRef((props, ref) => {
             filteredNominalVoltages: props.filteredNominalVoltages,
             lineFlowMode: lineFlowMode,
             lineFullPath: props.lineFullPath,
+            labelsVisible: labelsVisible,
+            labelColor: getLocalStorageTheme(),
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({

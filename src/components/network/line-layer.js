@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {CompositeLayer, PathLayer} from 'deck.gl';
+import {CompositeLayer, PathLayer, TextLayer} from 'deck.gl';
 
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import getDistance from "geolib/es/getDistance";
+import getPathLength from "geolib/es/getPathLength";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 
@@ -54,16 +55,24 @@ class LineLayer extends CompositeLayer {
                     .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
 
                 // add arrows
-
                 compositeData.forEach(compositeData => {
+                    compositeData.activePower = [];
                     // create one arrow each DISTANCE_BETWEEN_ARROWS
                     compositeData.arrows = compositeData.lines.flatMap(line => {
                         // calculate distance between 2 substations as a raw estimate of line size
                         const positions = props.geoData.getLinePositions(props.network, line, false);
                         const lineDistance = getDistance({latitude: positions[0][1], longitude: positions[0][0]},
                                                          {latitude: positions[1][1], longitude: positions[1][0]});
-
                         const arrowCount = Math.ceil(lineDistance / DISTANCE_BETWEEN_ARROWS);
+
+                        const linePositions = props.geoData.getLinePositions(props.network, line, props.lineFullPath);
+                        let lineLength = getPathLength(linePositions);
+                        let printPosition1 = this.props.geoData.getCoordinateInLine(linePositions, lineLength, 15);
+                        let printPosition2 = this.props.geoData.getCoordinateInLine(linePositions, lineLength, 85);
+                        if (printPosition1 !== null && printPosition2 !== null) {
+                            compositeData.activePower.push({p: line.p1, position: printPosition1.distance, offset: printPosition1.offset});
+                            compositeData.activePower.push({p: line.p2, position: printPosition2.distance, offset: printPosition2.offset});
+                        }
 
                         return [...new Array(arrowCount).keys()].map(index => {
                             return {
@@ -81,7 +90,13 @@ class LineLayer extends CompositeLayer {
 
     renderLayers() {
         const layers = [];
-
+        let labelColor;
+        if (this.props.labelColor === "Dark") {
+            labelColor = [255,255,255];
+        }
+        if (this.props.labelColor === "Light") {
+            labelColor = [0,0,0];
+        }
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.compositeData.forEach(compositeData => {
             const color = this.props.getNominalVoltageColor(compositeData.nominalVoltage);
@@ -101,6 +116,22 @@ class LineLayer extends CompositeLayer {
                 }
             }));
             layers.push(lineLayer);
+
+            // lines active power
+            const lineActivePowerLabelsLayer = new TextLayer(this.getSubLayerProps({
+                id: "ActivePower" + compositeData.nominalVoltage,
+                data: compositeData.activePower,
+                getText: activePower => activePower.p.toString(),
+                getPosition: activePower => [activePower.position.longitude, activePower.position.latitude],
+                getColor: labelColor,
+                fontFamily: 'Roboto',
+                getSize: 25,
+                getAngle: 0,
+                getPixelOffset: activePower => activePower.offset,
+                getTextAnchor: 'start',
+                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage) && this.props.labelsVisible,
+            }));
+            layers.push(lineActivePowerLabelsLayer);
 
             const arrowLayer = new ArrowLayer(this.getSubLayerProps({
                 id: 'ArrowNominalVoltage' + compositeData.nominalVoltage,

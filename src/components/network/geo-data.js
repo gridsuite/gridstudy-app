@@ -6,6 +6,9 @@
  */
 
 import getDistance from "geolib/es/getDistance";
+import getPathLength from "geolib/es/getPathLength";
+import getGreatCircleBearing from "geolib/es/getGreatCircleBearing";
+import computeDestinationPoint from "geolib/es/computeDestinationPoint";
 
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
@@ -88,4 +91,45 @@ export default class GeoData {
 
         return [ substationPosition1, substationPosition2 ];
     };
+
+    getCoordinateInLine(positions, lineDistance, percent) {
+        if (percent > 100 || percent < 0) {
+            throw Error("percent value incorrect: " + percent);
+        }
+        if (lineDistance <= 0) {
+            return null
+        }
+
+        let wantedDistance = lineDistance * percent / 100;
+        let currentDistance = 0;
+        let i;
+        for (i = 0; currentDistance < wantedDistance; i++) {
+            currentDistance = currentDistance + getPathLength(positions.slice(i, i + 2));
+        }
+
+        //the polyline where we reached the wanted distance
+        const goodPolyline = positions.slice(i - 1, i + 1);
+        let leftDistance = wantedDistance - (currentDistance - getPathLength(goodPolyline));
+        let angle = getGreatCircleBearing(goodPolyline[0], goodPolyline[1]);
+        let reducedAngle = angle;
+        if(angle > 180) {
+            reducedAngle = angle - 180;
+        }
+        const neededOffset = this.getNeededOffset(reducedAngle);
+        return {distance :computeDestinationPoint(goodPolyline[0], leftDistance, angle), angle: angle, offset: neededOffset};
+    }
+
+    getNeededOffset(angle) {
+        if (angle <= 180 && angle > 168) {
+            return [10, 0];
+        } else if (angle <= 168 && angle > 113) {
+            return [10, -10];
+        } else if (angle <= 113 && angle > 78) {
+            return [0, -10];
+        } else if (angle <= 78 && angle > 22) {
+            return [10, 10];
+        } else {
+            return [10, 0];
+        }
+    }
 }
