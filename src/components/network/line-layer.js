@@ -90,13 +90,6 @@ class LineLayer extends CompositeLayer {
 
     renderLayers() {
         const layers = [];
-        let labelColor;
-        if (this.props.labelColor === "Dark") {
-            labelColor = [255,255,255];
-        }
-        if (this.props.labelColor === "Light") {
-            labelColor = [0,0,0];
-        }
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.compositeData.forEach(compositeData => {
             const color = this.props.getNominalVoltageColor(compositeData.nominalVoltage);
@@ -123,7 +116,7 @@ class LineLayer extends CompositeLayer {
                 data: compositeData.activePower,
                 getText: activePower => activePower.p.toString(),
                 getPosition: activePower => [activePower.position.longitude, activePower.position.latitude],
-                getColor: labelColor,
+                getColor: this.props.labelColor,
                 fontFamily: 'Roboto',
                 getSize: 25,
                 getAngle: 0,
