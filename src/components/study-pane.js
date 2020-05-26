@@ -41,6 +41,7 @@ import PlayIcon from "@material-ui/icons/PlayArrow";
 import { green } from '@material-ui/core/colors';
 import AutoSizer from "react-virtualized/dist/commonjs/AutoSizer";
 import {CardHeader} from "@material-ui/core";
+import PageNotFound from "./page-not-found";
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -58,19 +59,6 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(2)
     },
 }));
-
-const StudyNotFound = (props) => {
-
-    const classes = useStyles();
-
-    return (
-        <Container maxWidth="sm" className={classes.error}>
-            <Typography variant="h5">
-                <FormattedMessage id="studyNotFound" values={ {"studyName": props.studyName} }/>
-            </Typography>
-        </Container>
-    );
-};
 
 const INITIAL_POSITION = [0, 0];
 
@@ -277,7 +265,7 @@ const StudyPane = () => {
     }, [mapRef, network]);
 
     if (studyNotFound) {
-        return <StudyNotFound studyName={studyName}/>;
+        return <PageNotFound message={<FormattedMessage id="studyNotFound" values={ {"studyName": studyName} }/>}/>
     } else {
         let displayedVoltageLevel, focusedVoltageLevel = null;
         if (network) {
