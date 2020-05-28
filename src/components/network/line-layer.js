@@ -9,7 +9,6 @@ import {CompositeLayer, PathLayer, TextLayer} from 'deck.gl';
 
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import getDistance from "geolib/es/getDistance";
-import getPathLength from "geolib/es/getPathLength";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 
@@ -65,14 +64,8 @@ class LineLayer extends CompositeLayer {
                                                          {latitude: positions[1][1], longitude: positions[1][0]});
                         const arrowCount = Math.ceil(lineDistance / DISTANCE_BETWEEN_ARROWS);
 
-                        const linePositions = props.geoData.getLinePositions(props.network, line, props.lineFullPath);
-                        let lineLength = getPathLength(linePositions);
-                        let printPosition1 = this.props.geoData.getCoordinateInLine(linePositions, lineLength, 15);
-                        let printPosition2 = this.props.geoData.getCoordinateInLine(linePositions, lineLength, 85);
-                        if (printPosition1 !== null && printPosition2 !== null) {
-                            compositeData.activePower.push({p: line.p1, position: printPosition1.distance, offset: printPosition1.offset});
-                            compositeData.activePower.push({p: line.p2, position: printPosition2.distance, offset: printPosition2.offset});
-                        }
+                        compositeData.activePower.push({line: line, p: line.p1, percent: 15});
+                        compositeData.activePower.push({line: line, p: line.p2, percent: 85});
 
                         return [...new Array(arrowCount).keys()].map(index => {
                             return {
@@ -115,14 +108,18 @@ class LineLayer extends CompositeLayer {
                 id: "ActivePower" + compositeData.nominalVoltage,
                 data: compositeData.activePower,
                 getText: activePower => activePower.p.toString(),
-                getPosition: activePower => [activePower.position.longitude, activePower.position.latitude],
+                getPosition: activePower => this.props.labelPosition(this.props.network, activePower.line, activePower.percent, this.props.lineFullPath),
                 getColor: this.props.labelColor,
                 fontFamily: 'Roboto',
                 getSize: 25,
                 getAngle: 0,
-                getPixelOffset: activePower => activePower.offset,
-                getTextAnchor: 'start',
+                getPixelOffset: activePower => this.props.labelOffset(this.props.network, activePower.line, activePower.percent, this.props.lineFullPath),
+                getTextAnchor: 'middle',
                 visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage) && this.props.labelsVisible,
+                updateTriggers: {
+                    getPosition: [this.props.lineFullPath],
+                    getPixelOffset: [this.props.lineFullPath]
+                }
             }));
             layers.push(lineActivePowerLabelsLayer);
 

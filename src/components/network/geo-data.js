@@ -94,7 +94,7 @@ export default class GeoData {
 
     getCoordinateInLine(positions, lineDistance, percent) {
         if (percent > 100 || percent < 0) {
-            throw Error("percent value incorrect: " + percent);
+            throw new Error("percent value incorrect: " + percent);
         }
         if (lineDistance <= 0) {
             return null
@@ -112,24 +112,15 @@ export default class GeoData {
         let leftDistance = wantedDistance - (currentDistance - getPathLength(goodPolyline));
         let angle = getGreatCircleBearing(goodPolyline[0], goodPolyline[1]);
         let reducedAngle = angle;
-        if(angle > 180) {
+        if (angle > 180) {
             reducedAngle = angle - 180;
         }
-        const neededOffset = this.getNeededOffset(reducedAngle);
+        const neededOffset = this.getNeededOffset(reducedAngle, 10);
         return {distance :computeDestinationPoint(goodPolyline[0], leftDistance, angle), angle: angle, offset: neededOffset};
     }
 
-    getNeededOffset(angle) {
-        if (angle <= 180 && angle > 168) {
-            return [10, 0];
-        } else if (angle <= 168 && angle > 113) {
-            return [10, -10];
-        } else if (angle <= 113 && angle > 78) {
-            return [0, -10];
-        } else if (angle <= 78 && angle > 22) {
-            return [10, 10];
-        } else {
-            return [10, 0];
-        }
+    getNeededOffset(angle, offsetDistance) {
+        let radiantAngle = (-angle + 90) / (180 / (Math.PI));
+        return [Math.cos(radiantAngle)*offsetDistance, -Math.sin(radiantAngle)*offsetDistance];
     }
 }

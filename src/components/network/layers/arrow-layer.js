@@ -189,7 +189,7 @@ export default class ArrowLayer extends Layer {
     }
 
     createTexturesStructure(props) {
-        const start = performance.now()
+        const start = performance.now();
 
         const linePositionsTextureData = [];
         const lineDistancesTextureData = [];
@@ -242,7 +242,7 @@ export default class ArrowLayer extends Layer {
             });
         });
 
-        const stop = performance.now()
+        const stop = performance.now();
         console.info(`Texture data created in ${stop -start} ms`);
 
         return {

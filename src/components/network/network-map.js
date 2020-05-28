@@ -22,7 +22,7 @@ import GeoData from './geo-data';
 import LineLayer, {LineFlowMode} from './line-layer';
 import SubstationLayer from './substation-layer';
 import {getNominalVoltageColor} from '../../utils/colors'
-import {getLocalStorageTheme} from "../../redux/local-storage";
+import getPathLength from "geolib/es/getPathLength";
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug'; // eslint-disable-line
 
@@ -121,7 +121,6 @@ const NetworkMap = forwardRef((props, ref) => {
                     }
                 }
             }
-
     }
 
     function updateLineFlowMode(viewState) {
@@ -165,6 +164,24 @@ const NetworkMap = forwardRef((props, ref) => {
         }
     }
 
+    function getLabelPosition(network, line, percent, fullPath) {
+        const linePositions = props.geoData.getLinePositions(network, line, fullPath);
+        let lineLength = getPathLength(linePositions);
+        let coordinates = props.geoData.getCoordinateInLine(linePositions, lineLength, percent);
+        if(coordinates !== null) {
+            return [coordinates.distance.longitude, coordinates.distance.latitude];
+        }
+    }
+
+    function getLabelOffset(network, line, percent, fullPath) {
+        const linePositions = props.geoData.getLinePositions(network, line, fullPath);
+        let lineLength = getPathLength(linePositions);
+        let coordinates = props.geoData.getCoordinateInLine(linePositions, lineLength, percent);
+        if(coordinates !== null) {
+            return coordinates.offset;
+        }
+    }
+
     const layers = [];
 
     if (props.network !== null && props.geoData !== null) {
@@ -193,6 +210,8 @@ const NetworkMap = forwardRef((props, ref) => {
             lineFullPath: props.lineFullPath,
             labelsVisible: labelsVisible,
             labelColor: labelColor,
+            labelPosition: getLabelPosition,
+            labelOffset: getLabelOffset,
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({
