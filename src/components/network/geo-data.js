@@ -100,6 +100,11 @@ export default class GeoData {
             return null
         }
 
+        if (percent > 50) {
+            percent = 100 - percent;
+            positions = positions.reverse();
+        }
+
         let wantedDistance = lineDistance * percent / 100;
         let currentDistance = 0;
         let i;
