@@ -9,6 +9,7 @@ import {CompositeLayer, PathLayer, TextLayer} from 'deck.gl';
 
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import getDistance from "geolib/es/getDistance";
+import getPathLength from "geolib/es/getPathLength";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 
@@ -28,7 +29,7 @@ class LineLayer extends CompositeLayer {
         };
     }
 
-    updateState({props, changeFlags}) {
+    updateState({props, oldProps, changeFlags}) {
         if (changeFlags.dataChanged) {
             let compositeData = [];
 
@@ -59,13 +60,31 @@ class LineLayer extends CompositeLayer {
                     // create one arrow each DISTANCE_BETWEEN_ARROWS
                     compositeData.arrows = compositeData.lines.flatMap(line => {
                         // calculate distance between 2 substations as a raw estimate of line size
-                        const positions = props.geoData.getLinePositions(props.network, line, false);
-                        const lineDistance = getDistance({latitude: positions[0][1], longitude: positions[0][0]},
-                                                         {latitude: positions[1][1], longitude: positions[1][0]});
-                        const arrowCount = Math.ceil(lineDistance / DISTANCE_BETWEEN_ARROWS);
+                        const directLinePositions = props.geoData.getLinePositions(props.network, line, false);
+                        const directLineDistance = getDistance({latitude: directLinePositions[0][1], longitude: directLinePositions[0][0]},
+                                                         {latitude: directLinePositions[1][1], longitude: directLinePositions[1][0]});
+                        const arrowCount = Math.ceil(directLineDistance / DISTANCE_BETWEEN_ARROWS);
 
-                        compositeData.activePower.push({line: line, p: line.p1, percent: 15});
-                        compositeData.activePower.push({line: line, p: line.p2, percent: 85});
+                        const positions = props.geoData.getLinePositions(props.network, line, props.lineFullPath);
+                        let lineLength = getPathLength(positions);
+                        let coordinates1 = props.geoData.getCoordinateInLine(positions, lineLength, 15);
+                        let coordinates2 = props.geoData.getCoordinateInLine(positions, lineLength, 85);
+
+                        if (coordinates1 !== null && coordinates2 !== null) {
+                            compositeData.activePower.push({
+                                line: line,
+                                p: line.p1,
+                                percent: 15,
+                                printPosition: [coordinates1.distance.longitude, coordinates1.distance.latitude],
+                                offset: coordinates1.offset,
+                                });
+                            compositeData.activePower.push({
+                                line: line,
+                                p: line.p2,
+                                percent: 85,
+                                printPosition: [coordinates2.distance.longitude, coordinates2.distance.latitude],
+                                offset: coordinates2.offset});
+                        }
 
                         return [...new Array(arrowCount).keys()].map(index => {
                             return {
@@ -79,6 +98,21 @@ class LineLayer extends CompositeLayer {
 
             this.setState({compositeData: compositeData});
         }
+        //update the label position when toggling fullPath
+        if (changeFlags.propsChanged) {
+            if (oldProps.lineFullPath !== undefined && props.lineFullPath !== oldProps.lineFullPath) {
+                this.state.compositeData.forEach(compositeData => {
+                   compositeData.activePower.forEach(activePower => {
+                       const positions = props.geoData.getLinePositions(props.network, activePower.line, props.lineFullPath);
+                       let lineLength = getPathLength(positions);
+                       let coordinates = props.geoData.getCoordinateInLine(positions, lineLength, activePower.percent);
+                       activePower.printPosition = [coordinates.distance.longitude, coordinates.distance.latitude];
+                       activePower.offset = coordinates.offset;
+                   });
+               });
+            }
+        }
+
     }
 
     renderLayers() {
@@ -108,12 +142,12 @@ class LineLayer extends CompositeLayer {
                 id: "ActivePower" + compositeData.nominalVoltage,
                 data: compositeData.activePower,
                 getText: activePower => activePower.p.toString(),
-                getPosition: activePower => this.props.labelPosition(this.props.network, activePower.line, activePower.percent, this.props.lineFullPath),
+                getPosition: activePower => activePower.printPosition,
                 getColor: this.props.labelColor,
                 fontFamily: 'Roboto',
                 getSize: 25,
                 getAngle: 0,
-                getPixelOffset: activePower => this.props.labelOffset(this.props.network, activePower.line, activePower.percent, this.props.lineFullPath),
+                getPixelOffset: activePower => activePower.offset,
                 getTextAnchor: 'middle',
                 visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage) && this.props.labelsVisible,
                 updateTriggers: {
