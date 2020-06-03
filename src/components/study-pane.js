@@ -90,6 +90,8 @@ const StudyPane = () => {
 
     const [loadFlowRunning, setLoadFlowRunning] = useState(false);
 
+    const [updateSwitchMsg, setUpdateSwitchMsg] = useState("");
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -169,9 +171,7 @@ const StudyPane = () => {
     }
 
     const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
-        if (sldRef.current) {
-            sldRef.current.updateSwitchMsg("");
-        }
+        setUpdateSwitchMsg("");
         history.replace("/studies/" + studyName + stringify({ voltageLevelId: voltageLevelId }, { addQueryPrefix: true }));
     }, []);
 
@@ -190,13 +190,13 @@ const StudyPane = () => {
         updateSwitchState(studyName, breakerId, open).then( response => {
             if (response.ok) {
                 sldRef.current.reloadSvg();
-                sldRef.current.updateSwitchMsg("");
+                setUpdateSwitchMsg("");
             }
             else {
                 console.error(response);
                 eltOpen.style.visibility = open ? "hidden" : "visible";
                 eltClose.style.visibility = open ? "visible" : "hidden";
-                sldRef.current.updateSwitchMsg(response.status + " : " + response.statusText);
+                setUpdateSwitchMsg(response.status + " : " + response.statusText);
             }
         });
     }, [studyName]);
@@ -328,8 +328,8 @@ const StudyPane = () => {
                                                    onBreakerClick={handleUpdateSwitchState}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
                                                    svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)}
-                                                   ref={sldRef} />
-
+                                                   ref={sldRef}
+                                                   updateSwitchMsg={updateSwitchMsg}/>
                             </div>
                         }
                         {

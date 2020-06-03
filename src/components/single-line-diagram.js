@@ -79,7 +79,6 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
     const svgDraw = useRef();
 
     const [forceState, updateState] = useState(false);
-    const [updateSwitchMsg, setUpdateSwitchMsg] = useState("");
 
     const forceUpdate = React.useCallback(() => {
             if (svgDraw.current) {
@@ -89,8 +88,7 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
     }, []);
 
     useImperativeHandle(ref, () => ({
-        reloadSvg: forceUpdate,
-        updateSwitchMsg: (m) => setUpdateSwitchMsg(m)
+        reloadSvg: forceUpdate
     }), []);
 
     useEffect(() => {
@@ -164,7 +162,7 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
             });
             svgDraw.current = draw;
         }
-    }, [svg, updateSwitchMsg]);
+    }, [svg, props.updateSwitchMsg]);
 
     const classes = useStyles();
 
@@ -185,8 +183,8 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
     }
 
     let msgUpdateSwitch;
-    if (updateSwitchMsg !== "") {
-        msgUpdateSwitch = <Alert className={classes.errorUpdateSwitch} severity="error">{updateSwitchMsg}</Alert>
+    if (props.updateSwitchMsg !== "") {
+        msgUpdateSwitch = <Alert className={classes.errorUpdateSwitch} severity="error">{props.updateSwitchMsg}</Alert>
     } else {
         msgUpdateSwitch = ""
     }
@@ -210,7 +208,8 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    updateSwitchMsg: PropTypes.string.isRequired
 };
 
 export default SingleLineDiagram;
