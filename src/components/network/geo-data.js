@@ -6,9 +6,8 @@
  */
 
 import getDistance from "geolib/es/getDistance";
-import getPathLength from "geolib/es/getPathLength";
-import getGreatCircleBearing from "geolib/es/getGreatCircleBearing";
 import computeDestinationPoint from "geolib/es/computeDestinationPoint";
+import cheapRuler from 'cheap-ruler';
 
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
@@ -108,14 +107,17 @@ export default class GeoData {
         let wantedDistance = lineDistance * percent / 100;
         let currentDistance = 0;
         let i;
+        let ruler;
         for (i = 0; currentDistance < wantedDistance; i++) {
-            currentDistance = currentDistance + getPathLength(positions.slice(i, i + 2));
+            ruler = cheapRuler(positions[i][1], 'meters');
+            currentDistance = currentDistance + ruler.lineDistance(positions.slice(i, i + 2));
         }
 
         //the polyline where we reached the wanted distance
         const goodPolyline = positions.slice(i - 1, i + 1);
-        let leftDistance = wantedDistance - (currentDistance - getPathLength(goodPolyline));
-        let angle = getGreatCircleBearing(goodPolyline[0], goodPolyline[1]);
+        ruler = cheapRuler(positions[i][1], 'meters');
+        let leftDistance = wantedDistance - (currentDistance - ruler.lineDistance(goodPolyline));
+        let angle = ruler.bearing(goodPolyline[0], goodPolyline[1]);
         let reducedAngle = angle;
         if (angle > 180) {
             reducedAngle = angle - 180;

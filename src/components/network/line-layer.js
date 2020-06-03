@@ -9,7 +9,7 @@ import {CompositeLayer, PathLayer, TextLayer} from 'deck.gl';
 
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import getDistance from "geolib/es/getDistance";
-import getPathLength from "geolib/es/getPathLength";
+import cheapRuler from 'cheap-ruler';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 
@@ -66,7 +66,8 @@ class LineLayer extends CompositeLayer {
                         const arrowCount = Math.ceil(directLineDistance / DISTANCE_BETWEEN_ARROWS);
 
                         const positions = props.geoData.getLinePositions(props.network, line, props.lineFullPath);
-                        let lineLength = getPathLength(positions);
+                        let ruler = cheapRuler(positions[0][1], 'meters');
+                        let lineLength = ruler.lineDistance(positions);
                         let coordinates1 = props.geoData.getCoordinateInLine(positions, lineLength, 15);
                         let coordinates2 = props.geoData.getCoordinateInLine(positions, lineLength, 85);
 
@@ -104,7 +105,8 @@ class LineLayer extends CompositeLayer {
                 this.state.compositeData.forEach(compositeData => {
                    compositeData.activePower.forEach(activePower => {
                        const positions = props.geoData.getLinePositions(props.network, activePower.line, props.lineFullPath);
-                       let lineLength = getPathLength(positions);
+                       let ruler = cheapRuler(positions[0][1], 'meters');
+                       let lineLength = ruler.lineDistance(positions);
                        let coordinates = props.geoData.getCoordinateInLine(positions, lineLength, activePower.percent);
                        activePower.printPosition = [coordinates.distance.longitude, coordinates.distance.latitude];
                        activePower.offset = coordinates.offset;
