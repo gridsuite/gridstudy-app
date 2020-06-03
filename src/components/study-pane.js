@@ -169,6 +169,9 @@ const StudyPane = () => {
     }
 
     const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
+        if (sldRef.current) {
+            sldRef.current.updateSwitchMsg("");
+        }
         history.replace("/studies/" + studyName + stringify({ voltageLevelId: voltageLevelId }, { addQueryPrefix: true }));
     }, []);
 
@@ -178,15 +181,22 @@ const StudyPane = () => {
 
     const sldRef = useRef();
     const handleUpdateSwitchState = useCallback( (breakerId, open, switchElement) => {
-        switchElement.querySelector(".open").style.visibility = open ? "visible" : "hidden";
-        switchElement.querySelector(".closed").style.visibility = open ? "hidden" : "visible";
+        let eltOpen = switchElement.querySelector(".open");
+        let eltClose = switchElement.querySelector(".closed");
+
+        eltOpen.style.visibility = open ? "visible" : "hidden";
+        eltClose.style.visibility = open ? "hidden" : "visible";
 
         updateSwitchState(studyName, breakerId, open).then( response => {
             if (response.ok) {
                 sldRef.current.reloadSvg();
+                sldRef.current.updateSwitchMsg("");
             }
             else {
                 console.error(response);
+                eltOpen.style.visibility = open ? "hidden" : "visible";
+                eltClose.style.visibility = open ? "visible" : "hidden";
+                sldRef.current.updateSwitchMsg(response.status + " : " + response.statusText);
             }
         });
     }, [studyName]);
