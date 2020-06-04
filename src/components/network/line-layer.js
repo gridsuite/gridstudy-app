@@ -54,10 +54,21 @@ class LineLayer extends CompositeLayer {
                     .map(e => { return { nominalVoltage: e[0], lines: e[1] };})
                     .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
 
+                compositeData.forEach(compositeData => {
+                    let lineMap = new Map();
+                    compositeData.lines.forEach(line => {
+                        const positions = props.geoData.getLinePositions(props.network, line, props.lineFullPath);
+                        const cumulativeDistances = props.geoData.getLineDistances(positions);
+                        lineMap.set(line.id, {positions: positions, cumulativeDistances: cumulativeDistances, line: line});
+                    });
+                    compositeData.lineMap = lineMap;
+                });
+
                 // add arrows
                 compositeData.forEach(compositeData => {
                     compositeData.activePower = [];
                     // create one arrow each DISTANCE_BETWEEN_ARROWS
+                    const lineMap = compositeData.lineMap;
                     compositeData.arrows = compositeData.lines.flatMap(line => {
                         // calculate distance between 2 substations as a raw estimate of line size
                         const directLinePositions = props.geoData.getLinePositions(props.network, line, false);
@@ -65,12 +76,11 @@ class LineLayer extends CompositeLayer {
                                                          {latitude: directLinePositions[1][1], longitude: directLinePositions[1][0]});
                         const arrowCount = Math.ceil(directLineDistance / DISTANCE_BETWEEN_ARROWS);
 
-                        const positions = props.geoData.getLinePositions(props.network, line, props.lineFullPath);
-                        let ruler = cheapRuler(positions[0][1], 'meters');
-                        let lineLength = ruler.lineDistance(positions);
-                        let coordinates1 = props.geoData.getCoordinateInLine(positions, lineLength, 15);
-                        let coordinates2 = props.geoData.getCoordinateInLine(positions, lineLength, 85);
+                        ///const positions = props.geoData.getLinePositions(props.network, line, props.lineFullPath);
+                        let lineData = lineMap.get(line.id);
 
+                        let coordinates1 = props.geoData.getCoordinateInLine(lineData.positions, lineData.cumulativeDistances, 15);
+                        let coordinates2 = props.geoData.getCoordinateInLine(lineData.positions, lineData.cumulativeDistances, 85);
                         if (coordinates1 !== null && coordinates2 !== null) {
                             compositeData.activePower.push({
                                 line: line,
@@ -87,6 +97,8 @@ class LineLayer extends CompositeLayer {
                                 offset: coordinates2.offset});
                         }
 
+                        line.cumulativeDistances = lineData.cumulativeDistances;
+                        line.positions = lineData.positions;
                         return [...new Array(arrowCount).keys()].map(index => {
                             return {
                                 distance: index / arrowCount,
@@ -103,18 +115,31 @@ class LineLayer extends CompositeLayer {
         if (changeFlags.propsChanged) {
             if (oldProps.lineFullPath !== undefined && props.lineFullPath !== oldProps.lineFullPath) {
                 this.state.compositeData.forEach(compositeData => {
-                   compositeData.activePower.forEach(activePower => {
-                       const positions = props.geoData.getLinePositions(props.network, activePower.line, props.lineFullPath);
-                       let ruler = cheapRuler(positions[0][1], 'meters');
-                       let lineLength = ruler.lineDistance(positions);
-                       let coordinates = props.geoData.getCoordinateInLine(positions, lineLength, activePower.percent);
-                       activePower.printPosition = [coordinates.distance.longitude, coordinates.distance.latitude];
-                       activePower.offset = coordinates.offset;
-                   });
+                    compositeData.lineMap.forEach(lineData => {
+                        lineData.positions = props.geoData.getLinePositions(props.network, lineData.line, props.lineFullPath);
+                        lineData.cumulativeDistances = props.geoData.getLineDistances(lineData.positions);
+                    });
+                });
+
+                this.state.compositeData.forEach(compositeData => {
+                    compositeData.activePower.forEach(activePower => {
+                        let lineData = compositeData.lineMap.get(activePower.line.id);
+                        const positions = lineData.positions;
+                        const cumulativeDistances = lineData.cumulativeDistances;
+                        let coordinates = props.geoData.getCoordinateInLine(positions, cumulativeDistances, activePower.percent);
+                        if (coordinates) {
+                            activePower.printPosition = [coordinates.distance.longitude, coordinates.distance.latitude];
+                            activePower.offset = coordinates.offset;
+                        }
+                    });
+                    compositeData.arrows.forEach(arrows => {
+                        let lineData = compositeData.lineMap.get(arrows.line.id);
+                        arrows.line.positions = lineData.positions;
+                        arrows.line.cumulativeDistances = lineData.cumulativeDistances;
+                    });
                });
             }
         }
-
     }
 
     renderLayers() {

@@ -192,7 +192,7 @@ export default class ArrowLayer extends Layer {
         const start = performance.now();
 
         const linePositionsTextureData = [];
-        const lineDistancesTextureData = [];
+        let lineDistancesTextureData = [];
         const lineAttributes = new Map();
 
         // build line list from arrow list
@@ -206,36 +206,20 @@ export default class ArrowLayer extends Layer {
             const linePositionsTextureOffset = linePositionsTextureData.length / 2;
             const lineDistancesTextureOffset = lineDistancesTextureData.length;
             let linePointCount = 0;
-            let lineDistance = 0;
             if (positions.length > 0) {
-                let ruler = cheapRuler(positions[0][1], 'meters');
-                let prevPosition;
-                positions.forEach((position, index) => {
-                    // compute distance with previous position
-                    let segmentDistance = 0;
-                    if (prevPosition) {
-                        ruler = cheapRuler(position[1], 'meters');
-                        segmentDistance = ruler.distance([prevPosition[1], prevPosition[0]],
-                                                         [position[1], position[0]]);
-                    }
-                    prevPosition = position;
-
+                positions.forEach((position) => {
                     // fill line positions texture
                     linePositionsTextureData.push(position[0]);
                     linePositionsTextureData.push(position[1]);
-
                     linePointCount++;
-
-                    // fill line distance texture
-                    lineDistance += segmentDistance;
-                    lineDistancesTextureData.push(lineDistance);
                 });
+                lineDistancesTextureData.push(...line.cumulativeDistances);
             }
             if (linePointCount > MAX_LINE_POINT_COUNT) {
                 throw new Error(`Too many line point count (${linePointCount}), maximum is ${MAX_LINE_POINT_COUNT}`);
             }
             lineAttributes.set(line, {
-                distance: lineDistance,
+                distance: lineDistancesTextureData[lineDistancesTextureData.length - 1],
                 positionsTextureOffset: linePositionsTextureOffset,
                 distancesTextureOffset: lineDistancesTextureOffset,
                 pointCount: linePointCount

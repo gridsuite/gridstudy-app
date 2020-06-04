@@ -91,32 +91,54 @@ export default class GeoData {
         return [ substationPosition1, substationPosition2 ];
     };
 
-    getCoordinateInLine(positions, lineDistance, percent) {
+    getLineDistances(positions) {
+        if (positions !== null && positions.length > 1) {
+            let cumulativeDistanceArray = [0];
+            let cumulativeDistance = 0;
+            let segmentDistance;
+            let ruler;
+            for (let i = 0; i < positions.length - 1; i++) {
+                ruler = cheapRuler(positions[i][1], 'meters');
+                segmentDistance = ruler.lineDistance(positions.slice(i, i + 2));
+                cumulativeDistance = cumulativeDistance + segmentDistance;
+                cumulativeDistanceArray[i+1] = cumulativeDistance;
+            }
+            return cumulativeDistanceArray;
+        }
+        return null;
+    }
+
+    getCoordinateInLine(positions, cumulativeDistances, percent) {
         if (percent > 100 || percent < 0) {
             throw new Error("percent value incorrect: " + percent);
         }
-        if (lineDistance <= 0) {
-            return null
+        if (cumulativeDistances === null || cumulativeDistances.length < 2 || cumulativeDistances[1] === 0) {
+            return null;
         }
-
-        if (percent > 50) {
-            percent = 100 - percent;
-            positions = positions.reverse();
-        }
-
+        let lineDistance = cumulativeDistances[cumulativeDistances.length-1];
         let wantedDistance = lineDistance * percent / 100;
-        let currentDistance = 0;
-        let i;
-        let ruler;
-        for (i = 0; currentDistance < wantedDistance; i++) {
-            ruler = cheapRuler(positions[i][1], 'meters');
-            currentDistance = currentDistance + ruler.lineDistance(positions.slice(i, i + 2));
+        let lowerBound = 0;
+        let upperBound = cumulativeDistances.length - 1;
+        let i = 0;
+
+        //binary search
+        while (true) {
+            i = Math.floor((lowerBound + upperBound) / 2);
+            if (cumulativeDistances[i] < wantedDistance && cumulativeDistances[i+1] < wantedDistance) {
+                lowerBound = i+1;
+            }
+            else if (cumulativeDistances[i] > wantedDistance) {
+                upperBound = i;
+            }
+            else if (cumulativeDistances[i] < wantedDistance && cumulativeDistances[i+1] > wantedDistance) {
+                break;
+            }
         }
 
         //the polyline where we reached the wanted distance
-        const goodPolyline = positions.slice(i - 1, i + 1);
-        ruler = cheapRuler(positions[i][1], 'meters');
-        let leftDistance = wantedDistance - (currentDistance - ruler.lineDistance(goodPolyline));
+        let goodPolyline = positions.slice(i, i+2);
+        let ruler = cheapRuler(goodPolyline[0][1], 'meters');
+        let leftDistance = wantedDistance - cumulativeDistances[i];
         let angle = ruler.bearing(goodPolyline[0], goodPolyline[1]);
         let reducedAngle = angle;
         if (angle > 180) {
@@ -124,6 +146,7 @@ export default class GeoData {
         }
         const neededOffset = this.getNeededOffset(reducedAngle, 10);
         return {distance :computeDestinationPoint(goodPolyline[0], leftDistance, angle), angle: angle, offset: neededOffset};
+
     }
 
     getNeededOffset(angle, offsetDistance) {
