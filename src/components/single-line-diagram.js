@@ -162,7 +162,11 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
             });
             svgDraw.current = draw;
         }
-    }, [svg, props.updateSwitchMsg]);
+    }, [svg]);
+
+    useLayoutEffect(() => {
+        svgPrevViewbox.current = null;
+     }, [props.updateSwitchMsg]);
 
     const classes = useStyles();
 
