@@ -5,15 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {store} from '../redux/store'
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 let PREFIX_CASE_QUERIES;
 let PREFIX_STUDY_QUERIES;
+let PREFIX_NOTIFICATION_WS;
 if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
     PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + "/case";
     PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + "/study";
+    PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + "/notification";
 } else {
     PREFIX_CASE_QUERIES = process.env.REACT_APP_API_CASE_SERVER;
     PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_STUDY_SERVER;
+    PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_NOTIFICATION_SERVER ;
 }
 
 function getToken() {
@@ -143,4 +147,22 @@ export function startLoadFlow(studyName) {
     const startLoadFlowUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/loadflow/run";
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, {method : 'put'});
+}
+
+export function connectNotificationsWebsocket(studyName) {
+    // The websocket API doesn't allow relative urls
+    const wsbase = document.baseURI.replace(/^http:\/\//, "ws://").replace(/^https:\/\//, "wss://");
+    const wsadress = wsbase + PREFIX_NOTIFICATION_WS + "/notify?studyName=" + studyName;
+    let wsaddressWithToken;
+    if (process.env.REACT_APP_USE_AUTHENTICATION === "true") {
+        wsaddressWithToken = wsadress + "&access_token=" + getToken();
+    } else {
+        wsaddressWithToken = wsadress;
+    }
+    const rws = new ReconnectingWebSocket(wsaddressWithToken);
+    // don't log the token, it's private
+    rws.onopen = function(event) {
+        console.info("Connected Websocket " + wsadress + " ...");
+    }
+    return rws;
 }
