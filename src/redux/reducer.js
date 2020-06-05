@@ -44,6 +44,7 @@ import {
     USE_NAME,
     USER,
     SIGNIN_CALLBACK_ERROR,
+    STUDY_UPDATED,
 } from "./actions";
 
 const initialState = {
@@ -63,6 +64,7 @@ const initialState = {
     lineFullPath: getLocalStorageLineFullPath(),
     lineFlowMode: getLocalStorageLineFlowMode(),
     signInCallbackError : null,
+    studyUpdated : {force: 0, eventData: {}}
 };
 
 export const reducer = createReducer(initialState, {
@@ -91,6 +93,10 @@ export const reducer = createReducer(initialState, {
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
         state.geoData = action.geoData;
+    },
+
+    [STUDY_UPDATED]: (state, action) => {
+        state.studyUpdated = {force: 1 - state.studyUpdated.force, eventData: action.eventData};
     },
 
     [SELECT_THEME]: (state, action) => {
