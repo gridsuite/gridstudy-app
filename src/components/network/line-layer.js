@@ -16,7 +16,8 @@ const DISTANCE_BETWEEN_ARROWS = 10000.0;
 export const LineFlowMode = {
     NONE: 'none',
     STATIC_ARROWS: 'staticArrows',
-    ANIMATED_ARROWS: 'animatedArrows'
+    ANIMATED_ARROWS: 'animatedArrows',
+    FEEDERS: 'feeders'
 };
 
 class LineLayer extends CompositeLayer {
