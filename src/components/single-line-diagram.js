@@ -17,11 +17,12 @@ import IconButton from '@material-ui/core/IconButton';
 import Paper from "@material-ui/core/Paper";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
+
 import { fetchSvg } from "../utils/rest-api";
 
 import { SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.panzoom.js";
-import {useSelector} from "react-redux";
 
 const maxWidth = 800;
 const maxHeight = 700;
@@ -47,6 +48,12 @@ const useStyles = makeStyles(theme => ({
         maxWidth: maxWidth,
         maxHeight: maxHeight,
     },
+    errorUpdateSwitch: {
+        position: 'absolute',
+        top: 25,
+        left: 0,
+        right: 0
+    }
 }));
 
 const SvgNotFound = (props) => {
@@ -71,14 +78,14 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
     const svgPrevViewbox = useRef();
     const svgDraw = useRef();
 
-    const [forceState, updateState] = React.useState(false);
+    const [forceState, updateState] = useState(false);
+
     const forceUpdate = React.useCallback(() => {
             if (svgDraw.current) {
                 svgPrevViewbox.current = svgDraw.current.viewbox();
             }
             updateState(s=>!s)
     }, []);
-
 
     useImperativeHandle(ref, () => ({
         reloadSvg: forceUpdate
@@ -157,6 +164,10 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
         }
     }, [svg]);
 
+    useEffect(() => {
+        svgPrevViewbox.current = null;
+     }, [props.updateSwitchMsg]);
+
     const classes = useStyles();
 
     const onCloseHandler = () => {
@@ -175,6 +186,13 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
         inner = <div id="sld-svg" style={{height : '100%'}} className={classes.div} dangerouslySetInnerHTML={{__html:svg.svg}}/>
     }
 
+    let msgUpdateSwitch;
+    if (props.updateSwitchMsg !== "") {
+        msgUpdateSwitch = <Alert className={classes.errorUpdateSwitch} severity="error">{props.updateSwitchMsg}</Alert>
+    } else {
+        msgUpdateSwitch = ""
+    }
+
     return (
         <Paper elevation={1} variant='outlined' className={finalClasses}>
             <Box display="flex" flexDirection="row">
@@ -185,6 +203,7 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
                     <CloseIcon/>
                 </IconButton>
             </Box>
+            {msgUpdateSwitch}
             {inner}
         </Paper>
     );
@@ -193,7 +212,8 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    updateSwitchMsg: PropTypes.string.isRequired
 };
 
 export default SingleLineDiagram;
