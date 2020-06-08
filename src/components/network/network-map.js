@@ -52,7 +52,7 @@ const NetworkMap = forwardRef((props, ref) => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
         return labelColor
-    }, theme);
+    }, [theme ]);
 
     const useName = useSelector(state => state.useName);
 
@@ -187,6 +187,7 @@ const NetworkMap = forwardRef((props, ref) => {
             network: props.network,
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
+            disconnectedLineColor: labelColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
             lineFlowMode: lineFlowMode,
             lineFullPath: props.lineFullPath,
