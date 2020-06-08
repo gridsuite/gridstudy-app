@@ -12,6 +12,9 @@ import getDistance from "geolib/es/getDistance";
 import cheapRuler from 'cheap-ruler';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
+//Constants for Feeders mode
+const START_ARROW_POSITION = 0.1;
+const END_ARROW_POSITION = 0.9;
 
 export const LineFlowMode = {
     NONE: 'none',
@@ -31,7 +34,7 @@ class LineLayer extends CompositeLayer {
     }
 
     updateState({props, oldProps, changeFlags}) {
-        if (changeFlags.dataChanged) {
+        if (changeFlags.dataChanged || props.lineFlowMode != oldProps.lineFlowMode) {
             let compositeData = [];
 
             if (props.network != null && props.geoData != null) {
@@ -97,21 +100,34 @@ class LineLayer extends CompositeLayer {
                                 printPosition: [coordinates2.distance.longitude, coordinates2.distance.latitude],
                                 offset: coordinates2.offset});
                         }
-
                         line.cumulativeDistances = lineData.cumulativeDistances;
                         line.positions = lineData.positions;
-                        return [...new Array(arrowCount).keys()].map(index => {
-                            return {
-                                distance: index / arrowCount,
+                        if(props.lineFlowMode != LineFlowMode.FEEDERS) {
+                            return [...new Array(arrowCount).keys()].map(index => {
+                                return {
+                                    distance: index / arrowCount,
+                                    line: line
+                                }
+                            });
+                        }
+                        //If we use Feeders Mode, we build only two arrows
+                        return [
+                            {
+                                distance: START_ARROW_POSITION,
+                                line: line
+                            },
+                            {
+                                distance: END_ARROW_POSITION,
                                 line: line
                             }
-                        });
+                        ]
                     });
                 });
             }
 
             this.setState({compositeData: compositeData});
         }
+
         //update the label position when toggling fullPath
         if (changeFlags.propsChanged) {
             if (oldProps.lineFullPath !== undefined && props.lineFullPath !== oldProps.lineFullPath) {
