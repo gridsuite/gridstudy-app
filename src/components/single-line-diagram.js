@@ -164,7 +164,7 @@ const SingleLineDiagram = forwardRef((props, ref)  => {
         }
     }, [svg]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         svgPrevViewbox.current = null;
      }, [props.updateSwitchMsg]);
 
