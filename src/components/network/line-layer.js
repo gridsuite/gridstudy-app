@@ -88,6 +88,11 @@ class LineLayer extends CompositeLayer {
             const doDash = line => {
                 return line.p1 == null || line.p2 == null;
             };
+            const isDisconnected = line => {
+                return line.p1 == null && line.p2 == null
+            };
+            const noDashArray=[0,0];
+            const dashArray=[15, 10];
 
             const lineLayer = new PathLayer(this.getSubLayerProps({
                 id: 'LineNominalVoltage' + compositeData.nominalVoltage,
@@ -97,7 +102,7 @@ class LineLayer extends CompositeLayer {
                 widthMaxPixels: 2,
                 getPath: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
                 getColor: line=> {
-                    return line.p1==null && line.p2 == null ? this.props.disconnectedLineColor: color
+                    return isDisconnected(line) ? this.props.disconnectedLineColor: color
                 },
                 getWidth: 2,
                 visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
@@ -105,7 +110,7 @@ class LineLayer extends CompositeLayer {
                     getPath: [this.props.lineFullPath],
                     getColor: [this.props.disconnectedLineColor]
                 },
-                getDashArray: line => doDash(line) ? [15, 10] : [0,0],
+                getDashArray: line => doDash(line) ? dashArray : noDashArray,
                 extensions: [new PathStyleExtension( { dash: true })]
             }));
             layers.push(lineLayer);
