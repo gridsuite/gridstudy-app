@@ -30,7 +30,6 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
-import {useSelector} from "react-redux";
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullScreen, {fullScreenSupported} from "react-request-fullscreen";
 
@@ -83,10 +82,7 @@ const StyledMenuItem = withStyles(theme => ({
     },
 }))(MenuItem);
 
-const TopBar = (props) => {
-
-    const user = useSelector(state => state.user);
-
+const TopBar = ({onParametersClick, onLogoutClick, user}) => {
     const classes = useStyles();
 
     const [anchorElGeneralMenu, setAnchorElGeneralMenu] = React.useState(null);
@@ -114,10 +110,10 @@ const TopBar = (props) => {
         setAnchorElAppsMenu(null);
     };
 
-    const onParametersClick = () => {
+    const onParametersClicked = () => {
         handleCloseGeneralMenu();
-      if (props.onParametersClick) {
-          props.onParametersClick();
+      if (onParametersClick) {
+          onParametersClick();
       }
     };
 
@@ -194,7 +190,7 @@ const TopBar = (props) => {
                         open={Boolean(anchorElGeneralMenu)}
                         onClose={handleCloseGeneralMenu}
                     >
-                        <StyledMenuItem onClick={onParametersClick}>
+                        <StyledMenuItem onClick={onParametersClicked}>
                             <ListItemIcon>
                                 <SettingsIcon fontSize="small" />
                             </ListItemIcon>
@@ -222,7 +218,7 @@ const TopBar = (props) => {
                                 }
                                 </StyledMenuItem>) : <></>
                         }
-                        <StyledMenuItem onClick={props.onLogoutClick}>
+                        <StyledMenuItem onClick={onLogoutClick}>
                             <ListItemIcon>
                                 <ExitToAppIcon fontSize="small" />
                             </ListItemIcon>
