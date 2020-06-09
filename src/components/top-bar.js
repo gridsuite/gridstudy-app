@@ -8,7 +8,6 @@
 import React, {useRef, useState} from "react";
 
 import {FormattedMessage} from "react-intl";
-import {useHistory} from 'react-router-dom';
 
 import AppBar from "@material-ui/core/AppBar";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -82,7 +81,7 @@ const StyledMenuItem = withStyles(theme => ({
     },
 }))(MenuItem);
 
-const TopBar = ({onParametersClick, onLogoutClick, user}) => {
+const TopBar = ({onParametersClick, onLogoutClick, onLogoClick, user}) => {
     const classes = useStyles();
 
     const [anchorElGeneralMenu, setAnchorElGeneralMenu] = React.useState(null);
@@ -92,8 +91,6 @@ const TopBar = ({onParametersClick, onLogoutClick, user}) => {
     const fullScreenRef = useRef(null);
 
     const [isFullScreen, setIsFullScreen] = useState(false);
-
-    const history = useHistory();
 
     const handleClickGeneralMenu = event => {
         setAnchorElGeneralMenu(event.currentTarget);
@@ -117,9 +114,9 @@ const TopBar = ({onParametersClick, onLogoutClick, user}) => {
       }
     };
 
-    const onLogoClick = () => {
+    const onLogoClicked = () => {
         handleCloseAppsMenu();
-        history.replace("/");
+        onLogoClick();
     };
 
     function onFullScreenChange (isFullScreen) {
@@ -159,7 +156,7 @@ const TopBar = ({onParametersClick, onLogoutClick, user}) => {
                             open={Boolean(anchorElAppsMenu)}
                             onClose={handleCloseAppsMenu}
                         >
-                            <StyledMenuItem onClick={onLogoClick}>
+                            <StyledMenuItem onClick={onLogoClicked}>
                                 <ListItemIcon>
                                     <PowsyblLogo className={classes.menuIcon}  />
                                 </ListItemIcon>
