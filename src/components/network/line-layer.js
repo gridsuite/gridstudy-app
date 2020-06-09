@@ -6,7 +6,7 @@
  */
 
 import {CompositeLayer, PathLayer} from 'deck.gl';
-
+import {PathStyleExtension} from '@deck.gl/extensions'
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import getDistance from "geolib/es/getDistance";
 
@@ -17,6 +17,17 @@ export const LineFlowMode = {
     STATIC_ARROWS: 'staticArrows',
     ANIMATED_ARROWS: 'animatedArrows'
 };
+
+const noDashArray=[0,0];
+const dashArray=[15, 10];
+
+function doDash(line){
+    return line.p1 == null || line.p2 == null;
+}
+
+function isDisconnected(line){
+    return line.p1 == null && line.p2 == null
+}
 
 class LineLayer extends CompositeLayer {
 
@@ -81,11 +92,9 @@ class LineLayer extends CompositeLayer {
 
     renderLayers() {
         const layers = [];
-
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.compositeData.forEach(compositeData => {
             const color = this.props.getNominalVoltageColor(compositeData.nominalVoltage);
-
             const lineLayer = new PathLayer(this.getSubLayerProps({
                 id: 'LineNominalVoltage' + compositeData.nominalVoltage,
                 data: compositeData.lines,
@@ -93,12 +102,15 @@ class LineLayer extends CompositeLayer {
                 widthMinPixels: 1,
                 widthMaxPixels: 2,
                 getPath: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
-                getColor: color,
+                getColor: line=> isDisconnected(line) ? this.props.disconnectedLineColor: color,
                 getWidth: 2,
                 visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
                 updateTriggers: {
-                    getPath: [this.props.lineFullPath]
-                }
+                    getPath: [this.props.lineFullPath],
+                    getColor: [this.props.disconnectedLineColor]
+                },
+                getDashArray: line => doDash(line) ? dashArray : noDashArray,
+                extensions: [new PathStyleExtension( { dash: true })]
             }));
             layers.push(lineLayer);
 
@@ -141,6 +153,7 @@ LineLayer.defaultProps = {
     network: null,
     geoData: null,
     getNominalVoltageColor: {type: 'accessor', value: [255, 255, 255]},
+    disconnectedLineColor: {type: 'color', value: [255, 255, 255]},
     filteredNominalVoltages: [],
     lineFlowMode: LineFlowMode.NONE,
     lineFullPath: true
