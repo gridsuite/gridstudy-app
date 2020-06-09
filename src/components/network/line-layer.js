@@ -18,6 +18,17 @@ export const LineFlowMode = {
     ANIMATED_ARROWS: 'animatedArrows'
 };
 
+const noDashArray=[0,0];
+const dashArray=[15, 10];
+
+function doDash(line){
+    return line.p1 == null || line.p2 == null;
+}
+
+function isDisconnected(line){
+    return line.p1 == null && line.p2 == null
+}
+
 class LineLayer extends CompositeLayer {
 
     initializeState() {
@@ -84,16 +95,6 @@ class LineLayer extends CompositeLayer {
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.compositeData.forEach(compositeData => {
             const color = this.props.getNominalVoltageColor(compositeData.nominalVoltage);
-
-            const doDash = line => {
-                return line.p1 == null || line.p2 == null;
-            };
-            const isDisconnected = line => {
-                return line.p1 == null && line.p2 == null
-            };
-            const noDashArray=[0,0];
-            const dashArray=[15, 10];
-
             const lineLayer = new PathLayer(this.getSubLayerProps({
                 id: 'LineNominalVoltage' + compositeData.nominalVoltage,
                 data: compositeData.lines,
