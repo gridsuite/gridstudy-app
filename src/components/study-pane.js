@@ -90,6 +90,8 @@ const StudyPane = () => {
 
     const [loadFlowRunning, setLoadFlowRunning] = useState(false);
 
+    const [updateSwitchMsg, setUpdateSwitchMsg] = useState("");
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -169,6 +171,7 @@ const StudyPane = () => {
     }
 
     const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
+        setUpdateSwitchMsg("");
         history.replace("/studies/" + studyName + stringify({ voltageLevelId: voltageLevelId }, { addQueryPrefix: true }));
     }, []);
 
@@ -178,15 +181,22 @@ const StudyPane = () => {
 
     const sldRef = useRef();
     const handleUpdateSwitchState = useCallback( (breakerId, open, switchElement) => {
-        switchElement.querySelector(".open").style.visibility = open ? "visible" : "hidden";
-        switchElement.querySelector(".closed").style.visibility = open ? "hidden" : "visible";
+        let eltOpen = switchElement.querySelector(".open");
+        let eltClose = switchElement.querySelector(".closed");
+
+        eltOpen.style.visibility = open ? "visible" : "hidden";
+        eltClose.style.visibility = open ? "hidden" : "visible";
 
         updateSwitchState(studyName, breakerId, open).then( response => {
             if (response.ok) {
                 sldRef.current.reloadSvg();
+                setUpdateSwitchMsg("");
             }
             else {
                 console.error(response);
+                eltOpen.style.visibility = open ? "hidden" : "visible";
+                eltClose.style.visibility = open ? "visible" : "hidden";
+                setUpdateSwitchMsg(response.status + " : " + response.statusText);
             }
         });
     }, [studyName]);
@@ -318,8 +328,8 @@ const StudyPane = () => {
                                                    onBreakerClick={handleUpdateSwitchState}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
                                                    svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)}
-                                                   ref={sldRef} />
-
+                                                   ref={sldRef}
+                                                   updateSwitchMsg={updateSwitchMsg}/>
                             </div>
                         }
                         {
