@@ -101,9 +101,7 @@ class LineLayer extends CompositeLayer {
                 widthMinPixels: 1,
                 widthMaxPixels: 2,
                 getPath: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
-                getColor: line=> {
-                    return isDisconnected(line) ? this.props.disconnectedLineColor: color
-                },
+                getColor: line=> isDisconnected(line) ? this.props.disconnectedLineColor: color,
                 getWidth: 2,
                 visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
                 updateTriggers: {
