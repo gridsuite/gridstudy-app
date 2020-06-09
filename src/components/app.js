@@ -130,7 +130,7 @@ const App = () => {
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={() => showParametersClicked()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
+                <TopBar onParametersClick={() => showParametersClicked()} onLogoutClick={() => logout(dispatch, userManager.instance)} user={user}/>
                 <Parameters showParameters={showParameters} hideParameters={hideParameters}/>
                 { user !== null ? (
                         <Switch>
