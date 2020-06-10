@@ -10,7 +10,6 @@ import {Model, Geometry, Texture2D, FEATURES, hasFeatures, isWebGL2} from '@luma
 
 import vs from './arrow-layer-vertex.glsl';
 import fs from './arrow-layer-fragment.glsl';
-import cheapRuler from 'cheap-ruler';
 
 const DEFAULT_COLOR = [0, 0, 0, 255];
 
@@ -192,8 +191,9 @@ export default class ArrowLayer extends Layer {
         const start = performance.now();
 
         const linePositionsTextureData = [];
-        let lineDistancesTextureData = [];
+        const lineDistancesTextureData = [];
         const lineAttributes = new Map();
+        let lineDistance = 0;
 
         // build line list from arrow list
         const lines = [...new Set(props.data.map(arrow => this.props.getLine(arrow)))];
@@ -214,16 +214,19 @@ export default class ArrowLayer extends Layer {
                     linePointCount++;
                 });
                 lineDistancesTextureData.push(...line.cumulativeDistances);
+                lineDistance = line.cumulativeDistances[line.cumulativeDistances.length-1];
             }
             if (linePointCount > MAX_LINE_POINT_COUNT) {
                 throw new Error(`Too many line point count (${linePointCount}), maximum is ${MAX_LINE_POINT_COUNT}`);
             }
+
             lineAttributes.set(line, {
-                distance: lineDistancesTextureData[lineDistancesTextureData.length - 1],
+                distance: lineDistance,
                 positionsTextureOffset: linePositionsTextureOffset,
                 distancesTextureOffset: lineDistancesTextureOffset,
                 pointCount: linePointCount
             });
+
         });
 
         const stop = performance.now();

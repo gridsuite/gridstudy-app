@@ -8,6 +8,7 @@
 import getDistance from "geolib/es/getDistance";
 import computeDestinationPoint from "geolib/es/computeDestinationPoint";
 import cheapRuler from 'cheap-ruler';
+import getGreatCircleBearing from "geolib/es/getGreatCircleBearing";
 
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
@@ -58,7 +59,6 @@ export default class GeoData {
         }
         const substationPosition1 = this.getSubstationPosition(voltageLevel1.substationId);
         const substationPosition2 = this.getSubstationPosition(voltageLevel2.substationId);
-
         if (detailed) {
             const linePositions = this.linePositionsById.get(line.id);
             if (linePositions) {
@@ -83,7 +83,6 @@ export default class GeoData {
                     }
                     positions[positions.length - 1] = substationPosition1;
                 }
-
                 return positions;
             }
         }
@@ -108,48 +107,52 @@ export default class GeoData {
         return null;
     }
 
-    getCoordinateInLine(positions, cumulativeDistances, percent) {
+    /**
+     * Find the segment in which we reach the wanted distance and return the segment
+     * along with the remaining distance to travel on this segment to be at the exact wanted distance
+     * (implemented using a binary search)
+     */
+    findSegment(positions, cumulativeDistances, wantedDistance) {
+        let lowerBound = 0;
+        let upperBound = cumulativeDistances.length-1;
+        let middlePoint;
+        while(lowerBound + 1 !== upperBound) {
+            middlePoint = Math.floor((lowerBound + upperBound) / 2);
+            let middlePointDistance = cumulativeDistances[middlePoint];
+            if (middlePointDistance <= wantedDistance) {
+                lowerBound = middlePoint;
+            } else {
+                upperBound = middlePoint;
+            }
+        }
+        return {segment: positions.slice(lowerBound, lowerBound+2), remainingDistance: wantedDistance - cumulativeDistances[lowerBound]};
+    }
+
+
+    labelDisplayPosition(positions, cumulativeDistances, percent) {
         if (percent > 100 || percent < 0) {
             throw new Error("percent value incorrect: " + percent);
         }
-        if (cumulativeDistances === null || cumulativeDistances.length < 2 || cumulativeDistances[1] === 0) {
+        if (cumulativeDistances === null || cumulativeDistances.length < 2 || cumulativeDistances[cumulativeDistances.length-1] === 0) {
             return null;
         }
         let lineDistance = cumulativeDistances[cumulativeDistances.length-1];
         let wantedDistance = lineDistance * percent / 100;
-        let lowerBound = 0;
-        let upperBound = cumulativeDistances.length - 1;
-        let i = 0;
 
-        //binary search
-        while (true) {
-            i = Math.floor((lowerBound + upperBound) / 2);
-            if (cumulativeDistances[i] < wantedDistance && cumulativeDistances[i+1] < wantedDistance) {
-                lowerBound = i+1;
-            }
-            else if (cumulativeDistances[i] > wantedDistance) {
-                upperBound = i;
-            }
-            else if (cumulativeDistances[i] < wantedDistance && cumulativeDistances[i+1] > wantedDistance) {
-                break;
-            }
-        }
+        let goodSegment = this.findSegment(positions, cumulativeDistances, wantedDistance);
 
-        //the polyline where we reached the wanted distance
-        let goodPolyline = positions.slice(i, i+2);
-        let ruler = cheapRuler(goodPolyline[0][1], 'meters');
-        let leftDistance = wantedDistance - cumulativeDistances[i];
-        let angle = ruler.bearing(goodPolyline[0], goodPolyline[1]);
+        let remainingDistance = goodSegment.remainingDistance;
+        let angle = getGreatCircleBearing(goodSegment.segment[0], goodSegment.segment[1]);
         let reducedAngle = angle;
         if (angle > 180) {
             reducedAngle = angle - 180;
         }
-        const neededOffset = this.getNeededOffset(reducedAngle, 10);
-        return {distance :computeDestinationPoint(goodPolyline[0], leftDistance, angle), angle: angle, offset: neededOffset};
+        const neededOffset = this.getLabelOffset(reducedAngle, 10);
+        return {distance :computeDestinationPoint(goodSegment.segment[0], remainingDistance, angle), angle: angle, offset: neededOffset};
 
     }
 
-    getNeededOffset(angle, offsetDistance) {
+    getLabelOffset(angle, offsetDistance) {
         let radiantAngle = (-angle + 90) / (180 / (Math.PI));
         return [Math.cos(radiantAngle)*offsetDistance, -Math.sin(radiantAngle)*offsetDistance];
     }
