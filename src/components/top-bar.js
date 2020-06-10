@@ -8,7 +8,6 @@
 import React, {useRef, useState} from "react";
 
 import {FormattedMessage} from "react-intl";
-import {useHistory} from 'react-router-dom';
 
 import AppBar from "@material-ui/core/AppBar";
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
@@ -30,7 +29,6 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 
 import {ReactComponent as PowsyblLogo} from "../images/powsybl_logo.svg";
 import PropTypes from "prop-types";
-import {useSelector} from "react-redux";
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullScreen, {fullScreenSupported} from "react-request-fullscreen";
 
@@ -83,10 +81,7 @@ const StyledMenuItem = withStyles(theme => ({
     },
 }))(MenuItem);
 
-const TopBar = (props) => {
-
-    const user = useSelector(state => state.user);
-
+const TopBar = ({onParametersClick, onLogoutClick, onLogoClick, user}) => {
     const classes = useStyles();
 
     const [anchorElGeneralMenu, setAnchorElGeneralMenu] = React.useState(null);
@@ -96,8 +91,6 @@ const TopBar = (props) => {
     const fullScreenRef = useRef(null);
 
     const [isFullScreen, setIsFullScreen] = useState(false);
-
-    const history = useHistory();
 
     const handleClickGeneralMenu = event => {
         setAnchorElGeneralMenu(event.currentTarget);
@@ -114,16 +107,16 @@ const TopBar = (props) => {
         setAnchorElAppsMenu(null);
     };
 
-    const onParametersClick = () => {
+    const onParametersClicked = () => {
         handleCloseGeneralMenu();
-      if (props.onParametersClick) {
-          props.onParametersClick();
+      if (onParametersClick) {
+          onParametersClick();
       }
     };
 
-    const onLogoClick = () => {
+    const onLogoClicked = () => {
         handleCloseAppsMenu();
-        history.replace("/");
+        onLogoClick();
     };
 
     function onFullScreenChange (isFullScreen) {
@@ -163,7 +156,7 @@ const TopBar = (props) => {
                             open={Boolean(anchorElAppsMenu)}
                             onClose={handleCloseAppsMenu}
                         >
-                            <StyledMenuItem onClick={onLogoClick}>
+                            <StyledMenuItem onClick={onLogoClicked}>
                                 <ListItemIcon>
                                     <PowsyblLogo className={classes.menuIcon}  />
                                 </ListItemIcon>
@@ -194,7 +187,7 @@ const TopBar = (props) => {
                         open={Boolean(anchorElGeneralMenu)}
                         onClose={handleCloseGeneralMenu}
                     >
-                        <StyledMenuItem onClick={onParametersClick}>
+                        <StyledMenuItem onClick={onParametersClicked}>
                             <ListItemIcon>
                                 <SettingsIcon fontSize="small" />
                             </ListItemIcon>
@@ -222,7 +215,7 @@ const TopBar = (props) => {
                                 }
                                 </StyledMenuItem>) : <></>
                         }
-                        <StyledMenuItem onClick={props.onLogoutClick}>
+                        <StyledMenuItem onClick={onLogoutClick}>
                             <ListItemIcon>
                                 <ExitToAppIcon fontSize="small" />
                             </ListItemIcon>

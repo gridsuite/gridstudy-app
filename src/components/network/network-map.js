@@ -49,11 +49,12 @@ const NetworkMap = forwardRef((props, ref) => {
     const [tooltip, setTooltip] = useState({});
 
     const theme = useTheme();
-    const labelColor = useMemo(() => {
+    const foregroundNeutralColor = useMemo(() => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
         return labelColor
     }, [theme]);
+
 
     const useName = useSelector(state => state.useName);
 
@@ -195,7 +196,7 @@ const NetworkMap = forwardRef((props, ref) => {
             filteredNominalVoltages: props.filteredNominalVoltages,
             useName: useName,
             labelsVisible: labelsVisible,
-            labelColor: labelColor,
+            labelColor: foregroundNeutralColor,
             pickable: true
         }));
 
@@ -205,6 +206,7 @@ const NetworkMap = forwardRef((props, ref) => {
             network: props.network,
             geoData: props.geoData,
             getNominalVoltageColor: getNominalVoltageColor,
+            disconnectedLineColor: foregroundNeutralColor,
             filteredNominalVoltages: props.filteredNominalVoltages,
             lineFlowMode: lineFlowMode,
             lineFullPath: props.lineFullPath,

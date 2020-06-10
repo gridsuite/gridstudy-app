@@ -126,11 +126,15 @@ const App = () => {
         setShowParameters(false);
     }
 
+    function onLogoClicked() {
+        history.replace("/");
+    }
+
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={() => showParametersClicked()} onLogoutClick={() => logout(dispatch, userManager.instance)}/>
+                <TopBar onParametersClick={() => showParametersClicked()} onLogoutClick={() => logout(dispatch, userManager.instance)} onLogoClick={() => onLogoClicked()} user={user}/>
                 <Parameters showParameters={showParameters} hideParameters={hideParameters}/>
                 { user !== null ? (
                         <Switch>
