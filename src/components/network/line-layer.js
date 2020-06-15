@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {CompositeLayer, PathLayer} from 'deck.gl';
+import {CompositeLayer, PathLayer, TextLayer} from 'deck.gl';
 import {PathStyleExtension} from '@deck.gl/extensions'
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import getDistance from "geolib/es/getDistance";
@@ -39,14 +39,13 @@ class LineLayer extends CompositeLayer {
         };
     }
 
-    updateState({props, changeFlags}) {
+    updateState({props, oldProps, changeFlags}) {
+        let compositeData;
         if (changeFlags.dataChanged) {
-            let compositeData = [];
+            compositeData = [];
 
             if (props.network != null && props.geoData != null) {
-
                 // group lines by nominal voltage
-
                 const lineNominalVoltageIndexer = (map, line) => {
                     const vl = props.network.getVoltageLevel(line.voltageLevelId1)
                         || props.network.getVoltageLevel(line.voltageLevelId2);
@@ -61,33 +60,78 @@ class LineLayer extends CompositeLayer {
                 const linesByNominalVoltage = props.data.reduce(lineNominalVoltageIndexer, new Map());
 
                 compositeData = Array.from(linesByNominalVoltage.entries())
-                    .map(e => { return { nominalVoltage: e[0], lines: e[1] };})
+                    .map(e => {
+                        return {nominalVoltage: e[0], lines: e[1]};
+                    })
                     .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
+            }
+        }
+        else {
+            compositeData = this.state.compositeData;
+        }
 
-                // add arrows
+        if (changeFlags.dataChanged || (changeFlags.propsChanged && oldProps.lineFullPath !== props.lineFullPath)) {
 
-                compositeData.forEach(compositeData => {
-                    // create one arrow each DISTANCE_BETWEEN_ARROWS
-                    compositeData.arrows = compositeData.lines.flatMap(line => {
-                        // calculate distance between 2 substations as a raw estimate of line size
-                        const positions = props.geoData.getLinePositions(props.network, line, false);
-                        const lineDistance = getDistance({latitude: positions[0][1], longitude: positions[0][0]},
-                                                         {latitude: positions[1][1], longitude: positions[1][0]});
-
-                        const arrowCount = Math.ceil(lineDistance / DISTANCE_BETWEEN_ARROWS);
-
-                        return [...new Array(arrowCount).keys()].map(index => {
-                            return {
-                                distance: index / arrowCount,
-                                line: line
-                            }
-                        });
+            compositeData.forEach(compositeData => {
+                let lineMap = new Map();
+                compositeData.lines.forEach(line => {
+                    const positions = props.geoData.getLinePositions(props.network, line, props.lineFullPath);
+                    const cumulativeDistances = props.geoData.getLineDistances(positions);
+                    lineMap.set(line.id, {
+                        positions: positions,
+                        cumulativeDistances: cumulativeDistances,
+                        line: line
                     });
                 });
-            }
+                compositeData.lineMap = lineMap;
+            });
 
-            this.setState({compositeData: compositeData});
+            // add arrows
+            compositeData.forEach(compositeData => {
+                compositeData.activePower = [];
+                // create one arrow each DISTANCE_BETWEEN_ARROWS
+                const lineMap = compositeData.lineMap;
+                compositeData.arrows = compositeData.lines.flatMap(line => {
+                    // calculate distance between 2 substations as a raw estimate of line size
+                    const directLinePositions = props.geoData.getLinePositions(props.network, line, false);
+                    const directLineDistance = getDistance({
+                            latitude: directLinePositions[0][1],
+                            longitude: directLinePositions[0][0]
+                        },
+                        {latitude: directLinePositions[1][1], longitude: directLinePositions[1][0]});
+                    const arrowCount = Math.ceil(directLineDistance / DISTANCE_BETWEEN_ARROWS);
+
+                    let lineData = lineMap.get(line.id);
+
+                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, 15);
+                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, 85);
+                    if (coordinates1 !== null && coordinates2 !== null) {
+                        compositeData.activePower.push({
+                            line: line,
+                            p: line.p1,
+                            printPosition: [coordinates1.distance.longitude, coordinates1.distance.latitude],
+                            offset: coordinates1.offset,
+                        });
+                        compositeData.activePower.push({
+                            line: line,
+                            p: line.p2,
+                            printPosition: [coordinates2.distance.longitude, coordinates2.distance.latitude],
+                            offset: coordinates2.offset
+                        });
+                    }
+
+                    line.cumulativeDistances = lineData.cumulativeDistances;
+                    line.positions = lineData.positions;
+                    return [...new Array(arrowCount).keys()].map(index => {
+                        return {
+                            distance: index / arrowCount,
+                            line: line
+                        }
+                    });
+                });
+            });
         }
+        this.setState({compositeData: compositeData});
     }
 
     renderLayers() {
@@ -113,6 +157,26 @@ class LineLayer extends CompositeLayer {
                 extensions: [new PathStyleExtension( { dash: true })]
             }));
             layers.push(lineLayer);
+
+            // lines active power
+            const lineActivePowerLabelsLayer = new TextLayer(this.getSubLayerProps({
+                id: "ActivePower" + compositeData.nominalVoltage,
+                data: compositeData.activePower,
+                getText: activePower => activePower.p.toString(),
+                getPosition: activePower => activePower.printPosition,
+                getColor: this.props.labelColor,
+                fontFamily: 'Roboto',
+                getSize: 25,
+                getAngle: 0,
+                getPixelOffset: activePower => activePower.offset,
+                getTextAnchor: 'middle',
+                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage) && this.props.labelsVisible,
+                updateTriggers: {
+                    getPosition: [this.props.lineFullPath],
+                    getPixelOffset: [this.props.lineFullPath]
+                }
+            }));
+            layers.push(lineActivePowerLabelsLayer);
 
             const arrowLayer = new ArrowLayer(this.getSubLayerProps({
                 id: 'ArrowNominalVoltage' + compositeData.nominalVoltage,

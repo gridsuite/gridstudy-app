@@ -10,7 +10,6 @@ import {Model, Geometry, Texture2D, FEATURES, hasFeatures, isWebGL2} from '@luma
 
 import vs from './arrow-layer-vertex.glsl';
 import fs from './arrow-layer-fragment.glsl';
-import cheapRuler from 'cheap-ruler';
 
 const DEFAULT_COLOR = [0, 0, 0, 255];
 
@@ -189,11 +188,12 @@ export default class ArrowLayer extends Layer {
     }
 
     createTexturesStructure(props) {
-        const start = performance.now()
+        const start = performance.now();
 
         const linePositionsTextureData = [];
         const lineDistancesTextureData = [];
         const lineAttributes = new Map();
+        let lineDistance = 0;
 
         // build line list from arrow list
         const lines = [...new Set(props.data.map(arrow => this.props.getLine(arrow)))];
@@ -206,43 +206,30 @@ export default class ArrowLayer extends Layer {
             const linePositionsTextureOffset = linePositionsTextureData.length / 2;
             const lineDistancesTextureOffset = lineDistancesTextureData.length;
             let linePointCount = 0;
-            let lineDistance = 0;
             if (positions.length > 0) {
-                let ruler = cheapRuler(positions[0][1], 'meters');
-                let prevPosition;
-                positions.forEach((position, index) => {
-                    // compute distance with previous position
-                    let segmentDistance = 0;
-                    if (prevPosition) {
-                        ruler = cheapRuler(position[1], 'meters');
-                        segmentDistance = ruler.distance([prevPosition[1], prevPosition[0]],
-                                                         [position[1], position[0]]);
-                    }
-                    prevPosition = position;
-
+                positions.forEach((position) => {
                     // fill line positions texture
                     linePositionsTextureData.push(position[0]);
                     linePositionsTextureData.push(position[1]);
-
                     linePointCount++;
-
-                    // fill line distance texture
-                    lineDistance += segmentDistance;
-                    lineDistancesTextureData.push(lineDistance);
                 });
+                lineDistancesTextureData.push(...line.cumulativeDistances);
+                lineDistance = line.cumulativeDistances[line.cumulativeDistances.length-1];
             }
             if (linePointCount > MAX_LINE_POINT_COUNT) {
                 throw new Error(`Too many line point count (${linePointCount}), maximum is ${MAX_LINE_POINT_COUNT}`);
             }
+
             lineAttributes.set(line, {
                 distance: lineDistance,
                 positionsTextureOffset: linePositionsTextureOffset,
                 distancesTextureOffset: lineDistancesTextureOffset,
                 pointCount: linePointCount
             });
+
         });
 
-        const stop = performance.now()
+        const stop = performance.now();
         console.info(`Texture data created in ${stop -start} ms`);
 
         return {
