@@ -10,6 +10,7 @@ import {PathStyleExtension} from '@deck.gl/extensions'
 import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import ParallelPathLayer from './layers/parallel-path-layer';
 import getDistance from "geolib/es/getDistance";
+import {ForkLineLayer} from "./fork-line-layer";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 
@@ -30,6 +31,7 @@ function isDisconnected(line){
     return line.p1 == null && line.p2 == null
 }
 
+
 class LineLayer extends CompositeLayer {
 
     initializeState() {
@@ -45,47 +47,6 @@ class LineLayer extends CompositeLayer {
             let compositeData = [];
 
             if (props.network != null && props.geoData != null) {
-
-                // group lines by substation ID
-                const lineBySubstationIdIndexer = (map, line) => {
-                    const substationId1 = props.network.getVoltageLevel(line.voltageLevelId1).substationId;
-                    const substationId2 = props.network.getVoltageLevel(line.voltageLevelId2).substationId;
-                    const key = substationId1 < substationId2 ? substationId1 + substationId2 : substationId2 + substationId1;
-                    let list = map.get(key);
-                    if (!list) {
-                        list = [];
-                        map.set(key, list);
-                    }
-                    list.push(line);
-                    return map;
-                };
-                const linesBySubstationId = props.data.reduce(lineBySubstationIdIndexer, new Map());
-
-                // add parallel index to each line
-                linesBySubstationId.forEach((lines) => {
-                    if (lines.length % 2 === 0) {
-                        lines.forEach((line, index) => {
-                            if (index % 2 === 0) {
-                                line.parallelIndex = (index + 2) / 2;
-                            } else {
-                                line.parallelIndex = -(index + 1) / 2;
-                            }
-                        })
-                    } else {
-                        lines.forEach((line, index) => {
-                            if (index === 0) {
-                                line.parallelIndex = 0;
-                            } else {
-                                if ((index - 1) % 2 === 0) {
-                                    line.parallelIndex = (index + 1) / 2;
-                                } else {
-                                    line.parallelIndex = -index / 2;
-                                }
-                            }
-                        })
-                    }
-                });
-                console.info(linesBySubstationId);
 
                 // group lines by nominal voltage
 
@@ -106,9 +67,10 @@ class LineLayer extends CompositeLayer {
                     .map(e => { return { nominalVoltage: e[0], lines: e[1] };})
                     .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
 
-                // add arrows
 
+                let mapOriginDestination=new Map();
                 compositeData.forEach(compositeData => {
+                    // add arrows
                     // create one arrow each DISTANCE_BETWEEN_ARROWS
                     compositeData.arrows = compositeData.lines.flatMap(line => {
                         // calculate distance between 2 substations as a raw estimate of line size
@@ -124,6 +86,31 @@ class LineLayer extends CompositeLayer {
                                 line: line
                             }
                         });
+                    });
+                    //find lines with same subsations set
+                    compositeData.lines.forEach( line => {
+                        const key = line.voltageLevelId1 > line.voltageLevelId2 ? line.voltageLevelId1 + "##" + line.voltageLevelId2
+                            : line.voltageLevelId2 + "##" + line.voltageLevelId1;
+                        let val = mapOriginDestination.get(key);
+                        if( val == null)
+                            mapOriginDestination.set(key, new Set([line] ) );
+                        else {
+                            mapOriginDestination.set(key, val.add( line ));
+                        }
+
+                        const path = this.props.geoData.getLinePositions(this.props.network, line, false);
+                        line.angle=Math.atan2( path[0][0]- path[1][0], path[0][1] - path[1][1]);
+                        line.origin=path[0];
+                        line.end=path[1];
+                    });
+                });
+
+                // calculate offset for line with same subsation set
+                mapOriginDestination.forEach( samePathLine => {
+                    let offset = -(samePathLine.size-1) / 2;
+                    samePathLine.forEach( line => {
+                        line.parallelIndex=offset;
+                        offset+=1;
                     });
                 });
             }
@@ -146,8 +133,13 @@ class LineLayer extends CompositeLayer {
                 getPath: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
                 getColor: line=> isDisconnected(line) ? this.props.disconnectedLineColor: color,
                 getWidth: 2,
-                getParallelIndex: line => line.parallelIndex,
+                getParallelIndex: (line) => line.parallelIndex,
+                getLineAngle: (line) =>  line.angle,
+                getDistanceBetweenLines :() =>  this.props.distanceBetweenLines,
+                getMaxParallelOffset : () => this.props.maxParallelOffset,
+                getMinParallelOffset : () => this.props.minParallelOffset,
                 visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
+
                 updateTriggers: {
                     getPath: [this.props.lineFullPath],
                     getColor: [this.props.disconnectedLineColor]
@@ -168,6 +160,10 @@ class LineLayer extends CompositeLayer {
                 getColor: color,
                 getSize: 700,
                 getSpeedFactor: 3,
+                getParallelIndex: (arrow) => arrow.line.parallelIndex,
+                getDistanceBetweenLines : () => this.props.distanceBetweenLines,
+                getMaxParallelOffset : () => this.props.maxParallelOffset,
+                getMinParallelOffset : () => this.props.minParallelOffset,
                 getDirection: arrow => {
                     if (arrow.line.p1 < 0) {
                         return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
@@ -184,6 +180,57 @@ class LineLayer extends CompositeLayer {
                 }
             }));
             layers.push(arrowLayer);
+
+
+            const startFork = new ForkLineLayer(this.getSubLayerProps({
+                id: 'LineForkStart' + compositeData.nominalVoltage,
+                getSourcePosition: d => d.origin,
+                getTargetPosition: d => d.origin,
+                data: compositeData.lines,
+                widthScale: 20,
+                widthMinPixels: 1,
+                widthMaxPixels: 2,
+                getColor: line=> isDisconnected(line) ? this.props.disconnectedLineColor: color,
+                getWidth: 2,
+                getParallelIndex: (line) => line.parallelIndex,
+                getAngle: (line) => line.angle,
+                getDistanceBetweenLines : () => this.props.distanceBetweenLines,
+                getMaxParallelOffset : () => this.props.maxParallelOffset,
+                getMinParallelOffset : () => this.props.minParallelOffset,
+                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
+
+                updateTriggers: {
+                    getPath: [this.props.lineFullPath],
+                    getColor: [this.props.disconnectedLineColor]
+                }
+            }));
+            layers.push(startFork);
+
+            const endFork = new ForkLineLayer(this.getSubLayerProps({
+                id: 'LineForkEnd' + compositeData.nominalVoltage,
+                getSourcePosition: d => d.end,
+                getTargetPosition: d => d.end,
+                data: compositeData.lines,
+                widthScale: 20,
+                widthMinPixels: 1,
+                widthMaxPixels: 2,
+                getColor: line=> isDisconnected(line) ? this.props.disconnectedLineColor: color,
+                getWidth: 2,
+                getParallelIndex: (line) => line.parallelIndex,
+                getAngle: (line) => line.angle,
+                getDistanceBetweenLines : () => this.props.distanceBetweenLines,
+                getMaxParallelOffset : () => this.props.maxParallelOffset,
+                getMinParallelOffset : () => this.props.minParallelOffset,
+                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
+                updateTriggers: {
+                    getPath: [this.props.lineFullPath],
+                    getColor: [this.props.disconnectedLineColor]
+                }
+            }));
+            layers.push(endFork);
+
+
+
         });
 
         return layers;
@@ -199,7 +246,10 @@ LineLayer.defaultProps = {
     disconnectedLineColor: {type: 'color', value: [255, 255, 255]},
     filteredNominalVoltages: [],
     lineFlowMode: LineFlowMode.NONE,
-    lineFullPath: true
+    lineFullPath: true,
+    distanceBetweenLines: 1000.,
+    maxParallelOffset: 50.,
+    minParallelOffset: 1.,
 };
 
 export default LineLayer;

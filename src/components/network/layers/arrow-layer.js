@@ -34,7 +34,12 @@ const defaultProps = {
     getColor: {type: 'accessor', value: DEFAULT_COLOR},
     getSpeedFactor: {type: 'accessor', value: 1.0},
     getDirection: {type: 'accessor', value: ArrowDirection.NONE},
-    animated: {type: 'boolean', value: true}
+    animated: {type: 'boolean', value: true},
+    getParallelIndex: {type: 'accessor', value: 0},
+    getLineAngle: {type: 'accessor', value: 0},
+    getDistanceBetweenLines: {type: 'accessor', value: 1000.},
+    getMaxParallelOffset: {type: 'accessor', value: 1.},
+    getPinParallelOffset: {type: 'accessor', value: 50.}
 };
 
 export default class ArrowLayer extends Layer {
@@ -135,6 +140,16 @@ export default class ArrowLayer extends Layer {
                 transition: true,
                 type: GL.FLOAT,
                 accessor: arrow => this.getArrowLineAttributes(arrow).pointCount
+            },
+            instanceOffsets: {
+                size: 1,
+                accessor: 'getParallelIndex',
+                type: GL.FLOAT
+            },
+            angleLine: {
+                size: 1,
+                accessor: arrow => arrow.line.angle,
+                type: GL.FLOAT
             }
         });
     }
@@ -361,7 +376,10 @@ export default class ArrowLayer extends Layer {
                 linePositionsTextureSize: [linePositionsTexture.width, linePositionsTexture.height],
                 lineDistancesTextureSize: [lineDistancesTexture.width, lineDistancesTexture.height],
                 timestamp,
-                webgl2
+                webgl2,
+                distanceBetweenLines: this.props.getDistanceBetweenLines(),
+                maxParallelOffset: this.props.getMaxParallelOffset(),
+                minParallelOffset: this.props.getMinParallelOffset()
             })
             .draw();
     }

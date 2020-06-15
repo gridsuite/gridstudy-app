@@ -4,8 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {PathLayer} from "deck.gl";
-import GL from '@luma.gl/constants';
+
+import {LineLayer} from "deck.gl";
+import ArrowLayer from "./layers/arrow-layer";
+
 
 const defaultProps = {
     getParallelIndex: {type: 'accessor', value: 0},
@@ -15,15 +17,7 @@ const defaultProps = {
     getPinParallelOffset: {type: 'accessor', value: 50.}
 };
 
-/**
- * A layer based on PathLayer allowing to shift path by an offset + angle
- * props : parallelIndex
- *         lineAngle
- *         distanceBetweenLines
- *         maxParallelOffset
- *         minParallelOffset
- */
-export default class ParallelPathLayer extends PathLayer {
+export class ForkLineLayer extends LineLayer {
 
     getShaders() {
         const shaders = super.getShaders();
@@ -34,15 +28,13 @@ attribute float angleLine;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
-
 `,
-    'vs:DECKGL_FILTER_GL_POSITION': `\
-            if ( instanceOffsets == 0.) return;
 
-      float offsetPixels = clamp(project_pixel_size( distanceBetweenLines), minParallelOffset, maxParallelOffset);
-      vec4 trans = vec4(-cos(angleLine), sin(angleLine), 0, 0) * instanceOffsets * project_size_to_pixel(offsetPixels);
-      position += trans ;
-`
+            'float segmentIndex = positions.x': `;
+
+      float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
+      target=source+vec4(-cos(angleLine), sin(angleLine),0,0) * instanceOffsets * project_size_to_pixel(offsetPixels);      
+            `
         };
         return shaders;
     }
@@ -54,16 +46,12 @@ uniform float minParallelOffset;
         attributeManager.addInstanced({
             instanceOffsets: {
                 size: 1,
-            type: GL.FLOAT,
-                accessor: 'getParallelIndex'},
-
+                accessor: 'getParallelIndex'
+            },
             angleLine: {
                 size: 1,
-                type: GL.FLOAT,
-                accessor: 'getLineAngle'}
-
-
-
+                accessor: 'getAngle'
+            }
         });
     }
 
@@ -78,8 +66,7 @@ uniform float minParallelOffset;
                 }
         })
     }
-
 }
 
-ParallelPathLayer.layerName = 'ParallelPathLayer';
-ParallelPathLayer.defaultProps = defaultProps;
+ArrowLayer.layerName = 'ForkLineLayer';
+ArrowLayer.defaultProps = defaultProps;
