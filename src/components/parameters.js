@@ -187,6 +187,9 @@ const Parameters = ({showParameters, hideParameters}) => {
                         <MenuItem value={LineFlowMode.ANIMATED_ARROWS}>
                             <FormattedMessage id="AnimatedArrows"/>
                         </MenuItem>
+                        <MenuItem value={LineFlowMode.FEEDERS}>
+                            <FormattedMessage id="Feeders"/>
+                        </MenuItem>
                     </Select>
                 </Grid>
             </Grid>

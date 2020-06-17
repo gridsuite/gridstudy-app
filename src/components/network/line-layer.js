@@ -11,11 +11,15 @@ import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import getDistance from "geolib/es/getDistance";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
+//Constants for Feeders mode
+const START_ARROW_POSITION = 0.1;
+const END_ARROW_POSITION = 0.9;
 
 export const LineFlowMode = {
     NONE: 'none',
     STATIC_ARROWS: 'staticArrows',
-    ANIMATED_ARROWS: 'animatedArrows'
+    ANIMATED_ARROWS: 'animatedArrows',
+    FEEDERS: 'feeders'
 };
 
 const noDashArray=[0,0];
@@ -70,7 +74,7 @@ class LineLayer extends CompositeLayer {
             compositeData = this.state.compositeData;
         }
 
-        if (changeFlags.dataChanged || (changeFlags.propsChanged && oldProps.lineFullPath !== props.lineFullPath)) {
+        if (changeFlags.dataChanged || (changeFlags.propsChanged && oldProps.lineFullPath !== props.lineFullPath)  || props.lineFlowMode != oldProps.lineFlowMode) {
 
             compositeData.forEach(compositeData => {
                 let lineMap = new Map();
@@ -122,12 +126,25 @@ class LineLayer extends CompositeLayer {
 
                     line.cumulativeDistances = lineData.cumulativeDistances;
                     line.positions = lineData.positions;
-                    return [...new Array(arrowCount).keys()].map(index => {
-                        return {
-                            distance: index / arrowCount,
+                    if(props.lineFlowMode != LineFlowMode.FEEDERS) {
+                        return [...new Array(arrowCount).keys()].map(index => {
+                            return {
+                                distance: index / arrowCount,
+                                line: line
+                            }
+                        });
+                    }
+                    //If we use Feeders Mode, we build only two arrows
+                    return [
+                        {
+                            distance: START_ARROW_POSITION,
+                            line: line
+                        },
+                        {
+                            distance: END_ARROW_POSITION,
                             line: line
                         }
-                    });
+                    ]
                 });
             });
         }
