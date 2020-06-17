@@ -76,9 +76,7 @@ class LineLayer extends CompositeLayer {
         else {
             compositeData = this.state.compositeData;
         }
-
-        if (changeFlags.dataChanged || (changeFlags.propsChanged && oldProps.lineFullPath !== props.lineFullPath)  || props.lineFlowMode != oldProps.lineFlowMode) {
-
+        if (changeFlags.propsChanged && (oldProps.lineFullPath !== props.lineFullPath || props.lineFlowMode != oldProps.lineFlowMode)) {
             compositeData.forEach(compositeData => {
                 let lineMap = new Map();
                 compositeData.lines.forEach(line => {
@@ -129,7 +127,7 @@ class LineLayer extends CompositeLayer {
 
                     line.cumulativeDistances = lineData.cumulativeDistances;
                     line.positions = lineData.positions;
-                    if(props.lineFlowMode != LineFlowMode.FEEDERS) {
+                    if(props.lineFlowMode !== LineFlowMode.FEEDERS) {
                         return [...new Array(arrowCount).keys()].map(index => {
                             return {
                                 distance: index / arrowCount,
