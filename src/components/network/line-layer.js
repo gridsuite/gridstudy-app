@@ -162,7 +162,7 @@ class LineLayer extends CompositeLayer {
             const lineActivePowerLabelsLayer = new TextLayer(this.getSubLayerProps({
                 id: "ActivePower" + compositeData.nominalVoltage,
                 data: compositeData.activePower,
-                getText: activePower => activePower.p.toString(),
+                getText: activePower => activePower.p !== undefined ? activePower.p.toString() : "",
                 getPosition: activePower => activePower.printPosition,
                 getColor: this.props.labelColor,
                 fontFamily: 'Roboto',
