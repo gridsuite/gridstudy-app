@@ -184,7 +184,7 @@ class LineLayer extends CompositeLayer {
                 getPosition: activePower => activePower.printPosition,
                 getColor: this.props.labelColor,
                 fontFamily: 'Roboto',
-                getSize: 25,
+                getSize: this.props.labelSize,
                 getAngle: 0,
                 getPixelOffset: activePower => activePower.offset,
                 getTextAnchor: 'middle',
@@ -238,7 +238,8 @@ LineLayer.defaultProps = {
     disconnectedLineColor: {type: 'color', value: [255, 255, 255]},
     filteredNominalVoltages: [],
     lineFlowMode: LineFlowMode.NONE,
-    lineFullPath: true
+    lineFullPath: true,
+    labelSize: 16
 };
 
 export default LineLayer;
