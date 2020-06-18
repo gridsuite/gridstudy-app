@@ -40,8 +40,8 @@ uniform float minParallelOffset;
             if ( instanceOffsets == 0.) return;
 
       float offsetPixels = clamp(project_pixel_size( distanceBetweenLines), minParallelOffset, maxParallelOffset);
-      vec4 trans = vec4(-cos(angleLine), sin(angleLine), 0, 0) * instanceOffsets * project_size_to_pixel(offsetPixels);
-      position += project_common_position_to_clipspace(trans) ;
+      vec4 trans = project_common_position_to_clipspace(vec4(-cos(angleLine), sin(angleLine), 0, 0.) * instanceOffsets) * project_size_to_pixel(offsetPixels);
+      position += trans ;
 `
         };
         return shaders;
