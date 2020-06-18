@@ -76,7 +76,7 @@ class LineLayer extends CompositeLayer {
         else {
             compositeData = this.state.compositeData;
         }
-        if (changeFlags.propsChanged && (oldProps.lineFullPath !== props.lineFullPath || props.lineFlowMode != oldProps.lineFlowMode)) {
+        if (changeFlags.dataChanged || (changeFlags.propsChanged && (oldProps.lineFullPath !== props.lineFullPath || props.lineFlowMode != oldProps.lineFlowMode))) {
             compositeData.forEach(compositeData => {
                 let lineMap = new Map();
                 compositeData.lines.forEach(line => {
