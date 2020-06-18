@@ -15,8 +15,8 @@ const DISTANCE_BETWEEN_ARROWS = 10000.0;
 const START_ARROW_POSITION = 0.1;
 const END_ARROW_POSITION = 0.9;
 //Constants for voltage labels
-const VOLTAGE_IN = 8;
-const VOLTAGE_OUT = 88;
+const START_LABEL_POSITION = 8;
+const END_LABEL_POSITION = 88;
 
 export const LineFlowMode = {
     NONE: 'none',
@@ -108,8 +108,8 @@ class LineLayer extends CompositeLayer {
 
                     let lineData = lineMap.get(line.id);
 
-                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, VOLTAGE_IN);
-                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, VOLTAGE_OUT);
+                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_LABEL_POSITION);
+                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_LABEL_POSITION);
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
                             line: line,
