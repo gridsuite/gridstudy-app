@@ -33,7 +33,8 @@ uniform float minParallelOffset;
             'float segmentIndex = positions.x': `;
 
       float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
-      target=source+vec4(-cos(angleLine), sin(angleLine),0,0) * instanceOffsets * project_size_to_pixel(offsetPixels);      
+      vec4 trans = project_common_position_to_clipspace(vec4(-cos(angleLine), sin(angleLine),0,0) * instanceOffsets * project_size_to_pixel(offsetPixels));
+      target = source + trans;      
             `
         };
         return shaders;
