@@ -11,11 +11,18 @@ import ArrowLayer, {ArrowDirection} from "./layers/arrow-layer";
 import getDistance from "geolib/es/getDistance";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
+//Constants for Feeders mode
+const START_ARROW_POSITION = 0.1;
+const END_ARROW_POSITION = 0.9;
+//Constants for voltage labels
+const START_LABEL_POSITION = 8;
+const END_LABEL_POSITION = 88;
 
 export const LineFlowMode = {
     NONE: 'none',
     STATIC_ARROWS: 'staticArrows',
-    ANIMATED_ARROWS: 'animatedArrows'
+    ANIMATED_ARROWS: 'animatedArrows',
+    FEEDERS: 'feeders'
 };
 
 const noDashArray=[0,0];
@@ -69,9 +76,7 @@ class LineLayer extends CompositeLayer {
         else {
             compositeData = this.state.compositeData;
         }
-
-        if (changeFlags.dataChanged || (changeFlags.propsChanged && oldProps.lineFullPath !== props.lineFullPath)) {
-
+        if (changeFlags.propsChanged && (oldProps.lineFullPath !== props.lineFullPath || props.lineFlowMode != oldProps.lineFlowMode)) {
             compositeData.forEach(compositeData => {
                 let lineMap = new Map();
                 compositeData.lines.forEach(line => {
@@ -103,8 +108,8 @@ class LineLayer extends CompositeLayer {
 
                     let lineData = lineMap.get(line.id);
 
-                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, 15);
-                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, 85);
+                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_LABEL_POSITION);
+                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_LABEL_POSITION);
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
                             line: line,
@@ -122,12 +127,25 @@ class LineLayer extends CompositeLayer {
 
                     line.cumulativeDistances = lineData.cumulativeDistances;
                     line.positions = lineData.positions;
-                    return [...new Array(arrowCount).keys()].map(index => {
-                        return {
-                            distance: index / arrowCount,
+                    if(props.lineFlowMode !== LineFlowMode.FEEDERS) {
+                        return [...new Array(arrowCount).keys()].map(index => {
+                            return {
+                                distance: index / arrowCount,
+                                line: line
+                            }
+                        });
+                    }
+                    //If we use Feeders Mode, we build only two arrows
+                    return [
+                        {
+                            distance: START_ARROW_POSITION,
+                            line: line
+                        },
+                        {
+                            distance: END_ARROW_POSITION,
                             line: line
                         }
-                    });
+                    ]
                 });
             });
         }
