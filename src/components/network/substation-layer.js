@@ -119,7 +119,7 @@ class SubstationLayer extends CompositeLayer {
             getText: substation => this.props.useName ? substation.name : substation.id,
             getColor: this.props.labelColor,
             fontFamily: 'Roboto',
-            getSize: 16,
+            getSize: this.props.labelSize,
             getAngle: 0,
             getTextAnchor: 'start',
             getAlignmentBaseline: 'center',
@@ -144,7 +144,8 @@ SubstationLayer.defaultProps = {
     filteredNominalVoltages: [],
     useName: true,
     labelsVisible: false,
-    labelColor: {type: 'color', value: [255, 255, 255]}
+    labelColor: {type: 'color', value: [255, 255, 255]},
+    labelSize: 16
 };
 
 export default SubstationLayer;

@@ -27,6 +27,7 @@ const MAPBOX_TOKEN = 'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd
 
 const SUBSTATION_LAYER_PREFIX = "substationLayer";
 const LINE_LAYER_PREFIX = "lineLayer";
+const LABEL_SIZE = 16;
 
 const NetworkMap = forwardRef((props, ref) => {
 
@@ -52,7 +53,8 @@ const NetworkMap = forwardRef((props, ref) => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
         return labelColor
-    }, [theme ]);
+    }, [theme]);
+
 
     const useName = useSelector(state => state.useName);
 
@@ -120,7 +122,6 @@ const NetworkMap = forwardRef((props, ref) => {
                     }
                 }
             }
-
     }
 
     function updateLineFlowMode(viewState) {
@@ -178,6 +179,7 @@ const NetworkMap = forwardRef((props, ref) => {
             useName: useName,
             labelsVisible: labelsVisible,
             labelColor: foregroundNeutralColor,
+            labelSize: LABEL_SIZE,
             pickable: true
         }));
 
@@ -191,6 +193,9 @@ const NetworkMap = forwardRef((props, ref) => {
             filteredNominalVoltages: props.filteredNominalVoltages,
             lineFlowMode: lineFlowMode,
             lineFullPath: props.lineFullPath,
+            labelsVisible: labelsVisible,
+            labelColor: foregroundNeutralColor,
+            labelSize: LABEL_SIZE,
             pickable: true,
             onHover: ({object, x, y}) => {
                 setTooltip({
