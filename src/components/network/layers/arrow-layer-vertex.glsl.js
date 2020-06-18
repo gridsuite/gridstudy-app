@@ -162,11 +162,13 @@ void main(void) {
 
       // calculate translation for the parallels lines lines use the angle calculated from origin/destination 
       // to maintain the same translation between segments
-      float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
-      vec4 trans = project_common_position_to_clipspace(vec4(-cos(angleLine), sin(angleLine), 0. ,0.) * instanceOffsets) * project_size_to_pixel(offsetPixels);
-
+      if( instanceOffsets != 0. ) {
+          float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
+          vec4 trans = project_common_position_to_clipspace(vec4(-cos(angleLine), sin(angleLine), 0. ,0.) * instanceOffsets) * project_size_to_pixel(offsetPixels);
+          vertexPosition += trans;
+      }
       // vertex shader output
-      gl_Position = vertexPosition + trans;
+      gl_Position = vertexPosition;
 
       // arrow fill color for fragment shader 
       vFillColor = instanceColor;
