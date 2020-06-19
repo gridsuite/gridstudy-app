@@ -1,6 +1,9 @@
 name: CI
 
-on: [push]
+on:
+  push:
+  repository_dispatch:
+    types: commons-ui-updated
 
 jobs:
   build-and-deploy:
@@ -8,15 +11,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout commons-ui
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          repository: gridsuite/commons-ui
+          ref: refs/heads/master
+          path: 'commons-ui'
+
+        - name: build commons-ui
+          run: |
+            cd $GITHUB_WORKSPACE/commons-ui
+            npm install
+            npm run build
+
       - name: Checkout
         uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
         with:
           persist-credentials: false
+          path: studyapp
 
       - name: Install and Build
         env:
           CI: false
         run: |
+          cd $GITHUB_WORKSPACE/studyapp
           npm install
           npm run-script build
           npm run-script test

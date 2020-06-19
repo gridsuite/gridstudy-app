@@ -4,6 +4,7 @@
   "homepage": ".",
   "private": true,
   "dependencies": {
+    "@gridsuite/commons-ui": "file:../commons-ui",
     "@material-ui/core": "^4.9.5",
     "@material-ui/icons": "^4.5.1",
     "@material-ui/lab": "^4.0.0-alpha.42",
@@ -20,8 +21,8 @@
     "oidc-client": "^1.10.1",
     "prop-types": "15.7.2",
     "qs": "^6.9.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
+    "react": "file:../commons-ui/node_modules/react",
+    "react-dom": "file:../commons-ui/node_modules/react-dom",
     "react-intl": "^3.11.0",
     "react-map-gl": "^5.2.3",
     "react-redux": "^7.1.3",
