@@ -245,3 +245,22 @@ export function connectNotificationsWebsocket(studyName) {
     };
     return rws;
 }
+
+export function getExportFormat() {
+    console.info("get export formats");
+    const getExportFormatUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/network-conversion/export/format";
+    console.debug(getExportFormatUrl);
+    return backendFetch(getExportFormatUrl, {method : 'get'}).then(response => response.json());
+}
+
+export function exportNetwork(studyName, format) {
+    console.info("Export network of study: " + studyName + " in format:" + format);
+    const exportNetworkUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/network-conversion/" + studyName + "/" + format;
+    console.debug(exportNetworkUrl);
+    return backendFetch(exportNetworkUrl, {method : 'get'}).then(response => {
+        let file = {};
+        file.filename = response.headers.get("content-disposition").split("filename=")[1];
+        file.data = response.blob();
+        return file;
+    });
+}

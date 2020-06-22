@@ -7,7 +7,7 @@
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { FormattedMessage } from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -16,6 +16,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 /**
  * Dialog to delete an element #TODO To be moved in the common-ui repository once it has been created
@@ -150,6 +154,72 @@ const RenameDialog = ({
     );
 };
 
+/**
+ * Dialog to export the network case #TODO To be moved in the common-ui repository once it has been created
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ * @param {EventListener} onClick Event to submit the export
+ * @param {String} title Title of the dialog
+ * @param {String} message Message of the dialog
+ */
+const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}) => {
+
+    const formats = availableFormat;
+    const [selectedFormat, setSelectedFormat] = React.useState("");
+
+    const useStyles = makeStyles(() => ({
+        formControl: {
+            minWidth: 200,
+        },
+    }));
+
+    const handleClick = () => {
+        console.debug("Request for exporting in format: " + selectedFormat);
+        onClick(selectedFormat);
+    };
+
+    const handleClose = () => {
+        onClose();
+    };
+
+    const handleExited = () => {
+        setSelectedFormat("");
+    };
+
+    const handleChange = (event) => {
+        setSelectedFormat(event.target.value);
+    };
+
+    const classes = useStyles();
+
+    return (
+        <Dialog open={open} onClose={handleClose} onExited={handleExited} aria-labelledby="dialog-title-export">
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent>
+                <FormControl className={classes.formControl}>
+                    <InputLabel id="select-format-label">
+                        <FormattedMessage id="exportFormat"/>
+                    </InputLabel>
+                    <Select
+                        labelId="select-format-label"
+                        id="controlled-select-format"
+                        onChange={handleChange}
+                        inputProps={{
+                            id: 'select-format',
+                        }}
+                    >
+                        {formats.map((function (element) {return <MenuItem key={element} value={element}>{element}</MenuItem>}))}
+                    </Select>
+                </FormControl>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose} variant="text"><FormattedMessage id="cancel"/></Button>
+                <Button onClick={handleClick} variant="outlined"><FormattedMessage id="export"/></Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
 RenameDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -159,4 +229,4 @@ RenameDialog.propTypes = {
     currentName: PropTypes.string.isRequired,
 };
 
-export { DeleteDialog, RenameDialog };
+export { DeleteDialog, RenameDialog, ExportDialog };
