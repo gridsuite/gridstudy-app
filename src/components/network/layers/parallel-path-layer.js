@@ -31,17 +31,36 @@ export default class ParallelPathLayer extends PathLayer {
             'vs:#decl': `\
 attribute float instanceOffsets;
 attribute float angleLine;
+attribute vec2 start;
+attribute float moveOriginPoint;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
 
 `,
-    'vs:DECKGL_FILTER_GL_POSITION': `\
-            if ( instanceOffsets == 0.) return;
+    'vs:#main-end': `\
+            if ( instanceOffsets == 0. ) return;
+      
+      float offsetPixels = clamp(project_pixel_size( distanceBetweenLines), minParallelOffset, maxParallelOffset );
+      float radius = 6.1;
+      float angleMove = angleLine ;
+      vec4 trans = vec4(cos(angleMove), -sin(angleMove ), 0, 0.) * instanceOffsets ;
+      float  x = sqrt( (radius* radius) - (instanceOffsets * instanceOffsets) ) / radius ;
 
-      float offsetPixels = clamp(project_pixel_size( distanceBetweenLines), minParallelOffset, maxParallelOffset);
-      vec4 trans = project_common_position_to_clipspace(vec4(-cos(angleLine), sin(angleLine), 0, 0.) * instanceOffsets) * project_size_to_pixel(offsetPixels);
-      position += trans ;
+      if( moveOriginPoint > 0.0 ) {
+          if( isEnd > EPSILON ) {
+              trans.x += x * sin(angleMove) ;
+              trans.y += x * cos(angleMove) ;
+          }
+          else
+          {
+              trans.x -= x * sin(angleMove ) ;
+              trans.y -= x * cos(angleMove ) ;
+          }
+      }
+      trans = project_common_position_to_clipspace( trans )   ;
+             
+      gl_Position += ( trans   ) * project_size_to_pixel(offsetPixels);
 `
         };
         return shaders;
@@ -60,10 +79,11 @@ uniform float minParallelOffset;
             angleLine: {
                 size: 1,
                 type: GL.FLOAT,
-                accessor: 'getLineAngle'}
-
-
-
+                accessor: 'getLineAngle'},
+            moveOriginPoint: {
+                size: 1,
+                accessor:'getMoveOriginPoint',
+            }
         });
     }
 

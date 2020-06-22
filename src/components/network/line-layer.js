@@ -163,19 +163,22 @@ class LineLayer extends CompositeLayer {
                         mapOriginDestination.set(key, val.add( line ));
                     }
 
-                    const path = this.props.geoData.getLinePositions(this.props.network, line, false);
-                    line.angle=Math.atan2( path[0][0]- path[1][0], path[0][1] - path[1][1]);
+                    const path = this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath);
+
+                    line.angle=Math.atan2( path[0][0] - path[path.length -1 ][0], path[0][1]- path[path.length -1 ][1]);
+                    if( line.angle < 0.) line.angle+= 2*Math.PI;
                     line.origin=path[0];
                     line.end=path[1];
+                    line.moveOriginPoint = path.length <= 2 ? 1.0 : 0.0;
                 });
             });
 
             // calculate offset for line with same subsation set
             mapOriginDestination.forEach( samePathLine => {
-                let offset = -(samePathLine.size-1) / 2;
+                let offset = -(samePathLine.size-1) / 2.;
                 samePathLine.forEach( line => {
                     line.parallelIndex=offset;
-                    offset+=1;
+                    offset+=1.;
                 });
             });
         }
@@ -198,6 +201,9 @@ class LineLayer extends CompositeLayer {
                 getWidth: 2,
                 getParallelIndex: (line) => line.parallelIndex,
                 getLineAngle: (line) =>  line.angle,
+                getMoveOriginPoint: d => d.moveOriginPoint,
+                getEnd: d => d.origin,
+
                 getDistanceBetweenLines :() =>  this.props.distanceBetweenLines,
                 getMaxParallelOffset : () => this.props.maxParallelOffset,
                 getMinParallelOffset : () => this.props.minParallelOffset,
@@ -239,6 +245,7 @@ class LineLayer extends CompositeLayer {
                 sizeMaxPixels: 7,
                 getDistance: arrow => arrow.distance,
                 getLine: arrow => arrow.line,
+                getMoveOriginPoint: arrow=>arrow.line.moveOriginPoint,
                 getLinePositions: line => this.props.geoData.getLinePositions(this.props.network, line, this.props.lineFullPath),
                 getColor: color,
                 getSize: 700,
@@ -268,7 +275,8 @@ class LineLayer extends CompositeLayer {
             const startFork = new ForkLineLayer(this.getSubLayerProps({
                 id: 'LineForkStart' + compositeData.nominalVoltage,
                 getSourcePosition: d => d.origin,
-                getTargetPosition: d => d.origin,
+                getTargetPosition: d => d.end,
+                getMoveOriginPoint: d=>d.moveOriginPoint,
                 data: compositeData.lines,
                 widthScale: 20,
                 widthMinPixels: 1,
@@ -292,7 +300,8 @@ class LineLayer extends CompositeLayer {
             const endFork = new ForkLineLayer(this.getSubLayerProps({
                 id: 'LineForkEnd' + compositeData.nominalVoltage,
                 getSourcePosition: d => d.end,
-                getTargetPosition: d => d.end,
+                getTargetPosition: d => d.origin,
+                getMoveOriginPoint: d=>d.moveOriginPoint,
                 data: compositeData.lines,
                 widthScale: 20,
                 widthMinPixels: 1,
@@ -300,7 +309,7 @@ class LineLayer extends CompositeLayer {
                 getColor: line=> isDisconnected(line) ? this.props.disconnectedLineColor: color,
                 getWidth: 2,
                 getParallelIndex: (line) => line.parallelIndex,
-                getAngle: (line) => line.angle,
+                getAngle: (line) => line.angle + Math.PI,
                 getDistanceBetweenLines : () => this.props.distanceBetweenLines,
                 getMaxParallelOffset : () => this.props.maxParallelOffset,
                 getMinParallelOffset : () => this.props.minParallelOffset,
@@ -332,8 +341,8 @@ LineLayer.defaultProps = {
     lineFullPath: true,
     labelSize: 16,
     distanceBetweenLines: 1000.,
-    maxParallelOffset: 50.,
-    minParallelOffset: 1.,
+    maxParallelOffset: 2.,
+    minParallelOffset: 0.25,
 };
 
 export default LineLayer;

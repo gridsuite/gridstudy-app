@@ -16,6 +16,7 @@ attribute float instanceLineDistance;
 attribute float instanceArrowDirection;
 attribute float instanceOffsets;
 attribute float angleLine;
+attribute float moveOriginPoint;
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
@@ -163,9 +164,29 @@ void main(void) {
       // calculate translation for the parallels lines lines use the angle calculated from origin/destination 
       // to maintain the same translation between segments
       if( instanceOffsets != 0. ) {
+
+          float radius = 6.1;
+          float angle = angleLine;
+          
+          if( linePoint >= 1 ) 
+            angle += 3.14159265359;
+
           float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
-          vec4 trans = project_common_position_to_clipspace(vec4(-cos(angleLine), sin(angleLine), 0. ,0.) * instanceOffsets) * project_size_to_pixel(offsetPixels);
-          vertexPosition += trans;
+          vec4 trans = vec4(-cos(angle), sin(angle),0.,0.) * instanceOffsets  ;
+          if( moveOriginPoint > 0.){
+              vec4 transOr = trans;
+              float  x = sqrt(abs( (radius*radius) - (instanceOffsets * instanceOffsets ) ) ) / radius ;
+              transOr.x += x * sin(angle) ;
+              transOr.y += x * cos(angle) ;
+              vec4 transEx = trans;
+              transEx.x -= x * sin(angle) ;
+              transEx.y -= x * cos(angle) ;
+              trans = mix( project_common_position_to_clipspace( transOr ), project_common_position_to_clipspace( transEx ), interpolationValue); 
+          }
+          else 
+            trans = project_common_position_to_clipspace( trans ) ;
+          vertexPosition+= trans* project_size_to_pixel(offsetPixels);
+
       }
       // vertex shader output
       gl_Position = vertexPosition;
