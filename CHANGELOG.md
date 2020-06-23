@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Indication of no-load and open lines in network display and single line diagrams
+- Representation of no-load and open lines in network display and single line diagrams
 
 ### Changed
 
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improve layout of the cards in the study explorer and add a tool tip with full study name
+- Improvement of the cards layout in the study explorer and addition of a tooltip with the full study name
 
 ### Fixed
 
