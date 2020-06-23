@@ -28,10 +28,14 @@ import {
     initializeAuthentication
 } from '../utils/authentication/AuthService';
 
-import Authentication from "./authentication";
+import Authentication from "./authentication-components/authentication";
+import SilentRenewCallback from "./authentication-components/silent-renew-callback";
+import SignInCallback from "./authentication-components/signin-callback";
+
 import PageNotFound from "./page-not-found";
 import {useRouteMatch} from "react-router";
 import {FormattedMessage} from "react-intl";
+import AuthenticationRouter from "./authentication-components/authentication-router";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -53,30 +57,6 @@ const getMuiTheme = (theme) => {
     } else {
         return darkTheme;
     }
-};
-
-const SignInCallback = (props) => {
-    useEffect(() => {
-        if (props.userManager.instance !== null) {
-            props.handleSigninCallback();
-        }
-    }, [props.userManager]);
-
-    return (
-        <h1> </h1>
-    )
-};
-
-const SilentRenewCallback = (props) => {
-    useEffect(() => {
-        if (props.userManager.instance !== null) {
-            props.handleSilentRenewCallback();
-        }
-    }, [props.userManager]);
-
-    return (
-        <h1>Technical token renew window, you should not see this</h1>
-    )
 };
 
 const noUserManager = {instance: null, error: null};
@@ -104,7 +84,7 @@ const App = () => {
     });
 
     useEffect(() => {
-        initializeAuthentication(dispatch, matchSilentRenewCallbackUrl != null)
+        initializeAuthentication(dispatch, matchSilentRenewCallbackUrl != null, fetch('idpSettings.json'))
             .then(userManager => {
                 setUserManager({instance: userManager, error: null});
             })
@@ -154,24 +134,8 @@ const App = () => {
                                 <PageNotFound message={<FormattedMessage id="PageNotFound"/>}/>
                             </Route>
                         </Switch>)
-                    : ( <React.Fragment>
-                            {userManager.error !== null && (<h1>Error : Getting userManager; {userManager.error}</h1>)}
-                            {signInCallbackError !== null && (<h1>Error : SignIn Callback Error; {signInCallbackError.message}</h1>)}
-                            <Switch>
-                                <Route exact path="/sign-in-callback">
-                                    <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
-                                </Route>
-                                <Route exact path="/silent-renew-callback">
-                                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(userManager.instance)}/>
-                                </Route>
-                                <Route exact path="/logout-callback">
-                                    <Redirect to="/" />
-                                </Route>
-                                <Route>
-                                    {userManager.error === null && (<Authentication disabled={userManager.instance === null} onLoginClick={() => login(location, userManager.instance)}/>)}
-                                </Route>
-                            </Switch>
-                        </React.Fragment>
+                    : (
+                        <AuthenticationRouter userManager={userManager} signInCallbackError={signInCallbackError} dispatch={dispatch} history={history} location={location}/>
                     )}
             </React.Fragment>
         </ThemeProvider>
