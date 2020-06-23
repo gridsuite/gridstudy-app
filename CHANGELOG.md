@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2020-06-12
+
+### Added
+
+- Indication of no-load and open lines in network display and single line diagrams
+
+### Changed
+
+- Misc. performance enhancements on the back-end side
+
+## [0.5.0] - 2020-05-29
+
+### Added
+
+- Redirection to a specific error page when trying to access a non-existing URL
+
+### Changed
+
+- Improve layout of the cards in the study explorer and add a tool tip with full study name
+
+### Fixed
+
+- Fix a bug with handling of objects representing network equipments
+
+### Technical
+
+- Switch to PowSyBl 3.3
+
 ## [0.4.0] - 2020-05-18
 
 ### Added
@@ -68,7 +96,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Geographical display of the imported networks
 - On-demand display of electrical substations
 
-[unreleased]: https://github.com/gridsuite/study-app/compare/v0.4.0...HEAD
+[unreleased]: https://github.com/gridsuite/study-app/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/gridsuite/study-app/releases/tag/v0.6.0
+[0.5.0]: https://github.com/gridsuite/study-app/releases/tag/v0.5.0
 [0.4.0]: https://github.com/gridsuite/study-app/releases/tag/v0.4.0
 [0.3.0]: https://github.com/gridsuite/study-app/releases/tag/v0.3.0
 [0.2.0]: https://github.com/gridsuite/study-app/releases/tag/v0.2.0
