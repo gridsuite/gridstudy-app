@@ -152,12 +152,18 @@ export default class GeoData {
 
     getLabelOffset(angle, offsetDistance, arrowDirection) {
         let radiantAngle = (-angle + 90) / (180 / (Math.PI));
-        //Y offset is negative because deckGL pixel uses a top-left coordinate system and our computation use orthogonal coordinates
-        let offset = [Math.cos(radiantAngle)*offsetDistance, -Math.sin(radiantAngle)*offsetDistance];
-        if(arrowDirection === ArrowDirection.FROM_SIDE_1_TO_SIDE_2)
-        {
-            offset = [-offset[0], -offset[1]];
+        let direction;
+        switch(arrowDirection){
+            case ArrowDirection.FROM_SIDE_2_TO_SIDE_1:
+                direction = 1;
+                break;
+            case ArrowDirection.FROM_SIDE_1_TO_SIDE_2:
+                direction = -1;
+                break;
+            case ArrowDirection.NONE:
+                direction = 0;
         }
-        return offset;
+        //Y offset is negative because deckGL pixel uses a top-left coordinate system and our computation use orthogonal coordinates
+        return [Math.cos(radiantAngle)*offsetDistance*direction, -Math.sin(radiantAngle)*offsetDistance*direction];
     }
 }
