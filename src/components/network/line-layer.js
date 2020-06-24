@@ -15,8 +15,8 @@ const DISTANCE_BETWEEN_ARROWS = 10000.0;
 const START_ARROW_POSITION = 0.1;
 const END_ARROW_POSITION = 0.9;
 //Constants for voltage labels
-const START_LABEL_POSITION = 8;
-const END_LABEL_POSITION = 88;
+const START_LABEL_POSITION = 10;
+const END_LABEL_POSITION = 90;
 
 export const LineFlowMode = {
     NONE: 'none',

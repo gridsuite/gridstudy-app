@@ -143,17 +143,28 @@ export default class GeoData {
 
         let remainingDistance = goodSegment.remainingDistance;
         let angle = getGreatCircleBearing(goodSegment.segment[0], goodSegment.segment[1]);
-        let reducedAngle = angle;
-        if (angle > 180) {
-            reducedAngle = angle - 180;
-        }
-        const neededOffset = this.getLabelOffset(reducedAngle, 10);
+
+        const neededOffset = this.getLabelOffset(angle, 30);
         return {distance :computeDestinationPoint(goodSegment.segment[0], remainingDistance, angle), angle: angle, offset: neededOffset};
 
     }
 
     getLabelOffset(angle, offsetDistance) {
-        let radiantAngle = (-angle + 90) / (180 / (Math.PI));
-        return [Math.cos(radiantAngle)*offsetDistance, -Math.sin(radiantAngle)*offsetDistance];
+        let reducedAngle = angle;
+        if (angle > 180) {
+            reducedAngle = angle - 180;
+        }
+        console.log("\n\n\n\n\n\n\n\n\n\n\n");
+        console.log("ANGLE DEG = " + angle);
+        let radiantAngle = (-reducedAngle + 90) / (180 / (Math.PI));
+        if(angle > 180) {
+            console.log("LEFT ANGLE");
+            console.log('OFFSET = [' + Math.cos(radiantAngle)*offsetDistance + ',' + (-Math.sin(radiantAngle)*offsetDistance) + ')');
+            return [Math.cos(radiantAngle)*offsetDistance, -Math.sin(radiantAngle)*offsetDistance];
+        }
+        console.log("RIGHT ANGLE");
+        console.log('OFFSET = [' + (-Math.cos(radiantAngle)*offsetDistance) + ',' + Math.sin(radiantAngle)*offsetDistance + ')');
+        return [-Math.cos(radiantAngle)*offsetDistance, Math.sin(radiantAngle)*offsetDistance];
+
     }
 }
