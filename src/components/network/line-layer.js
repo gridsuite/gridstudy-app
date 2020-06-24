@@ -43,6 +43,17 @@ class LineLayer extends CompositeLayer {
         };
     }
 
+    getArrowDirection(p) {
+        console.log('P = ', p);
+        if (p < 0) {
+            return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
+        } else if (p > 0) {
+            return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
+        } else {
+            return ArrowDirection.NONE;
+        }
+    }
+
     updateState({props, oldProps, changeFlags}) {
         let compositeData;
         if (changeFlags.dataChanged) {
@@ -104,9 +115,10 @@ class LineLayer extends CompositeLayer {
                     const arrowCount = Math.ceil(directLineDistance / DISTANCE_BETWEEN_ARROWS);
 
                     let lineData = lineMap.get(line.id);
+                    let arrowDirection = this.getArrowDirection(line.p1);
 
-                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_ARROW_POSITION * 100, line.p1 > 0);
-                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_ARROW_POSITION * 100, line.p1 > 0);
+                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_ARROW_POSITION * 100, arrowDirection);
+                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_ARROW_POSITION * 100, arrowDirection);
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
                             line: line,
@@ -205,13 +217,14 @@ class LineLayer extends CompositeLayer {
                 getSize: 700,
                 getSpeedFactor: 3,
                 getDirection: arrow => {
-                    if (arrow.line.p1 < 0) {
-                        return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
-                    } else if (arrow.line.p1 > 0) {
-                        return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
-                    } else {
-                        return ArrowDirection.NONE;
-                    }
+                    this.getArrowDirection(arrow.line.p1)
+                    // if (arrow.line.p1 < 0) {
+                    //     return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
+                    // } else if (arrow.line.p1 > 0) {
+                    //     return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
+                    // } else {
+                    //     return ArrowDirection.NONE;
+                    // }
                 },
                 animated: this.props.lineFlowMode === LineFlowMode.ANIMATED_ARROWS,
                 visible: this.props.lineFlowMode !== LineFlowMode.NONE && this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
@@ -219,6 +232,7 @@ class LineLayer extends CompositeLayer {
                     getLinePositions: [this.props.lineFullPath]
                 }
             }));
+            console.log('ARROW = ', arrowLayer);
             layers.push(arrowLayer);
         });
 

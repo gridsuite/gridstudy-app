@@ -9,6 +9,7 @@ import getDistance from "geolib/es/getDistance";
 import computeDestinationPoint from "geolib/es/computeDestinationPoint";
 import cheapRuler from 'cheap-ruler';
 import getGreatCircleBearing from "geolib/es/getGreatCircleBearing";
+import {ArrowDirection} from "./layers/arrow-layer";
 
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
@@ -129,7 +130,7 @@ export default class GeoData {
     }
 
 
-    labelDisplayPosition(positions, cumulativeDistances, percent, isPPositive) {
+    labelDisplayPosition(positions, cumulativeDistances, percent, arrowDirection) {
         if (percent > 100 || percent < 0) {
             throw new Error("percent value incorrect: " + percent);
         }
@@ -144,15 +145,16 @@ export default class GeoData {
         let remainingDistance = goodSegment.remainingDistance;
         let angle = getGreatCircleBearing(goodSegment.segment[0], goodSegment.segment[1]);
 
-        const neededOffset = this.getLabelOffset(angle, 30, isPPositive);
+        const neededOffset = this.getLabelOffset(angle, 30, arrowDirection);
         return {position :computeDestinationPoint(goodSegment.segment[0], remainingDistance, angle), angle: angle, offset: neededOffset};
 
     }
 
-    getLabelOffset(angle, offsetDistance, isPPositive) {
+    getLabelOffset(angle, offsetDistance, arrowDirection) {
         let radiantAngle = (-angle + 90) / (180 / (Math.PI));
-        if(isPPositive)
-            return [-Math.cos(radiantAngle)*offsetDistance, Math.sin(radiantAngle)*offsetDistance];
-        return [Math.cos(radiantAngle)*offsetDistance, -Math.sin(radiantAngle)*offsetDistance];
+        let offsetX = Math.cos(radiantAngle)*offsetDistance;
+        let offsetY = Math.sin(radiantAngle)*offsetDistance;
+        //
+        return (arrowDirection === ArrowDirection.FROM_SIDE_1_TO_SIDE_2)? [-offsetX, offsetY] : [offsetX, -offsetY];
     }
 }
