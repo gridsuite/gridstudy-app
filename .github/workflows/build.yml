@@ -18,6 +18,7 @@ jobs:
       - name: Install and Build
         env:
           CI: false
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           cd $GITHUB_WORKSPACE/study-app
           npm install
