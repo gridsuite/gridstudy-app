@@ -15,3 +15,4 @@ To run the app you should first connect to github packages registry
 then `npm install` `npm start` .
 
 The token is a person access token. click [here](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line) to see how to generate yours. 
+
