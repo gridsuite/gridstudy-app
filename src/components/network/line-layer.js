@@ -108,19 +108,19 @@ class LineLayer extends CompositeLayer {
 
                     let lineData = lineMap.get(line.id);
 
-                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_LABEL_POSITION);
-                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_LABEL_POSITION);
+                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_LABEL_POSITION, line.p1 > 0);
+                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_LABEL_POSITION, line.p1 > 0);
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
                             line: line,
                             p: line.p1,
-                            printPosition: [coordinates1.distance.longitude, coordinates1.distance.latitude],
+                            printPosition: [coordinates1.position.longitude, coordinates1.position.latitude],
                             offset: coordinates1.offset,
                         });
                         compositeData.activePower.push({
                             line: line,
                             p: line.p2,
-                            printPosition: [coordinates2.distance.longitude, coordinates2.distance.latitude],
+                            printPosition: [coordinates2.position.longitude, coordinates2.position.latitude],
                             offset: coordinates2.offset
                         });
                     }
