@@ -15,6 +15,17 @@ jobs:
           persist-credentials: false
           path: study-app
 
+      strategy:
+        matrix:
+          node-version: [12.x]
+
+      - name: Use Node.js ${{ matrix.node-version }}
+          uses: actions/setup-node@v1
+          with:
+            node-version: ${{ matrix.node-version }}
+            registry-url: https://npm.pkg.github.com/
+            scope: '@gridsuite'
+
       - name: Install and Build
         env:
           CI: false
