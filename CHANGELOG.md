@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Misc. performance enhancements on the back-end side
+- Misc. performance enhancements of the back-end side
 
 ## [0.5.0] - 2020-05-29
 
