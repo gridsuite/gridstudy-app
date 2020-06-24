@@ -117,8 +117,8 @@ class LineLayer extends CompositeLayer {
                     let lineData = lineMap.get(line.id);
                     let arrowDirection = getArrowDirection(line.p1);
 
-                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_ARROW_POSITION * 100, arrowDirection);
-                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_ARROW_POSITION * 100, arrowDirection);
+                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_ARROW_POSITION, arrowDirection);
+                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_ARROW_POSITION, arrowDirection);
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
                             line: line,
@@ -179,7 +179,7 @@ class LineLayer extends CompositeLayer {
                 updateTriggers: {
                     getPath: [this.props.lineFullPath],
                     getColor: [this.props.disconnectedLineColor]
-                },  
+                },
                 getDashArray: line => doDash(line) ? dashArray : noDashArray,
                 extensions: [new PathStyleExtension( { dash: true })]
             }));

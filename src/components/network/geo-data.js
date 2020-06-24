@@ -130,15 +130,15 @@ export default class GeoData {
     }
 
 
-    labelDisplayPosition(positions, cumulativeDistances, percent, arrowDirection) {
-        if (percent > 100 || percent < 0) {
-            throw new Error("percent value incorrect: " + percent);
+    labelDisplayPosition(positions, cumulativeDistances, arrowPosition, arrowDirection) {
+        if (arrowPosition > 1 || arrowPosition < 0) {
+            throw new Error("Proportional position value incorrect: " + arrowPosition);
         }
         if (cumulativeDistances === null || cumulativeDistances.length < 2 || cumulativeDistances[cumulativeDistances.length-1] === 0) {
             return null;
         }
         let lineDistance = cumulativeDistances[cumulativeDistances.length-1];
-        let wantedDistance = lineDistance * percent / 100;
+        let wantedDistance = lineDistance * arrowPosition;
 
         let goodSegment = this.findSegment(positions, cumulativeDistances, wantedDistance);
 
