@@ -33,6 +33,17 @@ function isDisconnected(line){
     return line.p1 == null && line.p2 == null
 }
 
+function getArrowDirection(p) {
+    console.log('P = ', p);
+    if (p < 0) {
+        return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
+    } else if (p > 0) {
+        return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
+    } else {
+        return ArrowDirection.NONE;
+    }
+}
+
 class LineLayer extends CompositeLayer {
 
     initializeState() {
@@ -41,17 +52,6 @@ class LineLayer extends CompositeLayer {
         this.state = {
             compositeData: []
         };
-    }
-
-    getArrowDirection(p) {
-        console.log('P = ', p);
-        if (p < 0) {
-            return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
-        } else if (p > 0) {
-            return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
-        } else {
-            return ArrowDirection.NONE;
-        }
     }
 
     updateState({props, oldProps, changeFlags}) {
@@ -115,7 +115,7 @@ class LineLayer extends CompositeLayer {
                     const arrowCount = Math.ceil(directLineDistance / DISTANCE_BETWEEN_ARROWS);
 
                     let lineData = lineMap.get(line.id);
-                    let arrowDirection = this.getArrowDirection(line.p1);
+                    let arrowDirection = getArrowDirection(line.p1);
 
                     let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_ARROW_POSITION * 100, arrowDirection);
                     let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_ARROW_POSITION * 100, arrowDirection);
@@ -179,7 +179,7 @@ class LineLayer extends CompositeLayer {
                 updateTriggers: {
                     getPath: [this.props.lineFullPath],
                     getColor: [this.props.disconnectedLineColor]
-                },
+                },  
                 getDashArray: line => doDash(line) ? dashArray : noDashArray,
                 extensions: [new PathStyleExtension( { dash: true })]
             }));
@@ -217,14 +217,7 @@ class LineLayer extends CompositeLayer {
                 getSize: 700,
                 getSpeedFactor: 3,
                 getDirection: arrow => {
-                    this.getArrowDirection(arrow.line.p1)
-                    // if (arrow.line.p1 < 0) {
-                    //     return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
-                    // } else if (arrow.line.p1 > 0) {
-                    //     return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
-                    // } else {
-                    //     return ArrowDirection.NONE;
-                    // }
+                    return getArrowDirection(arrow.line.p1)
                 },
                 animated: this.props.lineFlowMode === LineFlowMode.ANIMATED_ARROWS,
                 visible: this.props.lineFlowMode !== LineFlowMode.NONE && this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
