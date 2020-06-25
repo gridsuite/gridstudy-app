@@ -16,9 +16,6 @@ const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
 const START_ARROW_POSITION = 0.1;
 const END_ARROW_POSITION = 0.9;
-//Constants for voltage labels
-const START_LABEL_POSITION = 8;
-const END_LABEL_POSITION = 88;
 
 export const LineFlowMode = {
     NONE: 'none',
@@ -38,6 +35,15 @@ function isDisconnected(line){
     return line.p1 == null && line.p2 == null
 }
 
+function getArrowDirection(p) {
+    if (p < 0) {
+        return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
+    } else if (p > 0) {
+        return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
+    } else {
+        return ArrowDirection.NONE;
+    }
+}
 
 class LineLayer extends CompositeLayer {
 
@@ -79,7 +85,7 @@ class LineLayer extends CompositeLayer {
         else {
             compositeData = this.state.compositeData;
         }
-        if (changeFlags.propsChanged && (oldProps.lineFullPath !== props.lineFullPath || props.lineFlowMode != oldProps.lineFlowMode)) {
+        if (changeFlags.dataChanged || (changeFlags.propsChanged && (oldProps.lineFullPath !== props.lineFullPath || props.lineFlowMode != oldProps.lineFlowMode))) {
             compositeData.forEach(compositeData => {
                 let lineMap = new Map();
                 compositeData.lines.forEach(line => {
@@ -111,20 +117,21 @@ class LineLayer extends CompositeLayer {
                     const arrowCount = Math.ceil(directLineDistance / DISTANCE_BETWEEN_ARROWS);
 
                     let lineData = lineMap.get(line.id);
+                    let arrowDirection = getArrowDirection(line.p1);
 
-                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_LABEL_POSITION);
-                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_LABEL_POSITION);
+                    let coordinates1 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, START_ARROW_POSITION, arrowDirection);
+                    let coordinates2 = props.geoData.labelDisplayPosition(lineData.positions, lineData.cumulativeDistances, END_ARROW_POSITION, arrowDirection);
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
                             line: line,
                             p: line.p1,
-                            printPosition: [coordinates1.distance.longitude, coordinates1.distance.latitude],
+                            printPosition: [coordinates1.position.longitude, coordinates1.position.latitude],
                             offset: coordinates1.offset,
                         });
                         compositeData.activePower.push({
                             line: line,
                             p: line.p2,
-                            printPosition: [coordinates2.distance.longitude, coordinates2.distance.latitude],
+                            printPosition: [coordinates2.position.longitude, coordinates2.position.latitude],
                             offset: coordinates2.offset
                         });
                     }
@@ -218,26 +225,6 @@ class LineLayer extends CompositeLayer {
             }));
             layers.push(lineLayer);
 
-            // lines active power
-            const lineActivePowerLabelsLayer = new TextLayer(this.getSubLayerProps({
-                id: "ActivePower" + compositeData.nominalVoltage,
-                data: compositeData.activePower,
-                getText: activePower => activePower.p !== undefined ? activePower.p.toString() : "",
-                getPosition: activePower => activePower.printPosition,
-                getColor: this.props.labelColor,
-                fontFamily: 'Roboto',
-                getSize: this.props.labelSize,
-                getAngle: 0,
-                getPixelOffset: activePower => activePower.offset,
-                getTextAnchor: 'middle',
-                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage) && this.props.labelsVisible,
-                updateTriggers: {
-                    getPosition: [this.props.lineFullPath],
-                    getPixelOffset: [this.props.lineFullPath]
-                }
-            }));
-            layers.push(lineActivePowerLabelsLayer);
-
             const arrowLayer = new ArrowLayer(this.getSubLayerProps({
                 id: 'ArrowNominalVoltage' + compositeData.nominalVoltage,
                 data: compositeData.arrows,
@@ -255,13 +242,7 @@ class LineLayer extends CompositeLayer {
                 getMaxParallelOffset : () => this.props.maxParallelOffset,
                 getMinParallelOffset : () => this.props.minParallelOffset,
                 getDirection: arrow => {
-                    if (arrow.line.p1 < 0) {
-                        return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
-                    } else if (arrow.line.p1 > 0) {
-                        return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
-                    } else {
-                        return ArrowDirection.NONE;
-                    }
+                    return getArrowDirection(arrow.line.p1)
                 },
                 animated: this.props.lineFlowMode === LineFlowMode.ANIMATED_ARROWS,
                 visible: this.props.lineFlowMode !== LineFlowMode.NONE && this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage),
@@ -322,6 +303,27 @@ class LineLayer extends CompositeLayer {
             layers.push(endFork);
 
 
+
+
+            // lines active power
+            const lineActivePowerLabelsLayer = new TextLayer(this.getSubLayerProps({
+                id: "ActivePower" + compositeData.nominalVoltage,
+                data: compositeData.activePower,
+                getText: activePower => activePower.p !== undefined ? activePower.p.toString() : "",
+                getPosition: activePower => activePower.printPosition,
+                getColor: this.props.labelColor,
+                fontFamily: 'Roboto',
+                getSize: this.props.labelSize,
+                getAngle: 0,
+                getPixelOffset: activePower => activePower.offset,
+                getTextAnchor: 'middle',
+                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage) && this.props.labelsVisible,
+                updateTriggers: {
+                    getPosition: [this.props.lineFullPath],
+                    getPixelOffset: [this.props.lineFullPath]
+                }
+            }));
+            layers.push(lineActivePowerLabelsLayer);
 
         });
 
