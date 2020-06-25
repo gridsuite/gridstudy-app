@@ -7,15 +7,15 @@
 
 import React, {useEffect} from "react";
 
-const SignInCallback = (props) => {
+const SignInCallbackHandler = ({userManager, handleSignInCallback}) => {
     useEffect(() => {
-        if (props.userManager.instance !== null) {
-            props.handleSigninCallback();
+        if (userManager !== null) {
+            handleSignInCallback();
         }
-    }, [props.userManager]);
+    }, [userManager]);
 
     return (
         <h1> </h1>
     )
 };
-export default SignInCallback;
+export default SignInCallbackHandler;

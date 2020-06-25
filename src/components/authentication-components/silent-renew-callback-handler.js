@@ -7,16 +7,16 @@
 
 import React, {useEffect} from "react";
 
-const SilentRenewCallback = (props) => {
+const SilentRenewCallbackHandler = ({userManager, handleSilentRenewCallback}) => {
     useEffect(() => {
-        if (props.userManager.instance !== null) {
-            props.handleSilentRenewCallback();
+        if (userManager !== null) {
+            handleSilentRenewCallback();
         }
-    }, [props.userManager]);
+    }, [userManager]);
 
     return (
         <h1>Technical token renew window, you should not see this</h1>
     )
 };
 
-export default SilentRenewCallback;
+export default SilentRenewCallbackHandler;

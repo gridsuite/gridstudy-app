@@ -20,17 +20,10 @@ import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
 
 import {
-    login,
     logout,
-    handleSigninCallback,
     getPreLoginPath,
-    handleSilentRenewCallback,
-    initializeAuthentication
+    initializeAuthentication, login
 } from '../utils/authentication/AuthService';
-
-import Authentication from "./authentication-components/authentication";
-import SilentRenewCallback from "./authentication-components/silent-renew-callback";
-import SignInCallback from "./authentication-components/signin-callback";
 
 import PageNotFound from "./page-not-found";
 import {useRouteMatch} from "react-router";

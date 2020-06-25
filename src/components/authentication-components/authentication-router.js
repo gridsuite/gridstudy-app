@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect} from "react";
+import React from "react";
 import {Redirect, Route, Switch} from "react-router-dom";
-import SignInCallback from "./signin-callback";
+import SignInCallbackHandler from "./sign-in-callback-handler";
 import {handleSigninCallback, handleSilentRenewCallback, login} from "../../utils/authentication/AuthService";
-import SilentRenewCallback from "./silent-renew-callback";
+import SilentRenewCallbackHandler from "./silent-renew-callback-handler";
 import Authentication from "./authentication";
 
 const AuthenticationRouter = ({userManager, signInCallbackError, dispatch, history, location}) => {
@@ -19,10 +19,10 @@ const AuthenticationRouter = ({userManager, signInCallbackError, dispatch, histo
             {signInCallbackError !== null && (<h1>Error : SignIn Callback Error; {signInCallbackError.message}</h1>)}
             <Switch>
                 <Route exact path="/sign-in-callback">
-                    <SignInCallback userManager={userManager} handleSigninCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
+                    <SignInCallbackHandler userManager={userManager.instance} handleSignInCallback={() => handleSigninCallback(dispatch, history, userManager.instance)}/>
                 </Route>
                 <Route exact path="/silent-renew-callback">
-                    <SilentRenewCallback userManager={userManager} handleSilentRenewCallback={() => handleSilentRenewCallback(userManager.instance)}/>
+                    <SilentRenewCallbackHandler userManager={userManager.instance} handleSilentRenewCallback={() => handleSilentRenewCallback(userManager.instance)}/>
                 </Route>
                 <Route exact path="/logout-callback">
                     <Redirect to="/" />

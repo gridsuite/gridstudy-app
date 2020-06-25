@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect} from 'react';
+import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const Authentication = (props) => {
+const Authentication = ({onLoginClick, disabled}) => {
     const classes = useStyles();
 
     function Copyright() {
@@ -67,12 +67,12 @@ const Authentication = (props) => {
                 </Typography>
 
                 <Button
-                    disabled={props.disabled}
+                    disabled={disabled}
                     fullWidth
                     variant="contained"
                     color="primary"
                     className={classes.submit}
-                    onClick={props.onLoginClick}
+                    onClick={onLoginClick}
                 >
                     <FormattedMessage id="connection"/>
                 </Button>
