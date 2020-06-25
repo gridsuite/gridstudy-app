@@ -34,7 +34,6 @@ function isDisconnected(line){
 }
 
 function getArrowDirection(p) {
-    console.log('P = ', p);
     if (p < 0) {
         return ArrowDirection.FROM_SIDE_2_TO_SIDE_1;
     } else if (p > 0) {
@@ -225,7 +224,6 @@ class LineLayer extends CompositeLayer {
                     getLinePositions: [this.props.lineFullPath]
                 }
             }));
-            console.log('ARROW = ', arrowLayer);
             layers.push(arrowLayer);
         });
 

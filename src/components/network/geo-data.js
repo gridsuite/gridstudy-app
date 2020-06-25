@@ -152,7 +152,7 @@ export default class GeoData {
 
     getLabelOffset(angle, offsetDistance, arrowDirection) {
         let radiantAngle = (-angle + 90) / (180 / (Math.PI));
-        let direction;
+        let direction = 0;
         switch(arrowDirection){
             case ArrowDirection.FROM_SIDE_2_TO_SIDE_1:
                 direction = 1;
