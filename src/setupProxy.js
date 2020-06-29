@@ -13,8 +13,23 @@ module.exports = function(app) {
   );
 
   app.use(
+    createProxyMiddleware('http://localhost:9000/ws/gateway/notification', {
+        pathRewrite: { '^/ws/gateway/': '/' },
+        ws: true
+    })
+  );
+
+  app.use(
     createProxyMiddleware('http://localhost:9000/api/gateway', {
         pathRewrite: { '^/api/gateway/': '/' }
     })
   );
+
+  app.use(
+    createProxyMiddleware('http://localhost:5009/ws/notification-server', {
+        pathRewrite: { '^/ws/notification-server/': '/' },
+        ws: true
+    })
+  );
+
 };

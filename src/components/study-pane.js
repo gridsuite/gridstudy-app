@@ -30,9 +30,10 @@ import {
     fetchSubstations,
     getVoltageLevelSingleLineDiagram,
     updateSwitchState,
+    connectNotificationsWebsocket,
     startLoadFlow
 } from "../utils/rest-api";
-import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy} from "../redux/actions";
+import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy, studyUpdated} from "../redux/actions";
 import Network from "./network/network";
 import GeoData from "./network/geo-data";
 import NominalVoltageFilter from "./network/nominal-voltage-filter";
@@ -82,6 +83,8 @@ const StudyPane = () => {
 
     const lineFlowMode = useSelector( state => state.lineFlowMode);
 
+    const studyUpdatedForce = useSelector(state => state.studyUpdated);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null);
@@ -100,16 +103,22 @@ const StudyPane = () => {
 
     const history = useHistory();
 
+    const websocketExpectedCloseRef = useRef();
+
     // study creation, network and geo data loading: will be called only one time at creation mount event because
     // studyName won't change
     useEffect(() => {
+        websocketExpectedCloseRef.current = false;
         dispatch(openStudy(studyName));
 
         loadNetwork(studyName);
         loadGeoData(studyName);
+        const ws = connectNotifications(studyName);
 
         // study cleanup at unmount event
         return function () {
+            websocketExpectedCloseRef.current = true;
+            ws.close();
             dispatch(closeStudy());
         }
     }, [studyName]);
@@ -170,6 +179,24 @@ const StudyPane = () => {
             });
     }
 
+    function connectNotifications(studyName) {
+        console.info(`Connecting to notifications '${studyName}'...`);
+
+        const ws = connectNotificationsWebsocket(studyName);
+        ws.onmessage = function (event) {
+          dispatch(studyUpdated(JSON.parse(event.data)));
+        }
+        ws.onclose = function(event) {
+            if (!websocketExpectedCloseRef.current) {
+                console.error("Unexpected Notification WebSocket closed");
+            }
+        }
+        ws.onerror = function(event) {
+            console.error("Unexpected Notification WebSocket error", event);
+        }
+        return ws;
+    }
+
     const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
         setUpdateSwitchMsg("");
         history.replace("/studies/" + studyName + stringify({ voltageLevelId: voltageLevelId }, { addQueryPrefix: true }));
@@ -188,11 +215,7 @@ const StudyPane = () => {
         eltClose.style.visibility = open ? "hidden" : "visible";
 
         updateSwitchState(studyName, breakerId, open).then( response => {
-            if (response.ok) {
-                sldRef.current.reloadSvg();
-                setUpdateSwitchMsg("");
-            }
-            else {
+            if (!response.ok) {
                 console.error(response);
                 eltOpen.style.visibility = open ? "hidden" : "visible";
                 eltClose.style.visibility = open ? "visible" : "hidden";
@@ -200,6 +223,19 @@ const StudyPane = () => {
             }
         });
     }, [studyName]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (sldRef.current) {
+                setUpdateSwitchMsg("");
+                sldRef.current.reloadSvg();
+            }
+            if(studyUpdatedForce.eventData.headers["updateType"]=="loadflow") {
+                //TODO reload data more intelligently
+                loadNetwork(studyName);
+            }
+        }
+    }, [studyUpdatedForce]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
@@ -240,9 +276,6 @@ const StudyPane = () => {
         useEffect(() => {
             if (loadFlowRunning) {
                 startLoadFlow(studyName).then( () => {
-                    //TODO reload data more intelligently
-                    loadNetwork(studyName);
-                    sldRef.current && sldRef.current.reloadSvg();
                 }).then(() => {
                     setLoadFlowRunning(false);
                 });

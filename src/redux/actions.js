@@ -120,3 +120,9 @@ export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
 export function setSignInCallbackError(signInCallbackError) {
     return { type: SIGNIN_CALLBACK_ERROR, signInCallbackError : signInCallbackError};
 }
+
+export const STUDY_UPDATED = 'STUDY_UPDATED';
+
+export function studyUpdated(eventData) {
+    return { type: STUDY_UPDATED, eventData };
+}
