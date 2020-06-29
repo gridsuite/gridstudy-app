@@ -9,6 +9,8 @@ import getDistance from "geolib/es/getDistance";
 import computeDestinationPoint from "geolib/es/computeDestinationPoint";
 import cheapRuler from 'cheap-ruler';
 import getGreatCircleBearing from "geolib/es/getGreatCircleBearing";
+import getRhumbLineBearing from "geolib/es/getRhumbLineBearing";
+import {ArrowDirection} from "./layers/arrow-layer";
 
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
@@ -129,31 +131,60 @@ export default class GeoData {
     }
 
 
-    labelDisplayPosition(positions, cumulativeDistances, percent) {
-        if (percent > 100 || percent < 0) {
-            throw new Error("percent value incorrect: " + percent);
+    labelDisplayPosition(positions, cumulativeDistances, arrowPosition, arrowDirection) {
+        if (arrowPosition > 1 || arrowPosition < 0) {
+            throw new Error("Proportional position value incorrect: " + arrowPosition);
         }
         if (cumulativeDistances === null || cumulativeDistances.length < 2 || cumulativeDistances[cumulativeDistances.length-1] === 0) {
             return null;
         }
         let lineDistance = cumulativeDistances[cumulativeDistances.length-1];
-        let wantedDistance = lineDistance * percent / 100;
+        let wantedDistance = lineDistance * arrowPosition;
 
         let goodSegment = this.findSegment(positions, cumulativeDistances, wantedDistance);
 
-        let remainingDistance = goodSegment.remainingDistance;
-        let angle = getGreatCircleBearing(goodSegment.segment[0], goodSegment.segment[1]);
-        let reducedAngle = angle;
-        if (angle > 180) {
-            reducedAngle = angle - 180;
+        // We don't have the exact same distance calculation as in the arrow shader, so take some margin:
+        // we move the label a little bit on the flat side of the arrow so that at least it stays
+        // on the right side when zooming
+        let multiplier;
+        switch(arrowDirection){
+            case ArrowDirection.FROM_SIDE_2_TO_SIDE_1:
+                multiplier = 1.005;
+                break;
+            case ArrowDirection.FROM_SIDE_1_TO_SIDE_2:
+                multiplier = 0.995;
+                break;
+            case ArrowDirection.NONE:
+                multiplier = 1;
         }
-        const neededOffset = this.getLabelOffset(reducedAngle, 10);
-        return {distance :computeDestinationPoint(goodSegment.segment[0], remainingDistance, angle), angle: angle, offset: neededOffset};
+        let remainingDistance = goodSegment.remainingDistance * multiplier;
+
+        // We don't have the exact same angle calculation as in the arrow shader, and this
+        // seems to give more approaching results
+        let angle = getRhumbLineBearing(goodSegment.segment[0], goodSegment.segment[1]);
+        let angle2 = getGreatCircleBearing(goodSegment.segment[0], goodSegment.segment[1]);
+        const coeff = 0.1;
+        angle = coeff*angle + (1-coeff)*angle2;
+
+        const neededOffset = this.getLabelOffset(angle, 30, arrowDirection);
+        return {position :computeDestinationPoint(goodSegment.segment[0], remainingDistance, angle), angle: angle, offset: neededOffset};
 
     }
 
-    getLabelOffset(angle, offsetDistance) {
+    getLabelOffset(angle, offsetDistance, arrowDirection) {
         let radiantAngle = (-angle + 90) / (180 / (Math.PI));
-        return [Math.cos(radiantAngle)*offsetDistance, -Math.sin(radiantAngle)*offsetDistance];
+        let direction = 0;
+        switch(arrowDirection){
+            case ArrowDirection.FROM_SIDE_2_TO_SIDE_1:
+                direction = 1;
+                break;
+            case ArrowDirection.FROM_SIDE_1_TO_SIDE_2:
+                direction = -1;
+                break;
+            case ArrowDirection.NONE:
+                direction = 0;
+        }
+        //Y offset is negative because deckGL pixel uses a top-left coordinate system and our computation use orthogonal coordinates
+        return [Math.cos(radiantAngle)*offsetDistance*direction, -Math.sin(radiantAngle)*offsetDistance*direction];
     }
 }
