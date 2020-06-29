@@ -22,7 +22,7 @@ import Parameters from "./parameters";
 import {
     logout,
     getPreLoginPath,
-    initializeAuthenticationok
+    initializeAuthentication
 } from '../utils/authentication/AuthService';
 
 import PageNotFound from "./page-not-found";
