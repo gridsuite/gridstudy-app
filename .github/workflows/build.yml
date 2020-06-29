@@ -13,21 +13,9 @@ jobs:
         with:
           persist-credentials: false
 
-      strategy:
-        matrix:
-          node-version: [12.x]
-
-      - name: Use Node.js ${{ matrix.node-version }}
-          uses: actions/setup-node@v1
-          with:
-            node-version: ${{ matrix.node-version }}
-            registry-url: https://npm.pkg.github.com/
-            scope: '@gridsuite'
-
       - name: Install and Build
         env:
           CI: false
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           npm install
           npm run-script build
