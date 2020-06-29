@@ -15,7 +15,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
-import TopBar from './top-bar';
+import {TopBar} from '@gridsuite/commons-ui';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
 
@@ -107,7 +107,7 @@ const App = () => {
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
                 <CssBaseline />
-                <TopBar onParametersClick={() => showParametersClicked()} onLogoutClick={() => logout(dispatch, userManager.instance)} onLogoClick={() => onLogoClicked()} user={user}/>
+                <TopBar appName="GridStudy" onParametersClick={() => showParametersClicked()} onLogoutClick={() => logout(dispatch, userManager.instance)} onLogoClick={() => onLogoClicked()} user={user}/>
                 <Parameters showParameters={showParameters} hideParameters={hideParameters}/>
                 { user !== null ? (
                         <Switch>
