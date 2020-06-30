@@ -184,26 +184,6 @@ class LineLayer extends CompositeLayer {
             }));
             layers.push(lineLayer);
 
-            // lines active power
-            const lineActivePowerLabelsLayer = new TextLayer(this.getSubLayerProps({
-                id: "ActivePower" + compositeData.nominalVoltage,
-                data: compositeData.activePower,
-                getText: activePower => activePower.p !== undefined ? activePower.p.toString() : "",
-                getPosition: activePower => activePower.printPosition,
-                getColor: this.props.labelColor,
-                fontFamily: 'Roboto',
-                getSize: this.props.labelSize,
-                getAngle: 0,
-                getPixelOffset: activePower => activePower.offset,
-                getTextAnchor: 'middle',
-                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage) && this.props.labelsVisible,
-                updateTriggers: {
-                    getPosition: [this.props.lineFullPath],
-                    getPixelOffset: [this.props.lineFullPath]
-                }
-            }));
-            layers.push(lineActivePowerLabelsLayer);
-
             const arrowLayer = new ArrowLayer(this.getSubLayerProps({
                 id: 'ArrowNominalVoltage' + compositeData.nominalVoltage,
                 data: compositeData.arrows,
@@ -225,6 +205,27 @@ class LineLayer extends CompositeLayer {
                 }
             }));
             layers.push(arrowLayer);
+
+            // lines active power
+            const lineActivePowerLabelsLayer = new TextLayer(this.getSubLayerProps({
+                id: "ActivePower" + compositeData.nominalVoltage,
+                data: compositeData.activePower,
+                getText: activePower => activePower.p !== undefined ? activePower.p.toString() : "",
+                getPosition: activePower => activePower.printPosition,
+                getColor: this.props.labelColor,
+                fontFamily: 'Roboto',
+                getSize: this.props.labelSize,
+                getAngle: 0,
+                getPixelOffset: activePower => activePower.offset,
+                getTextAnchor: 'middle',
+                visible: this.props.filteredNominalVoltages.includes(compositeData.nominalVoltage) && this.props.labelsVisible,
+                updateTriggers: {
+                    getPosition: [this.props.lineFullPath],
+                    getPixelOffset: [this.props.lineFullPath]
+                }
+            }));
+            layers.push(lineActivePowerLabelsLayer);
+
         });
 
         return layers;

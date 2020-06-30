@@ -47,8 +47,6 @@
   "parameters": "Paramètres",
   "theme": "Thème",
   "close": "Fermer",
-  "goFullScreen" : "Plein écran",
-  "exitFullScreen" : "Quitter mode plein écran",
 
   "centerOnMap": "Centrer sur la carte",
   "openVoltageLevel": "Ouvrir le poste",
