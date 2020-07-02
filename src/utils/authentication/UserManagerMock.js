@@ -56,7 +56,16 @@ export class UserManagerMock {
     }
 
     signinSilent() {
+        console.log('signinSilent..............');
+        this.signinSilentCallback().then(() => console.log("signinSilentCallback called"));
         return Promise.resolve(this.user);
+    }
+
+    signinSilentCallback() {
+        console.log('signinSilentCallback..............');
+        sessionStorage.setItem("powsybl-study-app-mock-user", JSON.stringify(this.user));
+        this.events.userLoadedCallbacks.forEach(c => c(this.user));
+        return Promise.resolve("");
     }
 
     signinRedirect() {
