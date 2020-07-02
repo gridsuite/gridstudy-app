@@ -13,9 +13,9 @@ const hackauthoritykey = "oidc.hack.authority";
 
 const pathKey = "powsybl-study-app-current-path";
 
-function initializeAuthentication(dispatch, isSilentRenew, idpSettings) {
+function initializeAuthentication(dispatch, isSilentRenew, idpSettings, useAuthentication) {
 
-    if (process.env.REACT_APP_USE_AUTHENTICATION === "false") {
+    if (useAuthentication === "false") {
         let userManager = new UserManagerMock({});
         if (!isSilentRenew) {
             handleUser(dispatch, userManager);
@@ -46,7 +46,6 @@ function initializeAuthentication(dispatch, isSilentRenew, idpSettings) {
                     }
                 }
                 authority = authority || sessionStorage.getItem(hackauthoritykey) || idpSettings.authority;
-
                 let settings = {
                     authority,
                     client_id: idpSettings.client_id,

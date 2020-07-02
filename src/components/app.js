@@ -77,9 +77,10 @@ const App = () => {
     });
 
     useEffect(() => {
-        initializeAuthentication(dispatch, matchSilentRenewCallbackUrl != null, fetch('idpSettings.json'))
+        initializeAuthentication(dispatch, matchSilentRenewCallbackUrl != null, fetch('idpSettings.json'), process.env.REACT_APP_USE_AUTHENTICATION)
             .then(userManager => {
                 setUserManager({instance: userManager, error: null});
+                userManager.signinSilent().then(() => console.log("signIn silent called ")).catch(e => console.log('signIn silent:  ' + e));
             })
             .catch(function (error) {
                 setUserManager({instance: null, error: error.message});
