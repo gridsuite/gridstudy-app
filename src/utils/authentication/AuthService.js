@@ -13,16 +13,16 @@ const hackauthoritykey = "oidc.hack.authority";
 
 const pathKey = "powsybl-study-app-current-path";
 
-function initializeAuthentication(dispatch, isSilentRenew) {
+function initializeAuthentication(dispatch, isSilentRenew, idpSettings, useAuthentication) {
 
-    if (process.env.REACT_APP_USE_AUTHENTICATION === "false") {
+    if (useAuthentication === "false") {
         let userManager = new UserManagerMock({});
         if (!isSilentRenew) {
             handleUser(dispatch, userManager);
         }
         return  Promise.resolve(userManager);
     } else {
-        return fetch('idpSettings.json')
+        return idpSettings
             .then(r => r.json())
             .then(idpSettings => {
                 /* hack to ignore the iss check. XXX TODO to remove */
@@ -46,7 +46,6 @@ function initializeAuthentication(dispatch, isSilentRenew) {
                     }
                 }
                 authority = authority || sessionStorage.getItem(hackauthoritykey) || idpSettings.authority;
-
                 let settings = {
                     authority,
                     client_id: idpSettings.client_id,
