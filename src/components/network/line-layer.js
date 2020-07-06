@@ -26,11 +26,11 @@ const noDashArray=[0,0];
 const dashArray=[15, 10];
 
 function doDash(line){
-    return line.p1 == null || line.p2 == null;
+    return !line.isTerminal1Connected || !line.isTerminal2Connected;
 }
 
 function isDisconnected(line){
-    return line.p1 == null && line.p2 == null
+    return !line.isTerminal1Connected && !line.isTerminal2Connected;
 }
 
 function getArrowDirection(p) {
