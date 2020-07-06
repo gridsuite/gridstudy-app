@@ -15,20 +15,20 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import {createMuiTheme, ThemeProvider} from '@material-ui/core/styles';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
-import {TopBar} from '@gridsuite/commons-ui';
 import {LIGHT_THEME} from '../redux/actions'
 import Parameters from "./parameters";
 
 import {
+    TopBar,
+    AuthenticationRouter,
     logout,
     getPreLoginPath,
     initializeAuthentication
-} from '../utils/authentication/AuthService';
+} from '@gridsuite/commons-ui';
 
 import PageNotFound from "./page-not-found";
 import {useRouteMatch} from "react-router";
 import {FormattedMessage} from "react-intl";
-import AuthenticationRouter from "./authentication-components/authentication-router";
 
 const lightTheme = createMuiTheme({
     palette: {
