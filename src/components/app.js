@@ -29,7 +29,7 @@ import {
 import PageNotFound from "./page-not-found";
 import {useRouteMatch} from "react-router";
 import {FormattedMessage} from "react-intl";
-import {setLoggedUser} from "@gridsuite/commons-ui/lib/utils/actions";
+import {setLoggedUser} from "@gridsuite/commons-ui";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -85,10 +85,10 @@ const App = () => {
                 setUserManager({instance: userManager, error: null});
                 userManager.signinSilent().then((rep) =>  {
                     setAlreadyConnected(true);
-                    console.log(JSON.stringify(rep))
+                    console.log("Already connected :)")
                 }).catch((e) => {
                     setAlreadyConnected(false);
-                    console.log(e)
+                    console.log(e);
                 });
             })
             .catch(function (error) {
@@ -98,10 +98,11 @@ const App = () => {
     }, []);
 
     useEffect(() => {
-        if(!alreadyConnected) {
-            dispatch(setLoggedUser(null));
+        if(user != null && !alreadyConnected) {
+            logout(dispatch, userManager.instance);
+            console.log("Disconnected from outside but still connected in this running app");
         }
-    }, [alreadyConnected]);
+    }, [user, alreadyConnected]);
 
     function studyClickHandler(studyName) {
         history.push("/studies/" + studyName);
