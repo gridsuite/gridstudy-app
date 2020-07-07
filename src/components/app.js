@@ -29,6 +29,7 @@ import {
 import PageNotFound from "./page-not-found";
 import {useRouteMatch} from "react-router";
 import {FormattedMessage} from "react-intl";
+import {setLoggedUser} from "@gridsuite/commons-ui/lib/utils/actions";
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -63,6 +64,8 @@ const App = () => {
 
     const [userManager, setUserManager] = useState(noUserManager);
 
+    const [alreadyConnected, setAlreadyConnected] = useState(true);
+
     const [showParameters, setShowParameters] = useState(false);
 
     const history = useHistory();
@@ -80,13 +83,25 @@ const App = () => {
         initializeAuthentication(dispatch, matchSilentRenewCallbackUrl != null, fetch('idpSettings.json'), process.env.REACT_APP_USE_AUTHENTICATION)
             .then(userManager => {
                 setUserManager({instance: userManager, error: null});
-                userManager.signinSilent();
+                userManager.signinSilent().then((rep) =>  {
+                    setAlreadyConnected(true);
+                    console.log(JSON.stringify(rep))
+                }).catch((e) => {
+                    setAlreadyConnected(false);
+                    console.log(e)
+                });
             })
             .catch(function (error) {
                 setUserManager({instance: null, error: error.message});
                 console.debug("error when importing the idp settings")
             });
     }, []);
+
+    useEffect(() => {
+        if(!alreadyConnected) {
+            dispatch(setLoggedUser(null));
+        }
+    }, [alreadyConnected]);
 
     function studyClickHandler(studyName) {
         history.push("/studies/" + studyName);
