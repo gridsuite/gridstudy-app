@@ -38,7 +38,6 @@ import {
     toggleCenterLabelState,
     toggleDiagonalLabelState,
     toggleLineFullPathState,
-    toggleTopologicalColoringState,
     toggleUseNameState
 } from "../redux/actions";
 import {LineFlowMode} from './network/line-layer';
@@ -67,7 +66,6 @@ const Parameters = ({showParameters, hideParameters}) => {
     const useName = useSelector(state => state.useName);
     const centerLabel = useSelector(state => state.centerLabel);
     const diagonalLabel = useSelector(state => state.diagonalLabel);
-    const topologicalColoring = useSelector(state => state.topologicalColoring);
     const lineFullPath = useSelector(state => state.lineFullPath);
     const lineFlowMode = useSelector(state => state.lineFlowMode);
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -158,8 +156,6 @@ const Parameters = ({showParameters, hideParameters}) => {
                     {MakeSwitch(diagonalLabel, "diagonalLabel", () => dispatch(toggleDiagonalLabelState()))}
                     <MakeLineSeparator/>
                     {MakeSwitch(centerLabel, "centerLabel", () => dispatch(toggleCenterLabelState()))}
-                    <MakeLineSeparator/>
-                    {MakeSwitch(topologicalColoring, "topologicalColoring", () => dispatch(toggleTopologicalColoringState()))}
                 </Grid>
             )
     }
