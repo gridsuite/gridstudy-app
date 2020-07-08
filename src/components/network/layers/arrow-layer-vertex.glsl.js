@@ -162,4 +162,4 @@ void main(void) {
       shouldDiscard = 0.0;
   }
 }
-`;
+`

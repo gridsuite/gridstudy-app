@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react'
 
 const SignInCallbackHandler = ({ userManager, handleSignInCallback }) => {
-  useEffect(() => {
-    if (userManager !== null) {
-      handleSignInCallback();
-    }
-  }, [userManager]);
+    useEffect(() => {
+        if (userManager !== null) {
+            handleSignInCallback()
+        }
+    }, [userManager])
 
-  return <h1> </h1>;
-};
-export default SignInCallbackHandler;
+    return <h1> </h1>
+}
+export default SignInCallbackHandler
