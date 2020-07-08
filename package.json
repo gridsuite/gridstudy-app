@@ -16,7 +16,9 @@
     "deck.gl": "^8.0.0",
     "geolib": "^3.2.1",
     "http-proxy-middleware": "^1.0.3",
+    "husky": "^4.2.5",
     "jwt-decode": "^2.2.0",
+    "lint-staged": "^10.2.11",
     "mjolnir.js": "^2.4.0",
     "oidc-client": "^1.10.1",
     "prop-types": "15.7.2",
@@ -56,5 +58,16 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": ["prettier --write"]
+  },
+  "devDependencies": {
+    "prettier": "2.0.5"
   }
 }
