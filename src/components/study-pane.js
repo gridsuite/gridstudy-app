@@ -5,24 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef, useState, useCallback } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
-import { FormattedMessage } from 'react-intl'
+import { FormattedMessage } from 'react-intl';
 
-import { parse, stringify } from 'qs'
+import { parse, stringify } from 'qs';
 
-import Container from '@material-ui/core/Container'
-import Grid from '@material-ui/core/Grid'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
-import NetworkExplorer from './network/network-explorer'
-import NetworkMap from './network/network-map'
-import SingleLineDiagram from './single-line-diagram'
+import NetworkExplorer from './network/network-explorer';
+import NetworkMap from './network/network-map';
+import SingleLineDiagram from './single-line-diagram';
 import {
     fetchLinePositions,
     fetchLines,
@@ -32,23 +32,23 @@ import {
     updateSwitchState,
     connectNotificationsWebsocket,
     startLoadFlow,
-} from '../utils/rest-api'
+} from '../utils/rest-api';
 import {
     closeStudy,
     loadGeoDataSuccess,
     loadNetworkSuccess,
     openStudy,
     studyUpdated,
-} from '../redux/actions'
-import Network from './network/network'
-import GeoData from './network/geo-data'
-import NominalVoltageFilter from './network/nominal-voltage-filter'
-import Button from '@material-ui/core/Button'
-import PlayIcon from '@material-ui/icons/PlayArrow'
-import { green } from '@material-ui/core/colors'
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer'
-import { CardHeader } from '@material-ui/core'
-import PageNotFound from './page-not-found'
+} from '../redux/actions';
+import Network from './network/network';
+import GeoData from './network/geo-data';
+import NominalVoltageFilter from './network/nominal-voltage-filter';
+import Button from '@material-ui/core/Button';
+import PlayIcon from '@material-ui/icons/PlayArrow';
+import { green } from '@material-ui/core/colors';
+import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
+import { CardHeader } from '@material-ui/core';
+import PageNotFound from './page-not-found';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -65,147 +65,151 @@ const useStyles = makeStyles((theme) => ({
     error: {
         padding: theme.spacing(2),
     },
-}))
+}));
 
-const INITIAL_POSITION = [0, 0]
+const INITIAL_POSITION = [0, 0];
 
 const StudyPane = () => {
-    const { studyName } = useParams()
+    const { studyName } = useParams();
 
-    const network = useSelector((state) => state.network)
+    const network = useSelector((state) => state.network);
 
-    const geoData = useSelector((state) => state.geoData)
+    const geoData = useSelector((state) => state.geoData);
 
-    const useName = useSelector((state) => state.useName)
+    const useName = useSelector((state) => state.useName);
 
-    const centerName = useSelector((state) => state.centerLabel)
+    const centerName = useSelector((state) => state.centerLabel);
 
-    const diagonalName = useSelector((state) => state.diagonalLabel)
+    const diagonalName = useSelector((state) => state.diagonalLabel);
 
     const topologicalColoring = useSelector(
         (state) => state.topologicalColoring
-    )
+    );
 
-    const lineFullPath = useSelector((state) => state.lineFullPath)
+    const lineFullPath = useSelector((state) => state.lineFullPath);
 
-    const lineFlowMode = useSelector((state) => state.lineFlowMode)
+    const lineFlowMode = useSelector((state) => state.lineFlowMode);
 
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated)
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const [studyNotFound, setStudyNotFound] = useState(false)
+    const [studyNotFound, setStudyNotFound] = useState(false);
 
-    const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(null)
+    const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(
+        null
+    );
 
-    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([])
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
-    const [loadFlowRunning, setLoadFlowRunning] = useState(false)
+    const [loadFlowRunning, setLoadFlowRunning] = useState(false);
 
-    const [updateSwitchMsg, setUpdateSwitchMsg] = useState('')
+    const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
-    const classes = useStyles()
+    const classes = useStyles();
 
-    const location = useLocation()
+    const location = useLocation();
 
-    const history = useHistory()
+    const history = useHistory();
 
-    const websocketExpectedCloseRef = useRef()
+    const websocketExpectedCloseRef = useRef();
 
     // study creation, network and geo data loading: will be called only one time at creation mount event because
     // studyName won't change
     useEffect(() => {
-        websocketExpectedCloseRef.current = false
-        dispatch(openStudy(studyName))
+        websocketExpectedCloseRef.current = false;
+        dispatch(openStudy(studyName));
 
-        loadNetwork(studyName)
-        loadGeoData(studyName)
-        const ws = connectNotifications(studyName)
+        loadNetwork(studyName);
+        loadGeoData(studyName);
+        const ws = connectNotifications(studyName);
 
         // study cleanup at unmount event
         return function () {
-            websocketExpectedCloseRef.current = true
-            ws.close()
-            dispatch(closeStudy())
-        }
-    }, [studyName])
+            websocketExpectedCloseRef.current = true;
+            ws.close();
+            dispatch(closeStudy());
+        };
+    }, [studyName]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
         // parse query parameter
-        const queryParams = parse(location.search, { ignoreQueryPrefix: true })
-        const newVoltageLevelId = queryParams['voltageLevelId']
-        setDisplayedVoltageLevelId(newVoltageLevelId ? newVoltageLevelId : null)
-    }, [location.search])
+        const queryParams = parse(location.search, { ignoreQueryPrefix: true });
+        const newVoltageLevelId = queryParams['voltageLevelId'];
+        setDisplayedVoltageLevelId(
+            newVoltageLevelId ? newVoltageLevelId : null
+        );
+    }, [location.search]);
 
     useEffect(() => {
         if (network) {
-            setFilteredNominalVoltages(network.getNominalVoltages())
+            setFilteredNominalVoltages(network.getNominalVoltages());
         } else {
-            setFilteredNominalVoltages([])
+            setFilteredNominalVoltages([]);
         }
-    }, [network])
+    }, [network]);
 
     function loadNetwork(studyName) {
-        console.info(`Loading network of study '${studyName}'...`)
+        console.info(`Loading network of study '${studyName}'...`);
 
-        const substations = fetchSubstations(studyName)
+        const substations = fetchSubstations(studyName);
 
-        const lines = fetchLines(studyName)
+        const lines = fetchLines(studyName);
 
         Promise.all([substations, lines])
             .then((values) => {
-                const network = new Network()
-                network.setSubstations(values[0])
-                network.setLines(values[1])
-                dispatch(loadNetworkSuccess(network))
+                const network = new Network();
+                network.setSubstations(values[0]);
+                network.setLines(values[1]);
+                dispatch(loadNetworkSuccess(network));
             })
             .catch(function (error) {
-                console.error(error.message)
-                setStudyNotFound(true)
-            })
+                console.error(error.message);
+                setStudyNotFound(true);
+            });
     }
 
     function loadGeoData(studyName) {
-        console.info(`Loading geo data of study '${studyName}'...`)
+        console.info(`Loading geo data of study '${studyName}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyName)
+        const substationPositions = fetchSubstationPositions(studyName);
 
-        const linePositions = fetchLinePositions(studyName)
+        const linePositions = fetchLinePositions(studyName);
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
-                const geoData = new GeoData()
-                geoData.setSubstationPositions(values[0])
-                geoData.setLinePositions(values[1])
-                dispatch(loadGeoDataSuccess(geoData))
+                const geoData = new GeoData();
+                geoData.setSubstationPositions(values[0]);
+                geoData.setLinePositions(values[1]);
+                dispatch(loadGeoDataSuccess(geoData));
             })
             .catch(function (error) {
-                console.error(error.message)
-                setStudyNotFound(true)
-            })
+                console.error(error.message);
+                setStudyNotFound(true);
+            });
     }
 
     function connectNotifications(studyName) {
-        console.info(`Connecting to notifications '${studyName}'...`)
+        console.info(`Connecting to notifications '${studyName}'...`);
 
-        const ws = connectNotificationsWebsocket(studyName)
+        const ws = connectNotificationsWebsocket(studyName);
         ws.onmessage = function (event) {
-            dispatch(studyUpdated(JSON.parse(event.data)))
-        }
+            dispatch(studyUpdated(JSON.parse(event.data)));
+        };
         ws.onclose = function (event) {
             if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed')
+                console.error('Unexpected Notification WebSocket closed');
             }
-        }
+        };
         ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event)
-        }
-        return ws
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
     }
 
     const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
-        setUpdateSwitchMsg('')
+        setUpdateSwitchMsg('');
         history.replace(
             '/studies/' +
                 studyName +
@@ -213,69 +217,69 @@ const StudyPane = () => {
                     { voltageLevelId: voltageLevelId },
                     { addQueryPrefix: true }
                 )
-        )
-    }, [])
+        );
+    }, []);
 
     function closeVoltageLevelDiagram() {
-        history.replace('/studies/' + studyName)
+        history.replace('/studies/' + studyName);
     }
 
-    const sldRef = useRef()
+    const sldRef = useRef();
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            let eltOpen = switchElement.querySelector('.open')
-            let eltClose = switchElement.querySelector('.closed')
+            let eltOpen = switchElement.querySelector('.open');
+            let eltClose = switchElement.querySelector('.closed');
 
-            eltOpen.style.visibility = open ? 'visible' : 'hidden'
-            eltClose.style.visibility = open ? 'hidden' : 'visible'
+            eltOpen.style.visibility = open ? 'visible' : 'hidden';
+            eltClose.style.visibility = open ? 'hidden' : 'visible';
 
             updateSwitchState(studyName, breakerId, open).then((response) => {
                 if (!response.ok) {
-                    console.error(response)
-                    eltOpen.style.visibility = open ? 'hidden' : 'visible'
-                    eltClose.style.visibility = open ? 'visible' : 'hidden'
+                    console.error(response);
+                    eltOpen.style.visibility = open ? 'hidden' : 'visible';
+                    eltClose.style.visibility = open ? 'visible' : 'hidden';
                     setUpdateSwitchMsg(
                         response.status + ' : ' + response.statusText
-                    )
+                    );
                 }
-            })
+            });
         },
         [studyName]
-    )
+    );
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (sldRef.current) {
-                setUpdateSwitchMsg('')
-                sldRef.current.reloadSvg()
+                setUpdateSwitchMsg('');
+                sldRef.current.reloadSvg();
             }
             if (
                 studyUpdatedForce.eventData.headers['updateType'] == 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                loadNetwork(studyName)
+                loadNetwork(studyName);
             }
         }
-    }, [studyUpdatedForce])
+    }, [studyUpdatedForce]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
-        let newFiltered
+        let newFiltered;
         if (isToggle) {
-            newFiltered = [...filteredNominalVoltages]
+            newFiltered = [...filteredNominalVoltages];
             vnoms.map((vnom) => {
-                const currentIndex = filteredNominalVoltages.indexOf(vnom)
+                const currentIndex = filteredNominalVoltages.indexOf(vnom);
                 if (currentIndex === -1) {
-                    newFiltered.push(vnom)
+                    newFiltered.push(vnom);
                 } else {
-                    newFiltered.splice(currentIndex, 1)
+                    newFiltered.splice(currentIndex, 1);
                 }
-            })
+            });
         } else {
-            newFiltered = [...vnoms]
+            newFiltered = [...vnoms];
         }
-        setFilteredNominalVoltages(newFiltered)
-    }
+        setFilteredNominalVoltages(newFiltered);
+    };
 
     const loadFlowButtonStyles = makeStyles({
         root: {
@@ -288,22 +292,22 @@ const StudyPane = () => {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
         },
-    })
+    });
 
     function RunLoadFlowButton() {
-        const loadFlowButtonClasses = loadFlowButtonStyles()
+        const loadFlowButtonClasses = loadFlowButtonStyles();
 
         useEffect(() => {
             if (loadFlowRunning) {
                 startLoadFlow(studyName)
                     .then(() => {})
                     .then(() => {
-                        setLoadFlowRunning(false)
-                    })
+                        setLoadFlowRunning(false);
+                    });
             }
-        }, [loadFlowRunning])
+        }, [loadFlowRunning]);
 
-        const handleClick = () => setLoadFlowRunning(true)
+        const handleClick = () => setLoadFlowRunning(true);
 
         return (
             <Button
@@ -322,18 +326,18 @@ const StudyPane = () => {
                     </Typography>
                 </div>
             </Button>
-        )
+        );
     }
 
-    const mapRef = useRef()
+    const mapRef = useRef();
     const centerSubstation = useCallback(
         (id) => {
             mapRef.current.centerSubstation(
                 network.getVoltageLevel(id).substationId
-            )
+            );
         },
         [mapRef, network]
-    )
+    );
 
     if (studyNotFound) {
         return (
@@ -345,15 +349,15 @@ const StudyPane = () => {
                     />
                 }
             />
-        )
+        );
     } else {
         let displayedVoltageLevel,
-            focusedVoltageLevel = null
+            focusedVoltageLevel = null;
         if (network) {
             if (displayedVoltageLevelId) {
                 displayedVoltageLevel = network.getVoltageLevel(
                     displayedVoltageLevelId
-                )
+                );
             }
         }
         return (
@@ -475,8 +479,8 @@ const StudyPane = () => {
                     </div>
                 </Grid>
             </Grid>
-        )
+        );
     }
-}
+};
 
-export default StudyPane
+export default StudyPane;

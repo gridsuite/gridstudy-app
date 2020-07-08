@@ -6,9 +6,9 @@
  */
 
 class Events {
-    userLoadedCallbacks = []
+    userLoadedCallbacks = [];
     addUserLoaded(callback) {
-        this.userLoadedCallbacks.push(callback)
+        this.userLoadedCallbacks.push(callback);
     }
 
     addSilentRenewError(callback) {
@@ -17,8 +17,8 @@ class Events {
 }
 
 export class UserManagerMock {
-    settings
-    events
+    settings;
+    events;
     user = {
         profile: { name: 'John Doe' },
         id_token:
@@ -45,53 +45,53 @@ export class UserManagerMock {
             'UOej1ZMNwyVT6386O2pERPtxmFUt_D1dKLxBXxBNxLVUG5BG3bI7wMpBOHEUA5CbaBzYXmGrLMXVVbrj9OsF-WQ6aNoqsm9cicX6pJB60lFz1dxLeSgcFO7Zh2K3PFe4FnXCqAvNPadQMz_kJEO9_phlDV85c2MPqeXbA',
         token_type: 'Bearer',
         scope: 'scopes',
-    }
+    };
 
     constructor(settings) {
-        this.settings = settings
-        this.events = new Events()
+        this.settings = settings;
+        this.events = new Events();
     }
 
     getUser() {
         return Promise.resolve(
             JSON.parse(sessionStorage.getItem('powsybl-study-app-mock-user'))
-        )
+        );
     }
 
     signinSilent() {
-        console.info('UserManagerMock signin Silent...')
+        console.info('UserManagerMock signin Silent...');
         this.signinSilentCallback().then(() =>
             console.log('signinSilentCallback called')
-        )
-        return Promise.resolve(this.user)
+        );
+        return Promise.resolve(this.user);
     }
 
     signinSilentCallback() {
-        console.log('UserManagerMock signinSilentCallback...')
+        console.log('UserManagerMock signinSilentCallback...');
         sessionStorage.setItem(
             'powsybl-study-app-mock-user',
             JSON.stringify(this.user)
-        )
-        this.events.userLoadedCallbacks.forEach((c) => c(this.user))
-        return Promise.resolve('')
+        );
+        this.events.userLoadedCallbacks.forEach((c) => c(this.user));
+        return Promise.resolve('');
     }
 
     signinRedirect() {
-        window.location = './sign-in-callback'
-        return Promise.resolve(null)
+        window.location = './sign-in-callback';
+        return Promise.resolve(null);
     }
 
     signoutRedirect() {
-        sessionStorage.setItem('powsybl-study-app-mock-user', null)
-        window.location = '.'
-        return Promise.resolve(null)
+        sessionStorage.setItem('powsybl-study-app-mock-user', null);
+        window.location = '.';
+        return Promise.resolve(null);
     }
     signinRedirectCallback() {
         sessionStorage.setItem(
             'powsybl-study-app-mock-user',
             JSON.stringify(this.user)
-        )
-        this.events.userLoadedCallbacks.forEach((c) => c(this.user))
-        return Promise.resolve('')
+        );
+        this.events.userLoadedCallbacks.forEach((c) => c(this.user));
+        return Promise.resolve('');
     }
 }

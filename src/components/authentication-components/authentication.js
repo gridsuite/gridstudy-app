@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react'
-import Avatar from '@material-ui/core/Avatar'
-import Button from '@material-ui/core/Button'
-import CssBaseline from '@material-ui/core/CssBaseline'
-import Link from '@material-ui/core/Link'
-import Box from '@material-ui/core/Box'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
-import Typography from '@material-ui/core/Typography'
-import { makeStyles } from '@material-ui/core/styles'
-import Container from '@material-ui/core/Container'
-import { FormattedMessage } from 'react-intl'
+import React from 'react';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Link from '@material-ui/core/Link';
+import Box from '@material-ui/core/Box';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -36,10 +36,10 @@ const useStyles = makeStyles((theme) => ({
         width: 64,
         height: 64,
     },
-}))
+}));
 
 const Authentication = ({ onLoginClick, disabled }) => {
-    const classes = useStyles()
+    const classes = useStyles();
 
     function Copyright() {
         return (
@@ -51,7 +51,7 @@ const Authentication = ({ onLoginClick, disabled }) => {
                 {new Date().getFullYear()}
                 {'.'}
             </Typography>
-        )
+        );
     }
 
     return (
@@ -80,7 +80,7 @@ const Authentication = ({ onLoginClick, disabled }) => {
                 <Copyright />
             </Box>
         </Container>
-    )
-}
+    );
+};
 
-export default Authentication
+export default Authentication;

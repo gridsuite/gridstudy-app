@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 
 const SilentRenewCallbackHandler = ({
     userManager,
@@ -13,11 +13,11 @@ const SilentRenewCallbackHandler = ({
 }) => {
     useEffect(() => {
         if (userManager !== null) {
-            handleSilentRenewCallback()
+            handleSilentRenewCallback();
         }
-    }, [userManager])
+    }, [userManager]);
 
-    return <h1>Technical token renew window, you should not see this</h1>
-}
+    return <h1>Technical token renew window, you should not see this</h1>;
+};
 
-export default SilentRenewCallbackHandler
+export default SilentRenewCallbackHandler;

@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
     Redirect,
@@ -15,74 +15,74 @@ import {
     Switch,
     useHistory,
     useLocation,
-} from 'react-router-dom'
+} from 'react-router-dom';
 
-import CssBaseline from '@material-ui/core/CssBaseline'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
-import StudyPane from './study-pane'
-import StudyManager from './study-manager'
-import { TopBar } from '@gridsuite/commons-ui'
-import { LIGHT_THEME } from '../redux/actions'
-import Parameters from './parameters'
+import CssBaseline from '@material-ui/core/CssBaseline';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import StudyPane from './study-pane';
+import StudyManager from './study-manager';
+import { TopBar } from '@gridsuite/commons-ui';
+import { LIGHT_THEME } from '../redux/actions';
+import Parameters from './parameters';
 
 import {
     logout,
     getPreLoginPath,
     initializeAuthentication,
-} from '../utils/authentication/AuthService'
+} from '../utils/authentication/AuthService';
 
-import PageNotFound from './page-not-found'
-import { useRouteMatch } from 'react-router'
-import { FormattedMessage } from 'react-intl'
-import AuthenticationRouter from './authentication-components/authentication-router'
+import PageNotFound from './page-not-found';
+import { useRouteMatch } from 'react-router';
+import { FormattedMessage } from 'react-intl';
+import AuthenticationRouter from './authentication-components/authentication-router';
 
 const lightTheme = createMuiTheme({
     palette: {
         type: 'light',
     },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
-})
+});
 
 const darkTheme = createMuiTheme({
     palette: {
         type: 'dark',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
-})
+});
 
 const getMuiTheme = (theme) => {
     if (theme === LIGHT_THEME) {
-        return lightTheme
+        return lightTheme;
     } else {
-        return darkTheme
+        return darkTheme;
     }
-}
+};
 
-const noUserManager = { instance: null, error: null }
+const noUserManager = { instance: null, error: null };
 
 const App = () => {
-    const theme = useSelector((state) => state.theme)
+    const theme = useSelector((state) => state.theme);
 
-    const user = useSelector((state) => state.user)
+    const user = useSelector((state) => state.user);
 
     const signInCallbackError = useSelector(
         (state) => state.signInCallbackError
-    )
+    );
 
-    const [userManager, setUserManager] = useState(noUserManager)
+    const [userManager, setUserManager] = useState(noUserManager);
 
-    const [showParameters, setShowParameters] = useState(false)
+    const [showParameters, setShowParameters] = useState(false);
 
-    const history = useHistory()
+    const history = useHistory();
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
-    const location = useLocation()
+    const location = useLocation();
 
     let matchSilentRenewCallbackUrl = useRouteMatch({
         path: '/silent-renew-callback',
         exact: true,
-    })
+    });
 
     useEffect(() => {
         initializeAuthentication(
@@ -92,29 +92,29 @@ const App = () => {
             process.env.REACT_APP_USE_AUTHENTICATION
         )
             .then((userManager) => {
-                setUserManager({ instance: userManager, error: null })
-                userManager.signinSilent()
+                setUserManager({ instance: userManager, error: null });
+                userManager.signinSilent();
             })
             .catch(function (error) {
-                setUserManager({ instance: null, error: error.message })
-                console.debug('error when importing the idp settings')
-            })
-    }, [])
+                setUserManager({ instance: null, error: error.message });
+                console.debug('error when importing the idp settings');
+            });
+    }, []);
 
     function studyClickHandler(studyName) {
-        history.push('/studies/' + studyName)
+        history.push('/studies/' + studyName);
     }
 
     function showParametersClicked() {
-        setShowParameters(true)
+        setShowParameters(true);
     }
 
     function hideParameters() {
-        setShowParameters(false)
+        setShowParameters(false);
     }
 
     function onLogoClicked() {
-        history.replace('/')
+        history.replace('/');
     }
 
     return (
@@ -167,7 +167,7 @@ const App = () => {
                 )}
             </React.Fragment>
         </ThemeProvider>
-    )
-}
+    );
+};
 
-export default App
+export default App;

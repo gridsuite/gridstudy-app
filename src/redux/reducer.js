@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { createReducer } from '@reduxjs/toolkit'
+import { createReducer } from '@reduxjs/toolkit';
 
 import {
     getLocalStorageCenterLabel,
@@ -22,7 +22,7 @@ import {
     saveLocalStorageTheme,
     saveLocalStorageTopologicalColoring,
     saveLocalStorageUseName,
-} from './local-storage'
+} from './local-storage';
 
 import {
     CENTER_LABEL,
@@ -45,7 +45,7 @@ import {
     USER,
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
-} from './actions'
+} from './actions';
 
 const initialState = {
     studies: [],
@@ -65,98 +65,98 @@ const initialState = {
     lineFlowMode: getLocalStorageLineFlowMode(),
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
-}
+};
 
 export const reducer = createReducer(initialState, {
     [LOAD_STUDIES_SUCCESS]: (state, action) => {
-        state.studies = action.studies
+        state.studies = action.studies;
     },
 
     [LOAD_CASES_SUCCESS]: (state, action) => {
-        state.cases = action.cases
+        state.cases = action.cases;
     },
 
     [OPEN_STUDY]: (state, action) => {
-        state.studyName = action.studyName
+        state.studyName = action.studyName;
     },
 
     [CLOSE_STUDY]: (state) => {
-        state.studyName = null
-        state.network = null
-        state.geoData = null
+        state.studyName = null;
+        state.network = null;
+        state.geoData = null;
     },
 
     [LOAD_NETWORK_SUCCESS]: (state, action) => {
-        state.network = action.network
+        state.network = action.network;
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
-        state.geoData = action.geoData
+        state.geoData = action.geoData;
     },
 
     [STUDY_UPDATED]: (state, action) => {
         state.studyUpdated = {
             force: 1 - state.studyUpdated.force,
             eventData: action.eventData,
-        }
+        };
     },
 
     [SELECT_THEME]: (state, action) => {
-        state.theme = action.theme
-        saveLocalStorageTheme(state.theme)
+        state.theme = action.theme;
+        saveLocalStorageTheme(state.theme);
     },
 
     [SELECT_CASE]: (state, action) => {
-        state.selectedCase = action.selectedCase
+        state.selectedCase = action.selectedCase;
     },
 
     [REMOVE_SELECTED_CASE]: (state) => {
-        state.selectedCase = null
+        state.selectedCase = null;
     },
 
     [SELECT_FILE]: (state, action) => {
-        state.selectedFile = action.selectedFile
+        state.selectedFile = action.selectedFile;
     },
 
     [REMOVE_SELECTED_FILE]: (state) => {
-        state.selectedFile = null
+        state.selectedFile = null;
     },
 
     [USE_NAME]: (state) => {
-        state.useName = !state.useName
-        saveLocalStorageUseName(state.useName)
+        state.useName = !state.useName;
+        saveLocalStorageUseName(state.useName);
     },
 
     [USER]: (state, action) => {
-        state.user = action.user
+        state.user = action.user;
     },
 
     [CENTER_LABEL]: (state) => {
-        state.centerLabel = !state.centerLabel
-        saveLocalStorageCenterLabel(state.centerLabel)
+        state.centerLabel = !state.centerLabel;
+        saveLocalStorageCenterLabel(state.centerLabel);
     },
 
     [DIAGONAL_LABEL]: (state) => {
-        state.diagonalLabel = !state.diagonalLabel
-        saveLocalStorageDiagonalLabel(state.diagonalLabel)
+        state.diagonalLabel = !state.diagonalLabel;
+        saveLocalStorageDiagonalLabel(state.diagonalLabel);
     },
 
     [TOPOLOGICAL_COLORING]: (state) => {
-        state.topologicalColoring = !state.topologicalColoring
-        saveLocalStorageTopologicalColoring(state.topologicalColoring)
+        state.topologicalColoring = !state.topologicalColoring;
+        saveLocalStorageTopologicalColoring(state.topologicalColoring);
     },
 
     [LINE_FULL_PATH]: (state) => {
-        state.lineFullPath = !state.lineFullPath
-        saveLocalStorageLineFullPath(state.lineFullPath)
+        state.lineFullPath = !state.lineFullPath;
+        saveLocalStorageLineFullPath(state.lineFullPath);
     },
 
     [LINE_FLOW_MODE]: (state, action) => {
-        state.lineFlowMode = action.lineFlowMode
-        saveLocalStorageLineFlowMode(state.lineFlowMode)
+        state.lineFlowMode = action.lineFlowMode;
+        saveLocalStorageLineFlowMode(state.lineFlowMode);
     },
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
-        state.signInCallbackError = action.signInCallbackError
+        state.signInCallbackError = action.signInCallbackError;
     },
-})
+});

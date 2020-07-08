@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react'
-import PropTypes from 'prop-types'
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles';
 
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import Checkbox from '@material-ui/core/Checkbox'
-import ListItemText from '@material-ui/core/ListItemText'
-import Paper from '@material-ui/core/Paper'
-import { FormattedMessage } from 'react-intl'
-import Button from '@material-ui/core/Button'
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
+import { FormattedMessage } from 'react-intl';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles((theme) => ({
     nominalVoltageZone: {
@@ -44,16 +44,16 @@ const useStyles = makeStyles((theme) => ({
             textDecoration: 'underline',
         },
     },
-}))
+}));
 
 const NominalVoltageFilter = (props) => {
-    const classes = useStyles()
+    const classes = useStyles();
 
     const handleToggle = (value, isToggle) => () => {
         if (props.onNominalVoltageFilterChange !== null) {
-            props.onNominalVoltageFilterChange(value, isToggle)
+            props.onNominalVoltageFilterChange(value, isToggle);
         }
-    }
+    };
 
     return (
         <Paper>
@@ -103,23 +103,23 @@ const NominalVoltageFilter = (props) => {
                                 primary={`${value} kV`}
                             />
                         </ListItem>
-                    )
+                    );
                 })}
             </List>
         </Paper>
-    )
-}
+    );
+};
 
 NominalVoltageFilter.defaultProps = {
     nominalVoltages: [],
     filteredNominalVoltages: [],
     onNominalVoltageFilterChange: null,
-}
+};
 
 NominalVoltageFilter.propTypes = {
     nominalVoltages: PropTypes.array,
     filteredNominalVoltages: PropTypes.array,
     onNominalVoltageFilterChange: PropTypes.func,
-}
+};
 
-export default NominalVoltageFilter
+export default NominalVoltageFilter;

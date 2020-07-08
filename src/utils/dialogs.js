@@ -5,17 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Dialog from '@material-ui/core/Dialog'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import { FormattedMessage } from 'react-intl'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogActions from '@material-ui/core/DialogActions'
-import Button from '@material-ui/core/Button'
-import PropTypes from 'prop-types'
-import React from 'react'
-import InputLabel from '@material-ui/core/InputLabel'
-import TextField from '@material-ui/core/TextField'
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import { FormattedMessage } from 'react-intl';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
+import React from 'react';
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 
 /**
  * Dialog to delete an element #TODO To be moved in the common-ui repository once it has been created
@@ -27,19 +27,19 @@ import TextField from '@material-ui/core/TextField'
  */
 const DeleteDialog = ({ open, onClose, onClick, title, message }) => {
     const handleClose = () => {
-        onClose()
-    }
+        onClose();
+    };
 
     const handleClick = () => {
-        console.debug('Request for deletion')
-        onClick()
-    }
+        console.debug('Request for deletion');
+        onClick();
+    };
 
     const handleKeyPressed = (event) => {
         if (open && event.key === 'Enter') {
-            handleClose()
+            handleClose();
         }
-    }
+    };
 
     return (
         <Dialog
@@ -61,8 +61,8 @@ const DeleteDialog = ({ open, onClose, onClick, title, message }) => {
                 </Button>
             </DialogActions>
         </Dialog>
-    )
-}
+    );
+};
 
 DeleteDialog.propTypes = {
     open: PropTypes.bool.isRequired,
@@ -70,7 +70,7 @@ DeleteDialog.propTypes = {
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
-}
+};
 
 /**
  * Dialog to rename an element #TODO To be moved in the common-ui repository once it has been created
@@ -89,36 +89,36 @@ const RenameDialog = ({
     message,
     currentName,
 }) => {
-    const [newNameValue, setNewNameValue] = React.useState(currentName)
+    const [newNameValue, setNewNameValue] = React.useState(currentName);
 
     const updateNameValue = (event) => {
-        setNewNameValue(event.target.value)
-    }
+        setNewNameValue(event.target.value);
+    };
 
     const handleClick = () => {
         if (currentName !== newNameValue) {
             console.debug(
                 'Request for renaming : ' + currentName + ' => ' + newNameValue
-            )
-            onClick(newNameValue)
+            );
+            onClick(newNameValue);
         } else {
-            handleClose()
+            handleClose();
         }
-    }
+    };
 
     const handleClose = () => {
-        onClose()
-    }
+        onClose();
+    };
 
     const handleExited = () => {
-        setNewNameValue(currentName)
-    }
+        setNewNameValue(currentName);
+    };
 
     const handleKeyPressed = (event) => {
         if (open && event.key === 'Enter') {
-            handleClick()
+            handleClick();
         }
-    }
+    };
 
     return (
         <Dialog
@@ -147,8 +147,8 @@ const RenameDialog = ({
                 </Button>
             </DialogActions>
         </Dialog>
-    )
-}
+    );
+};
 
 RenameDialog.propTypes = {
     open: PropTypes.bool.isRequired,
@@ -157,6 +157,6 @@ RenameDialog.propTypes = {
     title: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
     currentName: PropTypes.string.isRequired,
-}
+};
 
-export { DeleteDialog, RenameDialog }
+export { DeleteDialog, RenameDialog };

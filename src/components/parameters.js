@@ -5,30 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react'
+import React from 'react';
 
-import { FormattedMessage } from 'react-intl'
+import { FormattedMessage } from 'react-intl';
 
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import Container from '@material-ui/core/Container'
-import Dialog from '@material-ui/core/Dialog'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogTitle from '@material-ui/core/DialogTitle'
-import Divider from '@material-ui/core/Divider'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Grid from '@material-ui/core/Grid'
-import { makeStyles } from '@material-ui/core/styles'
-import MenuItem from '@material-ui/core/MenuItem'
-import Radio from '@material-ui/core/Radio'
-import RadioGroup from '@material-ui/core/RadioGroup'
-import Select from '@material-ui/core/Select'
-import Switch from '@material-ui/core/Switch'
-import Tab from '@material-ui/core/Tab'
-import Tabs from '@material-ui/core/Tabs'
-import Typography from '@material-ui/core/Typography'
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Divider from '@material-ui/core/Divider';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import MenuItem from '@material-ui/core/MenuItem';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Select from '@material-ui/core/Select';
+import Switch from '@material-ui/core/Switch';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import Typography from '@material-ui/core/Typography';
 
 import {
     DARK_THEME,
@@ -40,8 +40,8 @@ import {
     toggleLineFullPathState,
     toggleTopologicalColoringState,
     toggleUseNameState,
-} from '../redux/actions'
-import { LineFlowMode } from './network/line-layer'
+} from '../redux/actions';
+import { LineFlowMode } from './network/line-layer';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -56,37 +56,37 @@ const useStyles = makeStyles((theme) => ({
     button: {
         marginBottom: '30px',
     },
-}))
+}));
 
 const Parameters = ({ showParameters, hideParameters }) => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
-    const classes = useStyles()
+    const classes = useStyles();
 
-    const useName = useSelector((state) => state.useName)
-    const centerLabel = useSelector((state) => state.centerLabel)
-    const diagonalLabel = useSelector((state) => state.diagonalLabel)
+    const useName = useSelector((state) => state.useName);
+    const centerLabel = useSelector((state) => state.centerLabel);
+    const diagonalLabel = useSelector((state) => state.diagonalLabel);
     const topologicalColoring = useSelector(
         (state) => state.topologicalColoring
-    )
-    const lineFullPath = useSelector((state) => state.lineFullPath)
-    const lineFlowMode = useSelector((state) => state.lineFlowMode)
-    const [tabIndex, setTabIndex] = React.useState(0)
+    );
+    const lineFullPath = useSelector((state) => state.lineFullPath);
+    const lineFlowMode = useSelector((state) => state.lineFlowMode);
+    const [tabIndex, setTabIndex] = React.useState(0);
 
-    const theme = useSelector((state) => state.theme)
+    const theme = useSelector((state) => state.theme);
 
     const handleChangeTheme = (event) => {
-        const theme = event.target.value
-        dispatch(selectTheme(theme))
-    }
+        const theme = event.target.value;
+        dispatch(selectTheme(theme));
+    };
 
     const handleLineFlowModeChange = (event) => {
-        const lineFlowMode = event.target.value
-        dispatch(selectLineFlowMode(lineFlowMode))
-    }
+        const lineFlowMode = event.target.value;
+        dispatch(selectLineFlowMode(lineFlowMode));
+    };
 
     function TabPanel(props) {
-        const { children, value, index, ...other } = props
+        const { children, value, index, ...other } = props;
 
         return (
             <Typography
@@ -99,7 +99,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
             >
                 {value === index && <Box p={3}>{children}</Box>}
             </Typography>
-        )
+        );
     }
 
     function MakeSwitch(prop, label, callback) {
@@ -122,7 +122,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     />
                 </Grid>
             </>
-        )
+        );
     }
 
     function MakeLineSeparator() {
@@ -130,7 +130,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
             <Grid item xs={12}>
                 <Divider />
             </Grid>
-        )
+        );
     }
 
     function GeneralTab() {
@@ -162,7 +162,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     </RadioGroup>
                 </Grid>
             </Grid>
-        )
+        );
     }
 
     function SingleLineDiagramParameters() {
@@ -180,7 +180,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     dispatch(toggleTopologicalColoringState())
                 )}
             </Grid>
-        )
+        );
     }
 
     const MapParameters = () => {
@@ -218,8 +218,8 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     </Select>
                 </Grid>
             </Grid>
-        )
-    }
+        );
+    };
 
     return (
         <Dialog
@@ -277,7 +277,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 </Container>
             </DialogContent>
         </Dialog>
-    )
-}
+    );
+};
 
-export default Parameters
+export default Parameters;

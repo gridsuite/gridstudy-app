@@ -12,27 +12,27 @@ import React, {
     useLayoutEffect,
     useRef,
     useState,
-} from 'react'
-import PropTypes from 'prop-types'
+} from 'react';
+import PropTypes from 'prop-types';
 
-import { FormattedMessage } from 'react-intl'
+import { FormattedMessage } from 'react-intl';
 
-import Container from '@material-ui/core/Container'
-import Box from '@material-ui/core/Box'
-import CloseIcon from '@material-ui/icons/Close'
-import IconButton from '@material-ui/core/IconButton'
-import Paper from '@material-ui/core/Paper'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import Alert from '@material-ui/lab/Alert'
+import Container from '@material-ui/core/Container';
+import Box from '@material-ui/core/Box';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
 
-import { fetchSvg } from '../utils/rest-api'
+import { fetchSvg } from '../utils/rest-api';
 
-import { SVG } from '@svgdotjs/svg.js'
-import '@svgdotjs/svg.panzoom.js'
+import { SVG } from '@svgdotjs/svg.js';
+import '@svgdotjs/svg.panzoom.js';
 
-const maxWidth = 800
-const maxHeight = 700
+const maxWidth = 800;
+const maxHeight = 700;
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -61,10 +61,10 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
         right: 0,
     },
-}))
+}));
 
 const SvgNotFound = (props) => {
-    const classes = useStyles()
+    const classes = useStyles();
     return (
         <Container className={classes.error}>
             <Typography variant="h5">
@@ -77,26 +77,26 @@ const SvgNotFound = (props) => {
                 />
             </Typography>
         </Container>
-    )
-}
+    );
+};
 
-const noSvg = { svg: null, metadata: null, error: null, svgUrl: null }
+const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
-const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH']
+const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
 
 const SingleLineDiagram = forwardRef((props, ref) => {
-    const [svg, setSvg] = useState(noSvg)
-    const svgPrevViewbox = useRef()
-    const svgDraw = useRef()
+    const [svg, setSvg] = useState(noSvg);
+    const svgPrevViewbox = useRef();
+    const svgDraw = useRef();
 
-    const [forceState, updateState] = useState(false)
+    const [forceState, updateState] = useState(false);
 
     const forceUpdate = React.useCallback(() => {
         if (svgDraw.current) {
-            svgPrevViewbox.current = svgDraw.current.viewbox()
+            svgPrevViewbox.current = svgDraw.current.viewbox();
         }
-        updateState((s) => !s)
-    }, [])
+        updateState((s) => !s);
+    }, []);
 
     useImperativeHandle(
         ref,
@@ -104,7 +104,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             reloadSvg: forceUpdate,
         }),
         []
-    )
+    );
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -115,34 +115,34 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         metadata: data.metadata,
                         error: null,
                         svgUrl: props.svgUrl,
-                    })
+                    });
                 })
                 .catch(function (error) {
-                    console.error(error.message)
+                    console.error(error.message);
                     setSvg({
                         svg: null,
                         metadata: null,
                         error,
                         svgUrl: props.svgUrl,
-                    })
-                })
+                    });
+                });
         } else {
-            setSvg(noSvg)
+            setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState])
+    }, [props.svgUrl, forceState]);
 
     useLayoutEffect(() => {
         if (svg.svg) {
             // calculate svg width and height
-            const divElt = document.getElementById('sld-svg')
-            const svgEl = divElt.getElementsByTagName('svg')[0]
-            const bbox = svgEl.getBBox()
-            const xOrigin = bbox.x - 20
-            const yOrigin = bbox.y - 20
-            const svgWidth = bbox.width + 40
-            const svgHeight = bbox.height + 40
+            const divElt = document.getElementById('sld-svg');
+            const svgEl = divElt.getElementsByTagName('svg')[0];
+            const bbox = svgEl.getBBox();
+            const xOrigin = bbox.x - 20;
+            const yOrigin = bbox.y - 20;
+            const svgWidth = bbox.width + 40;
+            const svgHeight = bbox.height + 40;
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
-            divElt.innerHTML = '' // clear the previous svg in div element before replacing
+            divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
                 .size(svgWidth, svgHeight)
@@ -158,76 +158,76 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         bottom: svgHeight / 4,
                         right: svgWidth / 4,
                     },
-                })
+                });
             if (svgPrevViewbox.current) {
-                draw.viewbox(svgPrevViewbox.current)
-                svgPrevViewbox.current = null
+                draw.viewbox(svgPrevViewbox.current);
+                svgPrevViewbox.current = null;
             }
-            draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible'
+            draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
             draw.on('panStart', function (evt) {
-                divElt.style.cursor = 'move'
-            })
+                divElt.style.cursor = 'move';
+            });
             draw.on('panEnd', function (evt) {
-                divElt.style.cursor = 'default'
-            })
+                divElt.style.cursor = 'default';
+            });
 
             // handling the navigation between voltage levels
             const elements = svg.metadata.nodes.filter(
                 (el) => el.nextVId !== null
-            )
+            );
             elements.forEach((el) => {
-                const domEl = document.getElementById(el.id)
-                domEl.style.cursor = 'pointer'
+                const domEl = document.getElementById(el.id);
+                domEl.style.cursor = 'pointer';
                 domEl.addEventListener('click', function (e) {
-                    const id = e.target.parentElement.id
+                    const id = e.target.parentElement.id;
                     const meta = svg.metadata.nodes.find(
                         (other) => other.id === id
-                    )
-                    props.onNextVoltageLevelClick(meta.nextVId)
-                })
-            })
+                    );
+                    props.onNextVoltageLevelClick(meta.nextVId);
+                });
+            });
 
             // handling the click on a switch
             const switches = svg.metadata.nodes.filter((element) =>
                 SWITCH_COMPONENT_TYPES.includes(element.componentType)
-            )
+            );
             switches.forEach((aSwitch) => {
-                const domEl = document.getElementById(aSwitch.id)
-                domEl.style.cursor = 'pointer'
+                const domEl = document.getElementById(aSwitch.id);
+                domEl.style.cursor = 'pointer';
                 domEl.addEventListener('click', function (event) {
-                    const clickedElementId = event.currentTarget.id
+                    const clickedElementId = event.currentTarget.id;
                     const switchMetadata = svg.metadata.nodes.find(
                         (value) => value.id === clickedElementId
-                    )
-                    const switchId = switchMetadata.equipmentId
-                    const open = switchMetadata.open
-                    svgPrevViewbox.current = draw.viewbox()
-                    props.onBreakerClick(switchId, !open, event.currentTarget)
-                })
-            })
-            svgDraw.current = draw
+                    );
+                    const switchId = switchMetadata.equipmentId;
+                    const open = switchMetadata.open;
+                    svgPrevViewbox.current = draw.viewbox();
+                    props.onBreakerClick(switchId, !open, event.currentTarget);
+                });
+            });
+            svgDraw.current = draw;
         }
-    }, [svg])
+    }, [svg]);
 
     useEffect(() => {
-        svgPrevViewbox.current = null
-    }, [props.updateSwitchMsg])
+        svgPrevViewbox.current = null;
+    }, [props.updateSwitchMsg]);
 
-    const classes = useStyles()
+    const classes = useStyles();
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
-            props.onClose()
+            props.onClose();
         }
-    }
+    };
 
-    let inner
-    let finalClasses
+    let inner;
+    let finalClasses;
     if (svg.error) {
-        finalClasses = classes.error
-        inner = <SvgNotFound svgUrl={svg.svgUrl} error={svg.error} />
+        finalClasses = classes.error;
+        inner = <SvgNotFound svgUrl={svg.svgUrl} error={svg.error} />;
     } else {
-        finalClasses = classes.diagram
+        finalClasses = classes.diagram;
         inner = (
             <div
                 id="sld-svg"
@@ -235,18 +235,18 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 className={classes.div}
                 dangerouslySetInnerHTML={{ __html: svg.svg }}
             />
-        )
+        );
     }
 
-    let msgUpdateSwitch
+    let msgUpdateSwitch;
     if (props.updateSwitchMsg !== '') {
         msgUpdateSwitch = (
             <Alert className={classes.errorUpdateSwitch} severity="error">
                 {props.updateSwitchMsg}
             </Alert>
-        )
+        );
     } else {
-        msgUpdateSwitch = ''
+        msgUpdateSwitch = '';
     }
 
     return (
@@ -262,14 +262,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             {msgUpdateSwitch}
             {inner}
         </Paper>
-    )
-})
+    );
+});
 
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
     onClose: PropTypes.func,
     updateSwitchMsg: PropTypes.string.isRequired,
-}
+};
 
-export default SingleLineDiagram
+export default SingleLineDiagram;

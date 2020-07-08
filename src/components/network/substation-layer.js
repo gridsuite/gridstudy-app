@@ -5,36 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CompositeLayer, TextLayer } from 'deck.gl'
-import ScatterplotLayerExt from './layers/scatterplot-layer-ext'
+import { CompositeLayer, TextLayer } from 'deck.gl';
+import ScatterplotLayerExt from './layers/scatterplot-layer-ext';
 
-const SUBSTATION_RADIUS = 500
+const SUBSTATION_RADIUS = 500;
 
-const SUBSTATION_RADIUS_MAX_PIXEL = 5
+const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 
 const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
-    let list = map.get(voltageLevel.nominalVoltage)
+    let list = map.get(voltageLevel.nominalVoltage);
     if (!list) {
-        list = []
-        map.set(voltageLevel.nominalVoltage, list)
+        list = [];
+        map.set(voltageLevel.nominalVoltage, list);
     }
-    list.push(voltageLevel)
-    return map
-}
+    list.push(voltageLevel);
+    return map;
+};
 
 class SubstationLayer extends CompositeLayer {
     initializeState() {
-        super.initializeState()
+        super.initializeState();
 
         this.state = {
             compositeData: [],
             substationsLabels: [],
-        }
+        };
     }
 
     updateState({ props, oldProps, changeFlags }) {
         if (changeFlags.dataChanged) {
-            let metaVoltageLevelsByNominalVoltage = new Map()
+            let metaVoltageLevelsByNominalVoltage = new Map();
 
             if (props.network != null && props.geoData != null) {
                 // create meta voltage levels
@@ -47,7 +47,7 @@ class SubstationLayer extends CompositeLayer {
                     const voltageLevelsByNominalVoltage = substation.voltageLevels.reduce(
                         voltageLevelNominalVoltageIndexer,
                         new Map()
-                    )
+                    );
 
                     // sorted distinct nominal voltages for this substation
                     const nominalVoltages = [
@@ -62,33 +62,33 @@ class SubstationLayer extends CompositeLayer {
                                         nominalVoltage1 - nominalVoltage2
                                 )
                         ),
-                    ]
+                    ];
 
                     // add to global map of meta voltage levels indexed by nominal voltage
                     Array.from(voltageLevelsByNominalVoltage.entries()).forEach(
                         (e) => {
-                            const nominalVoltage = e[0]
-                            const voltageLevels = e[1]
+                            const nominalVoltage = e[0];
+                            const voltageLevels = e[1];
 
                             let metaVoltageLevels = metaVoltageLevelsByNominalVoltage.get(
                                 nominalVoltage
-                            )
+                            );
                             if (!metaVoltageLevels) {
-                                metaVoltageLevels = []
+                                metaVoltageLevels = [];
                                 metaVoltageLevelsByNominalVoltage.set(
                                     nominalVoltage,
                                     metaVoltageLevels
-                                )
+                                );
                             }
                             metaVoltageLevels.push({
                                 voltageLevels,
                                 nominalVoltageIndex: nominalVoltages.indexOf(
                                     nominalVoltage
                                 ),
-                            })
+                            });
                         }
-                    )
-                })
+                    );
+                });
             }
 
             // sort the map by descending nominal voltages
@@ -96,19 +96,19 @@ class SubstationLayer extends CompositeLayer {
                 metaVoltageLevelsByNominalVoltage
             )
                 .map((e) => {
-                    return { nominalVoltage: e[0], metaVoltageLevels: e[1] }
+                    return { nominalVoltage: e[0], metaVoltageLevels: e[1] };
                 })
-                .sort((a, b) => b.nominalVoltage - a.nominalVoltage)
+                .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
 
             this.setState({
                 metaVoltageLevelsByNominalVoltage: metaVoltageLevelsByNominalVoltageArray,
-            })
+            });
         }
 
         if (
             props.filteredNominalVoltages !== oldProps.filteredNominalVoltages
         ) {
-            let substationsLabels = []
+            let substationsLabels = [];
 
             if (props.network != null && props.geoData != null) {
                 // we construct the substations where there is at least one voltage level with a nominal voltage
@@ -120,15 +120,15 @@ class SubstationLayer extends CompositeLayer {
                                 v.nominalVoltage
                             )
                         ) !== undefined
-                )
+                );
             }
 
-            this.setState({ substationsLabels })
+            this.setState({ substationsLabels });
         }
     }
 
     renderLayers() {
-        const layers = []
+        const layers = [];
 
         // substations : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.metaVoltageLevelsByNominalVoltage.forEach((e) => {
@@ -154,9 +154,9 @@ class SubstationLayer extends CompositeLayer {
                         e.nominalVoltage
                     ),
                 })
-            )
-            layers.push(substationsLayer)
-        })
+            );
+            layers.push(substationsLayer);
+        });
 
         // substations labels : create one layer
         const substationLabelsLayer = new TextLayer(
@@ -179,14 +179,14 @@ class SubstationLayer extends CompositeLayer {
                     getText: this.props.useName,
                 },
             })
-        )
-        layers.push(substationLabelsLayer)
+        );
+        layers.push(substationLabelsLayer);
 
-        return layers
+        return layers;
     }
 }
 
-SubstationLayer.layerName = 'SubstationLayer'
+SubstationLayer.layerName = 'SubstationLayer';
 
 SubstationLayer.defaultProps = {
     network: null,
@@ -197,6 +197,6 @@ SubstationLayer.defaultProps = {
     labelsVisible: false,
     labelColor: { type: 'color', value: [255, 255, 255] },
     labelSize: 16,
-}
+};
 
-export default SubstationLayer
+export default SubstationLayer;

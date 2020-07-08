@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
-import SignInCallbackHandler from './sign-in-callback-handler'
+import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import SignInCallbackHandler from './sign-in-callback-handler';
 import {
     handleSigninCallback,
     handleSilentRenewCallback,
     login,
-} from '../../utils/authentication/AuthService'
-import SilentRenewCallbackHandler from './silent-renew-callback-handler'
-import Authentication from './authentication'
+} from '../../utils/authentication/AuthService';
+import SilentRenewCallbackHandler from './silent-renew-callback-handler';
+import Authentication from './authentication';
 
 const AuthenticationRouter = ({
     userManager,
@@ -69,6 +69,6 @@ const AuthenticationRouter = ({
                 </Route>
             </Switch>
         </React.Fragment>
-    )
-}
-export default AuthenticationRouter
+    );
+};
+export default AuthenticationRouter;

@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UserManager } from 'oidc-client'
-import { UserManagerMock } from './UserManagerMock'
-import { setLoggedUser, setSignInCallbackError } from '../../redux/actions'
-import jwtDecode from 'jwt-decode'
+import { UserManager } from 'oidc-client';
+import { UserManagerMock } from './UserManagerMock';
+import { setLoggedUser, setSignInCallbackError } from '../../redux/actions';
+import jwtDecode from 'jwt-decode';
 
-const hackauthoritykey = 'oidc.hack.authority'
+const hackauthoritykey = 'oidc.hack.authority';
 
-const pathKey = 'powsybl-study-app-current-path'
+const pathKey = 'powsybl-study-app-current-path';
 
 function initializeAuthentication(
     dispatch,
@@ -20,44 +20,46 @@ function initializeAuthentication(
     useAuthentication
 ) {
     if (useAuthentication === 'false') {
-        let userManager = new UserManagerMock({})
+        let userManager = new UserManagerMock({});
         if (!isSilentRenew) {
-            handleUser(dispatch, userManager)
+            handleUser(dispatch, userManager);
         }
-        return Promise.resolve(userManager)
+        return Promise.resolve(userManager);
     } else {
         return idpSettings
             .then((r) => r.json())
             .then((idpSettings) => {
                 /* hack to ignore the iss check. XXX TODO to remove */
-                const regextoken = /id_token=[^&]*/
-                const regexstate = /state=[^&]*/
-                let authority
+                const regextoken = /id_token=[^&]*/;
+                const regexstate = /state=[^&]*/;
+                let authority;
                 if (window.location.hash) {
                     const matched_id_token = window.location.hash.match(
                         regextoken
-                    )
-                    const matched_state = window.location.hash.match(regexstate)
+                    );
+                    const matched_state = window.location.hash.match(
+                        regexstate
+                    );
                     if (matched_id_token != null && matched_state != null) {
-                        const id_token = matched_id_token[0].split('=')[1]
-                        const state = matched_state[0].split('=')[1]
-                        const strState = localStorage.getItem('oidc.' + state)
+                        const id_token = matched_id_token[0].split('=')[1];
+                        const state = matched_state[0].split('=')[1];
+                        const strState = localStorage.getItem('oidc.' + state);
                         if (strState != null) {
-                            authority = jwtDecode(id_token).iss
-                            const storedState = JSON.parse(strState)
-                            storedState.authority = authority
+                            authority = jwtDecode(id_token).iss;
+                            const storedState = JSON.parse(strState);
+                            storedState.authority = authority;
                             localStorage.setItem(
                                 'oidc.' + state,
                                 JSON.stringify(storedState)
-                            )
-                            sessionStorage.setItem(hackauthoritykey, authority)
+                            );
+                            sessionStorage.setItem(hackauthoritykey, authority);
                         }
                     }
                 }
                 authority =
                     authority ||
                     sessionStorage.getItem(hackauthoritykey) ||
-                    idpSettings.authority
+                    idpSettings.authority;
                 let settings = {
                     authority,
                     client_id: idpSettings.client_id,
@@ -70,77 +72,77 @@ function initializeAuthentication(
                     scope: idpSettings.scope,
                     automaticSilentRenew: !isSilentRenew,
                     accessTokenExpiringNotificationTime: 60,
-                }
-                let userManager = new UserManager(settings)
+                };
+                let userManager = new UserManager(settings);
                 if (!isSilentRenew) {
-                    handleUser(dispatch, userManager)
+                    handleUser(dispatch, userManager);
                 }
-                return userManager
-            })
+                return userManager;
+            });
     }
 }
 
 function login(location, userManagerInstance) {
-    sessionStorage.setItem(pathKey, location.pathname + location.search)
+    sessionStorage.setItem(pathKey, location.pathname + location.search);
     return userManagerInstance
         .signinRedirect()
-        .then(() => console.debug('login'))
+        .then(() => console.debug('login'));
 }
 
 function logout(dispatch, userManagerInstance) {
-    dispatch(setLoggedUser(null))
-    sessionStorage.removeItem(hackauthoritykey) //To remove when hack is removed
+    dispatch(setLoggedUser(null));
+    sessionStorage.removeItem(hackauthoritykey); //To remove when hack is removed
     return userManagerInstance
         .signoutRedirect()
-        .then(() => console.debug('logged out'))
+        .then(() => console.debug('logged out'));
 }
 
 function dispatchUser(dispatch, userManagerInstance) {
     return userManagerInstance.getUser().then((user) => {
         if (user) {
-            console.debug('User has been successfully loaded from store.')
-            return dispatch(setLoggedUser(user))
+            console.debug('User has been successfully loaded from store.');
+            return dispatch(setLoggedUser(user));
         } else {
-            console.debug('You are not logged in.')
+            console.debug('You are not logged in.');
         }
-    })
+    });
 }
 
 function getPreLoginPath() {
-    return sessionStorage.getItem(pathKey)
+    return sessionStorage.getItem(pathKey);
 }
 
 function handleSigninCallback(dispatch, history, userManagerInstance) {
     userManagerInstance
         .signinRedirectCallback()
         .then(function () {
-            dispatch(setSignInCallbackError(null))
-            const previousPath = getPreLoginPath()
-            history.replace(previousPath)
+            dispatch(setSignInCallbackError(null));
+            const previousPath = getPreLoginPath();
+            history.replace(previousPath);
         })
         .catch(function (e) {
-            dispatch(setSignInCallbackError(e))
-            console.error(e)
-        })
+            dispatch(setSignInCallbackError(e));
+            console.error(e);
+        });
 }
 
 function handleSilentRenewCallback(userManagerInstance) {
-    userManagerInstance.signinSilentCallback()
+    userManagerInstance.signinSilentCallback();
 }
 
 function handleUser(dispatch, userManager) {
     userManager.events.addUserLoaded((user) => {
-        console.debug('user loaded')
-        dispatchUser(dispatch, userManager)
-    })
+        console.debug('user loaded');
+        dispatchUser(dispatch, userManager);
+    });
 
     userManager.events.addSilentRenewError((error) => {
-        console.debug(error)
-        logout(dispatch, userManager)
-    })
+        console.debug(error);
+        logout(dispatch, userManager);
+    });
 
-    console.debug('dispatch user')
-    dispatchUser(dispatch, userManager)
+    console.debug('dispatch user');
+    dispatchUser(dispatch, userManager);
 }
 
 export {
@@ -151,4 +153,4 @@ export {
     dispatchUser,
     handleSigninCallback,
     getPreLoginPath,
-}
+};

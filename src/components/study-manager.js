@@ -5,45 +5,45 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react'
-import PropTypes from 'prop-types'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { FormattedMessage, useIntl } from 'react-intl'
-import { makeStyles } from '@material-ui/core/styles'
-import Typography from '@material-ui/core/Typography'
-import Card from '@material-ui/core/Card'
-import CardActionArea from '@material-ui/core/CardActionArea'
-import CardContent from '@material-ui/core/CardContent'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import Tooltip from '@material-ui/core/Tooltip'
+import { FormattedMessage, useIntl } from 'react-intl';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Tooltip from '@material-ui/core/Tooltip';
 
-import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg'
-import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg'
-import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg'
-import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg'
+import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg';
+import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
+import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
+import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
 
-import { loadStudiesSuccess } from '../redux/actions'
-import { deleteStudy, fetchStudies, renameStudy } from '../utils/rest-api'
+import { loadStudiesSuccess } from '../redux/actions';
+import { deleteStudy, fetchStudies, renameStudy } from '../utils/rest-api';
 
-import { CardHeader } from '@material-ui/core'
-import IconButton from '@material-ui/core/IconButton'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import Collapse from '@material-ui/core/Collapse'
-import CardActions from '@material-ui/core/CardActions'
-import clsx from 'clsx'
-import withStyles from '@material-ui/core/styles/withStyles'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import DeleteIcon from '@material-ui/icons/Delete'
-import EditIcon from '@material-ui/icons/Edit'
-import { DeleteDialog, RenameDialog } from '../utils/dialogs'
-import Container from '@material-ui/core/Container'
-import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
-import CreateStudyForm from './create-study-form'
+import { CardHeader } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Collapse from '@material-ui/core/Collapse';
+import CardActions from '@material-ui/core/CardActions';
+import clsx from 'clsx';
+import withStyles from '@material-ui/core/styles/withStyles';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import { DeleteDialog, RenameDialog } from '../utils/dialogs';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import CreateStudyForm from './create-study-form';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
     tooltip: {
         fontSize: 18,
     },
-}))
+}));
 
 /**
  * Card displaying a study on the screen, with the ability to open and edit it
@@ -98,22 +98,22 @@ const useStyles = makeStyles((theme) => ({
  * @param {EventListener} onClick Event to open the study
  */
 const StudyCard = ({ study, onClick }) => {
-    const dispatch = useDispatch()
-    const classes = useStyles()
+    const dispatch = useDispatch();
+    const classes = useStyles();
 
     function logo(caseFormat) {
         switch (caseFormat) {
             case 'XIIDM':
-                return <PowsyblLogo className={classes.logo} />
+                return <PowsyblLogo className={classes.logo} />;
             case 'CGMES':
-                return <EntsoeLogo className={classes.logo} />
+                return <EntsoeLogo className={classes.logo} />;
             case 'UCTE':
-                return <UcteLogo className={classes.logo} />
+                return <UcteLogo className={classes.logo} />;
             case 'IEEE-CDF':
             case 'IEEE CDF': // for powsybl <= 3.1 compatibility
-                return <IeeeLogo className={classes.logo} />
+                return <IeeeLogo className={classes.logo} />;
             default:
-                break
+                break;
         }
     }
 
@@ -135,71 +135,71 @@ const StudyCard = ({ study, onClick }) => {
             }}
             {...props}
         />
-    ))
+    ));
 
-    const [anchorEl, setAnchorEl] = React.useState(null)
+    const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleOpenMenu = (event) => {
-        setAnchorEl(event.currentTarget)
-    }
+        setAnchorEl(event.currentTarget);
+    };
 
     const handleCloseMenu = () => {
-        setAnchorEl(null)
-    }
+        setAnchorEl(null);
+    };
 
     /**
      * Delete dialog: window status value for deletion
      */
-    const [openDeleteDialog, setOpenDelete] = React.useState(false)
+    const [openDeleteDialog, setOpenDelete] = React.useState(false);
 
     const handleOpenDelete = () => {
-        setAnchorEl(null)
-        setOpenDelete(true)
-    }
+        setAnchorEl(null);
+        setOpenDelete(true);
+    };
 
     const handleClickDelete = () => {
         deleteStudy(study.studyName).then(() => {
             fetchStudies().then((studies) => {
-                dispatch(loadStudiesSuccess(studies))
-            })
-        })
-    }
+                dispatch(loadStudiesSuccess(studies));
+            });
+        });
+    };
 
     const handleCloseDelete = () => {
-        setOpenDelete(false)
-    }
+        setOpenDelete(false);
+    };
 
     /**
      * Rename dialog: window status value for renaming
      */
-    const [openRenameDialog, setOpenRename] = React.useState(false)
+    const [openRenameDialog, setOpenRename] = React.useState(false);
 
     const handleOpenRename = () => {
-        setAnchorEl(null)
-        setOpenRename(true)
-    }
+        setAnchorEl(null);
+        setOpenRename(true);
+    };
 
     const handleClickRename = (newStudyNameValue) => {
         renameStudy(study.studyName, newStudyNameValue).then(() => {
             fetchStudies().then((studies) => {
-                dispatch(loadStudiesSuccess(studies))
-            })
-            setOpenRename(false)
-        })
-    }
+                dispatch(loadStudiesSuccess(studies));
+            });
+            setOpenRename(false);
+        });
+    };
 
     const handleCloseRename = () => {
-        setOpenRename(false)
-    }
+        setOpenRename(false);
+    };
 
     /**
      * Status for displaying additional information
      */
-    const [expanded, setExpanded] = React.useState(false)
+    const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {
-        setExpanded(!expanded)
-    }
+        setExpanded(!expanded);
+    };
 
     return (
         <div>
@@ -311,8 +311,8 @@ const StudyCard = ({ study, onClick }) => {
                 currentName={study.studyName}
             />
         </div>
-    )
-}
+    );
+};
 
 StudyCard.propTypes = {
     study: PropTypes.shape({
@@ -322,25 +322,25 @@ StudyCard.propTypes = {
         caseDate: PropTypes.instanceOf(Date),
     }),
     onClick: PropTypes.func.isRequired,
-}
+};
 
 /**
  * Container displaying the *StudyCard* and the study creation feature
  * @param {EventListener} onClick Action to open the study
  */
 const StudyManager = ({ onClick }) => {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     useEffect(() => {
         fetchStudies().then((studies) => {
-            dispatch(loadStudiesSuccess(studies))
-        })
+            dispatch(loadStudiesSuccess(studies));
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, []);
 
-    const studies = useSelector((state) => state.studies)
+    const studies = useSelector((state) => state.studies);
 
-    const classes = useStyles()
+    const classes = useStyles();
 
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
@@ -360,11 +360,11 @@ const StudyManager = ({ onClick }) => {
                 ))}
             </Grid>
         </Container>
-    )
-}
+    );
+};
 
 StudyManager.propTypes = {
     onClick: PropTypes.func.isRequired,
-}
+};
 
-export default StudyManager
+export default StudyManager;
