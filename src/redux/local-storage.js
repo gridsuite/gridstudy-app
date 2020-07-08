@@ -58,7 +58,7 @@ const LOCAL_STORAGE_LINE_FLOW_MODE_KEY = "STUDY_APP_LINE_FLOW_MODE";
 
 export const getLocalStorageLineFlowMode = () => {
     const value = localStorage.getItem(LOCAL_STORAGE_LINE_FLOW_MODE_KEY);
-    return value || "none";
+    return value || "feeders";
 };
 
 export const saveLocalStorageLineFlowMode = (lineFlowMode) => {

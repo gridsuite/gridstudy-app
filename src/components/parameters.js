@@ -174,9 +174,6 @@ const Parameters = ({showParameters, hideParameters}) => {
                 </Grid>
                 <Grid item container xs={6} className={classes.controlItem}>
                     <Select labelId="line-flow-mode-select-label" value={lineFlowMode} onChange={handleLineFlowModeChange}>
-                        <MenuItem value={LineFlowMode.NONE}>
-                            <FormattedMessage id="None"/>
-                        </MenuItem>
                         <MenuItem value={LineFlowMode.STATIC_ARROWS}>
                             <FormattedMessage id="StaticArrows"/>
                         </MenuItem>
