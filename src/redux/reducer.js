@@ -13,14 +13,12 @@ import {
     getLocalStorageLineFlowMode,
     getLocalStorageLineFullPath,
     getLocalStorageTheme,
-    getLocalStorageTopologicalColoring,
     getLocalStorageUseName,
     saveLocalStorageCenterLabel,
     saveLocalStorageDiagonalLabel,
     saveLocalStorageLineFlowMode,
     saveLocalStorageLineFullPath,
     saveLocalStorageTheme,
-    saveLocalStorageTopologicalColoring,
     saveLocalStorageUseName
 } from "./local-storage";
 
@@ -40,7 +38,6 @@ import {
     SELECT_CASE,
     SELECT_FILE,
     SELECT_THEME,
-    TOPOLOGICAL_COLORING,
     USE_NAME,
     USER,
     SIGNIN_CALLBACK_ERROR,
@@ -60,7 +57,6 @@ const initialState = {
     user : null,
     centerLabel : getLocalStorageCenterLabel(),
     diagonalLabel : getLocalStorageDiagonalLabel(),
-    topologicalColoring : getLocalStorageTopologicalColoring(),
     lineFullPath: getLocalStorageLineFullPath(),
     lineFlowMode: getLocalStorageLineFlowMode(),
     signInCallbackError : null,
@@ -137,11 +133,6 @@ export const reducer = createReducer(initialState, {
     [DIAGONAL_LABEL]: (state) => {
         state.diagonalLabel = !state.diagonalLabel;
         saveLocalStorageDiagonalLabel(state.diagonalLabel);
-    },
-
-    [TOPOLOGICAL_COLORING]: (state) => {
-        state.topologicalColoring = !state.topologicalColoring;
-        saveLocalStorageTopologicalColoring(state.topologicalColoring);
     },
 
     [LINE_FULL_PATH]: (state) => {
