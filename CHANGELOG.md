@@ -7,15 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.6.0] - 2020-06-12
+## [0.6.0] - 2020-07-10
 
 ### Added
 
 - Representation of no-load and open lines in network display and single line diagrams
+- Addition of active power flow label on the map
+- Visualization of lines with 2 arrows next to power labels (called Feeder mode)
 
 ### Changed
 
+- Streamlining the GridStudy defaults options
 - Misc. performance enhancements of the back-end side
+
+### Fixed
+
+- Fix the topological style provider for CGMES
+- Fix problem with changing size of single line diagram
+- Fix GUI lag problem when navigating between single line diagrams
+
+### Technical
+
+- Switch to PowSyBl 3.4
 
 ## [0.5.0] - 2020-05-29
 
