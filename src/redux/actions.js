@@ -97,12 +97,6 @@ export function toggleDiagonalLabelState() {
     return { type: DIAGONAL_LABEL };
 }
 
-export const TOPOLOGICAL_COLORING = 'TOPOLOGICAL_COLORING';
-
-export function toggleTopologicalColoringState() {
-    return { type: TOPOLOGICAL_COLORING };
-}
-
 export const LINE_FULL_PATH = 'LINE_FULL_PATH';
 
 export function toggleLineFullPathState() {

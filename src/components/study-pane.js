@@ -82,10 +82,6 @@ const StudyPane = () => {
 
     const diagonalName = useSelector((state) => state.diagonalLabel);
 
-    const topologicalColoring = useSelector(
-        (state) => state.topologicalColoring
-    );
-
     const lineFullPath = useSelector((state) => state.lineFullPath);
 
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
@@ -448,8 +444,7 @@ const StudyPane = () => {
                                         displayedVoltageLevelId,
                                         useName,
                                         centerName,
-                                        diagonalName,
-                                        topologicalColoring
+                                        diagonalName
                                     )}
                                     ref={sldRef}
                                     updateSwitchMsg={updateSwitchMsg}

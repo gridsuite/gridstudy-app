@@ -58,8 +58,7 @@ export function getVoltageLevelSingleLineDiagram(
     voltageLevelId,
     useName,
     centerLabel,
-    diagonalLabel,
-    topologicalColoring
+    diagonalLabel
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`
@@ -76,8 +75,7 @@ export function getVoltageLevelSingleLineDiagram(
         centerLabel +
         '&diagonalLabel=' +
         diagonalLabel +
-        '&topologicalColoring=' +
-        topologicalColoring
+        '&topologicalColoring=true'
     );
 }
 
