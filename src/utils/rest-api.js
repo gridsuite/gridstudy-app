@@ -51,13 +51,13 @@ export function fetchCases() {
     return backendFetch(fetchCasesUrl).then(response => response.json());
 }
 
-export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel, topologicalColoring) {
+export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel) {
     console.info(`Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
     return PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg-and-metadata?" 
     + new URLSearchParams({"useName": useName}).toString() 
     + "&" + new URLSearchParams({"centerLabel": centerLabel}).toString() 
     + "&" + new URLSearchParams({"diagonalLabel": diagonalLabel}).toString() 
-    + "&" + new URLSearchParams({"topologicalColoring": topologicalColoring}).toString();
+    + "&" + new URLSearchParams({"topologicalColoring": true}).toString();
 }
 
 export function fetchSvg(svgUrl) {

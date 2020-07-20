@@ -77,8 +77,6 @@ const StudyPane = () => {
 
     const diagonalName = useSelector( state => state.diagonalLabel);
 
-    const topologicalColoring = useSelector( state => state.topologicalColoring);
-
     const lineFullPath = useSelector( state => state.lineFullPath);
 
     const lineFlowMode = useSelector( state => state.lineFlowMode);
@@ -360,7 +358,7 @@ const StudyPane = () => {
                                                    onNextVoltageLevelClick={showVoltageLevelDiagram}
                                                    onBreakerClick={handleUpdateSwitchState}
                                                    diagramTitle={useName && displayedVoltageLevel ? displayedVoltageLevel.name : displayedVoltageLevelId}
-                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName, topologicalColoring)}
+                                                   svgUrl={getVoltageLevelSingleLineDiagram(studyName, displayedVoltageLevelId, useName, centerName, diagonalName)}
                                                    ref={sldRef}
                                                    updateSwitchMsg={updateSwitchMsg}/>
                             </div>
