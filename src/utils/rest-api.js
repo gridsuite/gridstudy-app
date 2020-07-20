@@ -69,13 +69,14 @@ export function getVoltageLevelSingleLineDiagram(
         studyName +
         '/network/voltage-levels/' +
         voltageLevelId +
-        '/svg-and-metadata?useName=' +
-        useName +
-        '&centerLabel=' +
-        centerLabel +
-        '&diagonalLabel=' +
-        diagonalLabel +
-        '&topologicalColoring=true'
+        '/svg-and-metadata?' +
+        new URLSearchParams({ useName: useName }).toString() +
+        '&' +
+        new URLSearchParams({ centerLabel: centerLabel }).toString() +
+        '&' +
+        new URLSearchParams({ diagonalLabel: diagonalLabel }).toString() +
+        '&' +
+        new URLSearchParams({ topologicalColoring: true }).toString()
     );
 }
 
@@ -152,8 +153,8 @@ export function createStudy(
             studyName +
             '/cases/' +
             caseName +
-            '?description=' +
-            studyDescription;
+            '?' +
+            new URLSearchParams({ description: studyDescription }).toString();
         console.debug(createStudyWithExistingCaseUrl);
         return backendFetch(createStudyWithExistingCaseUrl, {
             method: 'post',
@@ -163,8 +164,8 @@ export function createStudy(
             PREFIX_STUDY_QUERIES +
             '/v1/studies/' +
             studyName +
-            '?description=' +
-            studyDescription;
+            '?' +
+            new URLSearchParams({ description: studyDescription }).toString();
         const formData = new FormData();
         formData.append('caseFile', selectedFile);
         console.debug(createStudyWithNewCaseUrl);
@@ -192,8 +193,8 @@ export function updateSwitchState(studyName, switchId, open) {
         studyName +
         '/network-modification/switches/' +
         switchId +
-        '?open=' +
-        open;
+        '?' +
+        new URLSearchParams({ open: open }).toString();
     console.debug(updateSwitchUrl);
     return backendFetch(updateSwitchUrl, { method: 'put' });
 }
