@@ -7,7 +7,7 @@
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -19,7 +19,10 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
+import {useSelector} from 'react-redux';
+import {store} from '../redux/store';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 /**
  * Dialog to delete an element #TODO To be moved in the common-ui repository once it has been created
@@ -166,6 +169,7 @@ const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}
 
     const formats = availableFormat;
     const [selectedFormat, setSelectedFormat] = React.useState("");
+    const [loading, setLoading] = React.useState(false);
 
     const useStyles = makeStyles(() => ({
         formControl: {
@@ -175,15 +179,18 @@ const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}
 
     const handleClick = () => {
         console.debug("Request for exporting in format: " + selectedFormat);
+        setLoading(true);
         onClick(selectedFormat);
     };
 
     const handleClose = () => {
+        setLoading(false);
         onClose();
     };
 
     const handleExited = () => {
         setSelectedFormat("");
+        setLoading(false);
     };
 
     const handleChange = (event) => {
@@ -216,6 +223,11 @@ const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}
                 <Button onClick={handleClose} variant="text"><FormattedMessage id="cancel"/></Button>
                 <Button onClick={handleClick} variant="outlined"><FormattedMessage id="export"/></Button>
             </DialogActions>
+            { loading && (
+                <div style={{display: 'flex', justifyContent: 'center'}}>
+                    <CircularProgress className={classes.progress}/>
+                </div>)
+            }
         </Dialog>
     );
 };
