@@ -53,8 +53,11 @@ export function fetchCases() {
 
 export function getVoltageLevelSingleLineDiagram(studyName, voltageLevelId, useName, centerLabel, diagonalLabel) {
     console.info(`Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`);
-    return PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg-and-metadata?useName=" + useName
-        + "&centerLabel=" + centerLabel + "&diagonalLabel=" + diagonalLabel + "&topologicalColoring=true";
+    return PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network/voltage-levels/" + voltageLevelId + "/svg-and-metadata?" 
+    + new URLSearchParams({"useName": useName}).toString() 
+    + "&" + new URLSearchParams({"centerLabel": centerLabel}).toString() 
+    + "&" + new URLSearchParams({"diagonalLabel": diagonalLabel}).toString() 
+    + "&" + new URLSearchParams({"topologicalColoring": true}).toString();
 }
 
 export function fetchSvg(svgUrl) {
@@ -128,7 +131,7 @@ export function deleteStudy(studyName) {
 
 export function updateSwitchState(studyName, switchId, open) {
     console.info("updating switch " + switchId + " ...");
-    const updateSwitchUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-modification/switches/" + switchId + "?open=" + open;
+    const updateSwitchUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "/network-modification/switches/" + switchId + "?" + new URLSearchParams({"open": open}).toString();
     console.debug(updateSwitchUrl);
     return backendFetch(updateSwitchUrl, {method : 'put'});
 }
