@@ -255,7 +255,7 @@ export function getExportFormat() {
 
 export function exportNetwork(studyName, format) {
     console.info("Export network of study: " + studyName + " in format:" + format);
-    const exportNetworkUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/network-conversion/" + studyName + "/" + format;
+    const exportNetworkUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/network-conversion/" + studyName + "/export/" + format;
     console.debug(exportNetworkUrl);
     return backendFetch(exportNetworkUrl, {method : 'get'}).then(response => {
         let file = {};
