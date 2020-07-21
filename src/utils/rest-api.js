@@ -94,15 +94,19 @@ export function fetchLinePositions(studyName) {
 
 export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userIdToken, userName) {
     console.info("Creating a new study...");
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append("description", studyDescription);
+    urlSearchParams.append("ownerId", userIdToken);
+    urlSearchParams.append("ownerName", userName);
     if (caseExist) {
         const createStudyWithExistingCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName +"/cases/" + caseName
-            + "?description=" + studyDescription + "&ownerId=" + userIdToken + "&ownerName=" + userName;
+            + "?" + urlSearchParams.toString();
         console.debug(createStudyWithExistingCaseUrl);
         return backendFetch(createStudyWithExistingCaseUrl, {
             method : 'post',
         });
     } else {
-        const createStudyWithNewCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "?description=" + studyDescription + "&ownerId=" + userIdToken + "&ownerName=" + userName;
+        const createStudyWithNewCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "?" + urlSearchParams.toString();
         const formData = new FormData();
         formData.append("caseFile", selectedFile);
         console.debug(createStudyWithNewCaseUrl);
