@@ -92,18 +92,19 @@ export function fetchLinePositions(studyName) {
     return backendFetch(fetchLinePositionsUrl).then(response => response.json());
 }
 
-export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile) {
+export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userIdToken, userName) {
     console.info("Creating a new study...");
     if (caseExist) {
-        const createStudyWithExistingCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName +"/cases/" + caseName +"?description=" + studyDescription;
+        const createStudyWithExistingCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName +"/cases/" + caseName
+            + "?description=" + studyDescription + "&ownerId=" + userIdToken + "&ownerName=" + userName;
         console.debug(createStudyWithExistingCaseUrl);
         return backendFetch(createStudyWithExistingCaseUrl, {
             method : 'post',
         });
     } else {
-        const createStudyWithNewCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "?description=" + studyDescription;
+        const createStudyWithNewCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "?description=" + studyDescription + "&ownerId=" + userIdToken + "&ownerName=" + userName;
         const formData = new FormData();
-        formData.append('caseFile', selectedFile);
+        formData.append("caseFile", selectedFile);
         console.debug(createStudyWithNewCaseUrl);
         return backendFetch(createStudyWithNewCaseUrl, {
             method : 'post',

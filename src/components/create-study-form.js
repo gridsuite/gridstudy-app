@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {makeStyles} from "@material-ui/core/styles";
 import Button from '@material-ui/core/Button';
@@ -32,6 +32,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {loadCasesSuccess, loadStudiesSuccess, removeSelectedFile, selectCase, selectFile} from "../redux/actions";
 import {store} from '../redux/store';
 import CardActionArea from "@material-ui/core/CardActionArea";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import Radio from "@material-ui/core/Radio";
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -131,6 +133,7 @@ export const CreateStudyForm = () => {
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
+    const [studyPrivacy, setStudyPrivacy] = React.useState('public');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [loading, setLoading] = React.useState(false);
@@ -164,6 +167,10 @@ export const CreateStudyForm = () => {
         setStudyName(e.target.value)
     };
 
+    const handleChangeStudyPrivacy = (event) => {
+        setStudyPrivacy(event.target.value);
+    };
+
     const handleCreateNewStudy = () => {
         if (studyName === '') {
             setCreateStudyErr(intl.formatMessage({id : 'studyNameErrorMsg'}));
@@ -175,8 +182,15 @@ export const CreateStudyForm = () => {
             setCreateStudyErr(intl.formatMessage({id : 'uploadErrorMsg'}));
             return;
         }
+        let userIdToken = "";
+        let userName = "";
+        if (studyPrivacy === "private") {
+            let studyOwner = store.getState().user;
+            userIdToken = studyOwner.id_token;
+            userName = studyOwner.profile.name;
+        }
         setLoading(true);
-        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile)
+        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userIdToken, userName)
             .then(res => {
                 if(res.ok) {
                     setCreateStudyErr('');
@@ -242,6 +256,10 @@ export const CreateStudyForm = () => {
                         fullWidth
                         label= <FormattedMessage id="studyDescription" />
                     />
+                    <RadioGroup aria-label="" name="studyPrivacy" value={studyPrivacy} onChange={handleChangeStudyPrivacy} row>
+                        <FormControlLabel value="public" control={<Radio />} label=<FormattedMessage id="public" /> />
+                        <FormControlLabel value="private" control={<Radio />} label=<FormattedMessage id="private" /> />
+                    </RadioGroup>
                     {caseExist && (<SelectCase/>)}
                     {!caseExist && (<UploadCase/>)}
                     {createStudyErr !== '' && (<Alert severity="error">{createStudyErr}</Alert>)}
