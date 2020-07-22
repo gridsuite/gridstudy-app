@@ -15,7 +15,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {FormattedMessage} from "react-intl";
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -30,16 +30,15 @@ const useStyles = makeStyles((theme) => ({
     },
     submit: {
         margin: theme.spacing(3, 0, 2),
-        borderRadius: '30px'
-        },
+        borderRadius: '30px',
+    },
     logo: {
         width: 64,
         height: 64,
     },
 }));
 
-
-const Authentication = ({onLoginClick, disabled}) => {
+const Authentication = ({ onLoginClick, disabled }) => {
     const classes = useStyles();
 
     function Copyright() {
@@ -63,7 +62,7 @@ const Authentication = ({onLoginClick, disabled}) => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    <FormattedMessage id="login"/> ?
+                    <FormattedMessage id="login" /> ?
                 </Typography>
 
                 <Button
@@ -74,7 +73,7 @@ const Authentication = ({onLoginClick, disabled}) => {
                     className={classes.submit}
                     onClick={onLoginClick}
                 >
-                    <FormattedMessage id="connection"/>
+                    <FormattedMessage id="connection" />
                 </Button>
             </div>
             <Box mt={2}>

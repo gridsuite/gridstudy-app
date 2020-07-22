@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {createReducer} from "@reduxjs/toolkit";
+import { createReducer } from '@reduxjs/toolkit';
 
 import {
     getLocalStorageCenterLabel,
@@ -19,8 +19,8 @@ import {
     saveLocalStorageLineFlowMode,
     saveLocalStorageLineFullPath,
     saveLocalStorageTheme,
-    saveLocalStorageUseName
-} from "./local-storage";
+    saveLocalStorageUseName,
+} from './local-storage';
 
 import {
     CENTER_LABEL,
@@ -42,7 +42,7 @@ import {
     USER,
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
-} from "./actions";
+} from './actions';
 
 const initialState = {
     studies: [],
@@ -50,21 +50,20 @@ const initialState = {
     network: null,
     geoData: null,
     theme: getLocalStorageTheme(),
-    cases : [],
-    selectedCase : null,
-    selectedFile : null,
-    useName : getLocalStorageUseName(),
-    user : null,
-    centerLabel : getLocalStorageCenterLabel(),
-    diagonalLabel : getLocalStorageDiagonalLabel(),
+    cases: [],
+    selectedCase: null,
+    selectedFile: null,
+    useName: getLocalStorageUseName(),
+    user: null,
+    centerLabel: getLocalStorageCenterLabel(),
+    diagonalLabel: getLocalStorageDiagonalLabel(),
     lineFullPath: getLocalStorageLineFullPath(),
     lineFlowMode: getLocalStorageLineFlowMode(),
-    signInCallbackError : null,
-    studyUpdated : {force: 0, eventData: {}}
+    signInCallbackError: null,
+    studyUpdated: { force: 0, eventData: {} },
 };
 
 export const reducer = createReducer(initialState, {
-
     [LOAD_STUDIES_SUCCESS]: (state, action) => {
         state.studies = action.studies;
     },
@@ -92,7 +91,10 @@ export const reducer = createReducer(initialState, {
     },
 
     [STUDY_UPDATED]: (state, action) => {
-        state.studyUpdated = {force: 1 - state.studyUpdated.force, eventData: action.eventData};
+        state.studyUpdated = {
+            force: 1 - state.studyUpdated.force,
+            eventData: action.eventData,
+        };
     },
 
     [SELECT_THEME]: (state, action) => {
