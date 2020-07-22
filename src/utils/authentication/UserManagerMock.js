@@ -20,7 +20,7 @@ export class UserManagerMock {
     settings;
     events;
     user = {
-        profile: { name: 'John Doe' },
+        profile: { name: 'John Doe', email: 'Jhon.Doe@rte-france.com' },
         id_token:
             'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IllNRUxIVDBndmIwbXhvU0RvWWZvbWpxZmpZVSJ9.eyJhdWQiOiI5YzQwMjQ2MS1iMmFiLTQ3NjctOWRiMy02Njg1OWJiMGZjZDAiLCJpc3MiOiJodHRwczovL2' +
             'xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNzUwMmRhZDUtZDY0Yy00NmM3LTlkNDctYjE2ZjU4MGZjZmE5L3YyLjAiLCJpYXQiOjE1ODUzMzEyNDksIm5iZiI6MTU4NTMzMTI0OSwiZXhwIjoxNTg1MzM1MTQ5LCJhaW8iOiJBV1FB' +
