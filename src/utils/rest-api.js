@@ -95,11 +95,11 @@ export function fetchLinePositions(studyName) {
     return backendFetch(fetchLinePositionsUrl).then(response => response.json());
 }
 
-export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userIdToken, userName) {
+export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userEmail, userName) {
     console.info("Creating a new study...");
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append("description", studyDescription);
-    urlSearchParams.append("ownerId", userIdToken);
+    urlSearchParams.append("ownerEmail", userEmail);
     urlSearchParams.append("ownerName", userName);
     if (caseExist) {
         const createStudyWithExistingCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName +"/cases/" + caseName

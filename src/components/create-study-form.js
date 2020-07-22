@@ -182,15 +182,15 @@ export const CreateStudyForm = () => {
             setCreateStudyErr(intl.formatMessage({id : 'uploadErrorMsg'}));
             return;
         }
-        let userIdToken = "";
+        let userEmail = "";
         let userName = "";
         if (studyPrivacy === "private") {
             let studyOwner = store.getState().user;
-            userIdToken = studyOwner.id_token;
+            userEmail = studyOwner.profile.email;
             userName = studyOwner.profile.name;
         }
         setLoading(true);
-        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userIdToken, userName)
+        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userEmail, userName)
             .then(res => {
                 if(res.ok) {
                     setCreateStudyErr('');
