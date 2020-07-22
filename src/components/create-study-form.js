@@ -183,14 +183,12 @@ export const CreateStudyForm = () => {
             return;
         }
         let userEmail = "";
-        let userName = "";
         if (studyPrivacy === "private") {
             let studyOwner = store.getState().user;
             userEmail = studyOwner.profile.email;
-            userName = studyOwner.profile.name;
         }
         setLoading(true);
-        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userEmail, userName)
+        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, userEmail)
             .then(res => {
                 if(res.ok) {
                     setCreateStudyErr('');
