@@ -218,16 +218,16 @@ const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}
                         {formats.map((function (element) {return <MenuItem key={element} value={element}>{element}</MenuItem>}))}
                     </Select>
                 </FormControl>
+                { loading && (
+                    <div style={{display: 'flex', justifyContent: 'center', marginTop: '5px'}}>
+                        <CircularProgress/>
+                    </div>)
+                }
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="text"><FormattedMessage id="cancel"/></Button>
                 <Button onClick={handleClick} variant="outlined"><FormattedMessage id="export"/></Button>
             </DialogActions>
-            { loading && (
-                <div style={{display: 'flex', justifyContent: 'center'}}>
-                    <CircularProgress className={classes.progress}/>
-                </div>)
-            }
         </Dialog>
     );
 };
