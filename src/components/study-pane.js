@@ -147,7 +147,7 @@ const StudyPane = () => {
     }, [network]);
 
     function loadNetwork(studyName) {
-        console.info(`Loading network of study '${studyName}'...`);
+        console.info(`Loading network of study '${decodeURIComponent(studyName)}'...`);
 
         const substations = fetchSubstations(studyName);
 
@@ -167,7 +167,7 @@ const StudyPane = () => {
     }
 
     function loadGeoData(studyName) {
-        console.info(`Loading geo data of study '${studyName}'...`);
+        console.info(`Loading geo data of study '${decodeURIComponent(studyName)}'...`);
 
         const substationPositions = fetchSubstationPositions(studyName);
 
@@ -187,7 +187,7 @@ const StudyPane = () => {
     }
 
     function connectNotifications(studyName) {
-        console.info(`Connecting to notifications '${studyName}'...`);
+        console.info(`Connecting to notifications '${decodeURIComponent(studyName)}'...`);
 
         const ws = connectNotificationsWebsocket(studyName);
         ws.onmessage = function (event) {

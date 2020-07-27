@@ -102,7 +102,7 @@ const App = () => {
     }, []);
 
     function studyClickHandler(studyName) {
-        history.push('/studies/' + studyName);
+        history.push('/studies/' + encodeURIComponent(studyName));
     }
 
     function showParametersClicked() {
