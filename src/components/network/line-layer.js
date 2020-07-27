@@ -289,7 +289,7 @@ class LineLayer extends CompositeLayer {
                 widthMaxPixels: 2,
                 getColor: line=> isDisconnected(line) ? this.props.disconnectedLineColor: color,
                 getWidth: 2,
-                getParallelIndex: (line) => line.parallelIndex,
+                getParallelIndex: (line) => -line.parallelIndex,
                 getAngle: (line) => line.angle + Math.PI,
                 getDistanceBetweenLines : () => this.props.distanceBetweenLines,
                 getMaxParallelOffset : () => this.props.maxParallelOffset,
