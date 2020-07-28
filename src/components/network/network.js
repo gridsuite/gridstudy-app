@@ -11,7 +11,6 @@ const voltageLevelIdIndexer = (map, voltageLevel) => {
 };
 
 export default class Network {
-
     substations = [];
 
     lines = [];
@@ -29,9 +28,12 @@ export default class Network {
 
         // add more infos
         const nominalVoltagesSet = new Set();
-        substations.forEach(substation => {
+        substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
-            substation.voltageLevels = substation.voltageLevels.sort((voltageLevel1, voltageLevel2) => voltageLevel1.nominalVoltage - voltageLevel2.nominalVoltage);
+            substation.voltageLevels = substation.voltageLevels.sort(
+                (voltageLevel1, voltageLevel2) =>
+                    voltageLevel1.nominalVoltage - voltageLevel2.nominalVoltage
+            );
 
             substation.voltageLevels.forEach((voltageLevel, index) => {
                 // add substation id
@@ -44,11 +46,18 @@ export default class Network {
             });
         });
 
-        this.voltageLevels = this.substations.flatMap(substation => substation.voltageLevels);
+        this.voltageLevels = this.substations.flatMap(
+            (substation) => substation.voltageLevels
+        );
 
-        this.voltageLevelsById = this.voltageLevels.reduce(voltageLevelIdIndexer, new Map());
+        this.voltageLevelsById = this.voltageLevels.reduce(
+            voltageLevelIdIndexer,
+            new Map()
+        );
 
-        this.nominalVoltages = Array.from(nominalVoltagesSet).sort((a, b) => b - a)
+        this.nominalVoltages = Array.from(nominalVoltagesSet).sort(
+            (a, b) => b - a
+        );
     }
 
     setLines(lines) {

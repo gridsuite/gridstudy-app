@@ -58,7 +58,7 @@ export function selectCase(selectedCase) {
 export const REMOVE_SELECTED_CASE = 'REMOVE_SELECTED_CASE';
 
 export function removeSelectedCase() {
-    return { type: REMOVE_SELECTED_CASE};
+    return { type: REMOVE_SELECTED_CASE };
 }
 
 export const SELECT_FILE = 'SELECT_FILE';
@@ -70,7 +70,7 @@ export function selectFile(selectedFile) {
 export const REMOVE_SELECTED_FILE = 'REMOVE_SELECTED_FILE';
 
 export function removeSelectedFile() {
-    return { type: REMOVE_SELECTED_FILE};
+    return { type: REMOVE_SELECTED_FILE };
 }
 
 export const USE_NAME = 'USE_NAME';
@@ -82,7 +82,7 @@ export function toggleUseNameState() {
 export const USER = 'USER';
 
 export function setLoggedUser(user) {
-    return { type: USER, user : user};
+    return { type: USER, user: user };
 }
 
 export const CENTER_LABEL = 'CENTER_LABEL';
@@ -95,12 +95,6 @@ export const DIAGONAL_LABEL = 'DIAGONAL_LABEL';
 
 export function toggleDiagonalLabelState() {
     return { type: DIAGONAL_LABEL };
-}
-
-export const TOPOLOGICAL_COLORING = 'TOPOLOGICAL_COLORING';
-
-export function toggleTopologicalColoringState() {
-    return { type: TOPOLOGICAL_COLORING };
 }
 
 export const LINE_FULL_PATH = 'LINE_FULL_PATH';
@@ -118,7 +112,10 @@ export function selectLineFlowMode(lineFlowMode) {
 export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
 
 export function setSignInCallbackError(signInCallbackError) {
-    return { type: SIGNIN_CALLBACK_ERROR, signInCallbackError : signInCallbackError};
+    return {
+        type: SIGNIN_CALLBACK_ERROR,
+        signInCallbackError: signInCallbackError,
+    };
 }
 
 export const STUDY_UPDATED = 'STUDY_UPDATED';

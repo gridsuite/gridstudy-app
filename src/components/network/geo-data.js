@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import getDistance from "geolib/es/getDistance";
-import computeDestinationPoint from "geolib/es/computeDestinationPoint";
+import getDistance from 'geolib/es/getDistance';
+import computeDestinationPoint from 'geolib/es/computeDestinationPoint';
 import cheapRuler from 'cheap-ruler';
-import getGreatCircleBearing from "geolib/es/getGreatCircleBearing";
-import getRhumbLineBearing from "geolib/es/getRhumbLineBearing";
-import {ArrowDirection} from "./layers/arrow-layer";
+import getGreatCircleBearing from 'geolib/es/getGreatCircleBearing';
+import getRhumbLineBearing from 'geolib/es/getRhumbLineBearing';
+import { ArrowDirection } from './layers/arrow-layer';
 
 const substationPositionByIdIndexer = (map, substation) => {
     map.set(substation.id, substation.coordinate);
@@ -23,14 +23,16 @@ const linePositionIndexer = (map, line) => {
 };
 
 export default class GeoData {
-
     substationPositionsById = new Map();
 
     linePositionsById = new Map();
 
     setSubstationPositions(positions) {
         // index positions by substation id
-        this.substationPositionsById = positions.reduce(substationPositionByIdIndexer, new Map());
+        this.substationPositionsById = positions.reduce(
+            substationPositionByIdIndexer,
+            new Map()
+        );
     }
 
     getSubstationPosition(substation) {
@@ -44,7 +46,10 @@ export default class GeoData {
 
     setLinePositions(positions) {
         // index positions by line id
-        this.linePositionsById = positions.reduce(linePositionIndexer, new Map());
+        this.linePositionsById = positions.reduce(
+            linePositionIndexer,
+            new Map()
+        );
     }
 
     /**
@@ -53,35 +58,72 @@ export default class GeoData {
     getLinePositions(network, line, detailed = true) {
         const voltageLevel1 = network.getVoltageLevel(line.voltageLevelId1);
         if (!voltageLevel1) {
-            throw new Error(`Voltage level side 1 '${line.voltageLevelId1}' not found`);
+            throw new Error(
+                `Voltage level side 1 '${line.voltageLevelId1}' not found`
+            );
         }
         const voltageLevel2 = network.getVoltageLevel(line.voltageLevelId2);
         if (!voltageLevel2) {
-            throw new Error(`Voltage level side 2 '${line.voltageLevelId1}' not found`);
+            throw new Error(
+                `Voltage level side 2 '${line.voltageLevelId1}' not found`
+            );
         }
-        const substationPosition1 = this.getSubstationPosition(voltageLevel1.substationId);
-        const substationPosition2 = this.getSubstationPosition(voltageLevel2.substationId);
+        const substationPosition1 = this.getSubstationPosition(
+            voltageLevel1.substationId
+        );
+        const substationPosition2 = this.getSubstationPosition(
+            voltageLevel2.substationId
+        );
         if (detailed) {
             const linePositions = this.linePositionsById.get(line.id);
             if (linePositions) {
                 const firstPosition = linePositions[0];
-                const distSub1 = getDistance({latitude: substationPosition1[1], longitude: substationPosition1[0]},
-                    {latitude: firstPosition.lat, longitude: firstPosition.lon});
-                const distSub2 = getDistance({latitude: substationPosition2[1], longitude: substationPosition2[0]},
-                    {latitude: firstPosition.lon, longitude: firstPosition.lon});
+                const distSub1 = getDistance(
+                    {
+                        latitude: substationPosition1[1],
+                        longitude: substationPosition1[0],
+                    },
+                    {
+                        latitude: firstPosition.lat,
+                        longitude: firstPosition.lon,
+                    }
+                );
+                const distSub2 = getDistance(
+                    {
+                        latitude: substationPosition2[1],
+                        longitude: substationPosition2[0],
+                    },
+                    {
+                        latitude: firstPosition.lon,
+                        longitude: firstPosition.lon,
+                    }
+                );
 
                 const positions = new Array(linePositions.length + 2);
 
                 if (distSub1 < distSub2) {
                     positions[0] = substationPosition1;
-                    linePositions.forEach((position, index) => positions[index + 1] = [position.lon, position.lat]);
+                    linePositions.forEach(
+                        (position, index) =>
+                            (positions[index + 1] = [
+                                position.lon,
+                                position.lat,
+                            ])
+                    );
                     positions[positions.length - 1] = substationPosition2;
                 } else {
                     // reverse positions order to go from side 1 to 2
                     positions[0] = substationPosition2;
-                    for (let index = linePositions.length - 1; index >= 0; index--) {
+                    for (
+                        let index = linePositions.length - 1;
+                        index >= 0;
+                        index--
+                    ) {
                         const position = linePositions[index];
-                        positions[linePositions.length - index] = [position.lon, position.lat];
+                        positions[linePositions.length - index] = [
+                            position.lon,
+                            position.lat,
+                        ];
                     }
                     positions[positions.length - 1] = substationPosition1;
                 }
@@ -89,8 +131,8 @@ export default class GeoData {
             }
         }
 
-        return [ substationPosition1, substationPosition2 ];
-    };
+        return [substationPosition1, substationPosition2];
+    }
 
     getLineDistances(positions) {
         if (positions !== null && positions.length > 1) {
@@ -102,7 +144,7 @@ export default class GeoData {
                 ruler = cheapRuler(positions[i][1], 'meters');
                 segmentDistance = ruler.lineDistance(positions.slice(i, i + 2));
                 cumulativeDistance = cumulativeDistance + segmentDistance;
-                cumulativeDistanceArray[i+1] = cumulativeDistance;
+                cumulativeDistanceArray[i + 1] = cumulativeDistance;
             }
             return cumulativeDistanceArray;
         }
@@ -116,9 +158,9 @@ export default class GeoData {
      */
     findSegment(positions, cumulativeDistances, wantedDistance) {
         let lowerBound = 0;
-        let upperBound = cumulativeDistances.length-1;
+        let upperBound = cumulativeDistances.length - 1;
         let middlePoint;
-        while(lowerBound + 1 !== upperBound) {
+        while (lowerBound + 1 !== upperBound) {
             middlePoint = Math.floor((lowerBound + upperBound) / 2);
             let middlePointDistance = cumulativeDistances[middlePoint];
             if (middlePointDistance <= wantedDistance) {
@@ -127,27 +169,44 @@ export default class GeoData {
                 upperBound = middlePoint;
             }
         }
-        return {segment: positions.slice(lowerBound, lowerBound+2), remainingDistance: wantedDistance - cumulativeDistances[lowerBound]};
+        return {
+            segment: positions.slice(lowerBound, lowerBound + 2),
+            remainingDistance: wantedDistance - cumulativeDistances[lowerBound],
+        };
     }
 
-
-    labelDisplayPosition(positions, cumulativeDistances, arrowPosition, arrowDirection) {
+    labelDisplayPosition(
+        positions,
+        cumulativeDistances,
+        arrowPosition,
+        arrowDirection
+    ) {
         if (arrowPosition > 1 || arrowPosition < 0) {
-            throw new Error("Proportional position value incorrect: " + arrowPosition);
+            throw new Error(
+                'Proportional position value incorrect: ' + arrowPosition
+            );
         }
-        if (cumulativeDistances === null || cumulativeDistances.length < 2 || cumulativeDistances[cumulativeDistances.length-1] === 0) {
+        if (
+            cumulativeDistances === null ||
+            cumulativeDistances.length < 2 ||
+            cumulativeDistances[cumulativeDistances.length - 1] === 0
+        ) {
             return null;
         }
-        let lineDistance = cumulativeDistances[cumulativeDistances.length-1];
+        let lineDistance = cumulativeDistances[cumulativeDistances.length - 1];
         let wantedDistance = lineDistance * arrowPosition;
 
-        let goodSegment = this.findSegment(positions, cumulativeDistances, wantedDistance);
+        let goodSegment = this.findSegment(
+            positions,
+            cumulativeDistances,
+            wantedDistance
+        );
 
         // We don't have the exact same distance calculation as in the arrow shader, so take some margin:
         // we move the label a little bit on the flat side of the arrow so that at least it stays
         // on the right side when zooming
         let multiplier;
-        switch(arrowDirection){
+        switch (arrowDirection) {
             case ArrowDirection.FROM_SIDE_2_TO_SIDE_1:
                 multiplier = 1.005;
                 break;
@@ -161,20 +220,33 @@ export default class GeoData {
 
         // We don't have the exact same angle calculation as in the arrow shader, and this
         // seems to give more approaching results
-        let angle = getRhumbLineBearing(goodSegment.segment[0], goodSegment.segment[1]);
-        let angle2 = getGreatCircleBearing(goodSegment.segment[0], goodSegment.segment[1]);
+        let angle = getRhumbLineBearing(
+            goodSegment.segment[0],
+            goodSegment.segment[1]
+        );
+        let angle2 = getGreatCircleBearing(
+            goodSegment.segment[0],
+            goodSegment.segment[1]
+        );
         const coeff = 0.1;
-        angle = coeff*angle + (1-coeff)*angle2;
+        angle = coeff * angle + (1 - coeff) * angle2;
 
         const neededOffset = this.getLabelOffset(angle, 30, arrowDirection);
-        return {position :computeDestinationPoint(goodSegment.segment[0], remainingDistance, angle), angle: angle, offset: neededOffset};
-
+        return {
+            position: computeDestinationPoint(
+                goodSegment.segment[0],
+                remainingDistance,
+                angle
+            ),
+            angle: angle,
+            offset: neededOffset,
+        };
     }
 
     getLabelOffset(angle, offsetDistance, arrowDirection) {
-        let radiantAngle = (-angle + 90) / (180 / (Math.PI));
+        let radiantAngle = (-angle + 90) / (180 / Math.PI);
         let direction = 0;
-        switch(arrowDirection){
+        switch (arrowDirection) {
             case ArrowDirection.FROM_SIDE_2_TO_SIDE_1:
                 direction = 1;
                 break;
@@ -185,6 +257,9 @@ export default class GeoData {
                 direction = 0;
         }
         //Y offset is negative because deckGL pixel uses a top-left coordinate system and our computation use orthogonal coordinates
-        return [Math.cos(radiantAngle)*offsetDistance*direction, -Math.sin(radiantAngle)*offsetDistance*direction];
+        return [
+            Math.cos(radiantAngle) * offsetDistance * direction,
+            -Math.sin(radiantAngle) * offsetDistance * direction,
+        ];
     }
 }
