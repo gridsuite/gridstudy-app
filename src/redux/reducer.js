@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {createReducer} from "@reduxjs/toolkit";
+import { createReducer } from '@reduxjs/toolkit';
 
 import {
     getLocalStorageCenterLabel,
@@ -13,16 +13,14 @@ import {
     getLocalStorageLineFlowMode,
     getLocalStorageLineFullPath,
     getLocalStorageTheme,
-    getLocalStorageTopologicalColoring,
     getLocalStorageUseName,
     saveLocalStorageCenterLabel,
     saveLocalStorageDiagonalLabel,
     saveLocalStorageLineFlowMode,
     saveLocalStorageLineFullPath,
     saveLocalStorageTheme,
-    saveLocalStorageTopologicalColoring,
-    saveLocalStorageUseName
-} from "./local-storage";
+    saveLocalStorageUseName,
+} from './local-storage';
 
 import {
     CENTER_LABEL,
@@ -40,11 +38,11 @@ import {
     SELECT_CASE,
     SELECT_FILE,
     SELECT_THEME,
-    TOPOLOGICAL_COLORING,
     USE_NAME,
     USER,
     SIGNIN_CALLBACK_ERROR,
-} from "./actions";
+    STUDY_UPDATED,
+} from './actions';
 
 const initialState = {
     studies: [],
@@ -52,21 +50,20 @@ const initialState = {
     network: null,
     geoData: null,
     theme: getLocalStorageTheme(),
-    cases : [],
-    selectedCase : null,
-    selectedFile : null,
-    useName : getLocalStorageUseName(),
-    user : null,
-    centerLabel : getLocalStorageCenterLabel(),
-    diagonalLabel : getLocalStorageDiagonalLabel(),
-    topologicalColoring : getLocalStorageTopologicalColoring(),
+    cases: [],
+    selectedCase: null,
+    selectedFile: null,
+    useName: getLocalStorageUseName(),
+    user: null,
+    centerLabel: getLocalStorageCenterLabel(),
+    diagonalLabel: getLocalStorageDiagonalLabel(),
     lineFullPath: getLocalStorageLineFullPath(),
     lineFlowMode: getLocalStorageLineFlowMode(),
-    signInCallbackError : null,
+    signInCallbackError: null,
+    studyUpdated: { force: 0, eventData: {} },
 };
 
 export const reducer = createReducer(initialState, {
-
     [LOAD_STUDIES_SUCCESS]: (state, action) => {
         state.studies = action.studies;
     },
@@ -91,6 +88,13 @@ export const reducer = createReducer(initialState, {
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
         state.geoData = action.geoData;
+    },
+
+    [STUDY_UPDATED]: (state, action) => {
+        state.studyUpdated = {
+            force: 1 - state.studyUpdated.force,
+            eventData: action.eventData,
+        };
     },
 
     [SELECT_THEME]: (state, action) => {
@@ -131,11 +135,6 @@ export const reducer = createReducer(initialState, {
     [DIAGONAL_LABEL]: (state) => {
         state.diagonalLabel = !state.diagonalLabel;
         saveLocalStorageDiagonalLabel(state.diagonalLabel);
-    },
-
-    [TOPOLOGICAL_COLORING]: (state) => {
-        state.topologicalColoring = !state.topologicalColoring;
-        saveLocalStorageTopologicalColoring(state.topologicalColoring);
     },
 
     [LINE_FULL_PATH]: (state) => {

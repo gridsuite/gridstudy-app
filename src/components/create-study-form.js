@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
@@ -25,38 +25,43 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import {createStudy, fetchCases, fetchStudies} from '../utils/rest-api';
-import {FormattedMessage, useIntl} from "react-intl";
+import { createStudy, fetchCases, fetchStudies } from '../utils/rest-api';
+import { FormattedMessage, useIntl } from 'react-intl';
 
-import {useDispatch, useSelector} from "react-redux";
-import {loadCasesSuccess, loadStudiesSuccess, removeSelectedFile, selectCase, selectFile} from "../redux/actions";
-import {store} from '../redux/store';
-import CardActionArea from "@material-ui/core/CardActionArea";
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    loadCasesSuccess,
+    loadStudiesSuccess,
+    removeSelectedFile,
+    selectCase,
+    selectFile,
+} from '../redux/actions';
+import { store } from '../redux/store';
+import CardActionArea from '@material-ui/core/CardActionArea';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
         fontSize: '64px',
     },
     addButtonArea: {
-        height:"136px",
+        height: '136px',
     },
 }));
 
 const SelectCase = () => {
     const dispatch = useDispatch();
-    const cases = useSelector(state => state.cases);
+    const cases = useSelector((state) => state.cases);
 
     const [openSelectCase, setSelectCase] = React.useState(false);
 
     useEffect(() => {
-        fetchCases()
-            .then(cases => {
-                dispatch(loadCasesSuccess(cases));
-            });
+        fetchCases().then((cases) => {
+            dispatch(loadCasesSuccess(cases));
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleChangeSelectCase = event => {
+    const handleChangeSelectCase = (event) => {
         dispatch(selectCase(event.target.value));
     };
 
@@ -70,56 +75,75 @@ const SelectCase = () => {
 
     return (
         <div>
-           <FormControl fullWidth>
-               <InputLabel id="demo-controlled-open-select-label">
-                   <FormattedMessage id="caseName"/>
-               </InputLabel>
-               <Select
-                   labelId="demo-controlled-open-select-label"
-                   id="demo-controlled-open-select"
-                   open={openSelectCase}
-                   onClose={handleCloseSelectCase}
-                   onOpen={handleOpenSelectCase}
-                   value={store.getState().selectedCase != null ? store.getState().selectedCase : ""}
-                   onChange={handleChangeSelectCase}>
-                   {
-                       cases.map((function (element) {return <MenuItem key={element.uuid} value={element.uuid}>{element.name}</MenuItem>}))
-                   }
-               </Select>
-           </FormControl>
+            <FormControl fullWidth>
+                <InputLabel id="demo-controlled-open-select-label">
+                    <FormattedMessage id="caseName" />
+                </InputLabel>
+                <Select
+                    labelId="demo-controlled-open-select-label"
+                    id="demo-controlled-open-select"
+                    open={openSelectCase}
+                    onClose={handleCloseSelectCase}
+                    onOpen={handleOpenSelectCase}
+                    value={
+                        store.getState().selectedCase != null
+                            ? store.getState().selectedCase
+                            : ''
+                    }
+                    onChange={handleChangeSelectCase}
+                >
+                    {cases.map(function (element) {
+                        return (
+                            <MenuItem key={element.uuid} value={element.uuid}>
+                                {element.name}
+                            </MenuItem>
+                        );
+                    })}
+                </Select>
+            </FormControl>
         </div>
     );
 };
 
 const UploadCase = () => {
     const dispatch = useDispatch();
-    const selectedFile = useSelector(state => state.selectedFile);
+    const selectedFile = useSelector((state) => state.selectedFile);
 
     const handleFileUpload = (e) => {
         e.preventDefault();
         let files = e.target.files;
-        dispatch(selectFile(files[0]))
+        dispatch(selectFile(files[0]));
     };
 
     return (
         <table>
             <tbody>
-            <tr>
-                <th>
-                    <Button  variant="contained" color="primary"  component="label" >
-                        <FormattedMessage id="uploadCase"/>
-                        <input
-                            type="file"
-                            name="file"
-                            onChange={(e) => handleFileUpload(e)}
-                            style={{ display: "none" }}
-                        />
-                    </Button>
-                </th>
-                <th>
-                    <p>{selectedFile === null ? <FormattedMessage id="uploadMessage"/> : selectedFile.name}</p>
-                </th>
-            </tr>
+                <tr>
+                    <th>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            component="label"
+                        >
+                            <FormattedMessage id="uploadCase" />
+                            <input
+                                type="file"
+                                name="file"
+                                onChange={(e) => handleFileUpload(e)}
+                                style={{ display: 'none' }}
+                            />
+                        </Button>
+                    </th>
+                    <th>
+                        <p>
+                            {selectedFile === null ? (
+                                <FormattedMessage id="uploadMessage" />
+                            ) : (
+                                selectedFile.name
+                            )}
+                        </p>
+                    </th>
+                </tr>
             </tbody>
         </table>
     );
@@ -139,8 +163,8 @@ export const CreateStudyForm = () => {
     const intl = useIntl();
     const dispatch = useDispatch();
 
-    const selectedFile = useSelector(state => state.selectedFile);
-    const caseName = useSelector(state => state.selectedCase);
+    const selectedFile = useSelector((state) => state.selectedFile);
+    const caseName = useSelector((state) => state.selectedCase);
 
     const handleClickOpenDialog = () => {
         setOpen(true);
@@ -157,73 +181,93 @@ export const CreateStudyForm = () => {
     };
 
     const handleStudyDescriptionChanges = (e) => {
-        setStudyDescription(e.target.value)
+        setStudyDescription(e.target.value);
     };
 
     const handleStudyNameChanges = (e) => {
-        setStudyName(e.target.value)
+        setStudyName(e.target.value);
     };
 
     const handleCreateNewStudy = () => {
         if (studyName === '') {
-            setCreateStudyErr(intl.formatMessage({id : 'studyNameErrorMsg'}));
+            setCreateStudyErr(intl.formatMessage({ id: 'studyNameErrorMsg' }));
             return;
         } else if (caseExist && caseName === null) {
-            setCreateStudyErr(intl.formatMessage({id : 'caseNameErrorMsg'}));
+            setCreateStudyErr(intl.formatMessage({ id: 'caseNameErrorMsg' }));
             return;
         } else if (!caseExist && selectedFile === null) {
-            setCreateStudyErr(intl.formatMessage({id : 'uploadErrorMsg'}));
+            setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
         setLoading(true);
-        createStudy(caseExist, studyName, studyDescription, caseName, selectedFile)
-            .then(res => {
-                if(res.ok) {
-                    setCreateStudyErr('');
-                    setStudyName('');
-                    setStudyDescription('');
-                    dispatch(removeSelectedFile());
-                    setLoading(false);
-                    setOpen(false);
-                    fetchStudies()
-                        .then(studies => {
-                            dispatch(loadStudiesSuccess(studies));
-                        })
-                } else {
-                    console.debug('Error when creating the study');
-                    setCreateStudyErr(intl.formatMessage({id : 'studyCreatingError'}));
-                    setLoading(false);
-                }
-            });
+        createStudy(
+            caseExist,
+            studyName,
+            studyDescription,
+            caseName,
+            selectedFile
+        ).then((res) => {
+            if (res.ok) {
+                setCreateStudyErr('');
+                setStudyName('');
+                setStudyDescription('');
+                dispatch(removeSelectedFile());
+                setLoading(false);
+                setOpen(false);
+                fetchStudies().then((studies) => {
+                    dispatch(loadStudiesSuccess(studies));
+                });
+            } else {
+                console.debug('Error when creating the study');
+                setCreateStudyErr(
+                    intl.formatMessage({ id: 'studyCreatingError' })
+                );
+                setLoading(false);
+            }
+        });
     };
 
     const handleKeyPressed = (event) => {
-        if (event.key === "Enter") {
+        if (event.key === 'Enter') {
             handleCreateNewStudy();
         }
     };
 
     return (
         <div>
-            <CardActionArea className={classes.addButtonArea} onClick={() => handleClickOpenDialog()}>
+            <CardActionArea
+                className={classes.addButtonArea}
+                onClick={() => handleClickOpenDialog()}
+            >
                 <AddIcon className={classes.addIcon} />
             </CardActionArea>
 
-            <Dialog open={open} onClose={handleCloseDialog} aria-labelledby="form-dialog-title" onKeyPress={handleKeyPressed}>
-                <DialogTitle id="form-dialog-title"><FormattedMessage id="addNewStudy"/></DialogTitle>
+            <Dialog
+                open={open}
+                onClose={handleCloseDialog}
+                aria-labelledby="form-dialog-title"
+                onKeyPress={handleKeyPressed}
+            >
+                <DialogTitle id="form-dialog-title">
+                    <FormattedMessage id="addNewStudy" />
+                </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        <FormattedMessage id="addNewStudyDescription"/>
+                        <FormattedMessage id="addNewStudyDescription" />
                     </DialogContentText>
                     <FormControlLabel
-                        control = {<Switch
-                            checked={caseExist}
-                            onChange={(e) => handleChangeSwitch(e)}
-                            value="checked"
-                            color="primary"
-                            inputProps={{ 'aria-label': 'primary checkbox' }}
-                        />}
-                        label = <FormattedMessage id="caseExist"/>
+                        control={
+                            <Switch
+                                checked={caseExist}
+                                onChange={(e) => handleChangeSwitch(e)}
+                                value="checked"
+                                color="primary"
+                                inputProps={{
+                                    'aria-label': 'primary checkbox',
+                                }}
+                            />
+                        }
+                        label=<FormattedMessage id="caseExist" />
                     />
                     <TextField
                         onChange={(e) => handleStudyNameChanges(e)}
@@ -232,7 +276,7 @@ export const CreateStudyForm = () => {
                         value={studyName}
                         type="text"
                         fullWidth
-                        label= <FormattedMessage id="studyName" />
+                        label=<FormattedMessage id="studyName" />
                     />
                     <TextField
                         onChange={(e) => handleStudyDescriptionChanges(e)}
@@ -240,23 +284,33 @@ export const CreateStudyForm = () => {
                         value={studyDescription}
                         type="text"
                         fullWidth
-                        label= <FormattedMessage id="studyDescription" />
+                        label=<FormattedMessage id="studyDescription" />
                     />
-                    {caseExist && (<SelectCase/>)}
-                    {!caseExist && (<UploadCase/>)}
-                    {createStudyErr !== '' && (<Alert severity="error">{createStudyErr}</Alert>)}
-                    { loading && (
-                        <div style={{display: 'flex', justifyContent: 'center'}}>
-                            <CircularProgress className={classes.progress}/>
-                        </div>)
-                    }
+                    {caseExist && <SelectCase />}
+                    {!caseExist && <UploadCase />}
+                    {createStudyErr !== '' && (
+                        <Alert severity="error">{createStudyErr}</Alert>
+                    )}
+                    {loading && (
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <CircularProgress className={classes.progress} />
+                        </div>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleCloseDialog()} variant="text">
-                        <FormattedMessage id="cancel"/>
+                        <FormattedMessage id="cancel" />
                     </Button>
-                    <Button onClick={() => handleCreateNewStudy()} variant="outlined">
-                        <FormattedMessage id="create"/>
+                    <Button
+                        onClick={() => handleCreateNewStudy()}
+                        variant="outlined"
+                    >
+                        <FormattedMessage id="create" />
                     </Button>
                 </DialogActions>
             </Dialog>

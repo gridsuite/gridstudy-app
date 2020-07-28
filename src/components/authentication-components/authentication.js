@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect} from 'react';
+import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -15,7 +15,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import {FormattedMessage} from "react-intl";
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -30,16 +30,15 @@ const useStyles = makeStyles((theme) => ({
     },
     submit: {
         margin: theme.spacing(3, 0, 2),
-        borderRadius: '30px'
-        },
+        borderRadius: '30px',
+    },
     logo: {
         width: 64,
         height: 64,
     },
 }));
 
-
-const Authentication = (props) => {
+const Authentication = ({ onLoginClick, disabled }) => {
     const classes = useStyles();
 
     function Copyright() {
@@ -63,18 +62,18 @@ const Authentication = (props) => {
                     <LockOutlinedIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    <FormattedMessage id="login"/> ?
+                    <FormattedMessage id="login" /> ?
                 </Typography>
 
                 <Button
-                    disabled={props.disabled}
+                    disabled={disabled}
                     fullWidth
                     variant="contained"
                     color="primary"
                     className={classes.submit}
-                    onClick={props.onLoginClick}
+                    onClick={onLoginClick}
                 >
-                    <FormattedMessage id="connection"/>
+                    <FormattedMessage id="connection" />
                 </Button>
             </div>
             <Box mt={2}>
