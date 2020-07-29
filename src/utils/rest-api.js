@@ -77,16 +77,6 @@ export function getVoltageLevelSingleLineDiagram(
             topologicalColoring: true,
         }).toString()
     );
-
-    // return (
-    //     PREFIX_STUDY_QUERIES +
-    //     '/v1/studies/' +
-    //     encodeURIComponent(studyName) +
-    //     '/network/voltage-levels/' +
-    //     voltageLevelId +
-    //     '/svg-and-metadata?' +
-    //     new URLSearchParams({ useName: useName }, { centerLabel: centerLabel }, { diagonalLabel: diagonalLabel }, { topologicalColoring: true }).toString()
-    // );
 }
 
 export function fetchSvg(svgUrl) {
