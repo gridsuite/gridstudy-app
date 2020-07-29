@@ -7,10 +7,9 @@
 
 import React from 'react';
 
-import Container from "@material-ui/core/Container";
+import Container from '@material-ui/core/Container';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import {makeStyles} from "@material-ui/core/styles";
-import {FormattedMessage, useIntl} from "react-intl";
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
     error: {
@@ -19,19 +18,19 @@ const useStyles = makeStyles(() => ({
         marginLeft: '40%',
     },
     container: {
-        marginTop:"70px",
+        marginTop: '70px',
     },
 }));
 
-const PageNotFound = ({message}) => {
+const PageNotFound = ({ message }) => {
     const classes = useStyles();
     return (
-        <Container className={classes.container} >
-            <br/>
-            <ErrorOutlineIcon className={classes.error}/>
-            <h1 style={{textAlign:"center"}}>{message}</h1>
+        <Container className={classes.container}>
+            <br />
+            <ErrorOutlineIcon className={classes.error} />
+            <h1 style={{ textAlign: 'center' }}>{message}</h1>
         </Container>
-            );
+    );
 };
 
 export default PageNotFound;

@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 
-import {FormattedMessage, useIntl} from "react-intl";
-import {makeStyles} from "@material-ui/core/styles";
+import { FormattedMessage, useIntl } from 'react-intl';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -19,31 +19,31 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import {ReactComponent as PowsyblLogo} from '../images/powsybl_logo.svg';
-import {ReactComponent as EntsoeLogo} from '../images/entsoe_logo.svg';
-import {ReactComponent as UcteLogo} from '../images/ucte_logo.svg';
-import {ReactComponent as IeeeLogo} from '../images/ieee_logo.svg';
+import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg';
+import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
+import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
+import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
 
-import {loadStudiesSuccess} from '../redux/actions';
-import {deleteStudy, fetchStudies, renameStudy} from '../utils/rest-api';
+import { loadStudiesSuccess } from '../redux/actions';
+import { deleteStudy, fetchStudies, renameStudy } from '../utils/rest-api';
 
-import {CardHeader} from "@material-ui/core";
-import IconButton from "@material-ui/core/IconButton";
+import { CardHeader } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Collapse from "@material-ui/core/Collapse";
-import CardActions from "@material-ui/core/CardActions";
-import clsx from "clsx";
-import withStyles from "@material-ui/core/styles/withStyles";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
+import Collapse from '@material-ui/core/Collapse';
+import CardActions from '@material-ui/core/CardActions';
+import clsx from 'clsx';
+import withStyles from '@material-ui/core/styles/withStyles';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import {DeleteDialog, RenameDialog} from "../utils/dialogs";
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import CreateStudyForm from "./create-study-form";
+import { DeleteDialog, RenameDialog } from '../utils/dialogs';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import CreateStudyForm from './create-study-form';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
     grid: {
         flexGrow: 1,
-        paddingLeft: theme.spacing(2)
+        paddingLeft: theme.spacing(2),
     },
     logo: {
         width: 48,
@@ -71,21 +71,21 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0.5),
     },
     cardContainer: {
-        marginTop:"48px",
+        marginTop: '48px',
     },
     addButtonBox: {
         borderStyle: 'dashed',
         borderRadius: 1,
-        opacity:"0.3",
+        opacity: '0.3',
     },
     cardTitle: {
-        overflow: "hidden",
-        textOverflow: "ellipsis",
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
         width: '11rem',
     },
     tooltip: {
-        fontSize: 18
-    }
+        fontSize: 18,
+    },
 }));
 
 /**
@@ -98,21 +98,20 @@ const useStyles = makeStyles((theme) => ({
  * @param {EventListener} onClick Event to open the study
  */
 const StudyCard = ({ study, onClick }) => {
-
     const dispatch = useDispatch();
     const classes = useStyles();
 
     function logo(caseFormat) {
         switch (caseFormat) {
             case 'XIIDM':
-                return <PowsyblLogo className={classes.logo}/>;
+                return <PowsyblLogo className={classes.logo} />;
             case 'CGMES':
-                return <EntsoeLogo className={classes.logo}/>;
+                return <EntsoeLogo className={classes.logo} />;
             case 'UCTE':
-                return <UcteLogo className={classes.logo}/>;
+                return <UcteLogo className={classes.logo} />;
             case 'IEEE-CDF':
             case 'IEEE CDF': // for powsybl <= 3.1 compatibility
-                return <IeeeLogo className={classes.logo}/>;
+                return <IeeeLogo className={classes.logo} />;
             default:
                 break;
         }
@@ -122,7 +121,7 @@ const StudyCard = ({ study, onClick }) => {
         paper: {
             border: '1px solid #d3d4d5',
         },
-    })(props => (
+    })((props) => (
         <Menu
             elevation={0}
             getContentAnchorEl={null}
@@ -140,7 +139,7 @@ const StudyCard = ({ study, onClick }) => {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleOpenMenu = event => {
+    const handleOpenMenu = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -160,7 +159,7 @@ const StudyCard = ({ study, onClick }) => {
 
     const handleClickDelete = () => {
         deleteStudy(study.studyName).then(() => {
-            fetchStudies().then(studies => {
+            fetchStudies().then((studies) => {
                 dispatch(loadStudiesSuccess(studies));
             });
         });
@@ -173,7 +172,7 @@ const StudyCard = ({ study, onClick }) => {
     /**
      * Rename dialog: window status value for renaming
      */
-    const [openRenameDialog, setOpenRename]  = React.useState(false);
+    const [openRenameDialog, setOpenRename] = React.useState(false);
 
     const handleOpenRename = () => {
         setAnchorEl(null);
@@ -181,13 +180,12 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, newStudyNameValue)
-            .then(() => {
-                fetchStudies().then(studies => {
-                    dispatch(loadStudiesSuccess(studies));
-                });
-                setOpenRename(false);
+        renameStudy(study.studyName, newStudyNameValue).then(() => {
+            fetchStudies().then((studies) => {
+                dispatch(loadStudiesSuccess(studies));
             });
+            setOpenRename(false);
+        });
     };
 
     const handleCloseRename = () => {
@@ -206,12 +204,20 @@ const StudyCard = ({ study, onClick }) => {
     return (
         <div>
             <Card className={classes.root}>
-                <CardActionArea onClick={() => onClick()} className={classes.card}>
-                    <Tooltip title={study.studyName} placement="top" arrow enterDelay={1000} enterNextDelay={1000} classes={classes}>
+                <CardActionArea
+                    onClick={() => onClick()}
+                    className={classes.card}
+                >
+                    <Tooltip
+                        title={study.studyName}
+                        placement="top"
+                        arrow
+                        enterDelay={1000}
+                        enterNextDelay={1000}
+                        classes={classes}
+                    >
                         <CardHeader
-                            avatar={
-                                logo(study.caseFormat)
-                            }
+                            avatar={logo(study.caseFormat)}
                             title={
                                 <div className={classes.cardTitle}>
                                     <Typography noWrap variant="h5">
@@ -220,7 +226,8 @@ const StudyCard = ({ study, onClick }) => {
                                 </div>
                             }
                             subheader={
-                                study.caseDate && study.caseDate.toLocaleString()
+                                study.caseDate &&
+                                study.caseDate.toLocaleString()
                             }
                         />
                     </Tooltip>
@@ -236,11 +243,12 @@ const StudyCard = ({ study, onClick }) => {
                     >
                         <ExpandMoreIcon />
                     </IconButton>
-                    <IconButton aria-label="settings"
-                                aria-controls="case-menu"
-                                aria-haspopup="true"
-                                variant="contained"
-                                onClick={handleOpenMenu}
+                    <IconButton
+                        aria-label="settings"
+                        aria-controls="case-menu"
+                        aria-haspopup="true"
+                        variant="contained"
+                        onClick={handleOpenMenu}
                     >
                         <MoreVertIcon />
                     </IconButton>
@@ -255,21 +263,24 @@ const StudyCard = ({ study, onClick }) => {
                             <ListItemIcon>
                                 <DeleteIcon fontSize="small" />
                             </ListItemIcon>
-                            <ListItemText primary={<FormattedMessage id="delete"/>} />
+                            <ListItemText
+                                primary={<FormattedMessage id="delete" />}
+                            />
                         </MenuItem>
 
                         <MenuItem onClick={handleOpenRename}>
                             <ListItemIcon>
-                                <EditIcon fontSize="small"/>
+                                <EditIcon fontSize="small" />
                             </ListItemIcon>
-                            <ListItemText primary={<FormattedMessage id="rename"/>} />
+                            <ListItemText
+                                primary={<FormattedMessage id="rename" />}
+                            />
                         </MenuItem>
-
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
-                        <Typography variant="button" >
+                        <Typography variant="button">
                             <FormattedMessage id="studyName" />
                         </Typography>
                         <Typography variant="body2" paragraph>
@@ -279,7 +290,7 @@ const StudyCard = ({ study, onClick }) => {
                             <FormattedMessage id="studyDescription" />
                         </Typography>
                         <Typography variant="body2" paragraph>
-                            {study.description?study.description:"—"}
+                            {study.description ? study.description : '—'}
                         </Typography>
                     </CardContent>
                 </Collapse>
@@ -288,15 +299,15 @@ const StudyCard = ({ study, onClick }) => {
                 open={openDeleteDialog}
                 onClose={handleCloseDelete}
                 onClick={handleClickDelete}
-                title={useIntl().formatMessage({id: "deleteStudy"})}
-                message={useIntl().formatMessage({id: "deleteStudyMsg"})}
+                title={useIntl().formatMessage({ id: 'deleteStudy' })}
+                message={useIntl().formatMessage({ id: 'deleteStudyMsg' })}
             />
             <RenameDialog
                 open={openRenameDialog}
                 onClose={handleCloseRename}
                 onClick={handleClickRename}
-                title={useIntl().formatMessage({id: "renameStudy"})}
-                message={useIntl().formatMessage({id: "renameStudyMsg"})}
+                title={useIntl().formatMessage({ id: 'renameStudy' })}
+                message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
                 currentName={study.studyName}
             />
         </div>
@@ -321,14 +332,13 @@ const StudyManager = ({ onClick }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        fetchStudies()
-            .then(studies => {
-                dispatch(loadStudiesSuccess(studies));
-            });
+        fetchStudies().then((studies) => {
+            dispatch(loadStudiesSuccess(studies));
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const studies = useSelector(state => state.studies);
+    const studies = useSelector((state) => state.studies);
 
     const classes = useStyles();
 
@@ -340,13 +350,14 @@ const StudyManager = ({ onClick }) => {
                         <CreateStudyForm />
                     </Box>
                 </Grid>
-                {
-                    studies.map(study =>
-                        <Grid item xs={12} sm={6} md={3} key={study.studyName}>
-                            <StudyCard study={study} onClick={() => onClick(study.studyName)} />
-                        </Grid>
-                    )
-                }
+                {studies.map((study) => (
+                    <Grid item xs={12} sm={6} md={3} key={study.studyName}>
+                        <StudyCard
+                            study={study}
+                            onClick={() => onClick(study.studyName)}
+                        />
+                    </Grid>
+                ))}
             </Grid>
         </Container>
     );

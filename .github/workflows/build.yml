@@ -3,35 +3,34 @@ name: CI
 on: [push]
 
 jobs:
-  build-and-deploy:
+    build-and-deploy:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+              with:
+                  persist-credentials: false
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
-        with:
-          persist-credentials: false
+            - name: Install and Build
+              env:
+                  CI: false
+              run: |
+                  npm install
+                  npm run-script build
+                  npm run-script test
 
-      - name: Install and Build
-        env:
-          CI: false
-        run: |
-          npm install
-          npm run-script build
-          npm run-script test
+            - name: Build and publish Docker image
+              if: github.ref == 'refs/heads/master'
+              uses: elgohr/Publish-Docker-Github-Action@master
+              with:
+                  name: powsybl/study-app
+                  username: powsyblci
+                  password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and publish Docker image
-        if: github.ref == 'refs/heads/master'
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: powsybl/study-app
-          username: powsyblci
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Broadcast update event
-        if: github.ref == 'refs/heads/master'
-        uses: gridsuite/broadcast-event@master
-        with:
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          event-type: study_app_updated
+            - name: Broadcast update event
+              if: github.ref == 'refs/heads/master'
+              uses: gridsuite/broadcast-event@master
+              with:
+                  token: ${{ secrets.REPO_ACCESS_TOKEN }}
+                  event-type: study_app_updated
