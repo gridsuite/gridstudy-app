@@ -147,11 +147,11 @@ const StudyPane = () => {
     }, [network]);
 
     function loadNetwork(studyName) {
-        console.info(`Loading network of study '${decodeURIComponent(studyName)}'...`);
+        console.info(`Loading network of study '${studyName}'...`);
 
-        const substations = fetchSubstations(studyName);
+        const substations = fetchSubstations(decodeURIComponent(studyName));
 
-        const lines = fetchLines(studyName);
+        const lines = fetchLines(decodeURIComponent(studyName));
 
         Promise.all([substations, lines])
             .then((values) => {
@@ -167,11 +167,13 @@ const StudyPane = () => {
     }
 
     function loadGeoData(studyName) {
-        console.info(`Loading geo data of study '${decodeURIComponent(studyName)}'...`);
+        console.info(`Loading geo data of study '${studyName}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyName);
+        const substationPositions = fetchSubstationPositions(
+            decodeURIComponent(studyName)
+        );
 
-        const linePositions = fetchLinePositions(studyName);
+        const linePositions = fetchLinePositions(decodeURIComponent(studyName));
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
@@ -187,9 +189,9 @@ const StudyPane = () => {
     }
 
     function connectNotifications(studyName) {
-        console.info(`Connecting to notifications '${decodeURIComponent(studyName)}'...`);
+        console.info(`Connecting to notifications '${studyName}'...`);
 
-        const ws = connectNotificationsWebsocket(studyName);
+        const ws = connectNotificationsWebsocket(decodeURIComponent(studyName));
         ws.onmessage = function (event) {
             dispatch(studyUpdated(JSON.parse(event.data)));
         };
@@ -208,7 +210,7 @@ const StudyPane = () => {
         setUpdateSwitchMsg('');
         history.replace(
             '/studies/' +
-                studyName +
+                encodeURIComponent(studyName) +
                 stringify(
                     { voltageLevelId: voltageLevelId },
                     { addQueryPrefix: true }
@@ -217,7 +219,7 @@ const StudyPane = () => {
     }, []);
 
     function closeVoltageLevelDiagram() {
-        history.replace('/studies/' + studyName);
+        history.replace('/studies/' + encodeURIComponent(studyName));
     }
 
     const sldRef = useRef();
@@ -229,7 +231,11 @@ const StudyPane = () => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(studyName, breakerId, open).then((response) => {
+            updateSwitchState(
+                decodeURIComponent(studyName),
+                breakerId,
+                open
+            ).then((response) => {
                 if (!response.ok) {
                     console.error(response);
                     eltOpen.style.visibility = open ? 'hidden' : 'visible';
@@ -440,7 +446,7 @@ const StudyPane = () => {
                                             : displayedVoltageLevelId
                                     }
                                     svgUrl={getVoltageLevelSingleLineDiagram(
-                                        studyName,
+                                        decodeURIComponent(studyName),
                                         displayedVoltageLevelId,
                                         useName,
                                         centerName,

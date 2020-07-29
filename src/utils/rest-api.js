@@ -61,23 +61,32 @@ export function getVoltageLevelSingleLineDiagram(
     diagonalLabel
 ) {
     console.info(
-        `Getting url of voltage level diagram '${voltageLevelId}' of study '${decodeURIComponent(studyName)}'...`
+        `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`
     );
     return (
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
-        studyName +
+        encodeURIComponent(studyName) +
         '/network/voltage-levels/' +
         voltageLevelId +
         '/svg-and-metadata?' +
-        new URLSearchParams({ useName: useName }).toString() +
-        '&' +
-        new URLSearchParams({ centerLabel: centerLabel }).toString() +
-        '&' +
-        new URLSearchParams({ diagonalLabel: diagonalLabel }).toString() +
-        '&' +
-        new URLSearchParams({ topologicalColoring: true }).toString()
+        new URLSearchParams({
+            useName: useName,
+            centerLabel: centerLabel,
+            diagonalLabel: diagonalLabel,
+            topologicalColoring: true,
+        }).toString()
     );
+
+    // return (
+    //     PREFIX_STUDY_QUERIES +
+    //     '/v1/studies/' +
+    //     encodeURIComponent(studyName) +
+    //     '/network/voltage-levels/' +
+    //     voltageLevelId +
+    //     '/svg-and-metadata?' +
+    //     new URLSearchParams({ useName: useName }, { centerLabel: centerLabel }, { diagonalLabel: diagonalLabel }, { topologicalColoring: true }).toString()
+    // );
 }
 
 export function fetchSvg(svgUrl) {
@@ -92,11 +101,11 @@ export function fetchSvg(svgUrl) {
 }
 
 export function fetchSubstations(studyName) {
-    console.info(`Fetching substations of study '${decodeURIComponent(studyName)}'...`);
+    console.info(`Fetching substations of study '${studyName}'...`);
     const fetchSubstationsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
-        studyName +
+        encodeURIComponent(studyName) +
         '/network-map/substations';
     console.debug(fetchSubstationsUrl);
     return backendFetch(fetchSubstationsUrl).then((response) =>
@@ -105,7 +114,7 @@ export function fetchSubstations(studyName) {
 }
 
 export function fetchSubstationPositions(studyName) {
-    console.info(`Fetching substation positions of study '${decodeURIComponent(studyName)}'...`);
+    console.info(`Fetching substation positions of study '${studyName}'...`);
     const fetchSubstationPositionsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -118,7 +127,7 @@ export function fetchSubstationPositions(studyName) {
 }
 
 export function fetchLines(studyName) {
-    console.info(`Fetching lines of study '${decodeURIComponent(studyName)}'...`);
+    console.info(`Fetching lines of study '${studyName}'...`);
     const fetchLinesUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
@@ -129,9 +138,12 @@ export function fetchLines(studyName) {
 }
 
 export function fetchLinePositions(studyName) {
-    console.info(`Fetching line positions of study '${decodeURIComponent(studyName)}'...`);
+    console.info(`Fetching line positions of study '${studyName}'...`);
     const fetchLinePositionsUrl =
-        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyName) + '/geo-data/lines';
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyName) +
+        '/geo-data/lines';
     console.debug(fetchLinePositionsUrl);
     return backendFetch(fetchLinePositionsUrl).then((response) =>
         response.json()
@@ -154,7 +166,7 @@ export function createStudy(
             '/cases/' +
             caseName +
             '?' +
-            new URLSearchParams({ description: studyDescription}).toString();
+            new URLSearchParams({ description: studyDescription }).toString();
         console.debug(createStudyWithExistingCaseUrl);
         return backendFetch(createStudyWithExistingCaseUrl, {
             method: 'post',
@@ -165,11 +177,10 @@ export function createStudy(
             '/v1/studies/' +
             encodeURIComponent(studyName) +
             '?' +
-            new URLSearchParams({ description: studyDescription}).toString();
+            new URLSearchParams({ description: studyDescription }).toString();
         const formData = new FormData();
         formData.append('caseFile', selectedFile);
         console.debug(createStudyWithNewCaseUrl);
-        console.log(createStudyWithNewCaseUrl);
         return backendFetch(createStudyWithNewCaseUrl, {
             method: 'post',
             body: formData,
@@ -179,7 +190,8 @@ export function createStudy(
 
 export function deleteStudy(studyName) {
     console.info('Deleting study ' + studyName + ' ...');
-    const deleteStudyUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyName);
+    const deleteStudyUrl =
+        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyName);
     console.debug(deleteStudyUrl);
     return backendFetch(deleteStudyUrl, {
         method: 'delete',
@@ -191,7 +203,7 @@ export function updateSwitchState(studyName, switchId, open) {
     const updateSwitchUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
-        studyName +
+        encodeURIComponent(studyName) +
         '/network-modification/switches/' +
         switchId +
         '?' +
@@ -219,8 +231,8 @@ export function renameStudy(studyName, newStudyName) {
 }
 
 export function startLoadFlow(studyName) {
-    console.info('Running loadflow on ' + decodeURIComponent(studyName) + '...');
-    const startLoadFlowUrl =    
+    console.info('Running loadflow on ' + studyName + '...');
+    const startLoadFlowUrl =
         PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
@@ -232,7 +244,10 @@ export function connectNotificationsWebsocket(studyName) {
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
     const wsadress =
-        wsbase + PREFIX_NOTIFICATION_WS + '/notify?studyName=' + decodeURIComponent(studyName);
+        wsbase +
+        PREFIX_NOTIFICATION_WS +
+        '/notify?studyName=' +
+        encodeURIComponent(studyName);
     let wsaddressWithToken;
     if (process.env.REACT_APP_USE_AUTHENTICATION === 'true') {
         wsaddressWithToken = wsadress + '&access_token=' + getToken();
