@@ -314,7 +314,7 @@ class LineLayer extends CompositeLayer {
                         this.props.distanceBetweenLines,
                     getMaxParallelOffset: () => this.props.maxParallelOffset,
                     getMinParallelOffset: () => this.props.minParallelOffset,
-                    getMoveOriginPoint: (d) => d.moveOriginPoint,
+                    getMoveOriginPoint: (arrow) => arrow.line.moveOriginPoint,
                     getDirection: (arrow) => {
                         return getArrowDirection(arrow.line.p1);
                     },

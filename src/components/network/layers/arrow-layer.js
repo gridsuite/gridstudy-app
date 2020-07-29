@@ -163,6 +163,7 @@ export default class ArrowLayer extends Layer {
             moveOriginPoint: {
                 size: 1,
                 accessor: 'getMoveOriginPoint',
+                type: GL.FLOAT,
             },
         });
     }
