@@ -35,7 +35,6 @@ import {
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
 import { FormattedMessage } from 'react-intl';
-import { setLoggedUser } from '@gridsuite/commons-ui';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -72,8 +71,6 @@ const App = () => {
 
     const [userManager, setUserManager] = useState(noUserManager);
 
-    const [alreadyConnected, setAlreadyConnected] = useState(true);
-
     const [showParameters, setShowParameters] = useState(false);
 
     const history = useHistory();
@@ -99,11 +96,9 @@ const App = () => {
                 userManager
                     .signinSilent()
                     .then((rep) => {
-                        setAlreadyConnected(true);
                         console.log('Already connected :)');
                     })
                     .catch((e) => {
-                        setAlreadyConnected(false);
                         console.log(e);
                     });
             })
@@ -112,15 +107,6 @@ const App = () => {
                 console.debug('error when importing the idp settings');
             });
     }, []);
-
-    useEffect(() => {
-        if (user != null && !alreadyConnected) {
-            logout(dispatch, userManager.instance);
-            console.log(
-                'Disconnected from outside but still connected in this running app'
-            );
-        }
-    }, [user, alreadyConnected]);
 
     function studyClickHandler(studyName) {
         history.push('/studies/' + studyName);
