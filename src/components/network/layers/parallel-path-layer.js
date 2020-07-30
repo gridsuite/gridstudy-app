@@ -31,7 +31,6 @@ export default class ParallelPathLayer extends PathLayer {
             'vs:#decl': `\
 attribute float instanceOffsets;
 attribute float angleLine;
-attribute vec2 start;
 attribute float moveOriginPoint;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
