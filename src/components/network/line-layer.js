@@ -222,10 +222,9 @@ class LineLayer extends CompositeLayer {
                         this.props.lineFullPath
                     );
 
-                    line.angle = Math.atan2(
-                        path[0][0] - path[path.length - 1][0],
-                        path[0][1] - path[path.length - 1][1]
-                    );
+                    let lineData = lineMap.get(line.id);
+                    let angle = props.geoData.getMapAngle(lineData.positions[0], lineData.positions[lineData.positions.length-1]);
+                    line.angle = angle * Math.PI / 180 + Math.PI;
                     if (line.angle < 0) line.angle += 2 * Math.PI;
                     line.origin = path[0];
                     line.end = path[1];

@@ -218,19 +218,7 @@ export default class GeoData {
         }
         let remainingDistance = goodSegment.remainingDistance * multiplier;
 
-        // We don't have the exact same angle calculation as in the arrow shader, and this
-        // seems to give more approaching results
-        let angle = getRhumbLineBearing(
-            goodSegment.segment[0],
-            goodSegment.segment[1]
-        );
-        let angle2 = getGreatCircleBearing(
-            goodSegment.segment[0],
-            goodSegment.segment[1]
-        );
-        const coeff = 0.1;
-        angle = coeff * angle + (1 - coeff) * angle2;
-
+        let angle = this.getMapAngle(goodSegment.segment[0], goodSegment.segment[1]);
         const neededOffset = this.getLabelOffset(angle, 30, arrowDirection);
         return {
             position: computeDestinationPoint(
@@ -262,4 +250,16 @@ export default class GeoData {
             -Math.sin(radiantAngle) * offsetDistance * direction,
         ];
     }
+
+    //returns the angle between point1 and point2 in degrees [0-360)
+    getMapAngle(point1, point2) {
+        // We don't have the exact same angle calculation as in the arrow shader, and this
+        // seems to give more approaching results
+        let angle = getRhumbLineBearing(point1, point2);
+        let angle2 = getGreatCircleBearing(point1, point2);
+        const coeff = 0.1;
+        angle = coeff * angle + (1 - coeff) * angle2;
+        return angle;
+    }
+
 }
