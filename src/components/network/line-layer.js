@@ -270,9 +270,7 @@ class LineLayer extends CompositeLayer {
                             ? this.props.disconnectedLineColor
                             : color,
                     getWidth: 2,
-                    getParallelIndex: (line) => line.parallelIndex,
-                    getLineAngle: (line) => line.angle,
-                    getMoveOriginPoint: (d) => d.moveOriginPoint,
+                    getParallelAttribsOffsetAngleOrigin: (line) => [line.parallelIndex, line.angle, line.moveOriginPoint],
                     getEnd: (d) => d.origin,
                     getDistanceBetweenLines: () =>
                         this.props.distanceBetweenLines,
