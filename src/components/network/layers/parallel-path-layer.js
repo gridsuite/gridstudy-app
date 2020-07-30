@@ -32,15 +32,15 @@ export default class ParallelPathLayer extends PathLayer {
 
     getShaders() {
         const shaders = super.getShaders();
-        shaders.inject = {
-            'vs:#decl': `\
+        shaders.inject = Object.assign({}, shaders.inject, {
+            'vs:#decl': shaders.inject['vs:#decl'] + `\
 attribute vec3 parallelAttribsOffsetAngleOrigin;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
 
 `,
-    'vs:#main-end': `\
+    'vs:#main-end': shaders.inject['vs:#main-end'] + `\
       float instanceOffsets = parallelAttribsOffsetAngleOrigin.x;
       float angleLine = parallelAttribsOffsetAngleOrigin.y;
       float moveOriginPoint = parallelAttribsOffsetAngleOrigin.z;
@@ -67,7 +67,7 @@ uniform float minParallelOffset;
              
       gl_Position += ( trans   ) * project_size_to_pixel(offsetPixels);
 `
-        };
+        });
         return shaders;
     }
 
