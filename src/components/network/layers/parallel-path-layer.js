@@ -16,7 +16,7 @@ const defaultProps = {
 
 /**
  * A layer based on PathLayer allowing to shift path by an offset + angle
- * props : parallelAttribsOffsetAngleOrigin : [parallelIndex, lineAngle, moveOriginPoint]
+ * props : parallelAttribsOffsetAngleOrigin : [parallelIndex, lineAngle]
  *         distanceBetweenLines
  *         maxParallelOffset
  *         minParallelOffset
@@ -43,8 +43,8 @@ uniform float minParallelOffset;
     'vs:#main-end': shaders.inject['vs:#main-end'] + `\
       float instanceOffsets = parallelAttribsOffsetAngleOrigin.x;
       float angleLine = parallelAttribsOffsetAngleOrigin.y;
-      float moveOriginPoint = parallelAttribsOffsetAngleOrigin.z;
-            if ( instanceOffsets == 0. ) return;
+
+      if ( instanceOffsets == 0. ) return;
       
       float offsetPixels = clamp(project_pixel_size( distanceBetweenLines), minParallelOffset, maxParallelOffset );
       float radius = 6.1;
@@ -52,16 +52,17 @@ uniform float minParallelOffset;
       vec4 trans = vec4(cos(angleMove), -sin(angleMove ), 0, 0.) * instanceOffsets ;
       float  x = sqrt( (radius* radius) - (instanceOffsets * instanceOffsets) ) / radius ;
 
-      if( moveOriginPoint > 0.0 ) {
-          if( isEnd > EPSILON ) {
-              trans.x += x * sin(angleMove) ;
-              trans.y += x * cos(angleMove) ;
-          }
-          else
-          {
-              trans.x -= x * sin(angleMove ) ;
-              trans.y -= x * cos(angleMove ) ;
-          }
+      bool isSegmentEnd = isEnd > EPSILON;
+      bool isFirstSegment = (instanceTypes == 1.0 || instanceTypes == 3.0);
+      bool isLastSegment = (instanceTypes == 2.0 || instanceTypes == 3.0);
+      if( isSegmentEnd && isLastSegment ) {
+          trans.x += x * sin(angleMove) ;
+          trans.y += x * cos(angleMove) ;
+      }
+      if ( !isSegmentEnd && isFirstSegment )
+      {
+          trans.x -= x * sin(angleMove ) ;
+          trans.y -= x * cos(angleMove ) ;
       }
       trans = project_common_position_to_clipspace( trans )   ;
              

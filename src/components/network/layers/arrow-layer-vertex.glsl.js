@@ -16,7 +16,6 @@ attribute float instanceLineDistance;
 attribute float instanceArrowDirection;
 attribute float instanceOffsets;
 attribute float angleLine;
-attribute float moveOriginPoint;
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
@@ -170,18 +169,18 @@ void main(void) {
           
           float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
           vec4 trans = vec4(-cos(angle), sin(angle),0.,0.) * instanceOffsets  ;
-          if( moveOriginPoint > 0.){
-              vec4 transOr = trans;
-              float  x = sqrt(abs( (radius*radius) - (instanceOffsets * instanceOffsets ) ) ) / radius ;
+          vec4 transOr = trans;
+          float  x = sqrt(abs( (radius*radius) - (instanceOffsets * instanceOffsets ) ) ) / radius ;
+          if( linePoint == 1 ) {
               transOr.x -= x * sin(angle) ;
               transOr.y -= x * cos(angle) ;
-              vec4 transEx = trans;
+          }
+          vec4 transEx = trans;
+          if ( linePoint == int(instanceLinePointCount)-1 ) {
               transEx.x += x * sin(angle) ;
               transEx.y += x * cos(angle) ;
-              trans = mix( project_common_position_to_clipspace( transOr ), project_common_position_to_clipspace( transEx ), interpolationValue); 
           }
-          else 
-            trans = project_common_position_to_clipspace( trans ) ;
+          trans = mix( project_common_position_to_clipspace( transOr ), project_common_position_to_clipspace( transEx ), interpolationValue); 
           vertexPosition+= trans* project_size_to_pixel(offsetPixels);
 
       }

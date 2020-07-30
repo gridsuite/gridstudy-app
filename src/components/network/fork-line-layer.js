@@ -25,7 +25,6 @@ export class ForkLineLayer extends LineLayer {
             'vs:#decl': `\
 attribute float instanceOffsets;
 attribute float angleLine;
-attribute float moveOriginPoint;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
@@ -39,11 +38,9 @@ uniform float minParallelOffset;
 
           float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
           vec4 trans = vec4(cos(angleLine), -sin(angleLine ), 0, 0.) * instanceOffsets ;      
-          if (moveOriginPoint > 0.0){
-              float  x = sqrt( (radius * radius) - (instanceOffsets * instanceOffsets) ) / radius ;
-              trans.x -= x * sin(angleLine) ;
-              trans.y -= x * cos(angleLine) ;
-          }
+          float  x = sqrt( (radius * radius) - (instanceOffsets * instanceOffsets) ) / radius ;
+          trans.x -= x * sin(angleLine) ;
+          trans.y -= x * cos(angleLine) ;
           trans = project_common_position_to_clipspace( trans ) * project_size_to_pixel(offsetPixels);
           target+=trans;
        }
@@ -65,10 +62,6 @@ uniform float minParallelOffset;
                 size: 1,
                 accessor: 'getAngle'
             },
-            moveOriginPoint: {
-                size: 1,
-                accessor:'getMoveOriginPoint',
-            }
         });
     }
 

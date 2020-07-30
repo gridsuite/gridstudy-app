@@ -228,7 +228,6 @@ class LineLayer extends CompositeLayer {
                     if (line.angle < 0) line.angle += 2 * Math.PI;
                     line.origin = path[0];
                     line.end = path[1];
-                    line.moveOriginPoint = path.length <= 2 ? 1.0 : 0.0;
                 });
             });
 
@@ -269,7 +268,7 @@ class LineLayer extends CompositeLayer {
                             ? this.props.disconnectedLineColor
                             : color,
                     getWidth: 2,
-                    getParallelAttribsOffsetAngleOrigin: (line) => [line.parallelIndex, line.angle, line.moveOriginPoint],
+                    getParallelAttribsOffsetAngleOrigin: (line) => [line.parallelIndex, line.angle],
                     getEnd: (d) => d.origin,
                     getDistanceBetweenLines: () =>
                         this.props.distanceBetweenLines,
@@ -311,7 +310,6 @@ class LineLayer extends CompositeLayer {
                         this.props.distanceBetweenLines,
                     getMaxParallelOffset: () => this.props.maxParallelOffset,
                     getMinParallelOffset: () => this.props.minParallelOffset,
-                    getMoveOriginPoint: (arrow) => arrow.line.moveOriginPoint,
                     getDirection: (arrow) => {
                         return getArrowDirection(arrow.line.p1);
                     },
@@ -335,7 +333,6 @@ class LineLayer extends CompositeLayer {
                     id: 'LineForkStart' + compositeData.nominalVoltage,
                     getSourcePosition: (d) => d.origin,
                     getTargetPosition: (d) => d.end,
-                    getMoveOriginPoint: (d) => d.moveOriginPoint,
                     data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
@@ -368,7 +365,6 @@ class LineLayer extends CompositeLayer {
                     id: 'LineForkEnd' + compositeData.nominalVoltage,
                     getSourcePosition: (d) => d.end,
                     getTargetPosition: (d) => d.origin,
-                    getMoveOriginPoint: (d) => d.moveOriginPoint,
                     data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
