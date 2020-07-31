@@ -86,14 +86,14 @@ const App = () => {
     });
 
     function initialize() {
-        if (process.env.REACT_APP_USE_AUTHENTICATION) {
+        if (process.env.REACT_APP_USE_AUTHENTICATION === true) {
             return initializeAuthenticationProd(
                 dispatch,
                 matchSilentRenewCallbackUrl != null,
                 fetch('idpSettings.json')
             );
         } else {
-            initializeAuthenticationDev(
+            return initializeAuthenticationDev(
                 dispatch,
                 matchSilentRenewCallbackUrl != null
             );
