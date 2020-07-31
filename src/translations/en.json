@@ -53,6 +53,7 @@
     "CBNone": "None",
     "Map": "Map",
     "lineFullPath": "Line full path",
+    "lineParallelPath": "Spread overlapping lines",
     "LineFlowMode": "Line flow mode",
     "None": "None",
     "StaticArrows": "Static arrows",

@@ -272,6 +272,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 filteredNominalVoltages: props.filteredNominalVoltages,
                 lineFlowMode: lineFlowMode,
                 lineFullPath: props.lineFullPath,
+                lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
@@ -346,6 +347,7 @@ NetworkMap.defaultProps = {
     filteredNominalVoltages: null,
     initialPosition: [0, 0],
     lineFullPath: true,
+    lineParallelPath: true,
     lineFlowMode: LineFlowMode.NONE,
 };
 
@@ -359,6 +361,7 @@ NetworkMap.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     lineFullPath: PropTypes.bool,
+    lineParallelPath: PropTypes.bool,
     lineFlowMode: PropTypes.instanceOf(LineFlowMode),
 };
 

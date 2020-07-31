@@ -54,6 +54,7 @@
     "CBNone": "Aucun",
     "Map": "Carte",
     "lineFullPath": "Chemin complet des lignes",
+    "lineParallelPath": "Écarter les lignes superposées",
     "LineFlowMode": "Mode de représentation des flux sur les lignes",
     "None": "Aucun",
     "StaticArrows": "Flèches statiques",

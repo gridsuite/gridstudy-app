@@ -91,6 +91,7 @@ class LineLayer extends CompositeLayer {
             changeFlags.dataChanged ||
             (changeFlags.propsChanged &&
                 (oldProps.lineFullPath !== props.lineFullPath ||
+                 oldProps.lineParallelPath !== props.lineParallelPath ||
                     props.lineFlowMode != oldProps.lineFlowMode))
         ) {
             compositeData.forEach((compositeData) => {
@@ -235,8 +236,12 @@ class LineLayer extends CompositeLayer {
             mapOriginDestination.forEach((samePathLine) => {
                 let offset = -(samePathLine.size - 1) / 2;
                 samePathLine.forEach((line) => {
-                    line.parallelIndex = offset;
-                    offset += 1;
+                    if (props.lineParallelPath) {
+                        line.parallelIndex = offset;
+                        offset += 1;
+                    } else {
+                        line.parallelIndex = 0;
+                    }
                 });
             });
         }
@@ -279,6 +284,7 @@ class LineLayer extends CompositeLayer {
                     ),
                     updateTriggers: {
                         getPath: [this.props.lineFullPath],
+                        getParallelAttribsOffsetAngleOrigin: [this.props.lineParallelPath],
                         getColor: [this.props.disconnectedLineColor],
                     },
                     getDashArray: (line) =>
@@ -353,6 +359,7 @@ class LineLayer extends CompositeLayer {
                     ),
 
                     updateTriggers: {
+                        getParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
                         getColor: [this.props.disconnectedLineColor],
@@ -385,6 +392,7 @@ class LineLayer extends CompositeLayer {
                         compositeData.nominalVoltage
                     ),
                     updateTriggers: {
+                        getParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
                         getColor: [this.props.disconnectedLineColor],
@@ -414,7 +422,7 @@ class LineLayer extends CompositeLayer {
                             compositeData.nominalVoltage
                         ) && this.props.labelsVisible,
                     updateTriggers: {
-                        getPosition: [this.props.lineFullPath],
+                        getPosition: [this.props.lineFullPath, this.props.lineParallelPath],
                         getPixelOffset: [this.props.lineFullPath],
                     },
                 })
@@ -436,6 +444,7 @@ LineLayer.defaultProps = {
     filteredNominalVoltages: [],
     lineFlowMode: LineFlowMode.NONE,
     lineFullPath: true,
+    lineParallelPath: true,
     labelSize: 16,
     distanceBetweenLines: 1000,
     maxParallelOffset: 2,

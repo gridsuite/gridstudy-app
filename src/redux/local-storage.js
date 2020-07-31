@@ -58,6 +58,15 @@ export const saveLocalStorageLineFullPath = (lineFullPath) => {
     localStorage.setItem(LOCAL_STORAGE_LINE_FULL_PATH_KEY, lineFullPath);
 };
 
+const LOCAL_STORAGE_LINE_PARALLEL_PATH_KEY = 'STUDY_APP_LINE_PARALLEL_PATH';
+
+export const getLocalStorageLineParallelPath = () =>
+    getLocalStorageBoolean(LOCAL_STORAGE_LINE_PARALLEL_PATH_KEY, 'true');
+
+export const saveLocalStorageLineParallelPath = (lineParallelPath) => {
+    localStorage.setItem(LOCAL_STORAGE_LINE_PARALLEL_PATH_KEY, lineParallelPath);
+};
+
 const LOCAL_STORAGE_LINE_FLOW_MODE_KEY = 'STUDY_APP_LINE_FLOW_MODE';
 
 export const getLocalStorageLineFlowMode = () => {
