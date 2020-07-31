@@ -168,7 +168,7 @@ void main(void) {
           float angle = angleLine;
           
           float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
-          vec4 trans = vec4(-cos(angle), sin(angle),0.,0.) * instanceOffsets  ;
+          vec4 trans = vec4(cos(angle), -sin(angle),0.,0.) * instanceOffsets  ;
           vec4 transOr = trans;
           float  x = sqrt(abs( (radius*radius) - (instanceOffsets * instanceOffsets ) ) ) / radius ;
           if( linePoint == 1 ) {
