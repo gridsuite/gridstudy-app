@@ -227,7 +227,7 @@ class LineLayer extends CompositeLayer {
                     line.angle = angle * Math.PI / 180 + Math.PI;
                     if (line.angle < 0) line.angle += 2 * Math.PI;
                     line.origin = path[0];
-                    line.end = path[1];
+                    line.end = path[path.length-1];
                 });
             });
 
