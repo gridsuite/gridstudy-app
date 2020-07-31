@@ -353,7 +353,8 @@ class LineLayer extends CompositeLayer {
                     ),
 
                     updateTriggers: {
-                        getPath: [this.props.lineFullPath],
+                        getSourcePosition: [this.props.lineFullPath],
+                        getTargetPosition: [this.props.lineFullPath],
                         getColor: [this.props.disconnectedLineColor],
                     },
                 })
@@ -384,7 +385,8 @@ class LineLayer extends CompositeLayer {
                         compositeData.nominalVoltage
                     ),
                     updateTriggers: {
-                        getPath: [this.props.lineFullPath],
+                        getSourcePosition: [this.props.lineFullPath],
+                        getTargetPosition: [this.props.lineFullPath],
                         getColor: [this.props.disconnectedLineColor],
                     },
                 })
