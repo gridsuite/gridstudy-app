@@ -19,8 +19,6 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
-import {useSelector} from 'react-redux';
-import {store} from '../redux/store';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -164,11 +162,18 @@ const RenameDialog = ({
  * @param {EventListener} onClick Event to submit the export
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
+ * @param {list<String>} availableFormat available export format
  */
-const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}) => {
-
+const ExportDialog = ({
+    open,
+    onClose,
+    onClick,
+    title,
+    message,
+    availableFormat,
+}) => {
     const formats = availableFormat;
-    const [selectedFormat, setSelectedFormat] = React.useState("");
+    const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
 
     const useStyles = makeStyles(() => ({
@@ -178,7 +183,7 @@ const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}
     }));
 
     const handleClick = () => {
-        console.debug("Request for exporting in format: " + selectedFormat);
+        console.debug('Request for exporting in format: ' + selectedFormat);
         setLoading(true);
         onClick(selectedFormat);
     };
@@ -189,7 +194,7 @@ const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}
     };
 
     const handleExited = () => {
-        setSelectedFormat("");
+        setSelectedFormat('');
         setLoading(false);
     };
 
@@ -200,12 +205,17 @@ const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}
     const classes = useStyles();
 
     return (
-        <Dialog open={open} onClose={handleClose} onExited={handleExited} aria-labelledby="dialog-title-export">
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            onExited={handleExited}
+            aria-labelledby="dialog-title-export"
+        >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <FormControl className={classes.formControl}>
                     <InputLabel id="select-format-label">
-                        <FormattedMessage id="exportFormat"/>
+                        <FormattedMessage id="exportFormat" />
                     </InputLabel>
                     <Select
                         labelId="select-format-label"
@@ -215,18 +225,34 @@ const ExportDialog = ({ open, onClose, onClick, title, message, availableFormat}
                             id: 'select-format',
                         }}
                     >
-                        {formats.map((function (element) {return <MenuItem key={element} value={element}>{element}</MenuItem>}))}
+                        {formats.map(function (element) {
+                            return (
+                                <MenuItem key={element} value={element}>
+                                    {element}
+                                </MenuItem>
+                            );
+                        })}
                     </Select>
                 </FormControl>
-                { loading && (
-                    <div style={{display: 'flex', justifyContent: 'center', marginTop: '5px'}}>
-                        <CircularProgress/>
-                    </div>)
-                }
+                {loading && (
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginTop: '5px',
+                        }}
+                    >
+                        <CircularProgress />
+                    </div>
+                )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="text"><FormattedMessage id="cancel"/></Button>
-                <Button onClick={handleClick} variant="outlined"><FormattedMessage id="export"/></Button>
+                <Button onClick={handleClose} variant="text">
+                    <FormattedMessage id="cancel" />
+                </Button>
+                <Button onClick={handleClick} variant="outlined">
+                    <FormattedMessage id="export" />
+                </Button>
             </DialogActions>
         </Dialog>
     );

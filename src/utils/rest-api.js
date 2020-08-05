@@ -248,14 +248,14 @@ export function connectNotificationsWebsocket(studyName) {
 
 export function getExportFormat() {
     console.info("get export formats");
-    const getExportFormatUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/network-conversion/export/format";
+    const getExportFormatUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/export-network-formats";
     console.debug(getExportFormatUrl);
     return backendFetch(getExportFormatUrl, {method : 'get'}).then(response => response.json());
 }
 
 export function exportNetwork(studyName, format) {
     console.info("Export network of study: " + studyName + " in format:" + format);
-    const exportNetworkUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/network-conversion/" + studyName + "/export/" + format;
+    const exportNetworkUrl = process.env.REACT_APP_API_STUDY_SERVER + "/v1/studies/" + studyName + "/export-network/" + format;
     console.debug(exportNetworkUrl);
     return backendFetch(exportNetworkUrl, {method : 'get'}).then(response => {
         let file = {};
