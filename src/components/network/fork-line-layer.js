@@ -36,13 +36,14 @@ uniform float minParallelOffset;
       if( instanceOffsets != 0. ){
             float radius = 6.1;
 
-          float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
+          float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
+          float offsetCommonSpace = project_pixel_size(offsetPixels);
           vec4 trans = vec4(cos(angleLine), -sin(angleLine ), 0, 0.) * instanceOffsets ;      
           float  x = sqrt( (radius * radius) - (instanceOffsets * instanceOffsets) ) / radius ;
           trans.x -= x * sin(angleLine) ;
           trans.y -= x * cos(angleLine) ;
-          trans = project_common_position_to_clipspace( trans ) * project_size_to_pixel(offsetPixels);
-          target+=trans;
+          trans = trans * offsetCommonSpace;
+          target+=project_common_position_to_clipspace(trans) - project_uCenter;
        }
             `
         };

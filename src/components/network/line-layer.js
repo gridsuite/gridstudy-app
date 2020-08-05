@@ -447,8 +447,8 @@ LineLayer.defaultProps = {
     lineParallelPath: true,
     labelSize: 16,
     distanceBetweenLines: 1000,
-    maxParallelOffset: 2,
-    minParallelOffset: 0.25,
+    maxParallelOffset: 100,
+    minParallelOffset: 3,
 };
 
 export default LineLayer;

@@ -167,7 +167,8 @@ void main(void) {
           float radius = 6.1;
           float angle = angleLine;
           
-          float offsetPixels = clamp(project_pixel_size(distanceBetweenLines), minParallelOffset, maxParallelOffset);
+          float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
+          float offsetCommonSpace = project_pixel_size(offsetPixels);
           vec4 trans = vec4(cos(angle), -sin(angle),0.,0.) * instanceOffsets  ;
           vec4 transOr = trans;
           float  x = sqrt(abs( (radius*radius) - (instanceOffsets * instanceOffsets ) ) ) / radius ;
@@ -180,8 +181,9 @@ void main(void) {
               transEx.x += x * sin(angle) ;
               transEx.y += x * cos(angle) ;
           }
-          trans = mix( project_common_position_to_clipspace( transOr ), project_common_position_to_clipspace( transEx ), interpolationValue); 
-          vertexPosition+= trans* project_size_to_pixel(offsetPixels);
+          trans = mix( transOr, transEx, interpolationValue);
+          trans = trans * offsetCommonSpace;
+          vertexPosition+=project_common_position_to_clipspace(trans) - project_uCenter;
 
       }
       // vertex shader output

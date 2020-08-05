@@ -46,7 +46,8 @@ uniform float minParallelOffset;
 
       if ( instanceOffsets == 0. ) return;
       
-      float offsetPixels = clamp(project_pixel_size( distanceBetweenLines), minParallelOffset, maxParallelOffset );
+      float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
+      float offsetCommonSpace = project_pixel_size(offsetPixels);
       float radius = 6.1;
       float angleMove = angleLine ;
       vec4 trans = vec4(cos(angleMove), -sin(angleMove ), 0, 0.) * instanceOffsets ;
@@ -64,9 +65,8 @@ uniform float minParallelOffset;
           trans.x -= x * sin(angleMove ) ;
           trans.y -= x * cos(angleMove ) ;
       }
-      trans = project_common_position_to_clipspace( trans )   ;
-             
-      gl_Position += ( trans   ) * project_size_to_pixel(offsetPixels);
+      trans = trans * offsetCommonSpace;
+      gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
 `
         });
         return shaders;
