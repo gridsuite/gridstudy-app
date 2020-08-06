@@ -104,14 +104,7 @@ const App = () => {
         initialize()
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
-                userManager
-                    .signinSilent()
-                    .then((rep) => {
-                        console.log('Already connected :)');
-                    })
-                    .catch((e) => {
-                        console.log(e);
-                    });
+                userManager.signinSilent();
             })
             .catch(function (error) {
                 setUserManager({ instance: null, error: error.message });
