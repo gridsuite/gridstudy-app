@@ -7,7 +7,7 @@
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -21,6 +21,7 @@ import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Alert from '@material-ui/lab/Alert';
 
 /**
  * Dialog to delete an element #TODO To be moved in the common-ui repository once it has been created
@@ -155,11 +156,21 @@ const RenameDialog = ({
     );
 };
 
+RenameDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired,
+    currentName: PropTypes.string.isRequired,
+};
+
 /**
  * Dialog to export the network case #TODO To be moved in the common-ui repository once it has been created
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {EventListener} onClick Event to submit the export
+ * @param studyName the name of the study to export
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  * @param {list<String>} availableFormat available export format
@@ -168,41 +179,61 @@ const ExportDialog = ({
     open,
     onClose,
     onClick,
+    studyName,
     title,
-    message,
     availableFormat,
 }) => {
     const formats = availableFormat;
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
+    const [downloadUrl, setDownloadUrl] = React.useState('');
+    const [exportStudyErr, setExportStudyErr] = React.useState('');
 
     const useStyles = makeStyles(() => ({
         formControl: {
-            minWidth: 200,
+            minWidth: 300,
         },
     }));
 
     const handleClick = () => {
         console.debug('Request for exporting in format: ' + selectedFormat);
-        setLoading(true);
-        onClick(selectedFormat);
+        if (selectedFormat) {
+            setLoading(true);
+            onClick(selectedFormat, downloadUrl);
+        } else {
+            setExportStudyErr(
+                intl.formatMessage({ id: 'exportStudyErrorMsg' })
+            );
+        }
     };
 
     const handleClose = () => {
+        setExportStudyErr('');
         setLoading(false);
         onClose();
     };
 
     const handleExited = () => {
+        setExportStudyErr('');
         setSelectedFormat('');
         setLoading(false);
+        setDownloadUrl('');
     };
 
     const handleChange = (event) => {
-        setSelectedFormat(event.target.value);
+        let selected = event.target.value;
+        setSelectedFormat(selected);
+        setDownloadUrl(
+            process.env.REACT_APP_API_STUDY_SERVER +
+                '/v1/studies/' +
+                studyName +
+                '/export-network/' +
+                selected
+        );
     };
 
     const classes = useStyles();
+    const intl = useIntl();
 
     return (
         <Dialog
@@ -234,6 +265,9 @@ const ExportDialog = ({
                         })}
                     </Select>
                 </FormControl>
+                {exportStudyErr !== '' && (
+                    <Alert severity="error">{exportStudyErr}</Alert>
+                )}
                 {loading && (
                     <div
                         style={{
@@ -258,13 +292,12 @@ const ExportDialog = ({
     );
 };
 
-RenameDialog.propTypes = {
+ExportDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
+    studyName: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
-    message: PropTypes.string.isRequired,
-    currentName: PropTypes.string.isRequired,
 };
 
 export { DeleteDialog, RenameDialog, ExportDialog };

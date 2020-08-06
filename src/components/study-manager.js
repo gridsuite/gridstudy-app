@@ -25,24 +25,29 @@ import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
 import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
 
 import { loadStudiesSuccess } from '../redux/actions';
-import { deleteStudy, exportNetwork, fetchStudies, getExportFormat, renameStudy } from '../utils/rest-api';
+import {
+    deleteStudy,
+    fetchStudies,
+    getExportFormat,
+    renameStudy,
+} from '../utils/rest-api';
 import { CardHeader } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Collapse from "@material-ui/core/Collapse";
-import CardActions from "@material-ui/core/CardActions";
-import clsx from "clsx";
+import Collapse from '@material-ui/core/Collapse';
+import CardActions from '@material-ui/core/CardActions';
+import clsx from 'clsx';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import withStyles from "@material-ui/core/styles/withStyles";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
+import withStyles from '@material-ui/core/styles/withStyles';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { DeleteDialog, ExportDialog, RenameDialog } from '../utils/dialogs';
-import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import CreateStudyForm from './create-study-form';
 
 const useStyles = makeStyles((theme) => ({
@@ -195,13 +200,13 @@ const StudyCard = ({ study, onClick }) => {
     /**
      * Export dialog: window status value for exporting a network
      */
-    const [openExportDialog, setOpenExport]  = React.useState(false);
-    const [format, setFormat]  = React.useState([]);
+    const [openExportDialog, setOpenExport] = React.useState(false);
+    const [format, setFormat] = React.useState([]);
 
     const handleOpenExport = () => {
         setAnchorEl(null);
         setOpenExport(true);
-        getExportFormat().then(formats => {
+        getExportFormat().then((formats) => {
             setFormat(formats);
         });
     };
@@ -210,17 +215,11 @@ const StudyCard = ({ study, onClick }) => {
         setOpenExport(false);
     };
 
-    const handleClickExport = (format) => {
-        exportNetwork(study.studyName, format).then(file => {
-            file.data.then(blob => {
-                let url = window.URL.createObjectURL(blob);
-                let a = document.createElement('a');
-                a.href = url;
-                a.download = file.filename;
-                a.click();
-                handleCloseExport();
-            });
-        });
+    const handleClickExport = (format, url) => {
+        let a = document.createElement('a');
+        a.href = url;
+        a.click();
+        handleCloseExport();
     };
 
     /**
@@ -310,11 +309,12 @@ const StudyCard = ({ study, onClick }) => {
 
                         <MenuItem onClick={handleOpenExport}>
                             <ListItemIcon>
-                                <GetAppIcon fontSize="small"/>
+                                <GetAppIcon fontSize="small" />
                             </ListItemIcon>
-                            <ListItemText primary={<FormattedMessage id="export"/>} />
+                            <ListItemText
+                                primary={<FormattedMessage id="export" />}
+                            />
                         </MenuItem>
-
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -353,8 +353,8 @@ const StudyCard = ({ study, onClick }) => {
                 open={openExportDialog}
                 onClose={handleCloseExport}
                 onClick={handleClickExport}
-                title={useIntl().formatMessage({id: "exportNetwork"})}
-                message={useIntl().formatMessage({id: "format"})}
+                studyName={study.studyName}
+                title={useIntl().formatMessage({ id: 'exportNetwork' })}
                 availableFormat={format}
             />
         </div>
