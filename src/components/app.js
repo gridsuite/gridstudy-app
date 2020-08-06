@@ -30,7 +30,6 @@ import {
     logout,
     getPreLoginPath,
     initializeAuthenticationProd,
-    initializeAuthenticationDev,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -85,23 +84,12 @@ const App = () => {
         exact: true,
     });
 
-    function initialize() {
-        if (process.env.REACT_APP_USE_AUTHENTICATION === true) {
-            return initializeAuthenticationProd(
-                dispatch,
-                matchSilentRenewCallbackUrl != null,
-                fetch('idpSettings.json')
-            );
-        } else {
-            return initializeAuthenticationDev(
-                dispatch,
-                matchSilentRenewCallbackUrl != null
-            );
-        }
-    }
-
     useEffect(() => {
-        initialize()
+        initializeAuthenticationProd(
+            dispatch,
+            matchSilentRenewCallbackUrl != null,
+            fetch('idpSettings.json')
+        )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
                 userManager.signinSilent();
