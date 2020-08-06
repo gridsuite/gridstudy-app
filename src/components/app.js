@@ -21,20 +21,21 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
-import { TopBar } from '@gridsuite/commons-ui';
 import { LIGHT_THEME } from '../redux/actions';
 import Parameters from './parameters';
 
 import {
+    TopBar,
+    AuthenticationRouter,
     logout,
     getPreLoginPath,
-    initializeAuthentication,
-} from '../utils/authentication/AuthService';
+    initializeAuthenticationProd,
+    initializeAuthenticationDev,
+} from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
 import { FormattedMessage } from 'react-intl';
-import AuthenticationRouter from './authentication-components/authentication-router';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -84,13 +85,23 @@ const App = () => {
         exact: true,
     });
 
+    function initialize() {
+        if (process.env.REACT_APP_USE_AUTHENTICATION === true) {
+            return initializeAuthenticationProd(
+                dispatch,
+                matchSilentRenewCallbackUrl != null,
+                fetch('idpSettings.json')
+            );
+        } else {
+            return initializeAuthenticationDev(
+                dispatch,
+                matchSilentRenewCallbackUrl != null
+            );
+        }
+    }
+
     useEffect(() => {
-        initializeAuthentication(
-            dispatch,
-            matchSilentRenewCallbackUrl != null,
-            fetch('idpSettings.json'),
-            process.env.REACT_APP_USE_AUTHENTICATION
-        )
+        initialize()
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
                 userManager.signinSilent();
