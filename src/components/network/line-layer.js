@@ -114,12 +114,56 @@ class LineLayer extends CompositeLayer {
                 compositeData.lineMap = lineMap;
             });
 
-            let mapOriginDestination = new Map();
             // add arrows
             compositeData.forEach((compositeData) => {
+
+                const lineMap = compositeData.lineMap;
+
+                //find lines with same subsations set
+                let mapOriginDestination = new Map();
+                compositeData.lines.forEach((line) => {
+                    const key =
+                        line.voltageLevelId1 > line.voltageLevelId2
+                            ? line.voltageLevelId1 + '##' + line.voltageLevelId2
+                            : line.voltageLevelId2 +
+                              '##' +
+                              line.voltageLevelId1;
+                    let val = mapOriginDestination.get(key);
+                    if (val == null)
+                        mapOriginDestination.set(key, new Set([line]));
+                    else {
+                        mapOriginDestination.set(key, val.add(line));
+                    }
+
+                    const path = this.props.geoData.getLinePositions(
+                        this.props.network,
+                        line,
+                        this.props.lineFullPath
+                    );
+
+                    let lineData = lineMap.get(line.id);
+                    let angle = props.geoData.getMapAngle(lineData.positions[0], lineData.positions[lineData.positions.length-1]);
+                    line.angle = angle * Math.PI / 180 + Math.PI;
+                    if (line.angle < 0) line.angle += 2 * Math.PI;
+                    line.origin = path[0];
+                    line.end = path[path.length-1];
+                });
+
+                // calculate offset for line with same subsation set
+                mapOriginDestination.forEach((samePathLine) => {
+                    let offset = -(samePathLine.size - 1) / 2;
+                    samePathLine.forEach((line) => {
+                        if (props.lineParallelPath) {
+                            line.parallelIndex = offset;
+                            offset += 1;
+                        } else {
+                            line.parallelIndex = 0;
+                        }
+                    });
+                });
+
                 compositeData.activePower = [];
                 // create one arrow each DISTANCE_BETWEEN_ARROWS
-                const lineMap = compositeData.lineMap;
                 compositeData.arrows = compositeData.lines.flatMap((line) => {
                     // calculate distance between 2 substations as a raw estimate of line size
                     const directLinePositions = props.geoData.getLinePositions(
@@ -148,13 +192,19 @@ class LineLayer extends CompositeLayer {
                         lineData.positions,
                         lineData.cumulativeDistances,
                         START_ARROW_POSITION,
-                        arrowDirection
+                        arrowDirection,
+                        line.parallelIndex,
+                        line.angle * 180 / Math.PI,
+                        props.distanceBetweenLines
                     );
                     let coordinates2 = props.geoData.labelDisplayPosition(
                         lineData.positions,
                         lineData.cumulativeDistances,
                         END_ARROW_POSITION,
-                        arrowDirection
+                        arrowDirection,
+                        line.parallelIndex,
+                        line.angle * 180 / Math.PI,
+                        props.distanceBetweenLines
                     );
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
@@ -202,47 +252,6 @@ class LineLayer extends CompositeLayer {
                     ];
                 });
 
-                //find lines with same subsations set
-                compositeData.lines.forEach((line) => {
-                    const key =
-                        line.voltageLevelId1 > line.voltageLevelId2
-                            ? line.voltageLevelId1 + '##' + line.voltageLevelId2
-                            : line.voltageLevelId2 +
-                              '##' +
-                              line.voltageLevelId1;
-                    let val = mapOriginDestination.get(key);
-                    if (val == null)
-                        mapOriginDestination.set(key, new Set([line]));
-                    else {
-                        mapOriginDestination.set(key, val.add(line));
-                    }
-
-                    const path = this.props.geoData.getLinePositions(
-                        this.props.network,
-                        line,
-                        this.props.lineFullPath
-                    );
-
-                    let lineData = lineMap.get(line.id);
-                    let angle = props.geoData.getMapAngle(lineData.positions[0], lineData.positions[lineData.positions.length-1]);
-                    line.angle = angle * Math.PI / 180 + Math.PI;
-                    if (line.angle < 0) line.angle += 2 * Math.PI;
-                    line.origin = path[0];
-                    line.end = path[path.length-1];
-                });
-            });
-
-            // calculate offset for line with same subsation set
-            mapOriginDestination.forEach((samePathLine) => {
-                let offset = -(samePathLine.size - 1) / 2;
-                samePathLine.forEach((line) => {
-                    if (props.lineParallelPath) {
-                        line.parallelIndex = offset;
-                        offset += 1;
-                    } else {
-                        line.parallelIndex = 0;
-                    }
-                });
             });
         }
         this.setState({ compositeData: compositeData });
