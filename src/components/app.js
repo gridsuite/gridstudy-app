@@ -121,7 +121,8 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar
-                    appName="GridStudy"
+                    appName="Study"
+                    appColor="#0CA789"
                     onParametersClick={() => showParametersClicked()}
                     onLogoutClick={() => logout(dispatch, userManager.instance)}
                     onLogoClick={() => onLogoClicked()}

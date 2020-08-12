@@ -24,7 +24,7 @@ jobs:
               if: github.ref == 'refs/heads/master'
               uses: elgohr/Publish-Docker-Github-Action@master
               with:
-                  name: powsybl/study-app
+                  name: powsybl/gridstudy
                   username: powsyblci
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
 
@@ -33,4 +33,4 @@ jobs:
               uses: gridsuite/broadcast-event@master
               with:
                   token: ${{ secrets.REPO_ACCESS_TOKEN }}
-                  event-type: study_app_updated
+                  event-type: gridstudy_updated

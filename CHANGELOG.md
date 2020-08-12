@@ -68,8 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Geographical display of the imported networks
 -   On-demand display of electrical substations
 
-[unreleased]: https://github.com/gridsuite/study-app/compare/v0.4.0...HEAD
-[0.4.0]: https://github.com/gridsuite/study-app/releases/tag/v0.4.0
-[0.3.0]: https://github.com/gridsuite/study-app/releases/tag/v0.3.0
-[0.2.0]: https://github.com/gridsuite/study-app/releases/tag/v0.2.0
-[0.1.0]: https://github.com/gridsuite/study-app/releases/tag/v0.1.0
+[unreleased]: https://github.com/gridsuite/gridstudy/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/gridsuite/gridstudy/releases/tag/v0.4.0
+[0.3.0]: https://github.com/gridsuite/gridstudy/releases/tag/v0.3.0
+[0.2.0]: https://github.com/gridsuite/gridstudy/releases/tag/v0.2.0
+[0.1.0]: https://github.com/gridsuite/gridstudy/releases/tag/v0.1.0
