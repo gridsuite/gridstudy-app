@@ -164,22 +164,20 @@ void main(void) {
       // to maintain the same translation between segments
       if( abs(instanceOffsets) != 9999. ) {
 
-          float radius = 6.1;
           float angle = angleLine;
           
           float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
           float offsetCommonSpace = project_pixel_size(offsetPixels);
           vec4 trans = vec4(cos(angle), -sin(angle),0.,0.) * instanceOffsets  ;
           vec4 transOr = trans;
-          float  x = sqrt(abs( (radius*radius) - (instanceOffsets * instanceOffsets ) ) ) / radius ;
           if( linePoint == 1 ) {
-              transOr.x -= x * sin(angle) ;
-              transOr.y -= x * cos(angle) ;
+              transOr.x -= sin(angle) ;
+              transOr.y -= cos(angle) ;
           }
           vec4 transEx = trans;
           if ( linePoint == int(instanceLinePointCount)-1 ) {
-              transEx.x += x * sin(angle) ;
-              transEx.y += x * cos(angle) ;
+              transEx.x += sin(angle) ;
+              transEx.y += cos(angle) ;
           }
           trans = mix( transOr, transEx, interpolationValue);
           trans = trans * offsetCommonSpace;

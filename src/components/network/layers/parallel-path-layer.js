@@ -51,19 +51,18 @@ uniform float minParallelOffset;
       float radius = 6.1;
       float angleMove = angleLine ;
       vec4 trans = vec4(cos(angleMove), -sin(angleMove ), 0, 0.) * instanceOffsets ;
-      float  x = sqrt( (radius* radius) - (instanceOffsets * instanceOffsets) ) / radius ;
 
       bool isSegmentEnd = isEnd > EPSILON;
       bool isFirstSegment = (instanceTypes == 1.0 || instanceTypes == 3.0);
       bool isLastSegment = (instanceTypes == 2.0 || instanceTypes == 3.0);
       if( isSegmentEnd && isLastSegment ) {
-          trans.x += x * sin(angleMove) ;
-          trans.y += x * cos(angleMove) ;
+          trans.x += sin(angleMove) ;
+          trans.y += cos(angleMove) ;
       }
       if ( !isSegmentEnd && isFirstSegment )
       {
-          trans.x -= x * sin(angleMove ) ;
-          trans.y -= x * cos(angleMove ) ;
+          trans.x -= sin(angleMove ) ;
+          trans.y -= cos(angleMove ) ;
       }
       trans = trans * offsetCommonSpace;
       gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
