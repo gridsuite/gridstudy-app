@@ -24,7 +24,7 @@ jobs:
               if: github.ref == 'refs/heads/master'
               uses: elgohr/Publish-Docker-Github-Action@master
               with:
-                  name: powsybl/gridstudy
+                  name: powsybl/gridstudy-app
                   username: powsyblci
                   password: ${{ secrets.DOCKERHUB_TOKEN }}
 
