@@ -246,12 +246,12 @@ export function connectNotificationsWebsocket(studyName) {
     return rws;
 }
 
-export function getExportFormat() {
+export function getAvailableExportFormats() {
     console.info('get export formats');
-    const getExportFormatUrl =
+    const getExportFormatsUrl =
         process.env.REACT_APP_API_STUDY_SERVER + '/v1/export-network-formats';
-    console.debug(getExportFormatUrl);
-    return backendFetch(getExportFormatUrl, {
+    console.debug(getExportFormatsUrl);
+    return backendFetch(getExportFormatsUrl, {
         method: 'get',
     }).then((response) => response.json());
 }

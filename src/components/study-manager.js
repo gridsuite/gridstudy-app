@@ -25,12 +25,7 @@ import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
 import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
 
 import { loadStudiesSuccess } from '../redux/actions';
-import {
-    deleteStudy,
-    fetchStudies,
-    getExportFormat,
-    renameStudy,
-} from '../utils/rest-api';
+import { deleteStudy, fetchStudies, renameStudy } from '../utils/rest-api';
 import { CardHeader } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -201,21 +196,17 @@ const StudyCard = ({ study, onClick }) => {
      * Export dialog: window status value for exporting a network
      */
     const [openExportDialog, setOpenExport] = React.useState(false);
-    const [format, setFormat] = React.useState([]);
 
     const handleOpenExport = () => {
         setAnchorEl(null);
         setOpenExport(true);
-        getExportFormat().then((formats) => {
-            setFormat(formats);
-        });
     };
 
     const handleCloseExport = () => {
         setOpenExport(false);
     };
 
-    const handleClickExport = (format, url) => {
+    const handleClickExport = (url) => {
         window.open(url, '_blank');
         handleCloseExport();
     };
@@ -353,7 +344,6 @@ const StudyCard = ({ study, onClick }) => {
                 onClick={handleClickExport}
                 studyName={study.studyName}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
-                availableFormat={format}
             />
         </div>
     );
