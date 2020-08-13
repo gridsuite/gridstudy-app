@@ -162,7 +162,7 @@ void main(void) {
 
       // calculate translation for the parallels lines lines use the angle calculated from origin/destination 
       // to maintain the same translation between segments
-      if( instanceOffsets != 0. ) {
+      if( abs(instanceOffsets) != 9999. ) {
 
           float radius = 6.1;
           float angle = angleLine;

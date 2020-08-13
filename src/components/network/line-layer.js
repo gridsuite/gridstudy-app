@@ -153,11 +153,13 @@ class LineLayer extends CompositeLayer {
                 mapOriginDestination.forEach((samePathLine) => {
                     let offset = -(samePathLine.size - 1) / 2;
                     samePathLine.forEach((line) => {
-                        if (props.lineParallelPath) {
+                        if (props.lineParallelPath && samePathLine.size > 1) {
                             line.parallelIndex = offset;
                             offset += 1;
                         } else {
-                            line.parallelIndex = 0;
+                            //The special value 9999 or -9999 mean that we
+                            //don't want parallel path translations for this line
+                            line.parallelIndex = 9999;
                         }
                     });
                 });

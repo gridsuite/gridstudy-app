@@ -44,7 +44,7 @@ uniform float minParallelOffset;
       float instanceOffsets = parallelAttribsOffsetAngleOrigin.x;
       float angleLine = parallelAttribsOffsetAngleOrigin.y;
 
-      if ( instanceOffsets == 0. ) return;
+      if ( abs(instanceOffsets) == 9999. ) return;
       
       float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
       float offsetCommonSpace = project_pixel_size(offsetPixels);

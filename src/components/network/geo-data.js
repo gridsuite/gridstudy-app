@@ -200,7 +200,7 @@ export default class GeoData {
         let lineDistance = cumulativeDistances[cumulativeDistances.length - 1];
         let wantedDistance = lineDistance * arrowPosition;
 
-        if (parallelIndex != 0 && cumulativeDistances.length == 2) {
+        if (Math.abs(parallelIndex) != 9999 && cumulativeDistances.length == 2) {
             // For parallel line, the initial fork line distance does not count
             // when there are no intermediate points between the substations
             // I'm not sure this is entirely correct but it displays well enough
@@ -241,7 +241,7 @@ export default class GeoData {
             angle: angle,
             offset: neededOffset,
         };
-        if (parallelIndex != 0) {
+        if (Math.abs(parallelIndex) != 9999) {
             // apply parallel spread between lines
             position.position = computeDestinationPoint(
                 position.position,

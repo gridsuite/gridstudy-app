@@ -33,7 +33,7 @@ uniform float minParallelOffset;
             'float segmentIndex = positions.x': `;
 
       target = source ;      
-      if( instanceOffsets != 0. ){
+      if( abs(instanceOffsets) != 9999. ) {
             float radius = 6.1;
 
           float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
