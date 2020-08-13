@@ -216,9 +216,7 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickExport = (format, url) => {
-        let a = document.createElement('a');
-        a.href = url;
-        a.click();
+        window.open(url, '_blank');
         handleCloseExport();
     };
 
