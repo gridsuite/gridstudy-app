@@ -182,7 +182,7 @@ export default class GeoData {
         arrowPosition,
         arrowDirection,
         lineParallelIndex,
-        angleLine,
+        lineAngle,
         distanceBetweenLines
     ) {
         if (arrowPosition > 1 || arrowPosition < 0) {
@@ -246,14 +246,14 @@ export default class GeoData {
             position.position = computeDestinationPoint(
                 position.position,
                 distanceBetweenLines * lineParallelIndex,
-                angleLine + 90);
+                lineAngle + 90);
             if ( cumulativeDistances.length == 2 ) {
-                // For line with only one segment, we can just apply a translation by angleLine because both segment ends
+                // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
                 // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
                 position.position = computeDestinationPoint(
                     position.position,
                     -distanceBetweenLines,
-                    angleLine);
+                    lineAngle);
             } else if (goodSegment.idx == 0 || goodSegment.idx == cumulativeDistances.length-2) {
                 // When the label is on the first or last segment and there is an intermediate point,
                 // when must shift by the percentange of position of the label on this segment
@@ -269,7 +269,7 @@ export default class GeoData {
                 position.position = computeDestinationPoint(
                     position.position,
                     distanceBetweenLines * labelPercentage,
-                    angleLine);
+                    lineAngle);
             }
         }
         return position;
