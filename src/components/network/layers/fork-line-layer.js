@@ -6,42 +6,38 @@
  */
 
 import {LineLayer} from "deck.gl";
-import ArrowLayer from "./layers/arrow-layer";
-
 
 const defaultProps = {
-    getParallelIndex: {type: 'accessor', value: 0},
+    getLineParallelIndex: {type: 'accessor', value: 0},
     getLineAngle: {type: 'accessor', value: 0},
-    getDistanceBetweenLines: {type: 'accessor', value: 1000.},
-    getMaxParallelOffset: {type: 'accessor', value: 1.},
-    getPinParallelOffset: {type: 'accessor', value: 50.}
+    getDistanceBetweenLines: {type: 'accessor', value: 1000},
+    getMaxParallelOffset: {type: 'accessor', value: 1},
+    getMinParallelOffset: {type: 'accessor', value: 50}
 };
 
-export class ForkLineLayer extends LineLayer {
+export default class ForkLineLayer extends LineLayer {
 
     getShaders() {
         const shaders = super.getShaders();
         shaders.inject = {
-            'vs:#decl': `\
-attribute float instanceOffsets;
-attribute float angleLine;
+            'vs:#decl': `
+attribute float instanceLineParallelIndex;
+attribute float instanceLineAngle;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
-`,
-
+            `,
             'float segmentIndex = positions.x': `;
-
-      target = source ;      
-      if( abs(instanceOffsets) != 9999. ) {
-          float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
-          float offsetCommonSpace = project_pixel_size(offsetPixels);
-          vec4 trans = vec4(cos(angleLine), -sin(angleLine ), 0, 0.) * instanceOffsets ;      
-          trans.x -= sin(angleLine) ;
-          trans.y -= cos(angleLine) ;
-          trans = trans * offsetCommonSpace;
-          target+=project_common_position_to_clipspace(trans) - project_uCenter;
-       }
+target = source ;
+if( abs(instanceLineParallelIndex) != 9999. ) {
+    float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
+    float offsetCommonSpace = project_pixel_size(offsetPixels);
+    vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle ), 0, 0.) * instanceLineParallelIndex ;
+    trans.x -= sin(instanceLineAngle) ;
+    trans.y -= cos(instanceLineAngle) ;
+    trans = trans * offsetCommonSpace;
+    target+=project_common_position_to_clipspace(trans) - project_uCenter;
+}
             `
         };
         return shaders;
@@ -52,13 +48,13 @@ uniform float minParallelOffset;
 
         const attributeManager = this.getAttributeManager();
         attributeManager.addInstanced({
-            instanceOffsets: {
+            instanceLineParallelIndex: {
                 size: 1,
-                accessor: 'getParallelIndex'
+                accessor: 'getLineParallelIndex'
             },
-            angleLine: {
+            instanceLineAngle: {
                 size: 1,
-                accessor: 'getAngle'
+                accessor: 'getLineAngle'
             },
         });
     }
@@ -76,5 +72,5 @@ uniform float minParallelOffset;
     }
 }
 
-ArrowLayer.layerName = 'ForkLineLayer';
-ArrowLayer.defaultProps = defaultProps;
+ForkLineLayer.layerName = 'ForkLineLayer';
+ForkLineLayer.defaultProps = defaultProps;

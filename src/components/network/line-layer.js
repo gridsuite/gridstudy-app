@@ -9,8 +9,8 @@ import { CompositeLayer, TextLayer } from 'deck.gl';
 import { PathStyleExtension } from '@deck.gl/extensions';
 import ArrowLayer, { ArrowDirection } from './layers/arrow-layer';
 import ParallelPathLayer from './layers/parallel-path-layer';
+import ForkLineLayer from './layers/fork-line-layer';
 import getDistance from 'geolib/es/getDistance';
-import { ForkLineLayer } from './fork-line-layer';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
@@ -149,16 +149,20 @@ class LineLayer extends CompositeLayer {
                     line.end = path[path.length-1];
                 });
 
-                // calculate offset for line with same subsation set
+                // calculate index for line with same subsation set
+                // The index is a real number in a normalized unit.
+                // +1 => distanceBetweenLines on side
+                // -1 => distanceBetweenLines on the other side
+                // 0.5 => half of distanceBetweenLines
+                //The special value 9999 or -9999 mean that we
+                //don't want parallel path translations for this line
                 mapOriginDestination.forEach((samePathLine) => {
-                    let offset = -(samePathLine.size - 1) / 2;
+                    let index = -(samePathLine.size - 1) / 2;
                     samePathLine.forEach((line) => {
                         if (props.lineParallelPath && samePathLine.size > 1) {
-                            line.parallelIndex = offset;
-                            offset += 1;
+                            line.parallelIndex = index;
+                            index += 1;
                         } else {
-                            //The special value 9999 or -9999 mean that we
-                            //don't want parallel path translations for this line
                             line.parallelIndex = 9999;
                         }
                     });
@@ -322,7 +326,8 @@ class LineLayer extends CompositeLayer {
                     getColor: color,
                     getSize: 700,
                     getSpeedFactor: 3,
-                    getParallelIndex: (arrow) => arrow.line.parallelIndex,
+                    getLineParallelIndex: (arrow) => arrow.line.parallelIndex,
+                    getLineAngle: (arrow) => arrow.line.angle,
                     getDistanceBetweenLines: () =>
                         this.props.distanceBetweenLines,
                     getMaxParallelOffset: () => this.props.maxParallelOffset,
@@ -359,8 +364,8 @@ class LineLayer extends CompositeLayer {
                             ? this.props.disconnectedLineColor
                             : color,
                     getWidth: 2,
-                    getParallelIndex: (line) => line.parallelIndex,
-                    getAngle: (line) => line.angle,
+                    getLineParallelIndex: (line) => line.parallelIndex,
+                    getLineAngle: (line) => line.angle,
                     getDistanceBetweenLines: () =>
                         this.props.distanceBetweenLines,
                     getMaxParallelOffset: () => this.props.maxParallelOffset,
@@ -370,7 +375,7 @@ class LineLayer extends CompositeLayer {
                     ),
 
                     updateTriggers: {
-                        getParallelIndex: [this.props.lineParallelPath],
+                        getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
                         getColor: [this.props.disconnectedLineColor],
@@ -393,8 +398,8 @@ class LineLayer extends CompositeLayer {
                             ? this.props.disconnectedLineColor
                             : color,
                     getWidth: 2,
-                    getParallelIndex: (line) => -line.parallelIndex,
-                    getAngle: (line) => line.angle + Math.PI,
+                    getLineParallelIndex: (line) => -line.parallelIndex,
+                    getLineAngle: (line) => line.angle + Math.PI,
                     getDistanceBetweenLines: () =>
                         this.props.distanceBetweenLines,
                     getMaxParallelOffset: () => this.props.maxParallelOffset,
@@ -403,7 +408,7 @@ class LineLayer extends CompositeLayer {
                         compositeData.nominalVoltage
                     ),
                     updateTriggers: {
-                        getParallelIndex: [this.props.lineParallelPath],
+                        getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
                         getColor: [this.props.disconnectedLineColor],

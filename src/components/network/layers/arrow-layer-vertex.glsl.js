@@ -14,8 +14,8 @@ attribute float instanceLineDistancesTextureOffset;
 attribute float instanceLinePointCount;
 attribute float instanceLineDistance;
 attribute float instanceArrowDirection;
-attribute float instanceOffsets;
-attribute float angleLine;
+attribute float instanceLineParallelIndex;
+attribute float instanceLineAngle;
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
@@ -142,7 +142,6 @@ void main(void) {
 
       // project the 2 line points position to common space 
       vec3 position64Low = vec3(0, 0, 0);
-
       vec3 commonPosition1 = project_position(linePosition1, position64Low);
       vec3 commonPosition2 = project_position(linePosition2, position64Low);
 
@@ -158,32 +157,29 @@ void main(void) {
  
       // calculate vertex position in the clipspace
       vec3 offset = positions * project_pixel_size(sizePixels) * rotation;
-      vec4 vertexPosition = project_common_position_to_clipspace(vec4(arrowPosition + offset, 1) );
+      vec4 vertexPosition = project_common_position_to_clipspace(vec4(arrowPosition + offset, 1));
 
-      // calculate translation for the parallels lines lines use the angle calculated from origin/destination 
+      // calculate translation for the parallels lines, use the angle calculated from origin/destination
       // to maintain the same translation between segments
-      if( abs(instanceOffsets) != 9999. ) {
-
-          float angle = angleLine;
-          
-          float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
+      if(abs(instanceLineParallelIndex) != 9999.) {
+          float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
           float offsetCommonSpace = project_pixel_size(offsetPixels);
-          vec4 trans = vec4(cos(angle), -sin(angle),0.,0.) * instanceOffsets  ;
+          vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle),0.,0.) * instanceLineParallelIndex;
           vec4 transOr = trans;
-          if( linePoint == 1 ) {
-              transOr.x -= sin(angle) ;
-              transOr.y -= cos(angle) ;
+          if(linePoint == 1) {
+              transOr.x -= sin(instanceLineAngle);
+              transOr.y -= cos(instanceLineAngle);
           }
           vec4 transEx = trans;
-          if ( linePoint == int(instanceLinePointCount)-1 ) {
-              transEx.x += sin(angle) ;
-              transEx.y += cos(angle) ;
+          if (linePoint == int(instanceLinePointCount)-1) {
+              transEx.x += sin(instanceLineAngle);
+              transEx.y += cos(instanceLineAngle);
           }
-          trans = mix( transOr, transEx, interpolationValue);
+          trans = mix(transOr, transEx, interpolationValue);
           trans = trans * offsetCommonSpace;
-          vertexPosition+=project_common_position_to_clipspace(trans) - project_uCenter;
-
+          vertexPosition += project_common_position_to_clipspace(trans) - project_uCenter;
       }
+
       // vertex shader output
       gl_Position = vertexPosition;
 

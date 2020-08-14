@@ -41,11 +41,11 @@ const defaultProps = {
     getSpeedFactor: { type: 'accessor', value: 1.0 },
     getDirection: { type: 'accessor', value: ArrowDirection.NONE },
     animated: { type: 'boolean', value: true },
-    getParallelIndex: { type: 'accessor', value: 0 },
+    getLineParallelIndex: { type: 'accessor', value: 0 },
     getLineAngle: { type: 'accessor', value: 0 },
     getDistanceBetweenLines: { type: 'accessor', value: 1000 },
     getMaxParallelOffset: { type: 'accessor', value: 1 },
-    getPinParallelOffset: { type: 'accessor', value: 50 },
+    getMinParallelOffset: { type: 'accessor', value: 50 },
 };
 
 export default class ArrowLayer extends Layer {
@@ -150,14 +150,14 @@ export default class ArrowLayer extends Layer {
                 accessor: (arrow) =>
                     this.getArrowLineAttributes(arrow).pointCount,
             },
-            instanceOffsets: {
+            instanceLineParallelIndex: {
                 size: 1,
-                accessor: 'getParallelIndex',
+                accessor: 'getLineParallelIndex',
                 type: GL.FLOAT,
             },
-            angleLine: {
+            instanceLineAngle: {
                 size: 1,
-                accessor: (arrow) => arrow.line.angle,
+                accessor: 'getLineAngle',
                 type: GL.FLOAT,
             },
         });
