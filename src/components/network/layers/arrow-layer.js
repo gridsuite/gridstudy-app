@@ -322,7 +322,6 @@ export default class ArrowLayer extends Layer {
                 linePositionsTexture,
                 lineDistancesTexture,
                 lineAttributes,
-                timestamp: 0,
             });
 
             if (!changeFlags.dataChanged) {
@@ -359,6 +358,7 @@ export default class ArrowLayer extends Layer {
         if (props.animated !== oldProps.animated) {
             this.setState({
                 stop: !props.animated,
+                timestamp: 0,
             });
             if (props.animated) {
                 this.startAnimation();
