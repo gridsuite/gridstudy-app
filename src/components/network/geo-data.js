@@ -201,9 +201,9 @@ export default class GeoData {
         let wantedDistance = lineDistance * arrowPosition;
 
         if (Math.abs(lineParallelIndex) != 9999 && cumulativeDistances.length == 2) {
-            // For parallel line, the initial fork line distance does not count
-            // when there are no intermediate points between the substations
-            // I'm not sure this is entirely correct but it displays well enough
+            // For parallel lines, the initial fork line distance does not count
+            // when there are no intermediate points between the substations.
+            // I'm not sure this is entirely correct but it displays well enough.
             wantedDistance = wantedDistance - 2 * distanceBetweenLines * arrowPosition;
         }
 
@@ -247,14 +247,14 @@ export default class GeoData {
                 position.position,
                 distanceBetweenLines * lineParallelIndex,
                 lineAngle + 90);
-            if ( cumulativeDistances.length == 2 ) {
+            if (cumulativeDistances.length == 2) {
                 // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
                 // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
                 position.position = computeDestinationPoint(
                     position.position,
                     -distanceBetweenLines,
                     lineAngle);
-            } else if (goodSegment.idx == 0 || goodSegment.idx == cumulativeDistances.length-2) {
+            } else if (goodSegment.idx == 0 || goodSegment.idx == cumulativeDistances.length - 2) {
                 // When the label is on the first or last segment and there is an intermediate point,
                 // when must shift by the percentange of position of the label on this segment
                 const segmentDistance = cumulativeDistances[goodSegment.idx+1] - cumulativeDistances[goodSegment.idx];

@@ -290,17 +290,15 @@ class LineLayer extends CompositeLayer {
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angle,
-                    getEnd: (d) => d.origin,
-                    getDistanceBetweenLines: () =>
-                        this.props.distanceBetweenLines,
-                    getMaxParallelOffset: () => this.props.maxParallelOffset,
-                    getMinParallelOffset: () => this.props.minParallelOffset,
+                    distanceBetweenLines: this.props.distanceBetweenLines,
+                    maxParallelOffset: this.props.maxParallelOffset,
+                    minParallelOffset: this.props.minParallelOffset,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),
                     updateTriggers: {
                         getPath: [this.props.lineFullPath],
-                        getParallelAttribsOffsetAngleOrigin: [this.props.lineParallelPath],
+                        getLineParallelIndex: [this.props.lineParallelPath],
                         getColor: [this.props.disconnectedLineColor],
                     },
                     getDashArray: (line) =>
@@ -329,10 +327,9 @@ class LineLayer extends CompositeLayer {
                     getSpeedFactor: 3,
                     getLineParallelIndex: (arrow) => arrow.line.parallelIndex,
                     getLineAngle: (arrow) => arrow.line.angle,
-                    getDistanceBetweenLines: () =>
-                        this.props.distanceBetweenLines,
-                    getMaxParallelOffset: () => this.props.maxParallelOffset,
-                    getMinParallelOffset: () => this.props.minParallelOffset,
+                    getDistanceBetweenLines: this.props.distanceBetweenLines,
+                    maxParallelOffset: this.props.maxParallelOffset,
+                    minParallelOffset: this.props.minParallelOffset,
                     getDirection: (arrow) => {
                         return getArrowDirection(arrow.line.p1);
                     },
@@ -354,27 +351,23 @@ class LineLayer extends CompositeLayer {
             const startFork = new ForkLineLayer(
                 this.getSubLayerProps({
                     id: 'LineForkStart' + compositeData.nominalVoltage,
-                    getSourcePosition: (d) => d.origin,
-                    getTargetPosition: (d) => d.end,
+                    getSourcePosition: line => line.origin,
+                    getTargetPosition: line => line.end,
                     data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
-                    getColor: (line) =>
-                        isDisconnected(line)
-                            ? this.props.disconnectedLineColor
-                            : color,
+                    getColor: (line) => isDisconnected(line) ?
+                        this.props.disconnectedLineColor : color,
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angle,
-                    getDistanceBetweenLines: () =>
-                        this.props.distanceBetweenLines,
-                    getMaxParallelOffset: () => this.props.maxParallelOffset,
-                    getMinParallelOffset: () => this.props.minParallelOffset,
+                    getDistanceBetweenLines: this.props.distanceBetweenLines,
+                    getMaxParallelOffset: this.props.maxParallelOffset,
+                    getMinParallelOffset: this.props.minParallelOffset,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),
-
                     updateTriggers: {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
@@ -388,23 +381,20 @@ class LineLayer extends CompositeLayer {
             const endFork = new ForkLineLayer(
                 this.getSubLayerProps({
                     id: 'LineForkEnd' + compositeData.nominalVoltage,
-                    getSourcePosition: (d) => d.end,
-                    getTargetPosition: (d) => d.origin,
+                    getSourcePosition: line => line.end,
+                    getTargetPosition: line => line.origin,
                     data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
-                    getColor: (line) =>
-                        isDisconnected(line)
-                            ? this.props.disconnectedLineColor
-                            : color,
+                    getColor: (line) => isDisconnected(line) ?
+                        this.props.disconnectedLineColor : color,
                     getWidth: 2,
-                    getLineParallelIndex: (line) => -line.parallelIndex,
-                    getLineAngle: (line) => line.angle + Math.PI,
-                    getDistanceBetweenLines: () =>
-                        this.props.distanceBetweenLines,
-                    getMaxParallelOffset: () => this.props.maxParallelOffset,
-                    getMinParallelOffset: () => this.props.minParallelOffset,
+                    getLineParallelIndex: line => -line.parallelIndex,
+                    getLineAngle: line => line.angle + Math.PI,
+                    getDistanceBetweenLines: this.props.distanceBetweenLines,
+                    getMaxParallelOffset: this.props.maxParallelOffset,
+                    getMinParallelOffset: this.props.minParallelOffset,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),

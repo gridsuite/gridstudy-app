@@ -10,18 +10,22 @@ import GL from '@luma.gl/constants';
 const defaultProps = {
     getLineParallelIndex: {type: 'accessor', value: 0},
     getLineAngle: {type: 'accessor', value: 0},
-    getDistanceBetweenLines: {type: 'accessor', value: 1000},
-    getMaxParallelOffset: {type: 'accessor', value: 1},
-    getMinParallelOffset: {type: 'accessor', value: 50}
+    distanceBetweenLines: {type: 'number', value: 1000},
+    maxParallelOffset: {type: 'number', value: 100},
+    minParallelOffset: {type: 'number', value: 3}
 };
 
 /**
  * A layer based on PathLayer allowing to shift path by an offset + angle
- * props : parallelIndex
- *         lineAngle
- *         distanceBetweenLines
- *         maxParallelOffset
- *         minParallelOffset
+ * In addition to the shift for all points, the first point is also shifted
+ * to coincide to the end of "fork lines" starting from the substations.
+ * Needs to be kept in sync with ForkLineLayer and ArrowLayer because
+ * ForkLineLayer must connect to this and the arrows must overlap on this.
+ * props : getLineParallelIndex: real number representing the parallel translation, normalized to distanceBetweenLines
+ *         getLineAngle: line angle in radian
+ *         distanceBetweenLines: distance in meters between line when no pixel clamping is applied
+ *         maxParallelOffset: max pixel distance
+ *         minParallelOffset: min pixel distance
  */
 export default class ParallelPathLayer extends PathLayer {
 
@@ -92,9 +96,9 @@ gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
             uniforms:
                 {
                     ...uniforms,
-                    distanceBetweenLines: this.props.getDistanceBetweenLines(),
-                    maxParallelOffset: this.props.getMaxParallelOffset(),
-                    minParallelOffset: this.props.getMinParallelOffset()
+                    distanceBetweenLines: this.props.distanceBetweenLines,
+                    maxParallelOffset: this.props.maxParallelOffset,
+                    minParallelOffset: this.props.minParallelOffset
                 }
         })
     }

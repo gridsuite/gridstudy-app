@@ -43,11 +43,21 @@ const defaultProps = {
     animated: { type: 'boolean', value: true },
     getLineParallelIndex: { type: 'accessor', value: 0 },
     getLineAngle: { type: 'accessor', value: 0 },
-    getDistanceBetweenLines: { type: 'accessor', value: 1000 },
-    getMaxParallelOffset: { type: 'accessor', value: 1 },
-    getMinParallelOffset: { type: 'accessor', value: 50 },
+    distanceBetweenLines: { type: 'number', value: 1000 },
+    maxParallelOffset: { type: 'number', value: 100 },
+    minParallelOffset: { type: 'number', value: 3 },
 };
 
+/**
+ * A layer that draws arrows over the lines between voltage levels. The arrows are drawn on a direct line
+ * or with a parallel offset. The initial point is also shifted to coincide with the fork line ends.
+ * Needs to be kept in sync with ForkLineLayer and ParallelPathLayer because they draw the lines.
+ * props : getLineParallelIndex: accessor for real number representing the parallel translation, normalized to distanceBetweenLines
+ *         getLineAngle: accessor for line angle in radian
+ *         distanceBetweenLines: distance in meters between line when no pixel clamping is applied
+ *         maxParallelOffset: max pixel distance
+ *         minParallelOffset: min pixel distance
+ */
 export default class ArrowLayer extends Layer {
     getShaders(id) {
         return super.getShaders({ vs, fs, modules: [project32, picking] });
@@ -399,9 +409,9 @@ export default class ArrowLayer extends Layer {
                 ],
                 timestamp,
                 webgl2,
-                distanceBetweenLines: this.props.getDistanceBetweenLines(),
-                maxParallelOffset: this.props.getMaxParallelOffset(),
-                minParallelOffset: this.props.getMinParallelOffset(),
+                distanceBetweenLines: this.props.distanceBetweenLines,
+                maxParallelOffset: this.props.maxParallelOffset,
+                minParallelOffset: this.props.minParallelOffset,
             })
             .draw();
     }

@@ -6,15 +6,25 @@
  */
 
 import {LineLayer} from "deck.gl";
+import GL from '@luma.gl/constants';
 
 const defaultProps = {
     getLineParallelIndex: {type: 'accessor', value: 0},
     getLineAngle: {type: 'accessor', value: 0},
-    getDistanceBetweenLines: {type: 'accessor', value: 1000},
-    getMaxParallelOffset: {type: 'accessor', value: 1},
-    getMinParallelOffset: {type: 'accessor', value: 50}
+    distanceBetweenLines: {type: 'number', value: 1000},
+    maxParallelOffset: {type: 'number', value: 100},
+    minParallelOffset: {type: 'number', value: 3}
 };
 
+/**
+ * A layer based on LineLayer that draws a fork line at a substation when there are multiple parallel lines
+ * Needs to be kept in sync with ArrowLayer and ParallelPathLayer because connect to the end of the fork lines.
+ * props : getLineParallelIndex: real number representing the parallel translation, normalized to distanceBetweenLines
+ *         getLineAngle: line angle in radian
+ *         distanceBetweenLines: distance in meters between line when no pixel clamping is applied
+ *         maxParallelOffset: max pixel distance
+ *         minParallelOffset: min pixel distance
+ */
 export default class ForkLineLayer extends LineLayer {
 
     getShaders() {
@@ -50,10 +60,12 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
         attributeManager.addInstanced({
             instanceLineParallelIndex: {
                 size: 1,
+                type: GL.FLOAT,
                 accessor: 'getLineParallelIndex'
             },
             instanceLineAngle: {
                 size: 1,
+                type: GL.FLOAT,
                 accessor: 'getLineAngle'
             },
         });
@@ -64,9 +76,9 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
             uniforms:
                 {
                     ...uniforms,
-                    distanceBetweenLines: this.props.getDistanceBetweenLines(),
-                    maxParallelOffset: this.props.getMaxParallelOffset(),
-                    minParallelOffset: this.props.getMinParallelOffset()
+                    distanceBetweenLines: this.props.getDistanceBetweenLines,
+                    maxParallelOffset: this.props.getMaxParallelOffset,
+                    minParallelOffset: this.props.getMinParallelOffset
                 }
         })
     }

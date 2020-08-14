@@ -157,7 +157,7 @@ void main(void) {
  
       // calculate vertex position in the clipspace
       vec3 offset = positions * project_pixel_size(sizePixels) * rotation;
-      vec4 vertexPosition = project_common_position_to_clipspace(vec4(arrowPosition + offset, 1));
+      vec4 vertexPosition = project_common_position_to_clipspace(vec4(arrowPosition + offset, 1)); 
 
       // calculate translation for the parallels lines, use the angle calculated from origin/destination
       // to maintain the same translation between segments
