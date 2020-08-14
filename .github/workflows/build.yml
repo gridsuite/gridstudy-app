@@ -33,4 +33,4 @@ jobs:
               uses: gridsuite/broadcast-event@master
               with:
                   token: ${{ secrets.REPO_ACCESS_TOKEN }}
-                  event-type: gridstudy_updated
+                  event-type: gridstudy_app_updated
