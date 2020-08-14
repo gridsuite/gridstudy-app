@@ -18,7 +18,6 @@ const START_ARROW_POSITION = 0.1;
 const END_ARROW_POSITION = 0.9;
 
 export const LineFlowMode = {
-    NONE: 'none',
     STATIC_ARROWS: 'staticArrows',
     ANIMATED_ARROWS: 'animatedArrows',
     FEEDERS: 'feeders',
@@ -383,7 +382,7 @@ class LineLayer extends CompositeLayer {
                         this.props.lineFlowMode ===
                         LineFlowMode.ANIMATED_ARROWS,
                     visible:
-                        this.props.lineFlowMode !== LineFlowMode.NONE &&
+                        this.props.lineFlowHidden &&
                         this.props.filteredNominalVoltages.includes(
                             compositeData.nominalVoltage
                         ),
@@ -496,7 +495,8 @@ LineLayer.defaultProps = {
     getNominalVoltageColor: { type: 'accessor', value: [255, 255, 255] },
     disconnectedLineColor: { type: 'color', value: [255, 255, 255] },
     filteredNominalVoltages: [],
-    lineFlowMode: LineFlowMode.NONE,
+    lineFlowMode: LineFlowMode.FEEDERS,
+    lineFlowHidden: true,
     lineFullPath: true,
     lineParallelPath: true,
     labelSize: 16,
