@@ -14,6 +14,11 @@
   "delete": "Delete",
   "filter": "Filter",
 
+  "settings": "Settings",
+  "logout": "Logout",
+  "login": "Login",
+  "connection": "Connection",
+
   "deleteStudy": "Delete Study",
   "deleteStudyMsg": "Are you sure you want to delete the study?",
   "studyNameDidNotMatchMsg": "The given study name did not match with ",
@@ -21,6 +26,12 @@
 
   "renameStudyMsg": "New study name:",
   "renameStudy": "Rename study",
+
+  "exportNetwork": "Export the network",
+  "export": "Export",
+  "format": "Format",
+  "exportFormat": "Format of the export",
+  "exportStudyErrorMsg": "No export format specified",
 
   "studyNameErrorMsg": "Study name should not be empty",
   "caseNameErrorMsg": "Please select the case name",
@@ -42,6 +53,8 @@
   "parameters": "Parameters",
   "theme": "Theme",
   "close": "Close",
+  "goFullScreen": "Full screen",
+  "exitFullScreen": "Exit full screen mode",
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",
   "CBAll": "All",

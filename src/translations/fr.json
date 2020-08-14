@@ -14,6 +14,11 @@
   "delete": "Supprimer",
   "filter": "Filtre",
 
+  "settings": "Paramètres",
+  "logout": "Se déconnecter",
+  "login": "Se connecter",
+  "connection": "Connexion",
+
   "deleteStudy": "Supprimer l'étude",
   "deleteStudyMsg": "Êtes-vous sûr de vouloir supprimer l'étude ?",
   "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
@@ -21,6 +26,12 @@
 
   "renameStudyMsg": "Nouveau nom de l'étude :",
   "renameStudy": "Renommer l'étude",
+
+  "exportNetwork": "Exporter le réseau",
+  "export": "Exporter",
+  "format": "Format",
+  "exportFormat": "Format de l'export",
+  "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
 
   "studyNameErrorMsg": "Le nom de l'étude ne doit pas être vide",
   "caseNameErrorMsg": "Veuillez sélectionner le nom de la situation",
