@@ -7,18 +7,9 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
-let PREFIX_CASE_QUERIES;
-let PREFIX_STUDY_QUERIES;
-let PREFIX_NOTIFICATION_WS;
-if (process.env.REACT_APP_USE_AUTHENTICATION === 'true') {
-    PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
-    PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-    PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
-} else {
-    PREFIX_CASE_QUERIES = process.env.REACT_APP_API_CASE_SERVER;
-    PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_STUDY_SERVER;
-    PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_NOTIFICATION_SERVER;
-}
+let PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
+let PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
+let PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
 
 function getToken() {
     const state = store.getState();
