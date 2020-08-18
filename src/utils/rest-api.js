@@ -23,10 +23,9 @@ function backendFetch(url, init) {
         );
     }
     const initCopy = Object.assign({}, init);
-    if (process.env.REACT_APP_USE_AUTHENTICATION === 'true') {
-        initCopy.headers = new Headers(initCopy.headers || {});
-        initCopy.headers.append('Authorization', 'Bearer ' + getToken());
-    }
+    initCopy.headers = new Headers(initCopy.headers || {});
+    initCopy.headers.append('Authorization', 'Bearer ' + getToken());
+
     return fetch(url, initCopy);
 }
 
@@ -224,11 +223,8 @@ export function connectNotificationsWebsocket(studyName) {
     const wsadress =
         wsbase + PREFIX_NOTIFICATION_WS + '/notify?studyName=' + studyName;
     let wsaddressWithToken;
-    if (process.env.REACT_APP_USE_AUTHENTICATION === 'true') {
-        wsaddressWithToken = wsadress + '&access_token=' + getToken();
-    } else {
-        wsaddressWithToken = wsadress;
-    }
+    wsaddressWithToken = wsadress + '&access_token=' + getToken();
+
     const rws = new ReconnectingWebSocket(wsaddressWithToken);
     // don't log the token, it's private
     rws.onopen = function (event) {
