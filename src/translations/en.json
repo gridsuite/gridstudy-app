@@ -14,11 +14,6 @@
   "delete": "Delete",
   "filter": "Filter",
 
-  "settings": "Settings",
-  "logout": "Logout",
-  "login": "Login",
-  "connection": "Connection",
-
   "deleteStudy": "Delete Study",
   "deleteStudyMsg": "Are you sure you want to delete the study?",
   "studyNameDidNotMatchMsg": "The given study name did not match with ",
@@ -53,8 +48,6 @@
   "parameters": "Parameters",
   "theme": "Theme",
   "close": "Close",
-  "goFullScreen": "Full screen",
-  "exitFullScreen": "Exit full screen mode",
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",
   "CBAll": "All",
