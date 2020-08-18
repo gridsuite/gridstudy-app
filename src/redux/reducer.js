@@ -12,12 +12,14 @@ import {
     getLocalStorageDiagonalLabel,
     getLocalStorageLineFlowMode,
     getLocalStorageLineFullPath,
+    getLocalStorageLineParallelPath,
     getLocalStorageTheme,
     getLocalStorageUseName,
     saveLocalStorageCenterLabel,
     saveLocalStorageDiagonalLabel,
     saveLocalStorageLineFlowMode,
     saveLocalStorageLineFullPath,
+    saveLocalStorageLineParallelPath,
     saveLocalStorageTheme,
     saveLocalStorageUseName,
 } from './local-storage';
@@ -28,6 +30,7 @@ import {
     DIAGONAL_LABEL,
     LINE_FLOW_MODE,
     LINE_FULL_PATH,
+    LINE_PARALLEL_PATH,
     LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
     LOAD_NETWORK_SUCCESS,
@@ -58,6 +61,7 @@ const initialState = {
     centerLabel: getLocalStorageCenterLabel(),
     diagonalLabel: getLocalStorageDiagonalLabel(),
     lineFullPath: getLocalStorageLineFullPath(),
+    lineParallelPath: getLocalStorageLineParallelPath(),
     lineFlowMode: getLocalStorageLineFlowMode(),
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
@@ -140,6 +144,11 @@ export const reducer = createReducer(initialState, {
     [LINE_FULL_PATH]: (state) => {
         state.lineFullPath = !state.lineFullPath;
         saveLocalStorageLineFullPath(state.lineFullPath);
+    },
+
+    [LINE_PARALLEL_PATH]: (state) => {
+        state.lineParallelPath = !state.lineParallelPath;
+        saveLocalStorageLineParallelPath(state.lineParallelPath);
     },
 
     [LINE_FLOW_MODE]: (state, action) => {
