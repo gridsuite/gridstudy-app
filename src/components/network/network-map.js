@@ -229,7 +229,7 @@ const NetworkMap = forwardRef((props, ref) => {
         }
     }
 
-    function cursorHandler({}) {
+    function cursorHandler() {
         return cursorType;
     }
 
