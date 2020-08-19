@@ -172,6 +172,7 @@ export default class GeoData {
             }
         }
         return {
+            idx: lowerBound,
             segment: positions.slice(lowerBound, lowerBound + 2),
             remainingDistance: wantedDistance - cumulativeDistances[lowerBound],
         };
@@ -181,7 +182,10 @@ export default class GeoData {
         positions,
         cumulativeDistances,
         arrowPosition,
-        arrowDirection
+        arrowDirection,
+        lineParallelIndex,
+        lineAngle,
+        distanceBetweenLines
     ) {
         if (arrowPosition > 1 || arrowPosition < 0) {
             throw new Error(
@@ -197,6 +201,13 @@ export default class GeoData {
         }
         let lineDistance = cumulativeDistances[cumulativeDistances.length - 1];
         let wantedDistance = lineDistance * arrowPosition;
+
+        if (Math.abs(lineParallelIndex) != 9999 && cumulativeDistances.length == 2) {
+            // For parallel lines, the initial fork line distance does not count
+            // when there are no intermediate points between the substations.
+            // I'm not sure this is entirely correct but it displays well enough.
+            wantedDistance = wantedDistance - 2 * distanceBetweenLines * arrowPosition;
+        }
 
         let goodSegment = this.findSegment(
             positions,
@@ -220,21 +231,10 @@ export default class GeoData {
         }
         let remainingDistance = goodSegment.remainingDistance * multiplier;
 
-        // We don't have the exact same angle calculation as in the arrow shader, and this
-        // seems to give more approaching results
-        let angle = getRhumbLineBearing(
-            goodSegment.segment[0],
-            goodSegment.segment[1]
-        );
-        let angle2 = getGreatCircleBearing(
-            goodSegment.segment[0],
-            goodSegment.segment[1]
-        );
-        const coeff = 0.1;
-        angle = coeff * angle + (1 - coeff) * angle2;
-
+        let angle = this.getMapAngle(goodSegment.segment[0], goodSegment.segment[1]);
         const neededOffset = this.getLabelOffset(angle, 30, arrowDirection);
-        return {
+
+        const position = {
             position: computeDestinationPoint(
                 goodSegment.segment[0],
                 remainingDistance,
@@ -243,6 +243,38 @@ export default class GeoData {
             angle: angle,
             offset: neededOffset,
         };
+        if (Math.abs(lineParallelIndex) != 9999) {
+            // apply parallel spread between lines
+            position.position = computeDestinationPoint(
+                position.position,
+                distanceBetweenLines * lineParallelIndex,
+                lineAngle + 90);
+            if (cumulativeDistances.length == 2) {
+                // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
+                // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
+                position.position = computeDestinationPoint(
+                    position.position,
+                    -distanceBetweenLines,
+                    lineAngle);
+            } else if (goodSegment.idx == 0 || goodSegment.idx == cumulativeDistances.length - 2) {
+                // When the label is on the first or last segment and there is an intermediate point,
+                // when must shift by the percentange of position of the label on this segment
+                const segmentDistance = cumulativeDistances[goodSegment.idx+1] - cumulativeDistances[goodSegment.idx];
+                const alreadyDoneDistance = segmentDistance - remainingDistance;
+                let labelDistanceInSegment;
+                if (goodSegment.idx == 0) {
+                    labelDistanceInSegment = -alreadyDoneDistance;
+                } else {
+                    labelDistanceInSegment = remainingDistance;
+                }
+                const labelPercentage = labelDistanceInSegment / segmentDistance;
+                position.position = computeDestinationPoint(
+                    position.position,
+                    distanceBetweenLines * labelPercentage,
+                    lineAngle);
+            }
+        }
+        return position;
     }
 
     getLabelOffset(angle, offsetDistance, arrowDirection) {
@@ -264,4 +296,16 @@ export default class GeoData {
             -Math.sin(radiantAngle) * offsetDistance * direction,
         ];
     }
+
+    //returns the angle between point1 and point2 in degrees [0-360)
+    getMapAngle(point1, point2) {
+        // We don't have the exact same angle calculation as in the arrow shader, and this
+        // seems to give more approaching results
+        let angle = getRhumbLineBearing(point1, point2);
+        let angle2 = getGreatCircleBearing(point1, point2);
+        const coeff = 0.1;
+        angle = coeff * angle + (1 - coeff) * angle2;
+        return angle;
+    }
+
 }
