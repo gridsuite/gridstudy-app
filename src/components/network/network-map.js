@@ -65,6 +65,8 @@ const NetworkMap = forwardRef((props, ref) => {
 
     const useName = useSelector((state) => state.useName);
 
+    const [cursorType, setCursorType] = useState('grab');
+
     useImperativeHandle(
         ref,
         () => ({
@@ -227,6 +229,10 @@ const NetworkMap = forwardRef((props, ref) => {
         }
     }
 
+    function cursorHandler({}) {
+        return cursorType;
+    }
+
     const layers = [];
 
     if (props.network !== null && props.geoData !== null) {
@@ -243,6 +249,9 @@ const NetworkMap = forwardRef((props, ref) => {
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
                 pickable: true,
+                onHover: ({ object, x, y }) => {
+                    setCursorType(object ? 'pointer' : 'grab');
+                },
             })
         );
 
@@ -264,6 +273,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 labelSize: LABEL_SIZE,
                 pickable: true,
                 onHover: ({ object, x, y }) => {
+                    setCursorType(object ? 'pointer' : 'grab');
                     setTooltip({
                         message: object
                             ? useName
@@ -300,6 +310,8 @@ const NetworkMap = forwardRef((props, ref) => {
             initialViewState={initialViewState}
             controller={{ doubleClickZoom: false }}
             ContextProvider={MapContext.Provider}
+            getCursor={cursorHandler}
+            pickingRadius={5}
         >
             <StaticMap
                 mapStyle={theme.mapboxStyle}
