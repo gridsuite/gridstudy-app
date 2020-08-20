@@ -25,7 +25,12 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { createStudy, fetchCases, fetchStudies } from '../utils/rest-api';
+import {
+    createStudy,
+    fetchCases,
+    fetchStudies,
+    studyExists,
+} from '../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -185,7 +190,21 @@ export const CreateStudyForm = () => {
     };
 
     const handleStudyNameChanges = (e) => {
-        setStudyName(e.target.value);
+        const name = e.target.value;
+        setStudyName(name);
+
+        clearTimeout(e.timeout);
+        e.timeout = setTimeout(function () {
+            if (name !== '') {
+                studyExists(name).then((res) => {
+                    if (res.ok) {
+                        console.log(res);
+                        console.log(res.studies);
+                        console.log('name used');
+                    }
+                });
+            }
+        }, 1000);
     };
 
     const handleCreateNewStudy = () => {
