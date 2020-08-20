@@ -21,20 +21,20 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import StudyPane from './study-pane';
 import StudyManager from './study-manager';
-import { TopBar } from '@gridsuite/commons-ui';
 import { LIGHT_THEME } from '../redux/actions';
 import Parameters from './parameters';
 
 import {
+    TopBar,
+    AuthenticationRouter,
     logout,
     getPreLoginPath,
-    initializeAuthentication,
-} from '../utils/authentication/AuthService';
+    initializeAuthenticationProd,
+} from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
 import { FormattedMessage } from 'react-intl';
-import AuthenticationRouter from './authentication-components/authentication-router';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -85,11 +85,10 @@ const App = () => {
     });
 
     useEffect(() => {
-        initializeAuthentication(
+        initializeAuthenticationProd(
             dispatch,
             matchSilentRenewCallbackUrl != null,
-            fetch('idpSettings.json'),
-            process.env.REACT_APP_USE_AUTHENTICATION
+            fetch('idpSettings.json')
         )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
@@ -122,7 +121,8 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar
-                    appName="GridStudy"
+                    appName="Study"
+                    appColor="#0CA789"
                     onParametersClick={() => showParametersClicked()}
                     onLogoutClick={() => logout(dispatch, userManager.instance)}
                     onLogoClick={() => onLogoClicked()}
