@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 const INITIAL_POSITION = [0, 0];
 
 const StudyPane = () => {
-    const { studyName } = useParams();
+    const studyName = decodeURIComponent(useParams()['studyName']);
 
     const network = useSelector((state) => state.network);
 
@@ -149,9 +149,9 @@ const StudyPane = () => {
     function loadNetwork(studyName) {
         console.info(`Loading network of study '${studyName}'...`);
 
-        const substations = fetchSubstations(decodeURIComponent(studyName));
+        const substations = fetchSubstations(studyName);
 
-        const lines = fetchLines(decodeURIComponent(studyName));
+        const lines = fetchLines(studyName);
 
         Promise.all([substations, lines])
             .then((values) => {
@@ -169,11 +169,9 @@ const StudyPane = () => {
     function loadGeoData(studyName) {
         console.info(`Loading geo data of study '${studyName}'...`);
 
-        const substationPositions = fetchSubstationPositions(
-            decodeURIComponent(studyName)
-        );
+        const substationPositions = fetchSubstationPositions(studyName);
 
-        const linePositions = fetchLinePositions(decodeURIComponent(studyName));
+        const linePositions = fetchLinePositions(studyName);
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
@@ -191,7 +189,7 @@ const StudyPane = () => {
     function connectNotifications(studyName) {
         console.info(`Connecting to notifications '${studyName}'...`);
 
-        const ws = connectNotificationsWebsocket(decodeURIComponent(studyName));
+        const ws = connectNotificationsWebsocket(studyName);
         ws.onmessage = function (event) {
             dispatch(studyUpdated(JSON.parse(event.data)));
         };
@@ -231,11 +229,7 @@ const StudyPane = () => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(
-                decodeURIComponent(studyName),
-                breakerId,
-                open
-            ).then((response) => {
+            updateSwitchState(studyName, breakerId, open).then((response) => {
                 if (!response.ok) {
                     console.error(response);
                     eltOpen.style.visibility = open ? 'hidden' : 'visible';
@@ -446,7 +440,7 @@ const StudyPane = () => {
                                             : displayedVoltageLevelId
                                     }
                                     svgUrl={getVoltageLevelSingleLineDiagram(
-                                        decodeURIComponent(studyName),
+                                        studyName,
                                         displayedVoltageLevelId,
                                         useName,
                                         centerName,

@@ -223,7 +223,10 @@ export function renameStudy(studyName, newStudyName) {
 export function startLoadFlow(studyName) {
     console.info('Running loadflow on ' + studyName + '...');
     const startLoadFlowUrl =
-        PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/loadflow/run';
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyName) +
+        '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
