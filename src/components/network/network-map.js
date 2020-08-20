@@ -44,14 +44,7 @@ const LABEL_SIZE = 16;
 const NetworkMap = forwardRef((props, ref) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
 
-    const [lineFlowMode, setLineFlowMode] = useState(LineFlowMode.NONE);
-
-    // update lineFlowMode state in case of lineFlowMode prop change
-    useEffect(() => {
-        if (lastViewStateRef.current) {
-            updateLineFlowMode(lastViewStateRef.current);
-        }
-    }, [props.lineFlowMode]);
+    const [lineFlowHidden, setLineFlowHidden] = useState(true);
 
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({
@@ -180,14 +173,6 @@ const NetworkMap = forwardRef((props, ref) => {
         }
     }
 
-    function updateLineFlowMode(viewState) {
-        if (viewState.zoom >= props.arrowsZoomThreshold) {
-            setLineFlowMode(props.lineFlowMode);
-        } else if (viewState.zoom < props.arrowsZoomThreshold) {
-            setLineFlowMode(LineFlowMode.NONE);
-        }
-    }
-
     function onViewStateChange(info) {
         lastViewStateRef.current = info.viewState;
         if (
@@ -206,7 +191,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 setLabelsVisible(false);
             }
 
-            updateLineFlowMode(info.viewState);
+            setLineFlowHidden(info.viewState.zoom >= props.arrowsZoomThreshold);
         }
     }
 
@@ -270,8 +255,10 @@ const NetworkMap = forwardRef((props, ref) => {
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
-                lineFlowMode: lineFlowMode,
+                lineFlowMode: props.lineFlowMode,
+                lineFlowHidden: lineFlowHidden,
                 lineFullPath: props.lineFullPath,
+                lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
@@ -346,7 +333,9 @@ NetworkMap.defaultProps = {
     filteredNominalVoltages: null,
     initialPosition: [0, 0],
     lineFullPath: true,
-    lineFlowMode: LineFlowMode.NONE,
+    lineParallelPath: true,
+    lineFlowMode: LineFlowMode.FEEDERS,
+    lineFlowHidden: true,
 };
 
 NetworkMap.propTypes = {
@@ -359,7 +348,9 @@ NetworkMap.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     lineFullPath: PropTypes.bool,
+    lineParallelPath: PropTypes.bool,
     lineFlowMode: PropTypes.instanceOf(LineFlowMode),
+    lineFlowHidden: PropTypes.bool,
 };
 
 export default React.memo(NetworkMap);

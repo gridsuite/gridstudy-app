@@ -7,18 +7,9 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
-let PREFIX_CASE_QUERIES;
-let PREFIX_STUDY_QUERIES;
-let PREFIX_NOTIFICATION_WS;
-if (process.env.REACT_APP_USE_AUTHENTICATION === 'true') {
-    PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
-    PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-    PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
-} else {
-    PREFIX_CASE_QUERIES = process.env.REACT_APP_API_CASE_SERVER;
-    PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_STUDY_SERVER;
-    PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_NOTIFICATION_SERVER;
-}
+let PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
+let PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
+let PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
 
 function getToken() {
     const state = store.getState();
@@ -32,10 +23,9 @@ function backendFetch(url, init) {
         );
     }
     const initCopy = Object.assign({}, init);
-    if (process.env.REACT_APP_USE_AUTHENTICATION === 'true') {
-        initCopy.headers = new Headers(initCopy.headers || {});
-        initCopy.headers.append('Authorization', 'Bearer ' + getToken());
-    }
+    initCopy.headers = new Headers(initCopy.headers || {});
+    initCopy.headers.append('Authorization', 'Bearer ' + getToken());
+
     return fetch(url, initCopy);
 }
 
@@ -242,15 +232,22 @@ export function connectNotificationsWebsocket(studyName) {
         '/notify?studyName=' +
         encodeURIComponent(studyName);
     let wsaddressWithToken;
-    if (process.env.REACT_APP_USE_AUTHENTICATION === 'true') {
-        wsaddressWithToken = wsadress + '&access_token=' + getToken();
-    } else {
-        wsaddressWithToken = wsadress;
-    }
+    wsaddressWithToken = wsadress + '&access_token=' + getToken();
+
     const rws = new ReconnectingWebSocket(wsaddressWithToken);
     // don't log the token, it's private
     rws.onopen = function (event) {
         console.info('Connected Websocket ' + wsadress + ' ...');
     };
     return rws;
+}
+
+export function getAvailableExportFormats() {
+    console.info('get export formats');
+    const getExportFormatsUrl =
+        process.env.REACT_APP_API_STUDY_SERVER + '/v1/export-network-formats';
+    console.debug(getExportFormatsUrl);
+    return backendFetch(getExportFormatsUrl, {
+        method: 'get',
+    }).then((response) => response.json());
 }

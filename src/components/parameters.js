@@ -38,6 +38,7 @@ import {
     toggleCenterLabelState,
     toggleDiagonalLabelState,
     toggleLineFullPathState,
+    toggleLineParallelPathState,
     toggleUseNameState,
 } from '../redux/actions';
 import { LineFlowMode } from './network/line-layer';
@@ -66,6 +67,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const centerLabel = useSelector((state) => state.centerLabel);
     const diagonalLabel = useSelector((state) => state.diagonalLabel);
     const lineFullPath = useSelector((state) => state.lineFullPath);
+    const lineParallelPath = useSelector((state) => state.lineParallelPath);
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
     const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -180,6 +182,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(lineFullPath, 'lineFullPath', () =>
                     dispatch(toggleLineFullPathState())
+                )}
+                <MakeLineSeparator />
+                {MakeSwitch(lineParallelPath, 'lineParallelPath', () =>
+                    dispatch(toggleLineParallelPathState())
                 )}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
