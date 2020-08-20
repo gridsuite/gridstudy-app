@@ -229,8 +229,8 @@ const NetworkMap = forwardRef((props, ref) => {
         }
     }
 
-    function cursorHandler() {
-        return cursorType;
+    function cursorHandler({ isDragging }) {
+        return isDragging ? 'grabbing' : cursorType;
     }
 
     const layers = [];
