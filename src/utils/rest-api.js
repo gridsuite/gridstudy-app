@@ -58,7 +58,7 @@ export function getVoltageLevelSingleLineDiagram(
         '/v1/studies/' +
         encodeURIComponent(studyName) +
         '/network/voltage-levels/' +
-        voltageLevelId +
+        encodeURIComponent(voltageLevelId) +
         '/svg-and-metadata?' +
         new URLSearchParams({
             useName: useName,
@@ -144,7 +144,7 @@ export function createStudy(
             '/v1/studies/' +
             encodeURIComponent(studyName) +
             '/cases/' +
-            caseName +
+            encodeURIComponent(caseName) +
             '?' +
             new URLSearchParams({ description: studyDescription }).toString();
         console.debug(createStudyWithExistingCaseUrl);
@@ -185,7 +185,7 @@ export function updateSwitchState(studyName, switchId, open) {
         '/v1/studies/' +
         encodeURIComponent(studyName) +
         '/network-modification/switches/' +
-        switchId +
+        encodeURIComponent(switchId) +
         '?' +
         new URLSearchParams({ open: open }).toString();
     console.debug(updateSwitchUrl);
