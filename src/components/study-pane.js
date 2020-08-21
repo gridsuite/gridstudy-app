@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 const INITIAL_POSITION = [0, 0];
 
 const StudyPane = () => {
-    const studyName = decodeURIComponent(useParams()['studyName']);
+    const studyName = decodeURIComponent(useParams().studyName);
 
     const network = useSelector((state) => state.network);
 
