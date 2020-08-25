@@ -44,14 +44,7 @@ const LABEL_SIZE = 16;
 const NetworkMap = forwardRef((props, ref) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
 
-    const [lineFlowMode, setLineFlowMode] = useState(LineFlowMode.NONE);
-
-    // update lineFlowMode state in case of lineFlowMode prop change
-    useEffect(() => {
-        if (lastViewStateRef.current) {
-            updateLineFlowMode(lastViewStateRef.current);
-        }
-    }, [props.lineFlowMode]);
+    const [lineFlowHidden, setLineFlowHidden] = useState(true);
 
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({
@@ -71,6 +64,8 @@ const NetworkMap = forwardRef((props, ref) => {
     }, [theme]);
 
     const useName = useSelector((state) => state.useName);
+
+    const [cursorType, setCursorType] = useState('grab');
 
     useImperativeHandle(
         ref,
@@ -180,14 +175,6 @@ const NetworkMap = forwardRef((props, ref) => {
         }
     }
 
-    function updateLineFlowMode(viewState) {
-        if (viewState.zoom >= props.arrowsZoomThreshold) {
-            setLineFlowMode(props.lineFlowMode);
-        } else if (viewState.zoom < props.arrowsZoomThreshold) {
-            setLineFlowMode(LineFlowMode.NONE);
-        }
-    }
-
     function onViewStateChange(info) {
         lastViewStateRef.current = info.viewState;
         if (
@@ -206,7 +193,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 setLabelsVisible(false);
             }
 
-            updateLineFlowMode(info.viewState);
+            setLineFlowHidden(info.viewState.zoom >= props.arrowsZoomThreshold);
         }
     }
 
@@ -234,12 +221,22 @@ const NetworkMap = forwardRef((props, ref) => {
             info.layer &&
             info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX) &&
             info.object &&
-            info.object.substationId // is a voltage level marker, not a substation text
+            (info.object.substationId || info.object.voltageLevels) // is a voltage level marker, or a substation text
         ) {
+            let idVl;
+            if (info.object.substationId) {
+                idVl = info.object.id;
+            } else if (info.object.voltageLevels) {
+                idVl = info.object.voltageLevels[0].id; // first voltage level of the substation, at the moment
+            }
             if (props.onSubstationClick) {
-                props.onSubstationClick(info.object.id);
+                props.onSubstationClick(idVl);
             }
         }
+    }
+
+    function cursorHandler({ isDragging }) {
+        return isDragging ? 'grabbing' : cursorType;
     }
 
     const layers = [];
@@ -258,6 +255,9 @@ const NetworkMap = forwardRef((props, ref) => {
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
                 pickable: true,
+                onHover: ({ object, x, y }) => {
+                    setCursorType(object ? 'pointer' : 'grab');
+                },
             })
         );
 
@@ -270,8 +270,10 @@ const NetworkMap = forwardRef((props, ref) => {
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
-                lineFlowMode: lineFlowMode,
+                lineFlowMode: props.lineFlowMode,
+                lineFlowHidden: lineFlowHidden,
                 lineFullPath: props.lineFullPath,
+                lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
@@ -313,6 +315,8 @@ const NetworkMap = forwardRef((props, ref) => {
             initialViewState={initialViewState}
             controller={{ doubleClickZoom: false }}
             ContextProvider={MapContext.Provider}
+            getCursor={cursorHandler}
+            pickingRadius={5}
         >
             <StaticMap
                 mapStyle={theme.mapboxStyle}
@@ -346,7 +350,9 @@ NetworkMap.defaultProps = {
     filteredNominalVoltages: null,
     initialPosition: [0, 0],
     lineFullPath: true,
-    lineFlowMode: LineFlowMode.NONE,
+    lineParallelPath: true,
+    lineFlowMode: LineFlowMode.FEEDERS,
+    lineFlowHidden: true,
 };
 
 NetworkMap.propTypes = {
@@ -359,7 +365,9 @@ NetworkMap.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     lineFullPath: PropTypes.bool,
+    lineParallelPath: PropTypes.bool,
     lineFlowMode: PropTypes.instanceOf(LineFlowMode),
+    lineFlowHidden: PropTypes.bool,
 };
 
 export default React.memo(NetworkMap);

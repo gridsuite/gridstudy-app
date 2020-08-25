@@ -101,7 +101,7 @@ const App = () => {
     }, []);
 
     function studyClickHandler(studyName) {
-        history.push('/studies/' + studyName);
+        history.push('/studies/' + encodeURIComponent(studyName));
     }
 
     function showParametersClicked() {
@@ -121,7 +121,8 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar
-                    appName="GridStudy"
+                    appName="Study"
+                    appColor="#0CA789"
                     onParametersClick={() => showParametersClicked()}
                     onLogoutClick={() => logout(dispatch, userManager.instance)}
                     onLogoClick={() => onLogoClicked()}
