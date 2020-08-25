@@ -6,6 +6,8 @@
   "studyDescription": "description de l'étude",
   "caseName": "nom de la situation",
   "uploadCase": "télécharger la situation",
+  "public" : "publique",
+  "private" : "privée",
 
   "uploadMessage": " Aucun fichier sélectionné",
   "cancel": "ANNULER",

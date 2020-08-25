@@ -38,6 +38,8 @@ import {
 } from '../redux/actions';
 import { store } from '../redux/store';
 import CardActionArea from '@material-ui/core/CardActionArea';
+import RadioGroup from "@material-ui/core/RadioGroup";
+import Radio from "@material-ui/core/Radio";
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -155,6 +157,7 @@ export const CreateStudyForm = () => {
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
+    const [studyPrivacy, setStudyPrivacy] = React.useState('public');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [loading, setLoading] = React.useState(false);
@@ -188,6 +191,10 @@ export const CreateStudyForm = () => {
         setStudyName(e.target.value);
     };
 
+    const handleChangeStudyPrivacy = (event) => {
+        setStudyPrivacy(event.target.value);
+    };
+
     const handleCreateNewStudy = () => {
         if (studyName === '') {
             setCreateStudyErr(intl.formatMessage({ id: 'studyNameErrorMsg' }));
@@ -199,13 +206,20 @@ export const CreateStudyForm = () => {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
+
+        let isPrivateStudy = false;
+        if (studyPrivacy === "private") {
+            isPrivateStudy = true
+        }
+
         setLoading(true);
         createStudy(
             caseExist,
             studyName,
             studyDescription,
             caseName,
-            selectedFile
+            selectedFile,
+            isPrivateStudy,
         ).then((res) => {
             if (res.ok) {
                 setCreateStudyErr('');
@@ -286,6 +300,11 @@ export const CreateStudyForm = () => {
                         fullWidth
                         label=<FormattedMessage id="studyDescription" />
                     />
+
+                    <RadioGroup aria-label="" name="studyPrivacy" value={studyPrivacy} onChange={handleChangeStudyPrivacy} row>
+                        <FormControlLabel value="public" control={<Radio />} label=<FormattedMessage id="public" /> />
+                        <FormControlLabel value="private" control={<Radio />} label=<FormattedMessage id="private" /> />
+                    </RadioGroup>
                     {caseExist && <SelectCase />}
                     {!caseExist && <UploadCase />}
                     {createStudyErr !== '' && (

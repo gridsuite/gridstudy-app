@@ -6,6 +6,7 @@
  */
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import jwt_decode from 'jwt-decode';
 
 let PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 let PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
@@ -25,6 +26,7 @@ function backendFetch(url, init) {
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
+    initCopy.headers.append('Subject', jwt_decode(getToken()).sub);
 
     return fetch(url, initCopy);
 }
@@ -33,7 +35,7 @@ export function fetchStudies() {
     console.info('Fetching studies...');
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies';
     console.debug(fetchStudiesUrl);
-    return backendFetch(fetchStudiesUrl).then((response) => response.json());
+    return backendFetch(fetchStudiesUrl).then((response) => response.json()).then(value => value.filter((current,index,array)=>array.findIndex(t=>(t.studyName === current.studyName))===index));
 }
 
 export function fetchCases() {
@@ -128,37 +130,24 @@ export function fetchLinePositions(studyName) {
     );
 }
 
-export function createStudy(
-    caseExist,
-    studyName,
-    studyDescription,
-    caseName,
-    selectedFile
-) {
+export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, isPrivateStudy) {
     console.info('Creating a new study...');
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append("description", studyDescription);
+    urlSearchParams.append("isPrivate", isPrivateStudy);
+
     if (caseExist) {
-        const createStudyWithExistingCaseUrl =
-            PREFIX_STUDY_QUERIES +
-            '/v1/studies/' +
-            studyName +
-            '/cases/' +
-            caseName +
-            '?' +
-            new URLSearchParams({ description: studyDescription }).toString();
+        const createStudyWithExistingCaseUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/cases/' + caseName + '?' + urlSearchParams.toString();
         console.debug(createStudyWithExistingCaseUrl);
         return backendFetch(createStudyWithExistingCaseUrl, {
             method: 'post',
         });
     } else {
-        const createStudyWithNewCaseUrl =
-            PREFIX_STUDY_QUERIES +
-            '/v1/studies/' +
-            studyName +
-            '?' +
-            new URLSearchParams({ description: studyDescription }).toString();
+        const createStudyWithNewCaseUrl = PREFIX_STUDY_QUERIES + "/v1/studies/" + studyName + "?" + urlSearchParams.toString();
         const formData = new FormData();
-        formData.append('caseFile', selectedFile);
+        formData.append("caseFile", selectedFile);
         console.debug(createStudyWithNewCaseUrl);
+
         return backendFetch(createStudyWithNewCaseUrl, {
             method: 'post',
             body: formData,
