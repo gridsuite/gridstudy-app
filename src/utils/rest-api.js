@@ -6,7 +6,6 @@
  */
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import jwt_decode from 'jwt-decode';
 
 let PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 let PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
@@ -26,7 +25,6 @@ function backendFetch(url, init) {
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
-    initCopy.headers.append('Subject', jwt_decode(getToken()).sub);
 
     return fetch(url, initCopy);
 }
