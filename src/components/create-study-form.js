@@ -244,9 +244,7 @@ export const CreateStudyForm = () => {
         setCreateStudyErr(errorMessage);
         setCreateButtonDisable(!isNameValid);
         setStudyNameValid(isNameValid);
-        isNameValid
-            ? setStudyNameInputColor(false)
-            : setStudyNameInputColor(true);
+        setStudyNameInputColor(!isNameValid);
     };
 
     const handleCreateNewStudy = () => {
