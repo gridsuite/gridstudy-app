@@ -350,7 +350,7 @@ export const CreateStudyForm = () => {
                             <div
                                 style={{
                                     display: 'inline-block',
-                                    'vertical-align': 'bottom',
+                                    verticalAlign: 'bottom',
                                 }}
                             >
                                 <CircularProgress
@@ -363,13 +363,10 @@ export const CreateStudyForm = () => {
                             <div
                                 style={{
                                     display: 'inline-block',
-                                    'vertical-align': 'bottom',
+                                    verticalAlign: 'bottom',
                                 }}
                             >
-                                <CheckIcon
-                                    color="green"
-                                    style={{ color: 'green' }}
-                                />
+                                <CheckIcon style={{ color: 'green' }} />
                             </div>
                         )}
                     </div>
