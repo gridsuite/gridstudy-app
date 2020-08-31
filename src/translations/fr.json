@@ -35,6 +35,7 @@
     "studyCreated": "Étude créée",
     "studyCreatingError": "Une erreur est survenue lors du création de l'étude",
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
+    "caseFileInvalid": "Le fichier de situation est incorrect",
 
     "useName": "Utiliser le nom à la place de l'identifiant",
     "diagonalLabel": "Afficher les noms en diagonal",

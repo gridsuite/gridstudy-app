@@ -32,7 +32,7 @@ function backendFetch(url, init) {
 export function fetchStudies() {
     console.info('Fetching studies...');
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies';
-    console.debug(fetchStudiesUrl);
+    console.info(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
 
@@ -128,14 +128,6 @@ export function fetchLinePositions(studyName) {
     );
 }
 
-// export function isStudyNameAlreadyUsed(studyName) {
-//     console.info(`Checking wether '${studyName}' is available or not...`);
-//     const isStudyNameAlreadyUsedUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/isStudyNameAlreadyUsed';
-//     return backendFetch(isStudyNameAlreadyUsedUrl).then((response) =>
-//         response.json()
-//     );
-// }
-
 export function getStudy(studyName) {
     console.info('Get study ' + studyName + ' ...');
     const getStudyUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName;
@@ -146,39 +138,11 @@ export function getStudy(studyName) {
 }
 
 export function studyExists(studyName) {
-    // console.info('Get study ' + studyName + ' ...');
-    // const studyExistsUrl =
-    //     process.env.REACT_APP_API_STUDY_SERVER +
-    //     '/v1/studies/' +
-    //     studyName +
-    //     '/exists';
-    // console.info(studyExistsUrl);
-    // return backendFetch(studyExistsUrl, {
-    //     method: 'post',
-    // });
-
-    // console.info('Get study ' + studyName + ' ...');
-    // const studyExistsUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
-    // return backendFetch(studyExistsUrl, {
-    //     method: 'post',
-    // });
-
     console.info('Check if ' + studyName + ' exists...');
     const studyExistsUrl =
         PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
     console.debug(studyExistsUrl);
-    return backendFetch(studyExistsUrl, { method: 'post' });
-
-    // return backendFetch(studyExistsUrl).then((response) =>
-    //     response.json()
-    // );
-    // return backendFetch(studyExistsUrl, {
-    //     method: 'POST',
-    //     headers: {
-    //         Accept: 'application/json',
-    //         'Content-Type': 'application/json'
-    //     },
-    // }).then((response) => response.json());
+    return backendFetch(studyExistsUrl, { method: 'get' });
 }
 
 export function createStudy(
