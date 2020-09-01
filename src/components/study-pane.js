@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 const INITIAL_POSITION = [0, 0];
 
 const StudyPane = () => {
-    const { studyName } = useParams();
+    const studyName = decodeURIComponent(useParams().studyName);
 
     const network = useSelector((state) => state.network);
 
@@ -83,6 +83,8 @@ const StudyPane = () => {
     const diagonalName = useSelector((state) => state.diagonalLabel);
 
     const lineFullPath = useSelector((state) => state.lineFullPath);
+
+    const lineParallelPath = useSelector((state) => state.lineParallelPath);
 
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
 
@@ -208,7 +210,7 @@ const StudyPane = () => {
         setUpdateSwitchMsg('');
         history.replace(
             '/studies/' +
-                studyName +
+                encodeURIComponent(studyName) +
                 stringify(
                     { voltageLevelId: voltageLevelId },
                     { addQueryPrefix: true }
@@ -217,7 +219,7 @@ const StudyPane = () => {
     }, []);
 
     function closeVoltageLevelDiagram() {
-        history.replace('/studies/' + studyName);
+        history.replace('/studies/' + encodeURIComponent(studyName));
     }
 
     const sldRef = useRef();
@@ -415,6 +417,7 @@ const StudyPane = () => {
                             initialZoom={1}
                             filteredNominalVoltages={filteredNominalVoltages}
                             lineFullPath={lineFullPath}
+                            lineParallelPath={lineParallelPath}
                             lineFlowMode={lineFlowMode}
                             ref={mapRef}
                             onSubstationClick={showVoltageLevelDiagram}

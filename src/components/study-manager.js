@@ -26,7 +26,6 @@ import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
 
 import { loadStudiesSuccess } from '../redux/actions';
 import { deleteStudy, fetchStudies, renameStudy } from '../utils/rest-api';
-
 import { CardHeader } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -34,12 +33,13 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Collapse from '@material-ui/core/Collapse';
 import CardActions from '@material-ui/core/CardActions';
 import clsx from 'clsx';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import withStyles from '@material-ui/core/styles/withStyles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { DeleteDialog, RenameDialog } from '../utils/dialogs';
+import { DeleteDialog, ExportDialog, RenameDialog } from '../utils/dialogs';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -88,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const DonwnloadIframe = 'downloadIframe';
 /**
  * Card displaying a study on the screen, with the ability to open and edit it
  * @param {object} study Study object containing ad hoc information to be displayed on the card
@@ -193,6 +194,25 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     /**
+     * Export dialog: window status value for exporting a network
+     */
+    const [openExportDialog, setOpenExport] = React.useState(false);
+
+    const handleOpenExport = () => {
+        setAnchorEl(null);
+        setOpenExport(true);
+    };
+
+    const handleCloseExport = () => {
+        setOpenExport(false);
+    };
+
+    const handleClickExport = (url) => {
+        window.open(url, DonwnloadIframe);
+        handleCloseExport();
+    };
+
+    /**
      * Status for displaying additional information
      */
     const [expanded, setExpanded] = React.useState(false);
@@ -276,6 +296,15 @@ const StudyCard = ({ study, onClick }) => {
                                 primary={<FormattedMessage id="rename" />}
                             />
                         </MenuItem>
+
+                        <MenuItem onClick={handleOpenExport}>
+                            <ListItemIcon>
+                                <GetAppIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={<FormattedMessage id="export" />}
+                            />
+                        </MenuItem>
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -309,6 +338,13 @@ const StudyCard = ({ study, onClick }) => {
                 title={useIntl().formatMessage({ id: 'renameStudy' })}
                 message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
                 currentName={study.studyName}
+            />
+            <ExportDialog
+                open={openExportDialog}
+                onClose={handleCloseExport}
+                onClick={handleClickExport}
+                studyName={study.studyName}
+                title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
         </div>
     );
@@ -359,6 +395,11 @@ const StudyManager = ({ onClick }) => {
                     </Grid>
                 ))}
             </Grid>
+            <iframe
+                id={DonwnloadIframe}
+                name={DonwnloadIframe}
+                style={{ visibility: 'hidden', width: 0, height: 0 }}
+            />
         </Container>
     );
 };
