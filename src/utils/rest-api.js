@@ -33,7 +33,7 @@ export function fetchStudies() {
     console.info('Fetching studies...');
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies';
     console.debug(fetchStudiesUrl);
-    return backendFetch(fetchStudiesUrl).then((response) => response.json()).then(value => value.filter((current,index,array)=>array.findIndex(t=>(t.studyName === current.studyName))===index));
+    return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
 
 export function fetchCases() {
