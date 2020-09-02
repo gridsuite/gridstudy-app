@@ -212,32 +212,37 @@ export const CreateStudyForm = () => {
         const name = e.target.value;
         setStudyName(name);
 
-        clearTimeout(e.timeout);
         setStudyNameValid(false);
         setLoadingCheckStudyName(true);
+
+        clearTimeout(e.timeout);
         e.timeout = setTimeout(function () {
-            if (name !== '') {
-                studyExists(name).then((response) => {
-                    if (response.ok) {
-                        getJsonData(response).then((value) => {
-                            if (value !== null) {
-                                setStudyFormState(
-                                    intl.formatMessage({
-                                        id: 'studyNameAlreadyUsed',
-                                    }),
-                                    false
-                                );
-                            } else {
-                                setStudyFormState('', true);
-                            }
-                        });
-                    }
-                });
-            } else {
-                setStudyNameValid(false);
-            }
-            setLoadingCheckStudyName(false);
+            updateStudyFormState(name);
         }, 700);
+    };
+
+    const updateStudyFormState = (inputValue) => {
+        if (inputValue !== '') {
+            studyExists(inputValue).then((response) => {
+                if (response.ok) {
+                    getJsonData(response).then((value) => {
+                        if (value !== null) {
+                            setStudyFormState(
+                                intl.formatMessage({
+                                    id: 'studyNameAlreadyUsed',
+                                }),
+                                false
+                            );
+                        } else {
+                            setStudyFormState('', true);
+                        }
+                    });
+                }
+            });
+        } else {
+            setStudyNameValid(false);
+        }
+        setLoadingCheckStudyName(false);
     };
 
     const setStudyFormState = (errorMessage, isNameValid) => {
@@ -373,7 +378,6 @@ export const CreateStudyForm = () => {
                         margin="dense"
                         value={studyDescription}
                         type="text"
-                        //fullWidth
                         style={{ width: '90%' }}
                         label=<FormattedMessage id="studyDescription" />
                     />
