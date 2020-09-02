@@ -54,6 +54,8 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+let typingTimer;
+
 const SelectCase = () => {
     const dispatch = useDispatch();
     const cases = useSelector((state) => state.cases);
@@ -211,12 +213,10 @@ export const CreateStudyForm = () => {
     const handleStudyNameChanges = (e) => {
         const name = e.target.value;
         setStudyName(name);
-
         setStudyNameValid(false);
         setLoadingCheckStudyName(true);
-
-        clearTimeout(e.timeout);
-        e.timeout = setTimeout(function () {
+        clearTimeout(typingTimer);
+        typingTimer = setTimeout(() => {
             updateStudyFormState(name);
         }, 700);
     };
