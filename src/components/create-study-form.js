@@ -198,7 +198,7 @@ export const CreateStudyForm = () => {
         setStudyDescription(e.target.value);
     };
 
-    const getJsonData = async (resp) => {
+    const getJsonData = (resp) => {
         return new Promise((resolve) => {
             if (resp) {
                 resp.json()

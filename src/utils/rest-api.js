@@ -138,7 +138,6 @@ export function getStudy(studyName) {
 }
 
 export function studyExists(studyName) {
-    console.info('Check if ' + studyName + ' exists...');
     const studyExistsUrl =
         PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
     console.debug(studyExistsUrl);
