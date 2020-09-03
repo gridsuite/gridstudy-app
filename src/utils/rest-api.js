@@ -32,7 +32,7 @@ function backendFetch(url, init) {
 export function fetchStudies() {
     console.info('Fetching studies...');
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies';
-    console.info(fetchStudiesUrl);
+    console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
 
@@ -151,7 +151,7 @@ export function createStudy(
     caseName,
     selectedFile
 ) {
-    console.info('Creating a new study...');
+    console.debug('Creating a new study...');
     if (caseExist) {
         const createStudyWithExistingCaseUrl =
             PREFIX_STUDY_QUERIES +
@@ -212,7 +212,7 @@ export function renameStudy(studyName, newStudyName) {
         '/v1/studies/' +
         studyName +
         '/rename';
-    console.info(renameStudiesUrl);
+    console.debug(renameStudiesUrl);
     return backendFetch(renameStudiesUrl, {
         method: 'POST',
         headers: {
