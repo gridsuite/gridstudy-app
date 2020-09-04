@@ -271,7 +271,7 @@ export const CreateStudyForm = () => {
                     setCreateStudyErr(
                         intl.formatMessage({ id: 'studyNameAlreadyUsed' })
                     );
-                } else if (res.status == 500) {
+                } else if (res.status === 500) {
                     res.json().then((data) => {
                         setCreateStudyErr(data.message);
                     });
