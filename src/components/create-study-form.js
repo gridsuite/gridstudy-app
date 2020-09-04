@@ -54,8 +54,6 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-let typingTimer;
-
 const SelectCase = () => {
     const dispatch = useDispatch();
     const cases = useSelector((state) => state.cases);
@@ -173,6 +171,8 @@ export const CreateStudyForm = () => {
     const [studyNameValid, setStudyNameValid] = React.useState(false);
     const [studyNameInputColor, setStudyNameInputColor] = React.useState(false);
 
+    const timer = React.useRef(0);
+
     const classes = useStyles();
     const intl = useIntl();
     const dispatch = useDispatch();
@@ -205,8 +205,8 @@ export const CreateStudyForm = () => {
         setStudyNameValid(false);
         setLoadingCheckStudyName(true);
 
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(() => {
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
             updateStudyFormState(name);
         }, 700);
     };
