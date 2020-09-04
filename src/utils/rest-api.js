@@ -128,15 +128,6 @@ export function fetchLinePositions(studyName) {
     );
 }
 
-export function getStudy(studyName) {
-    console.info('Get study ' + studyName + ' ...');
-    const getStudyUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName;
-    console.debug(getStudyUrl);
-    return backendFetch(getStudyUrl, {
-        method: 'get',
-    });
-}
-
 export function studyExists(studyName) {
     const studyExistsUrl =
         PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
