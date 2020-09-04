@@ -132,16 +132,15 @@ export function studyExists(studyName) {
     const studyExistsUrl =
         PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
     console.debug(studyExistsUrl);
-    return new Promise((resolve) => {
-        backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
+    return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
         if (response.ok) {
-            response.text().then((value) => {
-                return resolve(value !== '');
-            });
+            return response.text();
         }
-        });
-    });
+    }).then((value) => {
+        return value !== '';
+    })
 }
+
 
 export function createStudy(
     caseExist,
