@@ -164,12 +164,11 @@ export const CreateStudyForm = () => {
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [loading, setLoading] = React.useState(false);
-    const [createButtonDisable, setCreateButtonDisable] = useState(false);
+    const [studyInvalid, setStudyInvalid] = useState(false);
     const [loadingCheckStudyName, setLoadingCheckStudyName] = React.useState(
         false
     );
-    const [studyNameValid, setStudyNameValid] = React.useState(false);
-    const [studyNameInputColor, setStudyNameInputColor] = React.useState(false);
+    const [studyNameChecked, setStudyNameChecked] = React.useState(false);
 
     const timer = React.useRef();
 
@@ -202,7 +201,7 @@ export const CreateStudyForm = () => {
         const name = e.target.value;
         setStudyName(name);
 
-        setStudyNameValid(false);
+        setStudyNameChecked(false);
         setLoadingCheckStudyName(true);
 
         clearTimeout(timer.current);
@@ -226,16 +225,15 @@ export const CreateStudyForm = () => {
                 }
             });
         } else {
-            setStudyNameValid(false);
+            setStudyFormState('', false);
         }
         setLoadingCheckStudyName(false);
     };
 
     const setStudyFormState = (errorMessage, isNameValid) => {
         setCreateStudyErr(errorMessage);
-        setCreateButtonDisable(!isNameValid);
-        setStudyNameValid(isNameValid);
-        setStudyNameInputColor(!isNameValid);
+        setStudyInvalid(!isNameValid);
+        setStudyNameChecked(isNameValid);
     };
 
     const handleCreateNewStudy = () => {
@@ -277,8 +275,8 @@ export const CreateStudyForm = () => {
                     res.json().then((data) => {
                         setCreateStudyErr(data.message);
                     });
-                    setLoading(false);
                 }
+                setLoading(false);
             }
         });
     };
@@ -331,7 +329,7 @@ export const CreateStudyForm = () => {
                             margin="dense"
                             value={studyName}
                             type="text"
-                            error={studyNameInputColor}
+                            error={studyInvalid}
                             style={{ width: '90%' }}
                             label=<FormattedMessage id="studyName" />
                         />
@@ -348,7 +346,7 @@ export const CreateStudyForm = () => {
                                 />
                             </div>
                         )}
-                        {studyNameValid && (
+                        {studyNameChecked && (
                             <div
                                 style={{
                                     display: 'inline-block',
@@ -389,7 +387,7 @@ export const CreateStudyForm = () => {
                     </Button>
                     <Button
                         onClick={() => handleCreateNewStudy()}
-                        disabled={createButtonDisable}
+                        disabled={studyInvalid}
                         variant="outlined"
                     >
                         <FormattedMessage id="create" />

@@ -150,7 +150,7 @@ export function createStudy(
     caseName,
     selectedFile
 ) {
-    console.debug('Creating a new study...');
+    console.info('Creating a new study...');
     if (caseExist) {
         const createStudyWithExistingCaseUrl =
             PREFIX_STUDY_QUERIES +
