@@ -268,7 +268,7 @@ export const CreateStudyForm = () => {
                     dispatch(loadStudiesSuccess(studies));
                 });
             } else {
-                console.info('Error when creating the study');
+                console.debug('Error when creating the study');
                 if (res.status === 409) {
                     setCreateStudyErr(
                         intl.formatMessage({ id: 'studyNameAlreadyUsed' })
