@@ -201,8 +201,10 @@ export const CreateStudyForm = () => {
     const handleStudyNameChanges = (e) => {
         const name = e.target.value;
         setStudyName(name);
+
         setStudyNameValid(false);
         setLoadingCheckStudyName(true);
+
         clearTimeout(typingTimer);
         typingTimer = setTimeout(() => {
             updateStudyFormState(name);
