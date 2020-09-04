@@ -171,7 +171,7 @@ export const CreateStudyForm = () => {
     const [studyNameValid, setStudyNameValid] = React.useState(false);
     const [studyNameInputColor, setStudyNameInputColor] = React.useState(false);
 
-    const timer = React.useRef(0);
+    const timer = React.useRef();
 
     const classes = useStyles();
     const intl = useIntl();
