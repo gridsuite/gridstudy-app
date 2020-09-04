@@ -198,18 +198,6 @@ export const CreateStudyForm = () => {
         setStudyDescription(e.target.value);
     };
 
-    const getJsonData = (resp) => {
-        return new Promise((resolve) => {
-            if (resp) {
-                resp.json()
-                    .then((json) => resolve(json))
-                    .catch(() => resolve(null));
-            } else {
-                resolve(null);
-            }
-        });
-    };
-
     const handleStudyNameChanges = (e) => {
         const name = e.target.value;
         setStudyName(name);
@@ -224,19 +212,15 @@ export const CreateStudyForm = () => {
     const updateStudyFormState = (inputValue) => {
         if (inputValue !== '') {
             studyExists(inputValue).then((response) => {
-                if (response.ok) {
-                    getJsonData(response).then((value) => {
-                        if (value !== null) {
-                            setStudyFormState(
-                                intl.formatMessage({
-                                    id: 'studyNameAlreadyUsed',
-                                }),
-                                false
-                            );
-                        } else {
-                            setStudyFormState('', true);
-                        }
-                    });
+                if(response){
+                    setStudyFormState(
+                        intl.formatMessage({
+                            id: 'studyNameAlreadyUsed',
+                        }),
+                        false
+                    );
+                } else {
+                    setStudyFormState('', true);
                 }
             });
         } else {
@@ -288,8 +272,8 @@ export const CreateStudyForm = () => {
                         intl.formatMessage({ id: 'studyNameAlreadyUsed' })
                     );
                 } else if (res.status == 500) {
-                    getJsonData(res).then((value) => {
-                        setCreateStudyErr(value.message);
+                    res.json().then((data) => {
+                        setCreateStudyErr(data.message);
                     });
                     setLoading(false);
                 }
