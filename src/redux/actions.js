@@ -31,6 +31,12 @@ export function loadStudiesSuccess(studies) {
     return { type: LOAD_STUDIES_SUCCESS, studies: studies };
 }
 
+export const LOAD_TEMPORARY_STUDIES = 'LOAD_TEMPORARY_STUDIES';
+
+export function loadTemporaryStudies(temporaryStudies) {
+    return { type: LOAD_TEMPORARY_STUDIES, temporaryStudies: temporaryStudies };
+}
+
 export const LOAD_CASES_SUCCESS = 'LOAD_CASES_SUCCESS';
 
 export function loadCasesSuccess(cases) {

@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
     },
     message: {
         position: 'absolute',
-        marginTop: '130px',
+        lineHeight: 1.2,
     },
 }));
 
@@ -27,6 +27,7 @@ const LoaderWithOverlay = ({
     loaderSize,
     loadingMessageText,
     loadingMessageSize,
+    loaderMessageSpace,
 }) => {
     const classes = useStyles();
 
@@ -35,7 +36,10 @@ const LoaderWithOverlay = ({
             <CircularProgress color={color} size={loaderSize} />
             <div
                 className={classes.message}
-                style={{ fontSize: loadingMessageSize }}
+                style={{
+                    fontSize: loadingMessageSize,
+                    marginTop: loaderMessageSpace,
+                }}
             >
                 <FormattedMessage id={loadingMessageText} />
             </div>

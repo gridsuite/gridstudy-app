@@ -419,6 +419,47 @@ export function connectNotificationsWebsocket(studyName) {
     return rws;
 }
 
+/**
+ * Return the list of temporary studies which are being created
+ * @returns {Promise<Response>}
+ */
+export function temporaryStudies() {
+    console.info('Get the temporary studies list...');
+    const temporaryStudiesUrl =
+        PREFIX_STUDY_QUERIES + '/v1/study_creation_requests';
+    console.debug(temporaryStudiesUrl);
+    return backendFetch(temporaryStudiesUrl, {
+        method: 'get',
+    }).then((response) => response.json());
+}
+
+/**
+ * Function will be called to connect with notification websocket to update the studies list
+ * @returns {ReconnectingWebSocket}
+ */
+export function connectNotificationsWsUpdateStudies() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl +
+        PREFIX_NOTIFICATION_WS +
+        '/notify?updateType=update_studies';
+
+    let webSocketUrlWithToken;
+    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        webSocketUrlWithToken
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update studies' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
+}
+
 export function getAvailableExportFormats() {
     console.info('get export formats');
     const getExportFormatsUrl =

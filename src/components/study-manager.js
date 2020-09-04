@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,8 +24,14 @@ import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
 import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
 import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
 
-import { loadStudiesSuccess } from '../redux/actions';
-import { deleteStudy, fetchStudies, renameStudy } from '../utils/rest-api';
+import { loadStudiesSuccess, loadTemporaryStudies } from '../redux/actions';
+import {
+    deleteStudy,
+    fetchStudies,
+    renameStudy,
+    temporaryStudies,
+    connectNotificationsWsUpdateStudies,
+} from '../utils/rest-api';
 import { CardHeader } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -44,6 +50,7 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import CreateStudyForm from './create-study-form';
+import LoaderWithOverlay from './loader-with-overlay';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -86,6 +93,9 @@ const useStyles = makeStyles((theme) => ({
     tooltip: {
         fontSize: 18,
     },
+    container: {
+        position: 'relative',
+    },
 }));
 
 const DonwnloadIframe = 'downloadIframe';
@@ -97,8 +107,9 @@ const DonwnloadIframe = 'downloadIframe';
  * @param {String} study.description Description of the study
  * @param {Date} study.caseDate Date of the study
  * @param {EventListener} onClick Event to open the study
+ * @param inprogressLoader
  */
-const StudyCard = ({ study, onClick }) => {
+const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const intl = useIntl();
@@ -231,8 +242,17 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     return (
-        <div>
+        <div className={classes.container}>
             <Card className={classes.root}>
+                {studyCreationLoader && (
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={35}
+                        loadingMessageText="loadingCreationStudy"
+                        loadingMessageSize={18}
+                        loaderMessageSpace={75}
+                    />
+                )}
                 <CardActionArea
                     onClick={() => onClick()}
                     className={classes.card}
@@ -378,17 +398,45 @@ StudyCard.propTypes = {
  */
 const StudyManager = ({ onClick }) => {
     const dispatch = useDispatch();
+    const websocketExpectedCloseRef = useRef();
+
+    const studies = useSelector((state) => state.studies);
+    const loadTemporaryStudiesCreated = useSelector(
+        (state) => state.temporaryStudies
+    );
+
+    const classes = useStyles();
+
+    const connectNotificationsUpdateStudies = function () {
+        const ws = connectNotificationsWsUpdateStudies();
+
+        ws.onmessage = function (event) {
+            temporaryStudies().then((studies) => {
+                dispatch(loadTemporaryStudies(studies));
+            });
+            fetchStudies().then((studies) => {
+                dispatch(loadStudiesSuccess(studies));
+            });
+        };
+        ws.onclose = function (event) {
+            if (!websocketExpectedCloseRef.current) {
+                console.error('Unexpected Notification WebSocket closed');
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    };
 
     useEffect(() => {
         fetchStudies().then((studies) => {
             dispatch(loadStudiesSuccess(studies));
         });
+
+        connectNotificationsUpdateStudies();
         // Note: dispatch doesn't change
-    }, [dispatch]);
-
-    const studies = useSelector((state) => state.studies);
-
-    const classes = useStyles();
+    });
 
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
@@ -398,6 +446,16 @@ const StudyManager = ({ onClick }) => {
                         <CreateStudyForm />
                     </Box>
                 </Grid>
+                {loadTemporaryStudiesCreated &&
+                    loadTemporaryStudiesCreated.map((study) => (
+                        <Grid item xs={12} sm={6} md={3}>
+                            <StudyCard
+                                studyCreationLoader={true}
+                                study={study}
+                                onClick={() => onClick(study.studyName)}
+                            />
+                        </Grid>
+                    ))}
                 {studies.map((study) => (
                     <Grid
                         item
@@ -407,6 +465,7 @@ const StudyManager = ({ onClick }) => {
                         key={study.userId + '/' + study.studyName}
                     >
                         <StudyCard
+                            studyCreationLoader={false}
                             study={study}
                             onClick={() =>
                                 onClick(study.studyName, study.userId)
