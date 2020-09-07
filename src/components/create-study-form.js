@@ -324,7 +324,7 @@ export const CreateStudyForm = () => {
                         }
                         label=<FormattedMessage id="caseExist" />
                     />
-                    <div style={{}}>
+                    <div>
                         <TextField
                             onChange={(e) => handleStudyNameChanges(e)}
                             autoFocus
