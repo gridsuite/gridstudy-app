@@ -88,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const DonwnloadIframe = 'downloadIframe';
 /**
  * Card displaying a study on the screen, with the ability to open and edit it
  * @param {object} study Study object containing ad hoc information to be displayed on the card
@@ -207,7 +208,7 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickExport = (url) => {
-        window.open(url, '_blank');
+        window.open(url, DonwnloadIframe);
         handleCloseExport();
     };
 
@@ -394,6 +395,11 @@ const StudyManager = ({ onClick }) => {
                     </Grid>
                 ))}
             </Grid>
+            <iframe
+                id={DonwnloadIframe}
+                name={DonwnloadIframe}
+                style={{ visibility: 'hidden', width: 0, height: 0 }}
+            />
         </Container>
     );
 };

@@ -92,7 +92,18 @@ const App = () => {
         )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
-                userManager.signinSilent();
+                userManager.getUser().then( user => {
+                    if (user == null) {
+                        userManager.signinSilent().catch(error => {
+                            const oidcHackReloaded = "gridsuite-oidc-hack-reloaded";
+                            if (!sessionStorage.getItem(oidcHackReloaded) && error.message === "authority mismatch on settings vs. signin state") {
+                                sessionStorage.setItem(oidcHackReloaded, true);
+                                console.log("Hack oidc, reload page to make login work");
+                                window.location.reload();
+                            }
+                        });
+                    }
+                });
             })
             .catch(function (error) {
                 setUserManager({ instance: null, error: error.message });
@@ -101,7 +112,7 @@ const App = () => {
     }, []);
 
     function studyClickHandler(studyName) {
-        history.push('/studies/' + studyName);
+        history.push('/studies/' + encodeURIComponent(studyName));
     }
 
     function showParametersClicked() {
@@ -121,7 +132,8 @@ const App = () => {
             <React.Fragment>
                 <CssBaseline />
                 <TopBar
-                    appName="GridStudy"
+                    appName="Study"
+                    appColor="#0CA789"
                     onParametersClick={() => showParametersClicked()}
                     onLogoutClick={() => logout(dispatch, userManager.instance)}
                     onLogoClick={() => onLogoClicked()}
