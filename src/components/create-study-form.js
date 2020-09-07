@@ -223,13 +223,15 @@ export const CreateStudyForm = () => {
                 } else {
                     setStudyFormState('', true);
                 }
+            }).catch((error) => {
+                setCreateStudyErr(intl.formatMessage({ id: 'nameValidityCheckErrorMsg' }) + error);
             });
         } else {
             setStudyFormState('', false);
         }
         setLoadingCheckStudyName(false);
     };
-
+    
     const setStudyFormState = (errorMessage, isNameValid) => {
         setCreateStudyErr(errorMessage);
         setStudyInvalid(!isNameValid);

@@ -134,13 +134,14 @@ export function studyExists(studyName) {
     console.debug(studyExistsUrl);
     return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
         if (response.ok) {
-            return response.text();
-        }
-    }).then((value) => {
-        return value !== '';
-    })
+            return response.text().then((value) => {
+                    return value !== '';
+                })
+        } else {
+            throw response.status + ' (' + response.statusText + ')';
+        }       
+    });
 }
-
 
 export function createStudy(
     caseExist,
