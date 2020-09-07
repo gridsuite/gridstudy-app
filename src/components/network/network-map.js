@@ -65,6 +65,8 @@ const NetworkMap = forwardRef((props, ref) => {
 
     const useName = useSelector((state) => state.useName);
 
+    const [cursorType, setCursorType] = useState('grab');
+
     useImperativeHandle(
         ref,
         () => ({
@@ -219,12 +221,22 @@ const NetworkMap = forwardRef((props, ref) => {
             info.layer &&
             info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX) &&
             info.object &&
-            info.object.substationId // is a voltage level marker, not a substation text
+            (info.object.substationId || info.object.voltageLevels) // is a voltage level marker, or a substation text
         ) {
+            let idVl;
+            if (info.object.substationId) {
+                idVl = info.object.id;
+            } else if (info.object.voltageLevels) {
+                idVl = info.object.voltageLevels[0].id; // first voltage level of the substation, at the moment
+            }
             if (props.onSubstationClick) {
-                props.onSubstationClick(info.object.id);
+                props.onSubstationClick(idVl);
             }
         }
+    }
+
+    function cursorHandler({ isDragging }) {
+        return isDragging ? 'grabbing' : cursorType;
     }
 
     const layers = [];
@@ -243,6 +255,9 @@ const NetworkMap = forwardRef((props, ref) => {
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
                 pickable: true,
+                onHover: ({ object, x, y }) => {
+                    setCursorType(object ? 'pointer' : 'grab');
+                },
             })
         );
 
@@ -300,6 +315,8 @@ const NetworkMap = forwardRef((props, ref) => {
             initialViewState={initialViewState}
             controller={{ doubleClickZoom: false }}
             ContextProvider={MapContext.Provider}
+            getCursor={cursorHandler}
+            pickingRadius={5}
         >
             <StaticMap
                 mapStyle={theme.mapboxStyle}
