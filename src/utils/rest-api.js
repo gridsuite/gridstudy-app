@@ -45,18 +45,24 @@ export function fetchCases() {
 
 export function getVoltageLevelSingleLineDiagram(
     studyName,
+    subject,
+    issuer,
     voltageLevelId,
     useName,
     centerLabel,
     diagonalLabel
 ) {
     console.info(
-        `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}'...`
+        `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyName}' of user '${subject}'...`
     );
     return (
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(subject) +
+        '/' +
+        encodeURIComponent(issuer) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/svg-and-metadata?' +
@@ -80,12 +86,16 @@ export function fetchSvg(svgUrl) {
     );
 }
 
-export function fetchSubstations(studyName) {
-    console.info(`Fetching substations of study '${studyName}'...`);
+export function fetchSubstations(studyName, subject, issuer) {
+    console.info(`Fetching substations of study '${studyName}' of user '${studyName}'...`);
     const fetchSubstationsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(subject) +
+        '/' +
+        encodeURIComponent(issuer) +
         '/network-map/substations';
     console.debug(fetchSubstationsUrl);
     return backendFetch(fetchSubstationsUrl).then((response) =>
@@ -93,12 +103,16 @@ export function fetchSubstations(studyName) {
     );
 }
 
-export function fetchSubstationPositions(studyName) {
+export function fetchSubstationPositions(studyName, subject, issuer) {
     console.info(`Fetching substation positions of study '${studyName}'...`);
     const fetchSubstationPositionsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(subject) +
+        '/' +
+        encodeURIComponent(issuer) +
         '/geo-data/substations';
     console.debug(fetchSubstationPositionsUrl);
     return backendFetch(fetchSubstationPositionsUrl).then((response) =>
@@ -106,23 +120,31 @@ export function fetchSubstationPositions(studyName) {
     );
 }
 
-export function fetchLines(studyName) {
+export function fetchLines(studyName, subject, issuer) {
     console.info(`Fetching lines of study '${studyName}'...`);
     const fetchLinesUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(subject) +
+        '/' +
+        encodeURIComponent(issuer) +
         '/network-map/lines';
     console.debug(fetchLinesUrl);
     return backendFetch(fetchLinesUrl).then((response) => response.json());
 }
 
-export function fetchLinePositions(studyName) {
+export function fetchLinePositions(studyName, subject, issuer) {
     console.info(`Fetching line positions of study '${studyName}'...`);
     const fetchLinePositionsUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(subject) +
+        '/' +
+        encodeURIComponent(issuer) +
         '/geo-data/lines';
     console.debug(fetchLinePositionsUrl);
     return backendFetch(fetchLinePositionsUrl).then((response) =>
@@ -155,22 +177,32 @@ export function createStudy(caseExist, studyName, studyDescription, caseName, se
     }
 }
 
-export function deleteStudy(studyName) {
-    console.info('Deleting study ' + studyName + ' ...');
+export function deleteStudy(studyName, userId) {
+    console.info('Deleting study ' + studyName + 'from user ' + userId.subject + ' ...' );
     const deleteStudyUrl =
-        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyName);
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(userId.subject) +
+        '/' +
+        encodeURIComponent(userId.issuer);
     console.debug(deleteStudyUrl);
     return backendFetch(deleteStudyUrl, {
         method: 'delete',
     });
 }
 
-export function updateSwitchState(studyName, switchId, open) {
+export function updateSwitchState(studyName, subject, issuer, switchId, open) {
     console.info('updating switch ' + switchId + ' ...');
     const updateSwitchUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(subject) +
+        '/' +
+        encodeURIComponent(issuer) +
         '/network-modification/switches/' +
         encodeURIComponent(switchId) +
         '?' +
@@ -179,12 +211,16 @@ export function updateSwitchState(studyName, switchId, open) {
     return backendFetch(updateSwitchUrl, { method: 'put' });
 }
 
-export function renameStudy(studyName, newStudyName) {
+export function renameStudy(studyName, userId, newStudyName) {
     console.info('Renaming study ' + studyName);
     const renameStudiesUrl =
         process.env.REACT_APP_API_STUDY_SERVER +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(userId.subject) +
+        '/' +
+        encodeURIComponent(userId.issuer) +
         '/rename';
     console.debug(renameStudiesUrl);
     return backendFetch(renameStudiesUrl, {
@@ -197,12 +233,16 @@ export function renameStudy(studyName, newStudyName) {
     }).then((response) => response.json());
 }
 
-export function startLoadFlow(studyName) {
+export function startLoadFlow(studyName, subject, issuer) {
     console.info('Running loadflow on ' + studyName + '...');
     const startLoadFlowUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
+        '/' +
+        encodeURIComponent(subject) +
+        '/' +
+        encodeURIComponent(issuer) +
         '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });

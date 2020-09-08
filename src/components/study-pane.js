@@ -72,6 +72,10 @@ const INITIAL_POSITION = [0, 0];
 const StudyPane = () => {
     const studyName = decodeURIComponent(useParams().studyName);
 
+    const subject = decodeURIComponent(useParams().subject);
+
+    const issuer = decodeURIComponent(useParams().issuer);
+
     const network = useSelector((state) => state.network);
 
     const geoData = useSelector((state) => state.geoData);
@@ -116,10 +120,10 @@ const StudyPane = () => {
     // studyName won't change
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
-        dispatch(openStudy(studyName));
+        dispatch(openStudy(studyName, subject, issuer));
 
-        loadNetwork(studyName);
-        loadGeoData(studyName);
+        loadNetwork(studyName, subject, issuer);
+        loadGeoData(studyName, subject, issuer);
         const ws = connectNotifications(studyName);
 
         // study cleanup at unmount event
@@ -148,12 +152,12 @@ const StudyPane = () => {
         }
     }, [network]);
 
-    function loadNetwork(studyName) {
-        console.info(`Loading network of study '${studyName}'...`);
+    function loadNetwork(studyName, subject, issuer) {
+        console.info(`Loading network of study '${studyName}' of user '${subject}'...`);
 
-        const substations = fetchSubstations(studyName);
+        const substations = fetchSubstations(studyName, subject, issuer);
 
-        const lines = fetchLines(studyName);
+        const lines = fetchLines(studyName, subject, issuer);
 
         Promise.all([substations, lines])
             .then((values) => {
@@ -168,12 +172,12 @@ const StudyPane = () => {
             });
     }
 
-    function loadGeoData(studyName) {
+    function loadGeoData(studyName, subject, issuer) {
         console.info(`Loading geo data of study '${studyName}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyName);
+        const substationPositions = fetchSubstationPositions(studyName, subject, issuer);
 
-        const linePositions = fetchLinePositions(studyName);
+        const linePositions = fetchLinePositions(studyName, subject, issuer);
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
@@ -210,7 +214,12 @@ const StudyPane = () => {
         setUpdateSwitchMsg('');
         history.replace(
             '/studies/' +
-                encodeURIComponent(studyName) +
+            encodeURIComponent(studyName) +
+            '/' +
+            encodeURIComponent(subject) +
+            '/' +
+            encodeURIComponent(issuer) +
+            '/' +
                 stringify(
                     { voltageLevelId: voltageLevelId },
                     { addQueryPrefix: true }
@@ -219,7 +228,7 @@ const StudyPane = () => {
     }, []);
 
     function closeVoltageLevelDiagram() {
-        history.replace('/studies/' + encodeURIComponent(studyName));
+        history.replace('/studies/' + encodeURIComponent(studyName) + '/' + encodeURIComponent(subject) + '/' + encodeURIComponent(issuer));
     }
 
     const sldRef = useRef();
@@ -231,7 +240,7 @@ const StudyPane = () => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(studyName, breakerId, open).then((response) => {
+            updateSwitchState(studyName, subject, issuer, breakerId, open).then((response) => {
                 if (!response.ok) {
                     console.error(response);
                     eltOpen.style.visibility = open ? 'hidden' : 'visible';
@@ -297,7 +306,7 @@ const StudyPane = () => {
 
         useEffect(() => {
             if (loadFlowRunning) {
-                startLoadFlow(studyName)
+                startLoadFlow(studyName, subject, issuer)
                     .then(() => {})
                     .then(() => {
                         setLoadFlowRunning(false);
@@ -444,6 +453,8 @@ const StudyPane = () => {
                                     }
                                     svgUrl={getVoltageLevelSingleLineDiagram(
                                         studyName,
+                                        subject,
+                                        issuer,
                                         displayedVoltageLevelId,
                                         useName,
                                         centerName,

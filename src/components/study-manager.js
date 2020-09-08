@@ -152,6 +152,7 @@ const StudyCard = ({ study, onClick }) => {
      * Delete dialog: window status value for deletion
      */
     const [openDeleteDialog, setOpenDelete] = React.useState(false);
+    const [deleteError, setDeleteError] = React.useState(false);
 
     const handleOpenDelete = () => {
         setAnchorEl(null);
@@ -159,15 +160,16 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickDelete = () => {
-        deleteStudy(study.studyName).then(() => {
+        deleteStudy(study.studyName, study.userId).then((response) => { response.ok ?
             fetchStudies().then((studies) => {
                 dispatch(loadStudiesSuccess(studies));
-            });
+            }) : setDeleteError(true);
         });
     };
 
     const handleCloseDelete = () => {
         setOpenDelete(false);
+        setDeleteError(false);
     };
 
     /**
@@ -181,7 +183,7 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, newStudyNameValue).then(() => {
+        renameStudy(study.studyName, study.userId, newStudyNameValue).then(() => {
             fetchStudies().then((studies) => {
                 dispatch(loadStudiesSuccess(studies));
             });
@@ -330,6 +332,7 @@ const StudyCard = ({ study, onClick }) => {
                 onClick={handleClickDelete}
                 title={useIntl().formatMessage({ id: 'deleteStudy' })}
                 message={useIntl().formatMessage({ id: 'deleteStudyMsg' })}
+                error={deleteError}
             />
             <RenameDialog
                 open={openRenameDialog}
@@ -344,6 +347,7 @@ const StudyCard = ({ study, onClick }) => {
                 onClose={handleCloseExport}
                 onClick={handleClickExport}
                 studyName={study.studyName}
+                userId={study.userId}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
         </div>
@@ -353,6 +357,7 @@ const StudyCard = ({ study, onClick }) => {
 StudyCard.propTypes = {
     study: PropTypes.shape({
         studyName: PropTypes.string.isRequired,
+        userId: PropTypes.object.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
         caseDate: PropTypes.instanceOf(Date),
@@ -387,10 +392,10 @@ const StudyManager = ({ onClick }) => {
                     </Box>
                 </Grid>
                 {studies.map((study) => (
-                    <Grid item xs={12} sm={6} md={3} key={study.studyName}>
+                    <Grid item xs={12} sm={6} md={3} key={study.userId}>
                         <StudyCard
                             study={study}
-                            onClick={() => onClick(study.studyName)}
+                            onClick={() => onClick(study.studyName, study.userId)}
                         />
                     </Grid>
                 ))}

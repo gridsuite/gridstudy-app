@@ -100,8 +100,8 @@ const App = () => {
             });
     }, []);
 
-    function studyClickHandler(studyName) {
-        history.push('/studies/' + encodeURIComponent(studyName));
+    function studyClickHandler(studyName, userId) {
+        history.push('/studies/' + encodeURIComponent(studyName) + '/' + encodeURIComponent(userId.subject) + '/' + encodeURIComponent(userId.issuer));
     }
 
     function showParametersClicked() {
@@ -136,10 +136,10 @@ const App = () => {
                     <Switch>
                         <Route exact path="/">
                             <StudyManager
-                                onClick={(name) => studyClickHandler(name)}
+                                onClick={(name, userId) => studyClickHandler(name, userId)}
                             />
                         </Route>
-                        <Route exact path="/studies/:studyName">
+                        <Route exact path="/studies/:studyName/:subject/:issuer">
                             <StudyPane />
                         </Route>
                         <Route exact path="/sign-in-callback">

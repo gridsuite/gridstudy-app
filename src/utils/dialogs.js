@@ -32,9 +32,15 @@ import { getAvailableExportFormats } from './rest-api';
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-const DeleteDialog = ({ open, onClose, onClick, title, message }) => {
+const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
+
+    const intl = useIntl();
+    const [deleteError, setDeleteError] = React.useState(error);
+    const deleteErrorMsg = intl.formatMessage({ id: 'deleteStudyError' });
+
     const handleClose = () => {
         onClose();
+        setDeleteError(false);
     };
 
     const handleClick = () => {
@@ -58,6 +64,9 @@ const DeleteDialog = ({ open, onClose, onClick, title, message }) => {
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>{message}</DialogContentText>
+                { error === true && (
+                    <Alert severity="error">{deleteErrorMsg}</Alert>
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="outlined">
@@ -175,7 +184,7 @@ RenameDialog.propTypes = {
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-const ExportDialog = ({ open, onClose, onClick, studyName, title }) => {
+const ExportDialog = ({ open, onClose, onClick, studyName, userId, title }) => {
     const [availableFormats, setAvailableFormats] = React.useState('');
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
@@ -226,10 +235,14 @@ const ExportDialog = ({ open, onClose, onClick, studyName, title }) => {
         setSelectedFormat(selected);
         setDownloadUrl(
             process.env.REACT_APP_API_STUDY_SERVER +
-                '/v1/studies/' +
-                studyName +
-                '/export-network/' +
-                selected
+            '/v1/studies/' +
+            encodeURIComponent(studyName) +
+            '/' +
+            encodeURIComponent(userId.subject) +
+            '/' +
+            encodeURIComponent(userId.issuer) +
+            '/export-network/' +
+            selected
         );
     };
 

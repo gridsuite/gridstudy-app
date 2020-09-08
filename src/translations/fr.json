@@ -20,6 +20,7 @@
   "deleteStudyMsg": "Êtes-vous sûr de vouloir supprimer l'étude ?",
   "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
   "studyDeletedSuccessMsg": "Étude supprimée",
+  "deleteStudyError": "Vous ne pouvez pas supprimer une étude dont vous n'êtes pas propriétaire",
 
   "renameStudyMsg": "Nouveau nom de l'étude :",
   "renameStudy": "Renommer l'étude",
