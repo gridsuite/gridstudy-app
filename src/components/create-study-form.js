@@ -277,7 +277,6 @@ export const CreateStudyForm = () => {
                     );
                 } else {
                     res.json().then((data) => {
-                        console.log(data)
                         setCreateStudyErr(data.message);
                     }).catch((error) => {
                         setCreateStudyErr(error);
