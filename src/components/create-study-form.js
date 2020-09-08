@@ -212,20 +212,22 @@ export const CreateStudyForm = () => {
 
     const updateStudyFormState = (inputValue) => {
         if (inputValue !== '') {
-            studyExists(inputValue).then((response) => {
-                if(response){
-                    setStudyFormState(
-                        intl.formatMessage({
-                            id: 'studyNameAlreadyUsed',
-                        }),
-                        false
-                    );
-                } else {
-                    setStudyFormState('', true);
-                }
-            }).catch((error) => {
-                setCreateStudyErr(intl.formatMessage({ id: 'nameValidityCheckErrorMsg' }) + error);
-            });
+                studyExists(inputValue).then((data) => {
+                    if(data === true){
+                        setStudyFormState(
+                            intl.formatMessage({
+                                id: 'studyNameAlreadyUsed',
+                            }),
+                            false
+                        );
+                    } else if(data === false){
+                        setStudyFormState('', true);
+                    } else {
+                        setCreateStudyErr(intl.formatMessage({ id: 'nameValidityCheckErrorMsg' }) + data.status + ' (' + data.error + ')');
+                    }
+                }).catch((error) => {
+                    setCreateStudyErr(intl.formatMessage({ id: 'nameValidityCheckErrorMsg' }) + error);
+                });
         } else {
             setStudyFormState('', false);
         }
@@ -273,10 +275,13 @@ export const CreateStudyForm = () => {
                     setCreateStudyErr(
                         intl.formatMessage({ id: 'studyNameAlreadyUsed' })
                     );
-                } else if (res.status === 500) {
+                } else {
                     res.json().then((data) => {
+                        console.log(data)
                         setCreateStudyErr(data.message);
-                    });
+                    }).catch((error) => {
+                        setCreateStudyErr(error);
+                    });;
                 }
                 setLoading(false);
             }
