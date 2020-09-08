@@ -135,13 +135,7 @@ export function studyExists(studyName) {
         PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
     console.debug(studyExistsUrl);
     return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
-        if (response.ok) {
-            return response.json().then((value) => {
-                    return value;
-                })
-        } else {
-            throw response.status + ' (' + response.statusText + ')';
-        }       
+        return response.json();  
     });
 }
 
