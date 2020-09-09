@@ -365,7 +365,12 @@ const StudyPane = () => {
         return (
             <Grid container direction="row" className={classes.main}>
                 {waitingLoadGeoData && (
-                    <LoaderWithOverlay color={'inherit'} size={80} />
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={70}
+                        loadingMessageText="loadingGeoData"
+                        loadingMessageSize={25}
+                    />
                 )}
                 <Grid item xs={12} md={2}>
                     <AutoSizer>

@@ -50,6 +50,10 @@
   "parameters": "Parameters",
   "theme": "Theme",
   "close": "Close",
+
+  "loadingGeoData": "Loading in progress...",
+  "loadingCreationStudy": "Creation in progress...",
+
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",
   "CBAll": "All",

@@ -51,6 +51,9 @@
   "theme": "Thème",
   "close": "Fermer",
 
+  "loadingGeoData": "Chargement en cours...",
+  "loadingCreationStudy": "Création en cours...",
+
   "centerOnMap": "Centrer sur la carte",
   "openVoltageLevel": "Ouvrir le poste",
   "CBAll": "Tous",
