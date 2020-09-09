@@ -34,6 +34,8 @@
   "uploadErrorMsg": "Please upload the case file",
   "studyCreated": "Study created",
   "studyCreatingError": "An error occurred while creating the study",
+  "studyNameAlreadyUsed": "This study name is already used",
+  "nameValidityCheckErrorMsg": "Error while checking name validity : ",
 
   "useName": "Use the name instead of the identifier",
   "diagonalLabel": "Display name diagonally",
