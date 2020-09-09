@@ -1,6 +1,7 @@
 import React from 'react';
 import { CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     overlay: {
@@ -15,14 +16,29 @@ const useStyles = makeStyles((theme) => ({
         opacity: '0.8',
         zIndex: 99,
     },
+    message: {
+        position: 'absolute',
+        marginTop: '130px',
+    },
 }));
 
-const LoaderWithOverlay = ({ color, size }) => {
+const LoaderWithOverlay = ({
+    color,
+    loaderSize,
+    loadingMessageText,
+    loadingMessageSize,
+}) => {
     const classes = useStyles();
 
     return (
         <div className={classes.overlay} id={color}>
-            <CircularProgress color={color} size={size} />
+            <CircularProgress color={color} size={loaderSize} />
+            <div
+                className={classes.message}
+                style={{ fontSize: loadingMessageSize }}
+            >
+                <FormattedMessage id={loadingMessageText} />
+            </div>
         </div>
     );
 };
