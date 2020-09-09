@@ -33,7 +33,7 @@
   "caseDataErrorMsg": "Une erreur s'est produite lors de l'importation du fichier",
   "uploadErrorMsg": "Veuillez télécharger la situation",
   "studyCreated": "Étude créée",
-  "studyCreatingError": "Une erreur est survenue lors du création de l'étude",
+  "studyCreatingError": "Une erreur est survenue lors de la création de l'étude",
   "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
   "nameValidityCheckErrorMsg": "Erreur à la vérification du nom d'étude : ",
 
