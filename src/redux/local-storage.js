@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LIGHT_THEME, LineFlowMode } from './actions';
+import { LIGHT_THEME } from './actions';
 
 const LOCAL_STORAGE_THEME_KEY = 'GRIDSTUDY_THEME';
 
@@ -22,6 +22,11 @@ const LOCAL_STORAGE_USE_NAME_KEY = 'GRIDSTUDY_USE_NAME';
 export const getLocalStorageBoolean = (key, defValue) => {
     const value = localStorage.getItem(key) || defValue;
     return value === 'true';
+};
+
+export const getLocalStorageInteger = (key, defValue) => {
+    const value = localStorage.getItem(key) || defValue;
+    return value;
 };
 
 export const getLocalStorageUseName = () =>
@@ -64,7 +69,10 @@ export const getLocalStorageLineParallelPath = () =>
     getLocalStorageBoolean(LOCAL_STORAGE_LINE_PARALLEL_PATH_KEY, 'true');
 
 export const saveLocalStorageLineParallelPath = (lineParallelPath) => {
-    localStorage.setItem(LOCAL_STORAGE_LINE_PARALLEL_PATH_KEY, lineParallelPath);
+    localStorage.setItem(
+        LOCAL_STORAGE_LINE_PARALLEL_PATH_KEY,
+        lineParallelPath
+    );
 };
 
 const LOCAL_STORAGE_LINE_FLOW_MODE_KEY = 'GRIDSTUDY_LINE_FLOW_MODE';
@@ -76,4 +84,33 @@ export const getLocalStorageLineFlowMode = () => {
 
 export const saveLocalStorageLineFlowMode = (lineFlowMode) => {
     localStorage.setItem(LOCAL_STORAGE_LINE_FLOW_MODE_KEY, lineFlowMode);
+};
+
+const LOCAL_STORAGE_LINE_FLOW_COLOR_MODE_KEY = 'GRIDSTUDY_LINE_FLOW_COLOR_MODE';
+
+export const getLocalStorageLineFlowColorMode = () => {
+    const value = localStorage.getItem(LOCAL_STORAGE_LINE_FLOW_COLOR_MODE_KEY);
+    return value || 'nominalVoltage';
+};
+
+export const saveLocalStorageLineFlowColorMode = (lineFlowColorMode) => {
+    localStorage.setItem(
+        LOCAL_STORAGE_LINE_FLOW_COLOR_MODE_KEY,
+        lineFlowColorMode
+    );
+};
+
+const LOCAL_STORAGE_LINE_FLOW_ALERT_THRESHOLD_KEY =
+    'GRIDSTUDY_LINE_FLOW_ALERT_THRESHOLD';
+
+export const getLocalStorageLineFlowAlertThreshold = () =>
+    getLocalStorageInteger(LOCAL_STORAGE_LINE_FLOW_ALERT_THRESHOLD_KEY, 100);
+
+export const saveLocalStorageLineFlowAlertThreshold = (
+    lineFlowAlertThreshold
+) => {
+    localStorage.setItem(
+        LOCAL_STORAGE_LINE_FLOW_ALERT_THRESHOLD_KEY,
+        lineFlowAlertThreshold
+    );
 };
