@@ -24,6 +24,11 @@ export const getLocalStorageBoolean = (key, defValue) => {
     return value === 'true';
 };
 
+export const getLocalStorageInteger = (key, defValue) => {
+    const value = localStorage.getItem(key) || defValue;
+    return value;
+};
+
 export const getLocalStorageUseName = () =>
     getLocalStorageBoolean(LOCAL_STORAGE_USE_NAME_KEY, 'true');
 
