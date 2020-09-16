@@ -39,8 +39,8 @@ export function loadCasesSuccess(cases) {
 
 export const OPEN_STUDY = 'OPEN_STUDY';
 
-export function openStudy(studyName, subject, issuer) {
-    return { type: OPEN_STUDY, studyName: [studyName, subject, issuer] };
+export function openStudy(studyName, userId) {
+    return { type: OPEN_STUDY, studyName: [studyName, userId] };
 }
 
 export const CLOSE_STUDY = 'CLOSE_STUDY';

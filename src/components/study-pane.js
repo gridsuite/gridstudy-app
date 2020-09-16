@@ -72,9 +72,7 @@ const INITIAL_POSITION = [0, 0];
 const StudyPane = () => {
     const studyName = decodeURIComponent(useParams().studyName);
 
-    const subject = decodeURIComponent(useParams().subject);
-
-    const issuer = decodeURIComponent(useParams().issuer);
+    const userId = decodeURIComponent(useParams().userId);
 
     const network = useSelector((state) => state.network);
 
@@ -120,10 +118,10 @@ const StudyPane = () => {
     // studyName won't change
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
-        dispatch(openStudy(studyName, subject, issuer));
+        dispatch(openStudy(studyName, userId));
 
-        loadNetwork(studyName, subject, issuer);
-        loadGeoData(studyName, subject, issuer);
+        loadNetwork(studyName, userId);
+        loadGeoData(studyName, userId);
         const ws = connectNotifications(studyName);
 
         // study cleanup at unmount event
@@ -152,12 +150,12 @@ const StudyPane = () => {
         }
     }, [network]);
 
-    function loadNetwork(studyName, subject, issuer) {
-        console.info(`Loading network of study '${studyName}' of user '${subject}'...`);
+    function loadNetwork(studyName, userId) {
+        console.info(`Loading network of study '${studyName}' of user '${userId}'...`);
 
-        const substations = fetchSubstations(studyName, subject, issuer);
+        const substations = fetchSubstations(studyName, userId);
 
-        const lines = fetchLines(studyName, subject, issuer);
+        const lines = fetchLines(studyName, userId);
 
         Promise.all([substations, lines])
             .then((values) => {
@@ -172,12 +170,12 @@ const StudyPane = () => {
             });
     }
 
-    function loadGeoData(studyName, subject, issuer) {
+    function loadGeoData(studyName, userId) {
         console.info(`Loading geo data of study '${studyName}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyName, subject, issuer);
+        const substationPositions = fetchSubstationPositions(studyName, userId);
 
-        const linePositions = fetchLinePositions(studyName, subject, issuer);
+        const linePositions = fetchLinePositions(studyName, userId);
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
@@ -213,12 +211,10 @@ const StudyPane = () => {
     const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
         setUpdateSwitchMsg('');
         history.replace(
+            '/' +
+            encodeURIComponent(userId) +
             '/studies/' +
             encodeURIComponent(studyName) +
-            '/' +
-            encodeURIComponent(subject) +
-            '/' +
-            encodeURIComponent(issuer) +
             '/' +
                 stringify(
                     { voltageLevelId: voltageLevelId },
@@ -228,7 +224,7 @@ const StudyPane = () => {
     }, []);
 
     function closeVoltageLevelDiagram() {
-        history.replace('/studies/' + encodeURIComponent(studyName) + '/' + encodeURIComponent(subject) + '/' + encodeURIComponent(issuer));
+        history.replace('/' + encodeURIComponent(userId) + '/studies/' + encodeURIComponent(studyName));
     }
 
     const sldRef = useRef();
@@ -240,7 +236,7 @@ const StudyPane = () => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(studyName, subject, issuer, breakerId, open).then((response) => {
+            updateSwitchState(studyName, userId, breakerId, open).then((response) => {
                 if (!response.ok) {
                     console.error(response);
                     eltOpen.style.visibility = open ? 'hidden' : 'visible';
@@ -306,7 +302,7 @@ const StudyPane = () => {
 
         useEffect(() => {
             if (loadFlowRunning) {
-                startLoadFlow(studyName, subject, issuer)
+                startLoadFlow(studyName, userId)
                     .then(() => {})
                     .then(() => {
                         setLoadFlowRunning(false);
@@ -453,8 +449,7 @@ const StudyPane = () => {
                                     }
                                     svgUrl={getVoltageLevelSingleLineDiagram(
                                         studyName,
-                                        subject,
-                                        issuer,
+                                        userId,
                                         displayedVoltageLevelId,
                                         useName,
                                         centerName,

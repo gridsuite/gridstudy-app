@@ -235,12 +235,11 @@ const ExportDialog = ({ open, onClose, onClick, studyName, userId, title }) => {
         setSelectedFormat(selected);
         setDownloadUrl(
             process.env.REACT_APP_API_STUDY_SERVER +
-            '/v1/studies/' +
+            '/v1/' +
+            encodeURIComponent(userId) +
+            '/studies/' +
             encodeURIComponent(studyName) +
             '/' +
-            encodeURIComponent(userId.subject) +
-            '/' +
-            encodeURIComponent(userId.issuer) +
             '/export-network/' +
             selected
         );

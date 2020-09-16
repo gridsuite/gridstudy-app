@@ -50,8 +50,7 @@ import {
 const initialState = {
     studies: [],
     studyName: null,
-    subject: null,
-    issuer: null,
+    userId: null,
     network: null,
     geoData: null,
     theme: getLocalStorageTheme(),
@@ -80,14 +79,12 @@ export const reducer = createReducer(initialState, {
 
     [OPEN_STUDY]: (state, action) => {
         state.studyName = action[0];
-        state.subject = action[1];
-        state.issuer = action[2];
+        state.userId = action[1];
     },
 
     [CLOSE_STUDY]: (state) => {
         state.studyName = null;
-        state.subject = null;
-        state.issuer = null;
+        state.userId = null;
         state.network = null;
         state.geoData = null;
     },
