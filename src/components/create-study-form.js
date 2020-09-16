@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
+import CheckIcon from '@material-ui/icons/Check';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
@@ -25,7 +26,12 @@ import FormControl from '@material-ui/core/FormControl';
 import Alert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import { createStudy, fetchCases, fetchStudies } from '../utils/rest-api';
+import {
+    createStudy,
+    fetchCases,
+    fetchStudies,
+    studyExists,
+} from '../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -161,6 +167,13 @@ export const CreateStudyForm = () => {
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [loading, setLoading] = React.useState(false);
+    const [studyInvalid, setStudyInvalid] = useState(false);
+    const [loadingCheckStudyName, setLoadingCheckStudyName] = React.useState(
+        false
+    );
+    const [studyNameChecked, setStudyNameChecked] = React.useState(false);
+
+    const timer = React.useRef();
 
     const classes = useStyles();
     const intl = useIntl();
@@ -188,7 +201,46 @@ export const CreateStudyForm = () => {
     };
 
     const handleStudyNameChanges = (e) => {
-        setStudyName(e.target.value);
+        const name = e.target.value;
+        setStudyName(name);
+
+        setStudyNameChecked(false);
+        setLoadingCheckStudyName(true);
+
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => {
+            updateStudyFormState(name);
+        }, 700);
+    };
+
+    const updateStudyFormState = (inputValue) => {
+        if (inputValue !== '') {
+                studyExists(inputValue).then((data) => {
+                    if(data === true){
+                        setStudyFormState(
+                            intl.formatMessage({
+                                id: 'studyNameAlreadyUsed',
+                            }),
+                            false
+                        );
+                    } else if(data === false){
+                        setStudyFormState('', true);
+                    } else {
+                        setCreateStudyErr(intl.formatMessage({ id: 'nameValidityCheckErrorMsg' }) + data.status + ' (' + data.error + ')');
+                    }
+                }).catch((error) => {
+                    setCreateStudyErr(intl.formatMessage({ id: 'nameValidityCheckErrorMsg' }) + error);
+                });
+        } else {
+            setStudyFormState('', false);
+        }
+        setLoadingCheckStudyName(false);
+    };
+    
+    const setStudyFormState = (errorMessage, isNameValid) => {
+        setCreateStudyErr(errorMessage);
+        setStudyInvalid(!isNameValid);
+        setStudyNameChecked(isNameValid);
     };
 
     const handleChangeStudyPrivacy = (event) => {
@@ -233,9 +285,17 @@ export const CreateStudyForm = () => {
                 });
             } else {
                 console.debug('Error when creating the study');
-                setCreateStudyErr(
-                    intl.formatMessage({ id: 'studyCreatingError' })
-                );
+                if (res.status === 409) {
+                    setCreateStudyErr(
+                        intl.formatMessage({ id: 'studyNameAlreadyUsed' })
+                    );
+                } else {
+                    res.json().then((data) => {
+                        setCreateStudyErr(data.message);
+                    }).catch((error) => {
+                        setCreateStudyErr(error);
+                    });;
+                }
                 setLoading(false);
             }
         });
@@ -246,7 +306,6 @@ export const CreateStudyForm = () => {
             handleCreateNewStudy();
         }
     };
-
     return (
         <div>
             <CardActionArea
@@ -283,21 +342,47 @@ export const CreateStudyForm = () => {
                         }
                         label=<FormattedMessage id="caseExist" />
                     />
-                    <TextField
-                        onChange={(e) => handleStudyNameChanges(e)}
-                        autoFocus
-                        margin="dense"
-                        value={studyName}
-                        type="text"
-                        fullWidth
-                        label=<FormattedMessage id="studyName" />
-                    />
+                    <div>
+                        <TextField
+                            onChange={(e) => handleStudyNameChanges(e)}
+                            autoFocus
+                            margin="dense"
+                            value={studyName}
+                            type="text"
+                            error={studyInvalid}
+                            style={{ width: '90%' }}
+                            label=<FormattedMessage id="studyName" />
+                        />
+                        {loadingCheckStudyName && (
+                            <div
+                                style={{
+                                    display: 'inline-block',
+                                    verticalAlign: 'bottom',
+                                }}
+                            >
+                                <CircularProgress
+                                    className={classes.progress}
+                                    size="1rem"
+                                />
+                            </div>
+                        )}
+                        {studyNameChecked && (
+                            <div
+                                style={{
+                                    display: 'inline-block',
+                                    verticalAlign: 'bottom',
+                                }}
+                            >
+                                <CheckIcon style={{ color: 'green' }} />
+                            </div>
+                        )}
+                    </div>
                     <TextField
                         onChange={(e) => handleStudyDescriptionChanges(e)}
                         margin="dense"
                         value={studyDescription}
                         type="text"
-                        fullWidth
+                        style={{ width: '90%' }}
                         label=<FormattedMessage id="studyDescription" />
                     />
 
@@ -327,6 +412,7 @@ export const CreateStudyForm = () => {
                     </Button>
                     <Button
                         onClick={() => handleCreateNewStudy()}
+                        disabled={studyInvalid}
                         variant="outlined"
                     >
                         <FormattedMessage id="create" />

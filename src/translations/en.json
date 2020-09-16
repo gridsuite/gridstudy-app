@@ -37,6 +37,8 @@
   "uploadErrorMsg": "Please upload the case file",
   "studyCreated": "Study created",
   "studyCreatingError": "An error occurred while creating the study",
+  "studyNameAlreadyUsed": "This study name is already used",
+  "nameValidityCheckErrorMsg": "Error while checking name validity : ",
 
   "useName": "Use the name instead of the identifier",
   "diagonalLabel": "Display name diagonally",
@@ -51,6 +53,10 @@
   "parameters": "Parameters",
   "theme": "Theme",
   "close": "Close",
+
+  "loadingGeoData": "Loading...",
+  "loadingCreationStudy": "Creation in progress...",
+
   "centerOnMap": "Center on the map",
   "openVoltageLevel": "Open the voltage level",
   "CBAll": "All",

@@ -141,6 +141,15 @@ export function fetchLinePositions(studyName, userId) {
     );
 }
 
+export function studyExists(studyName) {
+    const studyExistsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
+    console.debug(studyExistsUrl);
+    return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
+        return response.json();  
+    });
+}
+
 export function createStudy(caseExist, studyName, studyDescription, caseName, selectedFile, isPrivateStudy) {
     console.info('Creating a new study...');
     let urlSearchParams = new URLSearchParams();

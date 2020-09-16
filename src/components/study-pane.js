@@ -49,6 +49,7 @@ import { green } from '@material-ui/core/colors';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import { CardHeader } from '@material-ui/core';
 import PageNotFound from './page-not-found';
+import LoaderWithOverlay from './loader-with-overlay';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -103,6 +104,8 @@ const StudyPane = () => {
     const [loadFlowRunning, setLoadFlowRunning] = useState(false);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
+
+    const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const dispatch = useDispatch();
 
@@ -183,6 +186,7 @@ const StudyPane = () => {
                 geoData.setSubstationPositions(values[0]);
                 geoData.setLinePositions(values[1]);
                 dispatch(loadGeoDataSuccess(geoData));
+                setWaitingLoadGeoData(false);
             })
             .catch(function (error) {
                 console.error(error.message);
@@ -365,6 +369,14 @@ const StudyPane = () => {
         }
         return (
             <Grid container direction="row" className={classes.main}>
+                {waitingLoadGeoData && (
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={70}
+                        loadingMessageText="loadingGeoData"
+                        loadingMessageSize={25}
+                    />
+                )}
                 <Grid item xs={12} md={2}>
                     <AutoSizer>
                         {({ width, height }) => (
