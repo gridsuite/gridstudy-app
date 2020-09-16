@@ -215,7 +215,7 @@ const NetworkMap = forwardRef((props, ref) => {
         );
     }
 
-    function onClickHandler(info) {
+    function onClickHandler(info, network) {
         if (
             info.layer &&
             info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX) &&
@@ -223,13 +223,34 @@ const NetworkMap = forwardRef((props, ref) => {
             (info.object.substationId || info.object.voltageLevels) // is a voltage level marker, or a substation text
         ) {
             let idVl;
+            let idSubstation;
             if (info.object.substationId) {
                 idVl = info.object.id;
             } else if (info.object.voltageLevels) {
-                idVl = info.object.voltageLevels[0].id; // first voltage level of the substation, at the moment
+                if (info.object.voltageLevels.length == 1) {
+                    let idS = info.object.voltageLevels[0].substationId;
+                    let substation = network.getSubstation(idS);
+                    if (substation && substation.voltageLevels.length > 1) {
+                        idSubstation = idS;
+                    } else {
+                        idVl = info.object.voltageLevels[0].id;
+                    }
+                } else {
+                    idSubstation = info.object.voltageLevels[0].substationId;
+                }
             }
-            if (props.onSubstationClick) {
+            if (idVl !== undefined && props.onSubstationClick) {
                 props.onSubstationClick(idVl);
+            }
+            if (
+                idSubstation !== undefined &&
+                props.onSubstationClickChooseVoltageLevel
+            ) {
+                props.onSubstationClickChooseVoltageLevel(
+                    idSubstation,
+                    info.x,
+                    info.y
+                );
             }
         }
     }
@@ -310,7 +331,9 @@ const NetworkMap = forwardRef((props, ref) => {
                 // save a reference to the Deck instance to be able to center in onAfterRender
                 setDeck(ref && ref.deck);
             }}
-            onClick={onClickHandler}
+            onClick={(info) => {
+                onClickHandler(info, props.network);
+            }}
             onAfterRender={onAfterRender}
             layers={layers}
             initialViewState={initialViewState}
@@ -368,6 +391,7 @@ NetworkMap.propTypes = {
     filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
+    onSubstationClickChooseVoltageLevel: PropTypes.func,
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,
     lineFlowMode: PropTypes.instanceOf(LineFlowMode),
