@@ -16,8 +16,6 @@
         "deck.gl": "^8.0.0",
         "geolib": "^3.2.1",
         "http-proxy-middleware": "^1.0.3",
-        "husky": "^4.2.5",
-        "lint-staged": "^10.2.11",
         "mjolnir.js": "^2.4.0",
         "prop-types": "15.7.2",
         "qs": "^6.9.1",
@@ -41,7 +39,13 @@
         "eject": "react-scripts eject"
     },
     "eslintConfig": {
-        "extends": "react-app"
+        "extends": [
+            "react-app",
+            "plugin:prettier/recommended"
+        ],
+        "rules": {
+            "prettier/prettier": "warn"
+        }
     },
     "browserslist": {
         "production": [
@@ -55,17 +59,9 @@
             "last 1 safari version"
         ]
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
-    },
-    "lint-staged": {
-        "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-            "prettier --write"
-        ]
-    },
     "devDependencies": {
-        "prettier": "2.0.5"
+        "prettier": "2.0.5",
+        "eslint-config-prettier": "^2.9.0",
+        "eslint-plugin-prettier": "^2.6.0"
     }
 }
