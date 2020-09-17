@@ -208,12 +208,13 @@ export function updateSwitchState(studyName, userId, switchId, open) {
 export function renameStudy(studyName, userId, newStudyName) {
     console.info('Renaming study ' + studyName);
     const renameStudiesUrl =
-        process.env.REACT_APP_API_STUDY_SERVER +
+        PREFIX_STUDY_QUERIES +
         '/v1/' +
         encodeURIComponent(userId) +
         '/studies/' +
         encodeURIComponent(studyName) +
         '/rename';
+  
     console.debug(renameStudiesUrl);
     return backendFetch(renameStudiesUrl, {
         method: 'POST',
@@ -262,7 +263,7 @@ export function connectNotificationsWebsocket(studyName) {
 export function getAvailableExportFormats() {
     console.info('get export formats');
     const getExportFormatsUrl =
-        process.env.REACT_APP_API_STUDY_SERVER + '/v1/export-network-formats';
+        PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
     console.debug(getExportFormatsUrl);
     return backendFetch(getExportFormatsUrl, {
         method: 'get',
