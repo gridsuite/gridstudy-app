@@ -92,13 +92,20 @@ const App = () => {
         )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
-                userManager.getUser().then( user => {
+                userManager.getUser().then((user) => {
                     if (user == null) {
-                        userManager.signinSilent().catch(error => {
-                            const oidcHackReloaded = "gridsuite-oidc-hack-reloaded";
-                            if (!sessionStorage.getItem(oidcHackReloaded) && error.message === "authority mismatch on settings vs. signin state") {
+                        userManager.signinSilent().catch((error) => {
+                            const oidcHackReloaded =
+                                'gridsuite-oidc-hack-reloaded';
+                            if (
+                                !sessionStorage.getItem(oidcHackReloaded) &&
+                                error.message ===
+                                    'authority mismatch on settings vs. signin state'
+                            ) {
                                 sessionStorage.setItem(oidcHackReloaded, true);
-                                console.log("Hack oidc, reload page to make login work");
+                                console.log(
+                                    'Hack oidc, reload page to make login work'
+                                );
                                 window.location.reload();
                             }
                         });
