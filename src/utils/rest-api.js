@@ -130,6 +130,15 @@ export function fetchLinePositions(studyName) {
     );
 }
 
+export function studyExists(studyName) {
+    const studyExistsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
+    console.debug(studyExistsUrl);
+    return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
+        return response.json();  
+    });
+}
+
 export function createStudy(
     caseExist,
     studyName,
@@ -195,7 +204,7 @@ export function updateSwitchState(studyName, switchId, open) {
 export function renameStudy(studyName, newStudyName) {
     console.info('Renaming study ' + studyName);
     const renameStudiesUrl =
-        process.env.REACT_APP_API_STUDY_SERVER +
+        PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyName) +
         '/rename';
@@ -245,7 +254,7 @@ export function connectNotificationsWebsocket(studyName) {
 export function getAvailableExportFormats() {
     console.info('get export formats');
     const getExportFormatsUrl =
-        process.env.REACT_APP_API_STUDY_SERVER + '/v1/export-network-formats';
+        PREFIX_STUDY_QUERIES + '/v1/export-network-formats';
     console.debug(getExportFormatsUrl);
     return backendFetch(getExportFormatsUrl, {
         method: 'get',

@@ -225,7 +225,7 @@ const ExportDialog = ({ open, onClose, onClick, studyName, title }) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
         setDownloadUrl(
-            process.env.REACT_APP_API_STUDY_SERVER +
+            process.env.REACT_APP_API_GATEWAY + '/study' +
                 '/v1/studies/' +
                 studyName +
                 '/export-network/' +
