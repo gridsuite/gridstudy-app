@@ -36,6 +36,13 @@ export function fetchStudies() {
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
 
+export function fetchStudy(studyName) {
+    console.info('Fetching studies...');
+    const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName;
+    console.debug(fetchStudiesUrl);
+    return backendFetch(fetchStudiesUrl).then((response) => response.json());
+}
+
 export function fetchCases() {
     console.info('Fetching cases...');
     const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
@@ -135,7 +142,7 @@ export function studyExists(studyName) {
         PREFIX_STUDY_QUERIES + '/v1/studies/' + studyName + '/exists';
     console.debug(studyExistsUrl);
     return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
-        return response.json();  
+        return response.json();
     });
 }
 

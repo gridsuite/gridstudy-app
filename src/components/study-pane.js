@@ -32,6 +32,7 @@ import {
     updateSwitchState,
     connectNotificationsWebsocket,
     startLoadFlow,
+    fetchStudy,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -45,11 +46,12 @@ import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Button from '@material-ui/core/Button';
 import PlayIcon from '@material-ui/icons/PlayArrow';
-import { green } from '@material-ui/core/colors';
+import { green, grey, orange, red, yellow } from '@material-ui/core/colors';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import { CardHeader } from '@material-ui/core';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
+import { Warning } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -71,6 +73,13 @@ const useStyles = makeStyles((theme) => ({
 const INITIAL_POSITION = [0, 0];
 
 const StudyPane = () => {
+    const LFStatus = {
+        CONVERGED: 'Converged',
+        DIVERGED: 'Diverged',
+        NOT_RUN: 'Start LoadFlow',
+        RUNNING: 'LoadFlow running…',
+    };
+
     const studyName = decodeURIComponent(useParams().studyName);
 
     const network = useSelector((state) => state.network);
@@ -99,7 +108,7 @@ const StudyPane = () => {
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
-    const [loadFlowRunning, setLoadFlowRunning] = useState(false);
+    const [loadFlowRunning, setLoadFlowRunning] = useState(LFStatus.NOT_RUN);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
@@ -114,6 +123,21 @@ const StudyPane = () => {
     const history = useHistory();
 
     const websocketExpectedCloseRef = useRef();
+
+    function toLFStatus(lfStatus) {
+        switch (lfStatus) {
+            case 'CONVERGED':
+                return LFStatus.CONVERGED;
+            case 'DIVERGED':
+                return LFStatus.DIVERGED;
+            case 'NOT_RUN':
+                return LFStatus.NOT_RUN;
+            case 'RUNNING':
+                return LFStatus.RUNNING;
+            default:
+                return LFStatus.NOT_RUN;
+        }
+    }
 
     // study creation, network and geo data loading: will be called only one time at creation mount event because
     // studyName won't change
@@ -153,6 +177,7 @@ const StudyPane = () => {
 
     function loadNetwork(studyName) {
         console.info(`Loading network of study '${studyName}'...`);
+        updateLFStatus(studyName);
 
         const substations = fetchSubstations(studyName);
 
@@ -249,6 +274,12 @@ const StudyPane = () => {
         [studyName]
     );
 
+    function updateLFStatus(studyName) {
+        fetchStudy(studyName).then((study) => {
+            setLoadFlowRunning(toLFStatus(study.loadFlowResult.status));
+        });
+    }
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (sldRef.current) {
@@ -256,10 +287,16 @@ const StudyPane = () => {
                 sldRef.current.reloadSvg();
             }
             if (
-                studyUpdatedForce.eventData.headers['updateType'] == 'loadflow'
+                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(studyName);
+            }
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'loadflow_status'
+            ) {
+                updateLFStatus(studyName);
             }
         }
     }, [studyUpdatedForce]);
@@ -285,9 +322,9 @@ const StudyPane = () => {
 
     const loadFlowButtonStyles = makeStyles({
         root: {
-            backgroundColor: green[500],
+            backgroundColor: grey[500],
             '&:hover': {
-                backgroundColor: green[700],
+                backgroundColor: grey[700],
             },
         },
         label: {
@@ -298,34 +335,55 @@ const StudyPane = () => {
 
     function RunLoadFlowButton() {
         const loadFlowButtonClasses = loadFlowButtonStyles();
+        const subStyle = {
+            running: {
+                backgroundColor: orange[500],
+            },
+            diverged: {
+                backgroundColor: red[500],
+            },
+            converged: {
+                backgroundColor: green[500],
+            },
+            root: {
+                backgroundColor: grey[500],
+                '&:hover': {
+                    backgroundColor: grey[700],
+                },
+            },
+        };
 
-        useEffect(() => {
-            if (loadFlowRunning) {
-                startLoadFlow(studyName)
-                    .then(() => {})
-                    .then(() => {
-                        setLoadFlowRunning(false);
-                    });
+        const handleClick = () => startLoadFlow(studyName).then();
+
+        function getStyle() {
+            switch (loadFlowRunning) {
+                case LFStatus.CONVERGED:
+                    return subStyle.converged;
+                case LFStatus.DIVERGED:
+                    return subStyle.diverged;
+                case LFStatus.RUNNING:
+                    return subStyle.running;
+                case LFStatus.NOT_RUN:
+                default:
+                    return {};
             }
-        }, [loadFlowRunning]);
-
-        const handleClick = () => setLoadFlowRunning(true);
-
+        }
         return (
             <Button
                 variant="contained"
                 fullWidth={true}
                 className={loadFlowButtonClasses.root}
-                startIcon={<PlayIcon />}
-                disabled={loadFlowRunning}
-                onClick={!loadFlowRunning ? handleClick : null}
+                startIcon={
+                    loadFlowRunning === LFStatus.NOT_RUN ? <PlayIcon /> : null
+                }
+                disabled={loadFlowRunning !== LFStatus.NOT_RUN}
+                onClick={
+                    loadFlowRunning === LFStatus.NOT_RUN ? handleClick : null
+                }
+                style={getStyle()}
             >
                 <div className={loadFlowButtonClasses.label}>
-                    <Typography noWrap>
-                        {loadFlowRunning
-                            ? 'LoadFlow running…'
-                            : 'Start LoadFlow'}
-                    </Typography>
+                    <Typography noWrap>{loadFlowRunning}</Typography>
                 </div>
             </Button>
         );
