@@ -101,6 +101,7 @@ const DonwnloadIframe = 'downloadIframe';
 const StudyCard = ({ study, onClick }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
+    const intl = useIntl();
 
     function logo(caseFormat) {
         switch (caseFormat) {
@@ -152,7 +153,7 @@ const StudyCard = ({ study, onClick }) => {
      * Delete dialog: window status value for deletion
      */
     const [openDeleteDialog, setOpenDelete] = React.useState(false);
-    const [deleteError, setDeleteError] = React.useState(false);
+    const [deleteError, setDeleteError] = React.useState("");
 
     const handleOpenDelete = () => {
         setAnchorEl(null);
@@ -163,13 +164,13 @@ const StudyCard = ({ study, onClick }) => {
         deleteStudy(study.studyName, study.userId).then((response) => { response.ok ?
             fetchStudies().then((studies) => {
                 dispatch(loadStudiesSuccess(studies));
-            }) : setDeleteError(true);
+            }) : setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
         });
     };
 
     const handleCloseDelete = () => {
         setOpenDelete(false);
-        setDeleteError(false);
+        setDeleteError("");
     };
 
     /**

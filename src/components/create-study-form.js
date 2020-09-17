@@ -163,7 +163,7 @@ export const CreateStudyForm = () => {
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
-    const [studyPrivacy, setStudyPrivacy] = React.useState('public');
+    const [studyPrivacy, setStudyPrivacy] = React.useState('private');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [loading, setLoading] = React.useState(false);

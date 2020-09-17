@@ -34,13 +34,8 @@ import { getAvailableExportFormats } from './rest-api';
  */
 const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
 
-    const intl = useIntl();
-    const [deleteError, setDeleteError] = React.useState(error);
-    const deleteErrorMsg = intl.formatMessage({ id: 'deleteStudyError' });
-
     const handleClose = () => {
         onClose();
-        setDeleteError(false);
     };
 
     const handleClick = () => {
@@ -64,8 +59,8 @@ const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>{message}</DialogContentText>
-                { error === true && (
-                    <Alert severity="error">{deleteErrorMsg}</Alert>
+                { error !== "" && (
+                    <Alert severity="error">{error}</Alert>
                 )}
             </DialogContent>
             <DialogActions>

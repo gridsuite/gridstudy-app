@@ -40,7 +40,7 @@ export function loadCasesSuccess(cases) {
 export const OPEN_STUDY = 'OPEN_STUDY';
 
 export function openStudy(studyName, userId) {
-    return { type: OPEN_STUDY, studyName: [studyName, userId] };
+    return { type: OPEN_STUDY, studyRef: [studyName, userId] };
 }
 
 export const CLOSE_STUDY = 'CLOSE_STUDY';

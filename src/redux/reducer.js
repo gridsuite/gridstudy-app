@@ -78,8 +78,8 @@ export const reducer = createReducer(initialState, {
     },
 
     [OPEN_STUDY]: (state, action) => {
-        state.studyName = action[0];
-        state.userId = action[1];
+        state.studyName = action.studyRef[0];
+        state.userId = action.studyRef[1];
     },
 
     [CLOSE_STUDY]: (state) => {
