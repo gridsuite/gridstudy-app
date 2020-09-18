@@ -50,6 +50,7 @@ import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
+import OverloadedLinesView from './network/overloadedLinesView';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -472,6 +473,21 @@ const StudyPane = () => {
                                     ref={sldRef}
                                     updateSwitchMsg={updateSwitchMsg}
                                 />
+                            </div>
+                        )}
+                        {network && (
+                            <div
+                                style={{
+                                    zIndex: 0,
+                                    right: 40,
+                                    top: 10,
+                                    overflowY: 'scroll',
+                                    position: 'absolute',
+                                    height: '70%',
+                                    opacity: '50%',
+                                }}
+                            >
+                                <OverloadedLinesView lines={network.lines} />
                             </div>
                         )}
                         {network && (
