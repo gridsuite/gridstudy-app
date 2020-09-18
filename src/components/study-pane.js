@@ -108,7 +108,7 @@ const StudyPane = () => {
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
-    const [loadFlowRunning, setLoadFlowRunning] = useState(LFStatus.NOT_RUN);
+    const [loadFlowState, setLoadFlowState] = useState(LFStatus.NOT_RUN);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
@@ -276,7 +276,7 @@ const StudyPane = () => {
 
     function updateLFStatus(studyName) {
         fetchStudy(studyName).then((study) => {
-            setLoadFlowRunning(toLFStatus(study.loadFlowResult.status));
+            setLoadFlowState(toLFStatus(study.loadFlowResult.status));
         });
     }
 
@@ -356,7 +356,7 @@ const StudyPane = () => {
         const handleClick = () => startLoadFlow(studyName).then();
 
         function getStyle() {
-            switch (loadFlowRunning) {
+            switch (loadFlowState) {
                 case LFStatus.CONVERGED:
                     return subStyle.converged;
                 case LFStatus.DIVERGED:
@@ -374,16 +374,16 @@ const StudyPane = () => {
                 fullWidth={true}
                 className={loadFlowButtonClasses.root}
                 startIcon={
-                    loadFlowRunning === LFStatus.NOT_RUN ? <PlayIcon /> : null
+                    loadFlowState === LFStatus.NOT_RUN ? <PlayIcon /> : null
                 }
-                disabled={loadFlowRunning !== LFStatus.NOT_RUN}
+                disabled={loadFlowState !== LFStatus.NOT_RUN}
                 onClick={
-                    loadFlowRunning === LFStatus.NOT_RUN ? handleClick : null
+                    loadFlowState === LFStatus.NOT_RUN ? handleClick : null
                 }
                 style={getStyle()}
             >
                 <div className={loadFlowButtonClasses.label}>
-                    <Typography noWrap>{loadFlowRunning}</Typography>
+                    <Typography noWrap>{loadFlowState}</Typography>
                 </div>
             </Button>
         );
