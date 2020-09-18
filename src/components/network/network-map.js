@@ -30,7 +30,7 @@ import { decomposeColor } from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
 import GeoData from './geo-data';
-import LineLayer, { LineFlowMode } from './line-layer';
+import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
 
@@ -272,6 +272,8 @@ const NetworkMap = forwardRef((props, ref) => {
                 filteredNominalVoltages: props.filteredNominalVoltages,
                 lineFlowMode: props.lineFlowMode,
                 lineFlowHidden: lineFlowHidden,
+                lineFlowColorMode: props.lineFlowColorMode,
+                lineFlowAlertThreshold: props.lineFlowAlertThreshold,
                 lineFullPath: props.lineFullPath,
                 lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
@@ -353,6 +355,8 @@ NetworkMap.defaultProps = {
     lineParallelPath: true,
     lineFlowMode: LineFlowMode.FEEDERS,
     lineFlowHidden: true,
+    lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
+    lineFlowAlertThreshold: 100,
 };
 
 NetworkMap.propTypes = {
@@ -368,6 +372,8 @@ NetworkMap.propTypes = {
     lineParallelPath: PropTypes.bool,
     lineFlowMode: PropTypes.instanceOf(LineFlowMode),
     lineFlowHidden: PropTypes.bool,
+    lineFlowColorMode: PropTypes.instanceOf(LineFlowColorMode),
+    lineFlowAlertThreshold: PropTypes.number.isRequired,
 };
 
 export default React.memo(NetworkMap);

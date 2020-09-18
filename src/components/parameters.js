@@ -29,11 +29,14 @@ import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
+import Slider from '@material-ui/core/Slider';
 
 import {
     DARK_THEME,
     LIGHT_THEME,
     selectLineFlowMode,
+    selectLineFlowColorMode,
+    selectLineFlowAlertThreshold,
     selectTheme,
     toggleCenterLabelState,
     toggleDiagonalLabelState,
@@ -42,6 +45,7 @@ import {
     toggleUseNameState,
 } from '../redux/actions';
 import { LineFlowMode } from './network/line-layer';
+import { LineFlowColorMode } from './network/line-layer';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -69,9 +73,29 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const lineFullPath = useSelector((state) => state.lineFullPath);
     const lineParallelPath = useSelector((state) => state.lineParallelPath);
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
+    const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
+    const lineFlowAlertThreshold = useSelector(
+        (state) => state.lineFlowAlertThreshold
+    );
+    const [
+        disabledFlowAlertThreshold,
+        setDisabledFlowAlertThreshold,
+    ] = React.useState(false);
+
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const theme = useSelector((state) => state.theme);
+
+    const alertThresholdMarks = [
+        {
+            value: 0,
+            label: '0',
+        },
+        {
+            value: 100,
+            label: '100',
+        },
+    ];
 
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
@@ -81,6 +105,16 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const handleLineFlowModeChange = (event) => {
         const lineFlowMode = event.target.value;
         dispatch(selectLineFlowMode(lineFlowMode));
+    };
+
+    const handleLineFlowColorModeChange = (event) => {
+        const lineFlowColorMode = event.target.value;
+        setDisabledFlowAlertThreshold(lineFlowColorMode === 'nominalVoltage');
+        dispatch(selectLineFlowColorMode(lineFlowColorMode));
+    };
+
+    const handleLineFlowAlertThresholdChange = (event, value) => {
+        dispatch(selectLineFlowAlertThreshold(value));
     };
 
     function TabPanel(props) {
@@ -117,6 +151,37 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         value={prop}
                         color="primary"
                         inputProps={{ 'aria-label': 'primary checkbox' }}
+                    />
+                </Grid>
+            </>
+        );
+    }
+
+    function MakeSlider(
+        threshold,
+        label,
+        disabledFlowAlertThreshold,
+        callback,
+        thresholdMarks
+    ) {
+        return (
+            <>
+                <Grid item xs={6}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id={label} />:
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={6} className={classes.controlItem}>
+                    <Slider
+                        min={0}
+                        max={100}
+                        valueLabelDisplay="auto"
+                        onChangeCommitted={callback}
+                        value={threshold}
+                        disabled={disabledFlowAlertThreshold}
+                        marks={thresholdMarks}
                     />
                 </Grid>
             </>
@@ -212,6 +277,36 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         </MenuItem>
                     </Select>
                 </Grid>
+                <MakeLineSeparator />
+                <Grid item xs={6}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="LineFlowColorMode" />:
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={6} className={classes.controlItem}>
+                    <Select
+                        labelId="line-flow-color-mode-select-label"
+                        value={lineFlowColorMode}
+                        onChange={handleLineFlowColorModeChange}
+                    >
+                        <MenuItem value={LineFlowColorMode.NOMINAL_VOLTAGE}>
+                            <FormattedMessage id="NominalVoltage" />
+                        </MenuItem>
+                        <MenuItem value={LineFlowColorMode.OVERLOADS}>
+                            <FormattedMessage id="Overloads" />
+                        </MenuItem>
+                    </Select>
+                </Grid>
+                <MakeLineSeparator />
+                {MakeSlider(
+                    Number(lineFlowAlertThreshold),
+                    'AlertThresholdLabel',
+                    disabledFlowAlertThreshold,
+                    handleLineFlowAlertThresholdChange,
+                    alertThresholdMarks
+                )}
             </Grid>
         );
     };
