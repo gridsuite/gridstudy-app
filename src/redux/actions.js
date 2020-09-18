@@ -115,6 +115,21 @@ export function selectLineFlowMode(lineFlowMode) {
     return { type: LINE_FLOW_MODE, lineFlowMode: lineFlowMode };
 }
 
+export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
+
+export function selectLineFlowColorMode(lineFlowColorMode) {
+    return { type: LINE_FLOW_COLOR_MODE, lineFlowColorMode: lineFlowColorMode };
+}
+
+export const LINE_FLOW_ALERT_THRESHOLD = 'LINE_FLOW_ALERT_THRESHOLD';
+
+export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
+    return {
+        type: LINE_FLOW_ALERT_THRESHOLD,
+        lineFlowAlertThreshold: lineFlowAlertThreshold,
+    };
+}
+
 export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';
 
 export function setSignInCallbackError(signInCallbackError) {

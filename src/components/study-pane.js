@@ -47,9 +47,9 @@ import Button from '@material-ui/core/Button';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import { green } from '@material-ui/core/colors';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
-import { CardHeader } from '@material-ui/core';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -90,6 +90,12 @@ const StudyPane = () => {
     const lineParallelPath = useSelector((state) => state.lineParallelPath);
 
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
+
+    const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
+
+    const lineFlowAlertThreshold = useSelector((state) =>
+        Number(state.lineFlowAlertThreshold)
+    );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -436,6 +442,8 @@ const StudyPane = () => {
                             lineFullPath={lineFullPath}
                             lineParallelPath={lineParallelPath}
                             lineFlowMode={lineFlowMode}
+                            lineFlowColorMode={lineFlowColorMode}
+                            lineFlowAlertThreshold={lineFlowAlertThreshold}
                             ref={mapRef}
                             onSubstationClick={showVoltageLevelDiagram}
                         />
@@ -497,6 +505,14 @@ const StudyPane = () => {
             </Grid>
         );
     }
+};
+
+StudyPane.defaultProps = {
+    lineFlowAlertThreshold: 100,
+};
+
+StudyPane.propTypes = {
+    lineFlowAlertThreshold: PropTypes.number.isRequired,
 };
 
 export default StudyPane;

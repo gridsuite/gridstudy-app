@@ -69,6 +69,10 @@
   "StaticArrows": "Static arrows",
   "AnimatedArrows": "Animated arrows",
   "Feeders": "Feeder",
+  "LineFlowColorMode": "Line color mode",
+  "NominalVoltage": "Nominal voltage",
+  "Overloads": "Overloads",
+  "AlertThresholdLabel": "Alert threshold",
 
   "PageNotFound": "Page not found"
 }
