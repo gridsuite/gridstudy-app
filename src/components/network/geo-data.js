@@ -203,8 +203,8 @@ export default class GeoData {
         let wantedDistance = lineDistance * arrowPosition;
 
         if (
-            Math.abs(lineParallelIndex) != 9999 &&
-            cumulativeDistances.length == 2
+            Math.abs(lineParallelIndex) !== 9999 &&
+            cumulativeDistances.length === 2
         ) {
             // For parallel lines, the initial fork line distance does not count
             // when there are no intermediate points between the substations.
@@ -232,6 +232,9 @@ export default class GeoData {
                 break;
             case ArrowDirection.NONE:
                 multiplier = 1;
+                break;
+            default:
+                throw new Error('impossible');
         }
         let remainingDistance = goodSegment.remainingDistance * multiplier;
 
@@ -250,14 +253,14 @@ export default class GeoData {
             angle: angle,
             offset: neededOffset,
         };
-        if (Math.abs(lineParallelIndex) != 9999) {
+        if (Math.abs(lineParallelIndex) !== 9999) {
             // apply parallel spread between lines
             position.position = computeDestinationPoint(
                 position.position,
                 distanceBetweenLines * lineParallelIndex,
                 lineAngle + 90
             );
-            if (cumulativeDistances.length == 2) {
+            if (cumulativeDistances.length === 2) {
                 // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
                 // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
                 position.position = computeDestinationPoint(
@@ -266,8 +269,8 @@ export default class GeoData {
                     lineAngle
                 );
             } else if (
-                goodSegment.idx == 0 ||
-                goodSegment.idx == cumulativeDistances.length - 2
+                goodSegment.idx === 0 ||
+                goodSegment.idx === cumulativeDistances.length - 2
             ) {
                 // When the label is on the first or last segment and there is an intermediate point,
                 // when must shift by the percentange of position of the label on this segment
@@ -276,7 +279,7 @@ export default class GeoData {
                     cumulativeDistances[goodSegment.idx];
                 const alreadyDoneDistance = segmentDistance - remainingDistance;
                 let labelDistanceInSegment;
-                if (goodSegment.idx == 0) {
+                if (goodSegment.idx === 0) {
                     labelDistanceInSegment = -alreadyDoneDistance;
                 } else {
                     labelDistanceInSegment = remainingDistance;
@@ -305,6 +308,9 @@ export default class GeoData {
                 break;
             case ArrowDirection.NONE:
                 direction = 0;
+                break;
+            default:
+                throw new Error('impossible');
         }
         //Y offset is negative because deckGL pixel uses a top-left coordinate system and our computation use orthogonal coordinates
         return [

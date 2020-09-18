@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -79,15 +79,22 @@ const App = () => {
 
     const location = useLocation();
 
-    let matchSilentRenewCallbackUrl = useRouteMatch({
+    const matchSilentRenewCallbackUrl = useRouteMatch({
         path: '/silent-renew-callback',
         exact: true,
     });
 
+    // Get the routeMatch at page load, so we ignore the exhaustive deps check
+    const initialMatchSilentRenewCallbackUrl = useCallback(
+        () => matchSilentRenewCallbackUrl,
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    )();
+
     useEffect(() => {
         initializeAuthenticationProd(
             dispatch,
-            matchSilentRenewCallbackUrl != null,
+            initialMatchSilentRenewCallbackUrl != null,
             fetch('idpSettings.json')
         )
             .then((userManager) => {
@@ -116,7 +123,8 @@ const App = () => {
                 setUserManager({ instance: null, error: error.message });
                 console.debug('error when importing the idp settings');
             });
-    }, []);
+        // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
+    }, [initialMatchSilentRenewCallbackUrl, dispatch]);
 
     function studyClickHandler(studyName) {
         history.push('/studies/' + encodeURIComponent(studyName));

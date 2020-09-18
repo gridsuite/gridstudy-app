@@ -64,8 +64,8 @@ const SelectCase = () => {
         fetchCases().then((cases) => {
             dispatch(loadCasesSuccess(cases));
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        // Note: dispatch doesn't change
+    }, [dispatch]);
 
     const handleChangeSelectCase = (event) => {
         dispatch(selectCase(event.target.value));

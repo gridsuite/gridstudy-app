@@ -128,6 +128,8 @@ export default class ArrowLayer extends Layer {
                             return 1.0;
                         case ArrowDirection.FROM_SIDE_2_TO_SIDE_1:
                             return 2.0;
+                        default:
+                            throw new Error('impossible');
                     }
                 },
                 defaultValue: 0.0,
@@ -381,8 +383,6 @@ export default class ArrowLayer extends Layer {
     }
 
     draw({ uniforms }) {
-        const { viewport } = this.context;
-
         const { sizeMinPixels, sizeMaxPixels } = this.props;
 
         const {
