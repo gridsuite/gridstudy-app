@@ -15,7 +15,6 @@ import { FormattedMessage } from 'react-intl';
 
 import { parse, stringify } from 'qs';
 
-import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -70,7 +69,13 @@ const useStyles = makeStyles((theme) => ({
 
 const INITIAL_POSITION = [0, 0];
 
-const StudyPane = () => {
+export const StudyView = {
+    MAP: 'Map',
+    TABLE: 'Table',
+    RESULTS: 'Results',
+};
+
+const StudyPane = (props) => {
     const studyName = decodeURIComponent(useParams().studyName);
 
     const network = useSelector((state) => state.network);
@@ -347,18 +352,7 @@ const StudyPane = () => {
         [mapRef, network]
     );
 
-    if (studyNotFound) {
-        return (
-            <PageNotFound
-                message={
-                    <FormattedMessage
-                        id="studyNotFound"
-                        values={{ studyName: studyName }}
-                    />
-                }
-            />
-        );
-    } else {
+    function mapView() {
         let displayedVoltageLevel,
             focusedVoltageLevel = null;
         if (network) {
@@ -370,14 +364,6 @@ const StudyPane = () => {
         }
         return (
             <Grid container direction="row" className={classes.main}>
-                {waitingLoadGeoData && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
-                    />
-                )}
                 <Grid item xs={12} md={2}>
                     <AutoSizer>
                         {({ width, height }) => (
@@ -499,13 +485,69 @@ const StudyPane = () => {
             </Grid>
         );
     }
+
+    function tableView() {}
+
+    function resultsView() {}
+
+    if (studyNotFound) {
+        return (
+            <PageNotFound
+                message={
+                    <FormattedMessage
+                        id="studyNotFound"
+                        values={{ studyName: studyName }}
+                    />
+                }
+            />
+        );
+    } else {
+        return (
+            <div>
+                {waitingLoadGeoData && (
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={70}
+                        loadingMessageText="loadingGeoData"
+                        loadingMessageSize={25}
+                    />
+                )}
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.MAP ? 'block' : 'none',
+                    }}
+                >
+                    {mapView()}
+                </div>
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.TABLE ? 'block' : 'none',
+                    }}
+                >
+                    {tableView()}
+                </div>
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.RESULTS ? 'block' : 'none',
+                    }}
+                >
+                    {resultsView()}
+                </div>
+            </div>
+        );
+    }
 };
 
 StudyPane.defaultProps = {
+    view: StudyView.MAP,
     lineFlowAlertThreshold: 100,
 };
 
 StudyPane.propTypes = {
+    view: PropTypes.instanceOf(StudyView),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
 };
 
