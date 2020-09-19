@@ -486,9 +486,11 @@ const StudyPane = (props) => {
         );
     }
 
-    function tableView() {}
+    function tableView() {
+    }
 
-    function resultsView() {}
+    function resultsView() {
+    }
 
     if (studyNotFound) {
         return (
@@ -512,32 +514,17 @@ const StudyPane = (props) => {
                         loadingMessageSize={25}
                     />
                 )}
-                <div
-                    style={{
-                        display:
-                            props.view === StudyView.MAP ? 'block' : 'none',
-                    }}
-                >
-                    {mapView()}
+                <div style={{ display: props.view === StudyView.MAP ? 'block': 'none'}}>
+                    { mapView() }
                 </div>
-                <div
-                    style={{
-                        display:
-                            props.view === StudyView.TABLE ? 'block' : 'none',
-                    }}
-                >
-                    {tableView()}
+                <div style={{ display: props.view === StudyView.TABLE ? 'block': 'none'}}>
+                    { tableView() }
                 </div>
-                <div
-                    style={{
-                        display:
-                            props.view === StudyView.RESULTS ? 'block' : 'none',
-                    }}
-                >
-                    {resultsView()}
+                <div style={{ display: props.view === StudyView.RESULTS ? 'block': 'none'}}>
+                    { resultsView() }
                 </div>
             </div>
-        );
+        )
     }
 };
 
