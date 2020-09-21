@@ -66,8 +66,8 @@ const SelectCase = () => {
         fetchCases().then((cases) => {
             dispatch(loadCasesSuccess(cases));
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        // Note: dispatch doesn't change
+    }, [dispatch]);
 
     const handleChangeSelectCase = (event) => {
         dispatch(selectCase(event.target.value));
@@ -215,28 +215,42 @@ export const CreateStudyForm = () => {
 
     const updateStudyFormState = (inputValue) => {
         if (inputValue !== '') {
-                studyExists(inputValue).then((data) => {
-                    if(data === true){
+            studyExists(inputValue)
+                .then((data) => {
+                    if (data === true) {
                         setStudyFormState(
                             intl.formatMessage({
                                 id: 'studyNameAlreadyUsed',
                             }),
                             false
                         );
-                    } else if(data === false){
+                    } else if (data === false) {
                         setStudyFormState('', true);
                     } else {
-                        setCreateStudyErr(intl.formatMessage({ id: 'nameValidityCheckErrorMsg' }) + data.status + ' (' + data.error + ')');
+                        setCreateStudyErr(
+                            intl.formatMessage({
+                                id: 'nameValidityCheckErrorMsg',
+                            }) +
+                                data.status +
+                                ' (' +
+                                data.error +
+                                ')'
+                        );
                     }
-                }).catch((error) => {
-                    setCreateStudyErr(intl.formatMessage({ id: 'nameValidityCheckErrorMsg' }) + error);
+                })
+                .catch((error) => {
+                    setCreateStudyErr(
+                        intl.formatMessage({
+                            id: 'nameValidityCheckErrorMsg',
+                        }) + error
+                    );
                 });
         } else {
             setStudyFormState('', false);
         }
         setLoadingCheckStudyName(false);
     };
-    
+
     const setStudyFormState = (errorMessage, isNameValid) => {
         setCreateStudyErr(errorMessage);
         setStudyInvalid(!isNameValid);
@@ -290,11 +304,13 @@ export const CreateStudyForm = () => {
                         intl.formatMessage({ id: 'studyNameAlreadyUsed' })
                     );
                 } else {
-                    res.json().then((data) => {
-                        setCreateStudyErr(data.message);
-                    }).catch((error) => {
-                        setCreateStudyErr(error);
-                    });;
+                    res.json()
+                        .then((data) => {
+                            setCreateStudyErr(data.message);
+                        })
+                        .catch((error) => {
+                            setCreateStudyErr(error);
+                        });
                 }
                 setLoading(false);
             }

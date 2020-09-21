@@ -24,11 +24,11 @@ export function getNominalVoltageColor(nominalVoltage) {
 }
 
 export function getOverLoadLineColor(iColor) {
-    if (iColor == 0) {
+    if (iColor === 0) {
         return [128, 128, 128]; // grey
-    } else if (iColor == 1) {
+    } else if (iColor === 1) {
         return [107, 178, 40]; // green
-    } else if (iColor == 2) {
+    } else if (iColor === 2) {
         return [210, 179, 63]; // yellow
     } else {
         return [255, 0, 0]; // red
