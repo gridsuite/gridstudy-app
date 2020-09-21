@@ -392,6 +392,7 @@ const StudyPane = (props) => {
                                             }}
                                         >
                                             <RunLoadFlowButton
+                                                studyName={studyName}
                                                 loadFlowRunning={
                                                     loadFlowRunning
                                                 }
