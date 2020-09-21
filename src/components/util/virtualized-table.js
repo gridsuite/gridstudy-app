@@ -1,3 +1,6 @@
+/**
+ * This class has been taken from 'Virtualized Table' example at https://material-ui.com/components/tables/
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
