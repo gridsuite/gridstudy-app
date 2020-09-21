@@ -393,7 +393,7 @@ const StudyManager = ({ onClick }) => {
                     </Box>
                 </Grid>
                 {studies.map((study) => (
-                    <Grid item xs={12} sm={6} md={3} key={study.userId}>
+                    <Grid item xs={12} sm={6} md={3} key={study.userId + '/' + study.studyName}>
                         <StudyCard
                             study={study}
                             onClick={() => onClick(study.studyName, study.userId)}
