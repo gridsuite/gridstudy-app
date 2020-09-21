@@ -173,6 +173,8 @@ export const CreateStudyForm = () => {
     );
     const [studyNameChecked, setStudyNameChecked] = React.useState(false);
 
+    const userId = useSelector((state) => state.user.profile.sub);
+
     const timer = React.useRef();
 
     const classes = useStyles();
@@ -209,7 +211,7 @@ export const CreateStudyForm = () => {
 
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
-            updateStudyFormState(name, store.getState().user.profile.sub);
+            updateStudyFormState(name, userId);
         }, 700);
     };
 
