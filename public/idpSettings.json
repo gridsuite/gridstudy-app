@@ -1,8 +1,8 @@
 {
-    "authority" : "http://172.17.0.1:9090/",
-    "client_id" : "my-client-2",
+    "authority": "http://172.17.0.1:9090/",
+    "client_id": "my-client-2",
     "redirect_uri": "http://localhost:3000/sign-in-callback",
-    "post_logout_redirect_uri" : "http://localhost:3000/logout-callback",
-    "silent_redirect_uri" : "http://localhost:3000/silent-renew-callback",
-    "scope" : "openid"
+    "post_logout_redirect_uri": "http://localhost:3000/logout-callback",
+    "silent_redirect_uri": "http://localhost:3000/silent-renew-callback",
+    "scope": "openid"
 }

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { useSelector } from 'react-redux';
@@ -59,18 +59,19 @@ const NetworkExplorer = ({
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
     );
-    const [currentVoltageLevel, setCurrentVoltageLevel] = React.useState(null);
-
     const buttonRef = React.useRef();
     const [voltageLevelMenuIndex, setVoltageLevelMenuIndex] = React.useState(
         -1
     );
 
-    const voltageLevelComparator = (vl1, vl2) => {
-        return useName
-            ? vl1.name.localeCompare(vl2.name)
-            : vl1.id.localeCompare(vl2.id);
-    };
+    const voltageLevelComparator = useCallback(
+        (vl1, vl2) => {
+            return useName
+                ? vl1.name.localeCompare(vl2.name)
+                : vl1.id.localeCompare(vl2.id);
+        },
+        [useName]
+    );
 
     useEffect(() => {
         if (network) {
@@ -78,17 +79,7 @@ const NetworkExplorer = ({
                 network.getVoltageLevels().sort(voltageLevelComparator)
             );
         }
-    }, [network]);
-
-    useEffect(() => {
-        if (currentVoltageLevel !== null) {
-            onVoltageLevelDisplayClick(
-                currentVoltageLevel.id,
-                currentVoltageLevel.name
-            );
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [useName]);
+    }, [network, voltageLevelComparator]);
 
     function handleClick(index) {
         setVoltageLevelMenuIndex(index);
@@ -102,7 +93,6 @@ const NetworkExplorer = ({
         if (onVoltageLevelDisplayClick !== null) {
             const vl = filteredVoltageLevels[index];
             onVoltageLevelDisplayClick(vl.id);
-            setCurrentVoltageLevel(vl);
         }
         handleClose();
     }

@@ -15,7 +15,6 @@ import { FormattedMessage } from 'react-intl';
 
 import { parse, stringify } from 'qs';
 
-import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -67,6 +66,55 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
     },
 }));
+
+const loadFlowButtonStyles = makeStyles({
+    root: {
+        backgroundColor: green[500],
+        '&:hover': {
+            backgroundColor: green[700],
+        },
+    },
+    label: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+});
+
+const RunLoadFlowButton = (props) => {
+    const loadFlowButtonClasses = loadFlowButtonStyles();
+
+    const { loadFlowRunning, setLoadFlowRunning, studyName } = props;
+
+    useEffect(() => {
+        if (loadFlowRunning) {
+            startLoadFlow(studyName)
+                .then(() => {})
+                .then(() => {
+                    setLoadFlowRunning(false);
+                });
+        }
+        // Note: setLoadFlowRunning, studyName don't change
+    }, [loadFlowRunning, setLoadFlowRunning, studyName]);
+
+    const handleClick = () => setLoadFlowRunning(true);
+
+    return (
+        <Button
+            variant="contained"
+            fullWidth={true}
+            className={loadFlowButtonClasses.root}
+            startIcon={<PlayIcon />}
+            disabled={loadFlowRunning}
+            onClick={!loadFlowRunning ? handleClick : null}
+        >
+            <div className={loadFlowButtonClasses.label}>
+                <Typography noWrap>
+                    {loadFlowRunning ? 'LoadFlow running…' : 'Start LoadFlow'}
+                </Typography>
+            </div>
+        </Button>
+    );
+};
 
 const INITIAL_POSITION = [0, 0];
 
@@ -121,14 +169,77 @@ const StudyPane = () => {
 
     const websocketExpectedCloseRef = useRef();
 
-    // study creation, network and geo data loading: will be called only one time at creation mount event because
-    // studyName won't change
+    const loadNetwork = useCallback(() => {
+        console.info(`Loading network of study '${studyName}'...`);
+
+        const substations = fetchSubstations(studyName);
+
+        const lines = fetchLines(studyName);
+
+        Promise.all([substations, lines])
+            .then((values) => {
+                const network = new Network();
+                network.setSubstations(values[0]);
+                network.setLines(values[1]);
+                dispatch(loadNetworkSuccess(network));
+            })
+            .catch(function (error) {
+                console.error(error.message);
+                setStudyNotFound(true);
+            });
+        // Note: studyName and dispatch don't change
+    }, [studyName, dispatch]);
+
+    const loadGeoData = useCallback(() => {
+        console.info(`Loading geo data of study '${studyName}'...`);
+
+        const substationPositions = fetchSubstationPositions(studyName);
+
+        const linePositions = fetchLinePositions(studyName);
+
+        Promise.all([substationPositions, linePositions])
+            .then((values) => {
+                const geoData = new GeoData();
+                geoData.setSubstationPositions(values[0]);
+                geoData.setLinePositions(values[1]);
+                dispatch(loadGeoDataSuccess(geoData));
+                setWaitingLoadGeoData(false);
+            })
+            .catch(function (error) {
+                console.error(error.message);
+                setStudyNotFound(true);
+            });
+        // Note: studyName and dispatch don't change
+    }, [studyName, dispatch]);
+
+    const connectNotifications = useCallback(
+        (studyName) => {
+            console.info(`Connecting to notifications '${studyName}'...`);
+
+            const ws = connectNotificationsWebsocket(studyName);
+            ws.onmessage = function (event) {
+                dispatch(studyUpdated(JSON.parse(event.data)));
+            };
+            ws.onclose = function (event) {
+                if (!websocketExpectedCloseRef.current) {
+                    console.error('Unexpected Notification WebSocket closed');
+                }
+            };
+            ws.onerror = function (event) {
+                console.error('Unexpected Notification WebSocket error', event);
+            };
+            return ws;
+        },
+        // Note: dispatch doesn't change
+        [dispatch]
+    );
+
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
         dispatch(openStudy(studyName));
 
-        loadNetwork(studyName);
-        loadGeoData(studyName);
+        loadNetwork();
+        loadGeoData();
         const ws = connectNotifications(studyName);
 
         // study cleanup at unmount event
@@ -137,7 +248,9 @@ const StudyPane = () => {
             ws.close();
             dispatch(closeStudy());
         };
-    }, [studyName]);
+        // Note: dispach, studyName, loadNetwork, loadGeoData,
+        // connectNotifications don't change
+    }, [dispatch, studyName, loadNetwork, loadGeoData, connectNotifications]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -157,76 +270,21 @@ const StudyPane = () => {
         }
     }, [network]);
 
-    function loadNetwork(studyName) {
-        console.info(`Loading network of study '${studyName}'...`);
-
-        const substations = fetchSubstations(studyName);
-
-        const lines = fetchLines(studyName);
-
-        Promise.all([substations, lines])
-            .then((values) => {
-                const network = new Network();
-                network.setSubstations(values[0]);
-                network.setLines(values[1]);
-                dispatch(loadNetworkSuccess(network));
-            })
-            .catch(function (error) {
-                console.error(error.message);
-                setStudyNotFound(true);
-            });
-    }
-
-    function loadGeoData(studyName) {
-        console.info(`Loading geo data of study '${studyName}'...`);
-
-        const substationPositions = fetchSubstationPositions(studyName);
-
-        const linePositions = fetchLinePositions(studyName);
-
-        Promise.all([substationPositions, linePositions])
-            .then((values) => {
-                const geoData = new GeoData();
-                geoData.setSubstationPositions(values[0]);
-                geoData.setLinePositions(values[1]);
-                dispatch(loadGeoDataSuccess(geoData));
-                setWaitingLoadGeoData(false);
-            })
-            .catch(function (error) {
-                console.error(error.message);
-                setStudyNotFound(true);
-            });
-    }
-
-    function connectNotifications(studyName) {
-        console.info(`Connecting to notifications '${studyName}'...`);
-
-        const ws = connectNotificationsWebsocket(studyName);
-        ws.onmessage = function (event) {
-            dispatch(studyUpdated(JSON.parse(event.data)));
-        };
-        ws.onclose = function (event) {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }
-
-    const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
-        setUpdateSwitchMsg('');
-        history.replace(
-            '/studies/' +
-                encodeURIComponent(studyName) +
-                stringify(
-                    { voltageLevelId: voltageLevelId },
-                    { addQueryPrefix: true }
-                )
-        );
-    }, []);
+    const showVoltageLevelDiagram = useCallback(
+        (voltageLevelId) => {
+            setUpdateSwitchMsg('');
+            history.replace(
+                '/studies/' +
+                    encodeURIComponent(studyName) +
+                    stringify(
+                        { voltageLevelId: voltageLevelId },
+                        { addQueryPrefix: true }
+                    )
+            );
+        },
+        // Note: studyName and history don't change
+        [studyName, history]
+    );
 
     function closeVoltageLevelDiagram() {
         history.replace('/studies/' + encodeURIComponent(studyName));
@@ -262,20 +320,21 @@ const StudyPane = () => {
                 sldRef.current.reloadSvg();
             }
             if (
-                studyUpdatedForce.eventData.headers['updateType'] == 'loadflow'
+                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(studyName);
             }
         }
-    }, [studyUpdatedForce]);
+        // Note: studyName and loadNetwork don't change
+    }, [studyUpdatedForce, studyName, loadNetwork]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
         let newFiltered;
         if (isToggle) {
             newFiltered = [...filteredNominalVoltages];
-            vnoms.map((vnom) => {
+            vnoms.forEach((vnom) => {
                 const currentIndex = filteredNominalVoltages.indexOf(vnom);
                 if (currentIndex === -1) {
                     newFiltered.push(vnom);
@@ -288,54 +347,6 @@ const StudyPane = () => {
         }
         setFilteredNominalVoltages(newFiltered);
     };
-
-    const loadFlowButtonStyles = makeStyles({
-        root: {
-            backgroundColor: green[500],
-            '&:hover': {
-                backgroundColor: green[700],
-            },
-        },
-        label: {
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-        },
-    });
-
-    function RunLoadFlowButton() {
-        const loadFlowButtonClasses = loadFlowButtonStyles();
-
-        useEffect(() => {
-            if (loadFlowRunning) {
-                startLoadFlow(studyName)
-                    .then(() => {})
-                    .then(() => {
-                        setLoadFlowRunning(false);
-                    });
-            }
-        }, [loadFlowRunning]);
-
-        const handleClick = () => setLoadFlowRunning(true);
-
-        return (
-            <Button
-                variant="contained"
-                fullWidth={true}
-                className={loadFlowButtonClasses.root}
-                startIcon={<PlayIcon />}
-                disabled={loadFlowRunning}
-                onClick={!loadFlowRunning ? handleClick : null}
-            >
-                <div className={loadFlowButtonClasses.label}>
-                    <Typography noWrap>
-                        {loadFlowRunning
-                            ? 'LoadFlow running…'
-                            : 'Start LoadFlow'}
-                    </Typography>
-                </div>
-            </Button>
-        );
-    }
 
     const mapRef = useRef();
     const centerSubstation = useCallback(
@@ -359,8 +370,7 @@ const StudyPane = () => {
             />
         );
     } else {
-        let displayedVoltageLevel,
-            focusedVoltageLevel = null;
+        let displayedVoltageLevel;
         if (network) {
             if (displayedVoltageLevelId) {
                 displayedVoltageLevel = network.getVoltageLevel(
@@ -392,7 +402,14 @@ const StudyPane = () => {
                                                 marginTop: 8,
                                             }}
                                         >
-                                            <RunLoadFlowButton />
+                                            <RunLoadFlowButton
+                                                loadFlowRunning={
+                                                    loadFlowRunning
+                                                }
+                                                setLoadFlowRunning={
+                                                    setLoadFlowRunning
+                                                }
+                                            />
                                         </div>
                                     </Grid>
                                     <Grid item key="explorer">
