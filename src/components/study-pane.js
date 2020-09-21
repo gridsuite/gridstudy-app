@@ -403,6 +403,7 @@ const StudyPane = () => {
                                             }}
                                         >
                                             <RunLoadFlowButton
+                                                studyName={studyName}
                                                 loadFlowRunning={
                                                     loadFlowRunning
                                                 }
