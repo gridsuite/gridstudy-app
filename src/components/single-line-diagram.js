@@ -7,6 +7,7 @@
 
 import React, {
     forwardRef,
+    useCallback,
     useEffect,
     useImperativeHandle,
     useLayoutEffect,
@@ -91,7 +92,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [forceState, updateState] = useState(false);
 
-    const forceUpdate = React.useCallback(() => {
+    const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
             svgPrevViewbox.current = svgDraw.current.viewbox();
         }
@@ -103,7 +104,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         () => ({
             reloadSvg: forceUpdate,
         }),
-        []
+        // Note: forceUpdate doesn't change
+        [forceUpdate]
     );
 
     useEffect(() => {
@@ -131,6 +133,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
     }, [props.svgUrl, forceState]);
 
+    const { onNextVoltageLevelClick, onBreakerClick } = props;
     useLayoutEffect(() => {
         if (svg.svg) {
             // calculate svg width and height
@@ -183,7 +186,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     const meta = svg.metadata.nodes.find(
                         (other) => other.id === id
                     );
-                    props.onNextVoltageLevelClick(meta.nextVId);
+                    onNextVoltageLevelClick(meta.nextVId);
                 });
             });
 
@@ -202,12 +205,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     const switchId = switchMetadata.equipmentId;
                     const open = switchMetadata.open;
                     svgPrevViewbox.current = draw.viewbox();
-                    props.onBreakerClick(switchId, !open, event.currentTarget);
+                    onBreakerClick(switchId, !open, event.currentTarget);
                 });
             });
             svgDraw.current = draw;
         }
-    }, [svg]);
+        // Note: onNextVoltageLevelClick and onBreakerClick don't change
+    }, [svg, onNextVoltageLevelClick, onBreakerClick]);
 
     useEffect(() => {
         svgPrevViewbox.current = null;
