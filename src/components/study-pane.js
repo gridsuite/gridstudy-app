@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {useHistory, useLocation, useParams} from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
-import {parse, stringify} from 'qs';
+import { parse, stringify } from 'qs';
 
 import Grid from '@material-ui/core/Grid';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 import NetworkExplorer from './network/network-explorer';
@@ -32,13 +32,19 @@ import {
     startLoadFlow,
     updateSwitchState,
 } from '../utils/rest-api';
-import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy, studyUpdated,} from '../redux/actions';
+import {
+    closeStudy,
+    loadGeoDataSuccess,
+    loadNetworkSuccess,
+    openStudy,
+    studyUpdated,
+} from '../redux/actions';
 import Network from './network/network';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Button from '@material-ui/core/Button';
 import PlayIcon from '@material-ui/icons/PlayArrow';
-import {green} from '@material-ui/core/colors';
+import { green } from '@material-ui/core/colors';
 import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
@@ -504,13 +510,12 @@ const StudyPane = (props) => {
     function renderTableView() {
         return (
             <Paper className={classes.main}>
-                <NetworkTable network={network}/>
+                <NetworkTable network={network} />
             </Paper>
         );
     }
 
-    function renderResultsView() {
-    }
+    function renderResultsView() {}
 
     if (studyNotFound) {
         return (
@@ -534,17 +539,32 @@ const StudyPane = (props) => {
                         loadingMessageSize={25}
                     />
                 )}
-                <div style={{ display: props.view === StudyView.MAP ? 'block': 'none'}}>
-                    { renderMapView() }
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.MAP ? 'block' : 'none',
+                    }}
+                >
+                    {renderMapView()}
                 </div>
-                <div style={{ display: props.view === StudyView.TABLE ? 'block': 'none'}}>
-                    { renderTableView() }
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.TABLE ? 'block' : 'none',
+                    }}
+                >
+                    {renderTableView()}
                 </div>
-                <div style={{ display: props.view === StudyView.RESULTS ? 'block': 'none'}}>
-                    { renderResultsView() }
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.RESULTS ? 'block' : 'none',
+                    }}
+                >
+                    {renderResultsView()}
                 </div>
             </div>
-        )
+        );
     }
 };
 

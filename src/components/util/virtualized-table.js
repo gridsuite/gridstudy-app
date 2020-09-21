@@ -4,9 +4,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import TableCell from '@material-ui/core/TableCell';
-import {AutoSizer, Column, Table} from 'react-virtualized';
+import { AutoSizer, Column, Table } from 'react-virtualized';
 
 const styles = (theme) => ({
     flexContainer: {
@@ -19,7 +19,8 @@ const styles = (theme) => ({
         // https://github.com/bvaughn/react-virtualized/issues/454
         '& .ReactVirtualized__Table__headerRow': {
             flip: false,
-            paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
+            paddingRight:
+                theme.direction === 'rtl' ? '0 !important' : undefined,
         },
     },
     tableRow: {
@@ -62,7 +63,12 @@ class MuiVirtualizedTable extends React.PureComponent {
                 })}
                 variant="body"
                 style={{ height: rowHeight }}
-                align={(columnIndex != null && columns[columnIndex].numeric) || false ? 'right' : 'left'}
+                align={
+                    (columnIndex != null && columns[columnIndex].numeric) ||
+                    false
+                        ? 'right'
+                        : 'left'
+                }
             >
                 {cellData}
             </TableCell>
@@ -75,7 +81,11 @@ class MuiVirtualizedTable extends React.PureComponent {
         return (
             <TableCell
                 component="div"
-                className={clsx(classes.tableCell, classes.flexContainer, classes.noClick)}
+                className={clsx(
+                    classes.tableCell,
+                    classes.flexContainer,
+                    classes.noClick
+                )}
                 variant="head"
                 style={{ height: headerHeight }}
                 align={columns[columnIndex].numeric || false ? 'right' : 'left'}
@@ -86,7 +96,13 @@ class MuiVirtualizedTable extends React.PureComponent {
     };
 
     render() {
-        const { classes, columns, rowHeight, headerHeight, ...tableProps } = this.props;
+        const {
+            classes,
+            columns,
+            rowHeight,
+            headerHeight,
+            ...tableProps
+        } = this.props;
         return (
             <AutoSizer>
                 {({ height, width }) => (
@@ -134,7 +150,7 @@ MuiVirtualizedTable.propTypes = {
             label: PropTypes.string.isRequired,
             numeric: PropTypes.bool,
             width: PropTypes.number.isRequired,
-        }),
+        })
     ).isRequired,
     headerHeight: PropTypes.number,
     onRowClick: PropTypes.func,

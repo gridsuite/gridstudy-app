@@ -18,25 +18,29 @@ import {
 } from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import StudyPane, {StudyView} from './study-pane';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import {
+    createMuiTheme,
+    makeStyles,
+    ThemeProvider,
+} from '@material-ui/core/styles';
+import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import { LIGHT_THEME } from '../redux/actions';
 import Parameters from './parameters';
 
 import {
-    TopBar,
     AuthenticationRouter,
-    logout,
     getPreLoginPath,
     initializeAuthenticationProd,
+    logout,
+    TopBar,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
-import {FormattedMessage, useIntl} from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -63,7 +67,7 @@ const getMuiTheme = (theme) => {
 const useStyles = makeStyles(() => ({
     tabs: {
         marginLeft: 18,
-    }
+    },
 }));
 
 const noUserManager = { instance: null, error: null };
@@ -170,18 +174,27 @@ const App = () => {
                     onParametersClick={() => showParametersClicked()}
                     onLogoutClick={() => logout(dispatch, userManager.instance)}
                     onLogoClick={() => onLogoClicked()}
-                    user={user}>
-                    { studyName &&
-                        <Tabs value={tabIndex}
-                              indicatorColor="primary"
-                              variant="scrollable"
-                              scrollButtons="auto"
-                              onChange={(event, newValue) => setTabIndex(newValue)}
-                              aria-label="views"
-                              className={classes.tabs}>
-                             {STUDY_VIEWS.map(tabName => <Tab label={intl.formatMessage({id: tabName})}/>)}
+                    user={user}
+                >
+                    {studyName && (
+                        <Tabs
+                            value={tabIndex}
+                            indicatorColor="primary"
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            onChange={(event, newValue) =>
+                                setTabIndex(newValue)
+                            }
+                            aria-label="views"
+                            className={classes.tabs}
+                        >
+                            {STUDY_VIEWS.map((tabName) => (
+                                <Tab
+                                    label={intl.formatMessage({ id: tabName })}
+                                />
+                            ))}
                         </Tabs>
-                    }
+                    )}
                 </TopBar>
                 <Parameters
                     showParameters={showParameters}
@@ -195,7 +208,7 @@ const App = () => {
                             />
                         </Route>
                         <Route exact path="/studies/:studyName">
-                            <StudyPane view={STUDY_VIEWS[tabIndex]}/>
+                            <StudyPane view={STUDY_VIEWS[tabIndex]} />
                         </Route>
                         <Route exact path="/sign-in-callback">
                             <Redirect to={getPreLoginPath() || '/'} />
