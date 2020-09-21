@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {PathLayer} from "deck.gl";
+import { PathLayer } from 'deck.gl';
 import GL from '@luma.gl/constants';
 
 const defaultProps = {
-    getLineParallelIndex: {type: 'accessor', value: 0},
-    getLineAngle: {type: 'accessor', value: 0},
-    distanceBetweenLines: {type: 'number', value: 1000},
-    maxParallelOffset: {type: 'number', value: 100},
-    minParallelOffset: {type: 'number', value: 3}
+    getLineParallelIndex: { type: 'accessor', value: 0 },
+    getLineAngle: { type: 'accessor', value: 0 },
+    distanceBetweenLines: { type: 'number', value: 1000 },
+    maxParallelOffset: { type: 'number', value: 100 },
+    minParallelOffset: { type: 'number', value: 3 },
 };
 
 /**
@@ -28,11 +28,12 @@ const defaultProps = {
  *         minParallelOffset: min pixel distance
  */
 export default class ParallelPathLayer extends PathLayer {
-
     getShaders() {
         const shaders = super.getShaders();
         shaders.inject = Object.assign({}, shaders.inject, {
-            'vs:#decl': shaders.inject['vs:#decl'] + `\
+            'vs:#decl':
+                shaders.inject['vs:#decl'] +
+                `\
 //Note: with the following 2 attributes, we have reached the limit (16 on most platforms) of the number of attributes.
 //      with webgl2, this might be raised in the future to 32 on most platforms...
 //      The PathLayer that this class extends already uses 13 attributes (and 14 with the dash extension).
@@ -47,7 +48,9 @@ uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
 `,
-            'vs:#main-end': shaders.inject['vs:#main-end'] + `\
+            'vs:#main-end':
+                shaders.inject['vs:#main-end'] +
+                `\
 if (abs(instanceLineParallelIndex) == 9999.) return;
 
 float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
@@ -68,7 +71,7 @@ if (!isSegmentEnd && isFirstSegment)
 }
 trans = trans * offsetCommonSpace;
 gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
-`
+`,
         });
         return shaders;
     }
@@ -81,28 +84,26 @@ gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
             instanceLineParallelIndex: {
                 size: 1,
                 type: GL.FLOAT,
-                accessor: 'getLineParallelIndex'
+                accessor: 'getLineParallelIndex',
             },
             instanceLineAngle: {
                 size: 1,
                 type: GL.FLOAT,
-                accessor: 'getLineAngle'
+                accessor: 'getLineAngle',
             },
         });
     }
 
-    draw({uniforms}) {
+    draw({ uniforms }) {
         super.draw({
-            uniforms:
-                {
-                    ...uniforms,
-                    distanceBetweenLines: this.props.distanceBetweenLines,
-                    maxParallelOffset: this.props.maxParallelOffset,
-                    minParallelOffset: this.props.minParallelOffset
-                }
-        })
+            uniforms: {
+                ...uniforms,
+                distanceBetweenLines: this.props.distanceBetweenLines,
+                maxParallelOffset: this.props.maxParallelOffset,
+                minParallelOffset: this.props.minParallelOffset,
+            },
+        });
     }
-
 }
 
 ParallelPathLayer.layerName = 'ParallelPathLayer';

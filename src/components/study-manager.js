@@ -371,8 +371,8 @@ const StudyManager = ({ onClick }) => {
         fetchStudies().then((studies) => {
             dispatch(loadStudiesSuccess(studies));
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        // Note: dispatch doesn't change
+    }, [dispatch]);
 
     const studies = useSelector((state) => state.studies);
 
@@ -398,6 +398,7 @@ const StudyManager = ({ onClick }) => {
             <iframe
                 id={DonwnloadIframe}
                 name={DonwnloadIframe}
+                title={DonwnloadIframe}
                 style={{ visibility: 'hidden', width: 0, height: 0 }}
             />
         </Container>

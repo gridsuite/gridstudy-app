@@ -51,13 +51,13 @@ function getArrowDirection(p) {
 }
 
 function getLineColor(line, color, props) {
-    if (props.lineFlowColorMode == LineFlowColorMode.NOMINAL_VOLTAGE) {
+    if (props.lineFlowColorMode === LineFlowColorMode.NOMINAL_VOLTAGE) {
         if (isDisconnected(line)) {
             return props.disconnectedLineColor;
         } else {
             return color;
         }
-    } else if (props.lineFlowColorMode == LineFlowColorMode.OVERLOADS) {
+    } else if (props.lineFlowColorMode === LineFlowColorMode.OVERLOADS) {
         let limits = [line.permanentLimit1, line.permanentLimit2];
         let intensities = [line.i1, line.i2];
         let iColor1, iColor2;
@@ -65,9 +65,9 @@ function getLineColor(line, color, props) {
 
         for (let i = 0; i < 2; ++i) {
             if (
-                limits[i] == undefined ||
-                intensities[i] == undefined ||
-                intensities[i] == 0
+                limits[i] === undefined ||
+                intensities[i] === undefined ||
+                intensities[i] === 0
             ) {
                 iColor[i] = 0;
             } else {
@@ -240,7 +240,7 @@ class LineLayer extends CompositeLayer {
             changeFlags.dataChanged ||
             (changeFlags.propsChanged &&
                 (oldProps.lineFullPath !== props.lineFullPath ||
-                    props.lineParallelPath != oldProps.lineParallelPath))
+                    props.lineParallelPath !== oldProps.lineParallelPath))
         ) {
             //add labels
             compositeData.forEach((compositeData) => {
@@ -296,9 +296,9 @@ class LineLayer extends CompositeLayer {
                 (oldProps.lineFullPath !== props.lineFullPath ||
                     //For lineFlowMode, recompute only if mode goes to or from LineFlowMode.FEEDERS
                     //because for LineFlowMode.STATIC_ARROWS and LineFlowMode.ANIMATED_ARROWS it's the same
-                    (props.lineFlowMode != oldProps.lineFlowMode &&
-                        (props.lineFlowMode == LineFlowMode.FEEDERS ||
-                            oldProps.lineFlowMode == LineFlowMode.FEEDERS))))
+                    (props.lineFlowMode !== oldProps.lineFlowMode &&
+                        (props.lineFlowMode === LineFlowMode.FEEDERS ||
+                            oldProps.lineFlowMode === LineFlowMode.FEEDERS))))
         ) {
             // add arrows
             compositeData.forEach((compositeData) => {
