@@ -367,7 +367,7 @@ const StudyPane = (props) => {
     );
 
     function renderMapView() {
-        let displayedVoltageLevel = null;
+        let displayedVoltageLevel;
         if (network) {
             if (displayedVoltageLevelId) {
                 displayedVoltageLevel = network.getVoltageLevel(
