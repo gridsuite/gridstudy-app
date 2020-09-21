@@ -5,50 +5,46 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import {useHistory, useLocation, useParams} from 'react-router-dom';
 
-import { FormattedMessage } from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
-import { parse, stringify } from 'qs';
+import {parse, stringify} from 'qs';
 
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
 import SingleLineDiagram from './single-line-diagram';
 import {
+    connectNotificationsWebsocket,
     fetchLinePositions,
     fetchLines,
     fetchSubstationPositions,
     fetchSubstations,
     getVoltageLevelSingleLineDiagram,
-    updateSwitchState,
-    connectNotificationsWebsocket,
     startLoadFlow,
+    updateSwitchState,
 } from '../utils/rest-api';
-import {
-    closeStudy,
-    loadGeoDataSuccess,
-    loadNetworkSuccess,
-    openStudy,
-    studyUpdated,
-} from '../redux/actions';
+import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy, studyUpdated,} from '../redux/actions';
 import Network from './network/network';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Button from '@material-ui/core/Button';
 import PlayIcon from '@material-ui/icons/PlayArrow';
-import { green } from '@material-ui/core/colors';
+import {green} from '@material-ui/core/colors';
+import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
+import NetworkTable from './network/network-table';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -352,7 +348,7 @@ const StudyPane = (props) => {
         [mapRef, network]
     );
 
-    function mapView() {
+    function renderMapView() {
         let displayedVoltageLevel,
             focusedVoltageLevel = null;
         if (network) {
@@ -486,10 +482,15 @@ const StudyPane = (props) => {
         );
     }
 
-    function tableView() {
+    function renderTableView() {
+        return (
+            <Paper className={classes.main}>
+                <NetworkTable network={network}/>
+            </Paper>
+        );
     }
 
-    function resultsView() {
+    function renderResultsView() {
     }
 
     if (studyNotFound) {
@@ -515,13 +516,13 @@ const StudyPane = (props) => {
                     />
                 )}
                 <div style={{ display: props.view === StudyView.MAP ? 'block': 'none'}}>
-                    { mapView() }
+                    { renderMapView() }
                 </div>
                 <div style={{ display: props.view === StudyView.TABLE ? 'block': 'none'}}>
-                    { tableView() }
+                    { renderTableView() }
                 </div>
                 <div style={{ display: props.view === StudyView.RESULTS ? 'block': 'none'}}>
-                    { resultsView() }
+                    { renderResultsView() }
                 </div>
             </div>
         )

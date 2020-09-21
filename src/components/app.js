@@ -162,7 +162,7 @@ const App = () => {
                               variant="scrollable"
                               scrollButtons="auto"
                               onChange={(event, newValue) => setTabIndex(newValue)}
-                              aria-label="parameters"
+                              aria-label="views"
                               className={classes.tabs}>
                              {STUDY_VIEWS.map(tabName => <Tab label={intl.formatMessage({id: tabName})}/>)}
                         </Tabs>
