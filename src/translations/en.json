@@ -6,8 +6,8 @@
     "studyDescription": "study description",
     "caseName": "case name",
     "uploadCase": "Upload case",
-    "public" : "public",
-    "private" : "private",
+    "public": "public",
+    "private": "private",
 
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",

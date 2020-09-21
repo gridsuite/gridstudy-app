@@ -44,8 +44,8 @@ import {
 } from '../redux/actions';
 import { store } from '../redux/store';
 import CardActionArea from '@material-ui/core/CardActionArea';
-import RadioGroup from "@material-ui/core/RadioGroup";
-import Radio from "@material-ui/core/Radio";
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -209,13 +209,13 @@ export const CreateStudyForm = () => {
 
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
-            updateStudyFormState(name);
+            updateStudyFormState(name, store.getState().user.profile.sub);
         }, 700);
     };
 
-    const updateStudyFormState = (inputValue) => {
+    const updateStudyFormState = (inputValue, userId) => {
         if (inputValue !== '') {
-            studyExists(inputValue)
+            studyExists(inputValue, userId)
                 .then((data) => {
                     if (data === true) {
                         setStudyFormState(
@@ -274,8 +274,8 @@ export const CreateStudyForm = () => {
         }
 
         let isPrivateStudy = false;
-        if (studyPrivacy === "private") {
-            isPrivateStudy = true
+        if (studyPrivacy === 'private') {
+            isPrivateStudy = true;
         }
 
         setLoading(true);
@@ -285,7 +285,7 @@ export const CreateStudyForm = () => {
             studyDescription,
             caseName,
             selectedFile,
-            isPrivateStudy,
+            isPrivateStudy
         ).then((res) => {
             if (res.ok) {
                 setCreateStudyErr('');
@@ -402,9 +402,23 @@ export const CreateStudyForm = () => {
                         label=<FormattedMessage id="studyDescription" />
                     />
 
-                    <RadioGroup aria-label="" name="studyPrivacy" value={studyPrivacy} onChange={handleChangeStudyPrivacy} row>
-                        <FormControlLabel value="public" control={<Radio />} label=<FormattedMessage id="public" /> />
-                        <FormControlLabel value="private" control={<Radio />} label=<FormattedMessage id="private" /> />
+                    <RadioGroup
+                        aria-label=""
+                        name="studyPrivacy"
+                        value={studyPrivacy}
+                        onChange={handleChangeStudyPrivacy}
+                        row
+                    >
+                        <FormControlLabel
+                            value="public"
+                            control={<Radio />}
+                            label=<FormattedMessage id="public" />
+                        />
+                        <FormControlLabel
+                            value="private"
+                            control={<Radio />}
+                            label=<FormattedMessage id="private" />
+                        />
                     </RadioGroup>
                     {caseExist && <SelectCase />}
                     {!caseExist && <UploadCase />}

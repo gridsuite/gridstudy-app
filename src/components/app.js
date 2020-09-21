@@ -127,7 +127,12 @@ const App = () => {
     }, [initialMatchSilentRenewCallbackUrl, dispatch]);
 
     function studyClickHandler(studyName, userId) {
-        history.push('/' + encodeURIComponent(userId) + '/studies/' + encodeURIComponent(studyName));
+        history.push(
+            '/' +
+                encodeURIComponent(userId) +
+                '/studies/' +
+                encodeURIComponent(studyName)
+        );
     }
 
     function showParametersClicked() {
@@ -162,7 +167,9 @@ const App = () => {
                     <Switch>
                         <Route exact path="/">
                             <StudyManager
-                                onClick={(name, userId) => studyClickHandler(name, userId)}
+                                onClick={(name, userId) =>
+                                    studyClickHandler(name, userId)
+                                }
                             />
                         </Route>
                         <Route exact path="/:userId/studies/:studyName">

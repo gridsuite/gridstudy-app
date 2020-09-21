@@ -33,7 +33,6 @@ import { getAvailableExportFormats } from './rest-api';
  * @param {String} message Message of the dialog
  */
 const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
-
     const handleClose = () => {
         onClose();
     };
@@ -59,9 +58,7 @@ const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>{message}</DialogContentText>
-                { error !== "" && (
-                    <Alert severity="error">{error}</Alert>
-                )}
+                {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="outlined">
@@ -229,14 +226,15 @@ const ExportDialog = ({ open, onClose, onClick, studyName, userId, title }) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
         setDownloadUrl(
-            process.env.REACT_APP_API_GATEWAY + '/study' +
-            '/v1/' +
-            encodeURIComponent(userId) +
-            '/studies/' +
-            encodeURIComponent(studyName) +
-            '/' +
-            '/export-network/' +
-            selected
+            process.env.REACT_APP_API_GATEWAY +
+                '/study' +
+                '/v1/' +
+                encodeURIComponent(userId) +
+                '/studies/' +
+                encodeURIComponent(studyName) +
+                '/' +
+                '/export-network/' +
+                selected
         );
     };
 

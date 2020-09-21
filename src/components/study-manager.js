@@ -153,7 +153,7 @@ const StudyCard = ({ study, onClick }) => {
      * Delete dialog: window status value for deletion
      */
     const [openDeleteDialog, setOpenDelete] = React.useState(false);
-    const [deleteError, setDeleteError] = React.useState("");
+    const [deleteError, setDeleteError] = React.useState('');
 
     const handleOpenDelete = () => {
         setAnchorEl(null);
@@ -161,16 +161,20 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickDelete = () => {
-        deleteStudy(study.studyName, study.userId).then((response) => { response.ok ?
-            fetchStudies().then((studies) => {
-                dispatch(loadStudiesSuccess(studies));
-            }) : setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
+        deleteStudy(study.studyName, study.userId).then((response) => {
+            response.ok
+                ? fetchStudies().then((studies) => {
+                      dispatch(loadStudiesSuccess(studies));
+                  })
+                : setDeleteError(
+                      intl.formatMessage({ id: 'deleteStudyError' })
+                  );
         });
     };
 
     const handleCloseDelete = () => {
         setOpenDelete(false);
-        setDeleteError("");
+        setDeleteError('');
     };
 
     /**
@@ -184,12 +188,14 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, study.userId, newStudyNameValue).then(() => {
-            fetchStudies().then((studies) => {
-                dispatch(loadStudiesSuccess(studies));
-            });
-            setOpenRename(false);
-        });
+        renameStudy(study.studyName, study.userId, newStudyNameValue).then(
+            () => {
+                fetchStudies().then((studies) => {
+                    dispatch(loadStudiesSuccess(studies));
+                });
+                setOpenRename(false);
+            }
+        );
     };
 
     const handleCloseRename = () => {
@@ -393,10 +399,18 @@ const StudyManager = ({ onClick }) => {
                     </Box>
                 </Grid>
                 {studies.map((study) => (
-                    <Grid item xs={12} sm={6} md={3} key={study.userId + '/' + study.studyName}>
+                    <Grid
+                        item
+                        xs={12}
+                        sm={6}
+                        md={3}
+                        key={study.userId + '/' + study.studyName}
+                    >
                         <StudyCard
                             study={study}
-                            onClick={() => onClick(study.studyName, study.userId)}
+                            onClick={() =>
+                                onClick(study.studyName, study.userId)
+                            }
                         />
                     </Grid>
                 ))}

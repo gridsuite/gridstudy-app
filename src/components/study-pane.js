@@ -190,7 +190,7 @@ const StudyPane = () => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, dispatch]);
+    }, [studyName, userId, dispatch]);
 
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
@@ -212,7 +212,7 @@ const StudyPane = () => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, dispatch]);
+    }, [studyName, userId, dispatch]);
 
     const connectNotifications = useCallback(
         (studyName) => {
@@ -238,7 +238,7 @@ const StudyPane = () => {
 
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
-        dispatch(openStudy(studyName));
+        dispatch(openStudy(studyName, userId));
 
         loadNetwork();
         loadGeoData();
@@ -252,7 +252,14 @@ const StudyPane = () => {
         };
         // Note: dispach, studyName, loadNetwork, loadGeoData,
         // connectNotifications don't change
-    }, [dispatch, studyName, loadNetwork, loadGeoData, connectNotifications]);
+    }, [
+        dispatch,
+        studyName,
+        userId,
+        loadNetwork,
+        loadGeoData,
+        connectNotifications,
+    ]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -276,7 +283,9 @@ const StudyPane = () => {
         (voltageLevelId) => {
             setUpdateSwitchMsg('');
             history.replace(
-                '/studies/' +
+                '/' +
+                    encodeURIComponent(userId) +
+                    '/studies/' +
                     encodeURIComponent(studyName) +
                     stringify(
                         { voltageLevelId: voltageLevelId },
@@ -285,11 +294,16 @@ const StudyPane = () => {
             );
         },
         // Note: studyName and history don't change
-        [studyName, history]
+        [studyName, userId, history]
     );
 
     function closeVoltageLevelDiagram() {
-        history.replace('/' + encodeURIComponent(userId) + '/studies/' + encodeURIComponent(studyName));
+        history.replace(
+            '/' +
+                encodeURIComponent(userId) +
+                '/studies/' +
+                encodeURIComponent(studyName)
+        );
     }
 
     const sldRef = useRef();
@@ -301,18 +315,20 @@ const StudyPane = () => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(studyName, userId, breakerId, open).then((response) => {
-                if (!response.ok) {
-                    console.error(response);
-                    eltOpen.style.visibility = open ? 'hidden' : 'visible';
-                    eltClose.style.visibility = open ? 'visible' : 'hidden';
-                    setUpdateSwitchMsg(
-                        response.status + ' : ' + response.statusText
-                    );
+            updateSwitchState(studyName, userId, breakerId, open).then(
+                (response) => {
+                    if (!response.ok) {
+                        console.error(response);
+                        eltOpen.style.visibility = open ? 'hidden' : 'visible';
+                        eltClose.style.visibility = open ? 'visible' : 'hidden';
+                        setUpdateSwitchMsg(
+                            response.status + ' : ' + response.statusText
+                        );
+                    }
                 }
-            });
+            );
         },
-        [studyName]
+        [studyName, userId]
     );
 
     useEffect(() => {
