@@ -157,7 +157,7 @@ const NetworkTable = (props) => {
                                 />
                             ))}
                         </Tabs>
-                        //This render is fast, rerender full dom everytime
+                        {/*This render is fast, rerender full dom everytime*/}
                         {tabIndex === 0 && renderSubstationsTable()}
                         {tabIndex === 1 && renderVoltageLevelsTable()}
                         {tabIndex === 2 && renderLinesTable()}
