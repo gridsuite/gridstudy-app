@@ -126,8 +126,13 @@ const App = () => {
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
     }, [initialMatchSilentRenewCallbackUrl, dispatch]);
 
-    function studyClickHandler(studyName) {
-        history.push('/studies/' + encodeURIComponent(studyName));
+    function studyClickHandler(studyName, userId) {
+        history.push(
+            '/' +
+                encodeURIComponent(userId) +
+                '/studies/' +
+                encodeURIComponent(studyName)
+        );
     }
 
     function showParametersClicked() {
@@ -162,10 +167,12 @@ const App = () => {
                     <Switch>
                         <Route exact path="/">
                             <StudyManager
-                                onClick={(name) => studyClickHandler(name)}
+                                onClick={(name, userId) =>
+                                    studyClickHandler(name, userId)
+                                }
                             />
                         </Route>
-                        <Route exact path="/studies/:studyName">
+                        <Route exact path="/:userId/studies/:studyName">
                             <StudyPane />
                         </Route>
                         <Route exact path="/sign-in-callback">

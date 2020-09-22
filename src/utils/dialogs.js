@@ -32,7 +32,7 @@ import { getAvailableExportFormats } from './rest-api';
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-const DeleteDialog = ({ open, onClose, onClick, title, message }) => {
+const DeleteDialog = ({ open, onClose, onClick, title, message, error }) => {
     const handleClose = () => {
         onClose();
     };
@@ -58,6 +58,7 @@ const DeleteDialog = ({ open, onClose, onClick, title, message }) => {
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <DialogContentText>{message}</DialogContentText>
+                {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="outlined">
@@ -175,7 +176,7 @@ RenameDialog.propTypes = {
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-const ExportDialog = ({ open, onClose, onClick, studyName, title }) => {
+const ExportDialog = ({ open, onClose, onClick, studyName, userId, title }) => {
     const [availableFormats, setAvailableFormats] = React.useState('');
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
@@ -227,8 +228,11 @@ const ExportDialog = ({ open, onClose, onClick, studyName, title }) => {
         setDownloadUrl(
             process.env.REACT_APP_API_GATEWAY +
                 '/study' +
-                '/v1/studies/' +
-                studyName +
+                '/v1/' +
+                encodeURIComponent(userId) +
+                '/studies/' +
+                encodeURIComponent(studyName) +
+                '/' +
                 '/export-network/' +
                 selected
         );
