@@ -85,18 +85,18 @@ const loadFlowButtonStyles = makeStyles({
 const RunLoadFlowButton = (props) => {
     const loadFlowButtonClasses = loadFlowButtonStyles();
 
-    const { loadFlowRunning, setLoadFlowRunning, studyName } = props;
+    const { loadFlowRunning, setLoadFlowRunning, studyName, userId } = props;
 
     useEffect(() => {
         if (loadFlowRunning) {
-            startLoadFlow(studyName)
+            startLoadFlow(studyName, userId)
                 .then(() => {})
                 .then(() => {
                     setLoadFlowRunning(false);
                 });
         }
-        // Note: setLoadFlowRunning, studyName don't change
-    }, [loadFlowRunning, setLoadFlowRunning, studyName]);
+        // Note: setLoadFlowRunning, studyName and userId don't change
+    }, [loadFlowRunning, setLoadFlowRunning, studyName, userId]);
 
     const handleClick = () => setLoadFlowRunning(true);
 
@@ -411,6 +411,7 @@ const StudyPane = (props) => {
                                         >
                                             <RunLoadFlowButton
                                                 studyName={studyName}
+                                                userId={userId}
                                                 loadFlowRunning={
                                                     loadFlowRunning
                                                 }
