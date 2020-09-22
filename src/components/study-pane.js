@@ -25,7 +25,8 @@ import SingleLineDiagram from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchLinePositions,
-    fetchLines, fetchStudy,
+    fetchLines,
+    fetchStudy,
     fetchSubstationPositions,
     fetchSubstations,
     getVoltageLevelSingleLineDiagram,
