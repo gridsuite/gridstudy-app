@@ -539,6 +539,7 @@ const StudyPane = (props) => {
                         loadingMessageSize={25}
                     />
                 )}
+                //Rendering the map is slow, do it once and keep it display:none
                 <div
                     style={{
                         display:
