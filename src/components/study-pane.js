@@ -466,6 +466,7 @@ const StudyPane = (props) => {
                             lineFlowAlertThreshold={lineFlowAlertThreshold}
                             ref={mapRef}
                             onSubstationClick={showVoltageLevelDiagram}
+                            visible={props.view === StudyView.MAP}
                         />
                         {displayedVoltageLevelId && (
                             <div
