@@ -96,7 +96,7 @@ const RunLoadFlowButton = (props) => {
                 });
         }
         // Note: setLoadFlowRunning, studyName don't change
-    }, [loadFlowRunning, setLoadFlowRunning, studyName]);
+    }, [loadFlowRunning, setLoadFlowRunning, studyName, userId]);
 
     const handleClick = () => setLoadFlowRunning(true);
 
