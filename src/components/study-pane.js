@@ -129,6 +129,8 @@ export const StudyView = {
 const StudyPane = (props) => {
     const studyName = decodeURIComponent(useParams().studyName);
 
+    const userId = decodeURIComponent(useParams().userId);
+
     const network = useSelector((state) => state.network);
 
     const geoData = useSelector((state) => state.geoData);
@@ -180,9 +182,9 @@ const StudyPane = (props) => {
     const loadNetwork = useCallback(() => {
         console.info(`Loading network of study '${studyName}'...`);
 
-        const substations = fetchSubstations(studyName);
+        const substations = fetchSubstations(studyName, userId);
 
-        const lines = fetchLines(studyName);
+        const lines = fetchLines(studyName, userId);
 
         Promise.all([substations, lines])
             .then((values) => {
@@ -196,14 +198,14 @@ const StudyPane = (props) => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, dispatch]);
+    }, [studyName, userId, dispatch]);
 
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyName);
+        const substationPositions = fetchSubstationPositions(studyName, userId);
 
-        const linePositions = fetchLinePositions(studyName);
+        const linePositions = fetchLinePositions(studyName, userId);
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
@@ -218,7 +220,7 @@ const StudyPane = (props) => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, dispatch]);
+    }, [studyName, userId, dispatch]);
 
     const connectNotifications = useCallback(
         (studyName) => {
@@ -244,7 +246,7 @@ const StudyPane = (props) => {
 
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
-        dispatch(openStudy(studyName));
+        dispatch(openStudy(studyName, userId));
 
         loadNetwork();
         loadGeoData();
@@ -258,7 +260,14 @@ const StudyPane = (props) => {
         };
         // Note: dispach, studyName, loadNetwork, loadGeoData,
         // connectNotifications don't change
-    }, [dispatch, studyName, loadNetwork, loadGeoData, connectNotifications]);
+    }, [
+        dispatch,
+        studyName,
+        userId,
+        loadNetwork,
+        loadGeoData,
+        connectNotifications,
+    ]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -282,7 +291,9 @@ const StudyPane = (props) => {
         (voltageLevelId) => {
             setUpdateSwitchMsg('');
             history.replace(
-                '/studies/' +
+                '/' +
+                    encodeURIComponent(userId) +
+                    '/studies/' +
                     encodeURIComponent(studyName) +
                     stringify(
                         { voltageLevelId: voltageLevelId },
@@ -291,11 +302,16 @@ const StudyPane = (props) => {
             );
         },
         // Note: studyName and history don't change
-        [studyName, history]
+        [studyName, userId, history]
     );
 
     function closeVoltageLevelDiagram() {
-        history.replace('/studies/' + encodeURIComponent(studyName));
+        history.replace(
+            '/' +
+                encodeURIComponent(userId) +
+                '/studies/' +
+                encodeURIComponent(studyName)
+        );
     }
 
     const sldRef = useRef();
@@ -307,18 +323,20 @@ const StudyPane = (props) => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(studyName, breakerId, open).then((response) => {
-                if (!response.ok) {
-                    console.error(response);
-                    eltOpen.style.visibility = open ? 'hidden' : 'visible';
-                    eltClose.style.visibility = open ? 'visible' : 'hidden';
-                    setUpdateSwitchMsg(
-                        response.status + ' : ' + response.statusText
-                    );
+            updateSwitchState(studyName, userId, breakerId, open).then(
+                (response) => {
+                    if (!response.ok) {
+                        console.error(response);
+                        eltOpen.style.visibility = open ? 'hidden' : 'visible';
+                        eltClose.style.visibility = open ? 'visible' : 'hidden';
+                        setUpdateSwitchMsg(
+                            response.status + ' : ' + response.statusText
+                        );
+                    }
                 }
-            });
+            );
         },
-        [studyName]
+        [studyName, userId]
     );
 
     useEffect(() => {
@@ -471,6 +489,7 @@ const StudyPane = (props) => {
                                     }
                                     svgUrl={getVoltageLevelSingleLineDiagram(
                                         studyName,
+                                        userId,
                                         displayedVoltageLevelId,
                                         useName,
                                         centerName,

@@ -44,6 +44,8 @@ import {
 } from '../redux/actions';
 import { store } from '../redux/store';
 import CardActionArea from '@material-ui/core/CardActionArea';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
 
 const useStyles = makeStyles(() => ({
     addIcon: {
@@ -161,6 +163,7 @@ export const CreateStudyForm = () => {
 
     const [studyName, setStudyName] = React.useState('');
     const [studyDescription, setStudyDescription] = React.useState('');
+    const [studyPrivacy, setStudyPrivacy] = React.useState('private');
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [loading, setLoading] = React.useState(false);
@@ -169,6 +172,8 @@ export const CreateStudyForm = () => {
         false
     );
     const [studyNameChecked, setStudyNameChecked] = React.useState(false);
+
+    const userId = useSelector((state) => state.user.profile.sub);
 
     const timer = React.useRef();
 
@@ -206,13 +211,13 @@ export const CreateStudyForm = () => {
 
         clearTimeout(timer.current);
         timer.current = setTimeout(() => {
-            updateStudyFormState(name);
+            updateStudyFormState(name, userId);
         }, 700);
     };
 
-    const updateStudyFormState = (inputValue) => {
+    const updateStudyFormState = (inputValue, userId) => {
         if (inputValue !== '') {
-            studyExists(inputValue)
+            studyExists(inputValue, userId)
                 .then((data) => {
                     if (data === true) {
                         setStudyFormState(
@@ -254,6 +259,10 @@ export const CreateStudyForm = () => {
         setStudyNameChecked(isNameValid);
     };
 
+    const handleChangeStudyPrivacy = (event) => {
+        setStudyPrivacy(event.target.value);
+    };
+
     const handleCreateNewStudy = () => {
         if (studyName === '') {
             setCreateStudyErr(intl.formatMessage({ id: 'studyNameErrorMsg' }));
@@ -265,13 +274,20 @@ export const CreateStudyForm = () => {
             setCreateStudyErr(intl.formatMessage({ id: 'uploadErrorMsg' }));
             return;
         }
+
+        let isPrivateStudy = false;
+        if (studyPrivacy === 'private') {
+            isPrivateStudy = true;
+        }
+
         setLoading(true);
         createStudy(
             caseExist,
             studyName,
             studyDescription,
             caseName,
-            selectedFile
+            selectedFile,
+            isPrivateStudy
         ).then((res) => {
             if (res.ok) {
                 setCreateStudyErr('');
@@ -387,6 +403,25 @@ export const CreateStudyForm = () => {
                         style={{ width: '90%' }}
                         label=<FormattedMessage id="studyDescription" />
                     />
+
+                    <RadioGroup
+                        aria-label=""
+                        name="studyPrivacy"
+                        value={studyPrivacy}
+                        onChange={handleChangeStudyPrivacy}
+                        row
+                    >
+                        <FormControlLabel
+                            value="public"
+                            control={<Radio />}
+                            label=<FormattedMessage id="public" />
+                        />
+                        <FormControlLabel
+                            value="private"
+                            control={<Radio />}
+                            label=<FormattedMessage id="private" />
+                        />
+                    </RadioGroup>
                     {caseExist && <SelectCase />}
                     {!caseExist && <UploadCase />}
                     {createStudyErr !== '' && (
