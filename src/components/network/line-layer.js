@@ -430,8 +430,9 @@ class LineLayer extends CompositeLayer {
                         return getArrowDirection(arrow.line.p1);
                     },
                     animated:
-                        this.props.showLineFlow && this.props.lineFlowMode ===
-                        LineFlowMode.ANIMATED_ARROWS,
+                        this.props.showLineFlow &&
+                        this.props.lineFlowMode ===
+                            LineFlowMode.ANIMATED_ARROWS,
                     visible:
                         this.props.showLineFlow &&
                         this.props.filteredNominalVoltages.includes(
