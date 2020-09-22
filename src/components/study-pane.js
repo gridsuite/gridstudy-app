@@ -15,7 +15,6 @@ import { FormattedMessage } from 'react-intl';
 
 import { parse, stringify } from 'qs';
 
-import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -51,6 +50,7 @@ import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloadedLinesView';
+import { LineFlowColorMode } from './network/line-layer';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -475,21 +475,29 @@ const StudyPane = () => {
                                 />
                             </div>
                         )}
-                        {network && (
-                            <div
-                                style={{
-                                    zIndex: 0,
-                                    right: 40,
-                                    top: 10,
-                                    overflowY: 'scroll',
-                                    position: 'absolute',
-                                    height: '70%',
-                                    opacity: '50%',
-                                }}
-                            >
-                                <OverloadedLinesView lines={network.lines} />
-                            </div>
-                        )}
+                        {network &&
+                            lineFlowColorMode ===
+                                LineFlowColorMode.OVERLOADS && (
+                                <div
+                                    style={{
+                                        zIndex: 0,
+                                        right: 40,
+                                        top: 10,
+                                        overflowY: 'scroll',
+                                        position: 'absolute',
+                                        height: '70%',
+                                        opacity: '70%',
+                                    }}
+                                >
+                                    <OverloadedLinesView
+                                        lines={network.lines}
+                                        lineFlowAlertThreshold={
+                                            lineFlowAlertThreshold
+                                        }
+                                        network={network}
+                                    />
+                                </div>
+                            )}
                         {network && (
                             <div
                                 style={{
