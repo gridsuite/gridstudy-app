@@ -11,6 +11,7 @@ import ArrowLayer, { ArrowDirection } from './layers/arrow-layer';
 import ParallelPathLayer from './layers/parallel-path-layer';
 import ForkLineLayer from './layers/fork-line-layer';
 import getDistance from 'geolib/es/getDistance';
+import { getOverLoadLineColor } from '../../utils/colors';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
@@ -21,6 +22,11 @@ export const LineFlowMode = {
     STATIC_ARROWS: 'staticArrows',
     ANIMATED_ARROWS: 'animatedArrows',
     FEEDERS: 'feeders',
+};
+
+export const LineFlowColorMode = {
+    NOMINAL_VOLTAGE: 'nominalVoltage',
+    OVERLOADS: 'overloads',
 };
 
 const noDashArray = [0, 0];
@@ -41,6 +47,47 @@ function getArrowDirection(p) {
         return ArrowDirection.FROM_SIDE_1_TO_SIDE_2;
     } else {
         return ArrowDirection.NONE;
+    }
+}
+
+function getLineColor(line, color, props) {
+    if (props.lineFlowColorMode === LineFlowColorMode.NOMINAL_VOLTAGE) {
+        if (isDisconnected(line)) {
+            return props.disconnectedLineColor;
+        } else {
+            return color;
+        }
+    } else if (props.lineFlowColorMode === LineFlowColorMode.OVERLOADS) {
+        let limits = [line.permanentLimit1, line.permanentLimit2];
+        let intensities = [line.i1, line.i2];
+        let iColor1, iColor2;
+        let iColor = [iColor1, iColor2];
+
+        for (let i = 0; i < 2; ++i) {
+            if (
+                limits[i] === undefined ||
+                intensities[i] === undefined ||
+                intensities[i] === 0
+            ) {
+                iColor[i] = 0;
+            } else {
+                let threshold =
+                    (props.lineFlowAlertThreshold * limits[i]) / 100;
+                if (intensities[i] > 0 && intensities[i] < threshold) {
+                    iColor[i] = 1;
+                } else if (
+                    intensities[i] >= threshold &&
+                    intensities[i] < limits[i]
+                ) {
+                    iColor[i] = 2;
+                } else {
+                    iColor[i] = 3;
+                }
+            }
+        }
+        return getOverLoadLineColor(Math.max(iColor[0], iColor[1]));
+    } else {
+        return color;
     }
 }
 
@@ -85,7 +132,6 @@ class LineLayer extends CompositeLayer {
                     })
                     .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
 
-
                 compositeData.forEach((compositeData) => {
                     //find lines with same subsations set
                     let mapOriginDestination = new Map();
@@ -93,7 +139,9 @@ class LineLayer extends CompositeLayer {
                     compositeData.lines.forEach((line) => {
                         const key =
                             line.voltageLevelId1 > line.voltageLevelId2
-                                ? line.voltageLevelId1 + '##' + line.voltageLevelId2
+                                ? line.voltageLevelId1 +
+                                  '##' +
+                                  line.voltageLevelId2
                                 : line.voltageLevelId2 +
                                   '##' +
                                   line.voltageLevelId1;
@@ -103,10 +151,8 @@ class LineLayer extends CompositeLayer {
                         else {
                             mapOriginDestination.set(key, val.add(line));
                         }
-                    })
-                })
-
-
+                    });
+                });
             }
         } else {
             compositeData = this.state.compositeData;
@@ -114,7 +160,8 @@ class LineLayer extends CompositeLayer {
 
         if (
             changeFlags.dataChanged ||
-            (changeFlags.propsChanged && oldProps.lineParallelPath !== props.lineParallelPath)
+            (changeFlags.propsChanged &&
+                oldProps.lineParallelPath !== props.lineParallelPath)
         ) {
             compositeData.forEach((compositeData) => {
                 const mapOriginDestination = compositeData.mapOriginDestination;
@@ -141,7 +188,8 @@ class LineLayer extends CompositeLayer {
 
         if (
             changeFlags.dataChanged ||
-            (changeFlags.propsChanged && oldProps.lineFullPath !== props.lineFullPath)
+            (changeFlags.propsChanged &&
+                oldProps.lineFullPath !== props.lineFullPath)
         ) {
             compositeData.forEach((compositeData) => {
                 let lineMap = new Map();
@@ -164,21 +212,24 @@ class LineLayer extends CompositeLayer {
             });
         }
 
-
         if (changeFlags.dataChanged) {
             compositeData.forEach((compositeData) => {
                 compositeData.lines.forEach((line) => {
-                    const positions = compositeData.lineMap.get(line.id).positions;
+                    const positions = compositeData.lineMap.get(line.id)
+                        .positions;
                     //the first and last in positions doesn't depend on lineFullPath
                     line.origin = positions[0];
-                    line.end = positions[positions.length-1];
+                    line.end = positions[positions.length - 1];
 
                     //TODO right now the angle doesn't depend on linefullpath (we always use the angle between the substations)
                     //but in the future, we will also compute the angle between the substations and the first point to have forklines
                     //going in the direction of the first segment, not the direction of the line between the substations. We will still
                     //need to keep the angle between the substations for the shift of the line, so we will have 3 angles.
-                    let angle = props.geoData.getMapAngle(positions[0], positions[positions.length-1]);
-                    angle = angle * Math.PI / 180 + Math.PI;
+                    let angle = props.geoData.getMapAngle(
+                        positions[0],
+                        positions[positions.length - 1]
+                    );
+                    angle = (angle * Math.PI) / 180 + Math.PI;
                     if (line.angle < 0) angle += 2 * Math.PI;
                     line.angle = angle;
                 });
@@ -189,7 +240,7 @@ class LineLayer extends CompositeLayer {
             changeFlags.dataChanged ||
             (changeFlags.propsChanged &&
                 (oldProps.lineFullPath !== props.lineFullPath ||
-                    props.lineParallelPath != oldProps.lineParallelPath))
+                    props.lineParallelPath !== oldProps.lineParallelPath))
         ) {
             //add labels
             compositeData.forEach((compositeData) => {
@@ -203,7 +254,7 @@ class LineLayer extends CompositeLayer {
                         START_ARROW_POSITION,
                         arrowDirection,
                         line.parallelIndex,
-                        line.angle * 180 / Math.PI,
+                        (line.angle * 180) / Math.PI,
                         props.distanceBetweenLines
                     );
                     let coordinates2 = props.geoData.labelDisplayPosition(
@@ -212,7 +263,7 @@ class LineLayer extends CompositeLayer {
                         END_ARROW_POSITION,
                         arrowDirection,
                         line.parallelIndex,
-                        line.angle * 180 / Math.PI,
+                        (line.angle * 180) / Math.PI,
                         props.distanceBetweenLines
                     );
                     if (coordinates1 !== null && coordinates2 !== null) {
@@ -241,22 +292,20 @@ class LineLayer extends CompositeLayer {
 
         if (
             changeFlags.dataChanged ||
-            (changeFlags.propsChanged && (
-                (oldProps.lineFullPath !== props.lineFullPath) ||
-                //For lineFlowMode, recompute only if mode goes to or from LineFlowMode.FEEDERS
-                //because for LineFlowMode.STATIC_ARROWS and LineFlowMode.ANIMATED_ARROWS it's the same
-                ((props.lineFlowMode != oldProps.lineFlowMode) && (props.lineFlowMode == LineFlowMode.FEEDERS || oldProps.lineFlowMode == LineFlowMode.FEEDERS))
-            ))
+            (changeFlags.propsChanged &&
+                (oldProps.lineFullPath !== props.lineFullPath ||
+                    //For lineFlowMode, recompute only if mode goes to or from LineFlowMode.FEEDERS
+                    //because for LineFlowMode.STATIC_ARROWS and LineFlowMode.ANIMATED_ARROWS it's the same
+                    (props.lineFlowMode !== oldProps.lineFlowMode &&
+                        (props.lineFlowMode === LineFlowMode.FEEDERS ||
+                            oldProps.lineFlowMode === LineFlowMode.FEEDERS))))
         ) {
-
             // add arrows
             compositeData.forEach((compositeData) => {
-
                 const lineMap = compositeData.lineMap;
 
                 // create one arrow each DISTANCE_BETWEEN_ARROWS
                 compositeData.arrows = compositeData.lines.flatMap((line) => {
-
                     let lineData = lineMap.get(line.id);
                     line.cumulativeDistances = lineData.cumulativeDistances;
                     line.positions = lineData.positions;
@@ -296,7 +345,7 @@ class LineLayer extends CompositeLayer {
                         directLineDistance / DISTANCE_BETWEEN_ARROWS
                     );
 
-                    return [...new Array(arrowCount).keys()].map( (index) => {
+                    return [...new Array(arrowCount).keys()].map((index) => {
                         return {
                             distance: index / arrowCount,
                             line: line,
@@ -328,10 +377,7 @@ class LineLayer extends CompositeLayer {
                             line,
                             this.props.lineFullPath
                         ),
-                    getColor: (line) =>
-                        isDisconnected(line)
-                            ? this.props.disconnectedLineColor
-                            : color,
+                    getColor: (line) => getLineColor(line, color, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angle,
@@ -344,7 +390,11 @@ class LineLayer extends CompositeLayer {
                     updateTriggers: {
                         getPath: [this.props.lineFullPath],
                         getLineParallelIndex: [this.props.lineParallelPath],
-                        getColor: [this.props.disconnectedLineColor],
+                        getColor: [
+                            this.props.disconnectedLineColor,
+                            this.props.lineFlowColorMode,
+                            this.props.lineFlowAlertThreshold,
+                        ],
                     },
                     getDashArray: (line) =>
                         doDash(line) ? dashArray : noDashArray,
@@ -367,7 +417,8 @@ class LineLayer extends CompositeLayer {
                             line,
                             this.props.lineFullPath
                         ),
-                    getColor: color,
+                    getColor: (arrow) =>
+                        getLineColor(arrow.line, color, this.props),
                     getSize: 700,
                     getSpeedFactor: 3,
                     getLineParallelIndex: (arrow) => arrow.line.parallelIndex,
@@ -379,16 +430,21 @@ class LineLayer extends CompositeLayer {
                         return getArrowDirection(arrow.line.p1);
                     },
                     animated:
+                        this.props.showLineFlow &&
                         this.props.lineFlowMode ===
-                        LineFlowMode.ANIMATED_ARROWS,
+                            LineFlowMode.ANIMATED_ARROWS,
                     visible:
-                        this.props.lineFlowHidden &&
+                        this.props.showLineFlow &&
                         this.props.filteredNominalVoltages.includes(
                             compositeData.nominalVoltage
                         ),
                     updateTriggers: {
                         getLinePositions: [this.props.lineFullPath],
                         getLineParallelIndex: [this.props.lineParallelPath],
+                        getColor: [
+                            this.props.lineFlowColorMode,
+                            this.props.lineFlowAlertThreshold,
+                        ],
                     },
                 })
             );
@@ -397,14 +453,13 @@ class LineLayer extends CompositeLayer {
             const startFork = new ForkLineLayer(
                 this.getSubLayerProps({
                     id: 'LineForkStart' + compositeData.nominalVoltage,
-                    getSourcePosition: line => line.origin,
-                    getTargetPosition: line => line.end,
+                    getSourcePosition: (line) => line.origin,
+                    getTargetPosition: (line) => line.end,
                     data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
-                    getColor: (line) => isDisconnected(line) ?
-                        this.props.disconnectedLineColor : color,
+                    getColor: (line) => getLineColor(line, color, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angle,
@@ -418,7 +473,11 @@ class LineLayer extends CompositeLayer {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
-                        getColor: [this.props.disconnectedLineColor],
+                        getColor: [
+                            this.props.disconnectedLineColor,
+                            this.props.lineFlowColorMode,
+                            this.props.lineFlowAlertThreshold,
+                        ],
                     },
                 })
             );
@@ -427,17 +486,16 @@ class LineLayer extends CompositeLayer {
             const endFork = new ForkLineLayer(
                 this.getSubLayerProps({
                     id: 'LineForkEnd' + compositeData.nominalVoltage,
-                    getSourcePosition: line => line.end,
-                    getTargetPosition: line => line.origin,
+                    getSourcePosition: (line) => line.end,
+                    getTargetPosition: (line) => line.origin,
                     data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
-                    getColor: (line) => isDisconnected(line) ?
-                        this.props.disconnectedLineColor : color,
+                    getColor: (line) => getLineColor(line, color, this.props),
                     getWidth: 2,
-                    getLineParallelIndex: line => -line.parallelIndex,
-                    getLineAngle: line => line.angle + Math.PI,
+                    getLineParallelIndex: (line) => -line.parallelIndex,
+                    getLineAngle: (line) => line.angle + Math.PI,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     getMaxParallelOffset: this.props.maxParallelOffset,
                     getMinParallelOffset: this.props.minParallelOffset,
@@ -448,7 +506,11 @@ class LineLayer extends CompositeLayer {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
-                        getColor: [this.props.disconnectedLineColor],
+                        getColor: [
+                            this.props.disconnectedLineColor,
+                            this.props.lineFlowColorMode,
+                            this.props.lineFlowAlertThreshold,
+                        ],
                     },
                 })
             );
@@ -475,7 +537,10 @@ class LineLayer extends CompositeLayer {
                             compositeData.nominalVoltage
                         ) && this.props.labelsVisible,
                     updateTriggers: {
-                        getPosition: [this.props.lineFullPath, this.props.lineParallelPath],
+                        getPosition: [
+                            this.props.lineFullPath,
+                            this.props.lineParallelPath,
+                        ],
                         getPixelOffset: [this.props.lineFullPath],
                     },
                 })
@@ -496,7 +561,9 @@ LineLayer.defaultProps = {
     disconnectedLineColor: { type: 'color', value: [255, 255, 255] },
     filteredNominalVoltages: [],
     lineFlowMode: LineFlowMode.FEEDERS,
-    lineFlowHidden: true,
+    lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
+    lineFlowAlertThreshold: 100,
+    showLineFlow: true,
     lineFullPath: true,
     lineParallelPath: true,
     labelSize: 16,

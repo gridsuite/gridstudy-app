@@ -11,6 +11,8 @@ import {
     getLocalStorageCenterLabel,
     getLocalStorageDiagonalLabel,
     getLocalStorageLineFlowMode,
+    getLocalStorageLineFlowColorMode,
+    getLocalStorageLineFlowAlertThreshold,
     getLocalStorageLineFullPath,
     getLocalStorageLineParallelPath,
     getLocalStorageTheme,
@@ -18,6 +20,8 @@ import {
     saveLocalStorageCenterLabel,
     saveLocalStorageDiagonalLabel,
     saveLocalStorageLineFlowMode,
+    saveLocalStorageLineFlowColorMode,
+    saveLocalStorageLineFlowAlertThreshold,
     saveLocalStorageLineFullPath,
     saveLocalStorageLineParallelPath,
     saveLocalStorageTheme,
@@ -29,6 +33,8 @@ import {
     CLOSE_STUDY,
     DIAGONAL_LABEL,
     LINE_FLOW_MODE,
+    LINE_FLOW_COLOR_MODE,
+    LINE_FLOW_ALERT_THRESHOLD,
     LINE_FULL_PATH,
     LINE_PARALLEL_PATH,
     LOAD_CASES_SUCCESS,
@@ -50,6 +56,7 @@ import {
 const initialState = {
     studies: [],
     studyName: null,
+    userId: null,
     network: null,
     geoData: null,
     theme: getLocalStorageTheme(),
@@ -63,6 +70,8 @@ const initialState = {
     lineFullPath: getLocalStorageLineFullPath(),
     lineParallelPath: getLocalStorageLineParallelPath(),
     lineFlowMode: getLocalStorageLineFlowMode(),
+    lineFlowColorMode: getLocalStorageLineFlowColorMode(),
+    lineFlowAlertThreshold: getLocalStorageLineFlowAlertThreshold(),
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
 };
@@ -77,11 +86,13 @@ export const reducer = createReducer(initialState, {
     },
 
     [OPEN_STUDY]: (state, action) => {
-        state.studyName = action.studyName;
+        state.studyName = action.studyRef[0];
+        state.userId = action.studyRef[1];
     },
 
     [CLOSE_STUDY]: (state) => {
         state.studyName = null;
+        state.userId = null;
         state.network = null;
         state.geoData = null;
     },
@@ -154,6 +165,16 @@ export const reducer = createReducer(initialState, {
     [LINE_FLOW_MODE]: (state, action) => {
         state.lineFlowMode = action.lineFlowMode;
         saveLocalStorageLineFlowMode(state.lineFlowMode);
+    },
+
+    [LINE_FLOW_COLOR_MODE]: (state, action) => {
+        state.lineFlowColorMode = action.lineFlowColorMode;
+        saveLocalStorageLineFlowColorMode(state.lineFlowColorMode);
+    },
+
+    [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
+        state.lineFlowAlertThreshold = action.lineFlowAlertThreshold;
+        saveLocalStorageLineFlowAlertThreshold(state.lineFlowAlertThreshold);
     },
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {

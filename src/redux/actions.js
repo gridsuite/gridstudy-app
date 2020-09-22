@@ -39,8 +39,8 @@ export function loadCasesSuccess(cases) {
 
 export const OPEN_STUDY = 'OPEN_STUDY';
 
-export function openStudy(studyName) {
-    return { type: OPEN_STUDY, studyName: studyName };
+export function openStudy(studyName, userId) {
+    return { type: OPEN_STUDY, studyRef: [studyName, userId] };
 }
 
 export const CLOSE_STUDY = 'CLOSE_STUDY';
@@ -113,6 +113,21 @@ export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
 
 export function selectLineFlowMode(lineFlowMode) {
     return { type: LINE_FLOW_MODE, lineFlowMode: lineFlowMode };
+}
+
+export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
+
+export function selectLineFlowColorMode(lineFlowColorMode) {
+    return { type: LINE_FLOW_COLOR_MODE, lineFlowColorMode: lineFlowColorMode };
+}
+
+export const LINE_FLOW_ALERT_THRESHOLD = 'LINE_FLOW_ALERT_THRESHOLD';
+
+export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
+    return {
+        type: LINE_FLOW_ALERT_THRESHOLD,
+        lineFlowAlertThreshold: lineFlowAlertThreshold,
+    };
 }
 
 export const SIGNIN_CALLBACK_ERROR = 'SIGNIN_CALLBACK_ERROR';

@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {LineLayer} from "deck.gl";
+import { LineLayer } from 'deck.gl';
 import GL from '@luma.gl/constants';
 
 const defaultProps = {
-    getLineParallelIndex: {type: 'accessor', value: 0},
-    getLineAngle: {type: 'accessor', value: 0},
-    distanceBetweenLines: {type: 'number', value: 1000},
-    maxParallelOffset: {type: 'number', value: 100},
-    minParallelOffset: {type: 'number', value: 3}
+    getLineParallelIndex: { type: 'accessor', value: 0 },
+    getLineAngle: { type: 'accessor', value: 0 },
+    distanceBetweenLines: { type: 'number', value: 1000 },
+    maxParallelOffset: { type: 'number', value: 100 },
+    minParallelOffset: { type: 'number', value: 3 },
 };
 
 /**
@@ -26,7 +26,6 @@ const defaultProps = {
  *         minParallelOffset: min pixel distance
  */
 export default class ForkLineLayer extends LineLayer {
-
     getShaders() {
         const shaders = super.getShaders();
         shaders.inject = {
@@ -48,7 +47,7 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
     trans = trans * offsetCommonSpace;
     target+=project_common_position_to_clipspace(trans) - project_uCenter;
 }
-            `
+            `,
         };
         return shaders;
     }
@@ -61,26 +60,25 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
             instanceLineParallelIndex: {
                 size: 1,
                 type: GL.FLOAT,
-                accessor: 'getLineParallelIndex'
+                accessor: 'getLineParallelIndex',
             },
             instanceLineAngle: {
                 size: 1,
                 type: GL.FLOAT,
-                accessor: 'getLineAngle'
+                accessor: 'getLineAngle',
             },
         });
     }
 
-    draw({uniforms}) {
+    draw({ uniforms }) {
         super.draw({
-            uniforms:
-                {
-                    ...uniforms,
-                    distanceBetweenLines: this.props.getDistanceBetweenLines,
-                    maxParallelOffset: this.props.getMaxParallelOffset,
-                    minParallelOffset: this.props.getMinParallelOffset
-                }
-        })
+            uniforms: {
+                ...uniforms,
+                distanceBetweenLines: this.props.getDistanceBetweenLines,
+                maxParallelOffset: this.props.getMaxParallelOffset,
+                minParallelOffset: this.props.getMinParallelOffset,
+            },
+        });
     }
 }
 
