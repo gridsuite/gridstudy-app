@@ -430,10 +430,10 @@ class LineLayer extends CompositeLayer {
                         return getArrowDirection(arrow.line.p1);
                     },
                     animated:
-                        this.props.lineFlowMode ===
+                        this.props.showLineFlow && this.props.lineFlowMode ===
                         LineFlowMode.ANIMATED_ARROWS,
                     visible:
-                        this.props.lineFlowHidden &&
+                        this.props.showLineFlow &&
                         this.props.filteredNominalVoltages.includes(
                             compositeData.nominalVoltage
                         ),
@@ -562,7 +562,7 @@ LineLayer.defaultProps = {
     lineFlowMode: LineFlowMode.FEEDERS,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,
-    lineFlowHidden: true,
+    showLineFlow: true,
     lineFullPath: true,
     lineParallelPath: true,
     labelSize: 16,
