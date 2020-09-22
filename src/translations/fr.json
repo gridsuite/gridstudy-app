@@ -74,5 +74,21 @@
     "Overloads": "Surcharges",
     "AlertThresholdLabel": "Seuil d'alerte",
 
-    "PageNotFound": "Page introuvable"
+    "PageNotFound": "Page introuvable",
+
+    "Table": "Tableur",
+    "Results": "Résultats",
+    "Substations": "Sites",
+    "VoltageLevels": "Postes",
+    "Lines": "Lignes",
+    "ID": "ID",
+    "Name": "Nom",
+    "Country": "Pays",
+    "SubstationId": "ID Site",
+    "VoltageLevelIdSide1": "ID Poste 1",
+    "VoltageLevelIdSide2": "ID Poste 2",
+    "ActivePowerSide1": "p1 (MW)",
+    "ActivePowerSide2": "p2 (MW)",
+    "ReactivePowerSide1": "q1 (MVar)",
+    "ReactivePowerSide2": "q2 (MVar)"
 }

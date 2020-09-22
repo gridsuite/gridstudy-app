@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -23,14 +23,14 @@ import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
 import SingleLineDiagram from './single-line-diagram';
 import {
+    connectNotificationsWebsocket,
     fetchLinePositions,
     fetchLines,
     fetchSubstationPositions,
     fetchSubstations,
     getVoltageLevelSingleLineDiagram,
-    updateSwitchState,
-    connectNotificationsWebsocket,
     startLoadFlow,
+    updateSwitchState,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -45,10 +45,12 @@ import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Button from '@material-ui/core/Button';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import { green } from '@material-ui/core/colors';
+import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
+import NetworkTable from './network/network-table';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -118,7 +120,13 @@ const RunLoadFlowButton = (props) => {
 
 const INITIAL_POSITION = [0, 0];
 
-const StudyPane = () => {
+export const StudyView = {
+    MAP: 'Map',
+    TABLE: 'Table',
+    RESULTS: 'Results',
+};
+
+const StudyPane = (props) => {
     const studyName = decodeURIComponent(useParams().studyName);
 
     const userId = decodeURIComponent(useParams().userId);
@@ -376,18 +384,7 @@ const StudyPane = () => {
         [mapRef, network]
     );
 
-    if (studyNotFound) {
-        return (
-            <PageNotFound
-                message={
-                    <FormattedMessage
-                        id="studyNotFound"
-                        values={{ studyName: studyName }}
-                    />
-                }
-            />
-        );
-    } else {
+    function renderMapView() {
         let displayedVoltageLevel;
         if (network) {
             if (displayedVoltageLevelId) {
@@ -398,14 +395,6 @@ const StudyPane = () => {
         }
         return (
             <Grid container direction="row" className={classes.main}>
-                {waitingLoadGeoData && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
-                    />
-                )}
                 <Grid item xs={12} md={2}>
                     <AutoSizer>
                         {({ width, height }) => (
@@ -477,6 +466,7 @@ const StudyPane = () => {
                             lineFlowAlertThreshold={lineFlowAlertThreshold}
                             ref={mapRef}
                             onSubstationClick={showVoltageLevelDiagram}
+                            visible={props.view === StudyView.MAP}
                         />
                         {displayedVoltageLevelId && (
                             <div
@@ -536,13 +526,76 @@ const StudyPane = () => {
             </Grid>
         );
     }
+
+    function renderTableView() {
+        return (
+            <Paper className={classes.main}>
+                <NetworkTable network={network} />
+            </Paper>
+        );
+    }
+
+    function renderResultsView() {}
+
+    if (studyNotFound) {
+        return (
+            <PageNotFound
+                message={
+                    <FormattedMessage
+                        id="studyNotFound"
+                        values={{ studyName: studyName }}
+                    />
+                }
+            />
+        );
+    } else {
+        return (
+            <div>
+                {waitingLoadGeoData && (
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={70}
+                        loadingMessageText="loadingGeoData"
+                        loadingMessageSize={25}
+                    />
+                )}
+                {/*Rendering the map is slow, do it once and keep it display:none*/}
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.MAP ? 'block' : 'none',
+                    }}
+                >
+                    {renderMapView()}
+                </div>
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.TABLE ? 'block' : 'none',
+                    }}
+                >
+                    {renderTableView()}
+                </div>
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.RESULTS ? 'block' : 'none',
+                    }}
+                >
+                    {renderResultsView()}
+                </div>
+            </div>
+        );
+    }
 };
 
 StudyPane.defaultProps = {
+    view: StudyView.MAP,
     lineFlowAlertThreshold: 100,
 };
 
 StudyPane.propTypes = {
+    view: PropTypes.instanceOf(StudyView),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
 };
 

@@ -270,7 +270,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
                 lineFlowMode: props.lineFlowMode,
-                showLineFlow: showLineFlow,
+                showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
                 lineFullPath: props.lineFullPath,
@@ -356,6 +356,7 @@ NetworkMap.defaultProps = {
     lineFlowHidden: true,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,
+    visible: true,
 };
 
 NetworkMap.propTypes = {
@@ -373,6 +374,7 @@ NetworkMap.propTypes = {
     lineFlowHidden: PropTypes.bool,
     lineFlowColorMode: PropTypes.instanceOf(LineFlowColorMode),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
+    visible: PropTypes.bool,
 };
 
 export default React.memo(NetworkMap);
