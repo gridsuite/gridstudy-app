@@ -90,9 +90,8 @@ const OverloadedLinesView = (props) => {
         setLines(
             props.lines
                 .map((line) => makeData(line))
-                .filter( (l) => l.overload > props.lineFlowAlertThreshold)
+                .filter((l) => l.overload > props.lineFlowAlertThreshold)
         );
-
     }, [props.lines, props.network, props.lineFlowAlertThreshold]);
 
     function MakeCell(label, color) {
