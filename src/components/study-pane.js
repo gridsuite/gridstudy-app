@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -23,14 +23,14 @@ import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
 import SingleLineDiagram from './single-line-diagram';
 import {
+    connectNotificationsWebsocket,
     fetchLinePositions,
     fetchLines,
     fetchSubstationPositions,
     fetchSubstations,
     getVoltageLevelSingleLineDiagram,
-    updateSwitchState,
-    connectNotificationsWebsocket,
     startLoadFlow,
+    updateSwitchState,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -45,12 +45,14 @@ import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Button from '@material-ui/core/Button';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import { green } from '@material-ui/core/colors';
+import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloadedLinesView';
 import { LineFlowColorMode } from './network/line-layer';
+import NetworkTable from './network/network-table';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -69,10 +71,67 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const loadFlowButtonStyles = makeStyles({
+    root: {
+        backgroundColor: green[500],
+        '&:hover': {
+            backgroundColor: green[700],
+        },
+    },
+    label: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+});
+
+const RunLoadFlowButton = (props) => {
+    const loadFlowButtonClasses = loadFlowButtonStyles();
+
+    const { loadFlowRunning, setLoadFlowRunning, studyName, userId } = props;
+
+    useEffect(() => {
+        if (loadFlowRunning) {
+            startLoadFlow(studyName, userId)
+                .then(() => {})
+                .then(() => {
+                    setLoadFlowRunning(false);
+                });
+        }
+        // Note: setLoadFlowRunning, studyName and userId don't change
+    }, [loadFlowRunning, setLoadFlowRunning, studyName, userId]);
+
+    const handleClick = () => setLoadFlowRunning(true);
+
+    return (
+        <Button
+            variant="contained"
+            fullWidth={true}
+            className={loadFlowButtonClasses.root}
+            startIcon={<PlayIcon />}
+            disabled={loadFlowRunning}
+            onClick={!loadFlowRunning ? handleClick : null}
+        >
+            <div className={loadFlowButtonClasses.label}>
+                <Typography noWrap>
+                    {loadFlowRunning ? 'LoadFlow running…' : 'Start LoadFlow'}
+                </Typography>
+            </div>
+        </Button>
+    );
+};
+
 const INITIAL_POSITION = [0, 0];
 
-const StudyPane = () => {
+export const StudyView = {
+    MAP: 'Map',
+    TABLE: 'Table',
+    RESULTS: 'Results',
+};
+
+const StudyPane = (props) => {
     const studyName = decodeURIComponent(useParams().studyName);
+
+    const userId = decodeURIComponent(useParams().userId);
 
     const network = useSelector((state) => state.network);
 
@@ -122,14 +181,77 @@ const StudyPane = () => {
 
     const websocketExpectedCloseRef = useRef();
 
-    // study creation, network and geo data loading: will be called only one time at creation mount event because
-    // studyName won't change
+    const loadNetwork = useCallback(() => {
+        console.info(`Loading network of study '${studyName}'...`);
+
+        const substations = fetchSubstations(studyName, userId);
+
+        const lines = fetchLines(studyName, userId);
+
+        Promise.all([substations, lines])
+            .then((values) => {
+                const network = new Network();
+                network.setSubstations(values[0]);
+                network.setLines(values[1]);
+                dispatch(loadNetworkSuccess(network));
+            })
+            .catch(function (error) {
+                console.error(error.message);
+                setStudyNotFound(true);
+            });
+        // Note: studyName and dispatch don't change
+    }, [studyName, userId, dispatch]);
+
+    const loadGeoData = useCallback(() => {
+        console.info(`Loading geo data of study '${studyName}'...`);
+
+        const substationPositions = fetchSubstationPositions(studyName, userId);
+
+        const linePositions = fetchLinePositions(studyName, userId);
+
+        Promise.all([substationPositions, linePositions])
+            .then((values) => {
+                const geoData = new GeoData();
+                geoData.setSubstationPositions(values[0]);
+                geoData.setLinePositions(values[1]);
+                dispatch(loadGeoDataSuccess(geoData));
+                setWaitingLoadGeoData(false);
+            })
+            .catch(function (error) {
+                console.error(error.message);
+                setStudyNotFound(true);
+            });
+        // Note: studyName and dispatch don't change
+    }, [studyName, userId, dispatch]);
+
+    const connectNotifications = useCallback(
+        (studyName) => {
+            console.info(`Connecting to notifications '${studyName}'...`);
+
+            const ws = connectNotificationsWebsocket(studyName);
+            ws.onmessage = function (event) {
+                dispatch(studyUpdated(JSON.parse(event.data)));
+            };
+            ws.onclose = function (event) {
+                if (!websocketExpectedCloseRef.current) {
+                    console.error('Unexpected Notification WebSocket closed');
+                }
+            };
+            ws.onerror = function (event) {
+                console.error('Unexpected Notification WebSocket error', event);
+            };
+            return ws;
+        },
+        // Note: dispatch doesn't change
+        [dispatch]
+    );
+
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
-        dispatch(openStudy(studyName));
+        dispatch(openStudy(studyName, userId));
 
-        loadNetwork(studyName);
-        loadGeoData(studyName);
+        loadNetwork();
+        loadGeoData();
         const ws = connectNotifications(studyName);
 
         // study cleanup at unmount event
@@ -138,7 +260,16 @@ const StudyPane = () => {
             ws.close();
             dispatch(closeStudy());
         };
-    }, [studyName]);
+        // Note: dispach, studyName, loadNetwork, loadGeoData,
+        // connectNotifications don't change
+    }, [
+        dispatch,
+        studyName,
+        userId,
+        loadNetwork,
+        loadGeoData,
+        connectNotifications,
+    ]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -158,79 +289,31 @@ const StudyPane = () => {
         }
     }, [network]);
 
-    function loadNetwork(studyName) {
-        console.info(`Loading network of study '${studyName}'...`);
-
-        const substations = fetchSubstations(studyName);
-
-        const lines = fetchLines(studyName);
-
-        Promise.all([substations, lines])
-            .then((values) => {
-                const network = new Network();
-                network.setSubstations(values[0]);
-                network.setLines(values[1]);
-                dispatch(loadNetworkSuccess(network));
-            })
-            .catch(function (error) {
-                console.error(error.message);
-                setStudyNotFound(true);
-            });
-    }
-
-    function loadGeoData(studyName) {
-        console.info(`Loading geo data of study '${studyName}'...`);
-
-        const substationPositions = fetchSubstationPositions(studyName);
-
-        const linePositions = fetchLinePositions(studyName);
-
-        Promise.all([substationPositions, linePositions])
-            .then((values) => {
-                const geoData = new GeoData();
-                geoData.setSubstationPositions(values[0]);
-                geoData.setLinePositions(values[1]);
-                dispatch(loadGeoDataSuccess(geoData));
-                setWaitingLoadGeoData(false);
-            })
-            .catch(function (error) {
-                console.error(error.message);
-                setStudyNotFound(true);
-            });
-    }
-
-    function connectNotifications(studyName) {
-        console.info(`Connecting to notifications '${studyName}'...`);
-
-        const ws = connectNotificationsWebsocket(studyName);
-        ws.onmessage = function (event) {
-            dispatch(studyUpdated(JSON.parse(event.data)));
-        };
-        ws.onclose = function (event) {
-            if (!websocketExpectedCloseRef.current) {
-                console.error('Unexpected Notification WebSocket closed');
-            }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }
-
-    const showVoltageLevelDiagram = useCallback((voltageLevelId) => {
-        setUpdateSwitchMsg('');
-        history.replace(
-            '/studies/' +
-                encodeURIComponent(studyName) +
-                stringify(
-                    { voltageLevelId: voltageLevelId },
-                    { addQueryPrefix: true }
-                )
-        );
-    }, []);
+    const showVoltageLevelDiagram = useCallback(
+        (voltageLevelId) => {
+            setUpdateSwitchMsg('');
+            history.replace(
+                '/' +
+                    encodeURIComponent(userId) +
+                    '/studies/' +
+                    encodeURIComponent(studyName) +
+                    stringify(
+                        { voltageLevelId: voltageLevelId },
+                        { addQueryPrefix: true }
+                    )
+            );
+        },
+        // Note: studyName and history don't change
+        [studyName, userId, history]
+    );
 
     function closeVoltageLevelDiagram() {
-        history.replace('/studies/' + encodeURIComponent(studyName));
+        history.replace(
+            '/' +
+                encodeURIComponent(userId) +
+                '/studies/' +
+                encodeURIComponent(studyName)
+        );
     }
 
     const sldRef = useRef();
@@ -242,18 +325,20 @@ const StudyPane = () => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(studyName, breakerId, open).then((response) => {
-                if (!response.ok) {
-                    console.error(response);
-                    eltOpen.style.visibility = open ? 'hidden' : 'visible';
-                    eltClose.style.visibility = open ? 'visible' : 'hidden';
-                    setUpdateSwitchMsg(
-                        response.status + ' : ' + response.statusText
-                    );
+            updateSwitchState(studyName, userId, breakerId, open).then(
+                (response) => {
+                    if (!response.ok) {
+                        console.error(response);
+                        eltOpen.style.visibility = open ? 'hidden' : 'visible';
+                        eltClose.style.visibility = open ? 'visible' : 'hidden';
+                        setUpdateSwitchMsg(
+                            response.status + ' : ' + response.statusText
+                        );
+                    }
                 }
-            });
+            );
         },
-        [studyName]
+        [studyName, userId]
     );
 
     useEffect(() => {
@@ -263,20 +348,21 @@ const StudyPane = () => {
                 sldRef.current.reloadSvg();
             }
             if (
-                studyUpdatedForce.eventData.headers['updateType'] == 'loadflow'
+                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(studyName);
             }
         }
-    }, [studyUpdatedForce]);
+        // Note: studyName and loadNetwork don't change
+    }, [studyUpdatedForce, studyName, loadNetwork]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
         let newFiltered;
         if (isToggle) {
             newFiltered = [...filteredNominalVoltages];
-            vnoms.map((vnom) => {
+            vnoms.forEach((vnom) => {
                 const currentIndex = filteredNominalVoltages.indexOf(vnom);
                 if (currentIndex === -1) {
                     newFiltered.push(vnom);
@@ -290,54 +376,6 @@ const StudyPane = () => {
         setFilteredNominalVoltages(newFiltered);
     };
 
-    const loadFlowButtonStyles = makeStyles({
-        root: {
-            backgroundColor: green[500],
-            '&:hover': {
-                backgroundColor: green[700],
-            },
-        },
-        label: {
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-        },
-    });
-
-    function RunLoadFlowButton() {
-        const loadFlowButtonClasses = loadFlowButtonStyles();
-
-        useEffect(() => {
-            if (loadFlowRunning) {
-                startLoadFlow(studyName)
-                    .then(() => {})
-                    .then(() => {
-                        setLoadFlowRunning(false);
-                    });
-            }
-        }, [loadFlowRunning]);
-
-        const handleClick = () => setLoadFlowRunning(true);
-
-        return (
-            <Button
-                variant="contained"
-                fullWidth={true}
-                className={loadFlowButtonClasses.root}
-                startIcon={<PlayIcon />}
-                disabled={loadFlowRunning}
-                onClick={!loadFlowRunning ? handleClick : null}
-            >
-                <div className={loadFlowButtonClasses.label}>
-                    <Typography noWrap>
-                        {loadFlowRunning
-                            ? 'LoadFlow running…'
-                            : 'Start LoadFlow'}
-                    </Typography>
-                </div>
-            </Button>
-        );
-    }
-
     const mapRef = useRef();
     const centerSubstation = useCallback(
         (id) => {
@@ -348,20 +386,8 @@ const StudyPane = () => {
         [mapRef, network]
     );
 
-    if (studyNotFound) {
-        return (
-            <PageNotFound
-                message={
-                    <FormattedMessage
-                        id="studyNotFound"
-                        values={{ studyName: studyName }}
-                    />
-                }
-            />
-        );
-    } else {
-        let displayedVoltageLevel,
-            focusedVoltageLevel = null;
+    function renderMapView() {
+        let displayedVoltageLevel;
         if (network) {
             if (displayedVoltageLevelId) {
                 displayedVoltageLevel = network.getVoltageLevel(
@@ -371,14 +397,6 @@ const StudyPane = () => {
         }
         return (
             <Grid container direction="row" className={classes.main}>
-                {waitingLoadGeoData && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
-                    />
-                )}
                 <Grid item xs={12} md={2}>
                     <AutoSizer>
                         {({ width, height }) => (
@@ -393,7 +411,16 @@ const StudyPane = () => {
                                                 marginTop: 8,
                                             }}
                                         >
-                                            <RunLoadFlowButton />
+                                            <RunLoadFlowButton
+                                                studyName={studyName}
+                                                userId={userId}
+                                                loadFlowRunning={
+                                                    loadFlowRunning
+                                                }
+                                                setLoadFlowRunning={
+                                                    setLoadFlowRunning
+                                                }
+                                            />
                                         </div>
                                     </Grid>
                                     <Grid item key="explorer">
@@ -442,6 +469,7 @@ const StudyPane = () => {
                             lineFlowAlertThreshold={lineFlowAlertThreshold}
                             ref={mapRef}
                             onSubstationClick={showVoltageLevelDiagram}
+                            visible={props.view === StudyView.MAP}
                         />
                         {displayedVoltageLevelId && (
                             <div
@@ -465,6 +493,7 @@ const StudyPane = () => {
                                     }
                                     svgUrl={getVoltageLevelSingleLineDiagram(
                                         studyName,
+                                        userId,
                                         displayedVoltageLevelId,
                                         useName,
                                         centerName,
@@ -523,13 +552,76 @@ const StudyPane = () => {
             </Grid>
         );
     }
+
+    function renderTableView() {
+        return (
+            <Paper className={classes.main}>
+                <NetworkTable network={network} />
+            </Paper>
+        );
+    }
+
+    function renderResultsView() {}
+
+    if (studyNotFound) {
+        return (
+            <PageNotFound
+                message={
+                    <FormattedMessage
+                        id="studyNotFound"
+                        values={{ studyName: studyName }}
+                    />
+                }
+            />
+        );
+    } else {
+        return (
+            <div>
+                {waitingLoadGeoData && (
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={70}
+                        loadingMessageText="loadingGeoData"
+                        loadingMessageSize={25}
+                    />
+                )}
+                {/*Rendering the map is slow, do it once and keep it display:none*/}
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.MAP ? 'block' : 'none',
+                    }}
+                >
+                    {renderMapView()}
+                </div>
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.TABLE ? 'block' : 'none',
+                    }}
+                >
+                    {renderTableView()}
+                </div>
+                <div
+                    style={{
+                        display:
+                            props.view === StudyView.RESULTS ? 'block' : 'none',
+                    }}
+                >
+                    {renderResultsView()}
+                </div>
+            </div>
+        );
+    }
 };
 
 StudyPane.defaultProps = {
+    view: StudyView.MAP,
     lineFlowAlertThreshold: 100,
 };
 
 StudyPane.propTypes = {
+    view: PropTypes.instanceOf(StudyView),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
 };
 

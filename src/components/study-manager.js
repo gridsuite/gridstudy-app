@@ -101,6 +101,7 @@ const DonwnloadIframe = 'downloadIframe';
 const StudyCard = ({ study, onClick }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
+    const intl = useIntl();
 
     function logo(caseFormat) {
         switch (caseFormat) {
@@ -152,6 +153,7 @@ const StudyCard = ({ study, onClick }) => {
      * Delete dialog: window status value for deletion
      */
     const [openDeleteDialog, setOpenDelete] = React.useState(false);
+    const [deleteError, setDeleteError] = React.useState('');
 
     const handleOpenDelete = () => {
         setAnchorEl(null);
@@ -159,15 +161,20 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickDelete = () => {
-        deleteStudy(study.studyName).then(() => {
-            fetchStudies().then((studies) => {
-                dispatch(loadStudiesSuccess(studies));
-            });
+        deleteStudy(study.studyName, study.userId).then((response) => {
+            response.ok
+                ? fetchStudies().then((studies) => {
+                      dispatch(loadStudiesSuccess(studies));
+                  })
+                : setDeleteError(
+                      intl.formatMessage({ id: 'deleteStudyError' })
+                  );
         });
     };
 
     const handleCloseDelete = () => {
         setOpenDelete(false);
+        setDeleteError('');
     };
 
     /**
@@ -181,12 +188,14 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, newStudyNameValue).then(() => {
-            fetchStudies().then((studies) => {
-                dispatch(loadStudiesSuccess(studies));
-            });
-            setOpenRename(false);
-        });
+        renameStudy(study.studyName, study.userId, newStudyNameValue).then(
+            () => {
+                fetchStudies().then((studies) => {
+                    dispatch(loadStudiesSuccess(studies));
+                });
+                setOpenRename(false);
+            }
+        );
     };
 
     const handleCloseRename = () => {
@@ -330,6 +339,7 @@ const StudyCard = ({ study, onClick }) => {
                 onClick={handleClickDelete}
                 title={useIntl().formatMessage({ id: 'deleteStudy' })}
                 message={useIntl().formatMessage({ id: 'deleteStudyMsg' })}
+                error={deleteError}
             />
             <RenameDialog
                 open={openRenameDialog}
@@ -344,6 +354,7 @@ const StudyCard = ({ study, onClick }) => {
                 onClose={handleCloseExport}
                 onClick={handleClickExport}
                 studyName={study.studyName}
+                userId={study.userId}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
         </div>
@@ -353,6 +364,7 @@ const StudyCard = ({ study, onClick }) => {
 StudyCard.propTypes = {
     study: PropTypes.shape({
         studyName: PropTypes.string.isRequired,
+        userId: PropTypes.object.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
         caseDate: PropTypes.instanceOf(Date),
@@ -371,8 +383,8 @@ const StudyManager = ({ onClick }) => {
         fetchStudies().then((studies) => {
             dispatch(loadStudiesSuccess(studies));
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        // Note: dispatch doesn't change
+    }, [dispatch]);
 
     const studies = useSelector((state) => state.studies);
 
@@ -387,10 +399,18 @@ const StudyManager = ({ onClick }) => {
                     </Box>
                 </Grid>
                 {studies.map((study) => (
-                    <Grid item xs={12} sm={6} md={3} key={study.studyName}>
+                    <Grid
+                        item
+                        xs={12}
+                        sm={6}
+                        md={3}
+                        key={study.userId + '/' + study.studyName}
+                    >
                         <StudyCard
                             study={study}
-                            onClick={() => onClick(study.studyName)}
+                            onClick={() =>
+                                onClick(study.studyName, study.userId)
+                            }
                         />
                     </Grid>
                 ))}
@@ -398,6 +418,7 @@ const StudyManager = ({ onClick }) => {
             <iframe
                 id={DonwnloadIframe}
                 name={DonwnloadIframe}
+                title={DonwnloadIframe}
                 style={{ visibility: 'hidden', width: 0, height: 0 }}
             />
         </Container>

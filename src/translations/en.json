@@ -6,6 +6,8 @@
     "studyDescription": "study description",
     "caseName": "case name",
     "uploadCase": "Upload case",
+    "public": "public",
+    "private": "private",
 
     "uploadMessage": " No file selected",
     "cancel": "CANCEL",
@@ -18,6 +20,7 @@
     "deleteStudyMsg": "Are you sure you want to delete the study?",
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
     "studyDeletedSuccessMsg": "Study deleted",
+    "deleteStudyError": "Cannot remove the study if you are not the owner",
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
@@ -75,5 +78,21 @@
     "limit": "limit",
     "load": "load",
 
-    "PageNotFound": "Page not found"
+    "PageNotFound": "Page not found",
+
+    "Table": "Table",
+    "Results": "Results",
+    "Substations": "Substations",
+    "VoltageLevels": "Voltage levels",
+    "Lines": "Lines",
+    "ID": "ID",
+    "Name": "Name",
+    "Country": "Country",
+    "SubstationId": "Substation ID",
+    "VoltageLevelIdSide1": "Voltage level ID 1",
+    "VoltageLevelIdSide2": "Voltage level ID 2",
+    "ActivePowerSide1": "p1 (MW)",
+    "ActivePowerSide2": "p2 (MW)",
+    "ReactivePowerSide1": "q1 (MVar)",
+    "ReactivePowerSide2": "q2 (MVar)"
 }

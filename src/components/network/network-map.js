@@ -7,7 +7,6 @@
 
 import React, {
     forwardRef,
-    useEffect,
     useImperativeHandle,
     useMemo,
     useRef,
@@ -44,7 +43,7 @@ const LABEL_SIZE = 16;
 const NetworkMap = forwardRef((props, ref) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
 
-    const [lineFlowHidden, setLineFlowHidden] = useState(true);
+    const [showLineFlow, setShowLineFlow] = useState(true);
 
     const [deck, setDeck] = useState(null);
     const [centered, setCentered] = useState({
@@ -193,7 +192,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 setLabelsVisible(false);
             }
 
-            setLineFlowHidden(info.viewState.zoom >= props.arrowsZoomThreshold);
+            setShowLineFlow(info.viewState.zoom >= props.arrowsZoomThreshold);
         }
     }
 
@@ -271,7 +270,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
                 lineFlowMode: props.lineFlowMode,
-                lineFlowHidden: lineFlowHidden,
+                showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
                 lineFullPath: props.lineFullPath,
@@ -357,6 +356,7 @@ NetworkMap.defaultProps = {
     lineFlowHidden: true,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,
+    visible: true,
 };
 
 NetworkMap.propTypes = {
@@ -374,6 +374,7 @@ NetworkMap.propTypes = {
     lineFlowHidden: PropTypes.bool,
     lineFlowColorMode: PropTypes.instanceOf(LineFlowColorMode),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
+    visible: PropTypes.bool,
 };
 
 export default React.memo(NetworkMap);

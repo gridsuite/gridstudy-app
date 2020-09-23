@@ -18,48 +18,48 @@ const OverloadedLinesView = (props) => {
     const [lines, setLines] = useState(null);
 
     useEffect(() => {
+        const makeData = (line) => {
+            let limits = [line.permanentLimit1, line.permanentLimit2];
+            let intensities = [line.i1, line.i2];
+            let loads = [line.p1, line.p2];
+
+            const color = getNominalVoltageColor(
+                props.network.getVoltageLevel(line.voltageLevelId1).nominalVoltage ||
+                props.network.getVoltageLevel(line.voltageLevelId2).nominalVoltage
+            );
+
+            let fields = { overload: 0 };
+            for (let i = 0; i < 2; ++i) {
+                if (
+                    limits[i] !== undefined &&
+                    intensities[i] !== undefined &&
+                    intensities[i] !== 0 && // we have enough data
+                    intensities[i] / limits[i] > fields.overload
+                ) {
+                    fields = {
+                        overload: intensities[i] / limits[i],
+                        name: line.name,
+                        intensity: intensities[i],
+                        load: loads[i],
+                        limit: limits[i],
+                        // conversion [r,g,b] => #XXXXXX ; concat '0' to (color value) in hexadecimal keep last 2 characters
+                        color:
+                            '#' +
+                            color
+                                .map((c) =>
+                                    ('0' + Math.max(c, 0).toString(16)).slice(-2)
+                                )
+                                .join(''),
+                    };
+                }
+            }
+            return fields;
+        };
+
         // parse query parameter
         setLines(props.lines.map((line) => makeData(line)));
-    }, [props.lines]);
+    }, [props.lines, props.network]);
 
-    function makeData(line) {
-        let limits = [line.permanentLimit1, line.permanentLimit2];
-        let intensities = [line.i1, line.i2];
-        let loads = [line.p1, line.p2];
-
-        const color = getNominalVoltageColor(
-            props.network.getVoltageLevel(line.voltageLevelId1)
-                .nominalVoltage ||
-                props.network.getVoltageLevel(line.voltageLevelId2)
-        );
-
-        let fields = { overload: 0 };
-        for (let i = 0; i < 2; ++i) {
-            if (
-                limits[i] !== undefined &&
-                intensities[i] !== undefined &&
-                intensities[i] !== 0 && // we have enough data
-                intensities[i] / limits[i] > fields.overload
-            ) {
-                fields = {
-                    overload: intensities[i] / limits[i],
-                    name: line.name,
-                    intensity: intensities[i],
-                    load: loads[i],
-                    limit: limits[i],
-                    // conversion [r,g,b] => #XXXXXX ; concat '0' to (color value) in hexadecimal keep last 2 characters
-                    color:
-                        '#' +
-                        color
-                            .map((c) =>
-                                ('0' + Math.max(c, 0).toString(16)).slice(-2)
-                            )
-                            .join(''),
-                };
-            }
-        }
-        return fields;
-    }
 
     function MakeHead(label) {
         return (
