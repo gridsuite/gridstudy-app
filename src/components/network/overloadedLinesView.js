@@ -8,25 +8,59 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import Paper from '@material-ui/core/Paper';
-import { TableBody, TableCell, TableHead, Typography } from '@material-ui/core';
-import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
+import { useIntl } from 'react-intl';
 import { getNominalVoltageColor } from '../../utils/colors';
+import VirtualizedTable from '../util/virtualized-table';
+import TableCell from '@material-ui/core/TableCell';
+
+import 'react-virtualized/styles.css';
+import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+
+const useStyles = makeStyles((theme) => ({
+    rowCell: {
+        backgroundColor: theme.palette.background.paper,
+        width: '100%',
+        height: '100%',
+        verticalAlign: 'center',
+        '&:hover': {
+            opacity: '100%',
+        },
+        top: '50%',
+        flex: 1,
+        pointerEvents: 'auto',
+    },
+    table: {
+        opacity: '60%',
+        '&:hover': {
+            opacity: '100%',
+        },
+        pointerEvents: 'none',
+    },
+    flexContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        boxSizing: 'border-box',
+        pointerEvents: 'none',
+    },
+}));
 
 const OverloadedLinesView = (props) => {
     const [lines, setLines] = useState(null);
+    const classes = useStyles();
 
+    const intl = useIntl();
+    const rowHeight = 30;
     useEffect(() => {
         const makeData = (line) => {
             let limits = [line.permanentLimit1, line.permanentLimit2];
             let intensities = [line.i1, line.i2];
             let loads = [line.p1, line.p2];
 
-            const color = getNominalVoltageColor(
-                props.network.getVoltageLevel(line.voltageLevelId1).nominalVoltage ||
-                props.network.getVoltageLevel(line.voltageLevelId2).nominalVoltage
-            );
+            let vl =
+                props.network.getVoltageLevel(line.voltageLevelId1) ||
+                props.network.getVoltageLevel(line.voltageLevelId2);
+            const color = getNominalVoltageColor(vl.nominalVoltage);
 
             let fields = { overload: 0 };
             for (let i = 0; i < 2; ++i) {
@@ -34,89 +68,100 @@ const OverloadedLinesView = (props) => {
                     limits[i] !== undefined &&
                     intensities[i] !== undefined &&
                     intensities[i] !== 0 && // we have enough data
-                    intensities[i] / limits[i] > fields.overload
+                    (intensities[i] / limits[i]) * 100 > fields.overload
                 ) {
                     fields = {
-                        overload: intensities[i] / limits[i],
-                        name: line.name,
+                        overload: ((intensities[i] / limits[i]) * 100).toFixed(
+                            1
+                        ),
+                        name: line.name || line.id,
                         intensity: intensities[i],
                         load: loads[i],
                         limit: limits[i],
                         // conversion [r,g,b] => #XXXXXX ; concat '0' to (color value) in hexadecimal keep last 2 characters
-                        color:
-                            '#' +
-                            color
-                                .map((c) =>
-                                    ('0' + Math.max(c, 0).toString(16)).slice(-2)
-                                )
-                                .join(''),
+                        //eslint-disable-next-line
+                        color: '#' + color.map((c) => ('0' + Math.max(c, 0).toString(16)).slice(-2)).join(''),
                     };
                 }
             }
             return fields;
         };
 
-        // parse query parameter
-        setLines(props.lines.map((line) => makeData(line)));
-    }, [props.lines, props.network]);
-
-
-    function MakeHead(label) {
-        return (
-            <TableCell>
-                <Typography>{label}</Typography>
-            </TableCell>
+        setLines(
+            props.lines
+                .map((line) => makeData(line))
+                .filter( (l) => l.overload > props.lineFlowAlertThreshold)
         );
-    }
+
+    }, [props.lines, props.network, props.lineFlowAlertThreshold]);
 
     function MakeCell(label, color) {
         return (
-            <TableCell>
-                <Typography style={{ color: color }}>{label}</Typography>
+            <TableCell
+                component="div"
+                className={clsx(classes.tableCell, classes.flexContainer)}
+                variant="body"
+                style={{
+                    height: rowHeight,
+                    color: color,
+                }}
+                align={'right'}
+            >
+                {label}
             </TableCell>
         );
     }
-    function MakeRawCell(label) {
-        return <TableCell>{label}</TableCell>;
-    }
 
-    function row(fields) {
+    function renderOverloadedLines() {
         return (
-            <TableRow key={fields.name}>
-                {MakeCell(fields.name, fields.color)}
-                {MakeRawCell(fields.load)}
-                {MakeRawCell(fields.intensity)}
-                {MakeRawCell(fields.limit)}
-                {MakeRawCell((fields.overload * 100).toFixed(1))}
-            </TableRow>
+            <VirtualizedTable
+                className={classes.table}
+                rowCount={lines.length}
+                rowGetter={({ index }) => lines[index]}
+                rowStyle={{ alignItems: 'stretch' }}
+                rowHeight={rowHeight}
+                classes={{ tableRow: classes.rowCell }}
+                columns={[
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                        cellRenderer: (cellData) =>
+                            MakeCell(
+                                cellData.rowData.name,
+                                cellData.rowData.color
+                            ),
+                    },
+                    {
+                        label: intl.formatMessage({ id: 'Load' }),
+                        dataKey: 'load',
+                        numeric: true,
+                        width: 70,
+                    },
+                    {
+                        label: intl.formatMessage({ id: 'Intensity' }),
+                        dataKey: 'intensity',
+                        numeric: true,
+                        width: 70,
+                    },
+                    {
+                        label: intl.formatMessage({ id: 'Limit' }),
+                        dataKey: 'limit',
+                        numeric: true,
+                        width: 70,
+                    },
+                    {
+                        label: intl.formatMessage({ id: 'Overload' }),
+                        dataKey: 'overload',
+                        numeric: true,
+                        width: 90,
+                    },
+                ]}
+            />
         );
     }
-    return (
-        lines && (
-            <Paper>
-                <Table aria-sort="none" stickyHeader={true} size="small">
-                    <TableHead>
-                        <TableRow>
-                            {MakeHead('name')}
-                            {MakeHead('load')}
-                            {MakeHead('intensity')}
-                            {MakeHead('limit')}
-                            {MakeHead('overload')}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody style={{ overflow: 'scroll' }}>
-                        {lines
-                            .filter(
-                                (line) =>
-                                    line.overload * 100 >
-                                    props.lineFlowAlertThreshold
-                            )
-                            .map((line) => row(line))}
-                    </TableBody>
-                </Table>
-            </Paper>
-        )
-    );
+
+    return lines && renderOverloadedLines();
 };
 
 OverloadedLinesView.defaultProps = {

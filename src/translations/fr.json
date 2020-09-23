@@ -75,8 +75,10 @@
     "Overloads": "Surcharges",
     "AlertThresholdLabel": "Seuil d'alerte",
     "intensity": "intensité",
+    "Intensity": "Intensité",
     "limit": "limite",
     "load": "transit",
+    "Load": "Transit",
 
     "PageNotFound": "Page introuvable",
 

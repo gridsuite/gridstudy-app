@@ -510,12 +510,14 @@ const StudyPane = (props) => {
                                 <div
                                     style={{
                                         zIndex: 0,
-                                        right: 40,
+                                        right: 45,
                                         top: 10,
-                                        overflowY: 'scroll',
+                                        minWidth: '500px',
                                         position: 'absolute',
                                         height: '70%',
-                                        opacity: '70%',
+                                        opacity: '1',
+                                        flex: 1,
+                                        pointerEvents: 'none',
                                     }}
                                 >
                                     <OverloadedLinesView
