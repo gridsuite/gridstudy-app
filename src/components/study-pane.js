@@ -45,7 +45,7 @@ import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Button from '@material-ui/core/Button';
 import PlayIcon from '@material-ui/icons/PlayArrow';
-import {green, grey, orange, red} from '@material-ui/core/colors';
+import { green, grey, orange, red } from '@material-ui/core/colors';
 import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
@@ -71,12 +71,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const loadFlowButtonStyles = makeStyles({
-         root: {
-            backgroundColor: grey[500],
-             '&:hover': {
-                backgroundColor: grey[700],
-             },
-         },
+    root: {
+        backgroundColor: grey[500],
+        '&:hover': {
+            backgroundColor: grey[700],
+        },
+    },
     label: {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -93,24 +93,26 @@ const LFStatus = {
 const RunLoadFlowButton = (props) => {
     const loadFlowButtonClasses = loadFlowButtonStyles();
     const subStyle = {
-            running: {
-                backgroundColor: orange[500],
+        running: {
+            backgroundColor: orange[500],
+        },
+        diverged: {
+            backgroundColor: red[500],
+        },
+        converged: {
+            backgroundColor: green[500],
+        },
+        root: {
+            backgroundColor: grey[500],
+            '&:hover': {
+                backgroundColor: grey[700],
             },
-            diverged: {
-                backgroundColor: red[500],
-            },
-            converged: {
-                backgroundColor: green[500],
-            },
-            root: {
-                backgroundColor: grey[500],
-                '&:hover': {
-                    backgroundColor: grey[700],
-                },
-            },
+        },
     };
 
-    const handleClick = () => startLoadFlow(props.studyName, props.userId).then();
+    const handleClick = () =>
+        startLoadFlow(props.studyName, props.userId).then();
+
     function getStyle() {
         switch (props.loadFlowState) {
             case LFStatus.CONVERGED:
@@ -122,7 +124,7 @@ const RunLoadFlowButton = (props) => {
             case LFStatus.NOT_RUN:
             default:
                 return {};
-         }
+        }
     }
 
     return (
@@ -221,12 +223,11 @@ const StudyPane = (props) => {
         }
     }
 
-    function updateLFStatus() {
+    const updateLFStatus = useCallback(() => {
         fetchStudy(studyName, userId).then((study) => {
             setLoadFlowState(toLFStatus(study.loadFlowResult.status));
         });
-    }
-
+    }, [studyName, userId]);
 
     const loadNetwork = useCallback(() => {
         console.info(`Loading network of study '${studyName}'...`);
@@ -247,7 +248,7 @@ const StudyPane = (props) => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, userId, dispatch]);
+    }, [studyName, userId, dispatch, updateLFStatus]);
 
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
@@ -399,15 +400,15 @@ const StudyPane = (props) => {
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(studyName);
-            }
-            else if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow_status'
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'loadflow_status'
             ) {
                 updateLFStatus();
             }
         }
         // Note: studyName and loadNetwork don't change
-    }, [studyUpdatedForce, studyName, loadNetwork]);
+    }, [studyUpdatedForce, studyName, loadNetwork, updateLFStatus]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
@@ -466,9 +467,7 @@ const StudyPane = (props) => {
                                             <RunLoadFlowButton
                                                 studyName={studyName}
                                                 userId={userId}
-                                                loadFlowState={
-                                                    loadFlowState
-                                                }
+                                                loadFlowState={loadFlowState}
                                             />
                                         </div>
                                     </Grid>

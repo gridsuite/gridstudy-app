@@ -38,9 +38,12 @@ export function fetchStudies() {
 
 export function fetchStudy(studyName, userId) {
     console.info('Fetching studies...');
-    const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/'+
+    const fetchStudiesUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
         encodeURIComponent(userId) +
-        '/studies/' + studyName;
+        '/studies/' +
+        studyName;
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
