@@ -72,7 +72,14 @@
     "LineFlowColorMode": "Line color mode",
     "NominalVoltage": "Nominal voltage",
     "Overloads": "Overloads",
+    "Overload": "Overload",
     "AlertThresholdLabel": "Alert threshold",
+    "intensity": "intensity",
+    "Intensity": "Intensity",
+    "limit": "limit",
+    "Limit": "Limit",
+    "load": "load",
+    "Load": "Load",
 
     "PageNotFound": "Page not found",
 
