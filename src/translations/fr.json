@@ -71,8 +71,15 @@
     "Feeders": "Départs",
     "LineFlowColorMode": "Mode de colorisation des lignes",
     "NominalVoltage": "Tension nominale",
+    "Overload": "Surcharge",
     "Overloads": "Surcharges",
     "AlertThresholdLabel": "Seuil d'alerte",
+    "intensity": "intensité",
+    "Intensity": "Intensité",
+    "limit": "limite",
+    "Limit": "Limite",
+    "load": "transit",
+    "Load": "Transit",
 
     "PageNotFound": "Page introuvable",
 
