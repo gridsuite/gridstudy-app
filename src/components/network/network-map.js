@@ -227,7 +227,7 @@ const NetworkMap = forwardRef((props, ref) => {
             if (info.object.substationId) {
                 idVl = info.object.id;
             } else if (info.object.voltageLevels) {
-                if (info.object.voltageLevels.length == 1) {
+                if (info.object.voltageLevels.length === 1) {
                     let idS = info.object.voltageLevels[0].substationId;
                     let substation = network.getSubstation(idS);
                     if (substation && substation.voltageLevels.length > 1) {
