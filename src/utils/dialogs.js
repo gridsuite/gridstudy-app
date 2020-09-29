@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from '@material-ui/lab/Alert';
-import { getAvailableExportFormats } from './rest-api';
+import { getAvailableExportFormats, getExportUrl } from './rest-api';
 
 /**
  * Dialog to delete an element #TODO To be moved in the common-ui repository once it has been created
@@ -225,17 +225,7 @@ const ExportDialog = ({ open, onClose, onClick, studyName, userId, title }) => {
     const handleChange = (event) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
-        setDownloadUrl(
-            process.env.REACT_APP_API_GATEWAY +
-                '/study' +
-                '/v1/' +
-                encodeURIComponent(userId) +
-                '/studies/' +
-                encodeURIComponent(studyName) +
-                '/' +
-                '/export-network/' +
-                selected
-        );
+        setDownloadUrl(getExportUrl(userId, studyName, selected));
     };
 
     const classes = useStyles();
