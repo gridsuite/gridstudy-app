@@ -86,7 +86,7 @@ const loadFlowButtonStyles = makeStyles({
 const LFStatus = {
     CONVERGED: 'Converged',
     DIVERGED: 'Diverged',
-    NOT_RUN: 'Start LoadFlow',
+    NOT_DONE: 'Start LoadFlow',
     RUNNING: 'LoadFlow running…',
 };
 
