@@ -54,6 +54,7 @@ import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloadedLinesView';
 import { LineFlowColorMode } from './network/line-layer';
 import NetworkTable from './network/network-table';
+import VoltageLevelChoice from './voltage_level_choice';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -201,6 +202,8 @@ const StudyPane = (props) => {
 
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
+    const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -230,6 +233,8 @@ const StudyPane = (props) => {
             setLoadFlowState(toLFStatus(study.loadFlowResult.status));
         });
     }, [studyName, userId]);
+
+    const [position, setPosition] = useState([-1, -1]);
 
     const loadNetwork = useCallback(() => {
         console.info(`Loading network of study '${studyName}'...`);
@@ -357,6 +362,14 @@ const StudyPane = (props) => {
         [studyName, userId, history]
     );
 
+    const chooseVoltageLevelForSubstation = useCallback(
+        (idSubstation, x, y) => {
+            setDisplayedSubstationId(idSubstation);
+            setPosition([x, y]);
+        },
+        []
+    );
+
     function closeVoltageLevelDiagram() {
         history.replace(
             '/' +
@@ -441,6 +454,15 @@ const StudyPane = (props) => {
         [mapRef, network]
     );
 
+    function closeChoiceVoltageLevelMenu() {
+        setDisplayedSubstationId(null);
+    }
+
+    function choiceVoltageLevel(voltageLevelId) {
+        showVoltageLevelDiagram(voltageLevelId);
+        closeChoiceVoltageLevelMenu();
+    }
+
     function renderMapView() {
         let displayedVoltageLevel;
         if (network) {
@@ -450,6 +472,16 @@ const StudyPane = (props) => {
                 );
             }
         }
+
+        let displayedSubstation = null;
+        if (network) {
+            if (displayedSubstationId) {
+                displayedSubstation = network.getSubstation(
+                    displayedSubstationId
+                );
+            }
+        }
+
         return (
             <Grid container direction="row" className={classes.main}>
                 <Grid item xs={12} md={2}>
@@ -520,6 +552,9 @@ const StudyPane = (props) => {
                             ref={mapRef}
                             onSubstationClick={showVoltageLevelDiagram}
                             visible={props.view === StudyView.MAP}
+                            onSubstationClickChooseVoltageLevel={
+                                chooseVoltageLevelForSubstation
+                            }
                         />
                         {displayedVoltageLevelId && (
                             <div
@@ -554,6 +589,7 @@ const StudyPane = (props) => {
                                 />
                             </div>
                         )}
+
                         {network &&
                             lineFlowColorMode ===
                                 LineFlowColorMode.OVERLOADS && (
@@ -579,6 +615,16 @@ const StudyPane = (props) => {
                                     />
                                 </div>
                             )}
+
+                        {displayedSubstationId && (
+                            <VoltageLevelChoice
+                                handleClose={closeChoiceVoltageLevelMenu}
+                                onClickHandler={choiceVoltageLevel}
+                                substation={displayedSubstation}
+                                position={[position[0] + 200, position[1]]}
+                            />
+                        )}
+
                         {network && (
                             <div
                                 style={{
