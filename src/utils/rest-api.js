@@ -297,3 +297,19 @@ export function getAvailableExportFormats() {
         method: 'get',
     }).then((response) => response.json());
 }
+
+function getUrlWithToken(baseUrl) {
+    return baseUrl + '?access_token=' + getToken();
+}
+
+export function getExportUrl(userId, studyName, exportFormat) {
+    const url = PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/' +
+        '/export-network/' +
+        exportFormat;
+    return getUrlWithToken(url);
+}
