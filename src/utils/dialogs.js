@@ -22,7 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from '@material-ui/lab/Alert';
-import {getAvailableExportFormats, getExportUrl} from './rest-api';
+import { getAvailableExportFormats, getExportUrl } from './rest-api';
 
 /**
  * Dialog to delete an element #TODO To be moved in the common-ui repository once it has been created

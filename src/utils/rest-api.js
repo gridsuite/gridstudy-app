@@ -303,7 +303,8 @@ function getUrlWithToken(baseUrl) {
 }
 
 export function getExportUrl(userId, studyName, exportFormat) {
-    const url = PREFIX_STUDY_QUERIES +
+    const url =
+        PREFIX_STUDY_QUERIES +
         '/v1/' +
         encodeURIComponent(userId) +
         '/studies/' +
