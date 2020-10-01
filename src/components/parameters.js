@@ -394,7 +394,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const commitLFParameter = (newParams) => {
         setLoadFlowParameters(studyName, userId, newParams).then();
         if (!newParams) {
-                resetLfParameters();
+            resetLfParameters();
         }
     };
 
@@ -437,7 +437,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 type: TYPES.bool,
                 description: 'descLfWriteSlackBus',
             },
-
         };
         if (!lfParams) {
             getLoadFlowParameters(studyName, userId).then((res) => {
