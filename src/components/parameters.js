@@ -392,6 +392,9 @@ const Parameters = ({ showParameters, hideParameters }) => {
     };
 
     const commitLFParameter = (newParams) => {
+        if (newParams) {
+            setLfParam(newParams);
+        }
         setLoadFlowParameters(studyName, userId, newParams).then();
         if (!newParams) {
             resetLfParameters();
@@ -439,9 +442,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
             },
         };
         if (!lfParams) {
-            getLoadFlowParameters(studyName, userId).then((res) => {
-                setLfParam(res);
-            });
+            resetLfParameters();
         }
         return (
             lfParams && (
@@ -451,9 +452,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     className={classes.grid}
                     justify="flex-end"
                 >
-                    {makeComponentsFor(defParams, lfParams, setLfParam)}
-                    {MakeButton(() => commitLFParameter(lfParams), 'save')}
-                    {MakeButton(resetLfParameters, 'cancel')}
+                    {makeComponentsFor(defParams, lfParams, commitLFParameter)}
                     {MakeButton(
                         () => commitLFParameter(null),
                         'resetToDefault'
