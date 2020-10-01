@@ -97,5 +97,21 @@
     "ActivePowerSide1": "p1 (MW)",
     "ActivePowerSide2": "p2 (MW)",
     "ReactivePowerSide1": "q1 (MVar)",
-    "ReactivePowerSide2": "q2 (MVar)"
+    "ReactivePowerSide2": "q2 (MVar)",
+
+    "descLfVoltageInitMode": "Initialisation des tensions",
+    "descLfTransformerVoltageControlOn": "Control des tensions des Tranfos",
+    "descLfNoGeneratorReactiveLimits": "Limite réactiver des Groupes",
+    "descLfPhaseShifterRegulationOn": "Déphaseurs",
+    "descLfTwtSplitShuntAdmittance": "Spit shunt admittance",
+    "descLfSimulShunt": "Shunt simulation",
+    "descLfUniformValues": "Uniforme",
+    "descLfPreviousValues": "Précédentes",
+    "descLfDcValues": "DC",
+    "resetToDefault": "Valeur par défaut",
+    "save": "enregister",
+    "LoadFlow":"LoadFlow",
+    "descLfReadSlackBus": "Read Slack Bus",
+    "descLfWriteSlackBus": "Write Slack Bus"
+
 }
