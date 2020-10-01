@@ -128,6 +128,49 @@ export function fetchLines(studyName, userId) {
     return backendFetch(fetchLinesUrl).then((response) => response.json());
 }
 
+export function fetchTwoWindingsTransformers(studyName, userId) {
+    console.info(`Fetching 2 windings transformers of study '${studyName}'...`);
+    const fetchTwoWindingsTransformersUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/network-map/2-windings-transformers';
+    console.debug(fetchTwoWindingsTransformersUrl);
+    return backendFetch(fetchTwoWindingsTransformersUrl).then((response) =>
+        response.json()
+    );
+}
+
+export function fetchThreeWindingsTransformers(studyName, userId) {
+    console.info(`Fetching 3 windings transformers of study '${studyName}'...`);
+    const fetchThreeWindingsTransformersUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/network-map/3-windings-transformers';
+    console.debug(fetchThreeWindingsTransformersUrl);
+    return backendFetch(fetchThreeWindingsTransformersUrl).then((response) =>
+        response.json()
+    );
+}
+
+export function fetchGenerators(studyName, userId) {
+    console.info(`Fetching generators of study '${studyName}'...`);
+    const fetchGeneratorsUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/network-map/generators';
+    console.debug(fetchGeneratorsUrl);
+    return backendFetch(fetchGeneratorsUrl).then((response) => response.json());
+}
+
 export function fetchLinePositions(studyName, userId) {
     console.info(`Fetching line positions of study '${studyName}'...`);
     const fetchLinePositionsUrl =

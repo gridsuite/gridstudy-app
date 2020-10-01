@@ -14,7 +14,14 @@ import Tab from '@material-ui/core/Tab';
 import { useIntl } from 'react-intl';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 
-const TABLE_NAMES = ['Substations', 'VoltageLevels', 'Lines'];
+const TABLE_NAMES = [
+    'Substations',
+    'VoltageLevels',
+    'Lines',
+    'TwoWindingsTransformers',
+    'ThreeWindingsTransformers',
+    'Generators',
+];
 
 const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -73,6 +80,7 @@ const NetworkTable = (props) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'NominalVoltage' }),
                         dataKey: 'nominalVoltage',
+                        numeric: true,
                     },
                 ]}
             />
@@ -113,21 +121,260 @@ const NetworkTable = (props) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide1' }),
                         dataKey: 'p1',
+                        numeric: true,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide2' }),
                         dataKey: 'p2',
+                        numeric: true,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
                         dataKey: 'q1',
+                        numeric: true,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
                         dataKey: 'q2',
+                        numeric: true,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderTwoWindingsTransformersTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.twoWindingsTransformers.length}
+                rowGetter={({ index }) =>
+                    props.network.twoWindingsTransformers[index]
+                }
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelIdSide1',
+                        }),
+                        dataKey: 'voltageLevelId1',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelIdSide2',
+                        }),
+                        dataKey: 'voltageLevelId2',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePowerSide1' }),
+                        dataKey: 'p1',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePowerSide2' }),
+                        dataKey: 'p2',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
+                        dataKey: 'q1',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                        dataKey: 'q2',
+                        numeric: true,
+                    },
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'RatioTap' }),
+                        dataKey: 'ratioTapChangerPosition',
+                        numeric: true,
+                    },
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'PhaseTap' }),
+                        dataKey: 'phaseTapChangerPosition',
+                        numeric: true,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderThreeWindingsTransformersTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.threeWindingsTransformers.length}
+                rowGetter={({ index }) =>
+                    props.network.threeWindingsTransformers[index]
+                }
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelIdSide1',
+                        }),
+                        dataKey: 'voltageLevelId1',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelIdSide2',
+                        }),
+                        dataKey: 'voltageLevelId2',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelIdSide3',
+                        }),
+                        dataKey: 'voltageLevelId3',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePowerSide1' }),
+                        dataKey: 'p1',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePowerSide2' }),
+                        dataKey: 'p2',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePowerSide3' }),
+                        dataKey: 'p3',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
+                        dataKey: 'q1',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                        dataKey: 'q2',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePowerSide3' }),
+                        dataKey: 'q3',
+                        numeric: true,
+                    },
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'RatioTap1' }),
+                        dataKey: 'ratioTapChanger1Position',
+                        numeric: true,
+                    },
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'RatioTap2' }),
+                        dataKey: 'ratioTapChanger2Position',
+                        numeric: true,
+                    },
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'RatioTap3' }),
+                        dataKey: 'ratioTapChanger3Position',
+                        numeric: true,
+                    },
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'PhaseTap1' }),
+                        dataKey: 'phaseTapChanger1Position',
+                        numeric: true,
+                    },
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'PhaseTap2' }),
+                        dataKey: 'phaseTapChanger2Position',
+                        numeric: true,
+                    },
+                    {
+                        width: 150,
+                        label: intl.formatMessage({ id: 'PhaseTap3' }),
+                        dataKey: 'phaseTapChanger3Position',
+                        numeric: true,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderGeneratorsTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.generators.length}
+                rowGetter={({ index }) => props.network.generators[index]}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelId',
+                        }),
+                        dataKey: 'voltageLevelId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePower' }),
+                        dataKey: 'p',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePower' }),
+                        dataKey: 'q',
+                        numeric: true,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'TargetP' }),
+                        dataKey: 'targetP',
+                        numeric: true,
                     },
                 ]}
             />
@@ -161,6 +408,10 @@ const NetworkTable = (props) => {
                         {tabIndex === 0 && renderSubstationsTable()}
                         {tabIndex === 1 && renderVoltageLevelsTable()}
                         {tabIndex === 2 && renderLinesTable()}
+                        {tabIndex === 3 && renderTwoWindingsTransformersTable()}
+                        {tabIndex === 4 &&
+                            renderThreeWindingsTransformersTable()}
+                        {tabIndex === 5 && renderGeneratorsTable()}
                     </div>
                 )}
             </AutoSizer>
