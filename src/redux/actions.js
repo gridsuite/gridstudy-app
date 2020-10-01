@@ -144,3 +144,8 @@ export const STUDY_UPDATED = 'STUDY_UPDATED';
 export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
 }
+
+export const LOADFLOW_PARAMETERS_CHANGED = 'LOADFLOW_PARAMETERS_CHANGED';
+export function loadFlowParametersChanged(lfParam) {
+    return { type: LOADFLOW_PARAMETERS_CHANGED, lfParam };
+}
