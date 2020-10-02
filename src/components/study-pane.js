@@ -24,11 +24,14 @@ import NetworkMap from './network/network-map';
 import SingleLineDiagram from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
+    fetchGenerators,
     fetchLinePositions,
     fetchLines,
     fetchStudy,
     fetchSubstationPositions,
     fetchSubstations,
+    fetchThreeWindingsTransformers,
+    fetchTwoWindingsTransformers,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
     updateSwitchState,
@@ -240,14 +243,31 @@ const StudyPane = (props) => {
         console.info(`Loading network of study '${studyName}'...`);
         updateLFStatus();
         const substations = fetchSubstations(studyName, userId);
-
         const lines = fetchLines(studyName, userId);
+        const twoWindingsTransformers = fetchTwoWindingsTransformers(
+            studyName,
+            userId
+        );
+        const threeWindingsTransformers = fetchThreeWindingsTransformers(
+            studyName,
+            userId
+        );
+        const generators = fetchGenerators(studyName, userId);
 
-        Promise.all([substations, lines])
+        Promise.all([
+            substations,
+            lines,
+            twoWindingsTransformers,
+            threeWindingsTransformers,
+            generators,
+        ])
             .then((values) => {
                 const network = new Network();
                 network.setSubstations(values[0]);
                 network.setLines(values[1]);
+                network.setTwoWindingsTransformers(values[2]);
+                network.setThreeWindingsTransformers(values[3]);
+                network.setGenerators(values[4]);
                 dispatch(loadNetworkSuccess(network));
             })
             .catch(function (error) {

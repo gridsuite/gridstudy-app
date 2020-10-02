@@ -15,6 +15,12 @@ export default class Network {
 
     lines = [];
 
+    twoWindingsTransformers = [];
+
+    threeWindingsTransformers = [];
+
+    generators = [];
+
     voltageLevelsByNominalVoltage = new Map();
 
     voltageLevelsById = new Map();
@@ -62,6 +68,18 @@ export default class Network {
 
     setLines(lines) {
         this.lines = lines;
+    }
+
+    setTwoWindingsTransformers(twoWindingsTransformers) {
+        this.twoWindingsTransformers = twoWindingsTransformers;
+    }
+
+    setThreeWindingsTransformers(threeWindingsTransformers) {
+        this.threeWindingsTransformers = threeWindingsTransformers;
+    }
+
+    setGenerators(generators) {
+        this.generators = generators;
     }
 
     getVoltageLevels() {
