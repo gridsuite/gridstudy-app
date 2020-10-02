@@ -133,7 +133,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
     }, [props.svgUrl, forceState]);
 
-    const { onNextVoltageLevelClick, onBreakerClick } = props;
+    const { onNextVoltageLevelClick, onBreakerClick, onLineClick } = props;
     useLayoutEffect(() => {
         if (svg.svg) {
             // calculate svg width and height
@@ -208,10 +208,29 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     onBreakerClick(switchId, !open, event.currentTarget);
                 });
             });
+
+            const lines = svg.metadata.nodes.filter((element) => {
+                return element.componentType === 'LINE';
+            });
+            lines.forEach((aLine) => {
+                const domEl = document.getElementById(aLine.id);
+                domEl.style.cursor = 'pointer';
+                domEl.addEventListener('contextmenu', function (event) {
+                    event.preventDefault();
+                    const clickedElementId = event.currentTarget.id;
+                    const lineMetadata = svg.metadata.nodes.find(
+                        (value) => value.id === clickedElementId
+                    );
+                    const lineId = lineMetadata.equipmentId;
+
+                    onLineClick(lineId, event.pageX, event.pageY);
+                });
+            });
+
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
-    }, [svg, onNextVoltageLevelClick, onBreakerClick]);
+    }, [svg, onNextVoltageLevelClick, onBreakerClick, onLineClick]);
 
     useEffect(() => {
         svgPrevViewbox.current = null;

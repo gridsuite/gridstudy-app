@@ -80,7 +80,15 @@ const OverloadedLinesView = (props) => {
                         limit: limits[i],
                         // conversion [r,g,b] => #XXXXXX ; concat '0' to (color value) in hexadecimal keep last 2 characters
                         //eslint-disable-next-line
-                        color: '#' + color.map((c) => ('0' + Math.max(c, 0).toString(16)).slice(-2)).join(''),
+                        color:
+                            '#' +
+                            color
+                                .map((c) =>
+                                    ('0' + Math.max(c, 0).toString(16)).slice(
+                                        -2
+                                    )
+                                )
+                                .join(''),
                     };
                 }
             }

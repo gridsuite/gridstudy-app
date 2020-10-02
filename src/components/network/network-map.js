@@ -29,7 +29,7 @@ import { decomposeColor } from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
 import GeoData from './geo-data';
-import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
+import LineLayer, { LineFlowColorMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
 
@@ -253,6 +253,16 @@ const NetworkMap = forwardRef((props, ref) => {
                 );
             }
         }
+        if (
+            info.layer &&
+            info.layer.id.startsWith(LINE_LAYER_PREFIX) &&
+            info.object &&
+            info.object.id &&
+            info.object.voltageLevelId1 &&
+            info.object.voltageLevelId2
+        ) {
+            props.onLineClick(info.object, info.x + 200, info.y);
+        }
     }
 
     function cursorHandler({ isDragging }) {
@@ -375,7 +385,7 @@ NetworkMap.defaultProps = {
     initialPosition: [0, 0],
     lineFullPath: true,
     lineParallelPath: true,
-    lineFlowMode: LineFlowMode.FEEDERS,
+    lineFlowMode: LineFlowColorMode.FEEDERS,
     lineFlowHidden: true,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,
@@ -392,9 +402,10 @@ NetworkMap.propTypes = {
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
+    onLineClick: PropTypes.func,
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,
-    lineFlowMode: PropTypes.instanceOf(LineFlowMode),
+    lineFlowMode: PropTypes.instanceOf(LineFlowColorMode),
     lineFlowHidden: PropTypes.bool,
     lineFlowColorMode: PropTypes.instanceOf(LineFlowColorMode),
     lineFlowAlertThreshold: PropTypes.number.isRequired,

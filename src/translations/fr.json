@@ -81,6 +81,9 @@
     "load": "transit",
     "Load": "Transit",
 
+    "LockoutLine": "Consigner la ligne",
+    "PutLineIntoOperation": "Mettre la ligne en service",
+
     "PageNotFound": "Page introuvable",
 
     "Table": "Tableur",

@@ -276,6 +276,23 @@ export function updateSwitchState(studyName, userId, switchId, open) {
     return backendFetch(updateSwitchUrl, { method: 'put' });
 }
 
+export function lockoutLine(studyName, userId, lineId, lockout) {
+    console.info('updating line ' + lineId + ' ...');
+    const updateLineUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/network-modification/lines/' +
+        encodeURIComponent(lineId) +
+        '/switches' +
+        '?' +
+        new URLSearchParams({ lockout: lockout }).toString();
+    console.debug(updateLineUrl);
+    return backendFetch(updateLineUrl, { method: 'put' });
+}
+
 export function renameStudy(studyName, userId, newStudyName) {
     console.info('Renaming study ' + studyName);
     const renameStudiesUrl =

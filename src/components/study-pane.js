@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { parse, stringify } from 'qs';
 
@@ -32,6 +32,7 @@ import {
     fetchThreeWindingsTransformers,
     fetchTwoWindingsTransformers,
     getVoltageLevelSingleLineDiagram,
+    lockoutLine,
     startLoadFlow,
     updateSwitchState,
 } from '../utils/rest-api';
@@ -57,6 +58,7 @@ import OverloadedLinesView from './network/overloadedLinesView';
 import { LineFlowColorMode } from './network/line-layer';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage_level_choice';
+import LockoutLine from './lockout-line';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -167,6 +169,16 @@ const StudyPane = (props) => {
         null
     );
 
+    const [displayLockout, setDisplayLockout] = useState(null);
+
+    const [lockoutMenuMessage, setLockoutMenuMessage] = useState('');
+
+    const [lockoutMenuPosition, setLockoutMenuPosition] = useState([-1, -1]);
+
+    const [lineToLockout, setLineToLockout] = useState(null);
+
+    const [lockout, setLockout] = useState(null);
+
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
     const [loadFlowRunning, setLoadFlowRunning] = useState(false);
@@ -184,6 +196,8 @@ const StudyPane = (props) => {
     const location = useLocation();
 
     const history = useHistory();
+
+    const intl = useIntl();
 
     const websocketExpectedCloseRef = useRef();
 
@@ -428,6 +442,38 @@ const StudyPane = (props) => {
         closeChoiceVoltageLevelMenu();
     }
 
+    function showLockout(line, x, y) {
+        let message;
+        if (
+            line.terminal1Connected === false &&
+            line.terminal2Connected === false
+        ) {
+            message = intl.formatMessage({ id: 'PutLineIntoOperation' });
+            setLockoutMenuMessage(message);
+            setLockout(false);
+        } else {
+            message = intl.formatMessage({ id: 'LockoutLine' });
+            setLockoutMenuMessage(message);
+            setLockout(true);
+        }
+        setLockoutMenuPosition([x, y]);
+        setLineToLockout(line);
+        setDisplayLockout(true);
+    }
+
+    function showSingleLineDiagramLockout(lineId, x, y) {
+        let line = network.lines.find((value) => (value.id = lineId));
+        showLockout(line, x, y);
+    }
+
+    function closeLockoutMenu() {
+        setDisplayLockout(null);
+    }
+
+    function handleLockout(lineId) {
+        lockoutLine(studyName, userId, lineId, lockout).then(closeLockoutMenu);
+    }
+
     function renderMapView() {
         let displayedVoltageLevel;
         if (network) {
@@ -521,6 +567,7 @@ const StudyPane = (props) => {
                             lineFlowAlertThreshold={lineFlowAlertThreshold}
                             ref={mapRef}
                             onSubstationClick={showVoltageLevelDiagram}
+                            onLineClick={showLockout}
                             visible={props.view === StudyView.MAP}
                             onSubstationClickChooseVoltageLevel={
                                 chooseVoltageLevelForSubstation
@@ -541,6 +588,7 @@ const StudyPane = (props) => {
                                         showVoltageLevelDiagram
                                     }
                                     onBreakerClick={handleUpdateSwitchState}
+                                    onLineClick={showSingleLineDiagramLockout}
                                     diagramTitle={
                                         useName && displayedVoltageLevel
                                             ? displayedVoltageLevel.name
@@ -614,6 +662,18 @@ const StudyPane = (props) => {
                                     }
                                 />
                             </div>
+                        )}
+                        {displayLockout && (
+                            <LockoutLine
+                                line={lineToLockout}
+                                position={[
+                                    lockoutMenuPosition[0],
+                                    lockoutMenuPosition[1],
+                                ]}
+                                message={lockoutMenuMessage}
+                                handleClose={closeLockoutMenu}
+                                handleClick={handleLockout}
+                            />
                         )}
                     </div>
                 </Grid>

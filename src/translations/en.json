@@ -81,6 +81,9 @@
     "load": "load",
     "Load": "Load",
 
+    "LockoutLine": "Lockout the line",
+    "PutLineIntoOperation": "Put the line into operation",
+
     "PageNotFound": "Page not found",
 
     "Table": "Table",
