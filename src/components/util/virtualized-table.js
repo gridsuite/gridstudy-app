@@ -55,6 +55,13 @@ class MuiVirtualizedTable extends React.PureComponent {
 
     cellRenderer = ({ cellData, columnIndex }) => {
         const { columns, classes, rowHeight, onRowClick } = this.props;
+
+        let displayedValue;
+        if (columns[columnIndex].numeric) {
+            if (!isNaN(cellData)) displayedValue = Math.round(cellData);
+            else displayedValue = '';
+        } else displayedValue = cellData;
+
         return (
             <TableCell
                 component="div"
@@ -70,7 +77,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                         : 'left'
                 }
             >
-                {cellData}
+                {displayedValue}
             </TableCell>
         );
     };
