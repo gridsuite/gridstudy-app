@@ -118,7 +118,7 @@
     "PhaseTap3": "Phase tap 3",
 
     "descLfVoltageInitMode": "Voltage initialization ",
-    "descLfTransformerVoltageControlOn": "Transformer Voltage Control",
+    "descLfTransformerVoltageControlOn": "Transformer voltage control",
     "descLfNoGeneratorReactiveLimits": "Generator reactive limits",
     "descLfPhaseShifterRegulationOn": "Phase shifter regulation",
     "descLfTwtSplitShuntAdmittance": "Split shunt admittance",
@@ -129,7 +129,7 @@
     "resetToDefault": "default values",
     "save": "save",
     "LoadFlow":"LoadFlow",
-    "descLfReadSlackBus": "Read Slack Bus",
-    "descLfWriteSlackBus": "Write Slack Bus"
+    "descLfReadSlackBus": "Read slack bus from network",
+    "descLfWriteSlackBus": "Write slack bus to network"
 
 }
