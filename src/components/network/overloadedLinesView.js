@@ -20,7 +20,7 @@ import clsx from 'clsx';
 const useStyles = makeStyles((theme) => ({
     div: {
         height: '100%',
-        width: '100%'
+        width: '100%',
     },
     rowCell: {
         backgroundColor: theme.palette.background.paper,
@@ -126,58 +126,58 @@ const OverloadedLinesView = (props) => {
 
     function renderOverloadedLines() {
         return (
-          <div className={classes.div} >
-            <VirtualizedTable
-                height={Math.min((lines.length * rowHeight) + 50, 400)}
-                className={classes.table}
-                rowCount={lines.length}
-                rowGetter={({ index }) => lines[index]}
-                rowStyle={{ alignItems: 'stretch' }}
-                rowHeight={rowHeight}
-                classes={{ tableRow: classes.rowCell }}
-                columns={[
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        cellRenderer: (cellData) =>
-                            MakeCell(
-                                cellData.rowData.name,
-                                cellData.rowData.color
-                            ),
-                    },
-                    {
-                        label: intl.formatMessage({ id: 'Load' }),
-                        dataKey: 'load',
-                        numeric: true,
-                        width: 70,
-                        fractionDigits: 1,
-                    },
-                    {
-                        label: intl.formatMessage({ id: 'Intensity' }),
-                        dataKey: 'intensity',
-                        numeric: true,
-                        width: 70,
-                        fractionDigits: 1,
-                    },
-                    {
-                        label: intl.formatMessage({ id: 'Limit' }),
-                        dataKey: 'limit',
-                        numeric: true,
-                        width: 70,
-                        fractionDigits: 1,
-                    },
-                    {
-                        label: intl.formatMessage({ id: 'Overload' }),
-                        dataKey: 'overload',
-                        numeric: true,
-                        width: 90,
-                        fractionDigits: 0,
-                        unit: '%',
-                    },
-                ]}
-            />
-          </div>
+            <div className={classes.div}>
+                <VirtualizedTable
+                    height={Math.min(lines.length * rowHeight + 50, 400)}
+                    className={classes.table}
+                    rowCount={lines.length}
+                    rowGetter={({ index }) => lines[index]}
+                    rowStyle={{ alignItems: 'stretch' }}
+                    rowHeight={rowHeight}
+                    classes={{ tableRow: classes.rowCell }}
+                    columns={[
+                        {
+                            width: 150,
+                            label: intl.formatMessage({ id: 'Name' }),
+                            dataKey: 'name',
+                            cellRenderer: (cellData) =>
+                                MakeCell(
+                                    cellData.rowData.name,
+                                    cellData.rowData.color
+                                ),
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Load' }),
+                            dataKey: 'load',
+                            numeric: true,
+                            width: 70,
+                            fractionDigits: 1,
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Intensity' }),
+                            dataKey: 'intensity',
+                            numeric: true,
+                            width: 70,
+                            fractionDigits: 1,
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Limit' }),
+                            dataKey: 'limit',
+                            numeric: true,
+                            width: 70,
+                            fractionDigits: 1,
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Overload' }),
+                            dataKey: 'overload',
+                            numeric: true,
+                            width: 90,
+                            fractionDigits: 0,
+                            unit: '%',
+                        },
+                    ]}
+                />
+            </div>
         );
     }
 
