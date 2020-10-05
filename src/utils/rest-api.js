@@ -333,8 +333,7 @@ export function setLoadFlowParameters(studyName, userId, newParams) {
 
 export function getLoadFlowParameters(studyName, userId) {
     console.info('get load flow parameters');
-    const getLfParams =
-        getStudyUrl(studyName, userId) + '/loadflow/parameters';
+    const getLfParams = getStudyUrl(studyName, userId) + '/loadflow/parameters';
     console.debug(getLfParams);
     return backendFetch(getLfParams, {
         method: 'get',
