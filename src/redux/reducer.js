@@ -17,6 +17,7 @@ import {
     getLocalStorageLineParallelPath,
     getLocalStorageTheme,
     getLocalStorageUseName,
+    getLocalStorageViewOverloadsTable,
     saveLocalStorageCenterLabel,
     saveLocalStorageDiagonalLabel,
     saveLocalStorageLineFlowMode,
@@ -26,6 +27,7 @@ import {
     saveLocalStorageLineParallelPath,
     saveLocalStorageTheme,
     saveLocalStorageUseName,
+    saveLocalStorageViewOverloadsTable,
 } from './local-storage';
 
 import {
@@ -51,6 +53,7 @@ import {
     USER,
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
+    VIEW_OVERLOADS_TABLE,
 } from './actions';
 
 const initialState = {
@@ -74,6 +77,7 @@ const initialState = {
     lineFlowAlertThreshold: getLocalStorageLineFlowAlertThreshold(),
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
+    viewOverloadsTable: getLocalStorageViewOverloadsTable(),
 };
 
 export const reducer = createReducer(initialState, {
@@ -179,5 +183,10 @@ export const reducer = createReducer(initialState, {
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
+    },
+
+    [VIEW_OVERLOADS_TABLE]: (state) => {
+        state.viewOverloadsTable = !state.viewOverloadsTable;
+        saveLocalStorageViewOverloadsTable(state.viewOverloadsTable);
     },
 });
