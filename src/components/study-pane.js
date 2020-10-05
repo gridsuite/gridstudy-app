@@ -101,18 +101,22 @@ const RunLoadFlowButton = (props) => {
     const subStyle = {
         running: {
             backgroundColor: orange[500],
+            color: 'black',
         },
         diverged: {
             backgroundColor: red[500],
+            color: 'black',
         },
         converged: {
             backgroundColor: green[500],
+            color: 'black',
         },
         root: {
             backgroundColor: grey[500],
             '&:hover': {
                 backgroundColor: grey[700],
             },
+            color: 'black',
         },
     };
 
@@ -127,7 +131,7 @@ const RunLoadFlowButton = (props) => {
                 return subStyle.diverged;
             case LFStatus.RUNNING:
                 return subStyle.running;
-            case LFStatus.NOT_RUN:
+            case LFStatus.NOT_DONE:
             default:
                 return {};
         }
@@ -135,19 +139,19 @@ const RunLoadFlowButton = (props) => {
 
     return (
         <Button
-            variant="contained"
+            variant="containedSecondary"
             fullWidth={true}
             className={loadFlowButtonClasses.root}
             startIcon={
-                props.loadFlowState === LFStatus.NOT_RUN ? <PlayIcon /> : null
+                props.loadFlowState === LFStatus.NOT_DONE ? <PlayIcon /> : null
             }
-            disabled={props.loadFlowState !== LFStatus.NOT_RUN}
+            disabled={props.loadFlowState !== LFStatus.NOT_DONE}
             onClick={
-                props.loadFlowState === LFStatus.NOT_RUN ? handleClick : null
+                props.loadFlowState === LFStatus.NOT_DONE ? handleClick : null
             }
             style={getStyle()}
         >
-            <div className={loadFlowButtonClasses.label}>
+            <div className={getStyle()}>
                 <Typography noWrap>{props.loadFlowState}</Typography>
             </div>
         </Button>
@@ -199,7 +203,7 @@ const StudyPane = (props) => {
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
-    const [loadFlowState, setLoadFlowState] = useState(LFStatus.NOT_RUN);
+    const [loadFlowState, setLoadFlowState] = useState(LFStatus.NOT_DONE);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
@@ -225,9 +229,10 @@ const StudyPane = (props) => {
                 return LFStatus.DIVERGED;
             case 'RUNNING':
                 return LFStatus.RUNNING;
-            case 'NOT_RUN':
+            case 'NOT_DONE':
+                return LFStatus.NOT_DONE;
             default:
-                return LFStatus.NOT_RUN;
+                return LFStatus.NOT_DONE;
         }
     }
 
