@@ -18,6 +18,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
+    div: {
+        height: '100%',
+        width: '100%',
+    },
     rowCell: {
         backgroundColor: theme.palette.background.paper,
         width: '100%',
@@ -35,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             opacity: '100%',
         },
-        pointerEvents: 'none',
+        pointerEvents: 'auto',
     },
     flexContainer: {
         display: 'flex',
@@ -80,7 +84,15 @@ const OverloadedLinesView = (props) => {
                         limit: limits[i],
                         // conversion [r,g,b] => #XXXXXX ; concat '0' to (color value) in hexadecimal keep last 2 characters
                         //eslint-disable-next-line
-                        color: '#' + color.map((c) => ('0' + Math.max(c, 0).toString(16)).slice(-2)).join(''),
+                        color:
+                            '#' +
+                            color
+                                .map((c) =>
+                                    ('0' + Math.max(c, 0).toString(16)).slice(
+                                        -2
+                                    )
+                                )
+                                .join(''),
                     };
                 }
             }
@@ -91,6 +103,7 @@ const OverloadedLinesView = (props) => {
             props.lines
                 .map((line) => makeData(line))
                 .filter((l) => l.overload > props.lineFlowAlertThreshold)
+                .sort((a, b) => b.overload - a.overload)
         );
     }, [props.lines, props.network, props.lineFlowAlertThreshold]);
 
@@ -113,50 +126,58 @@ const OverloadedLinesView = (props) => {
 
     function renderOverloadedLines() {
         return (
-            <VirtualizedTable
-                className={classes.table}
-                rowCount={lines.length}
-                rowGetter={({ index }) => lines[index]}
-                rowStyle={{ alignItems: 'stretch' }}
-                rowHeight={rowHeight}
-                classes={{ tableRow: classes.rowCell }}
-                columns={[
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        cellRenderer: (cellData) =>
-                            MakeCell(
-                                cellData.rowData.name,
-                                cellData.rowData.color
-                            ),
-                    },
-                    {
-                        label: intl.formatMessage({ id: 'Load' }),
-                        dataKey: 'load',
-                        numeric: true,
-                        width: 70,
-                    },
-                    {
-                        label: intl.formatMessage({ id: 'Intensity' }),
-                        dataKey: 'intensity',
-                        numeric: true,
-                        width: 70,
-                    },
-                    {
-                        label: intl.formatMessage({ id: 'Limit' }),
-                        dataKey: 'limit',
-                        numeric: true,
-                        width: 70,
-                    },
-                    {
-                        label: intl.formatMessage({ id: 'Overload' }),
-                        dataKey: 'overload',
-                        numeric: true,
-                        width: 90,
-                    },
-                ]}
-            />
+            <div className={classes.div}>
+                <VirtualizedTable
+                    height={Math.min(lines.length * rowHeight + 50, 400)}
+                    className={classes.table}
+                    rowCount={lines.length}
+                    rowGetter={({ index }) => lines[index]}
+                    rowStyle={{ alignItems: 'stretch' }}
+                    rowHeight={rowHeight}
+                    classes={{ tableRow: classes.rowCell }}
+                    columns={[
+                        {
+                            width: 150,
+                            label: intl.formatMessage({ id: 'Name' }),
+                            dataKey: 'name',
+                            cellRenderer: (cellData) =>
+                                MakeCell(
+                                    cellData.rowData.name,
+                                    cellData.rowData.color
+                                ),
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Load' }),
+                            dataKey: 'load',
+                            numeric: true,
+                            width: 70,
+                            fractionDigits: 1,
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Intensity' }),
+                            dataKey: 'intensity',
+                            numeric: true,
+                            width: 70,
+                            fractionDigits: 1,
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Limit' }),
+                            dataKey: 'limit',
+                            numeric: true,
+                            width: 70,
+                            fractionDigits: 1,
+                        },
+                        {
+                            label: intl.formatMessage({ id: 'Overload' }),
+                            dataKey: 'overload',
+                            numeric: true,
+                            width: 90,
+                            fractionDigits: 0,
+                            unit: '%',
+                        },
+                    ]}
+                />
+            </div>
         );
     }
 
