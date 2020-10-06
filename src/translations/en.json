@@ -115,5 +115,7 @@
     "RatioTap2": "Ratio tap 2",
     "PhaseTap2": "Phase tap 2",
     "RatioTap3": "Ratio tap 3",
-    "PhaseTap3": "Phase tap 3"
+    "PhaseTap3": "Phase tap 3",
+
+    "viewOverloadsTable": "View overloads table"
 }

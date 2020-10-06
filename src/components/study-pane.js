@@ -54,7 +54,6 @@ import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloadedLinesView';
-import { LineFlowColorMode } from './network/line-layer';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage_level_choice';
 
@@ -160,6 +159,8 @@ const StudyPane = (props) => {
     );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+
+    const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
@@ -560,31 +561,29 @@ const StudyPane = (props) => {
                             </div>
                         )}
 
-                        {network &&
-                            lineFlowColorMode ===
-                                LineFlowColorMode.OVERLOADS && (
-                                <div
-                                    style={{
-                                        zIndex: 0,
-                                        right: 45,
-                                        top: 10,
-                                        minWidth: '500px',
-                                        position: 'absolute',
-                                        height: '70%',
-                                        opacity: '1',
-                                        flex: 1,
-                                        pointerEvents: 'none',
-                                    }}
-                                >
-                                    <OverloadedLinesView
-                                        lines={network.lines}
-                                        lineFlowAlertThreshold={
-                                            lineFlowAlertThreshold
-                                        }
-                                        network={network}
-                                    />
-                                </div>
-                            )}
+                        {network && viewOverloadsTable && (
+                            <div
+                                style={{
+                                    zIndex: 0,
+                                    right: 45,
+                                    top: 10,
+                                    minWidth: '500px',
+                                    position: 'absolute',
+                                    height: '70%',
+                                    opacity: '1',
+                                    flex: 1,
+                                    pointerEvents: 'none',
+                                }}
+                            >
+                                <OverloadedLinesView
+                                    lines={network.lines}
+                                    lineFlowAlertThreshold={
+                                        lineFlowAlertThreshold
+                                    }
+                                    network={network}
+                                />
+                            </div>
+                        )}
 
                         {displayedSubstationId && (
                             <VoltageLevelChoice

@@ -144,3 +144,9 @@ export const STUDY_UPDATED = 'STUDY_UPDATED';
 export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
 }
+
+export const VIEW_OVERLOADS_TABLE = 'VIEW_OVERLOADS_TABLE';
+
+export function toggleViewOverloadsTableState() {
+    return { type: VIEW_OVERLOADS_TABLE };
+}

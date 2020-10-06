@@ -115,5 +115,7 @@
     "RatioTap2": "Plot régleur 2",
     "PhaseTap2": "Plot déphaseur 2",
     "RatioTap3": "Plot régleur 3",
-    "PhaseTap3": "Plot déphaseur 3"
+    "PhaseTap3": "Plot déphaseur 3",
+
+    "viewOverloadsTable": "Afficher la table des surcharges"
 }

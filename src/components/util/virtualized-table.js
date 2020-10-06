@@ -58,9 +58,28 @@ class MuiVirtualizedTable extends React.PureComponent {
 
         let displayedValue;
         if (columns[columnIndex].numeric) {
-            if (!isNaN(cellData)) displayedValue = Math.round(cellData);
-            else displayedValue = '';
-        } else displayedValue = cellData;
+            if (!isNaN(cellData)) {
+                if (
+                    columns[columnIndex].fractionDigits !== undefined &&
+                    columns[columnIndex].fractionDigits !== 0
+                ) {
+                    displayedValue = Number(cellData).toFixed(
+                        columns[columnIndex].fractionDigits
+                    );
+                } else {
+                    displayedValue = Math.round(cellData);
+                }
+            } else {
+                displayedValue = '';
+            }
+        } else {
+            displayedValue = cellData;
+        }
+
+        if (columns[columnIndex].unit !== undefined) {
+            displayedValue += ' ';
+            displayedValue += columns[columnIndex].unit;
+        }
 
         return (
             <TableCell
@@ -157,6 +176,8 @@ MuiVirtualizedTable.propTypes = {
             label: PropTypes.string.isRequired,
             numeric: PropTypes.bool,
             width: PropTypes.number.isRequired,
+            unit: PropTypes.string,
+            fractionDigits: PropTypes.number,
         })
     ).isRequired,
     headerHeight: PropTypes.number,
