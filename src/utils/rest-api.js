@@ -36,6 +36,18 @@ export function fetchStudies() {
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
 
+export function fetchStudy(studyName, userId) {
+    console.info('Fetching studies...');
+    const fetchStudiesUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        studyName;
+    console.debug(fetchStudiesUrl);
+    return backendFetch(fetchStudiesUrl).then((response) => response.json());
+}
+
 export function fetchCases() {
     console.info('Fetching cases...');
     const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
