@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 
-import { useDispatch, useSelector } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import {useHistory, useLocation, useParams} from 'react-router-dom';
 
-import { FormattedMessage } from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 
-import { parse, stringify } from 'qs';
+import {parse, stringify} from 'qs';
 
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import {makeStyles} from '@material-ui/core/styles';
 
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
@@ -33,22 +32,12 @@ import {
     fetchThreeWindingsTransformers,
     fetchTwoWindingsTransformers,
     getVoltageLevelSingleLineDiagram,
-    startLoadFlow,
     updateSwitchState,
 } from '../utils/rest-api';
-import {
-    closeStudy,
-    loadGeoDataSuccess,
-    loadNetworkSuccess,
-    openStudy,
-    studyUpdated,
-} from '../redux/actions';
+import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy, studyUpdated,} from '../redux/actions';
 import Network from './network/network';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
-import Button from '@material-ui/core/Button';
-import PlayIcon from '@material-ui/icons/PlayArrow';
-import { green, grey, orange, red } from '@material-ui/core/colors';
 import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
@@ -57,6 +46,7 @@ import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage-level-choice';
+import RunButton, {LFStatus} from "./run-button";
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -74,88 +64,6 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
     },
 }));
-
-const loadFlowButtonStyles = makeStyles({
-    root: {
-        backgroundColor: grey[500],
-        '&:hover': {
-            backgroundColor: grey[700],
-        },
-    },
-    label: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-});
-
-const LFStatus = {
-    CONVERGED: 'Converged',
-    DIVERGED: 'Diverged',
-    NOT_DONE: 'Start LoadFlow',
-    RUNNING: 'LoadFlow running…',
-};
-
-const RunLoadFlowButton = (props) => {
-    const loadFlowButtonClasses = loadFlowButtonStyles();
-    const subStyle = {
-        running: {
-            backgroundColor: orange[500],
-            color: 'black',
-        },
-        diverged: {
-            backgroundColor: red[500],
-            color: 'black',
-        },
-        converged: {
-            backgroundColor: green[500],
-            color: 'black',
-        },
-        root: {
-            backgroundColor: grey[500],
-            '&:hover': {
-                backgroundColor: grey[700],
-            },
-            color: 'black',
-        },
-    };
-
-    const handleClick = () =>
-        startLoadFlow(props.studyName, props.userId).then();
-
-    function getStyle() {
-        switch (props.loadFlowState) {
-            case LFStatus.CONVERGED:
-                return subStyle.converged;
-            case LFStatus.DIVERGED:
-                return subStyle.diverged;
-            case LFStatus.RUNNING:
-                return subStyle.running;
-            case LFStatus.NOT_DONE:
-            default:
-                return {};
-        }
-    }
-
-    return (
-        <Button
-            variant="containedSecondary"
-            fullWidth={true}
-            className={loadFlowButtonClasses.root}
-            startIcon={
-                props.loadFlowState === LFStatus.NOT_DONE ? <PlayIcon /> : null
-            }
-            disabled={props.loadFlowState !== LFStatus.NOT_DONE}
-            onClick={
-                props.loadFlowState === LFStatus.NOT_DONE ? handleClick : null
-            }
-            style={getStyle()}
-        >
-            <div className={getStyle()}>
-                <Typography noWrap>{props.loadFlowState}</Typography>
-            </div>
-        </Button>
-    );
-};
 
 const INITIAL_POSITION = [0, 0];
 
@@ -436,15 +344,10 @@ const StudyPane = (props) => {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
             }
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
-            ) {
+            if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflow') {
                 //TODO reload data more intelligently
                 loadNetwork(studyName);
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'loadflow_status'
-            ) {
+            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflow_status') {
                 updateLFStatus();
             }
         }
@@ -515,7 +418,7 @@ const StudyPane = (props) => {
                         {({ width, height }) => (
                             <div style={{ width: width, height: height }}>
                                 <Grid container direction="column">
-                                    <Grid item key="loadFlowButton">
+                                    <Grid item key="runButton">
                                         <div
                                             style={{
                                                 position: 'relative',
@@ -524,7 +427,7 @@ const StudyPane = (props) => {
                                                 marginTop: 8,
                                             }}
                                         >
-                                            <RunLoadFlowButton
+                                            <RunButton
                                                 studyName={studyName}
                                                 userId={userId}
                                                 loadFlowState={loadFlowState}
