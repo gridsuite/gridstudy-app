@@ -523,7 +523,7 @@ class LineLayer extends CompositeLayer {
                     data: compositeData.activePower,
                     getText: (activePower) =>
                         activePower.p !== undefined
-                            ? activePower.p.toString()
+                            ? Math.round(activePower.p).toString()
                             : '',
                     getPosition: (activePower) => activePower.printPosition,
                     getColor: this.props.labelColor,

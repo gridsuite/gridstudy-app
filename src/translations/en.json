@@ -130,6 +130,8 @@
     "save": "save",
     "LoadFlow":"LoadFlow",
     "descLfReadSlackBus": "Read slack bus from network",
-    "descLfWriteSlackBus": "Write slack bus to network"
+    "descLfWriteSlackBus": "Write slack bus to network",
+
+    "viewOverloadsTable": "View overloads table"
 
 }

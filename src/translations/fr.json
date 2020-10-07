@@ -130,6 +130,8 @@
     "save": "enregister",
     "LoadFlow":"LoadFlow",
     "descLfReadSlackBus": "Lire le noeud bilan dans le réseau",
-    "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau"
+    "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau",
+
+    "viewOverloadsTable": "Afficher la table des surcharges"
 
 }

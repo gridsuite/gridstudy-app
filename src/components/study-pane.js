@@ -27,6 +27,7 @@ import {
     fetchGenerators,
     fetchLinePositions,
     fetchLines,
+    fetchStudy,
     fetchSubstationPositions,
     fetchSubstations,
     fetchThreeWindingsTransformers,
@@ -47,14 +48,13 @@ import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Button from '@material-ui/core/Button';
 import PlayIcon from '@material-ui/icons/PlayArrow';
-import { green } from '@material-ui/core/colors';
+import { green, grey, orange, red } from '@material-ui/core/colors';
 import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloadedLinesView';
-import { LineFlowColorMode } from './network/line-layer';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage_level_choice';
 
@@ -77,9 +77,9 @@ const useStyles = makeStyles((theme) => ({
 
 const loadFlowButtonStyles = makeStyles({
     root: {
-        backgroundColor: green[500],
+        backgroundColor: grey[500],
         '&:hover': {
-            backgroundColor: green[700],
+            backgroundColor: grey[700],
         },
     },
     label: {
@@ -88,37 +88,70 @@ const loadFlowButtonStyles = makeStyles({
     },
 });
 
+const LFStatus = {
+    CONVERGED: 'Converged',
+    DIVERGED: 'Diverged',
+    NOT_DONE: 'Start LoadFlow',
+    RUNNING: 'LoadFlow running…',
+};
+
 const RunLoadFlowButton = (props) => {
     const loadFlowButtonClasses = loadFlowButtonStyles();
+    const subStyle = {
+        running: {
+            backgroundColor: orange[500],
+            color: 'black',
+        },
+        diverged: {
+            backgroundColor: red[500],
+            color: 'black',
+        },
+        converged: {
+            backgroundColor: green[500],
+            color: 'black',
+        },
+        root: {
+            backgroundColor: grey[500],
+            '&:hover': {
+                backgroundColor: grey[700],
+            },
+            color: 'black',
+        },
+    };
 
-    const { loadFlowRunning, setLoadFlowRunning, studyName, userId } = props;
+    const handleClick = () =>
+        startLoadFlow(props.studyName, props.userId).then();
 
-    useEffect(() => {
-        if (loadFlowRunning) {
-            startLoadFlow(studyName, userId)
-                .then(() => {})
-                .then(() => {
-                    setLoadFlowRunning(false);
-                });
+    function getStyle() {
+        switch (props.loadFlowState) {
+            case LFStatus.CONVERGED:
+                return subStyle.converged;
+            case LFStatus.DIVERGED:
+                return subStyle.diverged;
+            case LFStatus.RUNNING:
+                return subStyle.running;
+            case LFStatus.NOT_DONE:
+            default:
+                return {};
         }
-        // Note: setLoadFlowRunning, studyName and userId don't change
-    }, [loadFlowRunning, setLoadFlowRunning, studyName, userId]);
-
-    const handleClick = () => setLoadFlowRunning(true);
+    }
 
     return (
         <Button
-            variant="contained"
+            variant="containedSecondary"
             fullWidth={true}
             className={loadFlowButtonClasses.root}
-            startIcon={<PlayIcon />}
-            disabled={loadFlowRunning}
-            onClick={!loadFlowRunning ? handleClick : null}
+            startIcon={
+                props.loadFlowState === LFStatus.NOT_DONE ? <PlayIcon /> : null
+            }
+            disabled={props.loadFlowState !== LFStatus.NOT_DONE}
+            onClick={
+                props.loadFlowState === LFStatus.NOT_DONE ? handleClick : null
+            }
+            style={getStyle()}
         >
-            <div className={loadFlowButtonClasses.label}>
-                <Typography noWrap>
-                    {loadFlowRunning ? 'LoadFlow running…' : 'Start LoadFlow'}
-                </Typography>
+            <div className={getStyle()}>
+                <Typography noWrap>{props.loadFlowState}</Typography>
             </div>
         </Button>
     );
@@ -161,6 +194,8 @@ const StudyPane = (props) => {
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
+    const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(
@@ -169,7 +204,7 @@ const StudyPane = (props) => {
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
-    const [loadFlowRunning, setLoadFlowRunning] = useState(false);
+    const [loadFlowState, setLoadFlowState] = useState(LFStatus.NOT_DONE);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
@@ -187,11 +222,32 @@ const StudyPane = (props) => {
 
     const websocketExpectedCloseRef = useRef();
 
+    function toLFStatus(lfStatus) {
+        switch (lfStatus) {
+            case 'CONVERGED':
+                return LFStatus.CONVERGED;
+            case 'DIVERGED':
+                return LFStatus.DIVERGED;
+            case 'RUNNING':
+                return LFStatus.RUNNING;
+            case 'NOT_DONE':
+                return LFStatus.NOT_DONE;
+            default:
+                return LFStatus.NOT_DONE;
+        }
+    }
+
+    const updateLFStatus = useCallback(() => {
+        fetchStudy(studyName, userId).then((study) => {
+            setLoadFlowState(toLFStatus(study.loadFlowResult.status));
+        });
+    }, [studyName, userId]);
+
     const [position, setPosition] = useState([-1, -1]);
 
     const loadNetwork = useCallback(() => {
         console.info(`Loading network of study '${studyName}'...`);
-
+        updateLFStatus();
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
@@ -225,7 +281,7 @@ const StudyPane = (props) => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, userId, dispatch]);
+    }, [studyName, userId, dispatch, updateLFStatus]);
 
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
@@ -385,10 +441,15 @@ const StudyPane = (props) => {
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(studyName);
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'loadflow_status'
+            ) {
+                updateLFStatus();
             }
         }
         // Note: studyName and loadNetwork don't change
-    }, [studyUpdatedForce, studyName, loadNetwork]);
+    }, [studyUpdatedForce, studyName, loadNetwork, updateLFStatus]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
@@ -466,12 +527,7 @@ const StudyPane = (props) => {
                                             <RunLoadFlowButton
                                                 studyName={studyName}
                                                 userId={userId}
-                                                loadFlowRunning={
-                                                    loadFlowRunning
-                                                }
-                                                setLoadFlowRunning={
-                                                    setLoadFlowRunning
-                                                }
+                                                loadFlowState={loadFlowState}
                                             />
                                         </div>
                                     </Grid>
@@ -560,31 +616,29 @@ const StudyPane = (props) => {
                             </div>
                         )}
 
-                        {network &&
-                            lineFlowColorMode ===
-                                LineFlowColorMode.OVERLOADS && (
-                                <div
-                                    style={{
-                                        zIndex: 0,
-                                        right: 45,
-                                        top: 10,
-                                        minWidth: '500px',
-                                        position: 'absolute',
-                                        height: '70%',
-                                        opacity: '1',
-                                        flex: 1,
-                                        pointerEvents: 'none',
-                                    }}
-                                >
-                                    <OverloadedLinesView
-                                        lines={network.lines}
-                                        lineFlowAlertThreshold={
-                                            lineFlowAlertThreshold
-                                        }
-                                        network={network}
-                                    />
-                                </div>
-                            )}
+                        {network && viewOverloadsTable && (
+                            <div
+                                style={{
+                                    zIndex: 0,
+                                    right: 45,
+                                    top: 10,
+                                    minWidth: '500px',
+                                    position: 'absolute',
+                                    height: '70%',
+                                    opacity: '1',
+                                    flex: 1,
+                                    pointerEvents: 'none',
+                                }}
+                            >
+                                <OverloadedLinesView
+                                    lines={network.lines}
+                                    lineFlowAlertThreshold={
+                                        lineFlowAlertThreshold
+                                    }
+                                    network={network}
+                                />
+                            </div>
+                        )}
 
                         {displayedSubstationId && (
                             <VoltageLevelChoice
