@@ -59,6 +59,7 @@ import { LineFlowColorMode } from './network/line-layer';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage_level_choice';
 import LockoutLine from './lockout-line';
+import SingleLineDiagramActions from "./single-line-diagram-actions";
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -188,6 +189,8 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
+
+    const [displaySldActions, setDisplaySldActions] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -606,6 +609,20 @@ const StudyPane = (props) => {
                                     updateSwitchMsg={updateSwitchMsg}
                                 />
                             </div>
+                        )}
+                        {displaySldActions && (
+                        <div
+                            style={{
+                                position: 'absolute',
+                                left: 380,
+                                top: 10,
+                                zIndex: 1,
+                            }}
+                        >
+                            <SingleLineDiagramActions
+
+                            />
+                        </div>
                         )}
 
                         {network &&

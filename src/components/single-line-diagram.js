@@ -87,6 +87,7 @@ const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
+    const [selectedElement, setSelectedElement] = useState(null);
     const svgPrevViewbox = useRef();
     const svgDraw = useRef();
 
@@ -98,6 +99,73 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
         updateState((s) => !s);
     }, []);
+
+    function addArrowDef() {
+        let svg = document.getElementById('sld-svg').children[0]; //Get svg element
+        let defElement = document.createElementNS("http://www.w3.org/2000/svg", 'defs');
+        let html = ['<marker id="arrowhead" markerWidth="10" markerHeight="15" refX="1.25" refY="0" >',
+                    '<polygon points="0 0, 1.25 2.5, 2.5 0"/>',
+                    '</marker>'].join('');
+        defElement.innerHTML = html;
+        svg.appendChild(defElement)
+    }
+
+    function addArrow(element, transform, position) {
+        let svgInsert = document.getElementById(element.id).parentElement;
+        let group = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+        let arrow = document.createElementNS("http://www.w3.org/2000/svg", 'line');
+        //get x and y from transform attribute
+        let x = parseInt(transform[0].match(/\d+/));
+        let y = parseInt(transform[1].match(/\d+/));
+        if (position === "TOP") {
+            y = y - 35;
+        } else {
+            y = y + 35;
+        }
+        arrow.setAttribute("x1", 0);
+        arrow.setAttribute("x2", 0);
+        arrow.setAttribute("y1", 0);
+        arrow.setAttribute("y2", 10);
+        arrow.setAttribute("marker-end","url(#arrowhead)");
+        arrow.style.stroke = "#000"; //Set stroke colour
+        arrow.style.strokeWidth = "10"; //Set stroke width
+
+        group.setAttribute("pointer-events", "all");
+        group.setAttribute("transform", "translate(" + x + "," + y + ")");
+
+        if (position === "TOP") {
+            arrow.setAttribute("transform", "rotate(180)");
+        }
+
+        group.appendChild(arrow);
+        svgInsert.appendChild(group);
+
+        // handling the navigation between voltage levels
+        group.style.cursor = 'pointer';
+        group.addEventListener("click", function (e) {
+            const id = document.getElementById(element.id).id;
+            const meta = svg.metadata.nodes.find(
+                (other) => other.id === id
+            );
+            onNextVoltageLevelClick(meta.nextVId);
+        });
+    }
+
+    function addNavigationArrow(svg) {
+
+        const navigable = svg.metadata.nodes.filter(
+            (el) => el.nextVId !== null
+        );
+
+        navigable.forEach((element) => {
+            let transform = document.getElementById(element.id).getAttribute("transform").split(",");
+            if (element.direction === "TOP") {
+                addArrow(element, transform, "TOP");
+            } else {
+                addArrow(element, transform, "BOT");
+            }
+        });
+    }
 
     useImperativeHandle(
         ref,
@@ -136,14 +204,17 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const { onNextVoltageLevelClick, onBreakerClick, onLineClick } = props;
     useLayoutEffect(() => {
         if (svg.svg) {
+            //need to add it there so the bbox has the right size
+            addArrowDef();
+            addNavigationArrow(svg);
             // calculate svg width and height
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
             const bbox = svgEl.getBBox();
             const xOrigin = bbox.x - 20;
-            const yOrigin = bbox.y - 20;
+            const yOrigin = bbox.y - 24;
             const svgWidth = bbox.width + 40;
-            const svgHeight = bbox.height + 40;
+            const svgHeight = bbox.height + 48;
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
@@ -173,6 +244,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             draw.on('panEnd', function (evt) {
                 divElt.style.cursor = 'default';
             });
+            addArrowDef();
+            addNavigationArrow(svg);
 
             // handling the navigation between voltage levels
             const elements = svg.metadata.nodes.filter(
@@ -182,11 +255,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 const domEl = document.getElementById(el.id);
                 domEl.style.cursor = 'pointer';
                 domEl.addEventListener('click', function (e) {
-                    const id = e.target.parentElement.id;
+                    let parentElement = e.target.parentElement.id;
+                    console.log(parentElement);
+                    let elementMetadata = svg.metadata.nodes.find((element) => e.target.parentElement.id === element.id);
+                    console.log(elementMetadata);
+                    setSelectedElement(elementMetadata);
+                    /*const id = e.target.parentElement.id;
                     const meta = svg.metadata.nodes.find(
                         (other) => other.id === id
                     );
-                    onNextVoltageLevelClick(meta.nextVId);
+                    onNextVoltageLevelClick(meta.nextVId);*/
                 });
             });
 
