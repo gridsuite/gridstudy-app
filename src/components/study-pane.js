@@ -54,9 +54,9 @@ import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
-import OverloadedLinesView from './network/overloadedLinesView';
+import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
-import VoltageLevelChoice from './voltage_level_choice';
+import VoltageLevelChoice from './voltage-level-choice';
 
 const useStyles = makeStyles((theme) => ({
     main: {
