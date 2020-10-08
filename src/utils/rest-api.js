@@ -322,6 +322,22 @@ export function startLoadFlow(studyName, userId) {
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
+export function startSecurityAnalysis(studyName, userId, contingencyListName) {
+    console.info('Running security analysis on ' + studyName + '...');
+    const url = PREFIX_STUDY_QUERIES + '/v1/' + encodeURIComponent(userId) + '/studies/' + encodeURIComponent(studyName)
+        + '/security-analysis/run?contingencyListName=' + contingencyListName;
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}
+
+export function fetchSecurityAnalysisResult(studyName, userId) {
+    console.info('Fetching security analysis on ' + studyName + '...');
+    const url = PREFIX_STUDY_QUERIES + '/v1/' + encodeURIComponent(userId) + '/studies/' + encodeURIComponent(studyName)
+        + '/security-analysis/result';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' });
+}
+
 export function connectNotificationsWebsocket(studyName) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI

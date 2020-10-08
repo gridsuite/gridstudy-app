@@ -117,5 +117,12 @@
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
 
-    "viewOverloadsTable": "View overloads table"
+    "viewOverloadsTable": "View overloads table",
+
+    "LoadFlow": "LoadFlow",
+    "SecurityAnalysis": "Security analysis",
+    "runnableRunning": "{runnable} running...",
+    "runnableOk": "{runnable} Ok",
+    "runnableFailed": "{runnable} failed",
+    "StartRunnable": "Start {runnable}"
 }

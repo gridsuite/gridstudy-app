@@ -11,7 +11,7 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import {useHistory, useLocation, useParams} from 'react-router-dom';
 
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 
 import {parse, stringify} from 'qs';
 
@@ -26,12 +26,15 @@ import {
     fetchGenerators,
     fetchLinePositions,
     fetchLines,
+    fetchSecurityAnalysisResult,
     fetchStudy,
     fetchSubstationPositions,
     fetchSubstations,
     fetchThreeWindingsTransformers,
     fetchTwoWindingsTransformers,
     getVoltageLevelSingleLineDiagram,
+    startLoadFlow,
+    startSecurityAnalysis,
     updateSwitchState,
 } from '../utils/rest-api';
 import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy, studyUpdated,} from '../redux/actions';
@@ -46,7 +49,8 @@ import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage-level-choice';
-import RunButton, {LFStatus} from "./run-button";
+import RunButton, {RunningStatus} from "./run-button";
+import {Typography} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -74,6 +78,7 @@ export const StudyView = {
 };
 
 const StudyPane = (props) => {
+
     const studyName = decodeURIComponent(useParams().studyName);
 
     const userId = decodeURIComponent(useParams().userId);
@@ -112,7 +117,11 @@ const StudyPane = (props) => {
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
-    const [loadFlowState, setLoadFlowState] = useState(LFStatus.NOT_DONE);
+    const [loadFlowStatus, setLoadFlowStatus] = useState(RunningStatus.IDLE);
+
+    const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(RunningStatus.IDLE);
+
+    const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
@@ -130,32 +139,83 @@ const StudyPane = (props) => {
 
     const websocketExpectedCloseRef = useRef();
 
-    function toLFStatus(lfStatus) {
+    const intl = useIntl();
+
+    const Runnable = {
+        LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
+        SECURITY_ANALYSIS: intl.formatMessage({ id: 'SecurityAnalysis' })
+    };
+
+    const RUNNABLES = [Runnable.LOADFLOW, Runnable.SECURITY_ANALYSIS];
+
+    function getLoadFlowRunningStatus(lfStatus) {
         switch (lfStatus) {
             case 'CONVERGED':
-                return LFStatus.CONVERGED;
+                return RunningStatus.SUCCEED;
             case 'DIVERGED':
-                return LFStatus.DIVERGED;
+                return RunningStatus.FAILED;
             case 'RUNNING':
-                return LFStatus.RUNNING;
+                return RunningStatus.RUNNING;
             case 'NOT_DONE':
-                return LFStatus.NOT_DONE;
+                return RunningStatus.IDLE;
             default:
-                return LFStatus.NOT_DONE;
+                return RunningStatus.IDLE;
         }
     }
 
-    const updateLFStatus = useCallback(() => {
+    const updateLoadFlowStatus = useCallback(() => {
         fetchStudy(studyName, userId).then((study) => {
-            setLoadFlowState(toLFStatus(study.loadFlowResult.status));
+            setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowResult.status));
         });
     }, [studyName, userId]);
+
+    const updateSecurityAnalysisResult = useCallback(() => {
+        fetchSecurityAnalysisResult(studyName, userId).then(function(response) {
+            if (response.ok) {
+                setSecurityAnalysisStatus(RunningStatus.IDLE);
+                response.json().then(result => {
+                    setSecurityAnalysisResult(result);
+                })
+            }
+        });
+    }, [studyName, userId]);
+
+    const start = (runnable) => {
+        if (runnable === Runnable.LOADFLOW) {
+            startLoadFlow(studyName, userId);
+        } else if (runnable === Runnable.SECURITY_ANALYSIS) {
+            startSecurityAnalysis(studyName, userId, ['ma_liste']);
+            setSecurityAnalysisStatus(RunningStatus.RUNNING);
+        }
+    }
+
+    const getRunningStatus = (runnable) => {
+        if (runnable === Runnable.LOADFLOW) {
+            return loadFlowStatus;
+        } else if (runnable === Runnable.SECURITY_ANALYSIS) {
+            return securityAnalysisStatus;
+        }
+    }
+
+    const getRunningText = (runnable, status) => {
+        switch (status) {
+            case RunningStatus.RUNNING:
+                return intl.formatMessage({ id: 'runnableRunning' }, { runnable: runnable });
+            case RunningStatus.SUCCEED:
+                return intl.formatMessage({ id: 'runnableOk' }, { runnable: runnable });
+            case RunningStatus.FAILED:
+                return intl.formatMessage({ id: 'runnableFailed' }, { runnable: runnable });
+            case RunningStatus.IDLE:
+                return intl.formatMessage({ id: 'StartRunnable' }, { runnable: runnable });
+        }
+    }
 
     const [position, setPosition] = useState([-1, -1]);
 
     const loadNetwork = useCallback(() => {
         console.info(`Loading network of study '${studyName}'...`);
-        updateLFStatus();
+        updateLoadFlowStatus();
+        updateSecurityAnalysisResult();
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
@@ -189,7 +249,7 @@ const StudyPane = (props) => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, userId, dispatch, updateLFStatus]);
+    }, [studyName, userId, dispatch, updateLoadFlowStatus, updateSecurityAnalysisResult]);
 
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
@@ -348,11 +408,13 @@ const StudyPane = (props) => {
                 //TODO reload data more intelligently
                 loadNetwork(studyName);
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflow_status') {
-                updateLFStatus();
+                updateLoadFlowStatus();
+            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'securityAnalysisResult') {
+                updateSecurityAnalysisResult();
             }
         }
         // Note: studyName and loadNetwork don't change
-    }, [studyUpdatedForce, studyName, loadNetwork, updateLFStatus]);
+    }, [studyUpdatedForce, studyName, loadNetwork, updateLoadFlowStatus, updateSecurityAnalysisResult]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
@@ -427,11 +489,10 @@ const StudyPane = (props) => {
                                                 marginTop: 8,
                                             }}
                                         >
-                                            <RunButton
-                                                studyName={studyName}
-                                                userId={userId}
-                                                loadFlowState={loadFlowState}
-                                            />
+                                            <RunButton runnables={RUNNABLES}
+                                                       getStatus={getRunningStatus}
+                                                       onStartClick={start}
+                                                       getText={getRunningText} />
                                         </div>
                                     </Grid>
                                     <Grid item key="explorer">
@@ -586,7 +647,9 @@ const StudyPane = (props) => {
         );
     }
 
-    function renderResultsView() {}
+    function renderResultsView() {
+        return <Typography>{JSON. stringify(securityAnalysisResult)}</Typography>
+    }
 
     if (studyNotFound) {
         return (

@@ -117,5 +117,12 @@
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
 
-    "viewOverloadsTable": "Afficher la table des surcharges"
+    "viewOverloadsTable": "Afficher la table des surcharges",
+
+    "LoadFlow": "Calcul de répartition",
+    "SecurityAnalysis": "Analyse de sécurité",
+    "runnableRunning": "{runnable} en cours...",
+    "runnableOk": "{runnable} Ok",
+    "runnableFailed": "Echec {runnable}",
+    "StartRunnable": "Démarrer {runnable}"
 }

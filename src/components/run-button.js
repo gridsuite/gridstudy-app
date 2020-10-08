@@ -4,98 +4,88 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-import {makeStyles} from "@material-ui/core/styles";
-import {green, grey, orange, red} from "@material-ui/core/colors";
-import {startLoadFlow} from "../utils/rest-api";
-import Button from "@material-ui/core/Button";
-import PlayIcon from "@material-ui/icons/PlayArrow";
-import Typography from "@material-ui/core/Typography";
 import React from "react";
+import {green, grey, orange, red} from "@material-ui/core/colors";
+import PlayIcon from "@material-ui/icons/PlayArrow";
+import SplitButton from "./util/split-button";
+import PropTypes from "prop-types";
 
-const useStyles = makeStyles({
-    root: {
-        backgroundColor: grey[500],
-        '&:hover': {
-            backgroundColor: grey[700],
-        },
-    },
-    label: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-});
-
-export const LFStatus = {
-    CONVERGED: 'Converged',
-    DIVERGED: 'Diverged',
-    NOT_DONE: 'Start LoadFlow',
-    RUNNING: 'LoadFlow running…',
+export const RunningStatus = {
+    SUCCEED: 'SUCCEED',
+    FAILED: 'FAILED',
+    IDLE: 'IDLE',
+    RUNNING: 'RUNNING',
 };
+
+function getStyle(runningStatus) {
+    switch (runningStatus) {
+        case RunningStatus.SUCCEED:
+            return {
+                backgroundColor: green[500],
+                color: 'black',
+            };
+        case RunningStatus.FAILED:
+            return {
+                backgroundColor: red[500],
+                color: 'black',
+            };
+        case RunningStatus.RUNNING:
+            return {
+                backgroundColor: orange[500],
+                color: 'black',
+            };
+        case RunningStatus.IDLE:
+        default:
+            return {
+                backgroundColor: grey[500],
+                '&:hover': {
+                    backgroundColor: grey[700],
+                },
+                color: 'white',
+            };
+    }
+}
 
 const RunButton = (props) => {
 
-    const classes = useStyles();
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
 
-    const subStyle = {
-        running: {
-            backgroundColor: orange[500],
-            color: 'black',
-        },
-        diverged: {
-            backgroundColor: red[500],
-            color: 'black',
-        },
-        converged: {
-            backgroundColor: green[500],
-            color: 'black',
-        },
-        root: {
-            backgroundColor: grey[500],
-            '&:hover': {
-                backgroundColor: grey[700],
-            },
-            color: 'black',
-        },
-    };
-
-    const handleClick = () =>
-        startLoadFlow(props.studyName, props.userId).then();
-
-    function getStyle() {
-        switch (props.loadFlowState) {
-            case LFStatus.CONVERGED:
-                return subStyle.converged;
-            case LFStatus.DIVERGED:
-                return subStyle.diverged;
-            case LFStatus.RUNNING:
-                return subStyle.running;
-            case LFStatus.NOT_DONE:
-            default:
-                return {};
+    const handleClick = () => {
+        if (props.onStartClick) {
+            props.onStartClick(getRunnable());
         }
     }
 
+    function getRunnable() {
+        return props.runnables[selectedIndex];
+    }
+
+    function getRunningStatus() {
+        return props.getStatus(getRunnable());
+    }
+
+    const runningStatus = getRunningStatus();
+
     return (
-        <Button
-            variant="containedSecondary"
-            fullWidth={true}
-            className={classes.root}
-            startIcon={
-                props.loadFlowState === LFStatus.NOT_DONE ? <PlayIcon /> : null
-            }
-            disabled={props.loadFlowState !== LFStatus.NOT_DONE}
-            onClick={
-                props.loadFlowState === LFStatus.NOT_DONE ? handleClick : null
-            }
-            style={getStyle()}
-        >
-            <div className={getStyle()}>
-                <Typography noWrap>{props.loadFlowState}</Typography>
-            </div>
-        </Button>
+        <SplitButton fullWidth
+                     options={props.runnables}
+                     selectedIndex={selectedIndex}
+                     onSelectionChange={index => setSelectedIndex(index)}
+                     onClick={handleClick}
+                     style={getStyle(runningStatus)}
+                     buttonDisabled={runningStatus !== RunningStatus.IDLE}
+                     selectionDisabled={runningStatus === RunningStatus.RUNNING}
+                     startIcon={runningStatus === RunningStatus.IDLE ? <PlayIcon /> : null}
+                     text={props.getText ? props.getText(getRunnable(), getRunningStatus()) : ''}/>
     );
 };
+
+RunButton.propTypes = {
+    runnables: PropTypes.array,
+    getStatus: PropTypes.func,
+    getText: PropTypes.func,
+    onStartClick: PropTypes.func,
+}
 
 export default RunButton;
 
