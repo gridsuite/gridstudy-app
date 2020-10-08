@@ -75,15 +75,16 @@ const RunButton = (props) => {
                      style={getStyle(runningStatus)}
                      buttonDisabled={runningStatus !== RunningStatus.IDLE}
                      selectionDisabled={runningStatus === RunningStatus.RUNNING}
-                     startIcon={runningStatus === RunningStatus.IDLE ? <PlayIcon /> : null}
+                     startIcon={props.getStartIcon(getRunningStatus())}
                      text={props.getText ? props.getText(getRunnable(), getRunningStatus()) : ''}/>
     );
 };
 
 RunButton.propTypes = {
-    runnables: PropTypes.array,
-    getStatus: PropTypes.func,
-    getText: PropTypes.func,
+    runnables: PropTypes.array.isRequired,
+    getStatus: PropTypes.func.isRequired,
+    getText: PropTypes.func.isRequired,
+    getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
 }
 

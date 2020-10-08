@@ -121,8 +121,7 @@
 
     "LoadFlow": "LoadFlow",
     "SecurityAnalysis": "Security analysis",
-    "runnableRunning": "{runnable} running...",
-    "runnableOk": "{runnable} Ok",
-    "runnableFailed": "{runnable} failed",
-    "StartRunnable": "Start {runnable}"
+
+    "ContingencyListsSelection": "Contingency lists selection",
+    "Start": "Start"
 }

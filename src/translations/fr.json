@@ -121,8 +121,7 @@
 
     "LoadFlow": "Calcul de répartition",
     "SecurityAnalysis": "Analyse de sécurité",
-    "runnableRunning": "{runnable} en cours...",
-    "runnableOk": "{runnable} Ok",
-    "runnableFailed": "Echec {runnable}",
-    "StartRunnable": "Démarrer {runnable}"
+
+    "ContingencyListsSelection": "Sélection des listes de contingences",
+    "Start": "Démarrer"
 }

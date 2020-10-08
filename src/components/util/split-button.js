@@ -53,8 +53,7 @@ const SplitButton = (props) => {
             <ButtonGroup style={{...props.style, ...{width: width}}}
                          variant="contained"
                          color="primary"
-                         ref={anchorRef}
-                         aria-label="split button">
+                         ref={anchorRef}>
                 <Button startIcon={props.startIcon}
                         style={{...props.style, ...{width: width}}}
                         disabled={props.buttonDisabled}
@@ -63,10 +62,6 @@ const SplitButton = (props) => {
                 </Button>
                 <Button color="primary"
                         size="small"
-                        aria-controls={open ? 'split-button-menu' : undefined}
-                        aria-expanded={open ? 'true' : undefined}
-                        aria-label="select merge strategy"
-                        aria-haspopup="menu"
                         onClick={handleToggle}
                         style={props.style}
                         disabled={props.selectionDisabled}>

@@ -7,9 +7,10 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
-let PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
-let PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-let PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
+const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
+const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
+const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
+const PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
 
 function getToken() {
     const state = store.getState();
@@ -322,10 +323,16 @@ export function startLoadFlow(studyName, userId) {
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
-export function startSecurityAnalysis(studyName, userId, contingencyListName) {
+export function startSecurityAnalysis(studyName, userId, contingencyListNames) {
     console.info('Running security analysis on ' + studyName + '...');
-    const url = PREFIX_STUDY_QUERIES + '/v1/' + encodeURIComponent(userId) + '/studies/' + encodeURIComponent(studyName)
-        + '/security-analysis/run?contingencyListName=' + contingencyListName;
+    let url = PREFIX_STUDY_QUERIES + '/v1/' + encodeURIComponent(userId) + '/studies/' + encodeURIComponent(studyName)
+        + '/security-analysis/run';
+    if (contingencyListNames.length > 0) {
+        url += '?contingencyListName=' + contingencyListNames[0];
+        for (let i = 1; i < contingencyListNames.length; i++) {
+            url += '&contingencyListName=' + contingencyListNames[i];
+        }
+    }
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
@@ -336,6 +343,13 @@ export function fetchSecurityAnalysisResult(studyName, userId) {
         + '/security-analysis/result';
     console.debug(url);
     return backendFetch(url, { method: 'get' });
+}
+
+export function fetchContingencyLists() {
+    console.info('Fetching contingency lists');
+    const url = PREFIX_ACTIONS_QUERIES + '/v1/contingency-lists';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) => response.json());
 }
 
 export function connectNotificationsWebsocket(studyName) {
