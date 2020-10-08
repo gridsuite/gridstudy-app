@@ -186,6 +186,7 @@ const StudyPane = (props) => {
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             startSecurityAnalysis(studyName, userId, ['ma_liste']);
             setSecurityAnalysisStatus(RunningStatus.RUNNING);
+            setSecurityAnalysisResult(null);
         }
     }
 
@@ -648,7 +649,7 @@ const StudyPane = (props) => {
     }
 
     function renderResultsView() {
-        return <Typography>{JSON. stringify(securityAnalysisResult)}</Typography>
+        return securityAnalysisResult && <Typography>{JSON. stringify(securityAnalysisResult)}</Typography>
     }
 
     if (studyNotFound) {
