@@ -5,10 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from "react";
-import {green, grey, orange, red} from "@material-ui/core/colors";
-import PlayIcon from "@material-ui/icons/PlayArrow";
-import SplitButton from "./util/split-button";
 import PropTypes from "prop-types";
+
+import {green, grey, orange, red} from "@material-ui/core/colors";
+import {makeStyles} from "@material-ui/core/styles";
+
+import SplitButton from "./util/split-button";
 
 export const RunningStatus = {
     SUCCEED: 'SUCCEED',
@@ -17,38 +19,59 @@ export const RunningStatus = {
     RUNNING: 'RUNNING',
 };
 
-function getStyle(runningStatus) {
-    switch (runningStatus) {
-        case RunningStatus.SUCCEED:
-            return {
-                backgroundColor: green[500],
-                color: 'black',
-            };
-        case RunningStatus.FAILED:
-            return {
-                backgroundColor: red[500],
-                color: 'black',
-            };
-        case RunningStatus.RUNNING:
-            return {
-                backgroundColor: orange[500],
-                color: 'black',
-            };
-        case RunningStatus.IDLE:
-        default:
-            return {
-                backgroundColor: grey[500],
-                '&:hover': {
-                    backgroundColor: grey[700],
-                },
-                color: 'white',
-            };
-    }
-}
+const useStyles = makeStyles((theme) => ({
+    succeed: {
+        backgroundColor: green[500],
+        color: 'black',
+        '&:disabled': {
+            backgroundColor: green[500],
+            color: 'black',
+        },
+    },
+    failed: {
+        backgroundColor: red[500],
+        color: 'black',
+        '&:disabled': {
+            backgroundColor: red[500],
+            color: 'black',
+        },
+    },
+    running: {
+        backgroundColor: orange[500],
+        color: 'black',
+        '&:disabled': {
+            backgroundColor: orange[500],
+            color: 'black',
+        },
+    },
+    idle: {
+        backgroundColor: grey[500],
+        '&:hover': {
+            backgroundColor: grey[700],
+        },
+        color: 'white',
+    },
+}));
 
 const RunButton = (props) => {
 
+    const classes = useStyles();
+
     const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+    function getStyle(runningStatus) {
+        switch (runningStatus) {
+            case RunningStatus.SUCCEED:
+                return classes.succeed;
+            case RunningStatus.FAILED:
+                return classes.failed;
+            case RunningStatus.RUNNING:
+                return classes.running;
+            case RunningStatus.IDLE:
+            default:
+                return classes.idle;
+        }
+    }
 
     const handleClick = () => {
         if (props.onStartClick) {
@@ -72,7 +95,7 @@ const RunButton = (props) => {
                      selectedIndex={selectedIndex}
                      onSelectionChange={index => setSelectedIndex(index)}
                      onClick={handleClick}
-                     style={getStyle(runningStatus)}
+                     className={getStyle(runningStatus)}
                      buttonDisabled={runningStatus !== RunningStatus.IDLE}
                      selectionDisabled={runningStatus === RunningStatus.RUNNING}
                      startIcon={props.getStartIcon(getRunningStatus())}
@@ -89,4 +112,3 @@ RunButton.propTypes = {
 }
 
 export default RunButton;
-

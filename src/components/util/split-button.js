@@ -50,12 +50,14 @@ const SplitButton = (props) => {
 
     return (
         <div>
-            <ButtonGroup style={{...props.style, ...{width: width}}}
+            <ButtonGroup style={{width: width}}
+                         className={props.className}
                          variant="contained"
                          color="primary"
                          ref={anchorRef}>
                 <Button startIcon={props.startIcon}
-                        style={{...props.style, ...{width: width}}}
+                        style={{width: width}}
+                        className={props.className}
                         disabled={props.buttonDisabled}
                         onClick={handleClick}>
                     {props.text}
@@ -63,7 +65,7 @@ const SplitButton = (props) => {
                 <Button color="primary"
                         size="small"
                         onClick={handleToggle}
-                        style={props.style}
+                        className={props.className}
                         disabled={props.selectionDisabled}>
                     <ArrowDropDownIcon />
                 </Button>
@@ -112,7 +114,7 @@ SplitButton.propTypes = {
     onClick: PropTypes.func,
     buttonDisabled: PropTypes.bool,
     selectionDisabled: PropTypes.bool,
-    style: PropTypes.object,
+    className: PropTypes.string,
     startIcon: PropTypes.element,
     text: PropTypes.string
 };

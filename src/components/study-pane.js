@@ -73,6 +73,19 @@ const useStyles = makeStyles((theme) => ({
     error: {
         padding: theme.spacing(2),
     },
+    rotate: {
+        animation: "spin 1000ms infinite",
+    },
+    "@global": {
+        '@keyframes spin': {
+            '0%': {
+                transform: 'rotate(0deg)',
+            },
+            '100%': {
+                transform: 'rotate(360deg)',
+            },
+        },
+    }
 }));
 
 const INITIAL_POSITION = [0, 0];
@@ -223,7 +236,7 @@ const StudyPane = (props) => {
     const getRunningIcon = (status) => {
         switch (status) {
             case RunningStatus.RUNNING:
-                return <LoopIcon/>;
+                return <LoopIcon className={classes.rotate}/>;
             case RunningStatus.SUCCEED:
                 return <DoneIcon/>;
             case RunningStatus.FAILED:
