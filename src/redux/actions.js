@@ -33,7 +33,7 @@ export function loadStudiesSuccess(studies) {
 
 export const LOAD_TEMPORARY_STUDIES = 'LOAD_TEMPORARY_STUDIES';
 
-export function loadTemporaryStudies(temporaryStudies) {
+export function loadStudyCreationRequestsSuccess(temporaryStudies) {
     return { type: LOAD_TEMPORARY_STUDIES, temporaryStudies: temporaryStudies };
 }
 

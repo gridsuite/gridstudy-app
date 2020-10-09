@@ -27,7 +27,6 @@ const LoaderWithOverlay = ({
     loaderSize,
     loadingMessageText,
     loadingMessageSize,
-    loaderMessageSpace,
 }) => {
     const classes = useStyles();
 
@@ -38,7 +37,6 @@ const LoaderWithOverlay = ({
                 className={classes.message}
                 style={{
                     fontSize: loadingMessageSize,
-                    marginTop: loaderMessageSpace,
                 }}
             >
                 <FormattedMessage id={loadingMessageText} />

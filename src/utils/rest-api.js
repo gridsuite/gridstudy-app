@@ -38,8 +38,16 @@ function backendFetch(url, init) {
 export function fetchStudies() {
     console.info('Fetching studies...');
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies';
-    console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
+}
+
+export function fetchStudyCreationRequests() {
+    console.info('Fetching study creation requests...');
+    const creationRequestsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/study_creation_requests';
+    return backendFetch(creationRequestsUrl).then((response) =>
+        response.json()
+    );
 }
 
 export function fetchStudy(studyName, userId) {
@@ -420,20 +428,6 @@ export function connectNotificationsWebsocket(studyName) {
 }
 
 /**
- * Return the list of temporary studies which are being created
- * @returns {Promise<Response>}
- */
-export function temporaryStudies() {
-    console.info('Get the temporary studies list...');
-    const temporaryStudiesUrl =
-        PREFIX_STUDY_QUERIES + '/v1/study_creation_requests';
-    console.debug(temporaryStudiesUrl);
-    return backendFetch(temporaryStudiesUrl, {
-        method: 'get',
-    }).then((response) => response.json());
-}
-
-/**
  * Function will be called to connect with notification websocket to update the studies list
  * @returns {ReconnectingWebSocket}
  */
@@ -444,7 +438,7 @@ export function connectNotificationsWsUpdateStudies() {
     const webSocketUrl =
         webSocketBaseUrl +
         PREFIX_NOTIFICATION_WS +
-        '/notify?updateType=update_studies';
+        '/notify?updateType=studies';
 
     let webSocketUrlWithToken;
     webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();

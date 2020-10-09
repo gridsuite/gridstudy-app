@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,14 +24,19 @@ import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
 import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
 import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
 
-import { loadStudiesSuccess, loadTemporaryStudies } from '../redux/actions';
+import {
+    loadStudiesSuccess,
+    loadStudyCreationRequestsSuccess,
+} from '../redux/actions';
+
 import {
     deleteStudy,
     fetchStudies,
     renameStudy,
-    temporaryStudies,
+    fetchStudyCreationRequests,
     connectNotificationsWsUpdateStudies,
 } from '../utils/rest-api';
+
 import { CardHeader } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -110,7 +115,6 @@ const DonwnloadIframe = 'downloadIframe';
  * @param inprogressLoader
  */
 const StudyCard = ({ study, onClick, studyCreationLoader }) => {
-    const dispatch = useDispatch();
     const classes = useStyles();
     const intl = useIntl();
 
@@ -173,13 +177,9 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
 
     const handleClickDelete = () => {
         deleteStudy(study.studyName, study.userId).then((response) => {
-            response.ok
-                ? fetchStudies().then((studies) => {
-                      dispatch(loadStudiesSuccess(studies));
-                  })
-                : setDeleteError(
-                      intl.formatMessage({ id: 'deleteStudyError' })
-                  );
+            if (!response.ok) {
+                setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
+            }
         });
     };
 
@@ -201,9 +201,6 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     const handleClickRename = (newStudyNameValue) => {
         renameStudy(study.studyName, study.userId, newStudyNameValue).then(
             () => {
-                fetchStudies().then((studies) => {
-                    dispatch(loadStudiesSuccess(studies));
-                });
                 setOpenRename(false);
             }
         );
@@ -249,8 +246,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                         color="inherit"
                         loaderSize={35}
                         loadingMessageText="loadingCreationStudy"
-                        loadingMessageSize={18}
-                        loaderMessageSpace={75}
+                        loadingMessageSize={15}
                     />
                 )}
                 <CardActionArea
@@ -266,7 +262,13 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                         classes={classes}
                     >
                         <CardHeader
-                            avatar={logo(study.caseFormat)}
+                            avatar={
+                                studyCreationLoader ? (
+                                    <canvas className={classes.logo} />
+                                ) : (
+                                    logo(study.caseFormat)
+                                )
+                            }
                             title={
                                 <div className={classes.cardTitle}>
                                     <Typography noWrap variant="h5">
@@ -401,22 +403,27 @@ const StudyManager = ({ onClick }) => {
     const websocketExpectedCloseRef = useRef();
 
     const studies = useSelector((state) => state.studies);
-    const loadTemporaryStudiesCreated = useSelector(
+    const studyCreationRequests = useSelector(
         (state) => state.temporaryStudies
     );
 
     const classes = useStyles();
 
-    const connectNotificationsUpdateStudies = function () {
+    const dispatchStudies = useCallback(() => {
+        fetchStudyCreationRequests().then((studies) => {
+            dispatch(loadStudyCreationRequestsSuccess(studies));
+        });
+        fetchStudies().then((studies) => {
+            dispatch(loadStudiesSuccess(studies));
+        });
+        // Note: dispatch doesn't change
+    }, [dispatch]);
+
+    const connectNotificationsUpdateStudies = useCallback(() => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
-            temporaryStudies().then((studies) => {
-                dispatch(loadTemporaryStudies(studies));
-            });
-            fetchStudies().then((studies) => {
-                dispatch(loadStudiesSuccess(studies));
-            });
+            dispatchStudies();
         };
         ws.onclose = function (event) {
             if (!websocketExpectedCloseRef.current) {
@@ -427,16 +434,19 @@ const StudyManager = ({ onClick }) => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    };
+    }, [dispatchStudies]);
 
     useEffect(() => {
-        fetchStudies().then((studies) => {
-            dispatch(loadStudiesSuccess(studies));
-        });
+        dispatchStudies();
 
-        connectNotificationsUpdateStudies();
+        const ws = connectNotificationsUpdateStudies();
         // Note: dispatch doesn't change
-    });
+
+        // cleanup at unmount event
+        return function () {
+            ws.close();
+        };
+    }, [connectNotificationsUpdateStudies, dispatchStudies]);
 
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
@@ -446,8 +456,8 @@ const StudyManager = ({ onClick }) => {
                         <CreateStudyForm />
                     </Box>
                 </Grid>
-                {loadTemporaryStudiesCreated &&
-                    loadTemporaryStudiesCreated.map((study) => (
+                {studyCreationRequests &&
+                    studyCreationRequests.map((study) => (
                         <Grid item xs={12} sm={6} md={3}>
                             <StudyCard
                                 studyCreationLoader={true}
