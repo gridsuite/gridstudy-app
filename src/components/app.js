@@ -42,6 +42,9 @@ import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
+import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
+
 const lightTheme = createMuiTheme({
     palette: {
         type: 'light',
@@ -176,6 +179,13 @@ const App = () => {
                 <TopBar
                     appName="Study"
                     appColor="#0CA789"
+                    appLogo={
+                        theme === LIGHT_THEME ? (
+                            <GridStudyLogoLight />
+                        ) : (
+                            <GridStudyLogoDark />
+                        )
+                    }
                     onParametersClick={() => showParametersClicked()}
                     onLogoutClick={() => logout(dispatch, userManager.instance)}
                     onLogoClick={() => onLogoClicked()}
