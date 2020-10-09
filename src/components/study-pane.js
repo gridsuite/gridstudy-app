@@ -43,6 +43,7 @@ import {
     loadNetworkSuccess,
     openStudy,
     studyUpdated,
+    increaseResultCount,
 } from '../redux/actions';
 import Network from './network/network';
 import GeoData from './network/geo-data';
@@ -475,6 +476,9 @@ const StudyPane = (props) => {
                 'securityAnalysisResult'
             ) {
                 updateSecurityAnalysisResult();
+
+                // update badge
+                dispatch(increaseResultCount());
             }
         }
         // Note: studyName and loadNetwork don't change
