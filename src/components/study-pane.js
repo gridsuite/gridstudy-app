@@ -255,6 +255,7 @@ const StudyPane = (props) => {
             case RunningStatus.FAILED:
                 return <ErrorOutlineIcon />;
             case RunningStatus.IDLE:
+            default:
                 return <PlayIcon />;
         }
     };
