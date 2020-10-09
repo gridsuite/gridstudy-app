@@ -488,6 +488,7 @@ const StudyPane = (props) => {
         loadNetwork,
         updateLoadFlowStatus,
         updateSecurityAnalysisResult,
+        dispatch,
     ]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
