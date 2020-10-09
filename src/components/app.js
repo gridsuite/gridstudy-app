@@ -25,10 +25,10 @@ import {
     makeStyles,
     ThemeProvider,
 } from '@material-ui/core/styles';
-import {Badge} from "@material-ui/core";
+import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
-import {LIGHT_THEME, resetResultCount} from '../redux/actions';
+import { LIGHT_THEME, resetResultCount } from '../redux/actions';
 import Parameters from './parameters';
 
 import {
@@ -190,7 +190,10 @@ const App = () => {
                             scrollButtons="auto"
                             onChange={(event, newTabIndex) => {
                                 // reset result count when selecting results view
-                                if (STUDY_VIEWS[newTabIndex] === StudyView.RESULTS) {
+                                if (
+                                    STUDY_VIEWS[newTabIndex] ===
+                                    StudyView.RESULTS
+                                ) {
                                     dispatch(resetResultCount());
                                 }
                                 setTabIndex(newTabIndex);
@@ -201,11 +204,18 @@ const App = () => {
                             {STUDY_VIEWS.map((tabName) => {
                                 let label;
                                 if (tabName === StudyView.RESULTS) {
-                                    label = <Badge badgeContent={resultCount} color="secondary"><FormattedMessage id={tabName}/></Badge>;
+                                    label = (
+                                        <Badge
+                                            badgeContent={resultCount}
+                                            color="secondary"
+                                        >
+                                            <FormattedMessage id={tabName} />
+                                        </Badge>
+                                    );
                                 } else {
-                                    label = <FormattedMessage id={tabName}/>;
+                                    label = <FormattedMessage id={tabName} />;
                                 }
-                                return <Tab label={label}/>;
+                                return <Tab label={label} />;
                             })}
                         </Tabs>
                     )}
