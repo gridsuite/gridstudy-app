@@ -5,31 +5,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {useParams} from "react-router-dom";
+import { useParams } from 'react-router-dom';
 
-import {FormattedMessage} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import CheckboxList from './util/checkbox-list';
-import {fetchContingencyCount, fetchContingencyLists} from '../utils/rest-api';
+import {
+    fetchContingencyCount,
+    fetchContingencyLists,
+} from '../utils/rest-api';
 import Button from '@material-ui/core/Button';
 import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-import Grid from "@material-ui/core/Grid";
+import Grid from '@material-ui/core/Grid';
 
 const ContingencyListSelector = (props) => {
-
     const studyName = decodeURIComponent(useParams().studyName);
 
     const userId = decodeURIComponent(useParams().userId);
 
     const [contingencyListNames, setContingencyListNames] = useState([]);
 
-    const [simulatedContingencyCount, setSimulatedContingencyCount] = useState(0);
+    const [simulatedContingencyCount, setSimulatedContingencyCount] = useState(
+        0
+    );
 
     const [
         checkedContingencyListNames,
@@ -62,10 +66,13 @@ const ContingencyListSelector = (props) => {
     }, [props.open]);
 
     useEffect(() => {
-        fetchContingencyCount(userId, studyName, checkedContingencyListNames)
-            .then(contingencyCount => {
-                setSimulatedContingencyCount(contingencyCount);
-            });
+        fetchContingencyCount(
+            userId,
+            studyName,
+            checkedContingencyListNames
+        ).then((contingencyCount) => {
+            setSimulatedContingencyCount(contingencyCount);
+        });
     }, [userId, studyName, checkedContingencyListNames]);
 
     return (
@@ -90,7 +97,10 @@ const ContingencyListSelector = (props) => {
                     </Grid>
                     <Grid item>
                         <Alert variant="standard" severity="info">
-                            <FormattedMessage id="xContingeniesWillBeSimulated" values={{x: simulatedContingencyCount}}/>
+                            <FormattedMessage
+                                id="xContingeniesWillBeSimulated"
+                                values={{ x: simulatedContingencyCount }}
+                            />
                         </Alert>
                     </Grid>
                     <Grid align="center" item>
@@ -99,7 +109,9 @@ const ContingencyListSelector = (props) => {
                                 onClick={handleStart}
                                 variant="contained"
                                 color="primary"
-                                disabled={checkedContingencyListNames.length === 0}
+                                disabled={
+                                    checkedContingencyListNames.length === 0
+                                }
                             >
                                 <FormattedMessage id="Start" />
                             </Button>

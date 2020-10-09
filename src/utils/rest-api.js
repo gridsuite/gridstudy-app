@@ -327,7 +327,9 @@ export function startLoadFlow(studyName, userId) {
 function getContingencyListsQueryParams(contingencyListNames) {
     if (contingencyListNames.length > 0) {
         const urlSearchParams = new URLSearchParams();
-        contingencyListNames.forEach(contingencyListName => urlSearchParams.append("contingencyListName", contingencyListName));
+        contingencyListNames.forEach((contingencyListName) =>
+            urlSearchParams.append('contingencyListName', contingencyListName)
+        );
         return '?' + urlSearchParams.toString();
     }
     return '';
@@ -370,9 +372,12 @@ export function fetchContingencyLists() {
 }
 
 export function fetchContingencyCount(userId, studyName, contingencyListNames) {
-    console.info(`Fetching contingency count for ${contingencyListNames} on ' + ${studyName} + '...'`);
-    const url = PREFIX_STUDY_QUERIES +
-        '/v1/'+
+    console.info(
+        `Fetching contingency count for ${contingencyListNames} on ' + ${studyName} + '...'`
+    );
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
         encodeURIComponent(userId) +
         '/studies/' +
         encodeURIComponent(studyName) +
