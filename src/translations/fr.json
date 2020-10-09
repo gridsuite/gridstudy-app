@@ -123,5 +123,6 @@
     "SecurityAnalysis": "Analyse de sécurité",
 
     "ContingencyListsSelection": "Sélection des listes de contingences",
-    "Start": "Démarrer"
+    "Start": "Démarrer",
+    "xContingeniesWillBeSimulated": "{x} contingences seront simulées"
 }

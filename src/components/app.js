@@ -41,7 +41,7 @@ import {
 
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 const lightTheme = createMuiTheme({
     palette: {

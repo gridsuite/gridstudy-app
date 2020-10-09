@@ -324,21 +324,25 @@ export function startLoadFlow(studyName, userId) {
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
+function getContingencyListsQueryParams(contingencyListNames) {
+    if (contingencyListNames.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        contingencyListNames.forEach(contingencyListName => urlSearchParams.append("contingencyListName", contingencyListName));
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
 export function startSecurityAnalysis(studyName, userId, contingencyListNames) {
     console.info('Running security analysis on ' + studyName + '...');
-    let url =
+    const url =
         PREFIX_STUDY_QUERIES +
         '/v1/' +
         encodeURIComponent(userId) +
         '/studies/' +
         encodeURIComponent(studyName) +
-        '/security-analysis/run';
-    if (contingencyListNames.length > 0) {
-        url += '?contingencyListName=' + contingencyListNames[0];
-        for (let i = 1; i < contingencyListNames.length; i++) {
-            url += '&contingencyListName=' + contingencyListNames[i];
-        }
-    }
+        '/security-analysis/run' +
+        getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
@@ -359,6 +363,21 @@ export function fetchSecurityAnalysisResult(studyName, userId) {
 export function fetchContingencyLists() {
     console.info('Fetching contingency lists');
     const url = PREFIX_ACTIONS_QUERIES + '/v1/contingency-lists';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
+}
+
+export function fetchContingencyCount(userId, studyName, contingencyListNames) {
+    console.info(`Fetching contingency count for ${contingencyListNames} on ' + ${studyName} + '...'`);
+    const url = PREFIX_STUDY_QUERIES +
+        '/v1/'+
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/contingency-count' +
+        getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()

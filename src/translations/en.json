@@ -123,5 +123,6 @@
     "SecurityAnalysis": "Security analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
-    "Start": "Start"
+    "Start": "Start",
+    "xContingeniesWillBeSimulated": "{x} contingenies will be simulated"
 }
