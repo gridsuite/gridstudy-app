@@ -170,6 +170,11 @@ const App = () => {
         history.replace('/');
     }
 
+    // if result tab is displayed, clean badge
+    if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
+        dispatch(resetResultCount());
+    }
+
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
@@ -188,22 +193,18 @@ const App = () => {
                             indicatorColor="primary"
                             variant="scrollable"
                             scrollButtons="auto"
-                            onChange={(event, newTabIndex) => {
-                                // reset result count when selecting results view
-                                if (
-                                    STUDY_VIEWS[newTabIndex] ===
-                                    StudyView.RESULTS
-                                ) {
-                                    dispatch(resetResultCount());
-                                }
-                                setTabIndex(newTabIndex);
-                            }}
+                            onChange={(event, newTabIndex) =>
+                                setTabIndex(newTabIndex)
+                            }
                             aria-label="views"
                             className={classes.tabs}
                         >
                             {STUDY_VIEWS.map((tabName) => {
                                 let label;
-                                if (tabName === StudyView.RESULTS) {
+                                if (
+                                    tabName === StudyView.RESULTS &&
+                                    resultCount > 0
+                                ) {
                                     label = (
                                         <Badge
                                             badgeContent={resultCount}
