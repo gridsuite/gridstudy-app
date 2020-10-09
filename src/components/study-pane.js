@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {useHistory, useLocation, useParams} from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
-import {FormattedMessage, useIntl} from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
-import {parse, stringify} from 'qs';
+import { parse, stringify } from 'qs';
 
 import Grid from '@material-ui/core/Grid';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
@@ -37,7 +37,13 @@ import {
     startSecurityAnalysis,
     updateSwitchState,
 } from '../utils/rest-api';
-import {closeStudy, loadGeoDataSuccess, loadNetworkSuccess, openStudy, studyUpdated,} from '../redux/actions';
+import {
+    closeStudy,
+    loadGeoDataSuccess,
+    loadNetworkSuccess,
+    openStudy,
+    studyUpdated,
+} from '../redux/actions';
 import Network from './network/network';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
@@ -49,14 +55,13 @@ import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage-level-choice';
-import RunButton, {RunningStatus} from "./run-button";
-import {Typography} from "@material-ui/core";
-import ContingencyListSelector from "./contingency-list-selector";
-import PlayIcon from "@material-ui/icons/PlayArrow";
+import RunButton, { RunningStatus } from './run-button';
+import { Typography } from '@material-ui/core';
+import ContingencyListSelector from './contingency-list-selector';
+import PlayIcon from '@material-ui/icons/PlayArrow';
 import DoneIcon from '@material-ui/icons/Done';
 import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -74,9 +79,9 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
     },
     rotate: {
-        animation: "spin 1000ms infinite",
+        animation: 'spin 1000ms infinite',
     },
-    "@global": {
+    '@global': {
         '@keyframes spin': {
             '0%': {
                 transform: 'rotate(0deg)',
@@ -85,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
                 transform: 'rotate(360deg)',
             },
         },
-    }
+    },
 }));
 
 const INITIAL_POSITION = [0, 0];
@@ -97,7 +102,6 @@ export const StudyView = {
 };
 
 const StudyPane = (props) => {
-
     const studyName = decodeURIComponent(useParams().studyName);
 
     const userId = decodeURIComponent(useParams().userId);
@@ -138,7 +142,9 @@ const StudyPane = (props) => {
 
     const [loadFlowStatus, setLoadFlowStatus] = useState(RunningStatus.IDLE);
 
-    const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(RunningStatus.IDLE);
+    const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(
+        RunningStatus.IDLE
+    );
 
     const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
 
@@ -148,7 +154,10 @@ const StudyPane = (props) => {
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
 
-    const [showContingencyListSelector, setShowContingencyListSelector] = useState(false);
+    const [
+        showContingencyListSelector,
+        setShowContingencyListSelector,
+    ] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -164,7 +173,7 @@ const StudyPane = (props) => {
 
     const Runnable = {
         LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
-        SECURITY_ANALYSIS: intl.formatMessage({ id: 'SecurityAnalysis' })
+        SECURITY_ANALYSIS: intl.formatMessage({ id: 'SecurityAnalysis' }),
     };
 
     const RUNNABLES = [Runnable.LOADFLOW, Runnable.SECURITY_ANALYSIS];
@@ -186,17 +195,21 @@ const StudyPane = (props) => {
 
     const updateLoadFlowStatus = useCallback(() => {
         fetchStudy(studyName, userId).then((study) => {
-            setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowResult.status));
+            setLoadFlowStatus(
+                getLoadFlowRunningStatus(study.loadFlowResult.status)
+            );
         });
     }, [studyName, userId]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
-        fetchSecurityAnalysisResult(studyName, userId).then(function(response) {
+        fetchSecurityAnalysisResult(studyName, userId).then(function (
+            response
+        ) {
             if (response.ok) {
                 setSecurityAnalysisStatus(RunningStatus.IDLE);
-                response.json().then(result => {
+                response.json().then((result) => {
                     setSecurityAnalysisResult(result);
-                })
+                });
             }
         });
     }, [studyName, userId]);
@@ -211,7 +224,7 @@ const StudyPane = (props) => {
         // update status and clean result
         setSecurityAnalysisStatus(RunningStatus.RUNNING);
         setSecurityAnalysisResult(null);
-    }
+    };
 
     const start = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
@@ -219,7 +232,7 @@ const StudyPane = (props) => {
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
         }
-    }
+    };
 
     const getRunningStatus = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
@@ -227,24 +240,24 @@ const StudyPane = (props) => {
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             return securityAnalysisStatus;
         }
-    }
+    };
 
     const getRunningText = (runnable, status) => {
         return runnable;
-    }
+    };
 
     const getRunningIcon = (status) => {
         switch (status) {
             case RunningStatus.RUNNING:
-                return <LoopIcon className={classes.rotate}/>;
+                return <LoopIcon className={classes.rotate} />;
             case RunningStatus.SUCCEED:
-                return <DoneIcon/>;
+                return <DoneIcon />;
             case RunningStatus.FAILED:
-                return <ErrorOutlineIcon/>;
+                return <ErrorOutlineIcon />;
             case RunningStatus.IDLE:
-                return <PlayIcon/>;
+                return <PlayIcon />;
         }
-    }
+    };
 
     const [position, setPosition] = useState([-1, -1]);
 
@@ -285,7 +298,13 @@ const StudyPane = (props) => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, userId, dispatch, updateLoadFlowStatus, updateSecurityAnalysisResult]);
+    }, [
+        studyName,
+        userId,
+        dispatch,
+        updateLoadFlowStatus,
+        updateSecurityAnalysisResult,
+    ]);
 
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
@@ -440,17 +459,31 @@ const StudyPane = (props) => {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
             }
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflow') {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
+            ) {
                 //TODO reload data more intelligently
                 loadNetwork(studyName);
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflow_status') {
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'loadflow_status'
+            ) {
                 updateLoadFlowStatus();
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'securityAnalysisResult') {
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'securityAnalysisResult'
+            ) {
                 updateSecurityAnalysisResult();
             }
         }
         // Note: studyName and loadNetwork don't change
-    }, [studyUpdatedForce, studyName, loadNetwork, updateLoadFlowStatus, updateSecurityAnalysisResult]);
+    }, [
+        studyUpdatedForce,
+        studyName,
+        loadNetwork,
+        updateLoadFlowStatus,
+        updateSecurityAnalysisResult,
+    ]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
@@ -526,11 +559,15 @@ const StudyPane = (props) => {
                                                     marginTop: 8,
                                                 }}
                                             >
-                                                <RunButton runnables={RUNNABLES}
-                                                           getStatus={getRunningStatus}
-                                                           onStartClick={start}
-                                                           getText={getRunningText}
-                                                           getStartIcon={getRunningIcon}/>
+                                                <RunButton
+                                                    runnables={RUNNABLES}
+                                                    getStatus={getRunningStatus}
+                                                    onStartClick={start}
+                                                    getText={getRunningText}
+                                                    getStartIcon={
+                                                        getRunningIcon
+                                                    }
+                                                />
                                             </div>
                                         </Grid>
                                         <Grid item key="explorer">
@@ -571,7 +608,9 @@ const StudyPane = (props) => {
                                 arrowsZoomThreshold={7}
                                 initialPosition={INITIAL_POSITION}
                                 initialZoom={1}
-                                filteredNominalVoltages={filteredNominalVoltages}
+                                filteredNominalVoltages={
+                                    filteredNominalVoltages
+                                }
                                 lineFullPath={lineFullPath}
                                 lineParallelPath={lineParallelPath}
                                 lineFlowMode={lineFlowMode}
@@ -594,7 +633,9 @@ const StudyPane = (props) => {
                                     }}
                                 >
                                     <SingleLineDiagram
-                                        onClose={() => closeVoltageLevelDiagram()}
+                                        onClose={() =>
+                                            closeVoltageLevelDiagram()
+                                        }
                                         onNextVoltageLevelClick={
                                             showVoltageLevelDiagram
                                         }
@@ -675,9 +716,11 @@ const StudyPane = (props) => {
                     </Grid>
                 </Grid>
 
-                <ContingencyListSelector open={showContingencyListSelector}
-                                         onClose={() => setShowContingencyListSelector(false)}
-                                         onStart={handleStartSecurityAnalysis}/>
+                <ContingencyListSelector
+                    open={showContingencyListSelector}
+                    onClose={() => setShowContingencyListSelector(false)}
+                    onStart={handleStartSecurityAnalysis}
+                />
             </div>
         );
     }
@@ -691,7 +734,13 @@ const StudyPane = (props) => {
     }
 
     function renderResultsView() {
-        return securityAnalysisResult && <Typography>{JSON. stringify(securityAnalysisResult)}</Typography>
+        return (
+            securityAnalysisResult && (
+                <Typography>
+                    {JSON.stringify(securityAnalysisResult)}
+                </Typography>
+            )
+        );
     }
 
     if (studyNotFound) {

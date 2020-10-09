@@ -12,7 +12,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 
 const CheckboxList = (props) => {
-
     const [checked, setChecked] = React.useState([]);
 
     const handleToggle = (value) => () => {
@@ -36,13 +35,20 @@ const CheckboxList = (props) => {
         <List>
             {props.values.map((value) => {
                 return (
-                    <ListItem key={value} role={undefined} dense button onClick={handleToggle(value)}>
+                    <ListItem
+                        key={value}
+                        role={undefined}
+                        dense
+                        button
+                        onClick={handleToggle(value)}
+                    >
                         <ListItemIcon>
-                            <Checkbox color={"primary"}
-                                        edge="start"
-                                        checked={checked.indexOf(value) !== -1}
-                                        tabIndex={-1}
-                                        disableRipple
+                            <Checkbox
+                                color={'primary'}
+                                edge="start"
+                                checked={checked.indexOf(value) !== -1}
+                                tabIndex={-1}
+                                disableRipple
                             />
                         </ListItemIcon>
                         <ListItemText primary={value} />
@@ -51,6 +57,6 @@ const CheckboxList = (props) => {
             })}
         </List>
     );
-}
+};
 
 export default CheckboxList;

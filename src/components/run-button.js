@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import {green, grey, orange, red} from "@material-ui/core/colors";
-import {makeStyles} from "@material-ui/core/styles";
+import { green, grey, orange, red } from '@material-ui/core/colors';
+import { makeStyles } from '@material-ui/core/styles';
 
-import SplitButton from "./util/split-button";
+import SplitButton from './util/split-button';
 
 export const RunningStatus = {
     SUCCEED: 'SUCCEED',
@@ -54,7 +54,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const RunButton = (props) => {
-
     const classes = useStyles();
 
     const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -77,7 +76,7 @@ const RunButton = (props) => {
         if (props.onStartClick) {
             props.onStartClick(getRunnable());
         }
-    }
+    };
 
     function getRunnable() {
         return props.runnables[selectedIndex];
@@ -90,16 +89,22 @@ const RunButton = (props) => {
     const runningStatus = getRunningStatus();
 
     return (
-        <SplitButton fullWidth
-                     options={props.runnables}
-                     selectedIndex={selectedIndex}
-                     onSelectionChange={index => setSelectedIndex(index)}
-                     onClick={handleClick}
-                     className={getStyle(runningStatus)}
-                     buttonDisabled={runningStatus !== RunningStatus.IDLE}
-                     selectionDisabled={runningStatus === RunningStatus.RUNNING}
-                     startIcon={props.getStartIcon(getRunningStatus())}
-                     text={props.getText ? props.getText(getRunnable(), getRunningStatus()) : ''}/>
+        <SplitButton
+            fullWidth
+            options={props.runnables}
+            selectedIndex={selectedIndex}
+            onSelectionChange={(index) => setSelectedIndex(index)}
+            onClick={handleClick}
+            className={getStyle(runningStatus)}
+            buttonDisabled={runningStatus !== RunningStatus.IDLE}
+            selectionDisabled={runningStatus === RunningStatus.RUNNING}
+            startIcon={props.getStartIcon(getRunningStatus())}
+            text={
+                props.getText
+                    ? props.getText(getRunnable(), getRunningStatus())
+                    : ''
+            }
+        />
     );
 };
 
@@ -109,6 +114,6 @@ RunButton.propTypes = {
     getText: PropTypes.func.isRequired,
     getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
-}
+};
 
 export default RunButton;

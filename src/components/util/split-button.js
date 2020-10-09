@@ -14,10 +14,9 @@ import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 const SplitButton = (props) => {
-
     const [open, setOpen] = React.useState(false);
 
     const anchorRef = React.useRef(null);
@@ -50,32 +49,46 @@ const SplitButton = (props) => {
 
     return (
         <div>
-            <ButtonGroup style={{width: width}}
-                         className={props.className}
-                         variant="contained"
-                         color="primary"
-                         ref={anchorRef}>
-                <Button startIcon={props.startIcon}
-                        style={{width: width}}
-                        className={props.className}
-                        disabled={props.buttonDisabled}
-                        onClick={handleClick}>
+            <ButtonGroup
+                style={{ width: width }}
+                className={props.className}
+                variant="contained"
+                color="primary"
+                ref={anchorRef}
+            >
+                <Button
+                    startIcon={props.startIcon}
+                    style={{ width: width }}
+                    className={props.className}
+                    disabled={props.buttonDisabled}
+                    onClick={handleClick}
+                >
                     {props.text}
                 </Button>
-                <Button color="primary"
-                        size="small"
-                        onClick={handleToggle}
-                        className={props.className}
-                        disabled={props.selectionDisabled}>
+                <Button
+                    color="primary"
+                    size="small"
+                    onClick={handleToggle}
+                    className={props.className}
+                    disabled={props.selectionDisabled}
+                >
                     <ArrowDropDownIcon />
                 </Button>
             </ButtonGroup>
-            <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition>
+            <Popper
+                open={open}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                transition
+            >
                 {({ TransitionProps, placement }) => (
                     <Grow
                         {...TransitionProps}
                         style={{
-                            transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
+                            transformOrigin:
+                                placement === 'bottom'
+                                    ? 'center top'
+                                    : 'center bottom',
                         }}
                     >
                         <Paper>
@@ -84,8 +97,15 @@ const SplitButton = (props) => {
                                     {props.options.map((option, index) => (
                                         <MenuItem
                                             key={option}
-                                            selected={index === props.selectedIndex}
-                                            onClick={(event) => handleMenuItemClick(event, index)}
+                                            selected={
+                                                index === props.selectedIndex
+                                            }
+                                            onClick={(event) =>
+                                                handleMenuItemClick(
+                                                    event,
+                                                    index
+                                                )
+                                            }
                                         >
                                             {option}
                                         </MenuItem>
@@ -98,7 +118,7 @@ const SplitButton = (props) => {
             </Popper>
         </div>
     );
-}
+};
 
 SplitButton.defaultProps = {
     fullWidth: false,
@@ -116,7 +136,7 @@ SplitButton.propTypes = {
     selectionDisabled: PropTypes.bool,
     className: PropTypes.string,
     startIcon: PropTypes.element,
-    text: PropTypes.string
+    text: PropTypes.string,
 };
 
 export default SplitButton;
