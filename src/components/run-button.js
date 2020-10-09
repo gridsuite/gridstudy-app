@@ -27,6 +27,9 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: green[500],
             color: 'black',
         },
+        '&:hover': {
+            backgroundColor: green[700],
+        },
     },
     failed: {
         backgroundColor: red[500],
@@ -34,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
         '&:disabled': {
             backgroundColor: red[500],
             color: 'black',
+        },
+        '&:hover': {
+            backgroundColor: red[700],
         },
     },
     running: {

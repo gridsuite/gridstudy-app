@@ -80,7 +80,7 @@ const initialState = {
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
     viewOverloadsTable: getLocalStorageViewOverloadsTable(),
-    resultCount: null
+    resultCount: 0
 };
 
 export const reducer = createReducer(initialState, {
