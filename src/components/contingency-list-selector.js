@@ -66,6 +66,7 @@ const ContingencyListSelector = (props) => {
     }, [props.open]);
 
     useEffect(() => {
+        setSimulatedContingencyCount(null);
         fetchContingencyCount(
             userId,
             studyName,
@@ -74,6 +75,12 @@ const ContingencyListSelector = (props) => {
             setSimulatedContingencyCount(contingencyCount);
         });
     }, [userId, studyName, checkedContingencyListNames]);
+
+    function getSimulatedContingencyCountLabel() {
+        return simulatedContingencyCount != null
+            ? simulatedContingencyCount
+            : '...';
+    }
 
     return (
         <Dialog
@@ -99,7 +106,9 @@ const ContingencyListSelector = (props) => {
                         <Alert variant="standard" severity="info">
                             <FormattedMessage
                                 id="xContingeniesWillBeSimulated"
-                                values={{ x: simulatedContingencyCount }}
+                                values={{
+                                    x: getSimulatedContingencyCountLabel(),
+                                }}
                             />
                         </Alert>
                     </Grid>
