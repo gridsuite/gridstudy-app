@@ -124,5 +124,12 @@
 
     "ContingencyListsSelection": "Sélection des listes de contingences",
     "Start": "Démarrer",
-    "xContingeniesWillBeSimulated": "{x} contingences seront simulées"
+    "xContingeniesWillBeSimulated": "{x} contingences seront simulées",
+
+    "LimitType": "Type de limite",
+    "Value": "Valeur",
+    "ContingencyId": "ID contingence",
+    "ComputationOk": "Calcul OK",
+    "true": "oui",
+    "false": "non"
 }

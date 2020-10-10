@@ -63,6 +63,7 @@ import PlayIcon from '@material-ui/icons/PlayArrow';
 import DoneIcon from '@material-ui/icons/Done';
 import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import SecurityAnalysisResult from './security-analysis-result';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -741,11 +742,9 @@ const StudyPane = (props) => {
 
     function renderResultsView() {
         return (
-            securityAnalysisResult && (
-                <Typography>
-                    {JSON.stringify(securityAnalysisResult)}
-                </Typography>
-            )
+            <Paper className={classes.main}>
+                <SecurityAnalysisResult result={securityAnalysisResult} />
+            </Paper>
         );
     }
 

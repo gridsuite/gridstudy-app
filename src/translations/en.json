@@ -124,5 +124,12 @@
 
     "ContingencyListsSelection": "Contingency lists selection",
     "Start": "Start",
-    "xContingeniesWillBeSimulated": "{x} contingenies will be simulated"
+    "xContingeniesWillBeSimulated": "{x} contingenies will be simulated",
+
+    "LimitType": "Limit type",
+    "Value": "Value",
+    "ContingencyId": "Contingency ID",
+    "ComputationOk": "Computation OK",
+    "true": "true",
+    "false": "false"
 }
