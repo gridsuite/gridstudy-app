@@ -39,11 +39,11 @@ import {
 } from '../utils/rest-api';
 import {
     closeStudy,
+    increaseResultCount,
     loadGeoDataSuccess,
     loadNetworkSuccess,
     openStudy,
     studyUpdated,
-    increaseResultCount,
 } from '../redux/actions';
 import Network from './network/network';
 import GeoData from './network/geo-data';
@@ -57,7 +57,6 @@ import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage-level-choice';
 import RunButton, { RunningStatus } from './run-button';
-import { Typography } from '@material-ui/core';
 import ContingencyListSelector from './contingency-list-selector';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DoneIcon from '@material-ui/icons/Done';
