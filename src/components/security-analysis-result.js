@@ -18,25 +18,31 @@ const SecurityAnalysisResult = ({ result }) => {
     const intl = useIntl();
 
     function computeLoading(limitViolation) {
-        return limitViolation.loading = 100 * limitViolation.value / (limitViolation.limit * limitViolation.limitReduction);
+        return (limitViolation.loading =
+            (100 * limitViolation.value) /
+            (limitViolation.limit * limitViolation.limitReduction));
     }
 
     function renderTableN(preContingencyResult) {
         // extend data with loading
-        const rows = preContingencyResult.limitViolations.map(limitViolation => {
-            return {
-                subjectId: limitViolation.subjectId,
-                limitType: intl.formatMessage({ id: limitViolation.limitType }),
-                limit: limitViolation.limit,
-                value: limitViolation.value,
-                loading: computeLoading(limitViolation),
+        const rows = preContingencyResult.limitViolations.map(
+            (limitViolation) => {
+                return {
+                    subjectId: limitViolation.subjectId,
+                    limitType: intl.formatMessage({
+                        id: limitViolation.limitType,
+                    }),
+                    limit: limitViolation.limit,
+                    value: limitViolation.value,
+                    loading: computeLoading(limitViolation),
+                };
             }
-        });
+        );
 
         return (
             <VirtualizedTable
                 rowCount={rows.length}
-                rowGetter={({ index }) => rows[index] }
+                rowGetter={({ index }) => rows[index]}
                 columns={[
                     {
                         width: 200,
@@ -77,26 +83,36 @@ const SecurityAnalysisResult = ({ result }) => {
     function flattenNmKresults(postContingencyResults) {
         const rows = [];
         postContingencyResults.forEach((postContingencyResult, index) => {
-            rows.push({
-                contingencyIndex: index,
-                contingencyId: postContingencyResult.contingency.id,
-                computationOk: postContingencyResult.limitViolationsResult
-                    .computationOk
-                    ? intl.formatMessage({ id: 'true' })
-                    : intl.formatMessage({ id: 'false' }),
-            });
-            postContingencyResult.limitViolationsResult.limitViolations.forEach(
-                (limitViolation) => {
-                    rows.push({
-                        contingencyIndex: index,
-                        subjectId: limitViolation.subjectId,
-                        limitType: intl.formatMessage({ id: limitViolation.limitType }),
-                        limit: limitViolation.limit,
-                        value: limitViolation.value,
-                        loading: computeLoading(limitViolation),
-                    });
-                }
-            );
+            if (
+                postContingencyResult.limitViolationsResult.limitViolations
+                    .length > 0
+            ) {
+                rows.push({
+                    contingencyIndex: index,
+                    contingencyId: postContingencyResult.contingency.id,
+                    computationOk: postContingencyResult.limitViolationsResult
+                        .computationOk
+                        ? intl.formatMessage({ id: 'true' })
+                        : intl.formatMessage({ id: 'false' }),
+                    violationCount:
+                        postContingencyResult.limitViolationsResult
+                            .limitViolations.length,
+                });
+                postContingencyResult.limitViolationsResult.limitViolations.forEach(
+                    (limitViolation) => {
+                        rows.push({
+                            contingencyIndex: index,
+                            subjectId: limitViolation.subjectId,
+                            limitType: intl.formatMessage({
+                                id: limitViolation.limitType,
+                            }),
+                            limit: limitViolation.limit,
+                            value: limitViolation.value,
+                            loading: computeLoading(limitViolation),
+                        });
+                    }
+                );
+            }
         });
         return rows;
     }
