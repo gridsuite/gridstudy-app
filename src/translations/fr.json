@@ -131,5 +131,9 @@
     "ContingencyId": "ID contingence",
     "ComputationOk": "Calcul OK",
     "true": "oui",
-    "false": "non"
+    "false": "non",
+    "Loading": "Charge (%)",
+    "CURRENT": "Intensité",
+    "HIGH_VOLTAGE": "Tension haute",
+    "LOW_VOLTAGE": "Tension basse"
 }

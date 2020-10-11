@@ -17,13 +17,26 @@ const SecurityAnalysisResult = ({ result }) => {
 
     const intl = useIntl();
 
+    function computeLoading(limitViolation) {
+        return limitViolation.loading = 100 * limitViolation.value / (limitViolation.limit * limitViolation.limitReduction);
+    }
+
     function renderTableN(preContingencyResult) {
+        // extend data with loading
+        const rows = preContingencyResult.limitViolations.map(limitViolation => {
+            return {
+                subjectId: limitViolation.subjectId,
+                limitType: intl.formatMessage({ id: limitViolation.limitType }),
+                limit: limitViolation.limit,
+                value: limitViolation.value,
+                loading: computeLoading(limitViolation),
+            }
+        });
+
         return (
             <VirtualizedTable
-                rowCount={preContingencyResult.limitViolations.length}
-                rowGetter={({ index }) =>
-                    preContingencyResult.limitViolations[index]
-                }
+                rowCount={rows.length}
+                rowGetter={({ index }) => rows[index] }
                 columns={[
                     {
                         width: 200,
@@ -49,6 +62,13 @@ const SecurityAnalysisResult = ({ result }) => {
                         numeric: true,
                         fractionDigits: 1,
                     },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Loading' }),
+                        dataKey: 'loading',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
                 ]}
             />
         );
@@ -70,9 +90,10 @@ const SecurityAnalysisResult = ({ result }) => {
                     rows.push({
                         contingencyIndex: index,
                         subjectId: limitViolation.subjectId,
-                        limitType: limitViolation.limitType,
+                        limitType: intl.formatMessage({ id: limitViolation.limitType }),
                         limit: limitViolation.limit,
                         value: limitViolation.value,
+                        loading: computeLoading(limitViolation),
                     });
                 }
             );
@@ -118,6 +139,13 @@ const SecurityAnalysisResult = ({ result }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'Value' }),
                         dataKey: 'value',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Loading' }),
+                        dataKey: 'loading',
                         numeric: true,
                         fractionDigits: 1,
                     },
