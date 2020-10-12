@@ -131,7 +131,15 @@ const NetworkTable = (props) => {
         );
     }
 
-    function defaultCellRender(cellData) {
+    function formatCellData(cellData, isNumeric, fractionDigit) {
+        return cellData.rowData[cellData.dataKey] && isNumeric && fractionDigit
+            ? parseFloat(cellData.rowData[cellData.dataKey]).toFixed(
+                  fractionDigit
+              )
+            : cellData.rowData[cellData.dataKey];
+    }
+
+    function defaultCellRender(cellData, numeric, fractionDigit) {
         return (
             <TableCell
                 component="div"
@@ -141,9 +149,9 @@ const NetworkTable = (props) => {
                 align="right"
             >
                 <Grid container direction="column">
-                    <Grid item xs={1}/>
+                    <Grid item xs={1} />
                     <Grid item xs={1}>
-                        {cellData.rowData[cellData.dataKey]}
+                        {formatCellData(cellData, numeric, fractionDigit)}
                     </Grid>
                 </Grid>
             </TableCell>
@@ -159,10 +167,10 @@ const NetworkTable = (props) => {
         data.rowData[data.dataKey] = value;
     }
 
-    function EditableCellRender(cellData) {
+    function EditableCellRender(cellData, numeric, fractionDigit) {
         return !isLineOnEditMode(cellData.rowIndex) ||
             cellData.rowData[cellData.dataKey] === undefined ? (
-            defaultCellRender(cellData)
+            defaultCellRender(cellData, numeric, fractionDigit)
         ) : (
             <TextField
                 id={cellData.dataKey}
@@ -174,7 +182,7 @@ const NetworkTable = (props) => {
                 onChange={(obj) =>
                     registerChangeRequest(cellData, obj.target.value)
                 }
-                defaultValue={cellData.rowData[cellData.dataKey]}
+                defaultValue={formatCellData(cellData, numeric, fractionDigit)}
             />
         );
     }
@@ -377,17 +385,15 @@ const NetworkTable = (props) => {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap' }),
                         dataKey: 'ratioTapChangerPosition',
-                        numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 0,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 0),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap' }),
                         dataKey: 'phaseTapChangerPosition',
-                        numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 0,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 0),
                     },
                 ]}
             />
@@ -480,49 +486,43 @@ const NetworkTable = (props) => {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap1' }),
                         dataKey: 'ratioTapChanger1Position',
-                        numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 0,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 0),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap2' }),
                         dataKey: 'ratioTapChanger2Position',
-                        numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 0,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 0),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap3' }),
                         dataKey: 'ratioTapChanger3Position',
-                        numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 0,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 0),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap1' }),
                         dataKey: 'phaseTapChanger1Position',
-                        numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 0,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 0),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap2' }),
                         dataKey: 'phaseTapChanger2Position',
-                        numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 0,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 0),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap3' }),
-                        dataKey: 'phaseTapChanger3Position',
                         numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 0,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 0),
                     },
                 ]}
             />
@@ -571,9 +571,8 @@ const NetworkTable = (props) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'TargetP' }),
                         dataKey: 'targetP',
-                        numeric: true,
-                        cellRenderer: EditableCellRender,
-                        fractionDigits: 1,
+                        cellRenderer: (cell) =>
+                            EditableCellRender(cell, true, 1),
                     },
                 ]}
             />

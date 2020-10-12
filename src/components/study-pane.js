@@ -430,26 +430,72 @@ const StudyPane = (props) => {
         [studyName, userId]
     );
 
+    const updateEquipment = useCallback(
+        (typeEquipment, equipmentId) => {
+            if (!typeEquipment || !equipmentId) {
+                return;
+            }
+            let fetchCb, equipments;
+            switch (typeEquipment) {
+                case 'GENERATOR':
+                    fetchCb = fetchGenerators(studyName, userId);
+                    equipments = network.generators;
+                    break;
+                case 'TWO_WINDING_TRANSFORMER':
+                    fetchCb = fetchTwoWindingsTransformers(studyName, userId);
+                    equipments = network.twoWindingsTransformers;
+                    break;
+                case 'THREE_WINDING_TRANSFORMER':
+                    fetchCb = fetchThreeWindingsTransformers(studyName, userId);
+                    equipments = network.threeWindingsTransformers;
+                    break;
+                default:
+                    return;
+            }
+            fetchCb.then((res) => {
+                equipments[
+                    equipments.findIndex((e) => e.id === equipmentId)
+                ] = res.find((e) => e.id === equipmentId);
+            });
+        },
+        [network, studyName, userId]
+    );
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.info(studyUpdatedForce.eventData.headers);
             if (sldRef.current) {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
             }
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
-            ) {
-                //TODO reload data more intelligently
-                loadNetwork(studyName);
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'loadflow_status'
-            ) {
-                updateLFStatus();
+            switch (studyUpdatedForce.eventData.headers['updateType']) {
+                case 'loadflow':
+                    loadNetwork(studyName);
+                    break;
+                case 'loadflow_status':
+                    updateLFStatus();
+                    break;
+                case 'equipment':
+                    console.info(studyUpdatedForce.eventData.headers);
+                    updateEquipment(
+                        studyUpdatedForce.eventData.headers['equipment_type'] ||
+                            'GENERATOR',
+                        studyUpdatedForce.eventData.headers['equipment_id'] ||
+                            'PALISIN2'
+                    );
+                    break;
+                default:
+                    break;
             }
         }
         // Note: studyName and loadNetwork don't change
-    }, [studyUpdatedForce, studyName, loadNetwork, updateLFStatus]);
+    }, [
+        studyUpdatedForce,
+        studyName,
+        loadNetwork,
+        updateLFStatus,
+        updateEquipment,
+    ]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
         // filter on nominal voltage
