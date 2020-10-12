@@ -25,9 +25,10 @@ import {
     makeStyles,
     ThemeProvider,
 } from '@material-ui/core/styles';
+import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
-import { LIGHT_THEME } from '../redux/actions';
+import { LIGHT_THEME, resetResultCount } from '../redux/actions';
 import Parameters from './parameters';
 
 import {
@@ -40,7 +41,7 @@ import {
 
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
@@ -105,7 +106,7 @@ const App = () => {
 
     const [tabIndex, setTabIndex] = React.useState(0);
 
-    const intl = useIntl();
+    const resultCount = useSelector((state) => state.resultCount);
 
     const matchSilentRenewCallbackUrl = useRouteMatch({
         path: '/silent-renew-callback',
@@ -183,6 +184,11 @@ const App = () => {
         history.replace('/');
     }
 
+    // if result tab is displayed, clean badge
+    if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
+        dispatch(resetResultCount());
+    }
+
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <React.Fragment>
@@ -209,17 +215,31 @@ const App = () => {
                             indicatorColor="primary"
                             variant="scrollable"
                             scrollButtons="auto"
-                            onChange={(event, newValue) =>
-                                setTabIndex(newValue)
+                            onChange={(event, newTabIndex) =>
+                                setTabIndex(newTabIndex)
                             }
                             aria-label="views"
                             className={classes.tabs}
                         >
-                            {STUDY_VIEWS.map((tabName) => (
-                                <Tab
-                                    label={intl.formatMessage({ id: tabName })}
-                                />
-                            ))}
+                            {STUDY_VIEWS.map((tabName) => {
+                                let label;
+                                if (
+                                    tabName === StudyView.RESULTS &&
+                                    resultCount > 0
+                                ) {
+                                    label = (
+                                        <Badge
+                                            badgeContent={resultCount}
+                                            color="secondary"
+                                        >
+                                            <FormattedMessage id={tabName} />
+                                        </Badge>
+                                    );
+                                } else {
+                                    label = <FormattedMessage id={tabName} />;
+                                }
+                                return <Tab label={label} />;
+                            })}
                         </Tabs>
                     )}
                 </TopBar>

@@ -117,5 +117,23 @@
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
 
-    "viewOverloadsTable": "View overloads table"
+    "viewOverloadsTable": "View overloads table",
+
+    "LoadFlow": "LoadFlow",
+    "SecurityAnalysis": "Security analysis",
+
+    "ContingencyListsSelection": "Contingency lists selection",
+    "Start": "Start",
+    "xContingenciesWillBeSimulated": "{x} contingencies will be simulated",
+
+    "LimitType": "Limit type",
+    "Value": "Value",
+    "ContingencyId": "Contingency ID",
+    "ComputationOk": "Computation OK",
+    "true": "true",
+    "false": "false",
+    "Loading": "Loading",
+    "CURRENT": "Current",
+    "HIGH_VOLTAGE": "High voltage",
+    "LOW_VOLTAGE": "Low voltage"
 }
