@@ -377,7 +377,7 @@ export function getExportUrl(userId, studyName, exportFormat) {
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
     let url;
-    return ENV_VARIABLES.then(res => res.json()).then(res => {
+    return ENV_VARIABLES.then((res) => res.json()).then((res) => {
         if (res.isRunningInsideDockerCompose) {
             url = PREFIX_APPS_URLS_QUERIES + '/dev-urls.json';
         } else {
