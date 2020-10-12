@@ -415,10 +415,11 @@ const Parameters = ({ showParameters, hideParameters }) => {
         if (newParams) {
             setLfParam(newParams);
         }
-        setLoadFlowParameters(studyName, userId, newParams).then();
-        if (!newParams) {
-            resetLfParameters();
-        }
+        setLoadFlowParameters(studyName, userId, newParams).then(() => {
+            if (!newParams) {
+                resetLfParameters();
+            }
+        });
     };
 
     const LoadFlowParameters = () => {
