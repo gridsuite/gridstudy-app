@@ -624,7 +624,11 @@ const StudyPane = (props) => {
     function renderTableView() {
         return (
             <Paper className={classes.main}>
-                <NetworkTable network={network} />
+                <NetworkTable
+                    network={network}
+                    studyName={studyName}
+                    userId={userId}
+                />
             </Paper>
         );
     }

@@ -43,6 +43,16 @@ export function fetchCases() {
     return backendFetch(fetchCasesUrl).then((response) => response.json());
 }
 
+function getStudyUrl(studyName, userId) {
+    return (
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName)
+    );
+}
+
 export function getVoltageLevelSingleLineDiagram(
     studyName,
     userId,
@@ -356,4 +366,31 @@ export function getExportUrl(userId, studyName, exportFormat) {
         '/export-network/' +
         exportFormat;
     return getUrlWithToken(url);
+}
+
+export function requestNetworkChange(
+    userId,
+    studyName,
+    equipmentType,
+    equipmentId,
+    changeRequest
+) {
+    console.info('request network change');
+    const changeUrl =
+        getStudyUrl(studyName, userId) +
+        '/network-modification/' +
+        equipmentType +
+        '/' +
+        equipmentId;
+    console.debug(changeUrl);
+    return backendFetch(changeUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(changeRequest),
+    }).then((response) => {
+        return response.json();
+    });
 }
