@@ -384,9 +384,14 @@ export function fetchContingencyCount(userId, studyName, contingencyListNames) {
         '/contingency-count' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
-    return backendFetch(url, { method: 'get' }).then((response) =>
-        response.json()
-    );
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error(response);
+            return Promise.resolve(0);
+        }
+    });
 }
 
 export function connectNotificationsWebsocket(studyName) {

@@ -119,7 +119,8 @@ const ContingencyListSelector = (props) => {
                                 variant="contained"
                                 color="primary"
                                 disabled={
-                                    checkedContingencyListNames.length === 0
+                                    simulatedContingencyCount === null ||
+                                    simulatedContingencyCount === 0
                                 }
                             >
                                 <FormattedMessage id="Start" />
