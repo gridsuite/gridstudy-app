@@ -105,7 +105,7 @@ const ContingencyListSelector = (props) => {
                     <Grid item>
                         <Alert variant="standard" severity="info">
                             <FormattedMessage
-                                id="xContingeniesWillBeSimulated"
+                                id="xContingenciesWillBeSimulated"
                                 values={{
                                     x: getSimulatedContingencyCountLabel(),
                                 }}
