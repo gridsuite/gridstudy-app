@@ -141,7 +141,7 @@ const NetworkTable = (props) => {
                 align="right"
             >
                 <Grid container direction="column">
-                    <Grid item xs={1}></Grid>
+                    <Grid item xs={1}/>
                     <Grid item xs={1}>
                         {cellData.rowData[cellData.dataKey]}
                     </Grid>
@@ -232,6 +232,7 @@ const NetworkTable = (props) => {
                         label: intl.formatMessage({ id: 'NominalVoltage' }),
                         dataKey: 'nominalVoltage',
                         numeric: true,
+                        fractionDigits: 0,
                     },
                 ]}
             />
@@ -273,24 +274,28 @@ const NetworkTable = (props) => {
                         label: intl.formatMessage({ id: 'ActivePowerSide1' }),
                         dataKey: 'p1',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide2' }),
                         dataKey: 'p2',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
                         dataKey: 'q1',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
                         dataKey: 'q2',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                 ]}
             />
@@ -345,24 +350,28 @@ const NetworkTable = (props) => {
                         label: intl.formatMessage({ id: 'ActivePowerSide1' }),
                         dataKey: 'p1',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide2' }),
                         dataKey: 'p2',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
                         dataKey: 'q1',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
                         dataKey: 'q2',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 150,
@@ -370,6 +379,7 @@ const NetworkTable = (props) => {
                         dataKey: 'ratioTapChangerPosition',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 0,
                     },
                     {
                         width: 150,
@@ -377,6 +387,7 @@ const NetworkTable = (props) => {
                         dataKey: 'phaseTapChangerPosition',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 0,
                     },
                 ]}
             />
@@ -428,36 +439,42 @@ const NetworkTable = (props) => {
                         label: intl.formatMessage({ id: 'ActivePowerSide1' }),
                         dataKey: 'p1',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide2' }),
                         dataKey: 'p2',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide3' }),
                         dataKey: 'p3',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
                         dataKey: 'q1',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
                         dataKey: 'q2',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide3' }),
                         dataKey: 'q3',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 150,
@@ -465,6 +482,7 @@ const NetworkTable = (props) => {
                         dataKey: 'ratioTapChanger1Position',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 0,
                     },
                     {
                         width: 150,
@@ -472,6 +490,7 @@ const NetworkTable = (props) => {
                         dataKey: 'ratioTapChanger2Position',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 0,
                     },
                     {
                         width: 150,
@@ -479,6 +498,7 @@ const NetworkTable = (props) => {
                         dataKey: 'ratioTapChanger3Position',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 0,
                     },
                     {
                         width: 150,
@@ -486,6 +506,7 @@ const NetworkTable = (props) => {
                         dataKey: 'phaseTapChanger1Position',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 0,
                     },
                     {
                         width: 150,
@@ -493,6 +514,7 @@ const NetworkTable = (props) => {
                         dataKey: 'phaseTapChanger2Position',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 0,
                     },
                     {
                         width: 150,
@@ -500,6 +522,7 @@ const NetworkTable = (props) => {
                         dataKey: 'phaseTapChanger3Position',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 0,
                     },
                 ]}
             />
@@ -535,12 +558,14 @@ const NetworkTable = (props) => {
                         label: intl.formatMessage({ id: 'ActivePower' }),
                         dataKey: 'p',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
+                        fractionDigits: 1,
                     },
                     {
                         width: 200,
@@ -548,6 +573,7 @@ const NetworkTable = (props) => {
                         dataKey: 'targetP',
                         numeric: true,
                         cellRenderer: EditableCellRender,
+                        fractionDigits: 1,
                     },
                 ]}
             />
