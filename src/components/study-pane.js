@@ -11,13 +11,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { parse, stringify } from 'qs';
 
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
 
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
@@ -27,6 +26,7 @@ import {
     fetchGenerators,
     fetchLinePositions,
     fetchLines,
+    fetchSecurityAnalysisResult,
     fetchStudy,
     fetchSubstationPositions,
     fetchSubstations,
@@ -34,10 +34,12 @@ import {
     fetchTwoWindingsTransformers,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
+    startSecurityAnalysis,
     updateSwitchState,
 } from '../utils/rest-api';
 import {
     closeStudy,
+    increaseResultCount,
     loadGeoDataSuccess,
     loadNetworkSuccess,
     openStudy,
@@ -46,9 +48,6 @@ import {
 import Network from './network/network';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
-import Button from '@material-ui/core/Button';
-import PlayIcon from '@material-ui/icons/PlayArrow';
-import { green, grey, orange, red } from '@material-ui/core/colors';
 import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import PageNotFound from './page-not-found';
@@ -57,6 +56,13 @@ import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage-level-choice';
+import RunButton, { RunningStatus } from './run-button';
+import ContingencyListSelector from './contingency-list-selector';
+import PlayIcon from '@material-ui/icons/PlayArrow';
+import DoneIcon from '@material-ui/icons/Done';
+import LoopIcon from '@material-ui/icons/Loop';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import SecurityAnalysisResult from './security-analysis-result';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -73,89 +79,20 @@ const useStyles = makeStyles((theme) => ({
     error: {
         padding: theme.spacing(2),
     },
-}));
-
-const loadFlowButtonStyles = makeStyles({
-    root: {
-        backgroundColor: grey[500],
-        '&:hover': {
-            backgroundColor: grey[700],
-        },
+    rotate: {
+        animation: 'spin 1000ms infinite',
     },
-    label: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-});
-
-const LFStatus = {
-    CONVERGED: 'Converged',
-    DIVERGED: 'Diverged',
-    NOT_DONE: 'Start LoadFlow',
-    RUNNING: 'LoadFlow running…',
-};
-
-const RunLoadFlowButton = (props) => {
-    const loadFlowButtonClasses = loadFlowButtonStyles();
-    const subStyle = {
-        running: {
-            backgroundColor: orange[500],
-            color: 'black',
-        },
-        diverged: {
-            backgroundColor: red[500],
-            color: 'black',
-        },
-        converged: {
-            backgroundColor: green[500],
-            color: 'black',
-        },
-        root: {
-            backgroundColor: grey[500],
-            '&:hover': {
-                backgroundColor: grey[700],
+    '@global': {
+        '@keyframes spin': {
+            '0%': {
+                transform: 'rotate(0deg)',
             },
-            color: 'black',
+            '100%': {
+                transform: 'rotate(-360deg)',
+            },
         },
-    };
-
-    const handleClick = () =>
-        startLoadFlow(props.studyName, props.userId).then();
-
-    function getStyle() {
-        switch (props.loadFlowState) {
-            case LFStatus.CONVERGED:
-                return subStyle.converged;
-            case LFStatus.DIVERGED:
-                return subStyle.diverged;
-            case LFStatus.RUNNING:
-                return subStyle.running;
-            case LFStatus.NOT_DONE:
-            default:
-                return {};
-        }
-    }
-
-    return (
-        <Button
-            variant="containedSecondary"
-            fullWidth={true}
-            className={loadFlowButtonClasses.root}
-            startIcon={
-                props.loadFlowState === LFStatus.NOT_DONE ? <PlayIcon /> : null
-            }
-            disabled={props.loadFlowState !== LFStatus.NOT_DONE}
-            onClick={
-                props.loadFlowState === LFStatus.NOT_DONE ? handleClick : null
-            }
-            style={getStyle()}
-        >
-            <div className={getStyle()}>
-                <Typography noWrap>{props.loadFlowState}</Typography>
-            </div>
-        </Button>
-    );
-};
+    },
+}));
 
 const INITIAL_POSITION = [0, 0];
 
@@ -204,13 +141,24 @@ const StudyPane = (props) => {
 
     const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
 
-    const [loadFlowState, setLoadFlowState] = useState(LFStatus.NOT_DONE);
+    const [loadFlowStatus, setLoadFlowStatus] = useState(RunningStatus.IDLE);
+
+    const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(
+        RunningStatus.IDLE
+    );
+
+    const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
+
+    const [
+        showContingencyListSelector,
+        setShowContingencyListSelector,
+    ] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -222,32 +170,103 @@ const StudyPane = (props) => {
 
     const websocketExpectedCloseRef = useRef();
 
-    function toLFStatus(lfStatus) {
+    const intl = useIntl();
+
+    const Runnable = {
+        LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
+        SECURITY_ANALYSIS: intl.formatMessage({ id: 'SecurityAnalysis' }),
+    };
+
+    const RUNNABLES = [Runnable.LOADFLOW, Runnable.SECURITY_ANALYSIS];
+
+    function getLoadFlowRunningStatus(lfStatus) {
         switch (lfStatus) {
             case 'CONVERGED':
-                return LFStatus.CONVERGED;
+                return RunningStatus.SUCCEED;
             case 'DIVERGED':
-                return LFStatus.DIVERGED;
+                return RunningStatus.FAILED;
             case 'RUNNING':
-                return LFStatus.RUNNING;
+                return RunningStatus.RUNNING;
             case 'NOT_DONE':
-                return LFStatus.NOT_DONE;
+                return RunningStatus.IDLE;
             default:
-                return LFStatus.NOT_DONE;
+                return RunningStatus.IDLE;
         }
     }
 
-    const updateLFStatus = useCallback(() => {
+    const updateLoadFlowStatus = useCallback(() => {
         fetchStudy(studyName, userId).then((study) => {
-            setLoadFlowState(toLFStatus(study.loadFlowResult.status));
+            setLoadFlowStatus(
+                getLoadFlowRunningStatus(study.loadFlowResult.status)
+            );
         });
     }, [studyName, userId]);
+
+    const updateSecurityAnalysisResult = useCallback(() => {
+        fetchSecurityAnalysisResult(studyName, userId).then(function (
+            response
+        ) {
+            if (response.ok) {
+                setSecurityAnalysisStatus(RunningStatus.IDLE);
+                response.json().then((result) => {
+                    setSecurityAnalysisResult(result);
+                });
+            }
+        });
+    }, [studyName, userId]);
+
+    const handleStartSecurityAnalysis = (contingencyListNames) => {
+        // close the contingency list selection window
+        setShowContingencyListSelector(false);
+
+        // start server side security analysis
+        startSecurityAnalysis(studyName, userId, contingencyListNames);
+
+        // update status and clean result
+        setSecurityAnalysisStatus(RunningStatus.RUNNING);
+        setSecurityAnalysisResult(null);
+    };
+
+    const start = (runnable) => {
+        if (runnable === Runnable.LOADFLOW) {
+            startLoadFlow(studyName, userId);
+        } else if (runnable === Runnable.SECURITY_ANALYSIS) {
+            setShowContingencyListSelector(true);
+        }
+    };
+
+    const getRunningStatus = (runnable) => {
+        if (runnable === Runnable.LOADFLOW) {
+            return loadFlowStatus;
+        } else if (runnable === Runnable.SECURITY_ANALYSIS) {
+            return securityAnalysisStatus;
+        }
+    };
+
+    const getRunningText = (runnable, status) => {
+        return runnable;
+    };
+
+    const getRunningIcon = (status) => {
+        switch (status) {
+            case RunningStatus.RUNNING:
+                return <LoopIcon className={classes.rotate} />;
+            case RunningStatus.SUCCEED:
+                return <DoneIcon />;
+            case RunningStatus.FAILED:
+                return <ErrorOutlineIcon />;
+            case RunningStatus.IDLE:
+            default:
+                return <PlayIcon />;
+        }
+    };
 
     const [position, setPosition] = useState([-1, -1]);
 
     const loadNetwork = useCallback(() => {
         console.info(`Loading network of study '${studyName}'...`);
-        updateLFStatus();
+        updateLoadFlowStatus();
+        updateSecurityAnalysisResult();
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
@@ -281,7 +300,13 @@ const StudyPane = (props) => {
                 setStudyNotFound(true);
             });
         // Note: studyName and dispatch don't change
-    }, [studyName, userId, dispatch, updateLFStatus]);
+    }, [
+        studyName,
+        userId,
+        dispatch,
+        updateLoadFlowStatus,
+        updateSecurityAnalysisResult,
+    ]);
 
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
@@ -468,22 +493,32 @@ const StudyPane = (props) => {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
             }
-            switch (studyUpdatedForce.eventData.headers['updateType']) {
-                case 'loadflow':
-                    loadNetwork(studyName);
-                    break;
-                case 'loadflow_status':
-                    updateLFStatus();
-                    break;
-                case 'equipment':
-                    console.info(studyUpdatedForce.eventData.headers);
-                    updateEquipment(
-                        studyUpdatedForce.eventData.headers['equipment_type'],
-                        studyUpdatedForce.eventData.headers['equipment_id']
-                    );
-                    break;
-                default:
-                    break;
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
+            ) {
+                //TODO reload data more intelligently
+                loadNetwork(studyName);
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'loadflow_status'
+            ) {
+                updateLoadFlowStatus();
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'securityAnalysisResult'
+            ) {
+                updateSecurityAnalysisResult();
+
+                // update badge
+                dispatch(increaseResultCount());
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'equipment'
+            ) {
+                updateEquipment(
+                    studyUpdatedForce.eventData.headers['equipment_type'],
+                    studyUpdatedForce.eventData.headers['equipment_id']
+                );
             }
         }
         // Note: studyName and loadNetwork don't change
@@ -491,8 +526,10 @@ const StudyPane = (props) => {
         studyUpdatedForce,
         studyName,
         loadNetwork,
-        updateLFStatus,
+        updateLoadFlowStatus,
+        updateSecurityAnalysisResult,
         updateEquipment,
+        dispatch,
     ]);
 
     const updateFilteredNominalVoltages = (vnoms, isToggle) => {
@@ -553,169 +590,185 @@ const StudyPane = (props) => {
         }
 
         return (
-            <Grid container direction="row" className={classes.main}>
-                <Grid item xs={12} md={2}>
-                    <AutoSizer>
-                        {({ width, height }) => (
-                            <div style={{ width: width, height: height }}>
-                                <Grid container direction="column">
-                                    <Grid item key="loadFlowButton">
-                                        <div
-                                            style={{
-                                                position: 'relative',
-                                                marginLeft: 8,
-                                                marginRight: 8,
-                                                marginTop: 8,
-                                            }}
-                                        >
-                                            <RunLoadFlowButton
-                                                studyName={studyName}
-                                                userId={userId}
-                                                loadFlowState={loadFlowState}
-                                            />
-                                        </div>
+            <div>
+                <Grid container direction="row" className={classes.main}>
+                    <Grid item xs={12} md={2}>
+                        <AutoSizer>
+                            {({ width, height }) => (
+                                <div style={{ width: width, height: height }}>
+                                    <Grid container direction="column">
+                                        <Grid item key="runButton">
+                                            <div
+                                                style={{
+                                                    position: 'relative',
+                                                    marginLeft: 8,
+                                                    marginRight: 8,
+                                                    marginTop: 8,
+                                                }}
+                                            >
+                                                <RunButton
+                                                    runnables={RUNNABLES}
+                                                    getStatus={getRunningStatus}
+                                                    onStartClick={start}
+                                                    getText={getRunningText}
+                                                    getStartIcon={
+                                                        getRunningIcon
+                                                    }
+                                                />
+                                            </div>
+                                        </Grid>
+                                        <Grid item key="explorer">
+                                            <div
+                                                style={{
+                                                    position: 'relative',
+                                                    height: height - 44,
+                                                }}
+                                            >
+                                                <NetworkExplorer
+                                                    network={network}
+                                                    onVoltageLevelDisplayClick={
+                                                        showVoltageLevelDiagram
+                                                    }
+                                                    onVoltageLevelFocusClick={
+                                                        centerSubstation
+                                                    }
+                                                />
+                                            </div>
+                                        </Grid>
                                     </Grid>
-                                    <Grid item key="explorer">
-                                        <div
-                                            style={{
-                                                position: 'relative',
-                                                height: height - 44,
-                                            }}
-                                        >
-                                            <NetworkExplorer
-                                                network={network}
-                                                onVoltageLevelDisplayClick={
-                                                    showVoltageLevelDiagram
-                                                }
-                                                onVoltageLevelFocusClick={
-                                                    centerSubstation
-                                                }
-                                            />
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </div>
-                        )}
-                    </AutoSizer>
-                </Grid>
-                <Grid item xs={12} md={10} key="map">
-                    <div
-                        style={{
-                            position: 'relative',
-                            width: '100%',
-                            height: '100%',
-                        }}
-                    >
-                        <NetworkMap
-                            network={network}
-                            geoData={geoData}
-                            labelsZoomThreshold={9}
-                            arrowsZoomThreshold={7}
-                            initialPosition={INITIAL_POSITION}
-                            initialZoom={1}
-                            filteredNominalVoltages={filteredNominalVoltages}
-                            lineFullPath={lineFullPath}
-                            lineParallelPath={lineParallelPath}
-                            lineFlowMode={lineFlowMode}
-                            lineFlowColorMode={lineFlowColorMode}
-                            lineFlowAlertThreshold={lineFlowAlertThreshold}
-                            ref={mapRef}
-                            onSubstationClick={showVoltageLevelDiagram}
-                            visible={props.view === StudyView.MAP}
-                            onSubstationClickChooseVoltageLevel={
-                                chooseVoltageLevelForSubstation
-                            }
-                        />
-                        {displayedVoltageLevelId && (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    left: 10,
-                                    top: 10,
-                                    zIndex: 1,
-                                }}
-                            >
-                                <SingleLineDiagram
-                                    onClose={() => closeVoltageLevelDiagram()}
-                                    onNextVoltageLevelClick={
-                                        showVoltageLevelDiagram
-                                    }
-                                    onBreakerClick={handleUpdateSwitchState}
-                                    diagramTitle={
-                                        useName && displayedVoltageLevel
-                                            ? displayedVoltageLevel.name
-                                            : displayedVoltageLevelId
-                                    }
-                                    svgUrl={getVoltageLevelSingleLineDiagram(
-                                        studyName,
-                                        userId,
-                                        displayedVoltageLevelId,
-                                        useName,
-                                        centerName,
-                                        diagonalName
-                                    )}
-                                    ref={sldRef}
-                                    updateSwitchMsg={updateSwitchMsg}
-                                />
-                            </div>
-                        )}
-
-                        {network && viewOverloadsTable && (
-                            <div
-                                style={{
-                                    zIndex: 0,
-                                    right: 45,
-                                    top: 10,
-                                    minWidth: '500px',
-                                    position: 'absolute',
-                                    height: '70%',
-                                    opacity: '1',
-                                    flex: 1,
-                                    pointerEvents: 'none',
-                                }}
-                            >
-                                <OverloadedLinesView
-                                    lines={network.lines}
-                                    lineFlowAlertThreshold={
-                                        lineFlowAlertThreshold
-                                    }
-                                    network={network}
-                                />
-                            </div>
-                        )}
-
-                        {displayedSubstationId && (
-                            <VoltageLevelChoice
-                                handleClose={closeChoiceVoltageLevelMenu}
-                                onClickHandler={choiceVoltageLevel}
-                                substation={displayedSubstation}
-                                position={[position[0] + 200, position[1]]}
+                                </div>
+                            )}
+                        </AutoSizer>
+                    </Grid>
+                    <Grid item xs={12} md={10} key="map">
+                        <div
+                            style={{
+                                position: 'relative',
+                                width: '100%',
+                                height: '100%',
+                            }}
+                        >
+                            <NetworkMap
+                                network={network}
+                                geoData={geoData}
+                                labelsZoomThreshold={9}
+                                arrowsZoomThreshold={7}
+                                initialPosition={INITIAL_POSITION}
+                                initialZoom={1}
+                                filteredNominalVoltages={
+                                    filteredNominalVoltages
+                                }
+                                lineFullPath={lineFullPath}
+                                lineParallelPath={lineParallelPath}
+                                lineFlowMode={lineFlowMode}
+                                lineFlowColorMode={lineFlowColorMode}
+                                lineFlowAlertThreshold={lineFlowAlertThreshold}
+                                ref={mapRef}
+                                onSubstationClick={showVoltageLevelDiagram}
+                                visible={props.view === StudyView.MAP}
+                                onSubstationClickChooseVoltageLevel={
+                                    chooseVoltageLevelForSubstation
+                                }
                             />
-                        )}
+                            {displayedVoltageLevelId && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        left: 10,
+                                        top: 10,
+                                        zIndex: 1,
+                                    }}
+                                >
+                                    <SingleLineDiagram
+                                        onClose={() =>
+                                            closeVoltageLevelDiagram()
+                                        }
+                                        onNextVoltageLevelClick={
+                                            showVoltageLevelDiagram
+                                        }
+                                        onBreakerClick={handleUpdateSwitchState}
+                                        diagramTitle={
+                                            useName && displayedVoltageLevel
+                                                ? displayedVoltageLevel.name
+                                                : displayedVoltageLevelId
+                                        }
+                                        svgUrl={getVoltageLevelSingleLineDiagram(
+                                            studyName,
+                                            userId,
+                                            displayedVoltageLevelId,
+                                            useName,
+                                            centerName,
+                                            diagonalName
+                                        )}
+                                        ref={sldRef}
+                                        updateSwitchMsg={updateSwitchMsg}
+                                    />
+                                </div>
+                            )}
 
-                        {network && (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    right: 10,
-                                    bottom: 30,
-                                    zIndex: 1,
-                                }}
-                            >
-                                <NominalVoltageFilter
-                                    nominalVoltages={network.getNominalVoltages()}
-                                    filteredNominalVoltages={
-                                        filteredNominalVoltages
-                                    }
-                                    onNominalVoltageFilterChange={
-                                        updateFilteredNominalVoltages
-                                    }
+                            {network && viewOverloadsTable && (
+                                <div
+                                    style={{
+                                        zIndex: 0,
+                                        right: 45,
+                                        top: 10,
+                                        minWidth: '500px',
+                                        position: 'absolute',
+                                        height: '70%',
+                                        opacity: '1',
+                                        flex: 1,
+                                        pointerEvents: 'none',
+                                    }}
+                                >
+                                    <OverloadedLinesView
+                                        lines={network.lines}
+                                        lineFlowAlertThreshold={
+                                            lineFlowAlertThreshold
+                                        }
+                                        network={network}
+                                    />
+                                </div>
+                            )}
+
+                            {displayedSubstationId && (
+                                <VoltageLevelChoice
+                                    handleClose={closeChoiceVoltageLevelMenu}
+                                    onClickHandler={choiceVoltageLevel}
+                                    substation={displayedSubstation}
+                                    position={[position[0] + 200, position[1]]}
                                 />
-                            </div>
-                        )}
-                    </div>
+                            )}
+
+                            {network && (
+                                <div
+                                    style={{
+                                        position: 'absolute',
+                                        right: 10,
+                                        bottom: 30,
+                                        zIndex: 1,
+                                    }}
+                                >
+                                    <NominalVoltageFilter
+                                        nominalVoltages={network.getNominalVoltages()}
+                                        filteredNominalVoltages={
+                                            filteredNominalVoltages
+                                        }
+                                        onNominalVoltageFilterChange={
+                                            updateFilteredNominalVoltages
+                                        }
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </Grid>
                 </Grid>
-            </Grid>
+
+                <ContingencyListSelector
+                    open={showContingencyListSelector}
+                    onClose={() => setShowContingencyListSelector(false)}
+                    onStart={handleStartSecurityAnalysis}
+                />
+            </div>
         );
     }
 
@@ -731,7 +784,13 @@ const StudyPane = (props) => {
         );
     }
 
-    function renderResultsView() {}
+    function renderResultsView() {
+        return (
+            <Paper className={classes.main}>
+                <SecurityAnalysisResult result={securityAnalysisResult} />
+            </Paper>
+        );
+    }
 
     if (studyNotFound) {
         return (

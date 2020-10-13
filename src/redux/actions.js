@@ -150,3 +150,15 @@ export const VIEW_OVERLOADS_TABLE = 'VIEW_OVERLOADS_TABLE';
 export function toggleViewOverloadsTableState() {
     return { type: VIEW_OVERLOADS_TABLE };
 }
+
+export const INCREASE_RESULT_COUNT = 'INCREASE_RESULT_COUNT';
+
+export function increaseResultCount() {
+    return { type: INCREASE_RESULT_COUNT };
+}
+
+export const RESET_RESULT_COUNT = 'RESET_RESULT_COUNT';
+
+export function resetResultCount() {
+    return { type: RESET_RESULT_COUNT };
+}
