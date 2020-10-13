@@ -6,7 +6,6 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -17,6 +16,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { FormattedMessage } from 'react-intl';
 import Button from '@material-ui/core/Button';
+import { useDispatch, useSelector } from 'react-redux';
+import { filteredNominalVoltagesUpdated } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     nominalVoltageZone: {
@@ -47,12 +48,32 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NominalVoltageFilter = (props) => {
+    const network = useSelector((state) => state.network);
+
+    const filteredNominalVoltages = useSelector(
+        (state) => state.filteredNominalVoltages
+    );
+
+    const dispatch = useDispatch();
+
     const classes = useStyles();
 
-    const handleToggle = (value, isToggle) => () => {
-        if (props.onNominalVoltageFilterChange !== null) {
-            props.onNominalVoltageFilterChange(value, isToggle);
+    const handleToggle = (vnoms, isToggle) => () => {
+        // filter on nominal voltage
+        let newFiltered = [...filteredNominalVoltages];
+        if (isToggle) {
+            vnoms.forEach((vnom) => {
+                const currentIndex = filteredNominalVoltages.indexOf(vnom);
+                if (currentIndex === -1) {
+                    newFiltered.push(vnom);
+                } else {
+                    newFiltered.splice(currentIndex, 1);
+                }
+            });
+        } else {
+            newFiltered = [...vnoms];
         }
+        dispatch(filteredNominalVoltagesUpdated(newFiltered));
     };
 
     return (
@@ -63,7 +84,10 @@ const NominalVoltageFilter = (props) => {
                         size={'small'}
                         variant={'text'}
                         className={classes.nominalVoltageSelectionControl}
-                        onClick={handleToggle(props.nominalVoltages, false)}
+                        onClick={handleToggle(
+                            network.getNominalVoltages(),
+                            false
+                        )}
                     >
                         <FormattedMessage id="CBAll" />
                     </Button>
@@ -80,7 +104,7 @@ const NominalVoltageFilter = (props) => {
                         <FormattedMessage id="CBNone" />
                     </Button>
                 </ListItem>
-                {props.nominalVoltages.map((value) => {
+                {network.getNominalVoltages().map((value) => {
                     return (
                         <ListItem
                             className={classes.nominalVoltageItem}
@@ -92,9 +116,9 @@ const NominalVoltageFilter = (props) => {
                                 color="default"
                                 className={classes.nominalVoltageCheck}
                                 checked={
-                                    props.filteredNominalVoltages.indexOf(
-                                        value
-                                    ) !== -1
+                                    !filteredNominalVoltages ||
+                                    filteredNominalVoltages.indexOf(value) !==
+                                        -1
                                 }
                             />
                             <ListItemText
@@ -108,18 +132,6 @@ const NominalVoltageFilter = (props) => {
             </List>
         </Paper>
     );
-};
-
-NominalVoltageFilter.defaultProps = {
-    nominalVoltages: [],
-    filteredNominalVoltages: [],
-    onNominalVoltageFilterChange: null,
-};
-
-NominalVoltageFilter.propTypes = {
-    nominalVoltages: PropTypes.array,
-    filteredNominalVoltages: PropTypes.array,
-    onNominalVoltageFilterChange: PropTypes.func,
 };
 
 export default NominalVoltageFilter;
