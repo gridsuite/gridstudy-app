@@ -139,7 +139,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
     }, [props.svgUrl, forceState]);
 
-    const { onNextVoltageLevelClick, onBreakerClick } = props;
+    const { onNextVoltageLevelClick, onBreakerClick, isLFRunning } = props;
     useLayoutEffect(() => {
         if (svg.svg) {
             // calculate svg width and height
@@ -197,27 +197,30 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             });
 
             // handling the click on a switch
-            const switches = svg.metadata.nodes.filter((element) =>
-                SWITCH_COMPONENT_TYPES.includes(element.componentType)
-            );
-            switches.forEach((aSwitch) => {
-                const domEl = document.getElementById(aSwitch.id);
-                domEl.style.cursor = 'pointer';
-                domEl.addEventListener('click', function (event) {
-                    const clickedElementId = event.currentTarget.id;
-                    const switchMetadata = svg.metadata.nodes.find(
-                        (value) => value.id === clickedElementId
-                    );
-                    const switchId = switchMetadata.equipmentId;
-                    const open = switchMetadata.open;
-                    svgPrevViewbox.current = draw.viewbox();
-                    onBreakerClick(switchId, !open, event.currentTarget);
+            if (!isLFRunning) {
+                const switches = svg.metadata.nodes.filter((element) =>
+                    SWITCH_COMPONENT_TYPES.includes(element.componentType)
+                );
+                switches.forEach((aSwitch) => {
+                    const domEl = document.getElementById(aSwitch.id);
+                    domEl.style.cursor = 'pointer';
+                    domEl.addEventListener('click', function (event) {
+                        const clickedElementId = event.currentTarget.id;
+                        const switchMetadata = svg.metadata.nodes.find(
+                            (value) => value.id === clickedElementId
+                        );
+                        const switchId = switchMetadata.equipmentId;
+                        const open = switchMetadata.open;
+                        svgPrevViewbox.current = draw.viewbox();
+                        onBreakerClick(switchId, !open, event.currentTarget);
+                    });
                 });
-            });
+            }
+
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
-    }, [svg, onNextVoltageLevelClick, onBreakerClick]);
+    }, [svg, onNextVoltageLevelClick, onBreakerClick, isLFRunning]);
 
     useEffect(() => {
         svgPrevViewbox.current = null;
@@ -288,6 +291,7 @@ SingleLineDiagram.propTypes = {
     svgUrl: PropTypes.string.isRequired,
     onClose: PropTypes.func,
     updateSwitchMsg: PropTypes.string.isRequired,
+    isLFRunning: PropTypes.bool.isRequired,
 };
 
 export default SingleLineDiagram;

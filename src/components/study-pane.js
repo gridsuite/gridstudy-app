@@ -652,6 +652,10 @@ const StudyPane = (props) => {
                                         )}
                                         ref={sldRef}
                                         updateSwitchMsg={updateSwitchMsg}
+                                        isLFRunning={
+                                            loadFlowStatus ===
+                                            RunningStatus.RUNNING
+                                        }
                                     />
                                 </div>
                             )}
