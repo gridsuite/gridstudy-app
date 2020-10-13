@@ -328,7 +328,7 @@ const NetworkTable = (props) => {
                     props.network.twoWindingsTransformers[index]
                 }
                 columns={[
-                    makeHeaderCell('TWO_WINDING_TRANSFORMER'),
+                    makeHeaderCell('TWO_WINDINGS_TRANSFORMER'),
                     {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
@@ -408,7 +408,7 @@ const NetworkTable = (props) => {
                     props.network.threeWindingsTransformers[index]
                 }
                 columns={[
-                    makeHeaderCell('THREE_WINDING_TRANSFORMER'),
+                    makeHeaderCell('THREE_WINDINGS_TRANSFORMER'),
                     {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),

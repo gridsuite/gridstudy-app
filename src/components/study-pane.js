@@ -441,11 +441,11 @@ const StudyPane = (props) => {
                     fetchCb = fetchGenerators(studyName, userId);
                     equipments = network.generators;
                     break;
-                case 'TWO_WINDING_TRANSFORMER':
+                case 'TWO_WINDINGS_TRANSFORMER':
                     fetchCb = fetchTwoWindingsTransformers(studyName, userId);
                     equipments = network.twoWindingsTransformers;
                     break;
-                case 'THREE_WINDING_TRANSFORMER':
+                case 'THREE_WINDINGS_TRANSFORMER':
                     fetchCb = fetchThreeWindingsTransformers(studyName, userId);
                     equipments = network.threeWindingsTransformers;
                     break;
@@ -478,10 +478,8 @@ const StudyPane = (props) => {
                 case 'equipment':
                     console.info(studyUpdatedForce.eventData.headers);
                     updateEquipment(
-                        studyUpdatedForce.eventData.headers['equipment_type'] ||
-                            'GENERATOR',
-                        studyUpdatedForce.eventData.headers['equipment_id'] ||
-                            'PALISIN2'
+                        studyUpdatedForce.eventData.headers['equipment_type'],
+                        studyUpdatedForce.eventData.headers['equipment_id']
                     );
                     break;
                 default:
