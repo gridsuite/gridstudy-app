@@ -113,3 +113,15 @@ export const saveLocalStorageLineFlowAlertThreshold = (
         lineFlowAlertThreshold
     );
 };
+
+const LOCAL_STORAGE_VIEW_OVERLOADS_TABLE_KEY = 'GRIDSTUDY_VIEW_OVERLOADS_TABLE';
+
+export const getLocalStorageViewOverloadsTable = () =>
+    getLocalStorageBoolean(LOCAL_STORAGE_VIEW_OVERLOADS_TABLE_KEY, 'false');
+
+export const saveLocalStorageViewOverloadsTable = (viewOverloadsTable) => {
+    localStorage.setItem(
+        LOCAL_STORAGE_VIEW_OVERLOADS_TABLE_KEY,
+        viewOverloadsTable
+    );
+};

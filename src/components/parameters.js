@@ -43,6 +43,7 @@ import {
     toggleLineFullPathState,
     toggleLineParallelPathState,
     toggleUseNameState,
+    toggleViewOverloadsTableState,
 } from '../redux/actions';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
@@ -77,10 +78,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const lineFlowAlertThreshold = useSelector(
         (state) => state.lineFlowAlertThreshold
     );
+    const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
+
     const [
         disabledFlowAlertThreshold,
         setDisabledFlowAlertThreshold,
-    ] = React.useState(false);
+    ] = React.useState(
+        lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
+    );
 
     const [tabIndex, setTabIndex] = React.useState(0);
 
@@ -109,12 +114,21 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const handleLineFlowColorModeChange = (event) => {
         const lineFlowColorMode = event.target.value;
-        setDisabledFlowAlertThreshold(lineFlowColorMode === 'nominalVoltage');
+        setDisabledFlowAlertThreshold(
+            lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
+        );
         dispatch(selectLineFlowColorMode(lineFlowColorMode));
     };
 
     const handleLineFlowAlertThresholdChange = (event, value) => {
         dispatch(selectLineFlowAlertThreshold(value));
+    };
+
+    const handleViewOverloadsTableChange = (event) => {
+        setDisabledFlowAlertThreshold(
+            lineFlowColorMode === 'nominalVoltage' && viewOverloadsTable
+        );
+        dispatch(toggleViewOverloadsTableState());
     };
 
     function TabPanel(props) {
@@ -306,6 +320,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     disabledFlowAlertThreshold,
                     handleLineFlowAlertThresholdChange,
                     alertThresholdMarks
+                )}
+                <MakeLineSeparator />
+                {MakeSwitch(
+                    viewOverloadsTable,
+                    'viewOverloadsTable',
+                    handleViewOverloadsTableChange
                 )}
             </Grid>
         );
