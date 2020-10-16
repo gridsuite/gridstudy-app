@@ -50,7 +50,13 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import { DeleteDialog, ExportDialog, RenameDialog } from '../utils/dialogs';
+import BuildIcon from '@material-ui/icons/Build';
+import {
+    AccessRightsDialog,
+    DeleteDialog,
+    ExportDialog,
+    RenameDialog,
+} from '../utils/dialogs';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -229,6 +235,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
         handleCloseExport();
     };
 
+    const [openAccessRightsDialog, setOpenAccessRightsDialog] = React.useState(
+        false
+    );
+
+    const handleOpenAccessRights = () => {
+        setAnchorEl(null);
+        setOpenAccessRightsDialog(true);
+    };
+
+    const handleCloseAccessRights = () => {
+        setOpenAccessRightsDialog(false);
+    };
+
     /**
      * Status for displaying additional information
      */
@@ -336,6 +355,15 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                                 primary={<FormattedMessage id="export" />}
                             />
                         </MenuItem>
+
+                        <MenuItem onClick={handleOpenAccessRights}>
+                            <ListItemIcon>
+                                <BuildIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={<FormattedMessage id="accessRights" />}
+                            />
+                        </MenuItem>
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -378,6 +406,14 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 studyName={study.studyName}
                 userId={study.userId}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
+            />
+            <AccessRightsDialog
+                open={openAccessRightsDialog}
+                onClose={handleCloseAccessRights}
+                studyName={study.studyName}
+                userId={study.userId}
+                title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
+                isPrivate={study.isPrivate}
             />
         </div>
     );

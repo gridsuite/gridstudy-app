@@ -22,7 +22,17 @@ import MenuItem from '@material-ui/core/MenuItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Alert from '@material-ui/lab/Alert';
-import { getAvailableExportFormats, getExportUrl } from './rest-api';
+import {
+    changeStudyAccessRights,
+    fetchStudies,
+    getAvailableExportFormats,
+    getExportUrl,
+} from './rest-api';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import { loadStudiesSuccess } from '../redux/actions';
+import { useDispatch } from 'react-redux';
 
 /**
  * Dialog to delete an element #TODO To be moved in the common-ui repository once it has been created
@@ -297,4 +307,136 @@ ExportDialog.propTypes = {
     title: PropTypes.string.isRequired,
 };
 
-export { DeleteDialog, RenameDialog, ExportDialog };
+/**
+ * Dialog to change the access rights of a study #TODO To be moved in the common-ui repository once it has been created
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ * @param studyName the name of the study to export
+ * @param userId the name of the logged in user
+ * @param {String} title Title of the dialog
+ * @param {String} isPrivate tells if the study is private or not
+ */
+const AccessRightsDialog = ({
+    open,
+    onClose,
+    studyName,
+    userId,
+    title,
+    isPrivate,
+}) => {
+    const [loading, setLoading] = React.useState(false);
+
+    const [selected, setSelected] = React.useState(
+        isPrivate !== null ? isPrivate.toString() : null
+    );
+
+    const [error, setError] = React.useState('');
+
+    const dispatch = useDispatch();
+
+    const useStyles = makeStyles(() => ({
+        formControl: {
+            minWidth: 300,
+        },
+    }));
+
+    const handleClick = () => {
+        setLoading(true);
+        changeStudyAccessRights(studyName, userId, selected).then(
+            (response) => {
+                response.ok
+                    ? fetchStudies().then((studies) => {
+                          dispatch(loadStudiesSuccess(studies));
+                          onClose();
+                      })
+                    : setError(
+                          intl.formatMessage({ id: 'modifyAccessRightsError' })
+                      );
+            }
+        );
+        setLoading(false);
+    };
+
+    const handleClose = () => {
+        onClose();
+        setLoading(false);
+        setError('');
+    };
+
+    const handleExited = () => {
+        onClose();
+        setLoading(false);
+        setError('');
+    };
+
+    const handleChange = (event) => {
+        setSelected(event.target.value);
+    };
+
+    const classes = useStyles();
+    const intl = useIntl();
+
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            onExited={handleExited}
+            aria-labelledby="dialog-title-accessRights"
+        >
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent>
+                <FormControl className={classes.formControl}>
+                    <RadioGroup
+                        aria-label=""
+                        name="studyAccessRights"
+                        value={selected}
+                        onChange={handleChange}
+                        row
+                    >
+                        <FormControlLabel
+                            value="false"
+                            control={<Radio />}
+                            label=<FormattedMessage id="public" />
+                        />
+                        <FormControlLabel
+                            value="true"
+                            control={<Radio />}
+                            label=<FormattedMessage id="private" />
+                        />
+                    </RadioGroup>
+                    {error !== '' && <Alert severity="error">{error}</Alert>}
+                </FormControl>
+                {loading && (
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginTop: '5px',
+                        }}
+                    >
+                        <CircularProgress />
+                    </div>
+                )}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose} variant="text">
+                    <FormattedMessage id="cancel" />
+                </Button>
+                <Button onClick={handleClick} variant="outlined">
+                    <FormattedMessage id="edit" />
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+AccessRightsDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    studyName: PropTypes.string.isRequired,
+    userId: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    isPrivate: PropTypes.string.isRequired,
+};
+
+export { DeleteDialog, RenameDialog, ExportDialog, AccessRightsDialog };
