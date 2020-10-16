@@ -111,6 +111,37 @@ export function getVoltageLevelSingleLineDiagram(
     );
 }
 
+export function getSubstationSingleLineDiagram(
+    studyName,
+    userId,
+    substationId,
+    useName,
+    centerLabel,
+    diagonalLabel,
+    substationLayout
+) {
+    console.info(
+        `Getting url of substation diagram '${substationId}' of study '${studyName}' of user '${userId}'...`
+    );
+    return (
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/network/substations/' +
+        encodeURIComponent(substationId) +
+        '/svg-and-metadata?' +
+        new URLSearchParams({
+            useName: useName,
+            centerLabel: centerLabel,
+            diagonalLabel: diagonalLabel,
+            topologicalColoring: true,
+            substationLayout: substationLayout,
+        }).toString()
+    );
+}
+
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) =>

@@ -38,6 +38,7 @@ import {
     selectLineFlowColorMode,
     selectLineFlowAlertThreshold,
     selectTheme,
+    selectSubstationLayout,
     toggleCenterLabelState,
     toggleDiagonalLabelState,
     toggleLineFullPathState,
@@ -51,6 +52,7 @@ import {
     getLoadFlowParameters,
     setLoadFlowParameters,
 } from '../utils/rest-api';
+import { SubstationLayout } from './single-line-diagram';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -108,6 +110,8 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const theme = useSelector((state) => state.theme);
 
+    const substationLayout = useSelector((state) => state.substationLayout);
+
     const alertThresholdMarks = [
         {
             value: 0,
@@ -146,6 +150,11 @@ const Parameters = ({ showParameters, hideParameters }) => {
             lineFlowColorMode === 'nominalVoltage' && viewOverloadsTable
         );
         dispatch(toggleViewOverloadsTableState());
+    };
+
+    const handleSubstationLayoutChange = (event) => {
+        const substationLayout = event.target.value;
+        dispatch(selectSubstationLayout(substationLayout));
     };
 
     function TabPanel(props) {
@@ -307,6 +316,41 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 {MakeSwitch(centerLabel, 'centerLabel', () =>
                     dispatch(toggleCenterLabelState())
                 )}
+                <MakeLineSeparator />
+                <Grid item xs={6}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="SubstationLayout" />:
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={6} className={classes.controlItem}>
+                    <Select
+                        labelId="substation-layout-select-label"
+                        value={substationLayout}
+                        onChange={handleSubstationLayoutChange}
+                    >
+                        <MenuItem value={SubstationLayout.HORIZONTAL}>
+                            <FormattedMessage id="HorizontalSubstationLayout" />
+                        </MenuItem>
+                        <MenuItem value={SubstationLayout.VERTICAL}>
+                            <FormattedMessage id="VerticalSubstationLayout" />
+                        </MenuItem>
+                        <MenuItem value={SubstationLayout.SMART}>
+                            <FormattedMessage id="SmartSubstationLayout" />
+                        </MenuItem>
+                        <MenuItem
+                            value={SubstationLayout.SMARTHORIZONTALCOMPACTION}
+                        >
+                            <FormattedMessage id="SmartWithHorizontalCompactionSubstationLayout" />
+                        </MenuItem>
+                        <MenuItem
+                            value={SubstationLayout.SMARTVERTICALCOMPACTION}
+                        >
+                            <FormattedMessage id="SmartWithVerticalCompactionSubstationLayout" />
+                        </MenuItem>
+                    </Select>
+                </Grid>
             </Grid>
         );
     }

@@ -33,13 +33,29 @@ import { fetchSvg } from '../utils/rest-api';
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
 
-const maxWidth = 800;
-const maxHeight = 700;
+export const SubstationLayout = {
+    HORIZONTAL: 'horizontal',
+    VERTICAL: 'vertical',
+    SMART: 'smart',
+    SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
+    SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
+};
+
+const maxWidthVoltageLevel = 800;
+const maxHeightVoltageLevel = 700;
+const maxWidthSubstation = 1200;
+const maxHeightSubstation = 700;
 
 const useStyles = makeStyles((theme) => ({
-    div: {
-        maxWidth: maxWidth,
-        maxHeight: maxHeight,
+    divVoltageLevel: {
+        maxWidth: maxWidthVoltageLevel,
+        maxHeight: maxHeightVoltageLevel,
+        overflowX: 'hidden',
+        overflowY: 'hidden',
+    },
+    divSubstation: {
+        maxWidth: maxWidthSubstation,
+        maxHeight: maxHeightSubstation,
         overflowX: 'hidden',
         overflowY: 'hidden',
     },
@@ -54,8 +70,8 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
     },
     error: {
-        maxWidth: maxWidth,
-        maxHeight: maxHeight,
+        maxWidth: maxWidthVoltageLevel,
+        maxHeight: maxHeightVoltageLevel,
     },
     errorUpdateSwitch: {
         position: 'absolute',
@@ -149,10 +165,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
+        svgType,
     } = props;
+
     useLayoutEffect(() => {
         if (svg.svg) {
-            // calculate svg width and height
+            // calculate svg width and height from svg bounding box
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
             const bbox = svgEl.getBBox();
@@ -160,22 +178,49 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             const yOrigin = bbox.y - 20;
             const svgWidth = bbox.width + 40;
             const svgHeight = bbox.height + 40;
+
+            let sizeWidth = svgWidth;
+            let sizeHeight = svgHeight;
+            if (svgType === 'substation') {
+                // fit substation diagram to content
+                sizeWidth =
+                    svgWidth > maxWidthSubstation
+                        ? maxWidthSubstation
+                        : svgWidth;
+                sizeHeight =
+                    svgHeight > maxHeightSubstation
+                        ? maxHeightSubstation
+                        : svgHeight;
+            }
+
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .size(svgWidth, svgHeight)
+                .size(sizeWidth, sizeHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
-                    zoomMin: 0.5,
+                    zoomMin: svgType === 'voltage-level' ? 0.5 : 0.1,
                     zoomMax: 10,
-                    zoomFactor: 0.3,
+                    zoomFactor: svgType === 'voltage-level' ? 0.3 : 0.15,
                     margins: {
-                        top: svgHeight / 4,
-                        left: svgWidth / 4,
-                        bottom: svgHeight / 4,
-                        right: svgWidth / 4,
+                        top:
+                            svgType === 'voltage-level'
+                                ? sizeHeight / 4
+                                : -Infinity,
+                        left:
+                            svgType === 'voltage-level'
+                                ? sizeWidth / 4
+                                : -Infinity,
+                        bottom:
+                            svgType === 'voltage-level'
+                                ? sizeHeight / 4
+                                : -Infinity,
+                        right:
+                            svgType === 'voltage-level'
+                                ? sizeWidth / 4
+                                : -Infinity,
                     },
                 });
             if (svgPrevViewbox.current) {
@@ -230,7 +275,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
-    }, [svg, onNextVoltageLevelClick, onBreakerClick, isComputationRunning]);
+    }, [
+        svg,
+        onNextVoltageLevelClick,
+        onBreakerClick,
+        isComputationRunning,
+        svgType,
+    ]);
 
     useEffect(() => {
         svgPrevViewbox.current = null;
@@ -255,7 +306,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             <div
                 id="sld-svg"
                 style={{ height: '100%' }}
-                className={classes.div}
+                className={
+                    svgType === 'voltage-level'
+                        ? classes.divVoltageLevel
+                        : classes.divSubstation
+                }
                 dangerouslySetInnerHTML={{ __html: svg.svg }}
             />
         );
@@ -307,6 +362,7 @@ SingleLineDiagram.propTypes = {
     onClose: PropTypes.func,
     updateSwitchMsg: PropTypes.string.isRequired,
     isComputationRunning: PropTypes.bool.isRequired,
+    svgType: PropTypes.string.isRequired,
 };
 
 export default SingleLineDiagram;

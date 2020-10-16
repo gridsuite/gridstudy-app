@@ -155,5 +155,13 @@
     "resetToDefault": "default values",
     "save": "save",
     "descLfReadSlackBus": "Read slack bus from network",
-    "descLfWriteSlackBus": "Write slack bus to network"
+    "descLfWriteSlackBus": "Write slack bus to network",
+
+    "SubstationLayout": "Substation diagram layout",
+    "HorizontalSubstationLayout": "Horizontal",
+    "VerticalSubstationLayout": "Vertical",
+    "SmartSubstationLayout": "Smart",
+    "SmartWithHorizontalCompactionSubstationLayout": "Smart with horizontal compaction",
+    "SmartWithVerticalCompactionSubstationLayout": "Smart avec vertical compaction",
+    "openSubstation": "Open the substation"
 }
