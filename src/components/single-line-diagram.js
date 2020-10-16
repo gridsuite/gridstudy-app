@@ -269,14 +269,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     return (
         <Paper elevation={1} variant="outlined" className={finalClasses}>
             <Box display="flex" flexDirection="row">
-                <Box flexGrow={1} height={2}>
+                <Box flexGrow={1}>
                     <Typography>{props.diagramTitle}</Typography>
-                    {displayProgress}
                 </Box>
                 <IconButton className={classes.close} onClick={onCloseHandler}>
                     <CloseIcon />
                 </IconButton>
             </Box>
+            <Box height={2}>{displayProgress}</Box>
             {msgUpdateSwitch}
             {inner}
         </Paper>
