@@ -57,6 +57,7 @@ import {
     VIEW_OVERLOADS_TABLE,
     INCREASE_RESULT_COUNT,
     RESET_RESULT_COUNT,
+    FILTERED_NOMINAL_VOLTAGES_UPDATED,
 } from './actions';
 
 const initialState = {
@@ -82,6 +83,7 @@ const initialState = {
     studyUpdated: { force: 0, eventData: {} },
     viewOverloadsTable: getLocalStorageViewOverloadsTable(),
     resultCount: 0,
+    filteredNominalVoltages: null,
 };
 
 export const reducer = createReducer(initialState, {
@@ -204,5 +206,9 @@ export const reducer = createReducer(initialState, {
 
     [RESET_RESULT_COUNT]: (state) => {
         state.resultCount = 0;
+    },
+
+    [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
+        state.filteredNominalVoltages = action.filteredNominalVoltages;
     },
 });

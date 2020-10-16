@@ -168,3 +168,13 @@ export const RESET_RESULT_COUNT = 'RESET_RESULT_COUNT';
 export function resetResultCount() {
     return { type: RESET_RESULT_COUNT };
 }
+
+export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
+    'FILTERED_NOMINAL_VOLTAGES_UPDATED';
+
+export function filteredNominalVoltagesUpdated(filteredNV) {
+    return {
+        type: FILTERED_NOMINAL_VOLTAGES_UPDATED,
+        filteredNominalVoltages: filteredNV,
+    };
+}
