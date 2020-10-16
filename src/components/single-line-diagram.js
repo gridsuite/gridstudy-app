@@ -26,6 +26,7 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { fetchSvg } from '../utils/rest-api';
 
@@ -92,6 +93,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [forceState, updateState] = useState(false);
 
+    const [loadingState, updateLoadingState] = useState(false);
+
     const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
             svgPrevViewbox.current = svgDraw.current.viewbox();
@@ -110,6 +113,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (props.svgUrl) {
+            updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
                     setSvg({
@@ -118,6 +122,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         error: null,
                         svgUrl: props.svgUrl,
                     });
+                    updateLoadingState(false);
                 })
                 .catch(function (error) {
                     console.error(error.message);
@@ -127,6 +132,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         error,
                         svgUrl: props.svgUrl,
                     });
+                    updateLoadingState(false);
                 });
         } else {
             setSvg(noSvg);
@@ -253,6 +259,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         msgUpdateSwitch = '';
     }
 
+    let displayProgress;
+    if (loadingState) {
+        displayProgress = <LinearProgress />;
+    } else {
+        displayProgress = '';
+    }
+
     return (
         <Paper elevation={1} variant="outlined" className={finalClasses}>
             <Box display="flex" flexDirection="row">
@@ -263,6 +276,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     <CloseIcon />
                 </IconButton>
             </Box>
+            <Box height={2}>{displayProgress}</Box>
             {msgUpdateSwitch}
             {inner}
         </Paper>

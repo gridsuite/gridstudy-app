@@ -7,9 +7,15 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
-let PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
-let PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-let PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
+const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
+const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
+const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
+const PREFIX_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/notification';
+
+const PREFIX_APPS_URLS_QUERIES = process.env.REACT_APP_APPS_URLS;
+
+const ENV_VARIABLES = fetch('env.json');
 
 function getToken() {
     const state = store.getState();
@@ -32,8 +38,16 @@ function backendFetch(url, init) {
 export function fetchStudies() {
     console.info('Fetching studies...');
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies';
-    console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
+}
+
+export function fetchStudyCreationRequests() {
+    console.info('Fetching study creation requests...');
+    const creationRequestsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/study_creation_requests';
+    return backendFetch(creationRequestsUrl).then((response) =>
+        response.json()
+    );
 }
 
 export function fetchStudy(studyName, userId) {
@@ -280,6 +294,76 @@ export function startLoadFlow(studyName, userId) {
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
+function getContingencyListsQueryParams(contingencyListNames) {
+    if (contingencyListNames.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        contingencyListNames.forEach((contingencyListName) =>
+            urlSearchParams.append('contingencyListName', contingencyListName)
+        );
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
+export function startSecurityAnalysis(studyName, userId, contingencyListNames) {
+    console.info('Running security analysis on ' + studyName + '...');
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/security-analysis/run' +
+        getContingencyListsQueryParams(contingencyListNames);
+    console.debug(url);
+    return backendFetch(url, { method: 'post' });
+}
+
+export function fetchSecurityAnalysisResult(studyName, userId) {
+    console.info('Fetching security analysis on ' + studyName + '...');
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/security-analysis/result';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' });
+}
+
+export function fetchContingencyLists() {
+    console.info('Fetching contingency lists');
+    const url = PREFIX_ACTIONS_QUERIES + '/v1/contingency-lists';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
+}
+
+export function fetchContingencyCount(userId, studyName, contingencyListNames) {
+    console.info(
+        `Fetching contingency count for ${contingencyListNames} on ' + ${studyName} + '...'`
+    );
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/contingency-count' +
+        getContingencyListsQueryParams(contingencyListNames);
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error(response);
+            return Promise.resolve(0);
+        }
+    });
+}
+
 export function connectNotificationsWebsocket(studyName) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
@@ -299,6 +383,33 @@ export function connectNotificationsWebsocket(studyName) {
         console.info('Connected Websocket ' + wsadress + ' ...');
     };
     return rws;
+}
+
+/**
+ * Function will be called to connect with notification websocket to update the studies list
+ * @returns {ReconnectingWebSocket}
+ */
+export function connectNotificationsWsUpdateStudies() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl +
+        PREFIX_NOTIFICATION_WS +
+        '/notify?updateType=studies';
+
+    let webSocketUrlWithToken;
+    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        webSocketUrlWithToken
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update studies' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
 }
 
 export function getAvailableExportFormats() {
@@ -326,6 +437,22 @@ export function getExportUrl(userId, studyName, exportFormat) {
         '/export-network/' +
         exportFormat;
     return getUrlWithToken(url);
+}
+
+export function fetchAppsAndUrls() {
+    console.info(`Fetching apps and urls...`);
+    let url;
+    return ENV_VARIABLES.then((res) => res.json()).then((res) => {
+        if (res.isRunningInsideDockerCompose) {
+            url = PREFIX_APPS_URLS_QUERIES + '/dev-urls.json';
+        } else {
+            url = PREFIX_APPS_URLS_QUERIES + '/prod-urls.json';
+        }
+        console.log(url);
+        return backendFetch(url).then((response) => {
+            return response.json();
+        });
+    });
 }
 
 export function setLoadFlowParameters(studyName, userId, newParams) {
