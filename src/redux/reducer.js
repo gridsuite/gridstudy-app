@@ -43,6 +43,7 @@ import {
     LOAD_GEO_DATA_SUCCESS,
     LOAD_NETWORK_SUCCESS,
     LOAD_STUDIES_SUCCESS,
+    LOAD_TEMPORARY_STUDIES,
     OPEN_STUDY,
     REMOVE_SELECTED_CASE,
     REMOVE_SELECTED_FILE,
@@ -86,6 +87,10 @@ const initialState = {
 export const reducer = createReducer(initialState, {
     [LOAD_STUDIES_SUCCESS]: (state, action) => {
         state.studies = action.studies;
+    },
+
+    [LOAD_TEMPORARY_STUDIES]: (state, action) => {
+        state.temporaryStudies = action.temporaryStudies;
     },
 
     [LOAD_CASES_SUCCESS]: (state, action) => {
