@@ -13,11 +13,11 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { useIntl } from 'react-intl';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
-import InputAdornment from "@material-ui/core/InputAdornment";
+import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 
 const TABLE_NAMES = [
     'Substations',
