@@ -8,7 +8,7 @@ import { withStyles } from '@material-ui/core/styles';
 import TableCell from '@material-ui/core/TableCell';
 import { AutoSizer, Column, Table } from 'react-virtualized';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Grid from '@material-ui/core/Grid';
+import memoize from 'memoize-one';
 
 const styles = (theme) => ({
     flexContainer: {
@@ -39,6 +39,9 @@ const styles = (theme) => ({
     noClick: {
         cursor: 'initial',
     },
+    header: {
+        marginLeft: 16,
+    },
 });
 
 class MuiVirtualizedTable extends React.PureComponent {
@@ -47,11 +50,45 @@ class MuiVirtualizedTable extends React.PureComponent {
         rowHeight: 48,
     };
 
-    sortInfos = {
+    state = {
         key: undefined,
         direction: 'asc',
-        reorderedIndex: undefined,
     };
+
+    reorderIndex = memoize((key, direction, filter) => {
+        let indexedArray = [];
+        for (let i = 0; i < this.props.rowCount; i++) {
+            const row = this.props.rowGetter({ index: i });
+            if (!filter || filter(row)) indexedArray.push([row, i]);
+        }
+
+        function compareValue(a, b, isNumeric, reverse) {
+            const mult = reverse ? 1 : -1;
+            if (a === undefined && b === undefined) return 0;
+            else if (a === undefined) return mult;
+            else if (b === undefined) return -mult;
+
+            return isNumeric
+                ? (Number(a) < Number(b) ? 1 : -1) * mult
+                : ('' + a).localeCompare(b) * mult;
+        }
+
+        if (key !== undefined) {
+            const reverse = direction === 'asc';
+            const isNumeric = this.props.columns[key].numeric;
+            const dataKey = this.props.columns[key].dataKey;
+            if (dataKey && dataKey !== '')
+                indexedArray.sort((a, b) =>
+                    compareValue(
+                        a[0][dataKey],
+                        b[0][dataKey],
+                        isNumeric,
+                        reverse
+                    )
+                );
+        }
+        return indexedArray.map((k) => k[1]);
+    });
 
     sortableHeader = ({ label, columnIndex }) => {
         const { headerHeight, columns, classes } = this.props;
@@ -59,55 +96,30 @@ class MuiVirtualizedTable extends React.PureComponent {
         return (
             <TableSortLabel
                 component="div"
-                className={clsx(classes.tableCell, classes.flexContainer)}
-                active={columnIndex === this.sortInfos.key}
-                style={{ height: headerHeight }}
-                direction={this.sortInfos.direction}
-                align={columns[columnIndex].numeric ? 'right' : 'left'}
+                className={clsx(classes.tableCell, classes.flexContainer, classes.header)}
+                active={columnIndex === this.state.key}
+                style={{
+                    height: headerHeight,
+                    justifyContent: columns[columnIndex].numeric
+                        ? 'flex-end'
+                        : 'baseline',
+                }}
+                direction={this.state.direction}
                 onClick={() => {
-                    let newSortInfos = {};
-                    if (columnIndex === this.sortInfos.key) {
-                        newSortInfos.direction =
-                            this.sortInfos.direction === 'asc' ? 'desc' : 'asc';
-                        newSortInfos.key = this.sortInfos.key;
+                    if (columnIndex === this.state.key) {
+                        this.setState({
+                            direction:
+                                this.state.direction === 'asc' ? 'desc' : 'asc',
+                        });
                     } else {
-                        newSortInfos.direction = this.sortInfos.direction;
-                        newSortInfos.key = columnIndex;
+                        this.setState({ key: columnIndex });
                     }
-                    this.setSortInfos(newSortInfos);
                 }}
             >
                 <span>{label}</span>
             </TableSortLabel>
         );
     };
-
-    setSortInfos = (sortInfos) => {
-        let indexedArray = [];
-        for (let i = 0; i < this.props.rowCount; i++) {
-            const row = this.props.rowGetter({ index: i });
-            if (this.acceptRow(row)) indexedArray.push([row, i]);
-        }
-        const reverse = sortInfos.direction === 'asc' ? 1 : -1;
-        const isNumeric = this.props.columns[sortInfos.key].numeric;
-        const key = this.props.columns[sortInfos.key].dataKey;
-        indexedArray.sort((a, b) =>
-            !isNumeric
-                ? a[0][key].localeCompare(b[0][key]) * reverse
-                : (Number(a[0][key]) < Number(b[0][key]) ? 1 : -1) * reverse
-        );
-        sortInfos.reorderedIndex = indexedArray.map((k) => k[1]);
-
-        this.sortInfos = sortInfos;
-        this.forceUpdate();
-    };
-
-    getIndexFor(index) {
-        return this.sortInfos.reorderedIndex &&
-            this.sortInfos.reorderedIndex.length > index
-            ? this.sortInfos.reorderedIndex[index]
-            : index;
-    }
 
     getRowClassName = ({ index }) => {
         const { classes, onRowClick } = this.props;
@@ -185,32 +197,30 @@ class MuiVirtualizedTable extends React.PureComponent {
         );
     };
 
-    rowGetter(index) {
-        return this.props.rowGetter(this.getIndexFor(index));
-    }
-
-    acceptRow(cellData) {
-        if (this.props.filter) return this.props.filter(cellData);
-        return true;
-    }
-
     render() {
         const {
             classes,
             columns,
             rowHeight,
             headerHeight,
+            rowCount,
             ...tableProps
         } = this.props;
+
+        const reorderedIndex = this.reorderIndex(
+            this.state.key,
+            this.state.direction,
+            this.props.filter
+        );
+
+        const getIndexFor = (index) => {
+            return index < reorderedIndex.length ? reorderedIndex[index] : 0;
+        };
+
         return (
             <AutoSizer>
                 {({ height, width }) => (
                     <Table
-                        rowCount={() =>
-                            this.sortInfos.reorderedIndex
-                                ? this.sortInfos.reorderedIndex.length
-                                : this.props.rowCount
-                        }
                         height={height}
                         width={width}
                         rowHeight={rowHeight}
@@ -220,10 +230,11 @@ class MuiVirtualizedTable extends React.PureComponent {
                         headerHeight={headerHeight}
                         className={classes.table}
                         {...tableProps}
+                        rowCount={reorderedIndex.length}
                         rowClassName={this.getRowClassName}
                         rowGetter={({ index }) =>
                             this.props.rowGetter({
-                                index: this.getIndexFor(index),
+                                index: getIndexFor(index),
                             })
                         }
                     >
