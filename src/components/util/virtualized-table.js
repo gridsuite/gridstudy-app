@@ -96,7 +96,11 @@ class MuiVirtualizedTable extends React.PureComponent {
         return (
             <TableSortLabel
                 component="div"
-                className={clsx(classes.tableCell, classes.flexContainer, classes.header)}
+                className={clsx(
+                    classes.tableCell,
+                    classes.flexContainer,
+                    classes.header
+                )}
                 active={columnIndex === this.state.key}
                 style={{
                     height: headerHeight,
