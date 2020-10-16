@@ -38,8 +38,16 @@ function backendFetch(url, init) {
 export function fetchStudies() {
     console.info('Fetching studies...');
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies';
-    console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
+}
+
+export function fetchStudyCreationRequests() {
+    console.info('Fetching study creation requests...');
+    const creationRequestsUrl =
+        PREFIX_STUDY_QUERIES + '/v1/study_creation_requests';
+    return backendFetch(creationRequestsUrl).then((response) =>
+        response.json()
+    );
 }
 
 export function fetchStudy(studyName, userId) {
@@ -417,6 +425,33 @@ export function connectNotificationsWebsocket(studyName) {
         console.info('Connected Websocket ' + wsadress + ' ...');
     };
     return rws;
+}
+
+/**
+ * Function will be called to connect with notification websocket to update the studies list
+ * @returns {ReconnectingWebSocket}
+ */
+export function connectNotificationsWsUpdateStudies() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl +
+        PREFIX_NOTIFICATION_WS +
+        '/notify?updateType=studies';
+
+    let webSocketUrlWithToken;
+    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        webSocketUrlWithToken
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update studies' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
 }
 
 export function getAvailableExportFormats() {
