@@ -788,7 +788,7 @@ StudyPane.defaultProps = {
 };
 
 StudyPane.propTypes = {
-    view: PropTypes.instanceOf(StudyView),
+    view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
 };
 
