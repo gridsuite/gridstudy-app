@@ -135,7 +135,7 @@
     "Loading": "Loading",
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
-    "LOW_VOLTAGE": "Low voltage"
+    "LOW_VOLTAGE": "Low voltage",
 
     "descLfVoltageInitMode": "Voltage initialization ",
     "descLfTransformerVoltageControlOn": "Transformer voltage control",
@@ -148,7 +148,6 @@
     "descLfDcValues": "DC Values",
     "resetToDefault": "default values",
     "save": "save",
-    "LoadFlow":"LoadFlow",
     "descLfReadSlackBus": "Read slack bus from network",
-    "descLfWriteSlackBus": "Write slack bus to network",
+    "descLfWriteSlackBus": "Write slack bus to network"
 }

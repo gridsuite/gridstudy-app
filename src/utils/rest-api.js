@@ -50,14 +50,19 @@ export function fetchStudyCreationRequests() {
     );
 }
 
-export function fetchStudy(studyName, userId) {
-    console.info('Fetching studies...');
-    const fetchStudiesUrl =
+function getStudyUrl(studyName, userId) {
+    return (
         PREFIX_STUDY_QUERIES +
         '/v1/' +
         encodeURIComponent(userId) +
         '/studies/' +
-        studyName;
+        encodeURIComponent(studyName)
+    );
+}
+
+export function fetchStudy(studyName, userId) {
+    console.info('Fetching studies...');
+    const fetchStudiesUrl = getStudyUrl(studyName, userId);
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
@@ -67,16 +72,6 @@ export function fetchCases() {
     const fetchCasesUrl = PREFIX_CASE_QUERIES + '/v1/cases';
     console.debug(fetchCasesUrl);
     return backendFetch(fetchCasesUrl).then((response) => response.json());
-}
-
-function getStudyUrl(studyName, userId) {
-    return (
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName)
-    );
 }
 
 export function getVoltageLevelSingleLineDiagram(
@@ -147,12 +142,7 @@ export function fetchLines(studyName, userId) {
 export function fetchTwoWindingsTransformers(studyName, userId) {
     console.info(`Fetching 2 windings transformers of study '${studyName}'...`);
     const fetchTwoWindingsTransformersUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
-        '/network-map/2-windings-transformers';
+        getStudyUrl(studyName, userId) + '/network-map/2-windings-transformers';
     console.debug(fetchTwoWindingsTransformersUrl);
     return backendFetch(fetchTwoWindingsTransformersUrl).then((response) =>
         response.json()
@@ -162,12 +152,7 @@ export function fetchTwoWindingsTransformers(studyName, userId) {
 export function fetchThreeWindingsTransformers(studyName, userId) {
     console.info(`Fetching 3 windings transformers of study '${studyName}'...`);
     const fetchThreeWindingsTransformersUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
-        '/network-map/3-windings-transformers';
+        getStudyUrl(studyName, userId) + '/network-map/3-windings-transformers';
     console.debug(fetchThreeWindingsTransformersUrl);
     return backendFetch(fetchThreeWindingsTransformersUrl).then((response) =>
         response.json()
@@ -177,12 +162,7 @@ export function fetchThreeWindingsTransformers(studyName, userId) {
 export function fetchGenerators(studyName, userId) {
     console.info(`Fetching generators of study '${studyName}'...`);
     const fetchGeneratorsUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
-        '/network-map/generators';
+        getStudyUrl(studyName, userId) + '/network-map/generators';
     console.debug(fetchGeneratorsUrl);
     return backendFetch(fetchGeneratorsUrl).then((response) => response.json());
 }
@@ -308,11 +288,7 @@ function getContingencyListsQueryParams(contingencyListNames) {
 export function startSecurityAnalysis(studyName, userId, contingencyListNames) {
     console.info('Running security analysis on ' + studyName + '...');
     const url =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
+        getStudyUrl(studyName, userId) +
         '/security-analysis/run' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
@@ -321,13 +297,7 @@ export function startSecurityAnalysis(studyName, userId, contingencyListNames) {
 
 export function fetchSecurityAnalysisResult(studyName, userId) {
     console.info('Fetching security analysis on ' + studyName + '...');
-    const url =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
-        '/security-analysis/result';
+    const url = getStudyUrl(studyName, userId) + '/security-analysis/result';
     console.debug(url);
     return backendFetch(url, { method: 'get' });
 }
@@ -346,11 +316,7 @@ export function fetchContingencyCount(userId, studyName, contingencyListNames) {
         `Fetching contingency count for ${contingencyListNames} on ' + ${studyName} + '...'`
     );
     const url =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
+        getStudyUrl(studyName, userId) +
         '/contingency-count' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
@@ -428,14 +394,7 @@ function getUrlWithToken(baseUrl) {
 
 export function getExportUrl(userId, studyName, exportFormat) {
     const url =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
-        '/' +
-        '/export-network/' +
-        exportFormat;
+        getStudyUrl(studyName, userId) + '/export-network/' + exportFormat;
     return getUrlWithToken(url);
 }
 

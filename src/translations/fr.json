@@ -117,7 +117,7 @@
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
 
-    "viewOverloadsTable": "Afficher la table des surcharges"
+    "viewOverloadsTable": "Afficher la table des surcharges",
 
     "LoadFlow": "Calcul de répartition",
     "SecurityAnalysis": "Analyse de sécurité",
@@ -148,7 +148,6 @@
     "descLfDcValues": "DC",
     "resetToDefault": "Valeur par défaut",
     "save": "enregister",
-    "LoadFlow":"LoadFlow",
     "descLfReadSlackBus": "Lire le noeud bilan dans le réseau",
     "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau"
 }

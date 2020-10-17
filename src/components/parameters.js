@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -82,7 +82,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const studyName = useSelector((state) => state.studyName);
     const userId = useSelector((state) => state.userId);
 
-    const [lfParams, setLfParam] = React.useState(null);
+    const [lfParams, setLfParams] = React.useState(null);
 
     const lineFlowAlertThreshold = useSelector(
         (state) => state.lineFlowAlertThreshold
@@ -97,6 +97,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     );
 
     const [tabIndex, setTabIndex] = React.useState(0);
+
+    useEffect(() => {
+        if (userId) {
+            getLoadFlowParameters(studyName, userId).then((params) =>
+                setLfParams(params)
+            );
+        }
+    }, [studyName, userId]);
 
     const theme = useSelector((state) => state.theme);
 
@@ -408,17 +416,16 @@ const Parameters = ({ showParameters, hideParameters }) => {
     }
 
     const resetLfParameters = () => {
-        getLoadFlowParameters(studyName, userId).then((res) => setLfParam(res));
+        setLoadFlowParameters(studyName, userId, null)
+            .then(() => {
+                return getLoadFlowParameters(studyName, userId);
+            })
+            .then((params) => setLfParams(params));
     };
 
     const commitLFParameter = (newParams) => {
-        if (newParams) {
-            setLfParam(newParams);
-        }
+        setLfParams(newParams);
         setLoadFlowParameters(studyName, userId, newParams).then();
-        if (!newParams) {
-            resetLfParameters();
-        }
     };
 
     const LoadFlowParameters = () => {
@@ -461,9 +468,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 description: 'descLfWriteSlackBus',
             },
         };
-        if (!lfParams) {
-            resetLfParameters();
-        }
+
         return (
             lfParams && (
                 <Grid
@@ -473,10 +478,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     justify="flex-end"
                 >
                     {makeComponentsFor(defParams, lfParams, commitLFParameter)}
-                    {MakeButton(
-                        () => commitLFParameter(null),
-                        'resetToDefault'
-                    )}
+                    {MakeButton(() => resetLfParameters(), 'resetToDefault')}
                 </Grid>
             )
         );
