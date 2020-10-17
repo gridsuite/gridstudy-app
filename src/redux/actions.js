@@ -151,12 +151,6 @@ export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
 }
 
-export const LOADFLOW_PARAMETERS_CHANGED = 'LOADFLOW_PARAMETERS_CHANGED';
-
-export function loadFlowParametersChanged(lfParam) {
-    return { type: LOADFLOW_PARAMETERS_CHANGED, lfParam };
-}
-
 export const VIEW_OVERLOADS_TABLE = 'VIEW_OVERLOADS_TABLE';
 
 export function toggleViewOverloadsTableState() {
