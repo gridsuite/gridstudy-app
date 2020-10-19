@@ -140,6 +140,7 @@ const OverloadedLinesView = (props) => {
                             width: 150,
                             label: intl.formatMessage({ id: 'Name' }),
                             dataKey: 'name',
+                            numeric: false,
                             cellRenderer: (cellData) =>
                                 MakeCell(
                                     cellData.rowData.name,

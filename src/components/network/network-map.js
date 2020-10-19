@@ -396,9 +396,9 @@ NetworkMap.propTypes = {
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,
-    lineFlowMode: PropTypes.instanceOf(LineFlowMode),
+    lineFlowMode: PropTypes.oneOf(Object.values(LineFlowMode)),
     lineFlowHidden: PropTypes.bool,
-    lineFlowColorMode: PropTypes.instanceOf(LineFlowColorMode),
+    lineFlowColorMode: PropTypes.oneOf(Object.values(LineFlowColorMode)),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     visible: PropTypes.bool,
 };
