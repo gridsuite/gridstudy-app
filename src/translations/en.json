@@ -140,5 +140,19 @@
     "Loading": "Loading",
     "CURRENT": "Current",
     "HIGH_VOLTAGE": "High voltage",
-    "LOW_VOLTAGE": "Low voltage"
+    "LOW_VOLTAGE": "Low voltage",
+
+    "descLfVoltageInitMode": "Voltage initialization ",
+    "descLfTransformerVoltageControlOn": "Transformer voltage control",
+    "descLfNoGeneratorReactiveLimits": "Generator reactive limits",
+    "descLfPhaseShifterRegulationOn": "Phase shifter regulation",
+    "descLfTwtSplitShuntAdmittance": "Split shunt admittance",
+    "descLfSimulShunt": "Shunt simulation",
+    "descLfUniformValues": "Uniform values",
+    "descLfPreviousValues": "Previous values",
+    "descLfDcValues": "DC Values",
+    "resetToDefault": "default values",
+    "save": "save",
+    "descLfReadSlackBus": "Read slack bus from network",
+    "descLfWriteSlackBus": "Write slack bus to network"
 }
