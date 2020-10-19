@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Network from './network';
 import VirtualizedTable from '../util/virtualized-table';
@@ -13,6 +13,11 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { useIntl } from 'react-intl';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 import TableCell from '@material-ui/core/TableCell';
 import { IconButton, TextField } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
@@ -42,6 +47,12 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         cursor: 'initial',
     },
+    searchSection: {
+        height: '48px',
+        paddingRight: '10px',
+        alignItems: 'center',
+        minWidth: '300px',
+    },
 }));
 
 const NetworkTable = (props) => {
@@ -49,6 +60,7 @@ const NetworkTable = (props) => {
 
     const [tabIndex, setTabIndex] = React.useState(0);
     const [lineEdit, setLineEdit] = React.useState({});
+    const [rowFilter, setRowFilter] = React.useState(undefined);
     const intl = useIntl();
 
     const rowHeight = 48;
@@ -192,6 +204,7 @@ const NetworkTable = (props) => {
             <VirtualizedTable
                 rowCount={props.network.substations.length}
                 rowGetter={({ index }) => props.network.substations[index]}
+                filter={filter}
                 columns={[
                     {
                         width: 400,
@@ -219,6 +232,7 @@ const NetworkTable = (props) => {
             <VirtualizedTable
                 rowCount={voltageLevels.length}
                 rowGetter={({ index }) => voltageLevels[index]}
+                filter={filter}
                 columns={[
                     {
                         width: 400,
@@ -252,6 +266,7 @@ const NetworkTable = (props) => {
             <VirtualizedTable
                 rowCount={props.network.lines.length}
                 rowGetter={({ index }) => props.network.lines[index]}
+                filter={filter}
                 columns={[
                     {
                         width: 400,
@@ -327,6 +342,7 @@ const NetworkTable = (props) => {
                 rowGetter={({ index }) =>
                     props.network.twoWindingsTransformers[index]
                 }
+                filter={filter}
                 columns={[
                     makeHeaderCell('TWO_WINDINGS_TRANSFORMER'),
                     {
@@ -407,6 +423,7 @@ const NetworkTable = (props) => {
                 rowGetter={({ index }) =>
                     props.network.threeWindingsTransformers[index]
                 }
+                filter={filter}
                 columns={[
                     makeHeaderCell('THREE_WINDINGS_TRANSFORMER'),
                     {
@@ -534,6 +551,7 @@ const NetworkTable = (props) => {
             <VirtualizedTable
                 rowCount={props.network.generators.length}
                 rowGetter={({ index }) => props.network.generators[index]}
+                filter={filter}
                 columns={[
                     makeHeaderCell('GENERATOR'),
                     {
@@ -579,29 +597,84 @@ const NetworkTable = (props) => {
         );
     }
 
+    function setFilter(event) {
+        const value = event.target.value;
+        setRowFilter(
+            !value || value === '' ? undefined : new RegExp(value, 'i')
+        );
+    }
+
+    const filter = useCallback(
+        (cell) => {
+            if (!rowFilter) return true;
+            let ok = false;
+            Object.values(cell).forEach((value) => {
+                if (rowFilter.test(value)) {
+                    ok = true;
+                }
+            });
+
+            return ok;
+        },
+        [rowFilter]
+    );
+
     return (
         props.network && (
             <AutoSizer>
                 {({ width, height }) => (
                     <div style={{ width: width, height: height - 48 }}>
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            variant="scrollable"
-                            scrollButtons="auto"
-                            onChange={(event, newValue) =>
-                                setTabIndex(newValue)
-                            }
-                            aria-label="tables"
-                        >
-                            {TABLE_NAMES.map((tableName) => (
-                                <Tab
-                                    label={intl.formatMessage({
-                                        id: tableName,
-                                    })}
+                        <Grid container justify={'space-between'}>
+                            <Grid item>
+                                <Tabs
+                                    value={tabIndex}
+                                    indicatorColor="primary"
+                                    variant="scrollable"
+                                    scrollButtons="auto"
+                                    onChange={(event, newValue) =>
+                                        setTabIndex(newValue)
+                                    }
+                                    aria-label="tables"
+                                >
+                                    {TABLE_NAMES.map((tableName) => (
+                                        <Tab
+                                            key={tableName}
+                                            label={intl.formatMessage({
+                                                id: tableName,
+                                            })}
+                                        />
+                                    ))}
+                                </Tabs>
+                            </Grid>
+                            <Grid
+                                item
+                                alignContent={'flex-end'}
+                                className={classes.searchSection}
+                            >
+                                <TextField
+                                    className={classes.textField}
+                                    size="medium"
+                                    placeholder={
+                                        intl.formatMessage({ id: 'filter' }) +
+                                        '...'
+                                    }
+                                    onChange={setFilter}
+                                    variant="standard"
+                                    classes={classes.searchSection}
+                                    fullWidth
+                                    InputProps={{
+                                        classes: {
+                                            input: classes.searchSection,
+                                        },
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
                                 />
-                            ))}
-                        </Tabs>
+                            </Grid>
+                        </Grid>
                         {/*This render is fast, rerender full dom everytime*/}
                         {tabIndex === 0 && renderSubstationsTable()}
                         {tabIndex === 1 && renderVoltageLevelsTable()}

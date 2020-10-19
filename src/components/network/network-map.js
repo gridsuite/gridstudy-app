@@ -64,6 +64,10 @@ const NetworkMap = forwardRef((props, ref) => {
 
     const useName = useSelector((state) => state.useName);
 
+    const filteredNominalVoltages = useSelector(
+        (state) => state.filteredNominalVoltages
+    );
+
     const [cursorType, setCursorType] = useState('grab');
 
     useImperativeHandle(
@@ -269,7 +273,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 network: props.network,
                 geoData: props.geoData,
                 getNominalVoltageColor: getNominalVoltageColor,
-                filteredNominalVoltages: props.filteredNominalVoltages,
+                filteredNominalVoltages: filteredNominalVoltages,
                 useName: useName,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
@@ -289,7 +293,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 geoData: props.geoData,
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
-                filteredNominalVoltages: props.filteredNominalVoltages,
+                filteredNominalVoltages: filteredNominalVoltages,
                 lineFlowMode: props.lineFlowMode,
                 showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
@@ -371,7 +375,6 @@ NetworkMap.defaultProps = {
     labelsZoomThreshold: 9,
     arrowsZoomThreshold: 7,
     initialZoom: 5,
-    filteredNominalVoltages: null,
     initialPosition: [0, 0],
     lineFullPath: true,
     lineParallelPath: true,
@@ -388,15 +391,14 @@ NetworkMap.propTypes = {
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
-    filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,
-    lineFlowMode: PropTypes.instanceOf(LineFlowMode),
+    lineFlowMode: PropTypes.oneOf(Object.values(LineFlowMode)),
     lineFlowHidden: PropTypes.bool,
-    lineFlowColorMode: PropTypes.instanceOf(LineFlowColorMode),
+    lineFlowColorMode: PropTypes.oneOf(Object.values(LineFlowColorMode)),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     visible: PropTypes.bool,
 };

@@ -39,6 +39,7 @@ import {
 } from '../utils/rest-api';
 import {
     closeStudy,
+    filteredNominalVoltagesUpdated,
     increaseResultCount,
     loadGeoDataSuccess,
     loadNetworkSuccess,
@@ -139,7 +140,9 @@ const StudyPane = (props) => {
         null
     );
 
-    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState([]);
+    const filteredNominalVoltages = useSelector(
+        (state) => state.filteredNominalVoltages
+    );
 
     const [loadFlowStatus, setLoadFlowStatus] = useState(RunningStatus.IDLE);
 
@@ -365,6 +368,7 @@ const StudyPane = (props) => {
             websocketExpectedCloseRef.current = true;
             ws.close();
             dispatch(closeStudy());
+            dispatch(filteredNominalVoltagesUpdated(null));
         };
         // Note: dispach, studyName, loadNetwork, loadGeoData,
         // connectNotifications don't change
@@ -388,12 +392,12 @@ const StudyPane = (props) => {
     }, [location.search]);
 
     useEffect(() => {
-        if (network) {
-            setFilteredNominalVoltages(network.getNominalVoltages());
-        } else {
-            setFilteredNominalVoltages([]);
+        if (network && !filteredNominalVoltages) {
+            dispatch(
+                filteredNominalVoltagesUpdated(network.getNominalVoltages())
+            );
         }
-    }, [network]);
+    }, [network, filteredNominalVoltages, dispatch]);
 
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
@@ -497,7 +501,7 @@ const StudyPane = (props) => {
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                loadNetwork(studyName);
+                loadNetwork();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'loadflow_status'
@@ -521,7 +525,7 @@ const StudyPane = (props) => {
                 );
             }
         }
-        // Note: studyName and loadNetwork don't change
+        // Note: studyName, and loadNetwork don't change
     }, [
         studyUpdatedForce,
         studyName,
@@ -531,25 +535,6 @@ const StudyPane = (props) => {
         updateEquipment,
         dispatch,
     ]);
-
-    const updateFilteredNominalVoltages = (vnoms, isToggle) => {
-        // filter on nominal voltage
-        let newFiltered;
-        if (isToggle) {
-            newFiltered = [...filteredNominalVoltages];
-            vnoms.forEach((vnom) => {
-                const currentIndex = filteredNominalVoltages.indexOf(vnom);
-                if (currentIndex === -1) {
-                    newFiltered.push(vnom);
-                } else {
-                    newFiltered.splice(currentIndex, 1);
-                }
-            });
-        } else {
-            newFiltered = [...vnoms];
-        }
-        setFilteredNominalVoltages(newFiltered);
-    };
 
     const mapRef = useRef();
     const centerSubstation = useCallback(
@@ -591,6 +576,15 @@ const StudyPane = (props) => {
 
         return (
             <div>
+                {waitingLoadGeoData && (
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={70}
+                        loadingMessageText="loadingGeoData"
+                        loadingMessageSize={25}
+                        loaderMessageSpace={135}
+                    />
+                )}
                 <Grid container direction="row" className={classes.main}>
                     <Grid item xs={12} md={2}>
                         <AutoSizer>
@@ -655,9 +649,6 @@ const StudyPane = (props) => {
                                 arrowsZoomThreshold={7}
                                 initialPosition={INITIAL_POSITION}
                                 initialZoom={1}
-                                filteredNominalVoltages={
-                                    filteredNominalVoltages
-                                }
                                 lineFullPath={lineFullPath}
                                 lineParallelPath={lineParallelPath}
                                 lineFlowMode={lineFlowMode}
@@ -748,15 +739,7 @@ const StudyPane = (props) => {
                                         zIndex: 1,
                                     }}
                                 >
-                                    <NominalVoltageFilter
-                                        nominalVoltages={network.getNominalVoltages()}
-                                        filteredNominalVoltages={
-                                            filteredNominalVoltages
-                                        }
-                                        onNominalVoltageFilterChange={
-                                            updateFilteredNominalVoltages
-                                        }
-                                    />
+                                    <NominalVoltageFilter />
                                 </div>
                             )}
                         </div>
@@ -850,7 +833,7 @@ StudyPane.defaultProps = {
 };
 
 StudyPane.propTypes = {
-    view: PropTypes.instanceOf(StudyView),
+    view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
 };
 
