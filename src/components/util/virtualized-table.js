@@ -77,7 +77,7 @@ class MuiVirtualizedTable extends React.PureComponent {
             const reverse = direction === 'asc';
             const isNumeric = this.props.columns[key].numeric;
             const dataKey = this.props.columns[key].dataKey;
-            if (dataKey && dataKey !== '')
+            if (dataKey && dataKey !== '' && this.state.direction !== '')
                 indexedArray.sort((a, b) =>
                     compareValue(
                         a[0][dataKey],
@@ -110,14 +110,17 @@ class MuiVirtualizedTable extends React.PureComponent {
                 }}
                 direction={this.state.direction}
                 onClick={() => {
-                    if (columnIndex === this.state.key) {
-                        this.setState({
-                            direction:
-                                this.state.direction === 'asc' ? 'desc' : 'asc',
-                        });
-                    } else {
-                        this.setState({ key: columnIndex });
+                    let { key, direction } = this.state;
+                    if (key === undefined) key = columnIndex;
+                    else if (direction === 'asc') direction = 'desc';
+                    else {
+                        key = undefined;
+                        direction = 'asc';
                     }
+                    this.setState({
+                        key: key,
+                        direction: direction,
+                    });
                 }}
             >
                 <span>{label}</span>
