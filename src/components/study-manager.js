@@ -51,17 +51,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import BuildIcon from '@material-ui/icons/Build';
-import {
-    AccessRightsDialog,
-    DeleteDialog,
-    ExportDialog,
-    RenameDialog,
-} from '../utils/dialogs';
+import { DeleteDialog, ExportDialog, RenameDialog } from '../utils/dialogs';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import CreateStudyForm from './create-study-form';
 import LoaderWithOverlay from './loader-with-overlay';
+import AccessRightsDialog from './access-rights-dialog';
 
 const useStyles = makeStyles((theme) => ({
     card: {

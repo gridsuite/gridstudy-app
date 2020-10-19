@@ -270,13 +270,7 @@ export function renameStudy(studyName, userId, newStudyName) {
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
     console.info('Change access rights of study ' + studyName);
     const changeStudyAccessRightsUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
-        '/accessRights?toPrivate=' +
-        toPrivate;
+        getStudyUrl(studyName, userId) + '/accessRights?toPrivate=' + toPrivate;
 
     console.debug(changeStudyAccessRightsUrl);
     return backendFetch(changeStudyAccessRightsUrl, {
