@@ -110,7 +110,7 @@ const DonwnloadIframe = 'downloadIframe';
  * @param {String} study.studyName Name of the study
  * @param {String} study.caseFormat Format of the study
  * @param {String} study.description Description of the study
- * @param {Date} study.caseDate Date of the study
+ * @param {Date} study.creationDate Date of the study
  * @param {EventListener} onClick Event to open the study
  * @param inprogressLoader
  */
@@ -259,28 +259,30 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                         arrow
                         enterDelay={1000}
                         enterNextDelay={1000}
-                        classes={classes}
+                        classes={{ tooltip: classes.tooltip }}
                     >
-                        <CardHeader
-                            avatar={
-                                studyCreationLoader ? (
-                                    <canvas className={classes.logo} />
-                                ) : (
-                                    logo(study.caseFormat)
-                                )
-                            }
-                            title={
-                                <div className={classes.cardTitle}>
-                                    <Typography noWrap variant="h5">
-                                        {study.studyName}
-                                    </Typography>
-                                </div>
-                            }
-                            subheader={
-                                study.caseDate &&
-                                study.caseDate.toLocaleString()
-                            }
-                        />
+                        <div>
+                            <CardHeader
+                                avatar={
+                                    studyCreationLoader ? (
+                                        <canvas className={classes.logo} />
+                                    ) : (
+                                        logo(study.caseFormat)
+                                    )
+                                }
+                                title={
+                                    <div className={classes.cardTitle}>
+                                        <Typography noWrap variant="h5">
+                                            {study.studyName}
+                                        </Typography>
+                                    </div>
+                                }
+                                subheader={
+                                    study.caseDate &&
+                                    study.caseDate.toLocaleString()
+                                }
+                            />
+                        </div>
                     </Tooltip>
                 </CardActionArea>
                 <CardActions className={classes.actions}>
@@ -386,10 +388,10 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
 StudyCard.propTypes = {
     study: PropTypes.shape({
         studyName: PropTypes.string.isRequired,
-        userId: PropTypes.object.isRequired,
+        userId: PropTypes.string.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
-        caseDate: PropTypes.instanceOf(Date),
+        creationDate: PropTypes.number,
     }),
     onClick: PropTypes.func.isRequired,
 };
@@ -458,7 +460,13 @@ const StudyManager = ({ onClick }) => {
                 </Grid>
                 {studyCreationRequests &&
                     studyCreationRequests.map((study) => (
-                        <Grid item xs={12} sm={6} md={3}>
+                        <Grid
+                            item
+                            xs={12}
+                            sm={6}
+                            md={3}
+                            key={study.userId + '/' + study.studyName}
+                        >
                             <StudyCard
                                 studyCreationLoader={true}
                                 study={study}

@@ -424,6 +424,7 @@ const NetworkTable = (props) => {
                         >
                             {TABLE_NAMES.map((tableName) => (
                                 <Tab
+                                    key={tableName}
                                     label={intl.formatMessage({
                                         id: tableName,
                                     })}

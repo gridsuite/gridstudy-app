@@ -238,7 +238,7 @@ const App = () => {
                                 } else {
                                     label = <FormattedMessage id={tabName} />;
                                 }
-                                return <Tab label={label} />;
+                                return <Tab key={tabName} label={label} />;
                             })}
                         </Tabs>
                     )}
