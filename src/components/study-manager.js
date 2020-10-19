@@ -411,7 +411,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 studyName={study.studyName}
                 userId={study.userId}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
-                isPrivate={study.isPrivate}
+                isPrivate={study.studyPrivate}
             />
         </div>
     );

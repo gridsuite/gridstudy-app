@@ -269,8 +269,13 @@ export function renameStudy(studyName, userId, newStudyName) {
 
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
     console.info('Change access rights of study ' + studyName);
-    const changeStudyAccessRightsUrl =
-        getStudyUrl(studyName, userId) + '/accessRights?toPrivate=' + toPrivate;
+    let changeStudyAccessRightsUrl;
+    if (toPrivate) {
+        changeStudyAccessRightsUrl =
+            getStudyUrl(studyName, userId) + '/private';
+    } else {
+        changeStudyAccessRightsUrl = getStudyUrl(studyName, userId) + '/public';
+    }
 
     console.debug(changeStudyAccessRightsUrl);
     return backendFetch(changeStudyAccessRightsUrl, {
