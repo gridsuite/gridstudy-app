@@ -135,5 +135,19 @@
     "Loading": "Charge (%)",
     "CURRENT": "Intensité",
     "HIGH_VOLTAGE": "Tension haute",
-    "LOW_VOLTAGE": "Tension basse"
+    "LOW_VOLTAGE": "Tension basse",
+
+    "descLfVoltageInitMode": "Initialisation des tensions",
+    "descLfTransformerVoltageControlOn": "Contrôle tension des Transformateurs",
+    "descLfNoGeneratorReactiveLimits": "Limite en réactif des groupes",
+    "descLfPhaseShifterRegulationOn": "Régulation des déphaseurs",
+    "descLfTwtSplitShuntAdmittance": "Répartir l'admittance des moyens de compensation",
+    "descLfSimulShunt": "Simulation des moyens de compensation",
+    "descLfUniformValues": "Uniforme",
+    "descLfPreviousValues": "Précédentes",
+    "descLfDcValues": "DC",
+    "resetToDefault": "Valeur par défaut",
+    "save": "enregister",
+    "descLfReadSlackBus": "Lire le noeud bilan dans le réseau",
+    "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau"
 }

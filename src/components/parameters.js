@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -47,6 +47,10 @@ import {
 } from '../redux/actions';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
+import {
+    getLoadFlowParameters,
+    setLoadFlowParameters,
+} from '../utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -75,6 +79,11 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const lineParallelPath = useSelector((state) => state.lineParallelPath);
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
+    const studyName = useSelector((state) => state.studyName);
+    const userId = useSelector((state) => state.userId);
+
+    const [lfParams, setLfParams] = React.useState(null);
+
     const lineFlowAlertThreshold = useSelector(
         (state) => state.lineFlowAlertThreshold
     );
@@ -88,6 +97,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     );
 
     const [tabIndex, setTabIndex] = React.useState(0);
+
+    useEffect(() => {
+        if (userId) {
+            getLoadFlowParameters(studyName, userId).then((params) =>
+                setLfParams(params)
+            );
+        }
+    }, [studyName, userId]);
 
     const theme = useSelector((state) => state.theme);
 
@@ -168,6 +185,44 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     />
                 </Grid>
             </>
+        );
+    }
+
+    function MakeDropDown(prop, label, values, callback) {
+        return (
+            <>
+                <Grid item xs={6}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id={label} />:
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={6} className={classes.controlItem}>
+                    <Select labelId={label} value={prop} onChange={callback}>
+                        {Object.keys(values).map((key) => (
+                            <MenuItem key={key} value={key}>
+                                <FormattedMessage id={values[key]} />
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Grid>
+            </>
+        );
+    }
+
+    function MakeButton(callback, label) {
+        return (
+            <Grid item>
+                <Button
+                    onClick={callback}
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                >
+                    <FormattedMessage id={label} />
+                </Button>
+            </Grid>
         );
     }
 
@@ -331,6 +386,104 @@ const Parameters = ({ showParameters, hideParameters }) => {
         );
     };
 
+    const TYPES = {
+        enum: 'Enum',
+        bool: 'Bool',
+    };
+
+    function makeComponentFor(defParam, key, lfParams, setter) {
+        if (defParam.type === TYPES.bool) {
+            return MakeSwitch(lfParams[key], defParam.description, (ev) =>
+                setter({ ...lfParams, [key]: ev.target.checked })
+            );
+        } else if (defParam.type === TYPES.enum) {
+            return MakeDropDown(
+                lfParams[key],
+                defParam.description,
+                defParam.values,
+                (ev) => setter({ ...lfParams, [key]: ev.target.value })
+            );
+        }
+    }
+
+    function makeComponentsFor(defParams, params, setter) {
+        return Object.keys(defParams).map((key) => (
+            <Grid container key={key}>
+                {makeComponentFor(defParams[key], key, params, setter)}
+                <MakeLineSeparator />
+            </Grid>
+        ));
+    }
+
+    const resetLfParameters = () => {
+        setLoadFlowParameters(studyName, userId, null)
+            .then(() => {
+                return getLoadFlowParameters(studyName, userId);
+            })
+            .then((params) => setLfParams(params));
+    };
+
+    const commitLFParameter = (newParams) => {
+        setLfParams(newParams);
+        setLoadFlowParameters(studyName, userId, newParams).then();
+    };
+
+    const LoadFlowParameters = () => {
+        const defParams = {
+            voltageInitMode: {
+                type: TYPES.enum,
+                description: 'descLfVoltageInitMode',
+                values: {
+                    UNIFORM_VALUES: 'descLfUniformValues',
+                    PREVIOUS_VALUES: 'descLfPreviousValues',
+                    DC_VALUES: 'descLfDcValues',
+                },
+            },
+            transformerVoltageControlOn: {
+                type: TYPES.bool,
+                description: 'descLfTransformerVoltageControlOn',
+            },
+            noGeneratorReactiveLimits: {
+                type: TYPES.bool,
+                description: 'descLfNoGeneratorReactiveLimits',
+            },
+            phaseShifterRegulationOn: {
+                type: TYPES.bool,
+                description: 'descLfPhaseShifterRegulationOn',
+            },
+            twtSplitShuntAdmittance: {
+                type: TYPES.bool,
+                description: 'descLfTwtSplitShuntAdmittance',
+            },
+            simulShunt: {
+                type: TYPES.bool,
+                description: 'descLfSimulShunt',
+            },
+            readSlackBus: {
+                type: TYPES.bool,
+                description: 'descLfReadSlackBus',
+            },
+            writeSlackBus: {
+                type: TYPES.bool,
+                description: 'descLfWriteSlackBus',
+            },
+        };
+
+        return (
+            lfParams && (
+                <Grid
+                    container
+                    spacing={2}
+                    className={classes.grid}
+                    justify="flex-end"
+                >
+                    {makeComponentsFor(defParams, lfParams, commitLFParameter)}
+                    {MakeButton(() => resetLfParameters(), 'resetToDefault')}
+                </Grid>
+            )
+        );
+    };
+
     return (
         <Dialog
             open={showParameters}
@@ -363,6 +516,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                             label={<FormattedMessage id="SingleLineDiagram" />}
                         />
                         <Tab label={<FormattedMessage id="Map" />} />
+                        <Tab
+                            disabled={!studyName}
+                            label={<FormattedMessage id="LoadFlow" />}
+                        />
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
@@ -373,6 +530,9 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     </TabPanel>
                     <TabPanel value={tabIndex} index={2}>
                         <MapParameters />
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={3}>
+                        {studyName && <LoadFlowParameters />}
                     </TabPanel>
                     <Grid item xs={12}>
                         <Button
