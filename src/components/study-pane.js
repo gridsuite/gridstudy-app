@@ -246,6 +246,12 @@ const StudyPane = (props) => {
         }
     };
 
+    const isComputationRunning = () => {
+        return RUNNABLES.some(function (runnable) {
+            return getRunningStatus(runnable) === RunningStatus.RUNNING;
+        });
+    };
+
     const getRunningText = (runnable, status) => {
         return runnable;
     };
@@ -652,10 +658,7 @@ const StudyPane = (props) => {
                                         )}
                                         ref={sldRef}
                                         updateSwitchMsg={updateSwitchMsg}
-                                        isLFRunning={
-                                            loadFlowStatus ===
-                                            RunningStatus.RUNNING
-                                        }
+                                        isComputationRunning={isComputationRunning()}
                                     />
                                 </div>
                             )}

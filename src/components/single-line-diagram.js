@@ -139,7 +139,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
     }, [props.svgUrl, forceState]);
 
-    const { onNextVoltageLevelClick, onBreakerClick, isLFRunning } = props;
+    const {
+        onNextVoltageLevelClick,
+        onBreakerClick,
+        isComputationRunning,
+    } = props;
     useLayoutEffect(() => {
         if (svg.svg) {
             // calculate svg width and height
@@ -197,7 +201,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             });
 
             // handling the click on a switch
-            if (!isLFRunning) {
+            if (!isComputationRunning) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.includes(element.componentType)
                 );
@@ -220,7 +224,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
-    }, [svg, onNextVoltageLevelClick, onBreakerClick, isLFRunning]);
+    }, [svg, onNextVoltageLevelClick, onBreakerClick, isComputationRunning]);
 
     useEffect(() => {
         svgPrevViewbox.current = null;
@@ -291,7 +295,7 @@ SingleLineDiagram.propTypes = {
     svgUrl: PropTypes.string.isRequired,
     onClose: PropTypes.func,
     updateSwitchMsg: PropTypes.string.isRequired,
-    isLFRunning: PropTypes.bool.isRequired,
+    isComputationRunning: PropTypes.bool.isRequired,
 };
 
 export default SingleLineDiagram;
