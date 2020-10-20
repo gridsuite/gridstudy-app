@@ -14,8 +14,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { useSelector } from 'react-redux';
-
 import {
     _MapContext as MapContext,
     NavigationControl,
@@ -27,6 +25,8 @@ import DeckGL from '@deck.gl/react';
 import { useTheme } from '@material-ui/styles';
 import { decomposeColor } from '@material-ui/core/styles/colorManipulator';
 
+import Network from './network';
+import GeoData from './geo-data';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
@@ -60,16 +60,6 @@ const NetworkMap = forwardRef((props, ref) => {
         return labelColor;
     }, [theme]);
 
-    const useName = useSelector((state) => state.useName);
-
-    const network = useSelector((state) => state.network);
-
-    const geoData = useSelector((state) => state.geoData);
-
-    const filteredNominalVoltages = useSelector(
-        (state) => state.filteredNominalVoltages
-    );
-
     const [cursorType, setCursorType] = useState('grab');
 
     useImperativeHandle(
@@ -101,11 +91,11 @@ const NetworkMap = forwardRef((props, ref) => {
                         centered.lastCenteredSubstation)) &&
             deck !== null &&
             deck.viewManager != null &&
-            geoData !== null
+            props.geoData !== null
         ) {
-            if (geoData.substationPositionsById.size > 0) {
+            if (props.geoData.substationPositionsById.size > 0) {
                 if (centered.centeredSubstationId) {
-                    const geodata = geoData.substationPositionsById.get(
+                    const geodata = props.geoData.substationPositionsById.get(
                         centered.centeredSubstationId
                     );
                     const copyViewState =
@@ -133,7 +123,7 @@ const NetworkMap = forwardRef((props, ref) => {
                     });
                 } else {
                     const coords = Array.from(
-                        geoData.substationPositionsById.entries()
+                        props.geoData.substationPositionsById.entries()
                     ).map((x) => x[1]);
                     const maxlon = Math.max.apply(
                         null,
@@ -268,19 +258,19 @@ const NetworkMap = forwardRef((props, ref) => {
     const layers = [];
 
     if (
-        network !== null &&
-        geoData !== null &&
-        filteredNominalVoltages !== null
+        props.network !== null &&
+        props.geoData !== null &&
+        props.filteredNominalVoltages !== null
     ) {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
-                data: network.substations,
-                network: network,
-                geoData: geoData,
+                data: props.network.substations,
+                network: props.network,
+                geoData: props.geoData,
                 getNominalVoltageColor: getNominalVoltageColor,
-                filteredNominalVoltages: filteredNominalVoltages,
-                useName: useName,
+                filteredNominalVoltages: props.filteredNominalVoltages,
+                useName: props.useName,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
@@ -294,12 +284,13 @@ const NetworkMap = forwardRef((props, ref) => {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
-                data: network.lines,
-                network: network,
-                geoData: geoData,
+                data: props.network.lines,
+                network: props.network,
+                geoData: props.geoData,
+                useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
-                filteredNominalVoltages: filteredNominalVoltages,
+                filteredNominalVoltages: props.filteredNominalVoltages,
                 lineFlowMode: props.lineFlowMode,
                 showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
@@ -313,7 +304,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 onHover: ({ object, x, y }) => {
                     setTooltip({
                         message: object
-                            ? useName
+                            ? props.useName
                                 ? object.name
                                 : object.id
                             : null,
@@ -342,7 +333,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 setDeck(ref && ref.deck);
             }}
             onClick={(info) => {
-                onClickHandler(info, network);
+                onClickHandler(info, props.network);
             }}
             onAfterRender={onAfterRender}
             layers={layers}
@@ -376,6 +367,10 @@ const NetworkMap = forwardRef((props, ref) => {
 });
 
 NetworkMap.defaultProps = {
+    network: null,
+    geoData: null,
+    useName: null,
+    filteredNominalVoltages: null,
     labelsZoomThreshold: 9,
     arrowsZoomThreshold: 7,
     initialZoom: 5,
@@ -390,6 +385,10 @@ NetworkMap.defaultProps = {
 };
 
 NetworkMap.propTypes = {
+    network: PropTypes.instanceOf(Network).isRequired,
+    geoData: PropTypes.instanceOf(GeoData).isRequired,
+    useName: PropTypes.bool.isRequired,
+    filteredNominalVoltages: PropTypes.array.isRequired,
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
