@@ -470,7 +470,6 @@ const StudyManager = ({ onClick }) => {
                     </Box>
                 </Grid>
                 {studyCreationRequests &&
-                    studyCreationRequests instanceof Array &&
                     studyCreationRequests.map((study) => (
                         <Grid
                             item
@@ -486,24 +485,23 @@ const StudyManager = ({ onClick }) => {
                             />
                         </Grid>
                     ))}
-                {studies instanceof Array &&
-                    studies.map((study) => (
-                        <Grid
-                            item
-                            xs={12}
-                            sm={6}
-                            md={3}
-                            key={study.userId + '/' + study.studyName}
-                        >
-                            <StudyCard
-                                studyCreationLoader={false}
-                                study={study}
-                                onClick={() =>
-                                    onClick(study.studyName, study.userId)
-                                }
-                            />
-                        </Grid>
-                    ))}
+                {studies.map((study) => (
+                    <Grid
+                        item
+                        xs={12}
+                        sm={6}
+                        md={3}
+                        key={study.userId + '/' + study.studyName}
+                    >
+                        <StudyCard
+                            studyCreationLoader={false}
+                            study={study}
+                            onClick={() =>
+                                onClick(study.studyName, study.userId)
+                            }
+                        />
+                    </Grid>
+                ))}
             </Grid>
             <iframe
                 id={DonwnloadIframe}
