@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { changeStudyAccessRights, fetchStudies } from '../utils/rest-api';
-import { loadStudiesSuccess } from '../redux/actions';
+import { changeStudyAccessRights } from '../utils/rest-api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -48,8 +46,6 @@ const AccessRightsDialog = ({
 
     const [error, setError] = React.useState('');
 
-    const dispatch = useDispatch();
-
     const useStyles = makeStyles(() => ({
         formControl: {
             minWidth: 300,
@@ -60,14 +56,13 @@ const AccessRightsDialog = ({
         setLoading(true);
         changeStudyAccessRights(studyName, userId, selected).then(
             (response) => {
-                response.ok
-                    ? fetchStudies().then((studies) => {
-                          dispatch(loadStudiesSuccess(studies));
-                          onClose();
-                      })
-                    : setError(
-                          intl.formatMessage({ id: 'modifyAccessRightsError' })
-                      );
+                if (!response.ok) {
+                    setError(
+                        intl.formatMessage({ id: 'modifyAccessRightsError' })
+                    );
+                } else {
+                    onClose();
+                }
             }
         );
         setLoading(false);
