@@ -27,8 +27,6 @@ import DeckGL from '@deck.gl/react';
 import { useTheme } from '@material-ui/styles';
 import { decomposeColor } from '@material-ui/core/styles/colorManipulator';
 
-import Network from './network';
-import GeoData from './geo-data';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
@@ -63,6 +61,10 @@ const NetworkMap = forwardRef((props, ref) => {
     }, [theme]);
 
     const useName = useSelector((state) => state.useName);
+
+    const network = useSelector((state) => state.network);
+
+    const geoData = useSelector((state) => state.geoData);
 
     const filteredNominalVoltages = useSelector(
         (state) => state.filteredNominalVoltages
@@ -99,11 +101,11 @@ const NetworkMap = forwardRef((props, ref) => {
                         centered.lastCenteredSubstation)) &&
             deck !== null &&
             deck.viewManager != null &&
-            props.geoData !== null
+            geoData !== null
         ) {
-            if (props.geoData.substationPositionsById.size > 0) {
+            if (geoData.substationPositionsById.size > 0) {
                 if (centered.centeredSubstationId) {
-                    const geodata = props.geoData.substationPositionsById.get(
+                    const geodata = geoData.substationPositionsById.get(
                         centered.centeredSubstationId
                     );
                     const copyViewState =
@@ -131,7 +133,7 @@ const NetworkMap = forwardRef((props, ref) => {
                     });
                 } else {
                     const coords = Array.from(
-                        props.geoData.substationPositionsById.entries()
+                        geoData.substationPositionsById.entries()
                     ).map((x) => x[1]);
                     const maxlon = Math.max.apply(
                         null,
@@ -265,13 +267,17 @@ const NetworkMap = forwardRef((props, ref) => {
 
     const layers = [];
 
-    if (props.network !== null && props.geoData !== null) {
+    if (
+        network !== null &&
+        geoData !== null &&
+        filteredNominalVoltages !== null
+    ) {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
-                data: props.network.substations,
-                network: props.network,
-                geoData: props.geoData,
+                data: network.substations,
+                network: network,
+                geoData: geoData,
                 getNominalVoltageColor: getNominalVoltageColor,
                 filteredNominalVoltages: filteredNominalVoltages,
                 useName: useName,
@@ -288,9 +294,9 @@ const NetworkMap = forwardRef((props, ref) => {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
-                data: props.network.lines,
-                network: props.network,
-                geoData: props.geoData,
+                data: network.lines,
+                network: network,
+                geoData: geoData,
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: filteredNominalVoltages,
@@ -336,7 +342,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 setDeck(ref && ref.deck);
             }}
             onClick={(info) => {
-                onClickHandler(info, props.network);
+                onClickHandler(info, network);
             }}
             onAfterRender={onAfterRender}
             layers={layers}
@@ -370,8 +376,6 @@ const NetworkMap = forwardRef((props, ref) => {
 });
 
 NetworkMap.defaultProps = {
-    network: null,
-    geoData: null,
     labelsZoomThreshold: 9,
     arrowsZoomThreshold: 7,
     initialZoom: 5,
@@ -386,8 +390,6 @@ NetworkMap.defaultProps = {
 };
 
 NetworkMap.propTypes = {
-    network: PropTypes.instanceOf(Network),
-    geoData: PropTypes.instanceOf(GeoData),
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
