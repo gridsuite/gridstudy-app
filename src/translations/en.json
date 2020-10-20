@@ -24,6 +24,7 @@
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
+    "renameStudyError": "Cannot rename the study if you are not the owner",
 
     "exportNetwork": "Export the network",
     "export": "Export",
