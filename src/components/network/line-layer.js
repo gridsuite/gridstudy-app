@@ -163,7 +163,7 @@ function getArrowSpeedFactor(speed) {
             return 2;
         case ArrowSpeed.FAST:
             return 4;
-        case ArrowSpeed.FAST:
+        case ArrowSpeed.CRAZY:
             return 10;
         default:
             throw new Error('Unknown arrow speed: ' + speed);
