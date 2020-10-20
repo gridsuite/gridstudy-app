@@ -38,16 +38,28 @@ function backendFetch(url, init) {
 export function fetchStudies() {
     console.info('Fetching studies...');
     const fetchStudiesUrl = PREFIX_STUDY_QUERIES + '/v1/studies';
-    return backendFetch(fetchStudiesUrl).then((response) => response.json());
+    return backendFetch(fetchStudiesUrl).then(function (response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error(response);
+            return Promise.resolve([]);
+        }
+    });
 }
 
 export function fetchStudyCreationRequests() {
     console.info('Fetching study creation requests...');
     const creationRequestsUrl =
         PREFIX_STUDY_QUERIES + '/v1/study_creation_requests';
-    return backendFetch(creationRequestsUrl).then((response) =>
-        response.json()
-    );
+    return backendFetch(creationRequestsUrl).then(function (response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error(response);
+            return Promise.resolve([]);
+        }
+    });
 }
 
 function getStudyUrl(studyName, userId) {

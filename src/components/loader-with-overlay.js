@@ -10,15 +10,13 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         textAlign: 'center',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         background: 'grey',
         opacity: '0.8',
         zIndex: 99,
-    },
-    message: {
-        position: 'absolute',
-        lineHeight: 1.2,
+        fontSize: 15,
     },
 }));
 
@@ -33,14 +31,7 @@ const LoaderWithOverlay = ({
     return (
         <div className={classes.overlay} id={color}>
             <CircularProgress color={color} size={loaderSize} />
-            <div
-                className={classes.message}
-                style={{
-                    fontSize: loadingMessageSize,
-                }}
-            >
-                <FormattedMessage id={loadingMessageText} />
-            </div>
+            <FormattedMessage id={loadingMessageText} />
         </div>
     );
 };
