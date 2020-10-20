@@ -15,9 +15,6 @@ import { useIntl } from 'react-intl';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import TableCell from '@material-ui/core/TableCell';
 import { IconButton, TextField } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
@@ -78,20 +75,22 @@ const NetworkTable = (props) => {
 
     function commitChanges(rowData) {
         const changedTab = tabIndex;
-        requestNetworkChange(
-            props.userId,
-            props.studyName,
-            lineEdit[tabIndex].equipmentType,
-            lineEdit[tabIndex].id,
-            lineEdit[tabIndex].newValues
-        ).then((result) => {
-            Object.entries(result).forEach(([key, done]) => {
-                if (!done) {
-                    rowData[key] = lineEdit[tabIndex].oldValues[key];
-                }
-            });
-            setLineEditAt(changedTab, {});
+        let groovyCr =
+            "equipment = network.get('" +
+            lineEdit[tabIndex].equipmentType.replace("'", "\\'") +
+            "')";
+        lineEdit[tabIndex].newValues.forEach(([key, value]) => {
+            groovyCr += key + '=' + value;
         });
+
+        requestNetworkChange(props.userId, props.studyName, groovyCr).then(
+            (result) => {
+                Object.entries(lineEdit[changedTab].newValues).forEach(([key, value]) => {
+                    rowData[key] = value;
+                });
+                setLineEditAt(changedTab, {});
+            }
+        );
     }
 
     function resetChanges(rowData) {
@@ -344,7 +343,7 @@ const NetworkTable = (props) => {
                 }
                 filter={filter}
                 columns={[
-                    makeHeaderCell('TWO_WINDINGS_TRANSFORMER'),
+                    makeHeaderCell('TwoWindingsTransformers'),
                     {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
@@ -425,7 +424,7 @@ const NetworkTable = (props) => {
                 }
                 filter={filter}
                 columns={[
-                    makeHeaderCell('THREE_WINDINGS_TRANSFORMER'),
+                    makeHeaderCell('ThreeWindingsTransformer'),
                     {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
@@ -553,7 +552,7 @@ const NetworkTable = (props) => {
                 rowGetter={({ index }) => props.network.generators[index]}
                 filter={filter}
                 columns={[
-                    makeHeaderCell('GENERATOR'),
+                    makeHeaderCell('Generator'),
                     {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),

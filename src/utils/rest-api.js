@@ -417,27 +417,22 @@ export function fetchAppsAndUrls() {
 export function requestNetworkChange(
     userId,
     studyName,
-    equipmentType,
-    equipmentId,
-    changeRequest
+    groovyScript
 ) {
     console.info('request network change');
     const changeUrl =
         getStudyUrl(studyName, userId) +
-        '/network-modification/' +
-        equipmentType +
-        '/' +
-        equipmentId;
+        '/network-modification/groovy'
     console.debug(changeUrl);
     return backendFetch(changeUrl, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
             Accept: 'application/json',
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/text',
         },
-        body: JSON.stringify(changeRequest),
+        body: JSON.stringify(groovyScript),
     }).then((response) => {
-        return response.json();
+        return response;
     });
 }
 
