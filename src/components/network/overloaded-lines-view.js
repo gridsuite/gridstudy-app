@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useIntl } from 'react-intl';
@@ -102,10 +102,14 @@ const OverloadedLinesView = (props) => {
         setLines(
             props.lines
                 .map((line) => makeData(line))
-                .filter((l) => l.overload > props.lineFlowAlertThreshold)
                 .sort((a, b) => b.overload - a.overload)
         );
     }, [props.lines, props.network, props.lineFlowAlertThreshold]);
+
+    const filter = useCallback(
+        (line) => line.overload > props.lineFlowAlertThreshold,
+        [props.lineFlowAlertThreshold]
+    );
 
     function MakeCell(label, color) {
         return (
@@ -135,6 +139,7 @@ const OverloadedLinesView = (props) => {
                     rowStyle={{ alignItems: 'stretch' }}
                     rowHeight={rowHeight}
                     classes={{ tableRow: classes.rowCell }}
+                    filter={filter}
                     columns={[
                         {
                             width: 150,
