@@ -72,17 +72,17 @@ function getLineLoadingZoneOfSide(limit, intensity, lineFlowAlertThreshold) {
 }
 
 function getLineLoadingZone(line, lineFlowAlertThreshold) {
-    const gravity1 = getLineLoadingZoneOfSide(
+    const zone1 = getLineLoadingZoneOfSide(
         line.permanentLimit1,
         line.i1,
         lineFlowAlertThreshold
     );
-    const gravity2 = getLineLoadingZoneOfSide(
+    const zone2 = getLineLoadingZoneOfSide(
         line.permanentLimit2,
         line.i2,
         lineFlowAlertThreshold
     );
-    return Math.max(gravity1, gravity2);
+    return Math.max(zone1, zone2);
 }
 
 function getLineLoadingZoneColor(zone) {
