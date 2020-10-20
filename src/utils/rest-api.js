@@ -270,7 +270,7 @@ export function renameStudy(studyName, userId, newStudyName) {
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
     console.info('Change access rights of study ' + studyName);
     let changeStudyAccessRightsUrl;
-    if (toPrivate) {
+    if (toPrivate === 'true') {
         changeStudyAccessRightsUrl =
             getStudyUrl(studyName, userId) + '/private';
     } else {
