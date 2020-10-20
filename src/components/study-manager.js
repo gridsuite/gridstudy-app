@@ -192,6 +192,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
      * Rename dialog: window status value for renaming
      */
     const [openRenameDialog, setOpenRename] = React.useState(false);
+    const [renameError, setRenameError] = React.useState('');
 
     const handleOpenRename = () => {
         setAnchorEl(null);
@@ -200,14 +201,21 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
 
     const handleClickRename = (newStudyNameValue) => {
         renameStudy(study.studyName, study.userId, newStudyNameValue).then(
-            () => {
-                setOpenRename(false);
+            (response) => {
+                if (!response.ok) {
+                    setRenameError(
+                        intl.formatMessage({ id: 'renameStudyError' })
+                    );
+                } else {
+                    setOpenRename(false);
+                }
             }
         );
     };
 
     const handleCloseRename = () => {
         setOpenRename(false);
+        setRenameError('');
     };
 
     /**
@@ -241,18 +249,17 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     return (
         <div className={classes.container}>
             <Card className={classes.root}>
-                {studyCreationLoader && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={35}
-                        loadingMessageText="loadingCreationStudy"
-                        loadingMessageSize={15}
-                    />
-                )}
                 <CardActionArea
-                    onClick={() => onClick()}
+                    onClick={!studyCreationLoader ? () => onClick() : undefined}
                     className={classes.card}
                 >
+                    {studyCreationLoader && (
+                        <LoaderWithOverlay
+                            color="inherit"
+                            loaderSize={35}
+                            loadingMessageText="loadingCreationStudy"
+                        />
+                    )}
                     <Tooltip
                         title={study.studyName}
                         placement="top"
@@ -277,10 +284,9 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                                         </Typography>
                                     </div>
                                 }
-                                subheader={
-                                    study.caseDate &&
-                                    study.caseDate.toLocaleString()
-                                }
+                                subheader={new Date(
+                                    study.creationDate
+                                ).toLocaleString()}
                             />
                         </div>
                     </Tooltip>
@@ -321,23 +327,27 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                             />
                         </MenuItem>
 
-                        <MenuItem onClick={handleOpenRename}>
-                            <ListItemIcon>
-                                <EditIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<FormattedMessage id="rename" />}
-                            />
-                        </MenuItem>
+                        {!studyCreationLoader && (
+                            <MenuItem onClick={handleOpenRename}>
+                                <ListItemIcon>
+                                    <EditIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<FormattedMessage id="rename" />}
+                                />
+                            </MenuItem>
+                        )}
 
-                        <MenuItem onClick={handleOpenExport}>
-                            <ListItemIcon>
-                                <GetAppIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<FormattedMessage id="export" />}
-                            />
-                        </MenuItem>
+                        {!studyCreationLoader && (
+                            <MenuItem onClick={handleOpenExport}>
+                                <ListItemIcon>
+                                    <GetAppIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<FormattedMessage id="export" />}
+                                />
+                            </MenuItem>
+                        )}
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -372,6 +382,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 title={useIntl().formatMessage({ id: 'renameStudy' })}
                 message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
                 currentName={study.studyName}
+                error={renameError}
             />
             <ExportDialog
                 open={openExportDialog}
@@ -391,7 +402,7 @@ StudyCard.propTypes = {
         userId: PropTypes.string.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
-        creationDate: PropTypes.number,
+        creationDate: PropTypes.string,
     }),
     onClick: PropTypes.func.isRequired,
 };
