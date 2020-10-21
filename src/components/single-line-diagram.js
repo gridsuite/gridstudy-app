@@ -63,6 +63,12 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
         right: 0,
     },
+    header: {
+        padding: 5,
+        display: 'flex',
+        flexDirection: 'row',
+        backgroundColor: theme.palette.background.default,
+    },
 }));
 
 const SvgNotFound = (props) => {
@@ -274,8 +280,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     }
 
     return (
-        <Paper elevation={1} variant="outlined" className={finalClasses}>
-            <Box display="flex" flexDirection="row">
+        <Paper
+            elevation={1}
+            variant="outlined"
+            square="true"
+            className={finalClasses}
+        >
+            <Box className={classes.header}>
                 <Box flexGrow={1}>
                     <Typography>{props.diagramTitle}</Typography>
                 </Box>

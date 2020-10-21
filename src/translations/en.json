@@ -32,6 +32,11 @@
     "exportFormat": "Format of the export",
     "exportStudyErrorMsg": "No export format specified",
 
+    "accessRights": "Access rights",
+    "modifyAccessRights": "Modify the access rights",
+    "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
+    "edit": "Edit",
+
     "studyNameErrorMsg": "Study name should not be empty",
     "caseNameErrorMsg": "Please select the case name",
     "caseDataErrorMsg": "An error occured when importing the case",

@@ -279,6 +279,26 @@ export function renameStudy(studyName, userId, newStudyName) {
     }).then((response) => response.json());
 }
 
+export function changeStudyAccessRights(studyName, userId, toPrivate) {
+    console.info('Change access rights of study ' + studyName);
+    let changeStudyAccessRightsUrl;
+    if (toPrivate === 'true') {
+        changeStudyAccessRightsUrl =
+            getStudyUrl(studyName, userId) + '/private';
+    } else {
+        changeStudyAccessRightsUrl = getStudyUrl(studyName, userId) + '/public';
+    }
+
+    console.debug(changeStudyAccessRightsUrl);
+    return backendFetch(changeStudyAccessRightsUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
 export function startLoadFlow(studyName, userId) {
     console.info('Running loadflow on ' + studyName + '...');
     const startLoadFlowUrl = getStudyUrl(studyName, userId) + '/loadflow/run';

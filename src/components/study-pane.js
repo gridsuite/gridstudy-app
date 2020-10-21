@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
             height: 'calc(100vh - 48px)',
         },
         [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 64px)',
+            height: 'calc(100vh - 75px)',
         },
     },
     error: {
@@ -539,15 +539,22 @@ const StudyPane = (props) => {
             }
         }
 
+        const sldTitle =
+            useName && displayedVoltageLevel
+                ? displayedVoltageLevel.name +
+                  ' \u002D ' +
+                  network.getSubstation(displayedVoltageLevel.substationId)
+                      .countryName
+                : displayedVoltageLevelId;
+
         return (
             <div>
                 {waitingLoadGeoData && (
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
+                        isFixed={true}
                         loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
-                        loaderMessageSpace={135}
                     />
                 )}
                 <Grid container direction="row" className={classes.main}>
@@ -580,7 +587,7 @@ const StudyPane = (props) => {
                                             <div
                                                 style={{
                                                     position: 'relative',
-                                                    height: height - 44,
+                                                    height: height - 96,
                                                 }}
                                             >
                                                 <NetworkExplorer
@@ -610,6 +617,10 @@ const StudyPane = (props) => {
                             <NetworkMap
                                 network={network}
                                 geoData={geoData}
+                                useName={useName}
+                                filteredNominalVoltages={
+                                    filteredNominalVoltages
+                                }
                                 labelsZoomThreshold={9}
                                 arrowsZoomThreshold={7}
                                 initialPosition={INITIAL_POSITION}
@@ -630,8 +641,8 @@ const StudyPane = (props) => {
                                 <div
                                     style={{
                                         position: 'absolute',
-                                        left: 10,
-                                        top: 10,
+                                        left: 0,
+                                        top: 0,
                                         zIndex: 1,
                                     }}
                                 >
@@ -643,11 +654,7 @@ const StudyPane = (props) => {
                                             showVoltageLevelDiagram
                                         }
                                         onBreakerClick={handleUpdateSwitchState}
-                                        diagramTitle={
-                                            useName && displayedVoltageLevel
-                                                ? displayedVoltageLevel.name
-                                                : displayedVoltageLevelId
-                                        }
+                                        diagramTitle={sldTitle}
                                         svgUrl={getVoltageLevelSingleLineDiagram(
                                             studyName,
                                             userId,
@@ -755,8 +762,8 @@ const StudyPane = (props) => {
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
+                        isFixed={true}
                         loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
                     />
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
