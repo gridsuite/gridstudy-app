@@ -139,17 +139,9 @@ function getArrowSpeedOfSide(limit, intensity) {
     }
 }
 
-function getArrowSpeed(line, lineFlowAlertThreshold) {
-    const speed1 = getArrowSpeedOfSide(
-        line.permanentLimit1,
-        line.i1,
-        lineFlowAlertThreshold
-    );
-    const speed2 = getArrowSpeedOfSide(
-        line.permanentLimit2,
-        line.i2,
-        lineFlowAlertThreshold
-    );
+function getArrowSpeed(line) {
+    const speed1 = getArrowSpeedOfSide(line.permanentLimit1, line.i1);
+    const speed2 = getArrowSpeedOfSide(line.permanentLimit2, line.i2);
     return Math.max(speed1, speed2);
 }
 
@@ -505,12 +497,7 @@ class LineLayer extends CompositeLayer {
                         ),
                     getSize: 700,
                     getSpeedFactor: (arrow) =>
-                        getArrowSpeedFactor(
-                            getArrowSpeed(
-                                arrow.line,
-                                this.props.lineFlowAlertThreshold
-                            )
-                        ),
+                        getArrowSpeedFactor(getArrowSpeed(arrow.line)),
                     getLineParallelIndex: (arrow) => arrow.line.parallelIndex,
                     getLineAngle: (arrow) => arrow.line.angle,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
