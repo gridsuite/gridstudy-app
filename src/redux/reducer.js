@@ -62,6 +62,7 @@ import {
 
 const initialState = {
     studies: [],
+    temporaryStudies: [],
     studyName: null,
     userId: null,
     network: null,

@@ -50,12 +50,14 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import BuildIcon from '@material-ui/icons/Build';
 import { DeleteDialog, ExportDialog, RenameDialog } from '../utils/dialogs';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import CreateStudyForm from './create-study-form';
 import LoaderWithOverlay from './loader-with-overlay';
+import AccessRightsDialog from './access-rights-dialog';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -192,6 +194,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
      * Rename dialog: window status value for renaming
      */
     const [openRenameDialog, setOpenRename] = React.useState(false);
+    const [renameError, setRenameError] = React.useState('');
 
     const handleOpenRename = () => {
         setAnchorEl(null);
@@ -200,14 +203,21 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
 
     const handleClickRename = (newStudyNameValue) => {
         renameStudy(study.studyName, study.userId, newStudyNameValue).then(
-            () => {
-                setOpenRename(false);
+            (response) => {
+                if (!response.ok) {
+                    setRenameError(
+                        intl.formatMessage({ id: 'renameStudyError' })
+                    );
+                } else {
+                    setOpenRename(false);
+                }
             }
         );
     };
 
     const handleCloseRename = () => {
         setOpenRename(false);
+        setRenameError('');
     };
 
     /**
@@ -229,6 +239,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
         handleCloseExport();
     };
 
+    const [openAccessRightsDialog, setOpenAccessRightsDialog] = React.useState(
+        false
+    );
+
+    const handleOpenAccessRights = () => {
+        setAnchorEl(null);
+        setOpenAccessRightsDialog(true);
+    };
+
+    const handleCloseAccessRights = () => {
+        setOpenAccessRightsDialog(false);
+    };
+
     /**
      * Status for displaying additional information
      */
@@ -241,18 +264,17 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     return (
         <div className={classes.container}>
             <Card className={classes.root}>
-                {studyCreationLoader && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={35}
-                        loadingMessageText="loadingCreationStudy"
-                        loadingMessageSize={15}
-                    />
-                )}
                 <CardActionArea
-                    onClick={() => onClick()}
+                    onClick={!studyCreationLoader ? () => onClick() : undefined}
                     className={classes.card}
                 >
+                    {studyCreationLoader && (
+                        <LoaderWithOverlay
+                            color="inherit"
+                            loaderSize={35}
+                            loadingMessageText="loadingCreationStudy"
+                        />
+                    )}
                     <Tooltip
                         title={study.studyName}
                         placement="top"
@@ -277,10 +299,9 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                                         </Typography>
                                     </div>
                                 }
-                                subheader={
-                                    study.caseDate &&
-                                    study.caseDate.toLocaleString()
-                                }
+                                subheader={new Date(
+                                    study.creationDate
+                                ).toLocaleString()}
                             />
                         </div>
                     </Tooltip>
@@ -321,23 +342,40 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                             />
                         </MenuItem>
 
-                        <MenuItem onClick={handleOpenRename}>
-                            <ListItemIcon>
-                                <EditIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<FormattedMessage id="rename" />}
-                            />
-                        </MenuItem>
+                        {!studyCreationLoader && (
+                            <MenuItem onClick={handleOpenRename}>
+                                <ListItemIcon>
+                                    <EditIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<FormattedMessage id="rename" />}
+                                />
+                            </MenuItem>
+                        )}
 
-                        <MenuItem onClick={handleOpenExport}>
-                            <ListItemIcon>
-                                <GetAppIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<FormattedMessage id="export" />}
-                            />
-                        </MenuItem>
+                        {!studyCreationLoader && (
+                            <MenuItem onClick={handleOpenExport}>
+                                <ListItemIcon>
+                                    <GetAppIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<FormattedMessage id="export" />}
+                                />
+                            </MenuItem>
+                        )}
+
+                        {!studyCreationLoader && (
+                            <MenuItem onClick={handleOpenAccessRights}>
+                                <ListItemIcon>
+                                    <BuildIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <FormattedMessage id="accessRights" />
+                                    }
+                                />
+                            </MenuItem>
+                        )}
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -372,6 +410,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 title={useIntl().formatMessage({ id: 'renameStudy' })}
                 message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
                 currentName={study.studyName}
+                error={renameError}
             />
             <ExportDialog
                 open={openExportDialog}
@@ -380,6 +419,14 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 studyName={study.studyName}
                 userId={study.userId}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
+            />
+            <AccessRightsDialog
+                open={openAccessRightsDialog}
+                onClose={handleCloseAccessRights}
+                studyName={study.studyName}
+                userId={study.userId}
+                title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
+                isPrivate={study.studyPrivate}
             />
         </div>
     );
@@ -391,7 +438,7 @@ StudyCard.propTypes = {
         userId: PropTypes.string.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
-        creationDate: PropTypes.number,
+        creationDate: PropTypes.string,
     }),
     onClick: PropTypes.func.isRequired,
 };
