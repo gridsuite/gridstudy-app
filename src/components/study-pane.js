@@ -609,6 +609,10 @@ const StudyPane = (props) => {
                             <NetworkMap
                                 network={network}
                                 geoData={geoData}
+                                useName={useName}
+                                filteredNominalVoltages={
+                                    filteredNominalVoltages
+                                }
                                 labelsZoomThreshold={9}
                                 arrowsZoomThreshold={7}
                                 initialPosition={INITIAL_POSITION}
