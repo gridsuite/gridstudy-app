@@ -539,6 +539,14 @@ const StudyPane = (props) => {
             }
         }
 
+        const sldTitle =
+            useName && displayedVoltageLevel
+                ? displayedVoltageLevel.name +
+                  ' \u002D ' +
+                  network.getSubstation(displayedVoltageLevel.substationId)
+                      .countryName
+                : displayedVoltageLevelId;
+
         return (
             <div>
                 {waitingLoadGeoData && (
@@ -633,8 +641,8 @@ const StudyPane = (props) => {
                                 <div
                                     style={{
                                         position: 'absolute',
-                                        left: 10,
-                                        top: 10,
+                                        left: 0,
+                                        top: 0,
                                         zIndex: 1,
                                     }}
                                 >
@@ -646,11 +654,7 @@ const StudyPane = (props) => {
                                             showVoltageLevelDiagram
                                         }
                                         onBreakerClick={handleUpdateSwitchState}
-                                        diagramTitle={
-                                            useName && displayedVoltageLevel
-                                                ? displayedVoltageLevel.name
-                                                : displayedVoltageLevelId
-                                        }
+                                        diagramTitle={sldTitle}
                                         svgUrl={getVoltageLevelSingleLineDiagram(
                                             studyName,
                                             userId,
