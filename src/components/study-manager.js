@@ -272,6 +272,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                         <LoaderWithOverlay
                             color="inherit"
                             loaderSize={35}
+                            isFixed={false}
                             loadingMessageText="loadingCreationStudy"
                         />
                     )}
