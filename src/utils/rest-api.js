@@ -414,15 +414,10 @@ export function fetchAppsAndUrls() {
     });
 }
 
-export function requestNetworkChange(
-    userId,
-    studyName,
-    groovyScript
-) {
+export function requestNetworkChange(userId, studyName, groovyScript) {
     console.info('request network change');
     const changeUrl =
-        getStudyUrl(studyName, userId) +
-        '/network-modification/groovy'
+        getStudyUrl(studyName, userId) + '/network-modification/groovy';
     console.debug(changeUrl);
     return backendFetch(changeUrl, {
         method: 'PUT',
@@ -430,7 +425,7 @@ export function requestNetworkChange(
             Accept: 'application/json',
             'Content-Type': 'application/text',
         },
-        body: JSON.stringify(groovyScript),
+        body: groovyScript,
     }).then((response) => {
         return response;
     });

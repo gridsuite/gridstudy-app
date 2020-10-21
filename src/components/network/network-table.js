@@ -73,22 +73,51 @@ const NetworkTable = (props) => {
         });
     }
 
-    function commitChanges(rowData) {
-        const changedTab = tabIndex;
-        let groovyCr =
-            "equipment = network.get('" +
-            lineEdit[tabIndex].equipmentType.replace("'", "\\'") +
-            "')";
-        lineEdit[tabIndex].newValues.forEach(([key, value]) => {
-            groovyCr += key + '=' + value;
-        });
+    function generateTapRequest(type, leg) {
+        const getLeg = leg !== undefined ? '.getLeg' + leg + '()' : '';
+        return (
+            'tap = equipment' +
+            getLeg +
+            '.get' +
+            type +
+            'TapChanger()\n' +
+            'if (tap.getLowTapPosition() <= {} && {} < tap.getHighTapPosition() ) { \n' +
+            '    tap.setTapPosition({})\n' +
+            // to force update of transformer as sub elements changes like tapChanger are not detected
+            '    equipment.setFictitious(equipment.isFictitious())\n' +
+            '} else {\n' +
+            "throw new Exception('incorrect value')\n" +
+            ' }\n'
+        );
+    }
 
+    function commitChanges(rowData) {
+        const tab = tabIndex;
+        let groovyCr =
+            'equipment = network.get' +
+            lineEdit[tab].equipmentType +
+            "('" +
+            lineEdit[tabIndex].id.replace("'", "\\'") +
+            "')\n";
+        Object.values(lineEdit[tabIndex].newValues).map((cr) => {
+            groovyCr += cr.command.replaceAll('{}', cr.value) + '\n';
+        });
         requestNetworkChange(props.userId, props.studyName, groovyCr).then(
-            (result) => {
-                Object.entries(lineEdit[changedTab].newValues).forEach(([key, value]) => {
-                    rowData[key] = value;
-                });
-                setLineEditAt(changedTab, {});
+            (response) => {
+                if (response.ok) {
+                    Object.entries(lineEdit[tab].newValues).forEach(
+                        ([key, cr]) => {
+                            rowData[key] = cr.value;
+                        }
+                    );
+                } else {
+                    Object.entries(lineEdit[tab].oldValues).forEach(
+                        ([key, oldValue]) => {
+                            rowData[key] = oldValue;
+                        }
+                    );
+                }
+                setLineEditAt(tab, {});
             }
         );
     }
@@ -169,16 +198,19 @@ const NetworkTable = (props) => {
         );
     }
 
-    function registerChangeRequest(data, value) {
+    function registerChangeRequest(data, command, value) {
         // save original value, dont erase if exists
         if (!lineEdit[tabIndex].oldValues[data.dataKey])
             lineEdit[tabIndex].oldValues[data.dataKey] =
                 data.rowData[data.dataKey];
-        lineEdit[tabIndex].newValues[data.dataKey] = value;
+        lineEdit[tabIndex].newValues[data.dataKey] = {
+            command: command,
+            value: value,
+        };
         data.rowData[data.dataKey] = value;
     }
 
-    function EditableCellRender(cellData, numeric, fractionDigit) {
+    function EditableCellRender(cellData, numeric, command, fractionDigit) {
         return !isLineOnEditMode(cellData.rowIndex) ||
             cellData.rowData[cellData.dataKey] === undefined ? (
             defaultCellRender(cellData, numeric, fractionDigit)
@@ -191,7 +223,7 @@ const NetworkTable = (props) => {
                 margin={'normal'}
                 inputProps={{ style: { textAlign: 'center' } }}
                 onChange={(obj) =>
-                    registerChangeRequest(cellData, obj.target.value)
+                    registerChangeRequest(cellData, command, obj.target.value)
                 }
                 defaultValue={formatCellData(cellData, numeric, fractionDigit)}
             />
@@ -343,7 +375,7 @@ const NetworkTable = (props) => {
                 }
                 filter={filter}
                 columns={[
-                    makeHeaderCell('TwoWindingsTransformers'),
+                    makeHeaderCell('TwoWindingsTransformer'),
                     {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
@@ -401,14 +433,24 @@ const NetworkTable = (props) => {
                         label: intl.formatMessage({ id: 'RatioTap' }),
                         dataKey: 'ratioTapChangerPosition',
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 0),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                generateTapRequest('Ratio'),
+                                0
+                            ),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap' }),
                         dataKey: 'phaseTapChangerPosition',
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 0),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                generateTapRequest('Phase'),
+                                0
+                            ),
                     },
                 ]}
             />
@@ -503,42 +545,72 @@ const NetworkTable = (props) => {
                         label: intl.formatMessage({ id: 'RatioTap1' }),
                         dataKey: 'ratioTapChanger1Position',
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 0),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                generateTapRequest('Ratio', 1),
+                                0
+                            ),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap2' }),
                         dataKey: 'ratioTapChanger2Position',
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 0),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                generateTapRequest('Ratio', 2),
+                                0
+                            ),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap3' }),
                         dataKey: 'ratioTapChanger3Position',
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 0),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                generateTapRequest('Ratio', 3),
+                                0
+                            ),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap1' }),
                         dataKey: 'phaseTapChanger1Position',
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 0),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                generateTapRequest('Phase', 1),
+                                0
+                            ),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap2' }),
                         dataKey: 'phaseTapChanger2Position',
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 0),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                generateTapRequest('Phase', 2),
+                                0
+                            ),
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap3' }),
                         numeric: true,
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 0),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                generateTapRequest('Phase', 3),
+                                0
+                            ),
                     },
                 ]}
             />
@@ -589,7 +661,12 @@ const NetworkTable = (props) => {
                         label: intl.formatMessage({ id: 'TargetP' }),
                         dataKey: 'targetP',
                         cellRenderer: (cell) =>
-                            EditableCellRender(cell, true, 1),
+                            EditableCellRender(
+                                cell,
+                                true,
+                                'equipment.setTargetP({})',
+                                1
+                            ),
                     },
                 ]}
             />

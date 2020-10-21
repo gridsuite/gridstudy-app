@@ -459,40 +459,8 @@ const StudyPane = (props) => {
         [studyName, userId]
     );
 
-    const updateEquipment = useCallback(
-        (typeEquipment, equipmentId) => {
-            if (!typeEquipment || !equipmentId) {
-                return;
-            }
-            let fetchCb, equipments;
-            switch (typeEquipment) {
-                case 'GENERATOR':
-                    fetchCb = fetchGenerators(studyName, userId);
-                    equipments = network.generators;
-                    break;
-                case 'TWO_WINDINGS_TRANSFORMER':
-                    fetchCb = fetchTwoWindingsTransformers(studyName, userId);
-                    equipments = network.twoWindingsTransformers;
-                    break;
-                case 'THREE_WINDINGS_TRANSFORMER':
-                    fetchCb = fetchThreeWindingsTransformers(studyName, userId);
-                    equipments = network.threeWindingsTransformers;
-                    break;
-                default:
-                    return;
-            }
-            fetchCb.then((res) => {
-                equipments[
-                    equipments.findIndex((e) => e.id === equipmentId)
-                ] = res.find((e) => e.id === equipmentId);
-            });
-        },
-        [network, studyName, userId]
-    );
-
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.info(studyUpdatedForce.eventData.headers);
             if (sldRef.current) {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
@@ -515,14 +483,6 @@ const StudyPane = (props) => {
 
                 // update badge
                 dispatch(increaseResultCount());
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'equipment'
-            ) {
-                updateEquipment(
-                    studyUpdatedForce.eventData.headers['equipment_type'],
-                    studyUpdatedForce.eventData.headers['equipment_id']
-                );
             }
         }
         // Note: studyName, and loadNetwork don't change
@@ -532,7 +492,6 @@ const StudyPane = (props) => {
         loadNetwork,
         updateLoadFlowStatus,
         updateSecurityAnalysisResult,
-        updateEquipment,
         dispatch,
     ]);
 
