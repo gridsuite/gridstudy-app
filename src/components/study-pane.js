@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
             height: 'calc(100vh - 48px)',
         },
         [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 64px)',
+            height: 'calc(100vh - 75px)',
         },
     },
     error: {
@@ -553,9 +553,8 @@ const StudyPane = (props) => {
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
+                        isFixed={true}
                         loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
-                        loaderMessageSpace={135}
                     />
                 )}
                 <Grid container direction="row" className={classes.main}>
@@ -588,7 +587,7 @@ const StudyPane = (props) => {
                                             <div
                                                 style={{
                                                     position: 'relative',
-                                                    height: height - 44,
+                                                    height: height - 96,
                                                 }}
                                             >
                                                 <NetworkExplorer
@@ -763,8 +762,8 @@ const StudyPane = (props) => {
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
+                        isFixed={true}
                         loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
                     />
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
