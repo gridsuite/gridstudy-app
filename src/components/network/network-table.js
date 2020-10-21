@@ -99,7 +99,7 @@ const NetworkTable = (props) => {
             "('" +
             lineEdit[tabIndex].id.replace("'", "\\'") +
             "')\n";
-        Object.values(lineEdit[tabIndex].newValues).map((cr) => {
+        Object.values(lineEdit[tabIndex].newValues).forEach((cr) => {
             groovyCr += cr.command.replaceAll('{}', cr.value) + '\n';
         });
         requestNetworkChange(props.userId, props.studyName, groovyCr).then(
