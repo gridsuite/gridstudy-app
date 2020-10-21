@@ -539,8 +539,7 @@ const StudyPane = (props) => {
             }
         }
 
-        let sldTitle;
-        sldTitle =
+        const sldTitle =
             useName && displayedVoltageLevel
                 ? displayedVoltageLevel.name +
                   ' \u002D ' +
