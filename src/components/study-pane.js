@@ -567,7 +567,7 @@ const StudyPane = (props) => {
                                             <div
                                                 style={{
                                                     position: 'relative',
-                                                    height: height - 96,
+                                                    height: height,
                                                 }}
                                             >
                                                 <NetworkExplorer
