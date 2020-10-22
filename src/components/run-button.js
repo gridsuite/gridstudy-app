@@ -21,41 +21,41 @@ export const RunningStatus = {
 
 const useStyles = makeStyles((theme) => ({
     succeed: {
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: 'rgba(theme.palette.background.paper, 0.5)',
         color: green[500],
         borderColor: green[500],
         '&:disabled': {
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: 'rgba(theme.palette.background.paper, 0.5)',
             color: green[500],
             borderColor: green[500],
         },
         '&:hover': {
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: 'rgba(theme.palette.background.paper, 0.5)',
             color: green[700],
             borderColor: green[700],
         },
     },
     failed: {
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: 'rgba(theme.palette.background.paper, 0.5)',
         color: red[500],
         borderColor: red[500],
         '&:disabled': {
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: 'rgba(theme.palette.background.paper, 0.5)',
             color: red[500],
             borderColor: red[500],
         },
         '&:hover': {
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: 'rgba(theme.palette.background.paper, 0.5)',
             color: red[700],
             borderColor: red[700],
         },
     },
     running: {
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: 'rgba(theme.palette.background.paper, 0.5)',
         color: grey[500],
         borderColor: grey[500],
         '&:disabled': {
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: 'rgba(theme.palette.background.paper, 0.5)',
             color: grey[500],
             borderColor: grey[500],
         },
