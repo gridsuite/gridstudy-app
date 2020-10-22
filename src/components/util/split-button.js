@@ -15,11 +15,34 @@ import Popper from '@material-ui/core/Popper';
 import MenuItem from '@material-ui/core/MenuItem';
 import MenuList from '@material-ui/core/MenuList';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    expand: {
+        transform: 'rotate(180deg)',
+        marginLeft: 'auto',
+        transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shortest,
+        }),
+    },
+    expandOpen: {
+        transform: 'rotate(0deg)',
+    },
+}));
 
 const SplitButton = (props) => {
+    const classes = useStyles();
+
     const [open, setOpen] = React.useState(false);
 
     const anchorRef = React.useRef(null);
+
+    const [expanded, setExpanded] = React.useState(false);
+
+    const handleExpandClick = () => {
+        setExpanded(!expanded);
+    };
 
     const handleClick = () => {
         if (props.onClick) {
@@ -47,32 +70,43 @@ const SplitButton = (props) => {
 
     const width = props.fullWidth ? '100%' : 'auto';
 
+    const breakText = (text) => {
+        return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
+    };
+
     return (
         <div>
             <ButtonGroup
                 style={{ width: width }}
                 className={props.className}
-                variant="contained"
+                variant="outlined"
                 color="primary"
                 ref={anchorRef}
             >
                 <Button
+                    variant="outlined"
                     startIcon={props.startIcon}
                     style={{ width: width }}
                     className={props.className}
                     disabled={props.buttonDisabled}
                     onClick={handleClick}
                 >
-                    {props.text}
+                    {breakText(props.text)}
                 </Button>
                 <Button
+                    variant="outlined"
                     color="primary"
                     size="small"
                     onClick={handleToggle}
                     className={props.className}
                     disabled={props.selectionDisabled}
                 >
-                    <ArrowDropDownIcon />
+                    <ArrowDropDownIcon
+                        onClick={handleExpandClick}
+                        className={clsx(classes.expand, {
+                            [classes.expandOpen]: expanded,
+                        })}
+                    />
                 </Button>
             </ButtonGroup>
             <Popper
@@ -107,7 +141,7 @@ const SplitButton = (props) => {
                                                 )
                                             }
                                         >
-                                            {option}
+                                            {breakText(option)}
                                         </MenuItem>
                                     ))}
                                 </MenuList>
