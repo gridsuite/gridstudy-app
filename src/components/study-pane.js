@@ -20,7 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
-import SingleLineDiagram from './single-line-diagram';
+import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchGenerators,
@@ -32,6 +32,7 @@ import {
     fetchSubstations,
     fetchThreeWindingsTransformers,
     fetchTwoWindingsTransformers,
+    getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
     startSecurityAnalysis,
@@ -74,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
             height: 'calc(100vh - 48px)',
         },
         [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 64px)',
+            height: 'calc(100vh - 75px)',
         },
     },
     error: {
@@ -130,6 +131,8 @@ const StudyPane = (props) => {
         Number(state.lineFlowAlertThreshold)
     );
 
+    const substationLayout = useSelector((state) => state.substationLayout);
+
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
@@ -144,6 +147,8 @@ const StudyPane = (props) => {
         (state) => state.filteredNominalVoltages
     );
 
+    const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
+
     const [loadFlowStatus, setLoadFlowStatus] = useState(RunningStatus.IDLE);
 
     const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(
@@ -156,7 +161,10 @@ const StudyPane = (props) => {
 
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
-    const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
+    const [
+        choiceVoltageLevelsSubstationId,
+        setChoiceVoltageLevelsSubstationId,
+    ] = useState(null);
 
     const [
         showContingencyListSelector,
@@ -395,6 +403,8 @@ const StudyPane = (props) => {
         setDisplayedVoltageLevelId(
             newVoltageLevelId ? newVoltageLevelId : null
         );
+        const newSubstationId = queryParams['substationId'];
+        setDisplayedSubstationId(newSubstationId ? newSubstationId : null);
     }, [location.search]);
 
     useEffect(() => {
@@ -423,9 +433,27 @@ const StudyPane = (props) => {
         [studyName, userId, history]
     );
 
+    const showSubstationDiagram = useCallback(
+        (substationId) => {
+            setUpdateSwitchMsg('');
+            history.replace(
+                '/' +
+                    encodeURIComponent(userId) +
+                    '/studies/' +
+                    encodeURIComponent(studyName) +
+                    stringify(
+                        { substationId: substationId },
+                        { addQueryPrefix: true }
+                    )
+            );
+        },
+        // Note: studyName and history don't change
+        [studyName, userId, history]
+    );
+
     const chooseVoltageLevelForSubstation = useCallback(
         (idSubstation, x, y) => {
-            setDisplayedSubstationId(idSubstation);
+            setChoiceVoltageLevelsSubstationId(idSubstation);
             setPosition([x, y]);
         },
         []
@@ -512,7 +540,7 @@ const StudyPane = (props) => {
     );
 
     function closeChoiceVoltageLevelMenu() {
-        setDisplayedSubstationId(null);
+        setChoiceVoltageLevelsSubstationId(null);
     }
 
     function choiceVoltageLevel(voltageLevelId) {
@@ -530,7 +558,16 @@ const StudyPane = (props) => {
             }
         }
 
-        let displayedSubstation = null;
+        let choiceVoltageLevelsSubstation = null;
+        if (network) {
+            if (choiceVoltageLevelsSubstationId) {
+                choiceVoltageLevelsSubstation = network.getSubstation(
+                    choiceVoltageLevelsSubstationId
+                );
+            }
+        }
+
+        let displayedSubstation;
         if (network) {
             if (displayedSubstationId) {
                 displayedSubstation = network.getSubstation(
@@ -539,15 +576,52 @@ const StudyPane = (props) => {
             }
         }
 
+        let sldTitle;
+        let svgUrl;
+        if (displayedVoltageLevel) {
+            sldTitle = useName
+                ? displayedVoltageLevel.name
+                : displayedVoltageLevel.id;
+            sldTitle +=
+                ' \u002D ' +
+                network.getSubstation(displayedVoltageLevel.substationId)
+                    .countryName;
+
+            svgUrl = getVoltageLevelSingleLineDiagram(
+                studyName,
+                userId,
+                displayedVoltageLevelId,
+                useName,
+                centerName,
+                diagonalName
+            );
+        } else if (displayedSubstation) {
+            sldTitle = useName
+                ? displayedSubstation.name
+                : displayedSubstation.id;
+            sldTitle +=
+                ' \u002D ' +
+                network.getSubstation(displayedSubstation.id).countryName;
+
+            svgUrl = getSubstationSingleLineDiagram(
+                studyName,
+                userId,
+                displayedSubstationId,
+                useName,
+                centerName,
+                diagonalName,
+                substationLayout
+            );
+        }
+
         return (
             <div>
                 {waitingLoadGeoData && (
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
+                        isFixed={true}
                         loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
-                        loaderMessageSpace={135}
                     />
                 )}
                 <Grid container direction="row" className={classes.main}>
@@ -580,13 +654,16 @@ const StudyPane = (props) => {
                                             <div
                                                 style={{
                                                     position: 'relative',
-                                                    height: height - 44,
+                                                    height: height - 96,
                                                 }}
                                             >
                                                 <NetworkExplorer
                                                     network={network}
                                                     onVoltageLevelDisplayClick={
                                                         showVoltageLevelDiagram
+                                                    }
+                                                    onSubstationDisplayClick={
+                                                        showSubstationDiagram
                                                     }
                                                     onVoltageLevelFocusClick={
                                                         centerSubstation
@@ -610,6 +687,10 @@ const StudyPane = (props) => {
                             <NetworkMap
                                 network={network}
                                 geoData={geoData}
+                                useName={useName}
+                                filteredNominalVoltages={
+                                    filteredNominalVoltages
+                                }
                                 labelsZoomThreshold={9}
                                 arrowsZoomThreshold={7}
                                 initialPosition={INITIAL_POSITION}
@@ -626,12 +707,13 @@ const StudyPane = (props) => {
                                     chooseVoltageLevelForSubstation
                                 }
                             />
-                            {displayedVoltageLevelId && (
+                            {(displayedVoltageLevelId ||
+                                displayedSubstationId) && (
                                 <div
                                     style={{
                                         position: 'absolute',
-                                        left: 10,
-                                        top: 10,
+                                        left: 0,
+                                        top: 0,
                                         zIndex: 1,
                                     }}
                                 >
@@ -643,22 +725,16 @@ const StudyPane = (props) => {
                                             showVoltageLevelDiagram
                                         }
                                         onBreakerClick={handleUpdateSwitchState}
-                                        diagramTitle={
-                                            useName && displayedVoltageLevel
-                                                ? displayedVoltageLevel.name
-                                                : displayedVoltageLevelId
-                                        }
-                                        svgUrl={getVoltageLevelSingleLineDiagram(
-                                            studyName,
-                                            userId,
-                                            displayedVoltageLevelId,
-                                            useName,
-                                            centerName,
-                                            diagonalName
-                                        )}
+                                        diagramTitle={sldTitle}
+                                        svgUrl={svgUrl}
                                         ref={sldRef}
                                         updateSwitchMsg={updateSwitchMsg}
                                         isComputationRunning={isComputationRunning()}
+                                        svgType={
+                                            displayedVoltageLevelId
+                                                ? SvgType.VOLTAGE_LEVEL
+                                                : SvgType.SUBSTATION
+                                        }
                                     />
                                 </div>
                             )}
@@ -687,11 +763,11 @@ const StudyPane = (props) => {
                                 </div>
                             )}
 
-                            {displayedSubstationId && (
+                            {choiceVoltageLevelsSubstationId && (
                                 <VoltageLevelChoice
                                     handleClose={closeChoiceVoltageLevelMenu}
                                     onClickHandler={choiceVoltageLevel}
-                                    substation={displayedSubstation}
+                                    substation={choiceVoltageLevelsSubstation}
                                     position={[position[0] + 200, position[1]]}
                                 />
                             )}
@@ -759,8 +835,8 @@ const StudyPane = (props) => {
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
+                        isFixed={true}
                         loadingMessageText="loadingGeoData"
-                        loadingMessageSize={25}
                     />
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}

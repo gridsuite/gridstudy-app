@@ -5,7 +5,6 @@ import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     overlay: {
-        position: 'absolute',
         width: '100%',
         height: '100%',
         textAlign: 'center',
@@ -24,12 +23,16 @@ const LoaderWithOverlay = ({
     color,
     loaderSize,
     loadingMessageText,
-    loadingMessageSize,
+    isFixed,
 }) => {
     const classes = useStyles();
 
     return (
-        <div className={classes.overlay} id={color}>
+        <div
+            className={classes.overlay}
+            id={color}
+            style={{ position: isFixed ? 'fixed' : 'absolute' }}
+        >
             <CircularProgress color={color} size={loaderSize} />
             <FormattedMessage id={loadingMessageText} />
         </div>
