@@ -41,6 +41,11 @@ export const SubstationLayout = {
     SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
 };
 
+export const SvgType = {
+    VOLTAGE_LEVEL: 'voltage-level',
+    SUBSTATION: 'substation',
+};
+
 const maxWidthVoltageLevel = 800;
 const maxHeightVoltageLevel = 700;
 const maxWidthSubstation = 1200;
@@ -168,6 +173,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgType,
     } = props;
 
+    const calcMargins = (svgType, width, height) => {
+        return {
+            top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
+            left: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
+            bottom: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
+            right: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
+        };
+    };
+
     useLayoutEffect(() => {
         if (svg.svg) {
             // calculate svg width and height from svg bounding box
@@ -201,27 +215,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
-                    zoomMin: svgType === 'voltage-level' ? 0.5 : 0.1,
+                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
-                    zoomFactor: svgType === 'voltage-level' ? 0.3 : 0.15,
-                    margins: {
-                        top:
-                            svgType === 'voltage-level'
-                                ? sizeHeight / 4
-                                : -Infinity,
-                        left:
-                            svgType === 'voltage-level'
-                                ? sizeWidth / 4
-                                : -Infinity,
-                        bottom:
-                            svgType === 'voltage-level'
-                                ? sizeHeight / 4
-                                : -Infinity,
-                        right:
-                            svgType === 'voltage-level'
-                                ? sizeWidth / 4
-                                : -Infinity,
-                    },
+                    zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
+                    margins: calcMargins(svgType, sizeWidth, sizeHeight),
                 });
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);
@@ -307,7 +304,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 id="sld-svg"
                 style={{ height: '100%' }}
                 className={
-                    svgType === 'voltage-level'
+                    svgType === SvgType.VOLTAGE_LEVEL
                         ? classes.divVoltageLevel
                         : classes.divSubstation
                 }

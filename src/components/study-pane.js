@@ -20,7 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
-import SingleLineDiagram from './single-line-diagram';
+import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchGenerators,
@@ -580,11 +580,13 @@ const StudyPane = (props) => {
         let svgUrl;
         if (displayedVoltageLevel) {
             sldTitle = useName
-                ? displayedVoltageLevel.name +
-                  ' \u002D ' +
-                  network.getSubstation(displayedVoltageLevel.substationId)
-                      .countryName
-                : displayedVoltageLevelId;
+                ? displayedVoltageLevel.name
+                : displayedVoltageLevel.id;
+            sldTitle +=
+                ' \u002D ' +
+                network.getSubstation(displayedVoltageLevel.substationId)
+                    .countryName;
+
             svgUrl = getVoltageLevelSingleLineDiagram(
                 studyName,
                 userId,
@@ -595,11 +597,12 @@ const StudyPane = (props) => {
             );
         } else if (displayedSubstation) {
             sldTitle = useName
-                ? displayedSubstation.name +
-                  ' \u002D ' +
-                  network.getSubstation(displayedSubstation.id)
-                      .countryName
-                : displayedSubstationId;
+                ? displayedSubstation.name
+                : displayedSubstation.id;
+            sldTitle +=
+                ' \u002D ' +
+                network.getSubstation(displayedSubstation.id).countryName;
+
             svgUrl = getSubstationSingleLineDiagram(
                 studyName,
                 userId,
@@ -729,8 +732,8 @@ const StudyPane = (props) => {
                                         isComputationRunning={isComputationRunning()}
                                         svgType={
                                             displayedVoltageLevelId
-                                                ? 'voltage-level'
-                                                : 'substation'
+                                                ? SvgType.VOLTAGE_LEVEL
+                                                : SvgType.SUBSTATION
                                         }
                                     />
                                 </div>
