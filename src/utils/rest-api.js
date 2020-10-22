@@ -124,11 +124,7 @@ export function getSubstationSingleLineDiagram(
         `Getting url of substation diagram '${substationId}' of study '${studyName}' of user '${userId}'...`
     );
     return (
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
+        getStudyUrl(studyName, userId) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
         '/svg-and-metadata?' +
