@@ -178,3 +178,9 @@ export function filteredNominalVoltagesUpdated(filteredNV) {
         filteredNominalVoltages: filteredNV,
     };
 }
+
+export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
+
+export function selectSubstationLayout(substationLayout) {
+    return { type: SUBSTATION_LAYOUT, substationLayout: substationLayout };
+}
