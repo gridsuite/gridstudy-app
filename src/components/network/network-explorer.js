@@ -33,6 +33,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 
 const itemSize = 48;
 
@@ -46,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
 const NetworkExplorer = ({
     network,
     onVoltageLevelDisplayClick,
+    onSubstationDisplayClick,
     onVoltageLevelFocusClick,
 }) => {
     const intl = useIntl();
@@ -93,6 +95,14 @@ const NetworkExplorer = ({
         if (onVoltageLevelDisplayClick !== null) {
             const vl = filteredVoltageLevels[index];
             onVoltageLevelDisplayClick(vl.id);
+        }
+        handleClose();
+    }
+
+    function onDisplaySubstationClickHandler(index = voltageLevelMenuIndex) {
+        if (onSubstationDisplayClick !== null) {
+            const vl = filteredVoltageLevels[index];
+            onSubstationDisplayClick(vl.substationId);
         }
         handleClose();
     }
@@ -226,6 +236,16 @@ const NetworkExplorer = ({
                                 <FormattedMessage id="openVoltageLevel" />
                             </ListItemText>
                         </MenuItem>
+                        <MenuItem
+                            onClick={() => onDisplaySubstationClickHandler()}
+                        >
+                            <ListItemIcon>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            <ListItemText>
+                                <FormattedMessage id="openSubstation" />
+                            </ListItemText>
+                        </MenuItem>
                     </Menu>
                 </div>
             )}
@@ -240,6 +260,7 @@ NetworkExplorer.defaultProps = {
 NetworkExplorer.propTypes = {
     network: PropTypes.instanceOf(Network),
     onVoltageLevelDisplayClick: PropTypes.func,
+    onSubstationDisplayClick: PropTypes.func,
     onVoltageLevelFocusClick: PropTypes.func,
 };
 

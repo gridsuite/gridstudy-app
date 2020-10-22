@@ -18,6 +18,7 @@ import {
     getLocalStorageTheme,
     getLocalStorageUseName,
     getLocalStorageViewOverloadsTable,
+    getLocalStorageSubstationLayout,
     saveLocalStorageCenterLabel,
     saveLocalStorageDiagonalLabel,
     saveLocalStorageLineFlowMode,
@@ -28,6 +29,7 @@ import {
     saveLocalStorageTheme,
     saveLocalStorageUseName,
     saveLocalStorageViewOverloadsTable,
+    saveLocalStorageSubstationLayout,
 } from './local-storage';
 
 import {
@@ -58,6 +60,7 @@ import {
     INCREASE_RESULT_COUNT,
     RESET_RESULT_COUNT,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
+    SUBSTATION_LAYOUT,
 } from './actions';
 
 const initialState = {
@@ -85,6 +88,7 @@ const initialState = {
     viewOverloadsTable: getLocalStorageViewOverloadsTable(),
     resultCount: 0,
     filteredNominalVoltages: null,
+    substationLayout: getLocalStorageSubstationLayout(),
 };
 
 export const reducer = createReducer(initialState, {
@@ -211,5 +215,10 @@ export const reducer = createReducer(initialState, {
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
         state.filteredNominalVoltages = action.filteredNominalVoltages;
+    },
+
+    [SUBSTATION_LAYOUT]: (state, action) => {
+        state.substationLayout = action.substationLayout;
+        saveLocalStorageSubstationLayout(state.substationLayout);
     },
 });
