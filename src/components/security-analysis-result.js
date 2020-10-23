@@ -9,10 +9,11 @@ import PropTypes from 'prop-types';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import VirtualizedTable from './util/virtualized-table';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
-import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
+import MenuItem from '@material-ui/core/MenuItem';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -20,12 +21,18 @@ export const NMK_TYPE_RESULT = {
 };
 
 const useStyles = makeStyles((theme) => ({
-    switchNmk: {
-        color: 'white',
-        backgroundColor: 'blue',
-        '&:hover': {
-            backgroundColor: 'blue',
-        },
+    container: {
+        display: 'flex',
+    },
+    tabs: {
+        position: 'relative',
+        top: 0,
+        left: 0,
+    },
+    nmkResultSelect: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
     },
 }));
 
@@ -312,31 +319,45 @@ const SecurityAnalysisResult = ({ result }) => {
             <AutoSizer>
                 {({ width, height }) => (
                     <div style={{ width: width, height: height - 48 }}>
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
-                        >
-                            <Tab label="N" />
-                            <Tab label="N-K" />
-                        </Tabs>
-                        {tabIndex === 1 && (
-                            <Button
-                                className={classes.switchNmk}
-                                onClick={switchNmkTypeResult}
-                            >
-                                {nmkTypeResult ===
-                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
-                                    ? intl.formatMessage({
-                                          id: 'ConstraintsFromContingencies',
-                                      })
-                                    : intl.formatMessage({
-                                          id: 'ContingenciesFromConstraints',
-                                      })}
-                            </Button>
-                        )}
+                        <div className={classes.container}>
+                            <div className={classes.tabs}>
+                                <Tabs
+                                    value={tabIndex}
+                                    indicatorColor="primary"
+                                    onChange={(event, newTabIndex) =>
+                                        setTabIndex(newTabIndex)
+                                    }
+                                >
+                                    <Tab label="N" />
+                                    <Tab label="N-K" />
+                                </Tabs>
+                            </div>
+
+                            {tabIndex === 1 && (
+                                <div className={classes.nmkResultSelect}>
+                                    <Select
+                                        labelId="nmk-type-result-label"
+                                        value={nmkTypeResult}
+                                        onChange={switchNmkTypeResult}
+                                    >
+                                        <MenuItem
+                                            value={
+                                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
+                                            }
+                                        >
+                                            <FormattedMessage id="ConstraintsFromContingencies" />
+                                        </MenuItem>
+                                        <MenuItem
+                                            value={
+                                                NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
+                                            }
+                                        >
+                                            <FormattedMessage id="ContingenciesFromConstraints" />
+                                        </MenuItem>
+                                    </Select>
+                                </div>
+                            )}
+                        </div>
                         {tabIndex === 0 &&
                             renderTableN(result.preContingencyResult)}
                         {tabIndex === 1 &&
