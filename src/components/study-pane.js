@@ -206,9 +206,7 @@ const StudyPane = (props) => {
 
     const updateLoadFlowResult = useCallback(() => {
         fetchStudy(studyName, userId).then((study) => {
-            setLoadFlowStatus(
-                getLoadFlowRunningStatus(study.loadFlowStatus)
-            );
+            setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowStatus));
             setLoadFlowResult(study.loadFlowResult);
         });
     }, [studyName, userId]);
@@ -742,13 +740,19 @@ const StudyPane = (props) => {
                                 setTabIndex(newTabIndex)
                             }
                         >
-                            <Tab label={intl.formatMessage({ id: 'securityAnalysisResults' })}/>
-                            <Tab label={intl.formatMessage({ id: 'loadFlowResults' })} />  
+                            <Tab
+                                label={intl.formatMessage({
+                                    id: 'securityAnalysisResults',
+                                })}
+                            />
+                            <Tab
+                                label={intl.formatMessage({
+                                    id: 'loadFlowResults',
+                                })}
+                            />
                         </Tabs>
-                        {tabIndex === 0 &&
-                            renderSecurityAnalysisResult()}
-                        {tabIndex === 1 &&
-                            renderLoadFlowResult()}
+                        {tabIndex === 0 && renderSecurityAnalysisResult()}
+                        {tabIndex === 1 && renderLoadFlowResult()}
                     </div>
                 )}
             </AutoSizer>
@@ -758,7 +762,7 @@ const StudyPane = (props) => {
     function renderSecurityAnalysisResult() {
         return (
             <Paper className={classes.main}>
-               <SecurityAnalysisResult result={securityAnalysisResult} />
+                <SecurityAnalysisResult result={securityAnalysisResult} />
             </Paper>
         );
     }
@@ -766,7 +770,7 @@ const StudyPane = (props) => {
     function renderLoadFlowResult() {
         return (
             <Paper className={classes.main}>
-                <LoadFlowResult result={loadFlowResult} />  
+                <LoadFlowResult result={loadFlowResult} />
             </Paper>
         );
     }
