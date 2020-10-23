@@ -74,7 +74,7 @@ const LoadFlowResult = ({ result }) => {
                                             variant="body1"
                                         >
                                             <Box m={1}>
-                                                {result.ok.toString()}
+                                                {result.isOK.toString()}
                                             </Box>
                                         </Typography>
                                     </Grid>
