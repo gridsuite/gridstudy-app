@@ -61,6 +61,9 @@ const useStyles = makeStyles((theme) => ({
     countryText: {
         marginLeft: theme.spacing(1),
     },
+    noCRGrid: {
+        flexFlow: 'row',
+    },
 }));
 
 const NetworkExplorer = ({
@@ -200,6 +203,8 @@ const NetworkExplorer = ({
                                     onSubstationDisplayClick &&
                                     onSubstationDisplayClick(substation.id)
                                 }
+                                direction={'row'}
+                                className={classes.noCRGrid}
                             >
                                 <Grid item>
                                     <ListItemText
@@ -223,7 +228,7 @@ const NetworkExplorer = ({
                                         className={classes.countryText}
                                         primary={
                                             <Typography
-                                                //style={{ marginLeft:  }}
+                                                style={{ overflow: 'hidden' }}
                                                 color="textSecondary"
                                                 noWrap
                                             >
