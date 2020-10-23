@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 import { useSelector } from 'react-redux';
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -22,21 +22,15 @@ import TextField from '@material-ui/core/TextField';
 import Network from './network';
 import Divider from '@material-ui/core/Divider';
 import {
-    List,
     AutoSizer,
     CellMeasurer,
     CellMeasurerCache,
+    List,
 } from 'react-virtualized';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Typography from '@material-ui/core/Typography';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import DashboardIcon from '@material-ui/icons/Dashboard';
 
 const itemSize = 48;
 
@@ -48,28 +42,25 @@ const useStyles = makeStyles((theme) => ({
     listSubHeaderRoot: {
         backgroundColor: darken(theme.palette.background.default, 0.2),
         textAlign: 'left',
-        height: itemSize / 2,
+        height: (itemSize * 3) / 4,
         justifyContent: 'space-between',
         '&:hover': {
             backgroundColor: lighten(theme.palette.background.paper, 0.1),
         },
-    },
-    iconHeader: {
-        marginRight: -theme.spacing(1),
     },
     listItem: {
         backgroundColor: theme.palette.background.default,
         '&:hover': {
             backgroundColor: darken(theme.palette.background.paper, 0.1),
         },
-        marginLeft: theme.spacing(2),
+        textIndent: theme.spacing(2),
     },
     substationText: {
         marginLeft: -theme.spacing(1),
     },
     countryText: {
-        marginLeft:theme.spacing(1),
-    }
+        marginLeft: theme.spacing(1),
+    },
 }));
 
 const NetworkExplorer = ({
@@ -90,11 +81,6 @@ const NetworkExplorer = ({
         []
     );
 
-    const buttonRef = React.useRef();
-    const [voltageLevelMenuIndex, setVoltageLevelMenuIndex] = React.useState(
-        undefined
-    );
-
     const identifiedElementComparator = useCallback(
         (vl1, vl2) => {
             return useName
@@ -109,61 +95,48 @@ const NetworkExplorer = ({
         defaultHeight: itemSize,
     });
 
-    function generateFilteredSubstation(entry) {
-        const subs = [];
-        const match = (item) => {
-            const lc = useName
-                ? item.name.toLowerCase()
-                : item.id.toLowerCase();
-            return lc.includes(entry);
-        };
+    const generateFilteredSubstation = useCallback(
+        (entry) => {
+            const subs = [];
+            const match = (item) => {
+                const lc = useName
+                    ? item.name.toLowerCase()
+                    : item.id.toLowerCase();
+                return lc.includes(entry);
+            };
 
-        network.getSubstations().forEach((item) => {
-            let subVoltagesLevel = entry
-                ? item.voltageLevels.filter(match)
-                : item.voltageLevels;
-            if (
-                entry === undefined ||
-                entry === '' ||
-                subVoltagesLevel.length > 0 ||
-                match(item)
-            ) {
-                subs.push([
-                    item,
-                    subVoltagesLevel.sort(identifiedElementComparator),
-                ]);
-            }
-        });
-        subs.sort((a, b) => identifiedElementComparator(a[0], b[0]));
-        setFilteredVoltageLevels(subs);
-    }
+            network.getSubstations().forEach((item) => {
+                let subVoltagesLevel = entry
+                    ? item.voltageLevels.filter(match)
+                    : item.voltageLevels;
+                if (
+                    entry === undefined ||
+                    entry === '' ||
+                    subVoltagesLevel.length > 0 ||
+                    match(item)
+                ) {
+                    subs.push([
+                        item,
+                        subVoltagesLevel.sort(identifiedElementComparator),
+                    ]);
+                }
+            });
+            subs.sort((a, b) => identifiedElementComparator(a[0], b[0]));
+            setFilteredVoltageLevels(subs);
+        },
+        [identifiedElementComparator, network, useName]
+    );
 
     useEffect(() => {
         if (network) {
             generateFilteredSubstation();
         }
-    }, [network, identifiedElementComparator]);
+    }, [network, identifiedElementComparator, generateFilteredSubstation]);
 
-    function handleVoltageLevelButtonClick(vl) {
-        setVoltageLevelMenuIndex(vl);
-    }
-
-    function handleClose() {
-        setVoltageLevelMenuIndex(undefined);
-    }
-
-    function onDisplayClickHandler(vl = voltageLevelMenuIndex) {
+    function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
             onVoltageLevelDisplayClick(vl.id);
         }
-        handleClose();
-    }
-
-    function onDisplaySubstationClickHandler(vl = voltageLevelMenuIndex) {
-        if (onSubstationDisplayClick !== null) {
-            onSubstationDisplayClick(vl.substationId);
-        }
-        handleClose();
     }
 
     function onDisplaySubstationFocusHandler(substation) {
@@ -172,16 +145,8 @@ const NetworkExplorer = ({
         }
     }
 
-    function onFocusVoltageLevelClickHandler() {
-        if (onSubstationFocus !== null) {
-            onSubstationFocus(voltageLevelMenuIndex.substationId);
-        }
-        handleClose();
-    }
-
     const voltagelevelInfo = (vl) => {
-        let info = vl.nominalVoltage + ' kV';
-        return info;
+        return vl.nominalVoltage + ' kV';
     };
 
     const substationInfo = (substation) => {
@@ -207,20 +172,6 @@ const NetworkExplorer = ({
                 }
                 onClick={() => onDisplayClickHandler(vl)}
             />
-{/*
-            <IconButton
-                aria-owns={
-                    voltageLevelMenuIndex === vl
-                        ? 'voltageLevel-menu'
-                        : undefined
-                }
-                aria-haspopup="true"
-                ref={voltageLevelMenuIndex === vl ? buttonRef : undefined}
-                onClick={() => handleVoltageLevelButtonClick(vl)}
-            >
-                <MoreVertIcon />
-            </IconButton>
-*/}
         </ListItem>
     );
 
@@ -267,20 +218,19 @@ const NetworkExplorer = ({
                                 <Grid item>
                                     <ListItemText
                                         className={classes.countryText}
-                                        primary={ <Typography
-                                            //style={{ marginLeft:  }}
-                                            color="textSecondary"
-                                            noWrap
-                                        >
-                                            {substationInfo(substation)}
-                                        </Typography>
+                                        primary={
+                                            <Typography
+                                                //style={{ marginLeft:  }}
+                                                color="textSecondary"
+                                                noWrap
+                                            >
+                                                {substationInfo(substation)}
+                                            </Typography>
                                         }
                                     />
                                 </Grid>
                             </Grid>
                             <IconButton
-                                className={classes.iconHeader}
-                                size={'small'}
                                 onClick={() =>
                                     onDisplaySubstationFocusHandler(substation)
                                 }
@@ -337,41 +287,6 @@ const NetworkExplorer = ({
                                 />
                             </Grid>
                         </Grid>
-                        <Menu
-                            id="voltageLevel-menu"
-                            anchorEl={() => buttonRef.current}
-                            open={voltageLevelMenuIndex !== undefined}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={onFocusVoltageLevelClickHandler}>
-                                <ListItemIcon>
-                                    <GpsFixedIcon />
-                                </ListItemIcon>
-                                <ListItemText>
-                                    <FormattedMessage id="centerOnMap" />
-                                </ListItemText>
-                            </MenuItem>
-                            <MenuItem onClick={() => onDisplayClickHandler()}>
-                                <ListItemIcon>
-                                    <DeviceHubIcon />
-                                </ListItemIcon>
-                                <ListItemText>
-                                    <FormattedMessage id="openVoltageLevel" />
-                                </ListItemText>
-                            </MenuItem>
-                            <MenuItem
-                                onClick={() =>
-                                    onDisplaySubstationClickHandler()
-                                }
-                            >
-                                <ListItemIcon>
-                                    <DashboardIcon />
-                                </ListItemIcon>
-                                <ListItemText>
-                                    <FormattedMessage id="openSubstation" />
-                                </ListItemText>
-                            </MenuItem>
-                        </Menu>
                     </div>
                 );
             }}

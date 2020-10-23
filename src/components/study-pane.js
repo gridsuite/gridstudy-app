@@ -534,7 +534,7 @@ const StudyPane = (props) => {
         (id) => {
             mapRef.current.centerSubstation(id);
         },
-        [mapRef, network]
+        [mapRef]
     );
 
     function closeChoiceVoltageLevelMenu() {
