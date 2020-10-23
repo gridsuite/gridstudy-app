@@ -155,5 +155,13 @@
     "resetToDefault": "Valeur par défaut",
     "save": "enregister",
     "descLfReadSlackBus": "Lire le noeud bilan dans le réseau",
-    "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau"
+    "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau",
+
+    "SubstationLayout": "Layout des images de sites",
+    "HorizontalSubstationLayout": "Horizontal",
+    "VerticalSubstationLayout": "Vertical",
+    "SmartSubstationLayout": "Smart",
+    "SmartWithHorizontalCompactionSubstationLayout": "Smart avec compaction horizontale",
+    "SmartWithVerticalCompactionSubstationLayout": "Smart avec compaction verticale",
+    "openSubstation": "Ouvrir le site"
 }
