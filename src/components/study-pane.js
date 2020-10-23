@@ -824,17 +824,17 @@ const StudyPane = (props) => {
                         >
                             <Tab
                                 label={intl.formatMessage({
-                                    id: 'securityAnalysisResults',
+                                    id: 'loadFlowResults',
                                 })}
                             />
                             <Tab
                                 label={intl.formatMessage({
-                                    id: 'loadFlowResults',
+                                    id: 'securityAnalysisResults',
                                 })}
                             />
                         </Tabs>
-                        {tabIndex === 0 && renderSecurityAnalysisResult()}
-                        {tabIndex === 1 && renderLoadFlowResult()}
+                        {tabIndex === 0 && renderLoadFlowResult()}
+                        {tabIndex === 1 && renderSecurityAnalysisResult()}
                     </div>
                 )}
             </AutoSizer>
