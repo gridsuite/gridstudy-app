@@ -14,7 +14,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import {darken, lighten, makeStyles} from '@material-ui/core/styles';
+import { darken, lighten, makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
@@ -36,6 +36,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import DeviceHubIcon from '@material-ui/icons/DeviceHub';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 
 const itemSize = 48;
 
@@ -45,37 +46,36 @@ const useStyles = makeStyles((theme) => ({
         width: 'calc(100% - 16px)', // to fix an issue with fullWidth of textfield
     },
     listSubHeaderRoot: {
-//        backgroundColor: theme.palette.background.paper,
-        backgroundColor: darken(theme.palette.background.default, .2),
-        textAlign: 'center',
+        backgroundColor: darken(theme.palette.background.default, 0.2),
+        textAlign: 'left',
         height: itemSize / 2,
         justifyContent: 'space-between',
-        margin: 0,
-//        position: 'sticky',
         '&:hover': {
-            backgroundColor:lighten(theme.palette.background.paper, .10),
+            backgroundColor: lighten(theme.palette.background.paper, 0.1),
         },
-
-        // TODO hover, icon
+    },
+    iconHeader: {
+        marginRight: -theme.spacing(1),
     },
     listItem: {
         backgroundColor: theme.palette.background.default,
         '&:hover': {
-            backgroundColor:darken(theme.palette.background.paper, .10),
+            backgroundColor: darken(theme.palette.background.paper, 0.1),
         },
-    },
-    substationButton: {
-        //marginTop: -itemSize / 2,
+        marginLeft: theme.spacing(2),
     },
     substationText: {
-        marginTop: 12,
-//        position: 'sticky',
+        marginLeft: -theme.spacing(1),
     },
+    countryText: {
+        marginLeft:theme.spacing(1),
+    }
 }));
 
 const NetworkExplorer = ({
     network,
     onVoltageLevelDisplayClick,
+    onSubstationDisplayClick,
     onSubstationFocus,
 }) => {
     const intl = useIntl();
@@ -92,10 +92,6 @@ const NetworkExplorer = ({
 
     const buttonRef = React.useRef();
     const [voltageLevelMenuIndex, setVoltageLevelMenuIndex] = React.useState(
-        undefined
-    );
-
-    const [substationMenuIndex, setSubstationMenuIndex] = React.useState(
         undefined
     );
 
@@ -163,9 +159,17 @@ const NetworkExplorer = ({
         handleClose();
     }
 
-    function onDisplaySubstationHandler(substation = substationMenuIndex) {
-        console.info(substation.id);
-        setSubstationMenuIndex(undefined);
+    function onDisplaySubstationClickHandler(vl = voltageLevelMenuIndex) {
+        if (onSubstationDisplayClick !== null) {
+            onSubstationDisplayClick(vl.substationId);
+        }
+        handleClose();
+    }
+
+    function onDisplaySubstationFocusHandler(substation) {
+        if (onSubstationFocus !== null) {
+            onSubstationFocus(substation.id);
+        }
     }
 
     function onFocusVoltageLevelClickHandler() {
@@ -175,26 +179,13 @@ const NetworkExplorer = ({
         handleClose();
     }
 
-    function onFocusSubstationClickHandler() {
-        if (onSubstationFocus !== null) {
-            onSubstationFocus(substationMenuIndex.id);
-        }
-        setSubstationMenuIndex(undefined);
-    }
-
     const voltagelevelInfo = (vl) => {
-        if (vl.substationId !== undefined) {
-            let info = vl.nominalVoltage + ' kV';
-            /*if (network.getSubstation(vl.substationId).countryName !== undefined) {
-            info += ' — ' + network.getSubstation(vl.substationId).countryName;
-        }*/
-            return info;
-        }
+        let info = vl.nominalVoltage + ' kV';
+        return info;
     };
 
-    const substationInfo = (sub) => {
-        let info = sub.countryName;
-        return info;
+    const substationInfo = (substation) => {
+        return ' — ' + substation.countryName;
     };
 
     const voltageLevelRow = (vl) => (
@@ -211,11 +202,12 @@ const NetworkExplorer = ({
                         color="textSecondary"
                         noWrap
                     >
-                        {voltagelevelInfo({ vl })}
+                        {voltagelevelInfo(vl)}
                     </Typography>
                 }
                 onClick={() => onDisplayClickHandler(vl)}
             />
+{/*
             <IconButton
                 aria-owns={
                     voltageLevelMenuIndex === vl
@@ -228,13 +220,9 @@ const NetworkExplorer = ({
             >
                 <MoreVertIcon />
             </IconButton>
+*/}
         </ListItem>
     );
-
-    function substation(substation) {
-        setSubstationMenuIndex(undefined);
-        return undefined;
-    }
 
     const subStationRow = ({ index, key, parent, style }) => {
         const substation = filteredVoltageLevels[index][0];
@@ -248,18 +236,19 @@ const NetworkExplorer = ({
             >
                 {({ measure, registerChild }) => (
                     <div ref={registerChild} style={style}>
-                        <ListItem component={'li'} button key={substation.id} className={classes.listSubHeaderRoot} >
-                            <Grid
-                                container
-                                //className={classes.listSubHeaderRoot}
-                            >
-                                <Grid item xs>
+                        <ListItem
+                            component={'li'}
+                            button
+                            key={substation.id}
+                            className={classes.listSubHeaderRoot}
+                            onClick={() =>
+                                onSubstationDisplayClick &&
+                                onSubstationDisplayClick(substation.id)
+                            }
+                        >
+                            <Grid container>
+                                <Grid item>
                                     <ListItemText
-                                        onClick={() =>
-                                            onDisplaySubstationHandler(
-                                                substation
-                                            )
-                                        }
                                         primary={
                                             <Typography
                                                 color="textPrimary"
@@ -273,41 +262,31 @@ const NetworkExplorer = ({
                                                     : substation.id}
                                             </Typography>
                                         }
-                                        /*secondary={
-                                    <Typography
-                                        style={{ fontSize: 'small' }}
-                                        color="textSecondary"
-                                        noWrap
-                                    >
-                                        {substationInfo(
-                                            filteredVoltageLevels[index][0]
-                                        )}
-                                    </Typography>
-                                }*/
                                     />
                                 </Grid>
                                 <Grid item>
-                                    <IconButton
-                                        className={classes.substationButton}
-                                        aria-owns={
-                                            substationMenuIndex === substation
-                                                ? 'substation-menu'
-                                                : undefined
+                                    <ListItemText
+                                        className={classes.countryText}
+                                        primary={ <Typography
+                                            //style={{ marginLeft:  }}
+                                            color="textSecondary"
+                                            noWrap
+                                        >
+                                            {substationInfo(substation)}
+                                        </Typography>
                                         }
-                                        aria-haspopup="true"
-                                        ref={
-                                            substationMenuIndex === substation
-                                                ? buttonRef
-                                                : undefined
-                                        }
-                                        onClick={() =>
-                                            setSubstationMenuIndex(substation)
-                                        }
-                                    >
-                                        <MoreVertIcon />
-                                    </IconButton>
+                                    />
                                 </Grid>
                             </Grid>
+                            <IconButton
+                                className={classes.iconHeader}
+                                size={'small'}
+                                onClick={() =>
+                                    onDisplaySubstationFocusHandler(substation)
+                                }
+                            >
+                                <GpsFixedIcon />
+                            </IconButton>
                         </ListItem>
                         {filteredVoltageLevels[index][1].map((vl) =>
                             voltageLevelRow(vl)
@@ -380,24 +359,13 @@ const NetworkExplorer = ({
                                     <FormattedMessage id="openVoltageLevel" />
                                 </ListItemText>
                             </MenuItem>
-                        </Menu>
-                        <Menu
-                            id="substation-menu"
-                            anchorEl={() => buttonRef.current}
-                            open={substationMenuIndex !== undefined}
-                            onClose={() => setSubstationMenuIndex(undefined)}
-                        >
-                            <MenuItem onClick={onFocusSubstationClickHandler}>
+                            <MenuItem
+                                onClick={() =>
+                                    onDisplaySubstationClickHandler()
+                                }
+                            >
                                 <ListItemIcon>
-                                    <GpsFixedIcon />
-                                </ListItemIcon>
-                                <ListItemText>
-                                    <FormattedMessage id="centerOnMap" />
-                                </ListItemText>
-                            </MenuItem>
-                            <MenuItem onClick={onDisplaySubstationHandler}>
-                                <ListItemIcon>
-                                    <DeviceHubIcon />
+                                    <DashboardIcon />
                                 </ListItemIcon>
                                 <ListItemText>
                                     <FormattedMessage id="openSubstation" />
@@ -418,6 +386,7 @@ NetworkExplorer.defaultProps = {
 NetworkExplorer.propTypes = {
     network: PropTypes.instanceOf(Network),
     onVoltageLevelDisplayClick: PropTypes.func,
+    onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,
 };
 
