@@ -157,11 +157,27 @@
     "descLfReadSlackBus": "Read slack bus from network",
     "descLfWriteSlackBus": "Write slack bus to network",
 
+    "securityAnalysisResults" : "Security analysis results",
+    "loadFlowResults": "Loadflow results",
+
+    "componentNum": "Component number",
+    "status": "Status",
+    "iterationCount": "Iteration count",
+    "slackBusId": "Slack bus id",
+    "slackBusActivePowerMismatch": "Slack bus active power mismatch (MW)",
+
+    "isOk": "Ok",
+    "metrics": "Metrics",
+    "logs": "Logs",
+    
     "SubstationLayout": "Substation diagram layout",
     "HorizontalSubstationLayout": "Horizontal",
     "VerticalSubstationLayout": "Vertical",
     "SmartSubstationLayout": "Smart",
     "SmartWithHorizontalCompactionSubstationLayout": "Smart with horizontal compaction",
     "SmartWithVerticalCompactionSubstationLayout": "Smart avec vertical compaction",
-    "openSubstation": "Open the substation"
+    "openSubstation": "Open the substation",
+
+    "ConstraintsFromContingencies": "Constraints from contingencies",
+    "ContingenciesFromConstraints": "Contingencies from constraints"
 }
