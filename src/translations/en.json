@@ -24,12 +24,18 @@
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
+    "renameStudyError": "Cannot rename the study if you are not the owner",
 
     "exportNetwork": "Export the network",
     "export": "Export",
     "format": "Format",
     "exportFormat": "Format of the export",
     "exportStudyErrorMsg": "No export format specified",
+
+    "accessRights": "Access rights",
+    "modifyAccessRights": "Modify the access rights",
+    "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
+    "edit": "Edit",
 
     "studyNameErrorMsg": "Study name should not be empty",
     "caseNameErrorMsg": "Please select the case name",
@@ -162,5 +168,13 @@
 
     "isOk": "Ok",
     "metrics": "Metrics",
-    "logs": "Logs"
+    "logs": "Logs",
+    
+    "SubstationLayout": "Substation diagram layout",
+    "HorizontalSubstationLayout": "Horizontal",
+    "VerticalSubstationLayout": "Vertical",
+    "SmartSubstationLayout": "Smart",
+    "SmartWithHorizontalCompactionSubstationLayout": "Smart with horizontal compaction",
+    "SmartWithVerticalCompactionSubstationLayout": "Smart avec vertical compaction",
+    "openSubstation": "Open the substation"
 }

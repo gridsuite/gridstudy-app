@@ -7,7 +7,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { green, grey, orange, red } from '@material-ui/core/colors';
+import { green, grey, red } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 
 import SplitButton from './util/split-button';
@@ -21,41 +21,53 @@ export const RunningStatus = {
 
 const useStyles = makeStyles((theme) => ({
     succeed: {
-        backgroundColor: green[500],
-        color: 'black',
+        backgroundColor: '#00000066',
+        color: green[500],
+        borderColor: green[500],
         '&:disabled': {
-            backgroundColor: green[500],
-            color: 'black',
+            backgroundColor: '#00000066',
+            color: green[500],
+            borderColor: green[500],
         },
         '&:hover': {
-            backgroundColor: green[700],
+            backgroundColor: '#00000066',
+            color: green[700],
+            borderColor: green[700],
         },
     },
     failed: {
-        backgroundColor: red[500],
-        color: 'black',
+        backgroundColor: '#00000066',
+        color: red[500],
+        borderColor: red[500],
         '&:disabled': {
-            backgroundColor: red[500],
-            color: 'black',
+            backgroundColor: '#00000066',
+            color: red[500],
+            borderColor: red[500],
         },
         '&:hover': {
-            backgroundColor: red[700],
+            backgroundColor: '#00000066',
+            color: red[700],
+            borderColor: red[700],
         },
     },
     running: {
-        backgroundColor: orange[500],
-        color: 'black',
+        backgroundColor: '#00000066',
+        color: grey[500],
+        borderColor: grey[500],
         '&:disabled': {
-            backgroundColor: orange[500],
-            color: 'black',
+            backgroundColor: '#00000066',
+            color: grey[500],
+            borderColor: grey[500],
         },
     },
     idle: {
         backgroundColor: grey[500],
+        color: 'white',
+        borderColor: grey[500],
         '&:hover': {
             backgroundColor: grey[700],
+            borderColor: grey[700],
         },
-        color: 'white',
     },
 }));
 

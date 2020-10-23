@@ -24,12 +24,18 @@
 
     "renameStudyMsg": "Nouveau nom de l'étude :",
     "renameStudy": "Renommer l'étude",
+    "renameStudyError": "Vous ne pouvez pas renommer une étude dont vous n'êtes pas propriétaire\"",
 
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
     "format": "Format",
     "exportFormat": "Format de l'export",
     "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
+
+    "accessRights": "Droits d'accès",
+    "modifyAccessRights": "Modifier les droits d'accès",
+    "modifyAccessRightsError": "Vous ne pouvez pas modifier les droits d'accès d'une étude qui ne vous appartient pas",
+    "edit": "Modifier",
 
     "studyNameErrorMsg": "Le nom de l'étude ne doit pas être vide",
     "caseNameErrorMsg": "Veuillez sélectionner le nom de la situation",
@@ -162,5 +168,13 @@
 
     "isOk": "Ok",
     "metrics": "Métriques",
-    "logs": "Logs"
+    "logs": "Logs",
+    
+    "SubstationLayout": "Layout des images de sites",
+    "HorizontalSubstationLayout": "Horizontal",
+    "VerticalSubstationLayout": "Vertical",
+    "SmartSubstationLayout": "Smart",
+    "SmartWithHorizontalCompactionSubstationLayout": "Smart avec compaction horizontale",
+    "SmartWithVerticalCompactionSubstationLayout": "Smart avec compaction verticale",
+    "openSubstation": "Ouvrir le site"
 }
