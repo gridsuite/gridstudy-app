@@ -193,12 +193,14 @@ const NetworkExplorer = ({
                             button
                             key={substation.id}
                             className={classes.listSubHeaderRoot}
-                            onClick={() =>
-                                onSubstationDisplayClick &&
-                                onSubstationDisplayClick(substation.id)
-                            }
                         >
-                            <Grid container>
+                            <Grid
+                                container
+                                onClick={() =>
+                                    onSubstationDisplayClick &&
+                                    onSubstationDisplayClick(substation.id)
+                                }
+                            >
                                 <Grid item>
                                     <ListItemText
                                         primary={
