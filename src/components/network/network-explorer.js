@@ -150,7 +150,8 @@ const NetworkExplorer = ({
     };
 
     const substationInfo = (substation) => {
-        return ' — ' + substation.countryName;
+        if (substation.countryName) return ' — ' + substation.countryName;
+        return '';
     };
 
     const voltageLevelRow = (vl) => (
