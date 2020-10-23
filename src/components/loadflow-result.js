@@ -168,10 +168,8 @@ const LoadFlowResult = ({ result }) => {
                         },
                     ]}
                         />
-
                 </Paper> 
             </>
-                
         );
     }
 
