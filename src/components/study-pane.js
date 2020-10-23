@@ -588,10 +588,15 @@ const StudyPane = (props) => {
             sldTitle = useName
                 ? displayedVoltageLevel.name
                 : displayedVoltageLevel.id;
-            sldTitle +=
-                ' \u002D ' +
+            if (
                 network.getSubstation(displayedVoltageLevel.substationId)
-                    .countryName;
+                    .countryName !== undefined
+            ) {
+                sldTitle +=
+                    ' \u002D ' +
+                    network.getSubstation(displayedVoltageLevel.substationId)
+                        .countryName;
+            }
 
             svgUrl = getVoltageLevelSingleLineDiagram(
                 studyName,
@@ -605,9 +610,14 @@ const StudyPane = (props) => {
             sldTitle = useName
                 ? displayedSubstation.name
                 : displayedSubstation.id;
-            sldTitle +=
-                ' \u002D ' +
-                network.getSubstation(displayedSubstation.id).countryName;
+            if (
+                network.getSubstation(displayedSubstation.id).countryName !==
+                undefined
+            ) {
+                sldTitle +=
+                    ' \u002D ' +
+                    network.getSubstation(displayedSubstation.id).countryName;
+            }
 
             svgUrl = getSubstationSingleLineDiagram(
                 studyName,
