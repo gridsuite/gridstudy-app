@@ -504,9 +504,7 @@ const StudyPane = (props) => {
     const mapRef = useRef();
     const centerSubstation = useCallback(
         (id) => {
-            mapRef.current.centerSubstation(
-                network.getVoltageLevel(id).substationId
-            );
+            mapRef.current.centerSubstation(id);
         },
         [mapRef, network]
     );
@@ -595,7 +593,7 @@ const StudyPane = (props) => {
                                                     onVoltageLevelDisplayClick={
                                                         showVoltageLevelDiagram
                                                     }
-                                                    onVoltageLevelFocusClick={
+                                                    onSubstationFocus={
                                                         centerSubstation
                                                     }
                                                 />

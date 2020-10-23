@@ -14,16 +14,19 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import Grid from '@material-ui/core/Grid';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { makeStyles } from '@material-ui/core/styles';
+import {darken, lighten, makeStyles} from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 
-import { FixedSizeList as List } from 'react-window';
-
 import Network from './network';
 import Divider from '@material-ui/core/Divider';
-import { AutoSizer } from 'react-virtualized';
+import {
+    List,
+    AutoSizer,
+    CellMeasurer,
+    CellMeasurerCache,
+} from 'react-virtualized';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -41,12 +44,39 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
         width: 'calc(100% - 16px)', // to fix an issue with fullWidth of textfield
     },
+    listSubHeaderRoot: {
+//        backgroundColor: theme.palette.background.paper,
+        backgroundColor: darken(theme.palette.background.default, .2),
+        textAlign: 'center',
+        height: itemSize / 2,
+        justifyContent: 'space-between',
+        margin: 0,
+//        position: 'sticky',
+        '&:hover': {
+            backgroundColor:lighten(theme.palette.background.paper, .10),
+        },
+
+        // TODO hover, icon
+    },
+    listItem: {
+        backgroundColor: theme.palette.background.default,
+        '&:hover': {
+            backgroundColor:darken(theme.palette.background.paper, .10),
+        },
+    },
+    substationButton: {
+        //marginTop: -itemSize / 2,
+    },
+    substationText: {
+        marginTop: 12,
+//        position: 'sticky',
+    },
 }));
 
 const NetworkExplorer = ({
     network,
     onVoltageLevelDisplayClick,
-    onVoltageLevelFocusClick,
+    onSubstationFocus,
 }) => {
     const intl = useIntl();
 
@@ -59,12 +89,17 @@ const NetworkExplorer = ({
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
     );
+
     const buttonRef = React.useRef();
     const [voltageLevelMenuIndex, setVoltageLevelMenuIndex] = React.useState(
-        -1
+        undefined
     );
 
-    const voltageLevelComparator = useCallback(
+    const [substationMenuIndex, setSubstationMenuIndex] = React.useState(
+        undefined
+    );
+
+    const identifiedElementComparator = useCallback(
         (vl1, vl2) => {
             return useName
                 ? vl1.name.localeCompare(vl2.name)
@@ -73,63 +108,101 @@ const NetworkExplorer = ({
         [useName]
     );
 
+    const cache = new CellMeasurerCache({
+        fixedWidth: true,
+        defaultHeight: itemSize,
+    });
+
+    function generateFilteredSubstation(entry) {
+        const subs = [];
+        const match = (item) => {
+            const lc = useName
+                ? item.name.toLowerCase()
+                : item.id.toLowerCase();
+            return lc.includes(entry);
+        };
+
+        network.getSubstations().forEach((item) => {
+            let subVoltagesLevel = entry
+                ? item.voltageLevels.filter(match)
+                : item.voltageLevels;
+            if (
+                entry === undefined ||
+                entry === '' ||
+                subVoltagesLevel.length > 0 ||
+                match(item)
+            ) {
+                subs.push([
+                    item,
+                    subVoltagesLevel.sort(identifiedElementComparator),
+                ]);
+            }
+        });
+        subs.sort((a, b) => identifiedElementComparator(a[0], b[0]));
+        setFilteredVoltageLevels(subs);
+    }
+
     useEffect(() => {
         if (network) {
-            setFilteredVoltageLevels(
-                network.getVoltageLevels().sort(voltageLevelComparator)
-            );
+            generateFilteredSubstation();
         }
-    }, [network, voltageLevelComparator]);
+    }, [network, identifiedElementComparator]);
 
-    function handleClick(index) {
-        setVoltageLevelMenuIndex(index);
+    function handleVoltageLevelButtonClick(vl) {
+        setVoltageLevelMenuIndex(vl);
     }
 
     function handleClose() {
-        setVoltageLevelMenuIndex(-1);
+        setVoltageLevelMenuIndex(undefined);
     }
 
-    function onDisplayClickHandler(index = voltageLevelMenuIndex) {
+    function onDisplayClickHandler(vl = voltageLevelMenuIndex) {
         if (onVoltageLevelDisplayClick !== null) {
-            const vl = filteredVoltageLevels[index];
             onVoltageLevelDisplayClick(vl.id);
         }
         handleClose();
     }
 
-    function onFocusClickHandler() {
-        if (onVoltageLevelFocusClick !== null) {
-            const vl = filteredVoltageLevels[voltageLevelMenuIndex];
-            onVoltageLevelFocusClick(vl.id);
+    function onDisplaySubstationHandler(substation = substationMenuIndex) {
+        console.info(substation.id);
+        setSubstationMenuIndex(undefined);
+    }
+
+    function onFocusVoltageLevelClickHandler() {
+        if (onSubstationFocus !== null) {
+            onSubstationFocus(voltageLevelMenuIndex.substationId);
         }
         handleClose();
     }
 
-    const voltagelevelInfo = (index) => {
-        if (network.getSubstation(filteredVoltageLevels[index].substationId)) {
-            let info = filteredVoltageLevels[index].nominalVoltage + ' kV';
-            if (
-                network.getSubstation(filteredVoltageLevels[index].substationId)
-                    .countryName !== undefined
-            ) {
-                info +=
-                    ' — ' +
-                    network.getSubstation(
-                        filteredVoltageLevels[index].substationId
-                    ).countryName;
-            }
+    function onFocusSubstationClickHandler() {
+        if (onSubstationFocus !== null) {
+            onSubstationFocus(substationMenuIndex.id);
+        }
+        setSubstationMenuIndex(undefined);
+    }
+
+    const voltagelevelInfo = (vl) => {
+        if (vl.substationId !== undefined) {
+            let info = vl.nominalVoltage + ' kV';
+            /*if (network.getSubstation(vl.substationId).countryName !== undefined) {
+            info += ' — ' + network.getSubstation(vl.substationId).countryName;
+        }*/
             return info;
         }
     };
 
-    const Row = ({ index, style }) => (
-        <ListItem button style={style} key={index}>
+    const substationInfo = (sub) => {
+        let info = sub.countryName;
+        return info;
+    };
+
+    const voltageLevelRow = (vl) => (
+        <ListItem button key={vl.id} className={classes.listItem}>
             <ListItemText
                 primary={
                     <Typography color="textPrimary" noWrap>
-                        {useName
-                            ? filteredVoltageLevels[index].name
-                            : filteredVoltageLevels[index].id}
+                        {useName ? vl.name : vl.id}
                     </Typography>
                 }
                 secondary={
@@ -138,97 +211,202 @@ const NetworkExplorer = ({
                         color="textSecondary"
                         noWrap
                     >
-                        {voltagelevelInfo(index)}
+                        {voltagelevelInfo({ vl })}
                     </Typography>
                 }
-                onClick={() => onDisplayClickHandler(index)}
+                onClick={() => onDisplayClickHandler(vl)}
             />
             <IconButton
                 aria-owns={
-                    voltageLevelMenuIndex === index ? 'simple-menu' : undefined
+                    voltageLevelMenuIndex === vl
+                        ? 'voltageLevel-menu'
+                        : undefined
                 }
                 aria-haspopup="true"
-                ref={voltageLevelMenuIndex === index ? buttonRef : undefined}
-                onClick={() => handleClick(index)}
+                ref={voltageLevelMenuIndex === vl ? buttonRef : undefined}
+                onClick={() => handleVoltageLevelButtonClick(vl)}
             >
                 <MoreVertIcon />
             </IconButton>
         </ListItem>
     );
 
-    const filter = (event) => {
-        const entry = event.target.value.toLowerCase();
-        setFilteredVoltageLevels(
-            network
-                .getVoltageLevels()
-                .filter((item) => {
-                    const lc = useName
-                        ? item.name.toLowerCase()
-                        : item.id.toLowerCase();
-                    return lc.includes(entry);
-                })
-                .sort(voltageLevelComparator)
+    function substation(substation) {
+        setSubstationMenuIndex(undefined);
+        return undefined;
+    }
+
+    const subStationRow = ({ index, key, parent, style }) => {
+        const substation = filteredVoltageLevels[index][0];
+        return (
+            <CellMeasurer
+                cache={cache}
+                columnIndex={0}
+                key={key}
+                parent={parent}
+                rowIndex={index}
+            >
+                {({ measure, registerChild }) => (
+                    <div ref={registerChild} style={style}>
+                        <ListItem component={'li'} button key={substation.id} className={classes.listSubHeaderRoot} >
+                            <Grid
+                                container
+                                //className={classes.listSubHeaderRoot}
+                            >
+                                <Grid item xs>
+                                    <ListItemText
+                                        onClick={() =>
+                                            onDisplaySubstationHandler(
+                                                substation
+                                            )
+                                        }
+                                        primary={
+                                            <Typography
+                                                color="textPrimary"
+                                                className={
+                                                    classes.substationText
+                                                }
+                                                noWrap
+                                            >
+                                                {useName
+                                                    ? substation.name
+                                                    : substation.id}
+                                            </Typography>
+                                        }
+                                        /*secondary={
+                                    <Typography
+                                        style={{ fontSize: 'small' }}
+                                        color="textSecondary"
+                                        noWrap
+                                    >
+                                        {substationInfo(
+                                            filteredVoltageLevels[index][0]
+                                        )}
+                                    </Typography>
+                                }*/
+                                    />
+                                </Grid>
+                                <Grid item>
+                                    <IconButton
+                                        className={classes.substationButton}
+                                        aria-owns={
+                                            substationMenuIndex === substation
+                                                ? 'substation-menu'
+                                                : undefined
+                                        }
+                                        aria-haspopup="true"
+                                        ref={
+                                            substationMenuIndex === substation
+                                                ? buttonRef
+                                                : undefined
+                                        }
+                                        onClick={() =>
+                                            setSubstationMenuIndex(substation)
+                                        }
+                                    >
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                </Grid>
+                            </Grid>
+                        </ListItem>
+                        {filteredVoltageLevels[index][1].map((vl) =>
+                            voltageLevelRow(vl)
+                        )}
+
+                        <Grid onLoad={measure} />
+                    </div>
+                )}
+            </CellMeasurer>
         );
+    };
+
+    const filter = (event) => {
+        generateFilteredSubstation(event.target.value.toLowerCase());
     };
 
     return (
         <AutoSizer>
-            {({ width, height }) => (
-                <div style={{ width: width, height: height }}>
-                    <Grid container direction="column">
-                        <Grid item>
-                            <TextField
-                                className={classes.textField}
-                                size="small"
-                                placeholder={filterMsg}
-                                onChange={filter}
-                                variant="outlined"
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
+            {({ width, height }) => {
+                return (
+                    <div style={{ width: width, height: height }}>
+                        <Grid container direction="column">
+                            <Grid item>
+                                <TextField
+                                    className={classes.textField}
+                                    size="small"
+                                    placeholder={filterMsg}
+                                    onChange={filter}
+                                    variant="outlined"
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                            <Divider />
+                            <Grid item>
+                                <List
+                                    height={height}
+                                    rowHeight={cache.rowHeight}
+                                    rowRenderer={subStationRow}
+                                    rowCount={filteredVoltageLevels.length}
+                                    width={width}
+                                    subheader={<li />}
+                                />
+                            </Grid>
                         </Grid>
-                        <Divider />
-                        <Grid item>
-                            <List
-                                height={height - 57}
-                                itemCount={filteredVoltageLevels.length}
-                                itemSize={itemSize}
-                                width="100%"
-                            >
-                                {Row}
-                            </List>
-                        </Grid>
-                    </Grid>
-                    <Menu
-                        id="simple-menu"
-                        anchorEl={() => buttonRef.current}
-                        open={voltageLevelMenuIndex !== -1}
-                        onClose={handleClose}
-                    >
-                        <MenuItem onClick={onFocusClickHandler}>
-                            <ListItemIcon>
-                                <GpsFixedIcon />
-                            </ListItemIcon>
-                            <ListItemText>
-                                <FormattedMessage id="centerOnMap" />
-                            </ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={() => onDisplayClickHandler()}>
-                            <ListItemIcon>
-                                <DeviceHubIcon />
-                            </ListItemIcon>
-                            <ListItemText>
-                                <FormattedMessage id="openVoltageLevel" />
-                            </ListItemText>
-                        </MenuItem>
-                    </Menu>
-                </div>
-            )}
+                        <Menu
+                            id="voltageLevel-menu"
+                            anchorEl={() => buttonRef.current}
+                            open={voltageLevelMenuIndex !== undefined}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={onFocusVoltageLevelClickHandler}>
+                                <ListItemIcon>
+                                    <GpsFixedIcon />
+                                </ListItemIcon>
+                                <ListItemText>
+                                    <FormattedMessage id="centerOnMap" />
+                                </ListItemText>
+                            </MenuItem>
+                            <MenuItem onClick={() => onDisplayClickHandler()}>
+                                <ListItemIcon>
+                                    <DeviceHubIcon />
+                                </ListItemIcon>
+                                <ListItemText>
+                                    <FormattedMessage id="openVoltageLevel" />
+                                </ListItemText>
+                            </MenuItem>
+                        </Menu>
+                        <Menu
+                            id="substation-menu"
+                            anchorEl={() => buttonRef.current}
+                            open={substationMenuIndex !== undefined}
+                            onClose={() => setSubstationMenuIndex(undefined)}
+                        >
+                            <MenuItem onClick={onFocusSubstationClickHandler}>
+                                <ListItemIcon>
+                                    <GpsFixedIcon />
+                                </ListItemIcon>
+                                <ListItemText>
+                                    <FormattedMessage id="centerOnMap" />
+                                </ListItemText>
+                            </MenuItem>
+                            <MenuItem onClick={onDisplaySubstationHandler}>
+                                <ListItemIcon>
+                                    <DeviceHubIcon />
+                                </ListItemIcon>
+                                <ListItemText>
+                                    <FormattedMessage id="openSubstation" />
+                                </ListItemText>
+                            </MenuItem>
+                        </Menu>
+                    </div>
+                );
+            }}
         </AutoSizer>
     );
 };
@@ -240,7 +418,7 @@ NetworkExplorer.defaultProps = {
 NetworkExplorer.propTypes = {
     network: PropTypes.instanceOf(Network),
     onVoltageLevelDisplayClick: PropTypes.func,
-    onVoltageLevelFocusClick: PropTypes.func,
+    onSubstationFocus: PropTypes.func,
 };
 
 export default React.memo(NetworkExplorer);
