@@ -154,11 +154,11 @@
     "securityAnalysisResults" : "Security analysis results",
     "loadFlowResults": "Loadflow results",
 
-    "componentNum": "Component num",
+    "componentNum": "Component number",
     "status": "Status",
     "iterationCount": "Iteration count",
     "slackBusId": "Slack bus id",
-    "slackBusActivePowerMismatch": "Slack bus active power mismatch",
+    "slackBusActivePowerMismatch": "Slack bus active power mismatch (MW)",
 
     "isOk": "Ok",
     "metrics": "Metrics",
