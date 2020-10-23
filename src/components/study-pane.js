@@ -630,31 +630,11 @@ const StudyPane = (props) => {
                             {({ width, height }) => (
                                 <div style={{ width: width, height: height }}>
                                     <Grid container direction="column">
-                                        <Grid item key="runButton">
-                                            <div
-                                                style={{
-                                                    position: 'relative',
-                                                    marginLeft: 8,
-                                                    marginRight: 8,
-                                                    marginTop: 8,
-                                                }}
-                                            >
-                                                <RunButton
-                                                    runnables={RUNNABLES}
-                                                    getStatus={getRunningStatus}
-                                                    onStartClick={start}
-                                                    getText={getRunningText}
-                                                    getStartIcon={
-                                                        getRunningIcon
-                                                    }
-                                                />
-                                            </div>
-                                        </Grid>
                                         <Grid item key="explorer">
                                             <div
                                                 style={{
                                                     position: 'relative',
-                                                    height: height - 96,
+                                                    height: height,
                                                 }}
                                             >
                                                 <NetworkExplorer
@@ -784,6 +764,25 @@ const StudyPane = (props) => {
                                     <NominalVoltageFilter />
                                 </div>
                             )}
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    right: 100,
+                                    bottom: 30,
+                                    marginLeft: 8,
+                                    marginRight: 8,
+                                    marginTop: 8,
+                                    zIndex: 0,
+                                }}
+                            >
+                                <RunButton
+                                    runnables={RUNNABLES}
+                                    getStatus={getRunningStatus}
+                                    onStartClick={start}
+                                    getText={getRunningText}
+                                    getStartIcon={getRunningIcon}
+                                />
+                            </div>
                         </div>
                     </Grid>
                 </Grid>
