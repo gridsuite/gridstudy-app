@@ -51,6 +51,8 @@ import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Paper from '@material-ui/core/Paper';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import PageNotFound from './page-not-found';
 import LoaderWithOverlay from './loader-with-overlay';
 import PropTypes from 'prop-types';
@@ -64,6 +66,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
+import LoadFlowResult from './loadflow-result';
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -146,6 +149,8 @@ const StudyPane = (props) => {
 
     const [loadFlowStatus, setLoadFlowStatus] = useState(RunningStatus.IDLE);
 
+    const [loadFlowResult, setLoadFlowResult] = useState(null);
+
     const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(
         RunningStatus.IDLE
     );
@@ -157,6 +162,8 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
+
+    const [tabIndex, setTabIndex] = React.useState(0);
 
     const [
         showContingencyListSelector,
@@ -197,11 +204,12 @@ const StudyPane = (props) => {
         }
     }
 
-    const updateLoadFlowStatus = useCallback(() => {
+    const updateLoadFlowResult = useCallback(() => {
         fetchStudy(studyName, userId).then((study) => {
             setLoadFlowStatus(
-                getLoadFlowRunningStatus(study.loadFlowResult.status)
+                getLoadFlowRunningStatus(study.loadFlowStatus)
             );
+            setLoadFlowResult(study.loadFlowResult);
         });
     }, [studyName, userId]);
 
@@ -268,7 +276,7 @@ const StudyPane = (props) => {
 
     const loadNetwork = useCallback(() => {
         console.info(`Loading network of study '${studyName}'...`);
-        updateLoadFlowStatus();
+        updateLoadFlowResult();
         updateSecurityAnalysisResult();
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
@@ -307,7 +315,7 @@ const StudyPane = (props) => {
         studyName,
         userId,
         dispatch,
-        updateLoadFlowStatus,
+        updateLoadFlowResult,
         updateSecurityAnalysisResult,
     ]);
 
@@ -474,7 +482,7 @@ const StudyPane = (props) => {
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'loadflow_status'
             ) {
-                updateLoadFlowStatus();
+                updateLoadFlowResult();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'securityAnalysisResult'
@@ -490,7 +498,7 @@ const StudyPane = (props) => {
         studyUpdatedForce,
         studyName,
         loadNetwork,
-        updateLoadFlowStatus,
+        updateLoadFlowResult,
         updateSecurityAnalysisResult,
         dispatch,
     ]);
@@ -724,8 +732,41 @@ const StudyPane = (props) => {
 
     function renderResultsView() {
         return (
+            <AutoSizer>
+                {({ width, height }) => (
+                    <div style={{ width: width, height: height - 48 }}>
+                        <Tabs
+                            value={tabIndex}
+                            indicatorColor="primary"
+                            onChange={(event, newTabIndex) =>
+                                setTabIndex(newTabIndex)
+                            }
+                        >
+                            <Tab label={intl.formatMessage({ id: 'securityAnalysisResults' })}/>
+                            <Tab label={intl.formatMessage({ id: 'loadFlowResults' })} />  
+                        </Tabs>
+                        {tabIndex === 0 &&
+                            renderSecurityAnalysisResult()}
+                        {tabIndex === 1 &&
+                            renderLoadFlowResult()}
+                    </div>
+                )}
+            </AutoSizer>
+        );
+    }
+
+    function renderSecurityAnalysisResult() {
+        return (
             <Paper className={classes.main}>
-                <SecurityAnalysisResult result={securityAnalysisResult} />
+               <SecurityAnalysisResult result={securityAnalysisResult} />
+            </Paper>
+        );
+    }
+
+    function renderLoadFlowResult() {
+        return (
+            <Paper className={classes.main}>
+                <LoadFlowResult result={loadFlowResult} />  
             </Paper>
         );
     }

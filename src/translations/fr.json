@@ -149,5 +149,18 @@
     "resetToDefault": "Valeur par défaut",
     "save": "enregister",
     "descLfReadSlackBus": "Lire le noeud bilan dans le réseau",
-    "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau"
+    "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau",
+
+    "securityAnalysisResults" : "Security analysis results",
+    "loadFlowResults": "Loadflow results",
+
+    "componentNum": "Component num",
+    "status": "Status",
+    "iterationCount": "Iteration count",
+    "slackBusId": "Slack bus id",
+    "slackBusActivePowerMismatch": "Slack bus active power mismatch",
+
+    "isOk": "Ok",
+    "metrics": "Métriques",
+    "logs": "Logs"
 }
