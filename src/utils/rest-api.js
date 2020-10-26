@@ -473,6 +473,23 @@ export function fetchAppsAndUrls() {
     });
 }
 
+export function requestNetworkChange(userId, studyName, groovyScript) {
+    console.info('request network change');
+    const changeUrl =
+        getStudyUrl(studyName, userId) + '/network-modification/groovy';
+    console.debug(changeUrl);
+    return backendFetch(changeUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/text',
+        },
+        body: groovyScript,
+    }).then((response) => {
+        return response;
+    });
+}
+
 export function setLoadFlowParameters(studyName, userId, newParams) {
     console.info('set load flow parameters');
     const setLoadFlowParametersUrl =
