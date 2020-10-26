@@ -125,3 +125,14 @@ export const saveLocalStorageViewOverloadsTable = (viewOverloadsTable) => {
         viewOverloadsTable
     );
 };
+
+const LOCAL_STORAGE_SUBSTATION_LAYOUT_KEY = 'GRIDSTUDY_SUBSTATION_LAYOUT';
+
+export const getLocalStorageSubstationLayout = () => {
+    const value = localStorage.getItem(LOCAL_STORAGE_SUBSTATION_LAYOUT_KEY);
+    return value || 'horizontal';
+};
+
+export const saveLocalStorageSubstationLayout = (substationLayout) => {
+    localStorage.setItem(LOCAL_STORAGE_SUBSTATION_LAYOUT_KEY, substationLayout);
+};

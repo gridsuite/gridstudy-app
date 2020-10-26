@@ -18,6 +18,7 @@ import {
     getLocalStorageTheme,
     getLocalStorageUseName,
     getLocalStorageViewOverloadsTable,
+    getLocalStorageSubstationLayout,
     saveLocalStorageCenterLabel,
     saveLocalStorageDiagonalLabel,
     saveLocalStorageLineFlowMode,
@@ -28,6 +29,7 @@ import {
     saveLocalStorageTheme,
     saveLocalStorageUseName,
     saveLocalStorageViewOverloadsTable,
+    saveLocalStorageSubstationLayout,
 } from './local-storage';
 
 import {
@@ -43,6 +45,7 @@ import {
     LOAD_GEO_DATA_SUCCESS,
     LOAD_NETWORK_SUCCESS,
     LOAD_STUDIES_SUCCESS,
+    LOAD_TEMPORARY_STUDIES,
     OPEN_STUDY,
     REMOVE_SELECTED_CASE,
     REMOVE_SELECTED_FILE,
@@ -54,10 +57,15 @@ import {
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
     VIEW_OVERLOADS_TABLE,
+    INCREASE_RESULT_COUNT,
+    RESET_RESULT_COUNT,
+    FILTERED_NOMINAL_VOLTAGES_UPDATED,
+    SUBSTATION_LAYOUT,
 } from './actions';
 
 const initialState = {
     studies: [],
+    temporaryStudies: [],
     studyName: null,
     userId: null,
     network: null,
@@ -78,11 +86,18 @@ const initialState = {
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
     viewOverloadsTable: getLocalStorageViewOverloadsTable(),
+    resultCount: 0,
+    filteredNominalVoltages: null,
+    substationLayout: getLocalStorageSubstationLayout(),
 };
 
 export const reducer = createReducer(initialState, {
     [LOAD_STUDIES_SUCCESS]: (state, action) => {
         state.studies = action.studies;
+    },
+
+    [LOAD_TEMPORARY_STUDIES]: (state, action) => {
+        state.temporaryStudies = action.temporaryStudies;
     },
 
     [LOAD_CASES_SUCCESS]: (state, action) => {
@@ -188,5 +203,22 @@ export const reducer = createReducer(initialState, {
     [VIEW_OVERLOADS_TABLE]: (state) => {
         state.viewOverloadsTable = !state.viewOverloadsTable;
         saveLocalStorageViewOverloadsTable(state.viewOverloadsTable);
+    },
+
+    [INCREASE_RESULT_COUNT]: (state) => {
+        state.resultCount++;
+    },
+
+    [RESET_RESULT_COUNT]: (state) => {
+        state.resultCount = 0;
+    },
+
+    [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
+        state.filteredNominalVoltages = action.filteredNominalVoltages;
+    },
+
+    [SUBSTATION_LAYOUT]: (state, action) => {
+        state.substationLayout = action.substationLayout;
+        saveLocalStorageSubstationLayout(state.substationLayout);
     },
 });

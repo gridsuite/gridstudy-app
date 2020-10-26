@@ -24,12 +24,18 @@
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
+    "renameStudyError": "Cannot rename the study if you are not the owner",
 
     "exportNetwork": "Export the network",
     "export": "Export",
     "format": "Format",
     "exportFormat": "Format of the export",
     "exportStudyErrorMsg": "No export format specified",
+
+    "accessRights": "Access rights",
+    "modifyAccessRights": "Modify the access rights",
+    "modifyAccessRightsError": "You cannot modify the access rights of a study you don't own",
+    "edit": "Edit",
 
     "studyNameErrorMsg": "Study name should not be empty",
     "caseNameErrorMsg": "Please select the case name",
@@ -117,5 +123,61 @@
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
 
-    "viewOverloadsTable": "View overloads table"
+    "viewOverloadsTable": "View overloads table",
+
+    "LoadFlow": "LoadFlow",
+    "SecurityAnalysis": "Security analysis",
+
+    "ContingencyListsSelection": "Contingency lists selection",
+    "Start": "Start",
+    "xContingenciesWillBeSimulated": "{x} contingencies will be simulated",
+
+    "LimitType": "Limit type",
+    "Value": "Value",
+    "ContingencyId": "Contingency ID",
+    "ComputationOk": "Computation OK",
+    "true": "true",
+    "false": "false",
+    "Loading": "Loading",
+    "CURRENT": "Current",
+    "HIGH_VOLTAGE": "High voltage",
+    "LOW_VOLTAGE": "Low voltage",
+
+    "descLfVoltageInitMode": "Voltage initialization ",
+    "descLfTransformerVoltageControlOn": "Transformer voltage control",
+    "descLfNoGeneratorReactiveLimits": "Generator reactive limits",
+    "descLfPhaseShifterRegulationOn": "Phase shifter regulation",
+    "descLfTwtSplitShuntAdmittance": "Split shunt admittance",
+    "descLfSimulShunt": "Shunt simulation",
+    "descLfUniformValues": "Uniform values",
+    "descLfPreviousValues": "Previous values",
+    "descLfDcValues": "DC Values",
+    "resetToDefault": "default values",
+    "save": "save",
+    "descLfReadSlackBus": "Read slack bus from network",
+    "descLfWriteSlackBus": "Write slack bus to network",
+
+    "securityAnalysisResults" : "Security analysis results",
+    "loadFlowResults": "Loadflow results",
+
+    "componentNum": "Component number",
+    "status": "Status",
+    "iterationCount": "Iteration count",
+    "slackBusId": "Slack bus id",
+    "slackBusActivePowerMismatch": "Slack bus active power mismatch (MW)",
+
+    "isOk": "Ok",
+    "metrics": "Metrics",
+    "logs": "Logs",
+    
+    "SubstationLayout": "Substation diagram layout",
+    "HorizontalSubstationLayout": "Horizontal",
+    "VerticalSubstationLayout": "Vertical",
+    "SmartSubstationLayout": "Smart",
+    "SmartWithHorizontalCompactionSubstationLayout": "Smart with horizontal compaction",
+    "SmartWithVerticalCompactionSubstationLayout": "Smart avec vertical compaction",
+    "openSubstation": "Open the substation",
+
+    "ConstraintsFromContingencies": "Constraints from contingencies",
+    "ContingenciesFromConstraints": "Contingencies from constraints"
 }
