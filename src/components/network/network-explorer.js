@@ -286,7 +286,7 @@ const NetworkExplorer = ({
                             <Divider />
                             <Grid item>
                                 <List
-                                    height={height - 57}
+                                    height={height - 46}
                                     rowHeight={cache.rowHeight}
                                     rowRenderer={subStationRow}
                                     rowCount={filteredVoltageLevels.length}
