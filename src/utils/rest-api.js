@@ -11,7 +11,8 @@ let PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 let PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 let PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
 
-const APPS_METADATA_SERVER = process.env.REACT_APP_APPS_URLS + '/apps-metadata.json';
+const APPS_METADATA_SERVER =
+    process.env.REACT_APP_APPS_URLS + '/apps-metadata.json';
 
 function getToken() {
     const state = store.getState();
