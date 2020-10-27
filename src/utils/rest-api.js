@@ -11,8 +11,7 @@ let PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 let PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 let PREFIX_NOTIFICATION_WS = process.env.REACT_APP_WS_GATEWAY + '/notification';
 
-const APPS_METADATA_SERVER =
-    process.env.REACT_APP_APPS_URLS + '/apps-metadata.json';
+const APPS_METADATA_SERVER_URL = fetch('env.json');
 
 function getToken() {
     const state = store.getState();
@@ -375,7 +374,11 @@ export function getExportUrl(userId, studyName, exportFormat) {
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return backendFetch(APPS_METADATA_SERVER).then((response) => {
-        return response.json();
+    return APPS_METADATA_SERVER_URL.then((res) => res.json()).then((res) => {
+        return backendFetch(
+            res.appsMetadataServerUrl + '/apps-metadata.json'
+        ).then((response) => {
+            return response.json();
+        });
     });
 }
