@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,8 +24,19 @@ import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
 import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
 import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
 
-import { loadStudiesSuccess } from '../redux/actions';
-import { deleteStudy, fetchStudies, renameStudy } from '../utils/rest-api';
+import {
+    loadStudiesSuccess,
+    loadStudyCreationRequestsSuccess,
+} from '../redux/actions';
+
+import {
+    deleteStudy,
+    fetchStudies,
+    renameStudy,
+    fetchStudyCreationRequests,
+    connectNotificationsWsUpdateStudies,
+} from '../utils/rest-api';
+
 import { CardHeader } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -39,11 +50,14 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import BuildIcon from '@material-ui/icons/Build';
 import { DeleteDialog, ExportDialog, RenameDialog } from '../utils/dialogs';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import CreateStudyForm from './create-study-form';
+import LoaderWithOverlay from './loader-with-overlay';
+import AccessRightsDialog from './access-rights-dialog';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -86,6 +100,9 @@ const useStyles = makeStyles((theme) => ({
     tooltip: {
         fontSize: 18,
     },
+    container: {
+        position: 'relative',
+    },
 }));
 
 const DonwnloadIframe = 'downloadIframe';
@@ -95,11 +112,11 @@ const DonwnloadIframe = 'downloadIframe';
  * @param {String} study.studyName Name of the study
  * @param {String} study.caseFormat Format of the study
  * @param {String} study.description Description of the study
- * @param {Date} study.caseDate Date of the study
+ * @param {Date} study.creationDate Date of the study
  * @param {EventListener} onClick Event to open the study
+ * @param inprogressLoader
  */
-const StudyCard = ({ study, onClick }) => {
-    const dispatch = useDispatch();
+const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     const classes = useStyles();
     const intl = useIntl();
 
@@ -162,13 +179,9 @@ const StudyCard = ({ study, onClick }) => {
 
     const handleClickDelete = () => {
         deleteStudy(study.studyName, study.userId).then((response) => {
-            response.ok
-                ? fetchStudies().then((studies) => {
-                      dispatch(loadStudiesSuccess(studies));
-                  })
-                : setDeleteError(
-                      intl.formatMessage({ id: 'deleteStudyError' })
-                  );
+            if (!response.ok) {
+                setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
+            }
         });
     };
 
@@ -181,6 +194,7 @@ const StudyCard = ({ study, onClick }) => {
      * Rename dialog: window status value for renaming
      */
     const [openRenameDialog, setOpenRename] = React.useState(false);
+    const [renameError, setRenameError] = React.useState('');
 
     const handleOpenRename = () => {
         setAnchorEl(null);
@@ -189,17 +203,21 @@ const StudyCard = ({ study, onClick }) => {
 
     const handleClickRename = (newStudyNameValue) => {
         renameStudy(study.studyName, study.userId, newStudyNameValue).then(
-            () => {
-                fetchStudies().then((studies) => {
-                    dispatch(loadStudiesSuccess(studies));
-                });
-                setOpenRename(false);
+            (response) => {
+                if (!response.ok) {
+                    setRenameError(
+                        intl.formatMessage({ id: 'renameStudyError' })
+                    );
+                } else {
+                    setOpenRename(false);
+                }
             }
         );
     };
 
     const handleCloseRename = () => {
         setOpenRename(false);
+        setRenameError('');
     };
 
     /**
@@ -221,6 +239,19 @@ const StudyCard = ({ study, onClick }) => {
         handleCloseExport();
     };
 
+    const [openAccessRightsDialog, setOpenAccessRightsDialog] = React.useState(
+        false
+    );
+
+    const handleOpenAccessRights = () => {
+        setAnchorEl(null);
+        setOpenAccessRightsDialog(true);
+    };
+
+    const handleCloseAccessRights = () => {
+        setOpenAccessRightsDialog(false);
+    };
+
     /**
      * Status for displaying additional information
      */
@@ -231,34 +262,49 @@ const StudyCard = ({ study, onClick }) => {
     };
 
     return (
-        <div>
+        <div className={classes.container}>
             <Card className={classes.root}>
                 <CardActionArea
-                    onClick={() => onClick()}
+                    onClick={!studyCreationLoader ? () => onClick() : undefined}
                     className={classes.card}
                 >
+                    {studyCreationLoader && (
+                        <LoaderWithOverlay
+                            color="inherit"
+                            loaderSize={35}
+                            isFixed={false}
+                            loadingMessageText="loadingCreationStudy"
+                        />
+                    )}
                     <Tooltip
                         title={study.studyName}
                         placement="top"
                         arrow
                         enterDelay={1000}
                         enterNextDelay={1000}
-                        classes={classes}
+                        classes={{ tooltip: classes.tooltip }}
                     >
-                        <CardHeader
-                            avatar={logo(study.caseFormat)}
-                            title={
-                                <div className={classes.cardTitle}>
-                                    <Typography noWrap variant="h5">
-                                        {study.studyName}
-                                    </Typography>
-                                </div>
-                            }
-                            subheader={
-                                study.caseDate &&
-                                study.caseDate.toLocaleString()
-                            }
-                        />
+                        <div>
+                            <CardHeader
+                                avatar={
+                                    studyCreationLoader ? (
+                                        <canvas className={classes.logo} />
+                                    ) : (
+                                        logo(study.caseFormat)
+                                    )
+                                }
+                                title={
+                                    <div className={classes.cardTitle}>
+                                        <Typography noWrap variant="h5">
+                                            {study.studyName}
+                                        </Typography>
+                                    </div>
+                                }
+                                subheader={new Date(
+                                    study.creationDate
+                                ).toLocaleString()}
+                            />
+                        </div>
                     </Tooltip>
                 </CardActionArea>
                 <CardActions className={classes.actions}>
@@ -297,23 +343,40 @@ const StudyCard = ({ study, onClick }) => {
                             />
                         </MenuItem>
 
-                        <MenuItem onClick={handleOpenRename}>
-                            <ListItemIcon>
-                                <EditIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<FormattedMessage id="rename" />}
-                            />
-                        </MenuItem>
+                        {!studyCreationLoader && (
+                            <MenuItem onClick={handleOpenRename}>
+                                <ListItemIcon>
+                                    <EditIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<FormattedMessage id="rename" />}
+                                />
+                            </MenuItem>
+                        )}
 
-                        <MenuItem onClick={handleOpenExport}>
-                            <ListItemIcon>
-                                <GetAppIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={<FormattedMessage id="export" />}
-                            />
-                        </MenuItem>
+                        {!studyCreationLoader && (
+                            <MenuItem onClick={handleOpenExport}>
+                                <ListItemIcon>
+                                    <GetAppIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={<FormattedMessage id="export" />}
+                                />
+                            </MenuItem>
+                        )}
+
+                        {!studyCreationLoader && (
+                            <MenuItem onClick={handleOpenAccessRights}>
+                                <ListItemIcon>
+                                    <BuildIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <FormattedMessage id="accessRights" />
+                                    }
+                                />
+                            </MenuItem>
+                        )}
                     </StyledMenu>
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -348,6 +411,7 @@ const StudyCard = ({ study, onClick }) => {
                 title={useIntl().formatMessage({ id: 'renameStudy' })}
                 message={useIntl().formatMessage({ id: 'renameStudyMsg' })}
                 currentName={study.studyName}
+                error={renameError}
             />
             <ExportDialog
                 open={openExportDialog}
@@ -357,6 +421,14 @@ const StudyCard = ({ study, onClick }) => {
                 userId={study.userId}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
+            <AccessRightsDialog
+                open={openAccessRightsDialog}
+                onClose={handleCloseAccessRights}
+                studyName={study.studyName}
+                userId={study.userId}
+                title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
+                isPrivate={study.studyPrivate}
+            />
         </div>
     );
 };
@@ -364,10 +436,10 @@ const StudyCard = ({ study, onClick }) => {
 StudyCard.propTypes = {
     study: PropTypes.shape({
         studyName: PropTypes.string.isRequired,
-        userId: PropTypes.object.isRequired,
+        userId: PropTypes.string.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
-        caseDate: PropTypes.instanceOf(Date),
+        creationDate: PropTypes.string,
     }),
     onClick: PropTypes.func.isRequired,
 };
@@ -378,17 +450,53 @@ StudyCard.propTypes = {
  */
 const StudyManager = ({ onClick }) => {
     const dispatch = useDispatch();
+    const websocketExpectedCloseRef = useRef();
 
-    useEffect(() => {
+    const studies = useSelector((state) => state.studies);
+    const studyCreationRequests = useSelector(
+        (state) => state.temporaryStudies
+    );
+
+    const classes = useStyles();
+
+    const dispatchStudies = useCallback(() => {
+        fetchStudyCreationRequests().then((studies) => {
+            dispatch(loadStudyCreationRequestsSuccess(studies));
+        });
         fetchStudies().then((studies) => {
             dispatch(loadStudiesSuccess(studies));
         });
         // Note: dispatch doesn't change
     }, [dispatch]);
 
-    const studies = useSelector((state) => state.studies);
+    const connectNotificationsUpdateStudies = useCallback(() => {
+        const ws = connectNotificationsWsUpdateStudies();
 
-    const classes = useStyles();
+        ws.onmessage = function (event) {
+            dispatchStudies();
+        };
+        ws.onclose = function (event) {
+            if (!websocketExpectedCloseRef.current) {
+                console.error('Unexpected Notification WebSocket closed');
+            }
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, [dispatchStudies]);
+
+    useEffect(() => {
+        dispatchStudies();
+
+        const ws = connectNotificationsUpdateStudies();
+        // Note: dispatch doesn't change
+
+        // cleanup at unmount event
+        return function () {
+            ws.close();
+        };
+    }, [connectNotificationsUpdateStudies, dispatchStudies]);
 
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
@@ -398,6 +506,22 @@ const StudyManager = ({ onClick }) => {
                         <CreateStudyForm />
                     </Box>
                 </Grid>
+                {studyCreationRequests &&
+                    studyCreationRequests.map((study) => (
+                        <Grid
+                            item
+                            xs={12}
+                            sm={6}
+                            md={3}
+                            key={study.userId + '/' + study.studyName}
+                        >
+                            <StudyCard
+                                studyCreationLoader={true}
+                                study={study}
+                                onClick={() => onClick(study.studyName)}
+                            />
+                        </Grid>
+                    ))}
                 {studies.map((study) => (
                     <Grid
                         item
@@ -407,6 +531,7 @@ const StudyManager = ({ onClick }) => {
                         key={study.userId + '/' + study.studyName}
                     >
                         <StudyCard
+                            studyCreationLoader={false}
                             study={study}
                             onClick={() =>
                                 onClick(study.studyName, study.userId)

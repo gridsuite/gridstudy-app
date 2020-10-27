@@ -16,6 +16,7 @@
         "deck.gl": "^8.0.0",
         "geolib": "^3.2.1",
         "http-proxy-middleware": "^1.0.3",
+        "memoize-one": "^5.1.1",
         "mjolnir.js": "^2.4.0",
         "prop-types": "15.7.2",
         "qs": "^6.9.1",
