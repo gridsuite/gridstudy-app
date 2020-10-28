@@ -66,6 +66,8 @@ import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
@@ -129,6 +131,17 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
         marginLeft: drawerWidth,
+    },
+    fullScreen: {
+        top: '-48px',
+        position: 'relative',
+        textAlign: 'right',
+        padding: '5px 10px 0',
+    },
+    fullScreenIcon: {
+        cursor: 'pointer',
+        fontSize: '35px',
+        zIndex: '3',
     },
 }));
 
@@ -582,6 +595,14 @@ const StudyPane = (props) => {
         [mapRef]
     );
 
+    const showFullScreen = () => {
+        setFullScreen(true);
+    };
+
+    const hideFullScreen = () => {
+        setFullScreen(false);
+    };
+
     function closeChoiceVoltageLevelMenu() {
         setChoiceVoltageLevelsSubstationId(null);
     }
@@ -758,6 +779,8 @@ const StudyPane = (props) => {
                                 position: 'absolute',
                                 top: drawerOpen ? 0 : 55,
                                 zIndex: 0,
+                                width: fullScreen ? '100%' : 'auto',
+                                height: fullScreen ? '100%' : 'auto',
                             }}
                             className={clsx(classes.content, {
                                 [classes.contentShift]: drawerOpen,
@@ -774,6 +797,7 @@ const StudyPane = (props) => {
                                 ref={sldRef}
                                 updateSwitchMsg={updateSwitchMsg}
                                 isComputationRunning={isComputationRunning()}
+                                fullScreen={fullScreen}
                                 svgType={
                                     displayedVoltageLevelId
                                         ? SvgType.VOLTAGE_LEVEL

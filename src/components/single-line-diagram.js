@@ -90,6 +90,13 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         backgroundColor: theme.palette.background.default,
     },
+    fullScreenSingleLineDiagram: {
+        width: '100%',
+        textAlign: 'center',
+        '& svg': {
+            width: '100%',
+        },
+    },
 }));
 
 const SvgNotFound = (props) => {
@@ -302,9 +309,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         inner = (
             <div
                 id="sld-svg"
-                style={{ height: '100%' }}
+                style={{ height: props.fullScreen ? 'auto' : '100%' }}
                 className={
-                    svgType === SvgType.VOLTAGE_LEVEL
+                    props.fullScreen
+                        ? classes.fullScreenSingleLineDiagram
+                        : svgType === SvgType.VOLTAGE_LEVEL
                         ? classes.divVoltageLevel
                         : classes.divSubstation
                 }
@@ -337,6 +346,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             variant="outlined"
             square="true"
             className={finalClasses}
+            style={{
+                height: props.fullScreen ? '100%' : 'auto',
+                width: props.fullScreen ? '100%' : 'auto',
+            }}
         >
             <Box className={classes.header}>
                 <Box flexGrow={1}>
@@ -360,6 +373,7 @@ SingleLineDiagram.propTypes = {
     updateSwitchMsg: PropTypes.string.isRequired,
     isComputationRunning: PropTypes.bool.isRequired,
     svgType: PropTypes.string.isRequired,
+    fullScreen: PropTypes.bool.isRequired,
 };
 
 export default SingleLineDiagram;
