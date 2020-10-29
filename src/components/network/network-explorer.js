@@ -96,6 +96,7 @@ const NetworkExplorer = ({
     const cache = new CellMeasurerCache({
         fixedWidth: true,
         defaultHeight: itemSize,
+        minHeight: itemSize,
     });
 
     const generateFilteredSubstation = useCallback(
