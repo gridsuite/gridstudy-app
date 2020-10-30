@@ -82,6 +82,8 @@ const NetworkExplorer = ({
 
     const classes = useStyles();
 
+    const [selectedIndex, setSelectedIndex] = React.useState(0);
+
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
     );
