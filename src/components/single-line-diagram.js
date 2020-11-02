@@ -26,6 +26,7 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { fetchSvg, lockoutLine } from '../utils/rest-api';
 
@@ -35,13 +36,34 @@ import SingleLineDiagramActions from './single-line-diagram-actions';
 import { useSelector } from 'react-redux';
 import useTheme from '@material-ui/core/styles/useTheme';
 
-const maxWidth = 800;
-const maxHeight = 700;
+export const SubstationLayout = {
+    HORIZONTAL: 'horizontal',
+    VERTICAL: 'vertical',
+    SMART: 'smart',
+    SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
+    SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
+};
+
+export const SvgType = {
+    VOLTAGE_LEVEL: 'voltage-level',
+    SUBSTATION: 'substation',
+};
+
+const maxWidthVoltageLevel = 800;
+const maxHeightVoltageLevel = 700;
+const maxWidthSubstation = 1200;
+const maxHeightSubstation = 700;
 
 const useStyles = makeStyles((theme) => ({
-    div: {
-        maxWidth: maxWidth,
-        maxHeight: maxHeight,
+    divVoltageLevel: {
+        maxWidth: maxWidthVoltageLevel,
+        maxHeight: maxHeightVoltageLevel,
+        overflowX: 'hidden',
+        overflowY: 'hidden',
+    },
+    divSubstation: {
+        maxWidth: maxWidthSubstation,
+        maxHeight: maxHeightSubstation,
         overflowX: 'hidden',
         overflowY: 'hidden',
     },
@@ -56,14 +78,20 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
     },
     error: {
-        maxWidth: maxWidth,
-        maxHeight: maxHeight,
+        maxWidth: maxWidthVoltageLevel,
+        maxHeight: maxHeightVoltageLevel,
     },
     errorUpdateSwitch: {
         position: 'absolute',
         top: 25,
         left: 0,
         right: 0,
+    },
+    header: {
+        padding: 5,
+        display: 'flex',
+        flexDirection: 'row',
+        backgroundColor: theme.palette.background.default,
     },
 }));
 
@@ -94,6 +122,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const svgDraw = useRef();
 
     const [forceState, updateState] = useState(false);
+
+    const [loadingState, updateLoadingState] = useState(false);
 
     const [displaySldActions, setDisplaySldActions] = useState(false);
 
@@ -145,6 +175,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (props.svgUrl) {
+            updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
                     setSvg({
@@ -153,6 +184,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         error: null,
                         svgUrl: props.svgUrl,
                     });
+                    updateLoadingState(false);
                 })
                 .catch(function (error) {
                     console.error(error.message);
@@ -162,13 +194,29 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         error,
                         svgUrl: props.svgUrl,
                     });
+                    updateLoadingState(false);
                 });
         } else {
             setSvg(noSvg);
         }
     }, [props.svgUrl, forceState]);
 
-    const { onNextVoltageLevelClick, onBreakerClick } = props;
+    const {
+        onNextVoltageLevelClick,
+        onBreakerClick,
+        isComputationRunning,
+        svgType,
+    } = props;
+
+    const calcMargins = (svgType, width, height) => {
+        return {
+            top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
+            left: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
+            bottom: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
+            right: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
+        };
+    };
+
     useLayoutEffect(() => {
         function addNavigationArrowDef() {
             let svg = document.getElementById('sld-svg').children[0]; //Get svg element
@@ -292,6 +340,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
 
         if (svg.svg) {
+            // calculate svg width and height from svg bounding box
             //close sldActions if we change svg
             closeSldActions();
             //need to add it there so the bbox has the right size
@@ -304,24 +353,34 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             const xOrigin = bbox.x - 20;
             const yOrigin = bbox.y - 24;
             const svgWidth = bbox.width + 40;
-            const svgHeight = bbox.height + 48;
+            const svgHeight = bbox.height + 40;
+
+            let sizeWidth = svgWidth;
+            let sizeHeight = svgHeight;
+            if (svgType === 'substation') {
+                // fit substation diagram to content
+                sizeWidth =
+                    svgWidth > maxWidthSubstation
+                        ? maxWidthSubstation
+                        : svgWidth;
+                sizeHeight =
+                    svgHeight > maxHeightSubstation
+                        ? maxHeightSubstation
+                        : svgHeight;
+            }
+
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .size(svgWidth, svgHeight)
+                .size(sizeWidth, sizeHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
-                    zoomMin: 0.5,
+                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
-                    zoomFactor: 0.3,
-                    margins: {
-                        top: svgHeight / 4,
-                        left: svgWidth / 4,
-                        bottom: svgHeight / 4,
-                        right: svgWidth / 4,
-                    },
+                    zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
+                    margins: calcMargins(svgType, sizeWidth, sizeHeight),
                 });
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);
@@ -381,31 +440,35 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             });
 
             // handling the click on a switch
-            const switches = svg.metadata.nodes.filter((element) =>
-                SWITCH_COMPONENT_TYPES.includes(element.componentType)
-            );
-            switches.forEach((aSwitch) => {
-                const domEl = document.getElementById(aSwitch.id);
-                domEl.style.cursor = 'pointer';
-                domEl.addEventListener('click', function (event) {
-                    const clickedElementId = event.currentTarget.id;
-                    const switchMetadata = svg.metadata.nodes.find(
-                        (value) => value.id === clickedElementId
-                    );
-                    const switchId = switchMetadata.equipmentId;
-                    const open = switchMetadata.open;
-                    svgPrevViewbox.current = draw.viewbox();
-                    onBreakerClick(switchId, !open, event.currentTarget);
+            if (!isComputationRunning) {
+                const switches = svg.metadata.nodes.filter((element) =>
+                    SWITCH_COMPONENT_TYPES.includes(element.componentType)
+                );
+                switches.forEach((aSwitch) => {
+                    const domEl = document.getElementById(aSwitch.id);
+                    domEl.style.cursor = 'pointer';
+                    domEl.addEventListener('click', function (event) {
+                        const clickedElementId = event.currentTarget.id;
+                        const switchMetadata = svg.metadata.nodes.find(
+                            (value) => value.id === clickedElementId
+                        );
+                        const switchId = switchMetadata.equipmentId;
+                        const open = switchMetadata.open;
+                        svgPrevViewbox.current = draw.viewbox();
+                        onBreakerClick(switchId, !open, event.currentTarget);
+                    });
                 });
-            });
+            }
 
             svgDraw.current = draw;
         }
-        // Note: onNextVoltageLevelClick, intl and onBreakerClick don't change
+        // Note: onNextVoltageLevelClick and onBreakerClick don't change
     }, [
         svg,
         onNextVoltageLevelClick,
         onBreakerClick,
+        isComputationRunning,
+        svgType,
         intl,
         network.lines,
         theme.palette.text.primary,
@@ -434,7 +497,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             <div
                 id="sld-svg"
                 style={{ height: '100%' }}
-                className={classes.div}
+                className={
+                    svgType === SvgType.VOLTAGE_LEVEL
+                        ? classes.divVoltageLevel
+                        : classes.divSubstation
+                }
                 dangerouslySetInnerHTML={{ __html: svg.svg }}
             />
         );
@@ -451,9 +518,21 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         msgUpdateSwitch = '';
     }
 
+    let displayProgress;
+    if (loadingState) {
+        displayProgress = <LinearProgress />;
+    } else {
+        displayProgress = '';
+    }
+
     return (
-        <Paper elevation={1} variant="outlined" className={finalClasses}>
-            <Box display="flex" flexDirection="row">
+        <Paper
+            elevation={1}
+            variant="outlined"
+            square="true"
+            className={finalClasses}
+        >
+            <Box className={classes.header}>
                 <Box flexGrow={1}>
                     <Typography>{props.diagramTitle}</Typography>
                 </Box>
@@ -461,6 +540,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     <CloseIcon />
                 </IconButton>
             </Box>
+            <Box height={2}>{displayProgress}</Box>
             <Box display="flex" flexDirection="row">
                 <Box>
                     {msgUpdateSwitch}
@@ -491,6 +571,8 @@ SingleLineDiagram.propTypes = {
     svgUrl: PropTypes.string.isRequired,
     onClose: PropTypes.func,
     updateSwitchMsg: PropTypes.string.isRequired,
+    isComputationRunning: PropTypes.bool.isRequired,
+    svgType: PropTypes.string.isRequired,
 };
 
 export default SingleLineDiagram;

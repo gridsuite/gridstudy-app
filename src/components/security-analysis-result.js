@@ -9,13 +9,51 @@ import PropTypes from 'prop-types';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import VirtualizedTable from './util/virtualized-table';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import MenuItem from '@material-ui/core/MenuItem';
+
+export const NMK_TYPE_RESULT = {
+    CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
+    CONTINGENCIES_FROM_CONSTRAINTS: 'contingencies-from-constraints',
+};
+
+const useStyles = makeStyles((theme) => ({
+    container: {
+        display: 'flex',
+    },
+    tabs: {
+        position: 'relative',
+        top: 0,
+        left: 0,
+    },
+    nmkResultSelect: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+    },
+}));
 
 const SecurityAnalysisResult = ({ result }) => {
+    const classes = useStyles();
+
     const [tabIndex, setTabIndex] = React.useState(0);
 
+    const [nmkTypeResult, setNmkTypeResult] = React.useState(
+        NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
+    );
+
     const intl = useIntl();
+
+    const switchNmkTypeResult = () => {
+        setNmkTypeResult(
+            nmkTypeResult === NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
+                ? NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
+                : NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
+        );
+    };
 
     function computeLoading(limitViolation) {
         return (limitViolation.loading =
@@ -80,7 +118,7 @@ const SecurityAnalysisResult = ({ result }) => {
         );
     }
 
-    function flattenNmKresults(postContingencyResults) {
+    function flattenNmKresultsContingencies(postContingencyResults) {
         const rows = [];
         postContingencyResults.forEach((postContingencyResult, index) => {
             if (
@@ -117,8 +155,8 @@ const SecurityAnalysisResult = ({ result }) => {
         return rows;
     }
 
-    function renderTableNmK(postContingencyResults) {
-        const rows = flattenNmKresults(postContingencyResults);
+    function renderTableNmKContingencies(postContingencyResults) {
+        const rows = flattenNmKresultsContingencies(postContingencyResults);
         return (
             <VirtualizedTable
                 rowCount={rows.length}
@@ -170,25 +208,170 @@ const SecurityAnalysisResult = ({ result }) => {
         );
     }
 
+    function flattenNmKresultsConstraints(postContingencyResults) {
+        const rows = [];
+        let mapConstraints = new Map();
+
+        postContingencyResults.forEach((postContingencyResult, index) => {
+            if (
+                postContingencyResult.limitViolationsResult.limitViolations
+                    .length > 0
+            ) {
+                postContingencyResult.limitViolationsResult.limitViolations.forEach(
+                    (limitViolation) => {
+                        let contingencies;
+                        if (!mapConstraints.has(limitViolation.subjectId)) {
+                            contingencies = [];
+                            mapConstraints.set(
+                                limitViolation.subjectId,
+                                contingencies
+                            );
+                        } else {
+                            contingencies = mapConstraints.get(
+                                limitViolation.subjectId
+                            );
+                        }
+
+                        contingencies.push({
+                            contingencyId: postContingencyResult.contingency.id,
+                            limitType: intl.formatMessage({
+                                id: limitViolation.limitType,
+                            }),
+                            limit: limitViolation.limit,
+                            value: limitViolation.value,
+                            loading: limitViolation.loading,
+                        });
+                    }
+                );
+            }
+        });
+
+        mapConstraints.forEach((contingencies, subjectId) => {
+            rows.push({
+                subjectId: subjectId,
+            });
+
+            contingencies.forEach((contingency) => {
+                rows.push({
+                    contingencyId: contingency.contingencyId,
+                    limitType: contingency.limitType,
+                    limit: contingency.limit,
+                    value: contingency.value,
+                    loading: contingency.loading,
+                });
+            });
+        });
+
+        return rows;
+    }
+
+    function renderTableNmKConstraints(postContingencyResults) {
+        const rows = flattenNmKresultsConstraints(postContingencyResults);
+
+        return (
+            <VirtualizedTable
+                rowCount={rows.length}
+                rowGetter={({ index }) => rows[index]}
+                columns={[
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'subjectId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ContingencyId' }),
+                        dataKey: 'contingencyId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'LimitType' }),
+                        dataKey: 'limitType',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Limit' }),
+                        dataKey: 'limit',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Value' }),
+                        dataKey: 'value',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Loading' }),
+                        dataKey: 'loading',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
     function renderTabs() {
         return (
             <AutoSizer>
                 {({ width, height }) => (
                     <div style={{ width: width, height: height - 48 }}>
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
-                        >
-                            <Tab label="N" />
-                            <Tab label="N-K" />
-                        </Tabs>
+                        <div className={classes.container}>
+                            <div className={classes.tabs}>
+                                <Tabs
+                                    value={tabIndex}
+                                    indicatorColor="primary"
+                                    onChange={(event, newTabIndex) =>
+                                        setTabIndex(newTabIndex)
+                                    }
+                                >
+                                    <Tab label="N" />
+                                    <Tab label="N-K" />
+                                </Tabs>
+                            </div>
+
+                            {tabIndex === 1 && (
+                                <div className={classes.nmkResultSelect}>
+                                    <Select
+                                        labelId="nmk-type-result-label"
+                                        value={nmkTypeResult}
+                                        onChange={switchNmkTypeResult}
+                                    >
+                                        <MenuItem
+                                            value={
+                                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
+                                            }
+                                        >
+                                            <FormattedMessage id="ConstraintsFromContingencies" />
+                                        </MenuItem>
+                                        <MenuItem
+                                            value={
+                                                NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
+                                            }
+                                        >
+                                            <FormattedMessage id="ContingenciesFromConstraints" />
+                                        </MenuItem>
+                                    </Select>
+                                </div>
+                            )}
+                        </div>
                         {tabIndex === 0 &&
                             renderTableN(result.preContingencyResult)}
                         {tabIndex === 1 &&
-                            renderTableNmK(result.postContingencyResults)}
+                            nmkTypeResult ===
+                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
+                            renderTableNmKContingencies(
+                                result.postContingencyResults
+                            )}
+                        {tabIndex === 1 &&
+                            nmkTypeResult ===
+                                NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
+                            renderTableNmKConstraints(
+                                result.postContingencyResults
+                            )}
                     </div>
                 )}
             </AutoSizer>

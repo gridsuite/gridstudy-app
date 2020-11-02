@@ -11,7 +11,6 @@ import ArrowLayer, { ArrowDirection } from './layers/arrow-layer';
 import ParallelPathLayer from './layers/parallel-path-layer';
 import ForkLineLayer from './layers/fork-line-layer';
 import getDistance from 'geolib/es/getDistance';
-import { getOverLoadLineColor } from '../../utils/colors';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
@@ -50,44 +49,116 @@ function getArrowDirection(p) {
     }
 }
 
-function getLineColor(line, color, props) {
+export const LineLoadingZone = {
+    UNKNOWN: 0,
+    SAFE: 1,
+    WARNING: 2,
+    OVERLOAD: 3,
+};
+
+function getLineLoadingZoneOfSide(limit, intensity, lineFlowAlertThreshold) {
+    if (limit === undefined || intensity === undefined || intensity === 0) {
+        return LineLoadingZone.UNKNOWN;
+    } else {
+        let threshold = (lineFlowAlertThreshold * limit) / 100;
+        if (intensity > 0 && intensity < threshold) {
+            return LineLoadingZone.SAFE;
+        } else if (intensity >= threshold && intensity < limit) {
+            return LineLoadingZone.WARNING;
+        } else {
+            return LineLoadingZone.OVERLOAD;
+        }
+    }
+}
+
+function getLineLoadingZone(line, lineFlowAlertThreshold) {
+    const zone1 = getLineLoadingZoneOfSide(
+        line.permanentLimit1,
+        line.i1,
+        lineFlowAlertThreshold
+    );
+    const zone2 = getLineLoadingZoneOfSide(
+        line.permanentLimit2,
+        line.i2,
+        lineFlowAlertThreshold
+    );
+    return Math.max(zone1, zone2);
+}
+
+function getLineLoadingZoneColor(zone) {
+    if (zone === LineLoadingZone.UNKNOWN) {
+        return [128, 128, 128]; // grey
+    } else if (zone === LineLoadingZone.SAFE) {
+        return [107, 178, 40]; // green
+    } else if (zone === LineLoadingZone.WARNING) {
+        return [210, 179, 63]; // yellow
+    } else if (zone === LineLoadingZone.OVERLOAD) {
+        return [255, 0, 0]; // red
+    } else {
+        throw new Error('Unsupported line loading zone: ' + zone);
+    }
+}
+
+function getLineColor(line, nominalVoltageColor, props) {
     if (props.lineFlowColorMode === LineFlowColorMode.NOMINAL_VOLTAGE) {
         if (isDisconnected(line)) {
             return props.disconnectedLineColor;
         } else {
-            return color;
+            return nominalVoltageColor;
         }
     } else if (props.lineFlowColorMode === LineFlowColorMode.OVERLOADS) {
-        let limits = [line.permanentLimit1, line.permanentLimit2];
-        let intensities = [line.i1, line.i2];
-        let iColor1, iColor2;
-        let iColor = [iColor1, iColor2];
-
-        for (let i = 0; i < 2; ++i) {
-            if (
-                limits[i] === undefined ||
-                intensities[i] === undefined ||
-                intensities[i] === 0
-            ) {
-                iColor[i] = 0;
-            } else {
-                let threshold =
-                    (props.lineFlowAlertThreshold * limits[i]) / 100;
-                if (intensities[i] > 0 && intensities[i] < threshold) {
-                    iColor[i] = 1;
-                } else if (
-                    intensities[i] >= threshold &&
-                    intensities[i] < limits[i]
-                ) {
-                    iColor[i] = 2;
-                } else {
-                    iColor[i] = 3;
-                }
-            }
-        }
-        return getOverLoadLineColor(Math.max(iColor[0], iColor[1]));
+        const zone = getLineLoadingZone(line, props.lineFlowAlertThreshold);
+        return getLineLoadingZoneColor(zone);
     } else {
-        return color;
+        return nominalVoltageColor;
+    }
+}
+
+export const ArrowSpeed = {
+    STOPPED: 0,
+    SLOW: 1,
+    MEDIUM: 2,
+    FAST: 3,
+    CRAZY: 4,
+};
+
+function getArrowSpeedOfSide(limit, intensity) {
+    if (limit === undefined || intensity === undefined || intensity === 0) {
+        return ArrowSpeed.STOPPED;
+    } else {
+        if (intensity > 0 && intensity < limit / 3) {
+            return ArrowSpeed.SLOW;
+        } else if (intensity >= limit / 3 && intensity < (limit * 2) / 3) {
+            return ArrowSpeed.MEDIUM;
+        } else if (intensity >= (limit * 2) / 3 && intensity < limit) {
+            return ArrowSpeed.FAST;
+        } else {
+            // > limit
+            return ArrowSpeed.CRAZY;
+        }
+    }
+}
+
+function getArrowSpeed(line) {
+    const speed1 = getArrowSpeedOfSide(line.permanentLimit1, line.i1);
+    const speed2 = getArrowSpeedOfSide(line.permanentLimit2, line.i2);
+    return Math.max(speed1, speed2);
+}
+
+function getArrowSpeedFactor(speed) {
+    switch (speed) {
+        case ArrowSpeed.STOPPED:
+            return 0;
+        case ArrowSpeed.SLOW:
+            return 0.5;
+        case ArrowSpeed.MEDIUM:
+            return 2;
+        case ArrowSpeed.FAST:
+            return 4;
+        case ArrowSpeed.CRAZY:
+            return 10;
+        default:
+            throw new Error('Unknown arrow speed: ' + speed);
     }
 }
 
@@ -361,7 +432,7 @@ class LineLayer extends CompositeLayer {
         const layers = [];
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.compositeData.forEach((compositeData) => {
-            const color = this.props.getNominalVoltageColor(
+            const nominalVoltageColor = this.props.getNominalVoltageColor(
                 compositeData.nominalVoltage
             );
             const lineLayer = new ParallelPathLayer(
@@ -377,7 +448,8 @@ class LineLayer extends CompositeLayer {
                             line,
                             this.props.lineFullPath
                         ),
-                    getColor: (line) => getLineColor(line, color, this.props),
+                    getColor: (line) =>
+                        getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angle,
@@ -418,9 +490,14 @@ class LineLayer extends CompositeLayer {
                             this.props.lineFullPath
                         ),
                     getColor: (arrow) =>
-                        getLineColor(arrow.line, color, this.props),
+                        getLineColor(
+                            arrow.line,
+                            nominalVoltageColor,
+                            this.props
+                        ),
                     getSize: 700,
-                    getSpeedFactor: 3,
+                    getSpeedFactor: (arrow) =>
+                        getArrowSpeedFactor(getArrowSpeed(arrow.line)),
                     getLineParallelIndex: (arrow) => arrow.line.parallelIndex,
                     getLineAngle: (arrow) => arrow.line.angle,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
@@ -459,7 +536,8 @@ class LineLayer extends CompositeLayer {
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
-                    getColor: (line) => getLineColor(line, color, this.props),
+                    getColor: (line) =>
+                        getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angle,
@@ -492,7 +570,8 @@ class LineLayer extends CompositeLayer {
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
-                    getColor: (line) => getLineColor(line, color, this.props),
+                    getColor: (line) =>
+                        getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => -line.parallelIndex,
                     getLineAngle: (line) => line.angle + Math.PI,

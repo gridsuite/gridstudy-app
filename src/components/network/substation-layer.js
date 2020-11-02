@@ -106,6 +106,7 @@ class SubstationLayer extends CompositeLayer {
         }
 
         if (
+            props.useName !== oldProps.useName ||
             props.filteredNominalVoltages !== oldProps.filteredNominalVoltages
         ) {
             let substationsLabels = [];

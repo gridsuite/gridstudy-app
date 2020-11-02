@@ -31,6 +31,12 @@ export function loadStudiesSuccess(studies) {
     return { type: LOAD_STUDIES_SUCCESS, studies: studies };
 }
 
+export const LOAD_TEMPORARY_STUDIES = 'LOAD_TEMPORARY_STUDIES';
+
+export function loadStudyCreationRequestsSuccess(temporaryStudies) {
+    return { type: LOAD_TEMPORARY_STUDIES, temporaryStudies: temporaryStudies };
+}
+
 export const LOAD_CASES_SUCCESS = 'LOAD_CASES_SUCCESS';
 
 export function loadCasesSuccess(cases) {
@@ -161,4 +167,20 @@ export const RESET_RESULT_COUNT = 'RESET_RESULT_COUNT';
 
 export function resetResultCount() {
     return { type: RESET_RESULT_COUNT };
+}
+
+export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
+    'FILTERED_NOMINAL_VOLTAGES_UPDATED';
+
+export function filteredNominalVoltagesUpdated(filteredNV) {
+    return {
+        type: FILTERED_NOMINAL_VOLTAGES_UPDATED,
+        filteredNominalVoltages: filteredNV,
+    };
+}
+
+export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
+
+export function selectSubstationLayout(substationLayout) {
+    return { type: SUBSTATION_LAYOUT, substationLayout: substationLayout };
 }

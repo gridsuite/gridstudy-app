@@ -129,7 +129,10 @@ const App = () => {
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
                 userManager.getUser().then((user) => {
-                    if (user == null) {
+                    if (
+                        user == null &&
+                        initialMatchSilentRenewCallbackUrl == null
+                    ) {
                         userManager.signinSilent().catch((error) => {
                             const oidcHackReloaded =
                                 'gridsuite-oidc-hack-reloaded';
@@ -238,7 +241,7 @@ const App = () => {
                                 } else {
                                     label = <FormattedMessage id={tabName} />;
                                 }
-                                return <Tab label={label} />;
+                                return <Tab key={tabName} label={label} />;
                             })}
                         </Tabs>
                     )}

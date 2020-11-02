@@ -14,8 +14,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { useSelector } from 'react-redux';
-
 import {
     _MapContext as MapContext,
     NavigationControl,
@@ -29,7 +27,7 @@ import { decomposeColor } from '@material-ui/core/styles/colorManipulator';
 
 import Network from './network';
 import GeoData from './geo-data';
-import LineLayer, { LineFlowColorMode } from './line-layer';
+import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
 
@@ -61,8 +59,6 @@ const NetworkMap = forwardRef((props, ref) => {
         labelColor[3] *= 255;
         return labelColor;
     }, [theme]);
-
-    const useName = useSelector((state) => state.useName);
 
     const [cursorType, setCursorType] = useState('grab');
 
@@ -271,16 +267,20 @@ const NetworkMap = forwardRef((props, ref) => {
 
     const layers = [];
 
-    if (props.network !== null && props.geoData !== null) {
+    if (
+        props.network !== null &&
+        props.geoData !== null &&
+        props.filteredNominalVoltages !== null
+    ) {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
                 data: props.network.substations,
                 network: props.network,
                 geoData: props.geoData,
+                useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
-                useName: useName,
                 labelsVisible: labelsVisible,
                 labelColor: foregroundNeutralColor,
                 labelSize: LABEL_SIZE,
@@ -297,6 +297,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 data: props.network.lines,
                 network: props.network,
                 geoData: props.geoData,
+                useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,
                 disconnectedLineColor: foregroundNeutralColor,
                 filteredNominalVoltages: props.filteredNominalVoltages,
@@ -313,7 +314,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 onHover: ({ object, x, y }) => {
                     setTooltip({
                         message: object
-                            ? useName
+                            ? props.useName
                                 ? object.name
                                 : object.id
                             : null,
@@ -378,10 +379,11 @@ const NetworkMap = forwardRef((props, ref) => {
 NetworkMap.defaultProps = {
     network: null,
     geoData: null,
+    useName: null,
+    filteredNominalVoltages: null,
     labelsZoomThreshold: 9,
     arrowsZoomThreshold: 7,
     initialZoom: 5,
-    filteredNominalVoltages: null,
     initialPosition: [0, 0],
     lineFullPath: true,
     lineParallelPath: true,
@@ -393,21 +395,22 @@ NetworkMap.defaultProps = {
 };
 
 NetworkMap.propTypes = {
-    network: PropTypes.instanceOf(Network),
-    geoData: PropTypes.instanceOf(GeoData),
+    network: PropTypes.instanceOf(Network).isRequired,
+    geoData: PropTypes.instanceOf(GeoData).isRequired,
+    useName: PropTypes.bool.isRequired,
+    filteredNominalVoltages: PropTypes.array.isRequired,
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
-    filteredNominalVoltages: PropTypes.array,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onLineClick: PropTypes.func,
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,
-    lineFlowMode: PropTypes.instanceOf(LineFlowColorMode),
+    lineFlowMode: PropTypes.oneOf(Object.values(LineFlowMode)),
     lineFlowHidden: PropTypes.bool,
-    lineFlowColorMode: PropTypes.instanceOf(LineFlowColorMode),
+    lineFlowColorMode: PropTypes.oneOf(Object.values(LineFlowColorMode)),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     visible: PropTypes.bool,
 };
