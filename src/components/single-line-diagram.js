@@ -32,6 +32,8 @@ import { fetchSvg } from '../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
+import { useSelector } from 'react-redux';
+import { LIGHT_THEME } from '../redux/actions';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -122,6 +124,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
+    const theme = useSelector((state) => state.theme);
+
     const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
             svgPrevViewbox.current = svgDraw.current.viewbox();
@@ -183,7 +187,117 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     };
 
     useLayoutEffect(() => {
+        function addNavigationArrowDef() {
+            let svg = document.getElementById('sld-svg').children[0]; //Get svg element
+            let defElement = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'defs'
+            );
+
+            let html;
+            if (theme === LIGHT_THEME) {
+                html = [
+                    '<marker id="arrowhead" viewBox="0 0 100 100" refX="50" refY="1" >',
+                    '<polygon style="stroke: white;fill: white" points="0 0, 50 80, 100 0"/>',
+                    '</marker>',
+                ].join('');
+            } else {
+                html = [
+                    '<marker id="arrowhead" viewBox="0 0 100 100" refX="50" refY="1" >',
+                    '<polygon style="stroke: #212121;fill: #212121" points="0 0, 50 80, 100 0"/>',
+                    '</marker>',
+                ].join('');
+            }
+
+            defElement.innerHTML = html;
+            svg.appendChild(defElement);
+        }
+
+        function createSvgArrow(element, transform, position) {
+            let svgInsert = document.getElementById(element.id).parentElement;
+            let group = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'g'
+            );
+            let circle = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'circle'
+            );
+
+            let arrow = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'line'
+            );
+            //get x and y from transform attribute
+            let x = parseInt(transform[0].match(/\d+/));
+            let y = parseInt(transform[1].match(/\d+/));
+            if (position === 'TOP') {
+                y = y - 45;
+            } else {
+                y = y + 45;
+            }
+            arrow.setAttribute('x1', 0);
+            arrow.setAttribute('x2', 0);
+            arrow.setAttribute('y1', -10);
+            arrow.setAttribute('y2', 0);
+            arrow.setAttribute('marker-end', 'url(#arrowhead)');
+            arrow.style.strokeWidth = '5'; //Set stroke width
+
+            circle.setAttribute('r', 15);
+            circle.setAttribute('cx', 0);
+            circle.setAttribute('cy', 0);
+
+            //set colors depending on the theme
+            if (theme === LIGHT_THEME) {
+                circle.style.stroke = '#212121';
+                circle.style.fill = '#212121';
+                arrow.style.stroke = 'white';
+            } else {
+                circle.style.stroke = 'white';
+                circle.style.fill = 'white';
+                arrow.style.stroke = '#212121';
+            }
+
+            group.setAttribute('pointer-events', 'all');
+            group.setAttribute('transform', 'translate(' + x + ',' + y + ')');
+
+            if (position === 'TOP') {
+                arrow.setAttribute('transform', 'rotate(180)');
+            }
+
+            group.appendChild(circle);
+            group.appendChild(arrow);
+            svgInsert.appendChild(group);
+
+            // handling the navigation between voltage levels
+            group.style.cursor = 'pointer';
+            group.addEventListener('click', function (e) {
+                const id = document.getElementById(element.id).id;
+                const meta = svg.metadata.nodes.find(
+                    (other) => other.id === id
+                );
+                onNextVoltageLevelClick(meta.nextVId);
+            });
+        }
+
+        function addNavigationArrow(svg) {
+            addNavigationArrowDef();
+            const navigable = svg.metadata.nodes.filter(
+                (el) => el.nextVId !== null
+            );
+
+            navigable.forEach((element) => {
+                let transform = document
+                    .getElementById(element.id)
+                    .getAttribute('transform')
+                    .split(',');
+                createSvgArrow(element, transform, element.direction);
+            });
+        }
+
         if (svg.svg) {
+            //need to add it there so the bbox has the right size
+            addNavigationArrow(svg);
             // calculate svg width and height from svg bounding box
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -231,22 +345,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             draw.on('panEnd', function (evt) {
                 divElt.style.cursor = 'default';
             });
-
-            // handling the navigation between voltage levels
-            const elements = svg.metadata.nodes.filter(
-                (el) => el.nextVId !== null
-            );
-            elements.forEach((el) => {
-                const domEl = document.getElementById(el.id);
-                domEl.style.cursor = 'pointer';
-                domEl.addEventListener('click', function (e) {
-                    const id = e.target.parentElement.id;
-                    const meta = svg.metadata.nodes.find(
-                        (other) => other.id === id
-                    );
-                    onNextVoltageLevelClick(meta.nextVId);
-                });
-            });
+            addNavigationArrow(svg);
 
             // handling the click on a switch
             if (!isComputationRunning) {
@@ -278,6 +377,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onBreakerClick,
         isComputationRunning,
         svgType,
+        theme,
     ]);
 
     useEffect(() => {
