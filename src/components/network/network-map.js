@@ -21,6 +21,7 @@ import {
 } from 'react-map-gl';
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
+import mapboxgl from 'mapbox-gl';
 
 import { useTheme } from '@material-ui/styles';
 import { decomposeColor } from '@material-ui/core/styles/colorManipulator';
@@ -44,6 +45,8 @@ const NetworkMap = forwardRef((props, ref) => {
     const [showLineFlow, setShowLineFlow] = useState(true);
 
     const [deck, setDeck] = useState(null);
+    const [mapBox, setMapBox] = useState(null);
+
     const [centered, setCentered] = useState({
         lastCenteredSubstation: null,
         centeredSubstationId: null,
@@ -166,6 +169,13 @@ const NetworkMap = forwardRef((props, ref) => {
                         centered: true,
                     });
                 }
+            }
+
+            if (mapBox !== null) {
+                mapBox.addControl(
+                    new mapboxgl.AttributionControl(),
+                    'bottom-left'
+                );
             }
         }
     }
@@ -347,6 +357,11 @@ const NetworkMap = forwardRef((props, ref) => {
                 mapStyle={theme.mapboxStyle}
                 preventStyleDiffing={true}
                 mapboxApiAccessToken={MAPBOX_TOKEN}
+                attributionControl={false}
+                ref={(ref) => {
+                    // save a reference to the mapboxgl.Map instance
+                    setMapBox(ref && ref.getMap());
+                }}
             >
                 {renderTooltip()}
             </StaticMap>

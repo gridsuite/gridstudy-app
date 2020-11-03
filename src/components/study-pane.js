@@ -813,7 +813,7 @@ const StudyPane = (props) => {
                             style={{
                                 position: 'absolute',
                                 right: 10,
-                                bottom: 30,
+                                bottom: 0,
                                 zIndex: 1,
                             }}
                         >
@@ -824,7 +824,7 @@ const StudyPane = (props) => {
                         style={{
                             position: 'absolute',
                             right: 100,
-                            bottom: 30,
+                            bottom: 0,
                             marginLeft: 8,
                             marginRight: 8,
                             marginTop: 8,
