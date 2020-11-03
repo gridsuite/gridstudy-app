@@ -130,17 +130,6 @@ const useStyles = makeStyles((theme) => ({
         }),
         marginLeft: drawerWidth,
     },
-    fullScreen: {
-        top: '-48px',
-        position: 'relative',
-        textAlign: 'right',
-        padding: '5px 10px 0',
-    },
-    fullScreenIcon: {
-        cursor: 'pointer',
-        fontSize: '35px',
-        zIndex: '3',
-    },
 }));
 
 const INITIAL_POSITION = [0, 0];
