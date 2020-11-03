@@ -66,8 +66,6 @@ import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
-import FullscreenIcon from '@material-ui/icons/Fullscreen';
-import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
@@ -682,7 +680,7 @@ const StudyPane = (props) => {
         }
 
         return (
-            <div>
+            <div className={classes.main}>
                 {waitingLoadGeoData && (
                     <LoaderWithOverlay
                         color="inherit"
@@ -771,7 +769,7 @@ const StudyPane = (props) => {
                             style={{
                                 position: 'absolute',
                                 top: drawerOpen ? 0 : 55,
-                                zIndex: 0,
+                                zIndex: 2,
                                 width: fullScreen ? '100%' : 'auto',
                                 height: fullScreen ? '100%' : 'auto',
                                 border: '1px solid #ccc',
