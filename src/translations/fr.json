@@ -157,7 +157,7 @@
     "descLfReadSlackBus": "Lire le noeud bilan dans le réseau",
     "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau",
 
-    "securityAnalysisResults" : "Résultats de l'analyse de sécurité",
+    "securityAnalysisResults": "Résultats de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
 
     "componentNum": "Numéro de composante",
@@ -169,7 +169,7 @@
     "isOk": "Ok",
     "metrics": "Métriques",
     "logs": "Logs",
-    
+
     "SubstationLayout": "Layout des images de sites",
     "HorizontalSubstationLayout": "Horizontal",
     "VerticalSubstationLayout": "Vertical",

@@ -213,6 +213,7 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [drawerOpen, setDrawerOpen] = useState(true);
+    const fullScreen = useSelector((state) => state.fullScreen);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -595,14 +596,6 @@ const StudyPane = (props) => {
         [mapRef]
     );
 
-    const showFullScreen = () => {
-        setFullScreen(true);
-    };
-
-    const hideFullScreen = () => {
-        setFullScreen(false);
-    };
-
     function closeChoiceVoltageLevelMenu() {
         setChoiceVoltageLevelsSubstationId(null);
     }
@@ -689,7 +682,7 @@ const StudyPane = (props) => {
         }
 
         return (
-            <div className={classes.main}>
+            <div>
                 {waitingLoadGeoData && (
                     <LoaderWithOverlay
                         color="inherit"
@@ -781,6 +774,7 @@ const StudyPane = (props) => {
                                 zIndex: 0,
                                 width: fullScreen ? '100%' : 'auto',
                                 height: fullScreen ? '100%' : 'auto',
+                                border: '1px solid #ccc',
                             }}
                             className={clsx(classes.content, {
                                 [classes.contentShift]: drawerOpen,

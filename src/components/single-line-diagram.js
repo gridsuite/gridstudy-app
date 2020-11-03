@@ -32,6 +32,11 @@ import { fetchSvg } from '../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { fullScreenSingleLineDiagram } from '../redux/actions';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -95,7 +100,25 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center',
         '& svg': {
             width: '100%',
+            height: 'calc(100vh - 120px)', // Temporary: it will be fixed in the us of deleting scroll
         },
+    },
+    fullScreen: {
+        top: '-48px',
+        position: 'relative',
+        textAlign: 'right',
+        padding: '5px 10px 0',
+    },
+    notFullScreen: {
+        top: '0',
+        position: 'relative',
+        textAlign: 'right',
+        padding: '5px 10px 0',
+    },
+    fullScreenIcon: {
+        cursor: 'pointer',
+        fontSize: '35px',
+        zIndex: '3',
     },
 }));
 
@@ -124,6 +147,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
     const svgDraw = useRef();
+    const dispatch = useDispatch();
+
+    const fullScreen = useSelector((state) => state.fullScreen);
 
     const [forceState, updateState] = useState(false);
 
@@ -295,8 +321,17 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
+            dispatch(fullScreenSingleLineDiagram(false));
             props.onClose();
         }
+    };
+
+    const showFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(true));
+    };
+
+    const hideFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(false));
     };
 
     let inner;
@@ -309,9 +344,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         inner = (
             <div
                 id="sld-svg"
-                style={{ height: props.fullScreen ? 'auto' : '100%' }}
+                style={{ height: fullScreen ? 'auto' : '100%' }}
                 className={
-                    props.fullScreen
+                    fullScreen
                         ? classes.fullScreenSingleLineDiagram
                         : svgType === SvgType.VOLTAGE_LEVEL
                         ? classes.divVoltageLevel
@@ -347,8 +382,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             square="true"
             className={finalClasses}
             style={{
-                height: props.fullScreen ? '100%' : 'auto',
-                width: props.fullScreen ? '100%' : 'auto',
+                border: 'none',
+                height: fullScreen ? '100%' : 'auto',
+                width: fullScreen ? '100%' : 'auto',
             }}
         >
             <Box className={classes.header}>
@@ -362,6 +398,25 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             <Box height={2}>{displayProgress}</Box>
             {msgUpdateSwitch}
             {inner}
+            {!loadingState && (
+                <Box
+                    className={
+                        fullScreen ? classes.fullScreen : classes.notFullScreen
+                    }
+                >
+                    {fullScreen ? (
+                        <FullscreenExitIcon
+                            onClick={hideFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ) : (
+                        <FullscreenIcon
+                            onClick={showFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    )}
+                </Box>
+            )}
         </Paper>
     );
 });

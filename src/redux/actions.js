@@ -184,3 +184,9 @@ export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 export function selectSubstationLayout(substationLayout) {
     return { type: SUBSTATION_LAYOUT, substationLayout: substationLayout };
 }
+
+export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
+
+export function fullScreenSingleLineDiagram(fullScreen) {
+    return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
+}

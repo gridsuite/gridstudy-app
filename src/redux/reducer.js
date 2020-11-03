@@ -61,6 +61,7 @@ import {
     RESET_RESULT_COUNT,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
+    FULLSCREEN_SINGLE_LINE_DIAGRAM,
 } from './actions';
 
 const initialState = {
@@ -89,6 +90,7 @@ const initialState = {
     resultCount: 0,
     filteredNominalVoltages: null,
     substationLayout: getLocalStorageSubstationLayout(),
+    fullScreen: false,
 };
 
 export const reducer = createReducer(initialState, {
@@ -220,5 +222,9 @@ export const reducer = createReducer(initialState, {
     [SUBSTATION_LAYOUT]: (state, action) => {
         state.substationLayout = action.substationLayout;
         saveLocalStorageSubstationLayout(state.substationLayout);
+    },
+
+    [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
+        state.fullScreen = action.fullScreen;
     },
 });
