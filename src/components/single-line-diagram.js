@@ -427,8 +427,7 @@ SingleLineDiagram.propTypes = {
     onClose: PropTypes.func,
     updateSwitchMsg: PropTypes.string.isRequired,
     isComputationRunning: PropTypes.bool.isRequired,
-    svgType: PropTypes.string.isRequired,
-    fullScreen: PropTypes.bool.isRequired,
+    svgType: PropTypes.string.isRequired
 };
 
 export default SingleLineDiagram;

@@ -778,7 +778,6 @@ const StudyPane = (props) => {
                                 ref={sldRef}
                                 updateSwitchMsg={updateSwitchMsg}
                                 isComputationRunning={isComputationRunning()}
-                                fullScreen={fullScreen}
                                 svgType={
                                     displayedVoltageLevelId
                                         ? SvgType.VOLTAGE_LEVEL
