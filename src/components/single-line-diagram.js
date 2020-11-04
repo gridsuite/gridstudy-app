@@ -155,6 +155,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
+    const [fullScreenWidth, setFullScreenWidth] = useState(0);
+
     const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
             svgPrevViewbox.current = svgDraw.current.viewbox();
@@ -162,16 +164,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         updateState((s) => !s);
     }, []);
 
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
-
-    useEffect(() => {
+    const getSgv = useCallback(() => {
         if (props.svgUrl) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
@@ -197,7 +190,20 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState]);
+    }, [props.svgUrl]);
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            reloadSvg: forceUpdate,
+        }),
+        // Note: forceUpdate doesn't change
+        [forceUpdate]
+    );
+
+    useEffect(() => {
+        getSgv();
+    }, [forceState, getSgv]);
 
     const {
         onNextVoltageLevelClick,
@@ -206,17 +212,34 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgType,
     } = props;
 
-    const calcMargins = (svgType, width, height) => {
-        return {
-            top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            left: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-            bottom: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            right: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-        };
-    };
+    const calcMargins = useCallback(
+        (svgType, width, height, fullWidth) => {
+            return {
+                top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
+                left:
+                    svgType === SvgType.VOLTAGE_LEVEL
+                        ? fullScreen
+                            ? -(fullWidth - width / 4)
+                            : width / 4
+                        : -Infinity,
+                bottom:
+                    svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
+                right:
+                    svgType === SvgType.VOLTAGE_LEVEL
+                        ? fullScreen
+                            ? -(fullWidth - width / 4)
+                            : width / 4
+                        : -Infinity,
+            };
+        },
+        [fullScreen]
+    );
 
     useLayoutEffect(() => {
         if (svg.svg) {
+            const widthOfFullScreen = document.getElementById('sld-svg')
+                .offsetWidth;
+            setFullScreenWidth(widthOfFullScreen);
             // calculate svg width and height from svg bounding box
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -251,7 +274,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: calcMargins(svgType, sizeWidth, sizeHeight),
+                    margins: calcMargins(
+                        svgType,
+                        sizeWidth,
+                        sizeHeight,
+                        fullScreenWidth
+                    ),
                 });
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);
@@ -311,6 +339,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onBreakerClick,
         isComputationRunning,
         svgType,
+        calcMargins,
+        fullScreenWidth,
     ]);
 
     useEffect(() => {
@@ -328,6 +358,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const showFullScreen = () => {
         dispatch(fullScreenSingleLineDiagram(true));
+        getSgv();
     };
 
     const hideFullScreen = () => {
@@ -382,9 +413,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             square="true"
             className={finalClasses}
             style={{
-                border: 'none',
                 height: fullScreen ? '100%' : 'auto',
-                width: fullScreen ? '100%' : 'auto',
             }}
         >
             <Box className={classes.header}>
