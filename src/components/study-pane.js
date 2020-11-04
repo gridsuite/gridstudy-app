@@ -109,6 +109,7 @@ const useStyles = makeStyles((theme) => ({
     drawerPaper: {
         position: 'relative',
         overflow: 'hidden',
+        zIndex: 98,
     },
     drawerDiv: {
         height: 'calc(100vh - 56px)',
@@ -120,14 +121,14 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: -drawerWidth,
+        marginLeft: 0,
     },
     contentShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: 0,
+        marginLeft: drawerWidth,
     },
 }));
 
@@ -709,10 +710,9 @@ const StudyPane = (props) => {
                 <div
                     style={{
                         position: 'relative',
+                        width: '100%',
+                        marginLeft: -drawerWidth,
                     }}
-                    className={clsx(classes.content, {
-                        [classes.contentShift]: drawerOpen,
-                    })}
                 >
                     <NetworkMap
                         network={network}
@@ -743,6 +743,9 @@ const StudyPane = (props) => {
                                 zIndex: 1,
                                 flex: 1,
                             }}
+                            className={clsx(classes.content, {
+                                [classes.contentShift]: drawerOpen,
+                            })}
                         >
                             <IconButton onClick={toggleDrawer}>
                                 <MenuOpen />
@@ -756,6 +759,9 @@ const StudyPane = (props) => {
                                 top: drawerOpen ? 0 : 55,
                                 zIndex: 0,
                             }}
+                            className={clsx(classes.content, {
+                                [classes.contentShift]: drawerOpen,
+                            })}
                         >
                             <SingleLineDiagram
                                 onClose={() => closeVoltageLevelDiagram()}
