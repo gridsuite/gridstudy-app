@@ -173,12 +173,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgType,
     } = props;
 
-    const calcMargins = (svgType, width, height) => {
+    const calcMargins = () => {
         return {
-            top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            left: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-            bottom: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            right: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
+            top: 100,
+            left: 100,
+            bottom: 300,
+            right: 100,
         };
     };
 
@@ -212,7 +212,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             const draw = SVG()
                 .addTo(divElt)
                 .size(sizeWidth, sizeHeight)
-                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
+                .viewbox(xOrigin, yOrigin, sizeWidth, sizeHeight)
                 .panZoom({
                     panning: true,
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
