@@ -23,6 +23,7 @@ import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg';
 import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
 import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
 import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
+import { ReactComponent as MatpowerLogo } from '../images/matpower_logo.svg';
 
 import {
     loadStudiesSuccess,
@@ -131,6 +132,8 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
             case 'IEEE-CDF':
             case 'IEEE CDF': // for powsybl <= 3.1 compatibility
                 return <IeeeLogo className={classes.logo} />;
+            case 'MATPOWER':
+                return <MatpowerLogo className={classes.logo} />;
             default:
                 break;
         }

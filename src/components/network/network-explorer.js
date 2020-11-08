@@ -31,13 +31,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
+import { DoubleArrow } from '@material-ui/icons';
 
 const itemSize = 48;
 
 const useStyles = makeStyles((theme) => ({
     textField: {
         margin: theme.spacing(1),
-        width: 'calc(100% - 16px)', // to fix an issue with fullWidth of textfield
+        width: 'calc(100% - 64px)', // to fix an issue with fullWidth of textfield and get << on the same line
     },
     listSubHeaderRoot: {
         backgroundColor: darken(theme.palette.background.default, 0.2),
@@ -71,6 +72,7 @@ const NetworkExplorer = ({
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
     onSubstationFocus,
+    hideExplorer,
 }) => {
     const intl = useIntl();
 
@@ -93,10 +95,13 @@ const NetworkExplorer = ({
         [useName]
     );
 
-    const cache = new CellMeasurerCache({
-        fixedWidth: true,
-        defaultHeight: itemSize,
-    });
+    const [cache] = React.useState(
+        new CellMeasurerCache({
+            fixedWidth: true,
+            defaultHeight: itemSize,
+            minHeight: itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
+        })
+    );
 
     const generateFilteredSubstation = useCallback(
         (entry) => {
@@ -259,6 +264,7 @@ const NetworkExplorer = ({
 
     const filter = (event) => {
         generateFilteredSubstation(event.target.value.toLowerCase());
+        cache.clearAll();
     };
 
     return (
@@ -282,6 +288,9 @@ const NetworkExplorer = ({
                                         ),
                                     }}
                                 />
+                                <IconButton onClick={hideExplorer}>
+                                    <DoubleArrow transform={'rotate(180)'} />
+                                </IconButton>
                             </Grid>
                             <Divider />
                             <Grid item>
