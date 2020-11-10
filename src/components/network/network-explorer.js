@@ -95,11 +95,13 @@ const NetworkExplorer = ({
         [useName]
     );
 
-    const cache = new CellMeasurerCache({
-        fixedWidth: true,
-        defaultHeight: itemSize,
-        minHeight: itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
-    });
+    const [cache] = React.useState(
+        new CellMeasurerCache({
+            fixedWidth: true,
+            defaultHeight: itemSize,
+            minHeight: itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
+        })
+    );
 
     const generateFilteredSubstation = useCallback(
         (entry) => {
@@ -262,6 +264,7 @@ const NetworkExplorer = ({
 
     const filter = (event) => {
         generateFilteredSubstation(event.target.value.toLowerCase());
+        cache.clearAll();
     };
 
     return (
