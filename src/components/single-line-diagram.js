@@ -32,8 +32,9 @@ import { fetchSvg } from '../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
-import { useSelector } from 'react-redux';
-import { LIGHT_THEME } from '../redux/actions';
+import useTheme from '@material-ui/core/styles/useTheme';
+import Arrow from '../images/arrow.svg';
+import ArrowHover from '../images/arrow_hover.svg';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -115,6 +116,25 @@ const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
 const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
 
+let arrowSvg;
+let arrowHoverSvg;
+
+fetch(Arrow)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowSvg = data;
+    });
+
+fetch(ArrowHover)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowHoverSvg = data;
+    });
+
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
@@ -124,7 +144,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
-    const theme = useSelector((state) => state.theme);
+    const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
@@ -187,86 +207,42 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     };
 
     useLayoutEffect(() => {
-        function addNavigationArrowDef() {
-            let svg = document.getElementById('sld-svg').children[0]; //Get svg element
-            let defElement = document.createElementNS(
-                'http://www.w3.org/2000/svg',
-                'defs'
-            );
-
-            let html;
-            if (theme === LIGHT_THEME) {
-                html = [
-                    '<marker id="arrowhead" viewBox="0 0 100 100" refX="50" refY="1" >',
-                    '<polygon style="stroke: white;fill: white" points="0 0, 50 80, 100 0"/>',
-                    '</marker>',
-                ].join('');
-            } else {
-                html = [
-                    '<marker id="arrowhead" viewBox="0 0 100 100" refX="50" refY="1" >',
-                    '<polygon style="stroke: #212121;fill: #212121" points="0 0, 50 80, 100 0"/>',
-                    '</marker>',
-                ].join('');
-            }
-
-            defElement.innerHTML = html;
-            svg.appendChild(defElement);
-        }
-
-        function createSvgArrow(element, transform, position) {
+        function createSvgArrow(element, position, x, highestY, lowestY) {
             let svgInsert = document.getElementById(element.id).parentElement;
             let group = document.createElementNS(
                 'http://www.w3.org/2000/svg',
                 'g'
             );
-            let circle = document.createElementNS(
-                'http://www.w3.org/2000/svg',
-                'circle'
-            );
 
-            let arrow = document.createElementNS(
-                'http://www.w3.org/2000/svg',
-                'line'
-            );
-            //get x and y from transform attribute
-            let x = parseInt(transform[0].match(/\d+/));
-            let y = parseInt(transform[1].match(/\d+/));
+            let y;
             if (position === 'TOP') {
-                y = y - 45;
+                y = lowestY - 65;
+                x = x - 22;
             } else {
-                y = y + 45;
+                y = highestY + 65;
+                x = x + 22;
             }
-            arrow.setAttribute('x1', 0);
-            arrow.setAttribute('x2', 0);
-            arrow.setAttribute('y1', -10);
-            arrow.setAttribute('y2', 0);
-            arrow.setAttribute('marker-end', 'url(#arrowhead)');
-            arrow.style.strokeWidth = '5'; //Set stroke width
 
-            circle.setAttribute('r', 15);
-            circle.setAttribute('cx', 0);
-            circle.setAttribute('cy', 0);
-
-            //set colors depending on the theme
-            if (theme === LIGHT_THEME) {
-                circle.style.stroke = '#212121';
-                circle.style.fill = '#212121';
-                arrow.style.stroke = 'white';
+            if (position === 'BOTTOM') {
+                group.setAttribute(
+                    'transform',
+                    'translate(' + x + ',' + y + ') rotate(180)'
+                );
             } else {
-                circle.style.stroke = 'white';
-                circle.style.fill = 'white';
-                arrow.style.stroke = '#212121';
+                group.setAttribute(
+                    'transform',
+                    'translate(' + x + ',' + y + ')'
+                );
             }
 
-            group.setAttribute('pointer-events', 'all');
-            group.setAttribute('transform', 'translate(' + x + ',' + y + ')');
+            group.innerHTML = arrowSvg + arrowHoverSvg;
 
-            if (position === 'TOP') {
-                arrow.setAttribute('transform', 'rotate(180)');
-            }
+            //set initial colors depending on the theme
+            group.getElementsByClassName('arrow_hover')[0].style.fill =
+                theme.circle.fill;
+            group.getElementsByClassName('arrow')[0].style.fill =
+                theme.arrow.fill;
 
-            group.appendChild(circle);
-            group.appendChild(arrow);
             svgInsert.appendChild(group);
 
             // handling the navigation between voltage levels
@@ -278,20 +254,60 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 );
                 onNextVoltageLevelClick(meta.nextVId);
             });
+
+            //handling the color changes when hovering
+            group.addEventListener('mouseenter', function (e) {
+                console.log(e.target.querySelector('.arrow_hover'));
+                e.target.querySelector('.arrow_hover').style.fill =
+                    theme.circle_hover.fill;
+                e.target.querySelector('.arrow').style.fill =
+                    theme.arrow_hover.fill;
+            });
+
+            group.addEventListener('mouseleave', function (e) {
+                e.target.querySelector('.arrow_hover').style.fill =
+                    theme.circle.fill;
+                e.target.querySelector('.arrow').style.fill = theme.arrow.fill;
+            });
         }
 
         function addNavigationArrow(svg) {
-            addNavigationArrowDef();
             const navigable = svg.metadata.nodes.filter(
                 (el) => el.nextVId !== null
             );
+
+            let highestY;
+            let lowestY;
+            let y;
 
             navigable.forEach((element) => {
                 let transform = document
                     .getElementById(element.id)
                     .getAttribute('transform')
                     .split(',');
-                createSvgArrow(element, transform, element.direction);
+
+                y = parseInt(transform[1].match(/\d+/));
+                if (highestY === undefined || y > highestY) {
+                    highestY = y;
+                }
+                if (lowestY === undefined || y < lowestY) {
+                    lowestY = y;
+                }
+            });
+
+            navigable.forEach((element) => {
+                let transform = document
+                    .getElementById(element.id)
+                    .getAttribute('transform')
+                    .split(',');
+                let x = parseInt(transform[0].match(/\d+/));
+                createSvgArrow(
+                    element,
+                    element.direction,
+                    x,
+                    highestY,
+                    lowestY
+                );
             });
         }
 
