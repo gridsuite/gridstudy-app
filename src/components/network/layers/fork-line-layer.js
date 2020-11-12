@@ -26,6 +26,9 @@ const defaultProps = {
  *         distanceBetweenLines: distance in meters between line when no pixel clamping is applied
  *         maxParallelOffset: max pixel distance
  *         minParallelOffset: min pixel distance
+ *         instanceOffsetStart: distance from the origin point
+ *         substationRadius: min pixel
+ *         substationMaxPixel:
  */
 export default class ForkLineLayer extends LineLayer {
     getShaders() {
@@ -50,14 +53,14 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
     float offsetSubstation = clamp(project_size_to_pixel(substationRadius*instanceOffsetStart ), 
                                     1., 
                                     substationMaxPixel * instanceOffsetStart );
-    float offsetSubstationCS = project_pixel_size(offsetSubstation) ;
+    float offsetSubstationCommonSpace = project_pixel_size(offsetSubstation) ;
 
     vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle ), 0, 0.) * instanceLineParallelIndex;
 
     trans.x -= sin(instanceLineAngle) ;
     trans.y -= cos(instanceLineAngle) ;
 
-    source+=project_common_position_to_clipspace(trans * offsetSubstationCS ) - project_uCenter;
+    source+=project_common_position_to_clipspace(trans * offsetSubstationCommonSpace ) - project_uCenter;
     target+=project_common_position_to_clipspace(trans * offsetCommonSpace) - project_uCenter;
 
 }
