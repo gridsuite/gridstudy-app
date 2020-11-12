@@ -11,9 +11,8 @@ import ArrowLayer, { ArrowDirection } from './layers/arrow-layer';
 import ParallelPathLayer from './layers/parallel-path-layer';
 import ForkLineLayer from './layers/fork-line-layer';
 import getDistance from 'geolib/es/getDistance';
+import { SUBSTATION_RADIUS, SUBSTATION_RADIUS_MAX_PIXEL } from './constants';
 
-const SUBSTATION_RADIUS = 500;
-const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
 const START_ARROW_POSITION = 0.1;
