@@ -147,7 +147,8 @@ const NetworkExplorer = ({
         }
     }
 
-    function onDisplaySubstationFocusHandler(substation) {
+    function onDisplaySubstationFocusHandler(event, substation) {
+        event.stopPropagation();
         if (onSubstationFocus !== null) {
             onSubstationFocus(substation.id);
         }
@@ -163,7 +164,12 @@ const NetworkExplorer = ({
     };
 
     const voltageLevelRow = (vl) => (
-        <ListItem button key={vl.id} className={classes.listItem}>
+        <ListItem
+            button
+            key={vl.id}
+            className={classes.listItem}
+            onClick={() => onDisplayClickHandler(vl)}
+        >
             <ListItemText
                 primary={
                     <Typography color="textPrimary" noWrap>
@@ -179,7 +185,6 @@ const NetworkExplorer = ({
                         {voltagelevelInfo(vl)}
                     </Typography>
                 }
-                onClick={() => onDisplayClickHandler(vl)}
             />
         </ListItem>
     );
@@ -201,13 +206,13 @@ const NetworkExplorer = ({
                             button
                             key={substation.id}
                             className={classes.listSubHeaderRoot}
+                            onClick={() =>
+                                onSubstationDisplayClick &&
+                                onSubstationDisplayClick(substation.id)
+                            }
                         >
                             <Grid
                                 container
-                                onClick={() =>
-                                    onSubstationDisplayClick &&
-                                    onSubstationDisplayClick(substation.id)
-                                }
                                 direction={'row'}
                                 className={classes.noCRGrid}
                             >
@@ -244,8 +249,11 @@ const NetworkExplorer = ({
                                 </Grid>
                             </Grid>
                             <IconButton
-                                onClick={() =>
-                                    onDisplaySubstationFocusHandler(substation)
+                                onClick={(e) =>
+                                    onDisplaySubstationFocusHandler(
+                                        e,
+                                        substation
+                                    )
                                 }
                             >
                                 <GpsFixedIcon />
