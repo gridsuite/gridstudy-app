@@ -12,6 +12,8 @@ import ParallelPathLayer from './layers/parallel-path-layer';
 import ForkLineLayer from './layers/fork-line-layer';
 import getDistance from 'geolib/es/getDistance';
 
+const SUBSTATION_RADIUS = 500;
+const SUBSTATION_RADIUS_MAX_PIXEL = 5;
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
 const START_ARROW_POSITION = 0.1;
@@ -171,6 +173,23 @@ class LineLayer extends CompositeLayer {
         };
     }
 
+    getVoltageLevelIndex(voltageLevelId) {
+        const { network } = this.props;
+        const vl = network.getVoltageLevel(voltageLevelId);
+        const substation = network.getSubstation(vl.substationId);
+        return (
+            [
+                ...new Set(
+                    substation.voltageLevels.map((vl) => vl.nominalVoltage) // only one voltage level
+                ),
+            ]
+                .sort((a, b) => {
+                    return a - b; // force numerical sort
+                })
+                .indexOf(vl.nominalVoltage) + 0.1
+        );
+    }
+
     //TODO this is a huge function, refactor
     updateState({ props, oldProps, changeFlags }) {
         let compositeData;
@@ -234,27 +253,7 @@ class LineLayer extends CompositeLayer {
             (changeFlags.propsChanged &&
                 oldProps.lineParallelPath !== props.lineParallelPath)
         ) {
-            compositeData.forEach((compositeData) => {
-                const mapOriginDestination = compositeData.mapOriginDestination;
-                // calculate index for line with same subsation set
-                // The index is a real number in a normalized unit.
-                // +1 => distanceBetweenLines on side
-                // -1 => distanceBetweenLines on the other side
-                // 0.5 => half of distanceBetweenLines
-                //The special value 9999 or -9999 mean that we
-                //don't want parallel path translations for this line
-                mapOriginDestination.forEach((samePathLine) => {
-                    let index = -(samePathLine.size - 1) / 2;
-                    samePathLine.forEach((line) => {
-                        if (props.lineParallelPath && samePathLine.size > 1) {
-                            line.parallelIndex = index;
-                            index += 1;
-                        } else {
-                            line.parallelIndex = 9999;
-                        }
-                    });
-                });
-            });
+            this.recomputeParallelLinesIndex(compositeData, props);
         }
 
         if (
@@ -284,27 +283,7 @@ class LineLayer extends CompositeLayer {
         }
 
         if (changeFlags.dataChanged) {
-            compositeData.forEach((compositeData) => {
-                compositeData.lines.forEach((line) => {
-                    const positions = compositeData.lineMap.get(line.id)
-                        .positions;
-                    //the first and last in positions doesn't depend on lineFullPath
-                    line.origin = positions[0];
-                    line.end = positions[positions.length - 1];
-
-                    //TODO right now the angle doesn't depend on linefullpath (we always use the angle between the substations)
-                    //but in the future, we will also compute the angle between the substations and the first point to have forklines
-                    //going in the direction of the first segment, not the direction of the line between the substations. We will still
-                    //need to keep the angle between the substations for the shift of the line, so we will have 3 angles.
-                    let angle = props.geoData.getMapAngle(
-                        positions[0],
-                        positions[positions.length - 1]
-                    );
-                    angle = (angle * Math.PI) / 180 + Math.PI;
-                    if (line.angle < 0) angle += 2 * Math.PI;
-                    line.angle = angle;
-                });
-            });
+            this.recomputeForkLines(compositeData, props);
         }
 
         if (
@@ -428,6 +407,54 @@ class LineLayer extends CompositeLayer {
         this.setState({ compositeData: compositeData });
     }
 
+    recomputeParallelLinesIndex(compositeData, props) {
+        compositeData.forEach((compositeData) => {
+            const mapOriginDestination = compositeData.mapOriginDestination;
+            // calculate index for line with same subsation set
+            // The index is a real number in a normalized unit.
+            // +1 => distanceBetweenLines on side
+            // -1 => distanceBetweenLines on the other side
+            // 0.5 => half of distanceBetweenLines
+            mapOriginDestination.forEach((samePathLine) => {
+                let index = -(samePathLine.size - 1) / 2;
+                samePathLine.forEach((line) => {
+                    line.parallelIndex = props.lineParallelPath ? index : 0;
+                    index += 1;
+                });
+            });
+        });
+    }
+
+    recomputeForkLines(compositeData, props) {
+        compositeData.forEach((compositeData) => {
+            compositeData.lines.forEach((line) => {
+                const positions = compositeData.lineMap.get(line.id).positions;
+                //the first and last in positions doesn't depend on lineFullPath
+                line.origin = positions[0];
+                line.end = positions[positions.length - 1];
+
+                line.substationIndexStart = this.getVoltageLevelIndex(
+                    line.voltageLevelId1
+                );
+                line.substationIndexEnd = this.getVoltageLevelIndex(
+                    line.voltageLevelId2
+                );
+
+                //TODO right now the angle doesn't depend on linefullpath (we always use the angle between the substations)
+                //but in the future, we will also compute the angle between the substations and the first point to have forklines
+                //going in the direction of the first segment, not the direction of the line between the substations. We will still
+                //need to keep the angle between the substations for the shift of the line, so we will have 3 angles.
+                let angle = props.geoData.getMapAngle(
+                    positions[0],
+                    positions[positions.length - 1]
+                );
+                angle = (angle * Math.PI) / 180 + Math.PI;
+                if (line.angle < 0) angle += 2 * Math.PI;
+                line.angle = angle;
+            });
+        });
+    }
+
     renderLayers() {
         const layers = [];
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
@@ -544,6 +571,8 @@ class LineLayer extends CompositeLayer {
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     getMaxParallelOffset: this.props.maxParallelOffset,
                     getMinParallelOffset: this.props.minParallelOffset,
+                    getSubstationRadius: this.props.substationRadius,
+                    getSubstationMaxPixel: this.props.substationMaxPixel,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),
@@ -578,6 +607,8 @@ class LineLayer extends CompositeLayer {
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     getMaxParallelOffset: this.props.maxParallelOffset,
                     getMinParallelOffset: this.props.minParallelOffset,
+                    getSubstationRadius: this.props.substationRadius,
+                    getSubstationMaxPixel: this.props.substationMaxPixel,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),
@@ -649,6 +680,8 @@ LineLayer.defaultProps = {
     distanceBetweenLines: 1000,
     maxParallelOffset: 100,
     minParallelOffset: 3,
+    substationRadius: { type: 'number', value: SUBSTATION_RADIUS },
+    substationMaxPixel: { type: 'number', value: SUBSTATION_RADIUS_MAX_PIXEL },
 };
 
 export default LineLayer;
