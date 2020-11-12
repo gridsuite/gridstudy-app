@@ -176,17 +176,15 @@ class LineLayer extends CompositeLayer {
         const { network } = this.props;
         const vl = network.getVoltageLevel(voltageLevelId);
         const substation = network.getSubstation(vl.substationId);
-        return (
-            [
-                ...new Set(
-                    substation.voltageLevels.map((vl) => vl.nominalVoltage) // only one voltage level
-                ),
-            ]
-                .sort((a, b) => {
-                    return a - b; // force numerical sort
-                })
-                .indexOf(vl.nominalVoltage) + 0.1
-        );
+        return [
+            ...new Set(
+                substation.voltageLevels.map((vl) => vl.nominalVoltage) // only one voltage level
+            ),
+        ]
+            .sort((a, b) => {
+                return a - b; // force numerical sort
+            })
+            .indexOf(vl.nominalVoltage);
     }
 
     //TODO this is a huge function, refactor
