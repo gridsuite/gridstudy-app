@@ -14,6 +14,8 @@ const defaultProps = {
     distanceBetweenLines: { type: 'number', value: 1000 },
     maxParallelOffset: { type: 'number', value: 100 },
     minParallelOffset: { type: 'number', value: 3 },
+    substationRadius: { type: 'number', value: 500 },
+    substationMaxPixel: { type: 'number', value: 5 },
 };
 
 /**
@@ -32,20 +34,32 @@ export default class ForkLineLayer extends LineLayer {
             'vs:#decl': `
 attribute float instanceLineParallelIndex;
 attribute float instanceLineAngle;
+attribute float instanceOffsetStart;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
+uniform float substationRadius;
+uniform float substationMaxPixel;
             `,
             'float segmentIndex = positions.x': `;
 target = source ;
 if( abs(instanceLineParallelIndex) != 9999. ) {
     float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
     float offsetCommonSpace = project_pixel_size(offsetPixels);
-    vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle ), 0, 0.) * instanceLineParallelIndex ;
+
+    float offsetSubstation = clamp(project_size_to_pixel(substationRadius*instanceOffsetStart ), 
+                                    1., 
+                                    substationMaxPixel * instanceOffsetStart );
+    float offsetSubstationCS = project_pixel_size(offsetSubstation) ;
+
+    vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle ), 0, 0.) * instanceLineParallelIndex;
+
     trans.x -= sin(instanceLineAngle) ;
     trans.y -= cos(instanceLineAngle) ;
-    trans = trans * offsetCommonSpace;
-    target+=project_common_position_to_clipspace(trans) - project_uCenter;
+
+    source+=project_common_position_to_clipspace(trans * offsetSubstationCS ) - project_uCenter;
+    target+=project_common_position_to_clipspace(trans * offsetCommonSpace) - project_uCenter;
+
 }
             `,
         };
@@ -67,6 +81,11 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
                 type: GL.FLOAT,
                 accessor: 'getLineAngle',
             },
+            instanceOffsetStart: {
+                size: 1,
+                type: GL.FLOAT,
+                accessor: 'getSubstationOffset',
+            },
         });
     }
 
@@ -77,6 +96,8 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
                 distanceBetweenLines: this.props.getDistanceBetweenLines,
                 maxParallelOffset: this.props.getMaxParallelOffset,
                 minParallelOffset: this.props.getMinParallelOffset,
+                substationRadius: this.props.getSubstationRadius,
+                substationMaxPixel: this.props.getSubstationMaxPixel,
             },
         });
     }
