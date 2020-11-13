@@ -157,7 +157,7 @@
     "descLfReadSlackBus": "Read slack bus from network",
     "descLfWriteSlackBus": "Write slack bus to network",
 
-    "securityAnalysisResults" : "Security analysis results",
+    "securityAnalysisResults": "Security analysis results",
     "loadFlowResults": "Loadflow results",
 
     "componentNum": "Component number",
