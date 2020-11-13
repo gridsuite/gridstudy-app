@@ -276,6 +276,18 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 (el) => el.nextVId !== null
             );
 
+            //remove arrows if the arrow points to the current svg
+            navigable.forEach((element) => {
+                let duplicates = navigable.filter(
+                    (value) => value.equipmentId === element.equipmentId
+                );
+                if (duplicates.length > 1) {
+                    for (let i = 0; i < duplicates.length; i++) {
+                        navigable.splice(navigable.indexOf(duplicates[i]), 1);
+                    }
+                }
+            });
+
             let highestY;
             let lowestY;
             let y;
@@ -383,7 +395,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     });
                 });
             }
-
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
