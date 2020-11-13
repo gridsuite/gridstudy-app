@@ -8,7 +8,11 @@
 import { CompositeLayer, TextLayer } from 'deck.gl';
 import ScatterplotLayerExt from './layers/scatterplot-layer-ext';
 
-import { SUBSTATION_RADIUS, SUBSTATION_RADIUS_MAX_PIXEL } from './constants';
+import {
+    SUBSTATION_RADIUS,
+    SUBSTATION_RADIUS_MAX_PIXEL,
+    SUBSTATION_RADIUS_MIN_PIXEL,
+} from './constants';
 
 const voltageLevelNominalVoltageIndexer = (map, voltageLevel) => {
     let list = map.get(voltageLevel.nominalVoltage);
@@ -135,7 +139,7 @@ class SubstationLayer extends CompositeLayer {
                 this.getSubLayerProps({
                     id: 'NominalVoltage' + e.nominalVoltage,
                     data: e.metaVoltageLevels,
-                    radiusMinPixels: 1,
+                    radiusMinPixels: SUBSTATION_RADIUS_MIN_PIXEL,
                     getRadiusMaxPixels: (metaVoltageLevel) =>
                         SUBSTATION_RADIUS_MAX_PIXEL *
                         (metaVoltageLevel.nominalVoltageIndex + 1),
