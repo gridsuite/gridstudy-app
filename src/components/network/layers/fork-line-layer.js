@@ -48,8 +48,7 @@ uniform float substationMaxPixel;
 uniform float minSubstationRadiusPixel;
             `,
             'float segmentIndex = positions.x': `;
-target = source ;
-if( abs(instanceLineParallelIndex) != 9999. ) {
+    target = source ;
     float offsetPixels = clamp(project_size_to_pixel( distanceBetweenLines), minParallelOffset, maxParallelOffset );
     float offsetCommonSpace = project_pixel_size(offsetPixels);
 
@@ -66,7 +65,6 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
     source+=project_common_position_to_clipspace(trans * offsetSubstationCommonSpace ) - project_uCenter;
     target+=project_common_position_to_clipspace(trans * offsetCommonSpace) - project_uCenter;
 
-}
             `,
         };
         return shaders;

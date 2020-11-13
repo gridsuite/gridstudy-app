@@ -210,7 +210,7 @@ class LineLayer extends CompositeLayer {
                         list = [];
                         map.set(vl.nominalVoltage, list);
                     }
-                    if (!vl1 || vl1.substationId !== vl2.substationId) {
+                    if (vl1.substationId !== vl2.substationId) {
                         list.push(line);
                     }
                     return map;
