@@ -16,6 +16,7 @@ const defaultProps = {
     minParallelOffset: { type: 'number', value: 3 },
     substationRadius: { type: 'number', value: 500 },
     substationMaxPixel: { type: 'number', value: 5 },
+    minSubstationRadiusPixel: { type: 'number', value: 1 },
 };
 
 /**
@@ -27,8 +28,9 @@ const defaultProps = {
  *         maxParallelOffset: max pixel distance
  *         minParallelOffset: min pixel distance
  *         instanceOffsetStart: distance from the origin point
- *         substationRadius: min pixel
- *         substationMaxPixel:
+ *         substationRadius: radius for a voltage level in substation
+ *         substationMaxPixel: max pixel for a voltage level in substation
+ *         minSubstationRadiusPixel : min pixel for a substation
  */
 export default class ForkLineLayer extends LineLayer {
     getShaders() {
@@ -43,6 +45,7 @@ uniform float maxParallelOffset;
 uniform float minParallelOffset;
 uniform float substationRadius;
 uniform float substationMaxPixel;
+uniform float minSubstationRadiusPixel;
             `,
             'float segmentIndex = positions.x': `;
 target = source ;
@@ -51,7 +54,7 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
     float offsetCommonSpace = project_pixel_size(offsetPixels);
 
     float offsetSubstation = clamp(project_size_to_pixel(substationRadius*instanceOffsetStart ), 
-                                    1., 
+                                    minSubstationRadiusPixel, 
                                     substationMaxPixel * instanceOffsetStart );
     float offsetSubstationCommonSpace = project_pixel_size(offsetSubstation) ;
 
@@ -101,6 +104,8 @@ if( abs(instanceLineParallelIndex) != 9999. ) {
                 minParallelOffset: this.props.getMinParallelOffset,
                 substationRadius: this.props.getSubstationRadius,
                 substationMaxPixel: this.props.getSubstationMaxPixel,
+                minSubstationRadiusPixel: this.props
+                    .getMinSubstationRadiusPixel,
             },
         });
     }

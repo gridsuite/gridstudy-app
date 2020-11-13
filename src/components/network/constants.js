@@ -7,3 +7,4 @@
 
 export const SUBSTATION_RADIUS = 500;
 export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
+export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
