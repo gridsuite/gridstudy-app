@@ -257,7 +257,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
             //handling the color changes when hovering
             group.addEventListener('mouseenter', function (e) {
-                console.log(e.target.querySelector('.arrow_hover'));
                 e.target.querySelector('.arrow_hover').style.fill =
                     theme.circle_hover.fill;
                 e.target.querySelector('.arrow').style.fill =
