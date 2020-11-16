@@ -174,8 +174,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     } = props;
 
     const calcMargins = (svgType, width, height) => {
-        console.log('height', height);
-        console.log('width', width);
         return {
             top: height > 700 ? maxHeightSubstation - height : 40,
             left: width > 2000 ? -(width - height) / 2 : 100,
