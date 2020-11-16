@@ -271,20 +271,19 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
 
         function addNavigationArrow(svg) {
-            const navigable = svg.metadata.nodes.filter(
+            let navigable = svg.metadata.nodes.filter(
                 (el) => el.nextVId !== null
             );
 
+            let vlList = svg.metadata.nodes.map((element) => element.vid);
+            vlList = vlList.filter(
+                (element, index) =>
+                    element !== '' && vlList.indexOf(element) === index
+            );
+
             //remove arrows if the arrow points to the current svg
-            navigable.forEach((element) => {
-                let duplicates = navigable.filter(
-                    (value) => value.equipmentId === element.equipmentId
-                );
-                if (duplicates.length > 1) {
-                    for (let i = 0; i < duplicates.length; i++) {
-                        navigable.splice(navigable.indexOf(duplicates[i]), 1);
-                    }
-                }
+            navigable = navigable.filter((element) => {
+                return vlList.indexOf(element.nextVId) === -1;
             });
 
             let highestY;
