@@ -32,6 +32,9 @@ import { fetchSvg } from '../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
+import useTheme from '@material-ui/core/styles/useTheme';
+import Arrow from '../images/arrow.svg';
+import ArrowHover from '../images/arrow_hover.svg';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -113,6 +116,25 @@ const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
 const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
 
+let arrowSvg;
+let arrowHoverSvg;
+
+fetch(Arrow)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowSvg = data;
+    });
+
+fetch(ArrowHover)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowHoverSvg = data;
+    });
+
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
@@ -121,6 +143,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [forceState, updateState] = useState(false);
 
     const [loadingState, updateLoadingState] = useState(false);
+
+    const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
@@ -183,7 +207,124 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     };
 
     useLayoutEffect(() => {
+        function createSvgArrow(element, position, x, highestY, lowestY) {
+            let svgInsert = document.getElementById(element.id).parentElement;
+            let group = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'g'
+            );
+
+            let y;
+            if (position === 'TOP') {
+                y = lowestY - 65;
+                x = x - 22;
+            } else {
+                y = highestY + 65;
+                x = x + 22;
+            }
+
+            if (position === 'BOTTOM') {
+                group.setAttribute(
+                    'transform',
+                    'translate(' + x + ',' + y + ') rotate(180)'
+                );
+            } else {
+                group.setAttribute(
+                    'transform',
+                    'translate(' + x + ',' + y + ')'
+                );
+            }
+
+            group.innerHTML = arrowSvg + arrowHoverSvg;
+
+            //set initial colors depending on the theme
+            group.getElementsByClassName('arrow_hover')[0].style.fill =
+                theme.circle.fill;
+            group.getElementsByClassName('arrow')[0].style.fill =
+                theme.arrow.fill;
+
+            svgInsert.appendChild(group);
+
+            // handling the navigation between voltage levels
+            group.style.cursor = 'pointer';
+            group.addEventListener('click', function (e) {
+                const id = document.getElementById(element.id).id;
+                const meta = svg.metadata.nodes.find(
+                    (other) => other.id === id
+                );
+                onNextVoltageLevelClick(meta.nextVId);
+            });
+
+            //handling the color changes when hovering
+            group.addEventListener('mouseenter', function (e) {
+                e.target.querySelector('.arrow_hover').style.fill =
+                    theme.circle_hover.fill;
+                e.target.querySelector('.arrow').style.fill =
+                    theme.arrow_hover.fill;
+            });
+
+            group.addEventListener('mouseleave', function (e) {
+                e.target.querySelector('.arrow_hover').style.fill =
+                    theme.circle.fill;
+                e.target.querySelector('.arrow').style.fill = theme.arrow.fill;
+            });
+        }
+
+        function addNavigationArrow(svg) {
+            const navigable = svg.metadata.nodes.filter(
+                (el) => el.nextVId !== null
+            );
+
+            //remove arrows if the arrow points to the current svg
+            navigable.forEach((element) => {
+                let duplicates = navigable.filter(
+                    (value) => value.equipmentId === element.equipmentId
+                );
+                if (duplicates.length > 1) {
+                    for (let i = 0; i < duplicates.length; i++) {
+                        navigable.splice(navigable.indexOf(duplicates[i]), 1);
+                    }
+                }
+            });
+
+            let highestY;
+            let lowestY;
+            let y;
+
+            navigable.forEach((element) => {
+                let transform = document
+                    .getElementById(element.id)
+                    .getAttribute('transform')
+                    .split(',');
+
+                y = parseInt(transform[1].match(/\d+/));
+                if (highestY === undefined || y > highestY) {
+                    highestY = y;
+                }
+                if (lowestY === undefined || y < lowestY) {
+                    lowestY = y;
+                }
+            });
+
+            navigable.forEach((element) => {
+                let transform = document
+                    .getElementById(element.id)
+                    .getAttribute('transform')
+                    .split(',');
+                let x = parseInt(transform[0].match(/\d+/));
+                createSvgArrow(
+                    element,
+                    element.direction,
+                    x,
+                    highestY,
+                    lowestY
+                );
+            });
+        }
+
         if (svg.svg) {
+            //need to add it there so the bbox has the right size
+            addNavigationArrow(svg);
             // calculate svg width and height from svg bounding box
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -231,22 +372,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             draw.on('panEnd', function (evt) {
                 divElt.style.cursor = 'default';
             });
-
-            // handling the navigation between voltage levels
-            const elements = svg.metadata.nodes.filter(
-                (el) => el.nextVId !== null
-            );
-            elements.forEach((el) => {
-                const domEl = document.getElementById(el.id);
-                domEl.style.cursor = 'pointer';
-                domEl.addEventListener('click', function (e) {
-                    const id = e.target.parentElement.id;
-                    const meta = svg.metadata.nodes.find(
-                        (other) => other.id === id
-                    );
-                    onNextVoltageLevelClick(meta.nextVId);
-                });
-            });
+            addNavigationArrow(svg);
 
             // handling the click on a switch
             if (!isComputationRunning) {
@@ -268,7 +394,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     });
                 });
             }
-
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
@@ -278,6 +403,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onBreakerClick,
         isComputationRunning,
         svgType,
+        theme,
     ]);
 
     useEffect(() => {
