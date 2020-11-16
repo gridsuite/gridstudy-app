@@ -173,12 +173,14 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgType,
     } = props;
 
-    const calcMargins = () => {
+    const calcMargins = (svgType, width, height) => {
+        console.log('height', height);
+        console.log('width', width);
         return {
-            top: 100,
-            left: 100,
-            bottom: 300,
-            right: 100,
+            top: height > 700 ? maxHeightSubstation - height : 40,
+            left: width > 2000 ? -(width - height) / 2 : 100,
+            bottom: height > 700 ? 300 : 250,
+            right: width > 2000 ? (width - height) / 4 : 100,
         };
     };
 
@@ -218,7 +220,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: calcMargins(svgType, sizeWidth, sizeHeight),
+                    margins: calcMargins(svgType, svgWidth, svgHeight),
                 });
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);
