@@ -51,12 +51,44 @@ const lightTheme = createMuiTheme({
     palette: {
         type: 'light',
     },
+    arrow: {
+        fill: '#212121',
+        stroke: '#212121',
+    },
+    arrow_hover: {
+        fill: 'white',
+        stroke: 'white',
+    },
+    circle: {
+        stroke: 'white',
+        fill: 'white',
+    },
+    circle_hover: {
+        stroke: '#212121',
+        fill: '#212121',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
 const darkTheme = createMuiTheme({
     palette: {
         type: 'dark',
+    },
+    arrow: {
+        fill: 'white',
+        stroke: 'white',
+    },
+    arrow_hover: {
+        fill: '#424242',
+        stroke: '#424242',
+    },
+    circle: {
+        stroke: '#424242',
+        fill: '#424242',
+    },
+    circle_hover: {
+        stroke: 'white',
+        fill: 'white',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
