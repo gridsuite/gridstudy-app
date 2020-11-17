@@ -106,6 +106,10 @@ const RunButton = (props) => {
 
     const runningStatus = getRunningStatus();
 
+    let disabled =
+        (selectedIndex === 0 && runningStatus !== RunningStatus.IDLE) ||
+        (selectedIndex === 1 && runningStatus === RunningStatus.RUNNING);
+
     return (
         <SplitButton
             fullWidth
@@ -114,7 +118,7 @@ const RunButton = (props) => {
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
             className={getStyle(runningStatus)}
-            buttonDisabled={runningStatus !== RunningStatus.IDLE}
+            buttonDisabled={disabled}
             selectionDisabled={runningStatus === RunningStatus.RUNNING}
             startIcon={props.getStartIcon(getRunningStatus())}
             text={
