@@ -270,6 +270,7 @@ const StudyPane = (props) => {
 
     const updateSecurityAnalysisStatus = useCallback(() => {
         fetchSecurityAnalysisStatus(studyName, userId).then((status) => {
+            console.info('updateSecurityAnalysisStatus : ', status);
             setSecurityAnalysisStatus(getSecurityAnalysisRunningStatus(status));
         });
     }, [studyName, userId]);
@@ -293,8 +294,7 @@ const StudyPane = (props) => {
         // start server side security analysis
         startSecurityAnalysis(studyName, userId, contingencyListNames);
 
-        // update status and clean result
-        setSecurityAnalysisStatus(RunningStatus.RUNNING);
+        // clean result
         setSecurityAnalysisResult(null);
     };
 
@@ -565,6 +565,8 @@ const StudyPane = (props) => {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
             }
+
+            console.log('studyUpdatedForce.eventData.headers[updateType] = ', studyUpdatedForce.eventData.headers['updateType']);
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
