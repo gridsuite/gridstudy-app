@@ -62,7 +62,7 @@ uniform float minSubstationRadiusPixel;
     trans.x -= sin(instanceLineAngle) ;
     trans.y -= cos(instanceLineAngle) ;
 
-    source+=project_common_position_to_clipspace(trans * offsetSubstationCommonSpace ) - project_uCenter;
+    source+=project_common_position_to_clipspace(trans * (offsetSubstationCommonSpace / sqrt(trans.x*trans.x+trans.y*trans.y))) - project_uCenter;
     target+=project_common_position_to_clipspace(trans * offsetCommonSpace) - project_uCenter;
 
             `,

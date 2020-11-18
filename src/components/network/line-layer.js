@@ -188,7 +188,7 @@ class LineLayer extends CompositeLayer {
             .sort((a, b) => {
                 return a - b; // force numerical sort
             })
-            .indexOf(vl.nominalVoltage);
+            .indexOf(vl.nominalVoltage) + 1;
     }
 
     //TODO this is a huge function, refactor
