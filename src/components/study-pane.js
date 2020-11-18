@@ -270,7 +270,6 @@ const StudyPane = (props) => {
 
     const updateSecurityAnalysisStatus = useCallback(() => {
         fetchSecurityAnalysisStatus(studyName, userId).then((status) => {
-            console.info('updateSecurityAnalysisStatus : ', status);
             setSecurityAnalysisStatus(getSecurityAnalysisRunningStatus(status));
         });
     }, [studyName, userId]);
@@ -566,7 +565,6 @@ const StudyPane = (props) => {
                 sldRef.current.reloadSvg();
             }
 
-            console.log('studyUpdatedForce.eventData.headers[updateType] = ', studyUpdatedForce.eventData.headers['updateType']);
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
