@@ -77,13 +77,6 @@ const useStyles = makeStyles((theme) => ({
     main: {
         position: 'absolute',
         width: '100%',
-        height: 'calc(100vh - 56px)',
-        [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
-            height: 'calc(100vh - 48px)',
-        },
-        [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 65px)',
-        },
         display: 'flex',
     },
     error: {
@@ -200,6 +193,8 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [drawerOpen, setDrawerOpen] = useState(true);
+
+    const [headerHeight, setHeaderHeight] = useState('');
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -372,6 +367,8 @@ const StudyPane = (props) => {
         const substationPositions = fetchSubstationPositions(studyName, userId);
 
         const linePositions = fetchLinePositions(studyName, userId);
+
+        setHeaderHeight(document.querySelector('header').offsetHeight);
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
@@ -668,7 +665,10 @@ const StudyPane = (props) => {
         }
 
         return (
-            <div className={classes.main}>
+            <div
+                className={classes.main}
+                style={{ height: 'calc(100vh - ' + headerHeight + 'px)' }}
+            >
                 {waitingLoadGeoData && (
                     <LoaderWithOverlay
                         color="inherit"
@@ -871,7 +871,7 @@ const StudyPane = (props) => {
         return (
             <AutoSizer>
                 {({ width, height }) => (
-                    <div style={{ width: width, height: height - 48 }}>
+                    <div style={{ width: width, height: height }}>
                         <Tabs
                             value={tabIndex}
                             indicatorColor="primary"
