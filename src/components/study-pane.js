@@ -752,8 +752,10 @@ const StudyPane = (props) => {
                             </IconButton>
                         </div>
                     )}
-                    /* Rendering single line diagram only in map view and if
-                    displayed voltage level or substation id has been set */
+                    {/*
+                    Rendering single line diagram only in map view and if
+                    displayed voltage level or substation id has been set
+                    */}
                     {props.view === StudyView.MAP &&
                         (displayedVoltageLevelId || displayedSubstationId) && (
                             <div
