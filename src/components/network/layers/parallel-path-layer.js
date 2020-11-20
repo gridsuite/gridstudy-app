@@ -51,8 +51,6 @@ uniform float minParallelOffset;
             'vs:#main-end':
                 shaders.inject['vs:#main-end'] +
                 `\
-if (abs(instanceLineParallelIndex) == 9999.) return;
-
 float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
 float offsetCommonSpace = project_pixel_size(offsetPixels);
 vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle), 0, 0.) * instanceLineParallelIndex;
