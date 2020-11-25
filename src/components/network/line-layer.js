@@ -444,19 +444,21 @@ class LineLayer extends CompositeLayer {
                     line.voltageLevelId2
                 );
 
-                //TODO right now the angle doesn't depend on linefullpath (we always use the angle between the substations)
-                //but in the future, we will also compute the angle between the substations and the first point to have forklines
-                //going in the direction of the first segment, not the direction of the line between the substations. We will still
-                //need to keep the angle between the substations for the shift of the line, so we will have 3 angles.
-                let angle = props.geoData.getMapAngle(
-                    positions[0],
-                    positions[positions.length - 1]
-                );
-                angle = (angle * Math.PI) / 180 + Math.PI;
-                if (line.angle < 0) angle += 2 * Math.PI;
-                line.angle = angle;
+                line.angle = this.computeAngle(props, positions[0], positions[positions.length - 1]);
+                line.angleStart = this.computeAngle(props, positions[0], positions[1]);
+                line.angleEnd = this.computeAngle(props, positions[positions.length - 2], positions[positions.length-1], line);
             });
         });
+    }
+
+    computeAngle(props, position1, position2) {
+        let angle = props.geoData.getMapAngle(
+            position1,
+            position2
+        );
+        angle = (angle * Math.PI) / 180 + Math.PI;
+        if (angle < 0) angle += 2 * Math.PI;
+        return angle;
     }
 
     renderLayers() {
@@ -483,7 +485,7 @@ class LineLayer extends CompositeLayer {
                         getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
-                    getLineAngle: (line) => line.angle,
+                    getLineAngles: (line) => [line.angleStart, line.angle, line.angleEnd ],
                     distanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
@@ -530,7 +532,7 @@ class LineLayer extends CompositeLayer {
                     getSpeedFactor: (arrow) =>
                         getArrowSpeedFactor(getArrowSpeed(arrow.line)),
                     getLineParallelIndex: (arrow) => arrow.line.parallelIndex,
-                    getLineAngle: (arrow) => arrow.line.angle,
+                    getLineAngles: (arrow) => [ arrow.line.angleStart, arrow.line.angle, arrow.line.angleEnd],
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
@@ -572,7 +574,7 @@ class LineLayer extends CompositeLayer {
                         getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
-                    getLineAngle: (line) => line.angle,
+                    getLineAngle: (line) => line.angleStart,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     getMaxParallelOffset: this.props.maxParallelOffset,
                     getMinParallelOffset: this.props.minParallelOffset,
@@ -611,7 +613,7 @@ class LineLayer extends CompositeLayer {
                         getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => -line.parallelIndex,
-                    getLineAngle: (line) => line.angle + Math.PI,
+                    getLineAngle: (line) => line.angleEnd + Math.PI,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     getMaxParallelOffset: this.props.maxParallelOffset,
                     getMinParallelOffset: this.props.minParallelOffset,

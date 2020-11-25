@@ -15,7 +15,7 @@ attribute float instanceLinePointCount;
 attribute float instanceLineDistance;
 attribute float instanceArrowDirection;
 attribute float instanceLineParallelIndex;
-attribute float instanceLineAngle;
+attribute vec3 instanceLineAngles;
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
@@ -150,6 +150,7 @@ void main(void) {
       if(abs(instanceLineParallelIndex) != 9999.) {
           float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
           float offsetCommonSpace = project_pixel_size(offsetPixels);
+          float instanceLineAngle = instanceLineAngles[1]; 
           vec3 trans = vec3(cos(instanceLineAngle), -sin(instanceLineAngle),0.) * instanceLineParallelIndex;
           vec3 transOr = trans;
           if(linePoint == 1) {

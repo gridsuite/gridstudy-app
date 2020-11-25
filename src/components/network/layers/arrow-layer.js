@@ -42,7 +42,7 @@ const defaultProps = {
     getDirection: { type: 'accessor', value: ArrowDirection.NONE },
     animated: { type: 'boolean', value: true },
     getLineParallelIndex: { type: 'accessor', value: 0 },
-    getLineAngle: { type: 'accessor', value: 0 },
+    getLineAngles: { type: 'accessor', value: [0,0,0] },
     distanceBetweenLines: { type: 'number', value: 1000 },
     maxParallelOffset: { type: 'number', value: 100 },
     minParallelOffset: { type: 'number', value: 3 },
@@ -53,7 +53,7 @@ const defaultProps = {
  * or with a parallel offset. The initial point is also shifted to coincide with the fork line ends.
  * Needs to be kept in sync with ForkLineLayer and ParallelPathLayer because they draw the lines.
  * props : getLineParallelIndex: accessor for real number representing the parallel translation, normalized to distanceBetweenLines
- *         getLineAngle: accessor for line angle in radian
+ *         getLineAngles: accessor for line angle in radian (3 angle substation1 / first pilone ; substation1/substation2 ; last pilone / substation2
  *         distanceBetweenLines: distance in meters between line when no pixel clamping is applied
  *         maxParallelOffset: max pixel distance
  *         minParallelOffset: min pixel distance
@@ -167,9 +167,9 @@ export default class ArrowLayer extends Layer {
                 accessor: 'getLineParallelIndex',
                 type: GL.FLOAT,
             },
-            instanceLineAngle: {
-                size: 1,
-                accessor: 'getLineAngle',
+            instanceLineAngles: {
+                size: 3,
+                accessor: 'getLineAngles',
                 type: GL.FLOAT,
             },
         });

@@ -43,7 +43,7 @@ export default class ParallelPathLayer extends PathLayer {
 //       also has the downside that you can't update one attribute and reconstruct
 //       only its buffer, so it hurts performance in this case.
 attribute float instanceLineParallelIndex;
-attribute float instanceLineAngle;
+attribute vec3 instanceLineAngles;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
@@ -51,20 +51,28 @@ uniform float minParallelOffset;
             'vs:#main-end':
                 shaders.inject['vs:#main-end'] +
                 `\
-if (abs(instanceLineParallelIndex) == 9999.) return;
+
+bool isSegmentEnd = isEnd > EPSILON;
+bool isFirstSegment = (instanceTypes == 1.0 || instanceTypes == 3.0);
+bool isLastSegment = (instanceTypes == 2.0 || instanceTypes == 3.0);
+
+float instanceLineAngle = instanceLineAngles[1];
+if ( !isSegmentEnd && isFirstSegment ){
+    instanceLineAngle = instanceLineAngles[0];
+}
+else if ( isSegmentEnd && isLastSegment){
+    instanceLineAngle = instanceLineAngles[2];
+}
 
 float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
 float offsetCommonSpace = project_pixel_size(offsetPixels);
 vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle), 0, 0.) * instanceLineParallelIndex;
 
-bool isSegmentEnd = isEnd > EPSILON;
-bool isFirstSegment = (instanceTypes == 1.0 || instanceTypes == 3.0);
-bool isLastSegment = (instanceTypes == 2.0 || instanceTypes == 3.0);
 if(isSegmentEnd && isLastSegment) {
   trans.x += sin(instanceLineAngle);
   trans.y += cos(instanceLineAngle);
 }
-if (!isSegmentEnd && isFirstSegment)
+else if (!isSegmentEnd && isFirstSegment)
 {
   trans.x -= sin(instanceLineAngle);
   trans.y -= cos(instanceLineAngle);
@@ -86,10 +94,10 @@ gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
                 type: GL.FLOAT,
                 accessor: 'getLineParallelIndex',
             },
-            instanceLineAngle: {
-                size: 1,
+            instanceLineAngles: {
+                size: 3,
                 type: GL.FLOAT,
-                accessor: 'getLineAngle',
+                accessor: 'getLineAngles',
             },
         });
     }
