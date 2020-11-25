@@ -4,6 +4,7 @@
     "caseExist": "La situation existe-t-elle déjà ?",
     "studyName": "nom de l'étude",
     "studyDescription": "description de l'étude",
+    "owner": "Propriétaire",
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
     "public": "publique",

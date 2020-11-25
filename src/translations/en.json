@@ -4,6 +4,7 @@
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyDescription": "study description",
+    "owner": "Owner",
     "caseName": "case name",
     "uploadCase": "Upload case",
     "public": "public",

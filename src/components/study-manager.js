@@ -104,7 +104,19 @@ const useStyles = makeStyles((theme) => ({
     container: {
         position: 'relative',
     },
+    contentStyle: {
+        fontWeight: 400,
+        textTransform: 'lowercase',
+    },
 }));
+
+const CustomTypography = withStyles({
+    root: {
+        textTransform: 'uppercase',
+        fontWeight: 500,
+        fontSize: '18px',
+    },
+})(Typography);
 
 const DonwnloadIframe = 'downloadIframe';
 /**
@@ -384,18 +396,24 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
-                        <Typography variant="button">
-                            <FormattedMessage id="studyName" />
-                        </Typography>
-                        <Typography variant="body2" paragraph>
-                            {study.studyName}
-                        </Typography>
-                        <Typography variant="button">
-                            <FormattedMessage id="studyDescription" />
-                        </Typography>
-                        <Typography variant="body2" paragraph>
-                            {study.description ? study.description : '—'}
-                        </Typography>
+                        <CustomTypography className={classes.label}>
+                            <FormattedMessage id="studyName" />:{' '}
+                            <span className={classes.contentStyle}>
+                                {study.studyName}
+                            </span>
+                        </CustomTypography>
+                        <CustomTypography className={classes.label}>
+                            <FormattedMessage id="studyDescription" />:{' '}
+                            <span className={classes.contentStyle}>
+                                {study.description ? study.description : '—'}
+                            </span>
+                        </CustomTypography>
+                        <CustomTypography className={classes.label}>
+                            <FormattedMessage id="owner" />:{' '}
+                            <span className={classes.contentStyle}>
+                                {study.userId}
+                            </span>
+                        </CustomTypography>
                     </CardContent>
                 </Collapse>
             </Card>
