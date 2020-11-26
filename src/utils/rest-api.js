@@ -12,6 +12,10 @@ const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
+const PREFIX_CONFIG_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/config-notification';
+const PREFIX_CONFIG_UI_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/config-ui';
 
 const PREFIX_APPS_URLS_QUERIES = process.env.REACT_APP_APPS_URLS;
 
@@ -33,6 +37,27 @@ function backendFetch(url, init) {
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
 
     return fetch(url, initCopy);
+}
+
+export function fetchConfigUiParameters() {
+    console.info('Fetching UI configuration params ...');
+    const fetchParams = PREFIX_CONFIG_UI_QUERIES + '/v1/parameters';
+    return backendFetch(fetchParams).then((res) => {
+        return res.json();
+    });
+}
+
+export function updateConfigUiParameter(json) {
+    console.info('updating parameters : ' + json.toString());
+    const updateParams = PREFIX_CONFIG_UI_QUERIES + '/v1/parameters';
+    return backendFetch(updateParams, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: json,
+    }).then((response) => response.json());
 }
 
 export function fetchStudies() {
@@ -432,6 +457,29 @@ export function connectNotificationsWsUpdateStudies() {
     reconnectingWebSocket.onopen = function (event) {
         console.info(
             'Connected Websocket update studies' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
+}
+
+export function connectNotificationsWsUpdateConfigUi() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/notify';
+
+    let webSocketUrlWithToken;
+    webSocketUrlWithToken = webSocketUrl + '?access_token=' + getToken();
+
+    console.debug('webSocketUrl : ' + webSocketUrlWithToken);
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        webSocketUrlWithToken
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update config ui ' + webSocketUrl + ' ...'
         );
     };
     return reconnectingWebSocket;

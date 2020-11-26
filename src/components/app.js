@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,7 +28,21 @@ import {
 import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
-import { LIGHT_THEME, resetResultCount } from '../redux/actions';
+import {
+    LIGHT_THEME,
+    resetResultCount,
+    selectCenterLabelState,
+    selectDiagonalLabelState,
+    selectLineFlowAlertThreshold,
+    selectLineFlowColorMode,
+    selectLineFlowMode,
+    selectLineFullPathState,
+    selectLineParallelPathState,
+    selectSubstationLayout,
+    selectTheme,
+    selectUseName,
+    selectViewOverloadsTableState,
+} from '../redux/actions';
 import Parameters from './parameters';
 
 import {
@@ -45,7 +59,11 @@ import { FormattedMessage } from 'react-intl';
 
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
-import { fetchAppsAndUrls } from '../utils/rest-api';
+import {
+    connectNotificationsWsUpdateConfigUi,
+    fetchAppsAndUrls,
+    fetchConfigUiParameters,
+} from '../utils/rest-api';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -140,6 +158,39 @@ const App = () => {
 
     const resultCount = useSelector((state) => state.resultCount);
 
+    const updateParams = useCallback(
+        (params) => {
+            dispatch(selectTheme(params.theme));
+            dispatch(selectUseName(params.useName));
+            dispatch(selectCenterLabelState(params.centerLabel));
+            dispatch(selectDiagonalLabelState(params.diagonalLabel));
+            dispatch(selectLineFullPathState(params.lineFullPath));
+            dispatch(selectLineParallelPathState(params.lineParallelPath));
+            dispatch(selectLineFlowMode(params.lineFlowMode));
+            dispatch(selectLineFlowColorMode(params.lineFlowColorMode));
+            dispatch(
+                selectLineFlowAlertThreshold(params.lineFlowAlertThreshold)
+            );
+            dispatch(selectViewOverloadsTableState(params.viewOverloadsTable));
+            dispatch(selectSubstationLayout(params.substationLayout));
+        },
+        [dispatch]
+    );
+
+    const connectNotificationsUpdateConfig = useCallback(() => {
+        const ws = connectNotificationsWsUpdateConfigUi();
+
+        ws.onmessage = function (event) {
+            fetchConfigUiParameters().then((params) => {
+                updateParams(params);
+            });
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, [updateParams]);
+
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
         useRouteMatch({
@@ -199,6 +250,20 @@ const App = () => {
             });
         }
     }, [user]);
+
+    useEffect(() => {
+        if (user !== null) {
+            fetchConfigUiParameters().then((params) => {
+                console.debug('received UI parameters :');
+                console.debug(params);
+                updateParams(params);
+            });
+            const ws = connectNotificationsUpdateConfig();
+            return function () {
+                ws.close();
+            };
+        }
+    }, [user, dispatch, updateParams, connectNotificationsUpdateConfig]);
 
     function studyClickHandler(studyName, userId) {
         history.push(

@@ -39,18 +39,19 @@ import {
     selectLineFlowAlertThreshold,
     selectTheme,
     selectSubstationLayout,
-    toggleCenterLabelState,
-    toggleDiagonalLabelState,
-    toggleLineFullPathState,
-    toggleLineParallelPathState,
-    toggleUseNameState,
-    toggleViewOverloadsTableState,
+    selectUseName,
+    selectCenterLabelState,
+    selectDiagonalLabelState,
+    selectLineFullPathState,
+    selectLineParallelPathState,
+    selectViewOverloadsTableState,
 } from '../redux/actions';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
     setLoadFlowParameters,
+    updateConfigUiParameter,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 
@@ -125,12 +126,22 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
-        dispatch(selectTheme(theme));
+        let json = JSON.stringify({
+            theme: theme,
+        });
+        updateConfigUiParameter(json).then((res) => {
+            dispatch(selectTheme(res.theme));
+        });
     };
 
     const handleLineFlowModeChange = (event) => {
         const lineFlowMode = event.target.value;
-        dispatch(selectLineFlowMode(lineFlowMode));
+        let json = JSON.stringify({
+            lineFlowMode: lineFlowMode,
+        });
+        updateConfigUiParameter(json).then((res) => {
+            dispatch(selectLineFlowMode(res.lineFlowMode));
+        });
     };
 
     const handleLineFlowColorModeChange = (event) => {
@@ -138,23 +149,31 @@ const Parameters = ({ showParameters, hideParameters }) => {
         setDisabledFlowAlertThreshold(
             lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
         );
-        dispatch(selectLineFlowColorMode(lineFlowColorMode));
+        let json = JSON.stringify({
+            lineFlowColorMode: lineFlowColorMode,
+        });
+        updateConfigUiParameter(json).then((res) => {
+            dispatch(selectLineFlowColorMode(res.lineFlowColorMode));
+        });
     };
 
     const handleLineFlowAlertThresholdChange = (event, value) => {
-        dispatch(selectLineFlowAlertThreshold(value));
-    };
-
-    const handleViewOverloadsTableChange = (event) => {
-        setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && viewOverloadsTable
-        );
-        dispatch(toggleViewOverloadsTableState());
+        let json = JSON.stringify({
+            lineFlowAlertThreshold: value,
+        });
+        updateConfigUiParameter(json).then((res) => {
+            dispatch(selectLineFlowAlertThreshold(res.lineFlowAlertThreshold));
+        });
     };
 
     const handleSubstationLayoutChange = (event) => {
         const substationLayout = event.target.value;
-        dispatch(selectSubstationLayout(substationLayout));
+        let json = JSON.stringify({
+            substationLayout: substationLayout,
+        });
+        updateConfigUiParameter(json).then((res) => {
+            dispatch(selectSubstationLayout(res.substationLayout));
+        });
     };
 
     function TabPanel(props) {
@@ -277,9 +296,15 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function GeneralTab() {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(useName, 'useName', () =>
-                    dispatch(toggleUseNameState())
-                )}
+                {MakeSwitch(useName, 'useName', () => {
+                    let json = JSON.stringify({
+                        useName: !useName,
+                    });
+                    updateConfigUiParameter(json).then((res) => {
+                        dispatch(selectUseName(res.useName));
+                    });
+                })}
+
                 <MakeLineSeparator />
                 <Grid item xs={6}>
                     <Typography component="span" variant="body1">
@@ -309,13 +334,23 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function SingleLineDiagramParameters() {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(diagonalLabel, 'diagonalLabel', () =>
-                    dispatch(toggleDiagonalLabelState())
-                )}
+                {MakeSwitch(diagonalLabel, 'diagonalLabel', () => {
+                    let json = JSON.stringify({
+                        diagonalLabel: !diagonalLabel,
+                    });
+                    updateConfigUiParameter(json).then((res) => {
+                        dispatch(selectDiagonalLabelState(res.diagonalLabel));
+                    });
+                })}
                 <MakeLineSeparator />
-                {MakeSwitch(centerLabel, 'centerLabel', () =>
-                    dispatch(toggleCenterLabelState())
-                )}
+                {MakeSwitch(centerLabel, 'centerLabel', () => {
+                    let json = JSON.stringify({
+                        centerLabel: !centerLabel,
+                    });
+                    updateConfigUiParameter(json).then((res) => {
+                        dispatch(selectCenterLabelState(res.centerLabel));
+                    });
+                })}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
                     <Typography component="span" variant="body1">
@@ -358,13 +393,25 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const MapParameters = () => {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(lineFullPath, 'lineFullPath', () =>
-                    dispatch(toggleLineFullPathState())
-                )}
+                {MakeSwitch(lineFullPath, 'lineFullPath', () => {
+                    let json = JSON.stringify({
+                        lineFullPath: !lineFullPath,
+                    });
+                    updateConfigUiParameter(json).then((res) => {
+                        dispatch(selectLineFullPathState(res.lineFullPath));
+                    });
+                })}
                 <MakeLineSeparator />
-                {MakeSwitch(lineParallelPath, 'lineParallelPath', () =>
-                    dispatch(toggleLineParallelPathState())
-                )}
+                {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {
+                    let json = JSON.stringify({
+                        lineParallelPath: !lineParallelPath,
+                    });
+                    updateConfigUiParameter(json).then((res) => {
+                        dispatch(
+                            selectLineParallelPathState(res.lineParallelPath)
+                        );
+                    });
+                })}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
                     <Typography component="span" variant="body1">
@@ -421,11 +468,22 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     alertThresholdMarks
                 )}
                 <MakeLineSeparator />
-                {MakeSwitch(
-                    viewOverloadsTable,
-                    'viewOverloadsTable',
-                    handleViewOverloadsTableChange
-                )}
+                {MakeSwitch(viewOverloadsTable, 'viewOverloadsTable', () => {
+                    setDisabledFlowAlertThreshold(
+                        lineFlowColorMode === 'nominalVoltage' &&
+                            viewOverloadsTable
+                    );
+                    let json = JSON.stringify({
+                        viewOverloadsTable: !viewOverloadsTable,
+                    });
+                    updateConfigUiParameter(json).then((res) => {
+                        dispatch(
+                            selectViewOverloadsTableState(
+                                res.viewOverloadsTable
+                            )
+                        );
+                    });
+                })}
             </Grid>
         );
     };
