@@ -145,40 +145,39 @@ void main(void) {
       vec3 commonPosition1 = project_position(linePosition1, position64Low);
       vec3 commonPosition2 = project_position(linePosition2, position64Low);
 
-      // calculate arrow position in the common space by interpolating the 2 line points position 
-      float lineDistance1 = fetchLineDistance(linePoint - 1);
-      float lineDistance2 = fetchLineDistance(linePoint);
-      float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);    
-      vec3 arrowPosition = mix(commonPosition1, commonPosition2, interpolationValue);  
-
-      // calculate rotation angle for aligning the arrow with the line segment
-      // it has to be done in the common space to get the right angle!!!
-      mat3 rotation = calculateRotation(commonPosition1, commonPosition2);
- 
-      // calculate vertex position in the clipspace
-      vec3 offset = positions * project_pixel_size(sizePixels) * rotation;
-      vec4 vertexPosition = project_common_position_to_clipspace(vec4(arrowPosition + offset, 1)); 
-
       // calculate translation for the parallels lines, use the angle calculated from origin/destination
       // to maintain the same translation between segments
       if(abs(instanceLineParallelIndex) != 9999.) {
           float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
           float offsetCommonSpace = project_pixel_size(offsetPixels);
-          vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle),0.,0.) * instanceLineParallelIndex;
-          vec4 transOr = trans;
+          vec3 trans = vec3(cos(instanceLineAngle), -sin(instanceLineAngle),0.) * instanceLineParallelIndex;
+          vec3 transOr = trans;
           if(linePoint == 1) {
               transOr.x -= sin(instanceLineAngle);
               transOr.y -= cos(instanceLineAngle);
           }
-          vec4 transEx = trans;
+          commonPosition1 += transOr * offsetCommonSpace;
+          vec3 transEx = trans;
           if (linePoint == int(instanceLinePointCount)-1) {
               transEx.x += sin(instanceLineAngle);
               transEx.y += cos(instanceLineAngle);
           }
-          trans = mix(transOr, transEx, interpolationValue);
-          trans = trans * offsetCommonSpace;
-          vertexPosition += project_common_position_to_clipspace(trans) - project_uCenter;
+          commonPosition2 += transEx * offsetCommonSpace;
       }
+
+      // calculate arrow position in the common space by interpolating the 2 line points position
+      float lineDistance1 = fetchLineDistance(linePoint - 1);
+      float lineDistance2 = fetchLineDistance(linePoint);
+      float interpolationValue = (arrowDistance - lineDistance1) / (lineDistance2 - lineDistance1);
+      vec3 arrowPosition = mix(commonPosition1, commonPosition2, interpolationValue);
+
+      // calculate rotation angle for aligning the arrow with the line segment
+      // it has to be done in the common space to get the right angle!!!
+      mat3 rotation = calculateRotation(commonPosition1, commonPosition2);
+
+      // calculate vertex position in the clipspace
+      vec3 offset = positions * project_pixel_size(sizePixels) * rotation;
+      vec4 vertexPosition = project_common_position_to_clipspace(vec4(arrowPosition + offset, 1));
 
       // vertex shader output
       gl_Position = vertexPosition;
