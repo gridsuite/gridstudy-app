@@ -71,7 +71,7 @@ function getStudyUrl(studyName, userId) {
 }
 
 export function fetchStudy(studyName, userId) {
-    console.info('Fetching studies...');
+    console.info(`Fetching study '${studyName}' for user id '${userId}' ...`);
     const fetchStudiesUrl = getStudyUrl(studyName, userId);
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
@@ -147,12 +147,25 @@ export function fetchSvg(svgUrl) {
     );
 }
 
-export function fetchSubstations(studyName, userId) {
+function getSubstationsIdsListsQueryParams(substationsIds) {
+    if (substationsIds !== undefined && substationsIds.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        substationsIds.forEach((substationId) =>
+            urlSearchParams.append('substationId', substationId)
+        );
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
+export function fetchSubstations(studyName, userId, substationsIds) {
     console.info(
         `Fetching substations of study '${studyName}' of user '${userId}'...`
     );
     const fetchSubstationsUrl =
-        getStudyUrl(studyName, userId) + '/network-map/substations';
+        getStudyUrl(studyName, userId) +
+        '/network-map/substations' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchSubstationsUrl);
     return backendFetch(fetchSubstationsUrl).then((response) =>
         response.json()
@@ -169,37 +182,56 @@ export function fetchSubstationPositions(studyName, userId) {
     );
 }
 
-export function fetchLines(studyName, userId) {
-    console.info(`Fetching lines of study '${studyName}'...`);
-    const fetchLinesUrl = getStudyUrl(studyName, userId) + '/network-map/lines';
+export function fetchLines(studyName, userId, substationsIds) {
+    console.info(
+        `Fetching lines of study '${studyName}' of user '${userId}'...`
+    );
+    const fetchLinesUrl =
+        getStudyUrl(studyName, userId) +
+        '/network-map/lines' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchLinesUrl);
     return backendFetch(fetchLinesUrl).then((response) => response.json());
 }
 
-export function fetchTwoWindingsTransformers(studyName, userId) {
+export function fetchTwoWindingsTransformers(
+    studyName,
+    userId,
+    substationsIds
+) {
     console.info(`Fetching 2 windings transformers of study '${studyName}'...`);
     const fetchTwoWindingsTransformersUrl =
-        getStudyUrl(studyName, userId) + '/network-map/2-windings-transformers';
+        getStudyUrl(studyName, userId) +
+        '/network-map/2-windings-transformers' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchTwoWindingsTransformersUrl);
     return backendFetch(fetchTwoWindingsTransformersUrl).then((response) =>
         response.json()
     );
 }
 
-export function fetchThreeWindingsTransformers(studyName, userId) {
+export function fetchThreeWindingsTransformers(
+    studyName,
+    userId,
+    substationsIds
+) {
     console.info(`Fetching 3 windings transformers of study '${studyName}'...`);
     const fetchThreeWindingsTransformersUrl =
-        getStudyUrl(studyName, userId) + '/network-map/3-windings-transformers';
+        getStudyUrl(studyName, userId) +
+        '/network-map/3-windings-transformers' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchThreeWindingsTransformersUrl);
     return backendFetch(fetchThreeWindingsTransformersUrl).then((response) =>
         response.json()
     );
 }
 
-export function fetchGenerators(studyName, userId) {
+export function fetchGenerators(studyName, userId, substationsIds) {
     console.info(`Fetching generators of study '${studyName}'...`);
     const fetchGeneratorsUrl =
-        getStudyUrl(studyName, userId) + '/network-map/generators';
+        getStudyUrl(studyName, userId) +
+        '/network-map/generators' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchGeneratorsUrl);
     return backendFetch(fetchGeneratorsUrl).then((response) => response.json());
 }

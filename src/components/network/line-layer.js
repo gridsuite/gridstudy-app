@@ -168,6 +168,7 @@ class LineLayer extends CompositeLayer {
 
         this.state = {
             compositeData: [],
+            updatedNominalV: [],
         };
     }
 
@@ -227,6 +228,38 @@ class LineLayer extends CompositeLayer {
             }
         } else {
             compositeData = this.state.compositeData;
+
+            if (props.updatedLines !== oldProps.updatedLines) {
+                let updatedNominalV = [];
+
+                props.updatedLines.forEach((line1) => {
+                    const vl =
+                        props.network.getVoltageLevel(line1.voltageLevelId1) ||
+                        props.network.getVoltageLevel(line1.voltageLevelId2);
+                    if (!updatedNominalV.includes(vl.nominalVoltage)) {
+                        updatedNominalV.push(vl.nominalVoltage);
+                    }
+
+                    compositeData.forEach((compositeData) => {
+                        if (
+                            updatedNominalV.includes(
+                                compositeData.nominalVoltage
+                            )
+                        ) {
+                            compositeData.lines.forEach((line2) => {
+                                if (line1.id === line2.id) {
+                                    line2.terminal1Connected =
+                                        line1.terminal1Connected;
+                                    line2.terminal2Connected =
+                                        line1.terminal2Connected;
+                                }
+                            });
+                        }
+                    });
+                });
+
+                this.state.updatedNominalV = updatedNominalV;
+            }
         }
 
         if (
@@ -438,7 +471,12 @@ class LineLayer extends CompositeLayer {
             const lineLayer = new ParallelPathLayer(
                 this.getSubLayerProps({
                     id: 'LineNominalVoltage' + compositeData.nominalVoltage,
-                    data: compositeData.lines,
+                    //data: compositeData.lines,
+                    data: this.state.updatedNominalV.includes(
+                        compositeData.nominalVoltage
+                    )
+                        ? [...compositeData.lines]
+                        : compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
@@ -532,7 +570,12 @@ class LineLayer extends CompositeLayer {
                     id: 'LineForkStart' + compositeData.nominalVoltage,
                     getSourcePosition: (line) => line.origin,
                     getTargetPosition: (line) => line.end,
-                    data: compositeData.lines,
+                    //data: compositeData.lines,
+                    data: this.state.updatedNominalV.includes(
+                        compositeData.nominalVoltage
+                    )
+                        ? [...compositeData.lines]
+                        : compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
@@ -566,7 +609,12 @@ class LineLayer extends CompositeLayer {
                     id: 'LineForkEnd' + compositeData.nominalVoltage,
                     getSourcePosition: (line) => line.end,
                     getTargetPosition: (line) => line.origin,
-                    data: compositeData.lines,
+                    //data: compositeData.lines,
+                    data: this.state.updatedNominalV.includes(
+                        compositeData.nominalVoltage
+                    )
+                        ? [...compositeData.lines]
+                        : compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,

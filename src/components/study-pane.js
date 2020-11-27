@@ -176,6 +176,8 @@ const StudyPane = (props) => {
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
+    const [updatedLines, setUpdatedLines] = useState([]);
+
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(
         null
     );
@@ -386,6 +388,57 @@ const StudyPane = (props) => {
         updateSecurityAnalysisStatus,
     ]);
 
+    const updateNetwork = useCallback(
+        (substationsIds, network) => {
+            const substations = fetchSubstations(
+                studyName,
+                userId,
+                substationsIds
+            );
+
+            const lines = fetchLines(studyName, userId, substationsIds);
+            const twoWindingsTransformers = fetchTwoWindingsTransformers(
+                studyName,
+                userId,
+                substationsIds
+            );
+            const threeWindingsTransformers = fetchThreeWindingsTransformers(
+                studyName,
+                userId,
+                substationsIds
+            );
+            const generators = fetchGenerators(
+                studyName,
+                userId,
+                substationsIds
+            );
+
+            Promise.all([
+                substations,
+                lines,
+                twoWindingsTransformers,
+                threeWindingsTransformers,
+                generators,
+            ])
+
+                .then((values) => {
+                    network.updateSubstations(values[0]);
+                    network.updateLines(values[1]);
+                    network.updateTwoWindingsTransformers(values[2]);
+                    network.updateThreeWindingsTransformers(values[3]);
+                    network.updateGenerators(values[4]);
+
+                    setUpdatedLines(values[1]);
+                })
+                .catch(function (error) {
+                    console.error(error.message);
+                    setStudyNotFound(true);
+                });
+            // Note: studyName and dispatch don't change
+        },
+        [studyName, userId]
+    );
+
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
 
@@ -558,17 +611,20 @@ const StudyPane = (props) => {
         [studyName, userId]
     );
 
+    const updateSld = () => {
+        if (sldRef.current) {
+            setUpdateSwitchMsg('');
+            sldRef.current.reloadSvg();
+        }
+    };
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (sldRef.current) {
-                setUpdateSwitchMsg('');
-                sldRef.current.reloadSvg();
-            }
-
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
+                updateSld();
                 loadNetwork();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -588,6 +644,19 @@ const StudyPane = (props) => {
 
                 // update badge
                 dispatch(increaseResultCount());
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] === 'study'
+            ) {
+                updateSld();
+
+                // study partial update : loading equipments involved in the study modification and updating the network
+                const ids =
+                    studyUpdatedForce.eventData.headers['substationsIds'];
+                const substationsIds = ids
+                    .substring(1, ids.length - 1)
+                    .split(','); // removing square brackets
+
+                updateNetwork(substationsIds, network);
             }
         }
         // Note: studyName, and loadNetwork don't change
@@ -595,10 +664,12 @@ const StudyPane = (props) => {
         studyUpdatedForce,
         studyName,
         loadNetwork,
+        updateNetwork,
         updateLoadFlowResult,
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
         dispatch,
+        network,
     ]);
 
     const mapRef = useRef();
@@ -735,6 +806,7 @@ const StudyPane = (props) => {
                 >
                     <NetworkMap
                         network={network}
+                        updatedLines={updatedLines}
                         geoData={geoData}
                         useName={useName}
                         filteredNominalVoltages={filteredNominalVoltages}
