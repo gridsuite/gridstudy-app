@@ -114,7 +114,7 @@ const CustomTypography = withStyles({
     root: {
         textTransform: 'uppercase',
         fontWeight: 500,
-        fontSize: '18px',
+        fontSize: '16px',
     },
 })(Typography);
 
@@ -396,19 +396,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
-                        <CustomTypography className={classes.label}>
+                        <CustomTypography>
                             <FormattedMessage id="studyName" />:{' '}
                             <span className={classes.contentStyle}>
                                 {study.studyName}
                             </span>
                         </CustomTypography>
-                        <CustomTypography className={classes.label}>
+                        <CustomTypography>
                             <FormattedMessage id="studyDescription" />:{' '}
                             <span className={classes.contentStyle}>
                                 {study.description ? study.description : '—'}
                             </span>
                         </CustomTypography>
-                        <CustomTypography className={classes.label}>
+                        <CustomTypography>
                             <FormattedMessage id="owner" />:{' '}
                             <span className={classes.contentStyle}>
                                 {study.userId}
