@@ -100,12 +100,29 @@ export default class Network {
         });
     }
 
+    updateLines(lines) {
+        this.lines.forEach((line1, index) => {
+            const found = lines.filter((line2) => line2.id === line1.id);
+            this.lines[index] = found.length > 0 ? found[0] : line1;
+        });
+    }
+
     setTwoWindingsTransformers(twoWindingsTransformers) {
         this.twoWindingsTransformers = twoWindingsTransformers;
         this.twoWindingsTransformersById = this.twoWindingsTransformers.reduce(
             elementIdIndexer,
             new Map()
         );
+    }
+
+    updateTwoWindingsTransformers(twoWindingsTransformers) {
+        this.twoWindingsTransformers.forEach((t1, index) => {
+            const found = twoWindingsTransformers.filter(
+                (t2) => t2.id === t1.id
+            );
+            this.twoWindingsTransformers[index] =
+                found.length > 0 ? found[0] : t1;
+        });
     }
 
     updateTwoWindingsTransformers(twoWindingsTransformers) {
@@ -136,12 +153,29 @@ export default class Network {
         });
     }
 
+    updateThreeWindingsTransformers(threeWindingsTransformers) {
+        this.threeWindingsTransformers.forEach((t1, index) => {
+            const found = threeWindingsTransformers.filter(
+                (t2) => t2.id === t1.id
+            );
+            this.threeWindingsTransformers[index] =
+                found.length > 0 ? found[0] : t1;
+        });
+    }
+
     setGenerators(generators) {
         this.generators = generators;
         this.generatorsById = this.generators.reduce(
             elementIdIndexer,
             new Map()
         );
+    }
+
+    updateGenerators(generators) {
+        this.generators.forEach((g1, index) => {
+            const found = generators.filter((g2) => g2.id === g1.id);
+            this.generators[index] = found.length > 0 ? found[0] : g1;
+        });
     }
 
     updateGenerators(generators) {
