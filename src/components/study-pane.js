@@ -669,14 +669,6 @@ const StudyPane = (props) => {
 
         return (
             <div className={classes.main}>
-                {waitingLoadGeoData && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        isFixed={true}
-                        loadingMessageText="loadingGeoData"
-                    />
-                )}
                 <Drawer
                     variant={'persistent'}
                     className={classes.drawer}
