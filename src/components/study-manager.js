@@ -565,7 +565,7 @@ const StudyManager = ({ onClick }) => {
                 id={DonwnloadIframe}
                 name={DonwnloadIframe}
                 title={DonwnloadIframe}
-                style={{ visibility: 'hidden', width: 0, height: 0 }}
+                style={{ display: 'none' }}
             />
         </Container>
     );
