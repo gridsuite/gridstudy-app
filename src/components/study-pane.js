@@ -696,14 +696,6 @@ const StudyPane = (props) => {
 
         return (
             <div className={classes.main}>
-                {waitingLoadGeoData && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        isFixed={true}
-                        loadingMessageText="loadingGeoData"
-                    />
-                )}
                 <Drawer
                     variant={'persistent'}
                     className={classes.drawer}
@@ -779,37 +771,41 @@ const StudyPane = (props) => {
                             </IconButton>
                         </div>
                     )}
-                    {(displayedVoltageLevelId || displayedSubstationId) && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: drawerOpen ? 0 : 55,
-                                zIndex: 0,
-                            }}
-                            className={clsx(classes.content, {
-                                [classes.contentShift]: drawerOpen,
-                            })}
-                        >
-                            <SingleLineDiagram
-                                onClose={() => closeVoltageLevelDiagram()}
-                                onNextVoltageLevelClick={
-                                    showVoltageLevelDiagram
-                                }
-                                onBreakerClick={handleUpdateSwitchState}
-                                diagramTitle={sldTitle}
-                                svgUrl={svgUrl}
-                                ref={sldRef}
-                                updateSwitchMsg={updateSwitchMsg}
-                                isComputationRunning={isComputationRunning()}
-                                svgType={
-                                    displayedVoltageLevelId
-                                        ? SvgType.VOLTAGE_LEVEL
-                                        : SvgType.SUBSTATION
-                                }
-                            />
-                        </div>
-                    )}
-
+                    {/*
+                    Rendering single line diagram only in map view and if
+                    displayed voltage level or substation id has been set
+                    */}
+                    {props.view === StudyView.MAP &&
+                        (displayedVoltageLevelId || displayedSubstationId) && (
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: drawerOpen ? 0 : 55,
+                                    zIndex: 0,
+                                }}
+                                className={clsx(classes.content, {
+                                    [classes.contentShift]: drawerOpen,
+                                })}
+                            >
+                                <SingleLineDiagram
+                                    onClose={() => closeVoltageLevelDiagram()}
+                                    onNextVoltageLevelClick={
+                                        showVoltageLevelDiagram
+                                    }
+                                    onBreakerClick={handleUpdateSwitchState}
+                                    diagramTitle={sldTitle}
+                                    svgUrl={svgUrl}
+                                    ref={sldRef}
+                                    updateSwitchMsg={updateSwitchMsg}
+                                    isComputationRunning={isComputationRunning()}
+                                    svgType={
+                                        displayedVoltageLevelId
+                                            ? SvgType.VOLTAGE_LEVEL
+                                            : SvgType.SUBSTATION
+                                    }
+                                />
+                            </div>
+                        )}
                     {network && viewOverloadsTable && (
                         <div
                             style={{
@@ -831,7 +827,6 @@ const StudyPane = (props) => {
                             />
                         </div>
                     )}
-
                     {choiceVoltageLevelsSubstationId && (
                         <VoltageLevelChoice
                             handleClose={closeChoiceVoltageLevelMenu}
@@ -840,7 +835,6 @@ const StudyPane = (props) => {
                             position={[position[0] + 200, position[1]]}
                         />
                     )}
-
                     {network && (
                         <div
                             style={{
