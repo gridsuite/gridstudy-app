@@ -383,6 +383,20 @@ export function fetchSecurityAnalysisResult(studyName, userId) {
     return backendFetch(url, { method: 'get' });
 }
 
+export function fetchSecurityAnalysisStatus(studyName, userId) {
+    console.info('Fetching security analysis status on ' + studyName + '...');
+    const url = getStudyUrl(studyName, userId) + '/security-analysis/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            console.error(response);
+            return Promise.resolve(0);
+        }
+    });
+}
+
 export function fetchContingencyLists() {
     console.info('Fetching contingency lists');
     const url = PREFIX_ACTIONS_QUERIES + '/v1/contingency-lists';
