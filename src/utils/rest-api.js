@@ -14,8 +14,7 @@ const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
-const PREFIX_CONFIG_UI_QUERIES =
-    process.env.REACT_APP_API_GATEWAY + '/config-ui';
+const PREFIX_CONFIG_UI_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 
 const APPS_METADATA_SERVER_URL = fetch('env.json');
 
@@ -37,7 +36,7 @@ function backendFetch(url, init) {
     return fetch(url, initCopy);
 }
 
-export function fetchConfigUiParameters() {
+export function fetchConfigParameters() {
     console.info('Fetching UI configuration params ...');
     const fetchParams = PREFIX_CONFIG_UI_QUERIES + '/v1/parameters';
     return backendFetch(fetchParams).then((res) => {
@@ -45,7 +44,7 @@ export function fetchConfigUiParameters() {
     });
 }
 
-export function updateConfigUiParameter(json) {
+export function updateConfigParameter(json) {
     console.info('updating parameters : ' + json.toString());
     const updateParams = PREFIX_CONFIG_UI_QUERIES + '/v1/parameters';
     return backendFetch(updateParams, {
@@ -460,7 +459,7 @@ export function connectNotificationsWsUpdateStudies() {
     return reconnectingWebSocket;
 }
 
-export function connectNotificationsWsUpdateConfigUi() {
+export function connectNotificationsWsUpdateConfig() {
     const webSocketBaseUrl = document.baseURI
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');

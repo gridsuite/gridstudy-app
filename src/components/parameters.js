@@ -51,7 +51,7 @@ import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
     setLoadFlowParameters,
-    updateConfigUiParameter,
+    updateConfigParameter,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 
@@ -129,7 +129,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
         let json = JSON.stringify({
             theme: theme,
         });
-        updateConfigUiParameter(json).then((res) => {
+        updateConfigParameter(json).then((res) => {
             dispatch(selectTheme(res.theme));
         });
     };
@@ -139,7 +139,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
         let json = JSON.stringify({
             lineFlowMode: lineFlowMode,
         });
-        updateConfigUiParameter(json).then((res) => {
+        updateConfigParameter(json).then((res) => {
             dispatch(selectLineFlowMode(res.lineFlowMode));
         });
     };
@@ -152,7 +152,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
         let json = JSON.stringify({
             lineFlowColorMode: lineFlowColorMode,
         });
-        updateConfigUiParameter(json).then((res) => {
+        updateConfigParameter(json).then((res) => {
             dispatch(selectLineFlowColorMode(res.lineFlowColorMode));
         });
     };
@@ -161,7 +161,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
         let json = JSON.stringify({
             lineFlowAlertThreshold: value,
         });
-        updateConfigUiParameter(json).then((res) => {
+        updateConfigParameter(json).then((res) => {
             dispatch(selectLineFlowAlertThreshold(res.lineFlowAlertThreshold));
         });
     };
@@ -171,7 +171,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
         let json = JSON.stringify({
             substationLayout: substationLayout,
         });
-        updateConfigUiParameter(json).then((res) => {
+        updateConfigParameter(json).then((res) => {
             dispatch(selectSubstationLayout(res.substationLayout));
         });
     };
@@ -300,7 +300,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     let json = JSON.stringify({
                         useName: !useName,
                     });
-                    updateConfigUiParameter(json).then((res) => {
+                    updateConfigParameter(json).then((res) => {
                         dispatch(selectUseName(res.useName));
                     });
                 })}
@@ -338,7 +338,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     let json = JSON.stringify({
                         diagonalLabel: !diagonalLabel,
                     });
-                    updateConfigUiParameter(json).then((res) => {
+                    updateConfigParameter(json).then((res) => {
                         dispatch(selectDiagonalLabelState(res.diagonalLabel));
                     });
                 })}
@@ -347,7 +347,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     let json = JSON.stringify({
                         centerLabel: !centerLabel,
                     });
-                    updateConfigUiParameter(json).then((res) => {
+                    updateConfigParameter(json).then((res) => {
                         dispatch(selectCenterLabelState(res.centerLabel));
                     });
                 })}
@@ -397,7 +397,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     let json = JSON.stringify({
                         lineFullPath: !lineFullPath,
                     });
-                    updateConfigUiParameter(json).then((res) => {
+                    updateConfigParameter(json).then((res) => {
                         dispatch(selectLineFullPathState(res.lineFullPath));
                     });
                 })}
@@ -406,7 +406,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     let json = JSON.stringify({
                         lineParallelPath: !lineParallelPath,
                     });
-                    updateConfigUiParameter(json).then((res) => {
+                    updateConfigParameter(json).then((res) => {
                         dispatch(
                             selectLineParallelPathState(res.lineParallelPath)
                         );
@@ -476,7 +476,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     let json = JSON.stringify({
                         viewOverloadsTable: !viewOverloadsTable,
                     });
-                    updateConfigUiParameter(json).then((res) => {
+                    updateConfigParameter(json).then((res) => {
                         dispatch(
                             selectViewOverloadsTableState(
                                 res.viewOverloadsTable

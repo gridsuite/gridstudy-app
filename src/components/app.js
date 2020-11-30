@@ -60,9 +60,9 @@ import { FormattedMessage } from 'react-intl';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import {
-    connectNotificationsWsUpdateConfigUi,
+    connectNotificationsWsUpdateConfig,
     fetchAppsAndUrls,
-    fetchConfigUiParameters,
+    fetchConfigParameters,
 } from '../utils/rest-api';
 
 const lightTheme = createMuiTheme({
@@ -178,10 +178,10 @@ const App = () => {
     );
 
     const connectNotificationsUpdateConfig = useCallback(() => {
-        const ws = connectNotificationsWsUpdateConfigUi();
+        const ws = connectNotificationsWsUpdateConfig();
 
         ws.onmessage = function (event) {
-            fetchConfigUiParameters().then((params) => {
+            fetchConfigParameters().then((params) => {
                 updateParams(params);
             });
         };
@@ -253,7 +253,7 @@ const App = () => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchConfigUiParameters().then((params) => {
+            fetchConfigParameters().then((params) => {
                 console.debug('received UI parameters :');
                 console.debug(params);
                 updateParams(params);
