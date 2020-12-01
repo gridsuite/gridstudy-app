@@ -229,7 +229,7 @@ class LineLayer extends CompositeLayer {
                     .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
 
                 compositeData.forEach((compositeData) => {
-                    //find lines with same subsations set
+                    //find lines with same substations set
                     let mapOriginDestination = new Map();
                     compositeData.mapOriginDestination = mapOriginDestination;
                     compositeData.lines.forEach((line) => {
@@ -288,7 +288,11 @@ class LineLayer extends CompositeLayer {
             });
         }
 
-        if (changeFlags.dataChanged) {
+        if (
+            changeFlags.dataChanged ||
+            (changeFlags.propsChanged &&
+                oldProps.lineFullPath !== props.lineFullPath)
+        ) {
             this.recomputeForkLines(compositeData, props);
         }
 
@@ -416,7 +420,7 @@ class LineLayer extends CompositeLayer {
     recomputeParallelLinesIndex(compositeData, props) {
         compositeData.forEach((compositeData) => {
             const mapOriginDestination = compositeData.mapOriginDestination;
-            // calculate index for line with same subsation set
+            // calculate index for line with same substation set
             // The index is a real number in a normalized unit.
             // +1 => distanceBetweenLines on side
             // -1 => distanceBetweenLines on the other side
@@ -446,18 +450,49 @@ class LineLayer extends CompositeLayer {
                     line.voltageLevelId2
                 );
 
-                line.angle = this.computeAngle(props, positions[0], positions[positions.length - 1]);
-                line.angleStart = this.computeAngle(props, positions[0], positions[1]);
-                line.angleEnd = this.computeAngle(props, positions[positions.length - 2], positions[positions.length-1], line);
+                line.angle = this.computeAngle(
+                    props,
+                    positions[0],
+                    positions[positions.length - 1]
+                );
+                line.angleStart = this.computeAngle(
+                    props,
+                    positions[0],
+                    positions[1]
+                );
+                line.angleEnd = this.computeAngle(
+                    props,
+                    positions[positions.length - 2],
+                    positions[positions.length - 1]
+                );
+                line.proximityFactorStart = this.getProximityFactor(
+                    positions[0],
+                    positions[1]
+                );
+                line.proximityFactorEnd = this.getProximityFactor(
+                    positions[positions.length - 2],
+                    positions[positions.length - 1]
+                );
             });
         });
     }
 
+    getProximityFactor(firstPosition, secondPosition) {
+        if (getDistance(firstPosition, secondPosition) < 500) {
+            return -0.1;
+        } else if (getDistance(firstPosition, secondPosition) < 1000) {
+            return 0.1;
+        } else if (getDistance(firstPosition, secondPosition) < 1500) {
+            return 0.3;
+        } else if (getDistance(firstPosition, secondPosition) < 3000) {
+            return 0.5;
+        } else {
+            return 1;
+        }
+    }
+
     computeAngle(props, position1, position2) {
-        let angle = props.geoData.getMapAngle(
-            position1,
-            position2
-        );
+        let angle = props.geoData.getMapAngle(position1, position2);
         angle = (angle * Math.PI) / 180 + Math.PI;
         if (angle < 0) angle += 2 * Math.PI;
         return angle;
@@ -487,7 +522,15 @@ class LineLayer extends CompositeLayer {
                         getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
-                    getLineAngles: (line) => [line.angleStart, line.angle, line.angleEnd ],
+                    getLineAngles: (line) => [
+                        line.angleStart,
+                        line.angle,
+                        line.angleEnd,
+                    ],
+                    getProximityFactors: (line) => [
+                        line.proximityFactorStart,
+                        line.proximityFactorEnd,
+                    ],
                     distanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
@@ -534,7 +577,15 @@ class LineLayer extends CompositeLayer {
                     getSpeedFactor: (arrow) =>
                         getArrowSpeedFactor(getArrowSpeed(arrow.line)),
                     getLineParallelIndex: (arrow) => arrow.line.parallelIndex,
-                    getLineAngles: (arrow) => [ arrow.line.angleStart, arrow.line.angle, arrow.line.angleEnd],
+                    getLineAngles: (arrow) => [
+                        arrow.line.angleStart,
+                        arrow.line.angle,
+                        arrow.line.angleEnd,
+                    ],
+                    getProximityFactors: (arrow) => [
+                        arrow.line.proximityFactorStart,
+                        arrow.line.proximityFactorEnd,
+                    ],
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
@@ -575,6 +626,7 @@ class LineLayer extends CompositeLayer {
                     getColor: (line) =>
                         getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
+                    getProximityFactor: (line) => line.proximityFactorStart,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angleStart,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
@@ -614,6 +666,7 @@ class LineLayer extends CompositeLayer {
                     getColor: (line) =>
                         getLineColor(line, nominalVoltageColor, this.props),
                     getWidth: 2,
+                    getProximityFactor: (line) => line.proximityFactorEnd,
                     getLineParallelIndex: (line) => -line.parallelIndex,
                     getLineAngle: (line) => line.angleEnd + Math.PI,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,

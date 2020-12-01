@@ -40,6 +40,7 @@ export default class ForkLineLayer extends LineLayer {
 attribute float instanceLineParallelIndex;
 attribute float instanceLineAngle;
 attribute float instanceOffsetStart;
+attribute float instanceProximityFactor;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
@@ -59,9 +60,10 @@ uniform float minSubstationRadiusPixel;
 
     vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle ), 0, 0.) * instanceLineParallelIndex;
 
-    trans.x -= sin(instanceLineAngle) ;
-    trans.y -= cos(instanceLineAngle) ;
-
+    if( instanceLineParallelIndex != 0. ){
+        trans.x -= sin(instanceLineAngle) * instanceProximityFactor;
+        trans.y -= cos(instanceLineAngle) * instanceProximityFactor;
+    }
     source+=project_common_position_to_clipspace(trans * (offsetSubstationCommonSpace / sqrt(trans.x*trans.x+trans.y*trans.y))) - project_uCenter;
     target+=project_common_position_to_clipspace(trans * offsetCommonSpace) - project_uCenter;
 
@@ -89,6 +91,11 @@ uniform float minSubstationRadiusPixel;
                 size: 1,
                 type: GL.FLOAT,
                 accessor: 'getSubstationOffset',
+            },
+            instanceProximityFactor: {
+                size: 1,
+                type: GL.FLOAT,
+                accessor: 'getProximityFactor',
             },
         });
     }

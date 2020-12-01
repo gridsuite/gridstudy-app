@@ -42,7 +42,7 @@ const defaultProps = {
     getDirection: { type: 'accessor', value: ArrowDirection.NONE },
     animated: { type: 'boolean', value: true },
     getLineParallelIndex: { type: 'accessor', value: 0 },
-    getLineAngles: { type: 'accessor', value: [0,0,0] },
+    getLineAngles: { type: 'accessor', value: [0, 0, 0] },
     distanceBetweenLines: { type: 'number', value: 1000 },
     maxParallelOffset: { type: 'number', value: 100 },
     minParallelOffset: { type: 'number', value: 3 },
@@ -170,6 +170,11 @@ export default class ArrowLayer extends Layer {
             instanceLineAngles: {
                 size: 3,
                 accessor: 'getLineAngles',
+                type: GL.FLOAT,
+            },
+            instanceProximityFactors: {
+                size: 2,
+                accessor: 'getProximityFactors',
                 type: GL.FLOAT,
             },
         });

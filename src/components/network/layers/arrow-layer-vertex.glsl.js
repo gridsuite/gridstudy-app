@@ -16,6 +16,7 @@ attribute float instanceLineDistance;
 attribute float instanceArrowDirection;
 attribute float instanceLineParallelIndex;
 attribute vec3 instanceLineAngles;
+attribute vec2 instanceProximityFactors;
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
@@ -160,14 +161,14 @@ void main(void) {
       }      
       vec3 transOr = vec3(cos(instanceLineAngle1), -sin(instanceLineAngle1),0.) * instanceLineParallelIndex;      
       if(linePoint == 1) {
-          transOr.x -= sin(instanceLineAngle1);
-          transOr.y -= cos(instanceLineAngle1);
+          transOr.x -= sin(instanceLineAngle1) * instanceProximityFactors[0];
+          transOr.y -= cos(instanceLineAngle1) * instanceProximityFactors[0];
       }
       commonPosition1 += transOr * offsetCommonSpace;
       vec3 transEx = vec3(cos(instanceLineAngle2), -sin(instanceLineAngle2),0.) * instanceLineParallelIndex;
       if (linePoint == int(instanceLinePointCount)-1) {
-          transEx.x += sin(instanceLineAngle2);
-          transEx.y += cos(instanceLineAngle2);
+          transEx.x += sin(instanceLineAngle2) * instanceProximityFactors[1];
+          transEx.y += cos(instanceLineAngle2) * instanceProximityFactors[1];
       }
       commonPosition2 += transEx * offsetCommonSpace;
 
