@@ -169,7 +169,6 @@ class LineLayer extends CompositeLayer {
 
         this.state = {
             compositeData: [],
-            updatedNominalV: [],
             linesConnection: new Map(),
         };
     }
@@ -463,12 +462,7 @@ class LineLayer extends CompositeLayer {
             const lineLayer = new ParallelPathLayer(
                 this.getSubLayerProps({
                     id: 'LineNominalVoltage' + compositeData.nominalVoltage,
-                    //data: compositeData.lines,
-                    data: this.state.updatedNominalV.includes(
-                        compositeData.nominalVoltage
-                    )
-                        ? [...compositeData.lines]
-                        : compositeData.lines,
+                    data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
@@ -573,12 +567,7 @@ class LineLayer extends CompositeLayer {
                     id: 'LineForkStart' + compositeData.nominalVoltage,
                     getSourcePosition: (line) => line.origin,
                     getTargetPosition: (line) => line.end,
-                    //data: compositeData.lines,
-                    data: this.state.updatedNominalV.includes(
-                        compositeData.nominalVoltage
-                    )
-                        ? [...compositeData.lines]
-                        : compositeData.lines,
+                    data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
@@ -618,12 +607,7 @@ class LineLayer extends CompositeLayer {
                     id: 'LineForkEnd' + compositeData.nominalVoltage,
                     getSourcePosition: (line) => line.end,
                     getTargetPosition: (line) => line.origin,
-                    //data: compositeData.lines,
-                    data: this.state.updatedNominalV.includes(
-                        compositeData.nominalVoltage
-                    )
-                        ? [...compositeData.lines]
-                        : compositeData.lines,
+                    data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
