@@ -160,7 +160,7 @@ function getSubstationsIdsListsQueryParams(substationsIds) {
 
 export function fetchSubstations(studyName, userId, substationsIds) {
     console.info(
-        `Fetching substations of study '${studyName}' of user '${userId}'...`
+        `Fetching substations of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
     );
     const fetchSubstationsUrl =
         getStudyUrl(studyName, userId) +
@@ -184,7 +184,7 @@ export function fetchSubstationPositions(studyName, userId) {
 
 export function fetchLines(studyName, userId, substationsIds) {
     console.info(
-        `Fetching lines of study '${studyName}' of user '${userId}'...`
+        `Fetching lines of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
     );
     const fetchLinesUrl =
         getStudyUrl(studyName, userId) +
@@ -199,7 +199,9 @@ export function fetchTwoWindingsTransformers(
     userId,
     substationsIds
 ) {
-    console.info(`Fetching 2 windings transformers of study '${studyName}'...`);
+    console.info(
+        `Fetching 2 windings transformers of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
     const fetchTwoWindingsTransformersUrl =
         getStudyUrl(studyName, userId) +
         '/network-map/2-windings-transformers' +
@@ -215,7 +217,9 @@ export function fetchThreeWindingsTransformers(
     userId,
     substationsIds
 ) {
-    console.info(`Fetching 3 windings transformers of study '${studyName}'...`);
+    console.info(
+        `Fetching 3 windings transformers of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
     const fetchThreeWindingsTransformersUrl =
         getStudyUrl(studyName, userId) +
         '/network-map/3-windings-transformers' +
@@ -227,7 +231,9 @@ export function fetchThreeWindingsTransformers(
 }
 
 export function fetchGenerators(studyName, userId, substationsIds) {
-    console.info(`Fetching generators of study '${studyName}'...`);
+    console.info(
+        `Fetching generators of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
     const fetchGeneratorsUrl =
         getStudyUrl(studyName, userId) +
         '/network-map/generators' +
