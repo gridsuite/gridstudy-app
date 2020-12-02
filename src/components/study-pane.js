@@ -654,7 +654,6 @@ const StudyPane = (props) => {
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
         dispatch,
-        network,
     ]);
 
     useEffect(() => {
