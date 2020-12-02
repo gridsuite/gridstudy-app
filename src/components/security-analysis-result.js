@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({ result }) => {
+const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -67,6 +67,7 @@ const SecurityAnalysisResult = ({ result }) => {
             (limitViolation) => {
                 return {
                     subjectId: limitViolation.subjectId,
+                    limitTypeIdent: limitViolation.limitType,
                     limitType: intl.formatMessage({
                         id: limitViolation.limitType,
                     }),
@@ -141,12 +142,14 @@ const SecurityAnalysisResult = ({ result }) => {
                         rows.push({
                             contingencyIndex: index,
                             subjectId: limitViolation.subjectId,
+                            limitTypeIdent: limitViolation.limitType,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
                             }),
                             limit: limitViolation.limit,
                             value: limitViolation.value,
                             loading: computeLoading(limitViolation),
+                            side: limitViolation.side,
                         });
                     }
                 );
@@ -161,6 +164,7 @@ const SecurityAnalysisResult = ({ result }) => {
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
+                onCellClick={onClickConstraint}
                 columns={[
                     {
                         width: 200,
@@ -176,11 +180,13 @@ const SecurityAnalysisResult = ({ result }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'subjectId',
+                        side: 'side',
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'LimitType' }),
                         dataKey: 'limitType',
+                        side: 'side',
                     },
                     {
                         width: 200,
@@ -188,6 +194,7 @@ const SecurityAnalysisResult = ({ result }) => {
                         dataKey: 'limit',
                         numeric: true,
                         fractionDigits: 1,
+                        side: 'side',
                     },
                     {
                         width: 200,
@@ -195,6 +202,7 @@ const SecurityAnalysisResult = ({ result }) => {
                         dataKey: 'value',
                         numeric: true,
                         fractionDigits: 1,
+                        side: 'side',
                     },
                     {
                         width: 200,
@@ -202,6 +210,7 @@ const SecurityAnalysisResult = ({ result }) => {
                         dataKey: 'loading',
                         numeric: true,
                         fractionDigits: 1,
+                        side: 'side',
                     },
                 ]}
             />
@@ -234,12 +243,15 @@ const SecurityAnalysisResult = ({ result }) => {
 
                         contingencies.push({
                             contingencyId: postContingencyResult.contingency.id,
+                            constraintId: limitViolation.subjectId,
+                            limitTypeIdent: limitViolation.limitType,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
                             }),
                             limit: limitViolation.limit,
                             value: limitViolation.value,
                             loading: limitViolation.loading,
+                            side: limitViolation.side,
                         });
                     }
                 );
@@ -254,10 +266,13 @@ const SecurityAnalysisResult = ({ result }) => {
             contingencies.forEach((contingency) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
+                    constraintId: contingency.constraintId,
+                    limitTypeIdent: contingency.limitTypeIdent,
                     limitType: contingency.limitType,
                     limit: contingency.limit,
                     value: contingency.value,
                     loading: contingency.loading,
+                    side: contingency.side,
                 });
             });
         });
@@ -272,6 +287,7 @@ const SecurityAnalysisResult = ({ result }) => {
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
+                onCellClick={onClickConstraint}
                 columns={[
                     {
                         width: 200,
@@ -282,11 +298,13 @@ const SecurityAnalysisResult = ({ result }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'ContingencyId' }),
                         dataKey: 'contingencyId',
+                        side: 'side',
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'LimitType' }),
                         dataKey: 'limitType',
+                        side: 'side',
                     },
                     {
                         width: 200,
@@ -294,6 +312,7 @@ const SecurityAnalysisResult = ({ result }) => {
                         dataKey: 'limit',
                         numeric: true,
                         fractionDigits: 1,
+                        side: 'side',
                     },
                     {
                         width: 200,
@@ -301,6 +320,7 @@ const SecurityAnalysisResult = ({ result }) => {
                         dataKey: 'value',
                         numeric: true,
                         fractionDigits: 1,
+                        side: 'side',
                     },
                     {
                         width: 200,
@@ -308,6 +328,7 @@ const SecurityAnalysisResult = ({ result }) => {
                         dataKey: 'loading',
                         numeric: true,
                         fractionDigits: 1,
+                        side: 'side',
                     },
                 ]}
             />
@@ -387,6 +408,7 @@ SecurityAnalysisResult.defaultProps = {
 
 SecurityAnalysisResult.propTypes = {
     result: PropTypes.object,
+    onClickConstraint: PropTypes.func,
 };
 
 export default SecurityAnalysisResult;

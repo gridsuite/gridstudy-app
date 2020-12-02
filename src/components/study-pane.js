@@ -618,6 +618,40 @@ const StudyPane = (props) => {
         closeChoiceVoltageLevelMenu();
     }
 
+    function onClickConstraint(row) {
+        if (network) {
+            if (row.limitTypeIdent) {
+                let vlId;
+                let searchId = row.subjectId ? row.subjectId : row.constraintId;
+
+                if (row.limitTypeIdent === 'CURRENT') {
+                    const connection = network.getLineOrTransformer(searchId);
+                    if (connection) {
+                        vlId =
+                            row.side === 'ONE'
+                                ? connection.voltageLevelId1
+                                : row.side === 'TWO'
+                                ? connection.voltageLevelId2
+                                : connection.voltageLevelId3;
+                    }
+                } else if (
+                    row.limitTypeIdent === 'HIGH_VOLTAGE' ||
+                    row.limitTypeIdent === 'LOW_VOLTAGE'
+                ) {
+                    const vl = network.getVoltageLevel(searchId);
+                    if (vl) {
+                        vlId = vl.id;
+                    }
+                }
+
+                if (vlId) {
+                    props.onChangeTab(0); // switch to map view
+                    showVoltageLevelDiagram(vlId); // show voltage level
+                }
+            }
+        }
+    }
+
     function renderMapView() {
         let displayedVoltageLevel;
         if (network) {
@@ -922,7 +956,10 @@ const StudyPane = (props) => {
     function renderSecurityAnalysisResult() {
         return (
             <Paper className={classes.main}>
-                <SecurityAnalysisResult result={securityAnalysisResult} />
+                <SecurityAnalysisResult
+                    result={securityAnalysisResult}
+                    onClickConstraint={onClickConstraint}
+                />
             </Paper>
         );
     }
@@ -996,6 +1033,7 @@ StudyPane.defaultProps = {
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
+    onChangeTab: PropTypes.func,
 };
 
 export default StudyPane;

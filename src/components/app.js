@@ -221,6 +221,10 @@ const App = () => {
         history.replace('/');
     }
 
+    function onChangeTab(newTabIndex) {
+        setTabIndex(newTabIndex);
+    }
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -252,9 +256,9 @@ const App = () => {
                             indicatorColor="primary"
                             variant="scrollable"
                             scrollButtons="auto"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
+                            onChange={(event, newTabIndex) => {
+                                onChangeTab(newTabIndex);
+                            }}
                             aria-label="views"
                             className={classes.tabs}
                         >
@@ -294,7 +298,10 @@ const App = () => {
                             />
                         </Route>
                         <Route exact path="/:userId/studies/:studyName">
-                            <StudyPane view={STUDY_VIEWS[tabIndex]} />
+                            <StudyPane
+                                view={STUDY_VIEWS[tabIndex]}
+                                onChangeTab={onChangeTab}
+                            />
                         </Route>
                         <Route exact path="/sign-in-callback">
                             <Redirect to={getPreLoginPath() || '/'} />
