@@ -14,7 +14,7 @@ const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
-const PREFIX_CONFIG_UI_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
+const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 
 const APPS_METADATA_SERVER_URL = fetch('env.json');
 
@@ -38,7 +38,7 @@ function backendFetch(url, init) {
 
 export function fetchConfigParameters() {
     console.info('Fetching UI configuration params ...');
-    const fetchParams = PREFIX_CONFIG_UI_QUERIES + '/v1/parameters';
+    const fetchParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
     return backendFetch(fetchParams).then((res) => {
         return res.json();
     });
@@ -46,7 +46,7 @@ export function fetchConfigParameters() {
 
 export function updateConfigParameter(json) {
     console.info('updating parameters : ' + json.toString());
-    const updateParams = PREFIX_CONFIG_UI_QUERIES + '/v1/parameters';
+    const updateParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
     return backendFetch(updateParams, {
         method: 'put',
         headers: {
@@ -381,6 +381,20 @@ export function fetchSecurityAnalysisResult(studyName, userId) {
     const url = getStudyUrl(studyName, userId) + '/security-analysis/result';
     console.debug(url);
     return backendFetch(url, { method: 'get' });
+}
+
+export function fetchSecurityAnalysisStatus(studyName, userId) {
+    console.info('Fetching security analysis status on ' + studyName + '...');
+    const url = getStudyUrl(studyName, userId) + '/security-analysis/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            console.error(response);
+            return Promise.resolve(0);
+        }
+    });
 }
 
 export function fetchContingencyLists() {

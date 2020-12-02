@@ -25,6 +25,7 @@ import {
     fetchLinePositions,
     fetchLines,
     fetchSecurityAnalysisResult,
+    fetchSecurityAnalysisStatus,
     fetchStudy,
     fetchSubstationPositions,
     fetchSubstations,
@@ -254,12 +255,30 @@ const StudyPane = (props) => {
         });
     }, [studyName, userId]);
 
+    function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
+        switch (securityAnalysisStatus) {
+            case 'COMPLETED':
+                return RunningStatus.SUCCEED;
+            case 'RUNNING':
+                return RunningStatus.RUNNING;
+            case 'NOT_DONE':
+                return RunningStatus.IDLE;
+            default:
+                return RunningStatus.IDLE;
+        }
+    }
+
+    const updateSecurityAnalysisStatus = useCallback(() => {
+        fetchSecurityAnalysisStatus(studyName, userId).then((status) => {
+            setSecurityAnalysisStatus(getSecurityAnalysisRunningStatus(status));
+        });
+    }, [studyName, userId]);
+
     const updateSecurityAnalysisResult = useCallback(() => {
         fetchSecurityAnalysisResult(studyName, userId).then(function (
             response
         ) {
             if (response.ok) {
-                setSecurityAnalysisStatus(RunningStatus.IDLE);
                 response.json().then((result) => {
                     setSecurityAnalysisResult(result);
                 });
@@ -274,8 +293,7 @@ const StudyPane = (props) => {
         // start server side security analysis
         startSecurityAnalysis(studyName, userId, contingencyListNames);
 
-        // update status and clean result
-        setSecurityAnalysisStatus(RunningStatus.RUNNING);
+        // clean result
         setSecurityAnalysisResult(null);
     };
 
@@ -325,6 +343,7 @@ const StudyPane = (props) => {
         console.info(`Loading network of study '${studyName}'...`);
         updateLoadFlowResult();
         updateSecurityAnalysisResult();
+        updateSecurityAnalysisStatus();
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
@@ -364,6 +383,7 @@ const StudyPane = (props) => {
         dispatch,
         updateLoadFlowResult,
         updateSecurityAnalysisResult,
+        updateSecurityAnalysisStatus,
     ]);
 
     const loadGeoData = useCallback(() => {
@@ -544,6 +564,7 @@ const StudyPane = (props) => {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
             }
+
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
@@ -554,6 +575,11 @@ const StudyPane = (props) => {
                 'loadflow_status'
             ) {
                 updateLoadFlowResult();
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'securityAnalysis_status'
+            ) {
+                updateSecurityAnalysisStatus();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'securityAnalysisResult'
@@ -570,6 +596,7 @@ const StudyPane = (props) => {
         studyName,
         loadNetwork,
         updateLoadFlowResult,
+        updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
         dispatch,
     ]);
@@ -669,14 +696,6 @@ const StudyPane = (props) => {
 
         return (
             <div className={classes.main}>
-                {waitingLoadGeoData && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        isFixed={true}
-                        loadingMessageText="loadingGeoData"
-                    />
-                )}
                 <Drawer
                     variant={'persistent'}
                     className={classes.drawer}
