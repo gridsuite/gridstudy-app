@@ -645,6 +645,7 @@ const StudyPane = (props) => {
             }
         }
         // Note: studyName, and loadNetwork don't change
+        // eslint-disable-next-line
     }, [
         studyUpdatedForce,
         studyName,
