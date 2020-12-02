@@ -469,8 +469,6 @@ export function connectNotificationsWsUpdateConfig() {
     let webSocketUrlWithToken;
     webSocketUrlWithToken = webSocketUrl + '?access_token=' + getToken();
 
-    console.debug('webSocketUrl : ' + webSocketUrlWithToken);
-
     const reconnectingWebSocket = new ReconnectingWebSocket(
         webSocketUrlWithToken
     );
