@@ -669,7 +669,6 @@ const StudyPane = (props) => {
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
         dispatch,
-        network,
     ]);
 
     const mapRef = useRef();
