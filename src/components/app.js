@@ -28,7 +28,17 @@ import {
 import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
-import { LIGHT_THEME, resetResultCount } from '../redux/actions';
+import {
+    LIGHT_THEME,
+    DARK_THEME,
+    USE_NAME,
+    USE_ID,
+} from './util/toggle-equipment-display';
+import {
+    resetResultCount,
+    selectTheme,
+    toggleUseNameState,
+} from '../redux/actions';
 import Parameters from './parameters';
 
 import {
@@ -46,6 +56,8 @@ import { FormattedMessage } from 'react-intl';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import { fetchAppsAndUrls } from '../utils/rest-api';
+
+import EquipmentDisplay from './util/toggle-equipment-display';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -114,6 +126,8 @@ const STUDY_VIEWS = [StudyView.MAP, StudyView.TABLE, StudyView.RESULTS];
 const App = () => {
     const theme = useSelector((state) => state.theme);
 
+    const useName = useSelector((state) => state.useName);
+
     const user = useSelector((state) => state.user);
 
     const studyName = useSelector((state) => state.studyName);
@@ -140,6 +154,8 @@ const App = () => {
 
     const resultCount = useSelector((state) => state.resultCount);
 
+    const [toggleState, setToggleState] = useState(USE_NAME);
+
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
         useRouteMatch({
@@ -147,6 +163,23 @@ const App = () => {
             exact: true,
         })
     );
+
+    const handleClickToggle = () => {
+        if (useName) {
+            setToggleState(USE_ID);
+        } else {
+            setToggleState(USE_NAME);
+        }
+        dispatch(toggleUseNameState());
+    };
+
+    const handleDisplayMode = () => {
+        if (theme === LIGHT_THEME) {
+            dispatch(selectTheme(DARK_THEME));
+        } else {
+            dispatch(selectTheme(LIGHT_THEME));
+        }
+    };
 
     useEffect(() => {
         document.addEventListener('contextmenu', (event) => {
@@ -245,6 +278,16 @@ const App = () => {
                     onLogoClick={() => onLogoClicked()}
                     user={user}
                     appsAndUrls={appsAndUrls}
+                    onDisplayModeClick={() => handleDisplayMode()}
+                    onAboutClick={() => console.log('about')}
+                    selectedTheme={theme}
+                    equipmentDisplay={
+                        <EquipmentDisplay
+                            handleDisplay={handleClickToggle}
+                            toggleState={toggleState}
+                        />
+                    }
+                    selectedEquipment={toggleState} // You must add this props it is necessary to pass the information to the parent component to close menu after updating toggle
                 >
                     {studyName && (
                         <Tabs
