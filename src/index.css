@@ -1,3 +1,14 @@
+html {
+    min-height: 100%;
+}
+
+script, head {
+    display:none;
+}
+* {
+    display: grid;
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',

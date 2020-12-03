@@ -75,8 +75,7 @@ const drawerWidth = 300;
 
 const useStyles = makeStyles((theme) => ({
     main: {
-        position: 'absolute',
-        width: '100%',
+        flexGrow: 1,
         display: 'flex',
     },
     error: {
@@ -105,7 +104,6 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 98,
     },
     drawerDiv: {
-        height: 'calc(100vh - 56px)',
         pointerEvents: 'all',
     },
     content: {
@@ -667,7 +665,6 @@ const StudyPane = (props) => {
         return (
             <div
                 className={classes.main}
-                style={{ height: 'calc(100vh - ' + headerHeight + 'px)' }}
             >
                 {waitingLoadGeoData && (
                     <LoaderWithOverlay
@@ -693,6 +690,7 @@ const StudyPane = (props) => {
                 >
                     <div
                         style={{
+                            flex:'1 1 auto',
                             overflowY: 'none',
                             overflowX: 'none',
                         }}
@@ -869,32 +867,28 @@ const StudyPane = (props) => {
 
     function renderResultsView() {
         return (
-            <AutoSizer>
-                {({ width, height }) => (
-                    <div style={{ width: width, height: height }}>
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
-                        >
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'loadFlowResults',
-                                })}
-                            />
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'securityAnalysisResults',
-                                })}
-                            />
-                        </Tabs>
-                        {tabIndex === 0 && renderLoadFlowResult()}
-                        {tabIndex === 1 && renderSecurityAnalysisResult()}
-                    </div>
-                )}
-            </AutoSizer>
+            <div style={{ flexGrow:1 }}>
+                <Tabs
+                    value={tabIndex}
+                    indicatorColor="primary"
+                    onChange={(event, newTabIndex) =>
+                        setTabIndex(newTabIndex)
+                    }
+                >
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'loadFlowResults',
+                        })}
+                    />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'securityAnalysisResults',
+                        })}
+                    />
+                </Tabs>
+                {tabIndex === 0 && renderLoadFlowResult()}
+                {tabIndex === 1 && renderSecurityAnalysisResult()}
+            </div>
         );
     }
 
@@ -927,7 +921,7 @@ const StudyPane = (props) => {
         );
     } else {
         return (
-            <div>
+            <>
                 {waitingLoadGeoData && (
                     <LoaderWithOverlay
                         color="inherit"
@@ -939,8 +933,9 @@ const StudyPane = (props) => {
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
                 <div
                     style={{
+                        flexGrow:1,
                         display:
-                            props.view === StudyView.MAP ? 'block' : 'none',
+                            props.view === StudyView.MAP ? 'flex' : 'none',
                         pointerEvents: 'all',
                     }}
                 >
@@ -948,21 +943,23 @@ const StudyPane = (props) => {
                 </div>
                 <div
                     style={{
+                        flexGrow:1,
                         display:
-                            props.view === StudyView.TABLE ? 'block' : 'none',
+                            props.view === StudyView.TABLE ? 'flex' : 'none',
                     }}
                 >
                     {renderTableView()}
                 </div>
                 <div
                     style={{
+                        flexGrow:1,
                         display:
-                            props.view === StudyView.RESULTS ? 'block' : 'none',
+                            props.view === StudyView.RESULTS ? 'flex' : 'none',
                     }}
                 >
                     {renderResultsView()}
                 </div>
-            </div>
+            </>
         );
     }
 };

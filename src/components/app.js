@@ -228,7 +228,7 @@ const App = () => {
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
-            <React.Fragment>
+            <div style={{display:"flex", flexDirection:"column", flexGrow:1}}>
                 <CssBaseline />
                 <TopBar
                     appName="Study"
@@ -284,7 +284,9 @@ const App = () => {
                     showParameters={showParameters}
                     hideParameters={hideParameters}
                 />
+
                 {user !== null ? (
+                    <div style={{flexGrow:1, display: "flex", flexDirection: "column"}}>
                     <Switch>
                         <Route exact path="/">
                             <StudyManager
@@ -310,6 +312,7 @@ const App = () => {
                             />
                         </Route>
                     </Switch>
+                    </div>
                 ) : (
                     <AuthenticationRouter
                         userManager={userManager}
@@ -319,7 +322,7 @@ const App = () => {
                         location={location}
                     />
                 )}
-            </React.Fragment>
+            </div>
         </ThemeProvider>
     );
 };

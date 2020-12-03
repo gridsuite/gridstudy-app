@@ -29,18 +29,12 @@ const LoadFlowResult = ({ result }) => {
         label: {
             paddingTop: '75px',
         },
-        table: {
-            height: '100%',
-        },
         card: {
             display: 'inline-block',
             width: '38%',
         },
         tablePaper: {
-            display: 'inline-block',
-            float: 'right',
-            width: '60%',
-            height: '100%',
+            flexGrow: 1,
         },
     }));
 
@@ -181,7 +175,6 @@ const LoadFlowResult = ({ result }) => {
                 </Card>
                 <Paper className={classes.tablePaper}>
                     <VirtualizedTable
-                        className={classes.table}
                         rowCount={result.componentResults.length}
                         rowGetter={({ index }) =>
                             result.componentResults[index]
