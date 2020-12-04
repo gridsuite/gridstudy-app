@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { useIntl } from 'react-intl';
 
@@ -32,6 +32,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import { DoubleArrow } from '@material-ui/icons';
+import { selectItemNetwork } from '../../redux/actions';
 
 const itemSize = 48;
 
@@ -65,6 +66,20 @@ const useStyles = makeStyles((theme) => ({
     noCRGrid: {
         flexFlow: 'row',
     },
+    selectedVoltage: {
+        backgroundColor: '#ababab !important',
+        textIndent: 16,
+        '& p': {
+            color: theme.palette.type === 'dark' ? '#000' : '#FFF',
+        },
+    },
+    selectedSubstation: {
+        height: (itemSize * 3) / 4,
+        backgroundColor: '#7c7c7c !important',
+        '& p': {
+            color: theme.palette.type === 'dark' ? '#000' : '#FFF',
+        },
+    },
 }));
 
 const NetworkExplorer = ({
@@ -76,13 +91,15 @@ const NetworkExplorer = ({
 }) => {
     const intl = useIntl();
 
+    const dispatch = useDispatch();
+
+    const selectItem = useSelector((state) => state.selectItemNetwork);
+
     const useName = useSelector((state) => state.useName);
 
     const filterMsg = intl.formatMessage({ id: 'filter' }) + '...';
 
     const classes = useStyles();
-
-    const [selectedIndex, setSelectedIndex] = React.useState(0);
 
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
@@ -146,6 +163,7 @@ const NetworkExplorer = ({
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
             onVoltageLevelDisplayClick(vl.id);
+            dispatch(selectItemNetwork(vl.id));
         }
     }
 
@@ -169,7 +187,11 @@ const NetworkExplorer = ({
         <ListItem
             button
             key={vl.id}
-            className={classes.listItem}
+            className={
+                selectItem === vl.id
+                    ? classes.selectedVoltage
+                    : classes.listItem
+            }
             onClick={() => onDisplayClickHandler(vl)}
         >
             <ListItemText
@@ -207,7 +229,11 @@ const NetworkExplorer = ({
                             component={'li'}
                             button
                             key={substation.id}
-                            className={classes.listSubHeaderRoot}
+                            className={
+                                selectItem === substation.id
+                                    ? classes.selectedSubstation
+                                    : classes.listSubHeaderRoot
+                            }
                             onClick={() =>
                                 onSubstationDisplayClick &&
                                 onSubstationDisplayClick(substation.id)
