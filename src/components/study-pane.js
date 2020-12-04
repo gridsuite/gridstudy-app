@@ -21,6 +21,7 @@ import NetworkMap from './network/network-map';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
+    fetchAllEquipments,
     fetchGenerators,
     fetchLinePositions,
     fetchLines,
@@ -390,45 +391,25 @@ const StudyPane = (props) => {
 
     const updateNetwork = useCallback(
         (substationsIds, network) => {
-            const substations = fetchSubstations(
+            const updatedEquipments = fetchAllEquipments(
                 studyName,
                 userId,
                 substationsIds
             );
 
-            const lines = fetchLines(studyName, userId, substationsIds);
-            const twoWindingsTransformers = fetchTwoWindingsTransformers(
-                studyName,
-                userId,
-                substationsIds
-            );
-            const threeWindingsTransformers = fetchThreeWindingsTransformers(
-                studyName,
-                userId,
-                substationsIds
-            );
-            const generators = fetchGenerators(
-                studyName,
-                userId,
-                substationsIds
-            );
-
-            Promise.all([
-                substations,
-                lines,
-                twoWindingsTransformers,
-                threeWindingsTransformers,
-                generators,
-            ])
-
+            Promise.all([updatedEquipments])
                 .then((values) => {
-                    network.updateSubstations(values[0]);
-                    network.updateLines(values[1]);
-                    network.updateTwoWindingsTransformers(values[2]);
-                    network.updateThreeWindingsTransformers(values[3]);
-                    network.updateGenerators(values[4]);
+                    network.updateSubstations(values[0].substations);
+                    network.updateLines(values[0].lines);
+                    network.updateTwoWindingsTransformers(
+                        values[0].twoWindingsTransformers
+                    );
+                    network.updateThreeWindingsTransformers(
+                        values[0].threeWindingsTransformers
+                    );
+                    network.updateGenerators(values[0].generators);
 
-                    setUpdatedLines(values[1]);
+                    setUpdatedLines(values[0].lines);
                 })
                 .catch(function (error) {
                     console.error(error.message);

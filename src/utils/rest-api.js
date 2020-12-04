@@ -242,6 +242,20 @@ export function fetchGenerators(studyName, userId, substationsIds) {
     return backendFetch(fetchGeneratorsUrl).then((response) => response.json());
 }
 
+export function fetchAllEquipments(studyName, userId, substationsIds) {
+    console.info(
+        `Fetching equipments of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
+    const fetchAllEquipmentsUrl =
+        getStudyUrl(studyName, userId) +
+        '/network-map/all' +
+        getSubstationsIdsListsQueryParams(substationsIds);
+    console.debug(fetchAllEquipmentsUrl);
+    return backendFetch(fetchAllEquipmentsUrl).then((response) =>
+        response.json()
+    );
+}
+
 export function fetchLinePositions(studyName, userId) {
     console.info(`Fetching line positions of study '${studyName}'...`);
     const fetchLinePositionsUrl =
