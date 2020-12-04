@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#ababab !important',
         textIndent: 16,
         '& p': {
-            color: theme.palette.type === 'dark' ? '#000' : '#FFF',
+            color: theme.palette.type === 'dark' ? '#000' : '',
         },
     },
     selectedSubstation: {
