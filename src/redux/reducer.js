@@ -61,6 +61,7 @@ import {
     RESET_RESULT_COUNT,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
+    SELECTED_ITEM_NETWORK,
 } from './actions';
 
 const initialState = {
@@ -89,6 +90,7 @@ const initialState = {
     resultCount: 0,
     filteredNominalVoltages: null,
     substationLayout: getLocalStorageSubstationLayout(),
+    selectItemNetwork: null,
 };
 
 export const reducer = createReducer(initialState, {
@@ -220,5 +222,9 @@ export const reducer = createReducer(initialState, {
     [SUBSTATION_LAYOUT]: (state, action) => {
         state.substationLayout = action.substationLayout;
         saveLocalStorageSubstationLayout(state.substationLayout);
+    },
+
+    [SELECTED_ITEM_NETWORK]: (state, action) => {
+        state.selectItemNetwork = action.selectItemNetwork;
     },
 });

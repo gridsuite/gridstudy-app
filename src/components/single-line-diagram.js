@@ -18,6 +18,9 @@ import PropTypes from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 
+import { useDispatch } from 'react-redux';
+import { selectItemNetwork } from '../redux/actions';
+
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
@@ -139,6 +142,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
     const svgDraw = useRef();
+    const dispatch = useDispatch();
 
     const [forceState, updateState] = useState(false);
 
@@ -413,6 +417,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
+            dispatch(selectItemNetwork(null));
             props.onClose();
         }
     };
