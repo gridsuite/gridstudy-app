@@ -37,6 +37,7 @@ import {
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
 } from './actions';
+import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
 
 const initialState = {
     studies: [],
@@ -45,7 +46,7 @@ const initialState = {
     userId: null,
     network: null,
     geoData: null,
-    theme: 'Dark',
+    theme: getLocalStorageTheme(),
     cases: [],
     selectedCase: null,
     selectedFile: null,
@@ -108,6 +109,7 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_THEME]: (state, action) => {
         state.theme = action.theme;
+        saveLocalStorageTheme(state.theme);
     },
 
     [SELECT_CASE]: (state, action) => {
