@@ -39,6 +39,9 @@ const styles = (theme) => ({
     noClick: {
         cursor: 'initial',
     },
+    tableCellColor: {
+        color: theme.link.color,
+    },
     header: {
         marginLeft: 16,
     },
@@ -174,7 +177,14 @@ class MuiVirtualizedTable extends React.PureComponent {
             <TableCell
                 component="div"
                 className={clsx(classes.tableCell, classes.flexContainer, {
-                    [classes.noClick]: onCellClick == null,
+                    [classes.noClick]:
+                        onCellClick == null ||
+                        columns[columnIndex].clickable === undefined ||
+                        !columns[columnIndex].clickable,
+                    [classes.tableCellColor]:
+                        onCellClick !== null &&
+                        columns[columnIndex].clickable !== undefined &&
+                        columns[columnIndex].clickable,
                 })}
                 variant="body"
                 style={{ height: rowHeight }}
@@ -186,7 +196,10 @@ class MuiVirtualizedTable extends React.PureComponent {
                 }
                 onClick={(e) => {
                     if (onCellClick) {
-                        onCellClick(rowGetter({ index: rowIndex }));
+                        onCellClick(
+                            rowGetter({ index: rowIndex }),
+                            columns[columnIndex]
+                        );
                     }
                 }}
             >

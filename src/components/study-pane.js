@@ -618,29 +618,27 @@ const StudyPane = (props) => {
         closeChoiceVoltageLevelMenu();
     }
 
-    function onClickConstraint(row) {
+    function onClickNmKConstraint(row, column) {
         if (network) {
-            if (row.limitTypeIdent) {
+            if (column.dataKey === 'subjectId') {
                 let vlId;
-                let searchId = row.subjectId ? row.subjectId : row.constraintId;
 
-                if (row.limitTypeIdent === 'CURRENT') {
-                    const connection = network.getLineOrTransformer(searchId);
-                    if (connection) {
+                let equipment = network.getLineOrTransformer(row.subjectId);
+                if (equipment) {
+                    if (row.side) {
                         vlId =
                             row.side === 'ONE'
-                                ? connection.voltageLevelId1
+                                ? equipment.voltageLevelId1
                                 : row.side === 'TWO'
-                                ? connection.voltageLevelId2
-                                : connection.voltageLevelId3;
+                                ? equipment.voltageLevelId2
+                                : equipment.voltageLevelId3;
+                    } else {
+                        vlId = equipment.voltageLevelId1;
                     }
-                } else if (
-                    row.limitTypeIdent === 'HIGH_VOLTAGE' ||
-                    row.limitTypeIdent === 'LOW_VOLTAGE'
-                ) {
-                    const vl = network.getVoltageLevel(searchId);
-                    if (vl) {
-                        vlId = vl.id;
+                } else {
+                    equipment = network.getVoltageLevel(row.subjectId);
+                    if (equipment) {
+                        vlId = equipment.id;
                     }
                 }
 
@@ -958,7 +956,7 @@ const StudyPane = (props) => {
             <Paper className={classes.main}>
                 <SecurityAnalysisResult
                     result={securityAnalysisResult}
-                    onClickConstraint={onClickConstraint}
+                    onClickNmKConstraint={onClickNmKConstraint}
                 />
             </Paper>
         );

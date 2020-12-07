@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
+const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -67,7 +67,6 @@ const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
             (limitViolation) => {
                 return {
                     subjectId: limitViolation.subjectId,
-                    limitTypeIdent: limitViolation.limitType,
                     limitType: intl.formatMessage({
                         id: limitViolation.limitType,
                     }),
@@ -142,7 +141,6 @@ const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
                         rows.push({
                             contingencyIndex: index,
                             subjectId: limitViolation.subjectId,
-                            limitTypeIdent: limitViolation.limitType,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
                             }),
@@ -164,7 +162,7 @@ const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
-                onCellClick={onClickConstraint}
+                onCellClick={onClickNmKConstraint}
                 columns={[
                     {
                         width: 200,
@@ -181,6 +179,7 @@ const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'subjectId',
                         side: 'side',
+                        clickable: true,
                     },
                     {
                         width: 200,
@@ -244,7 +243,6 @@ const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
                         contingencies.push({
                             contingencyId: postContingencyResult.contingency.id,
                             constraintId: limitViolation.subjectId,
-                            limitTypeIdent: limitViolation.limitType,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
                             }),
@@ -267,7 +265,6 @@ const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
                     constraintId: contingency.constraintId,
-                    limitTypeIdent: contingency.limitTypeIdent,
                     limitType: contingency.limitType,
                     limit: contingency.limit,
                     value: contingency.value,
@@ -287,12 +284,13 @@ const SecurityAnalysisResult = ({ result, onClickConstraint }) => {
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
-                onCellClick={onClickConstraint}
+                onCellClick={onClickNmKConstraint}
                 columns={[
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'subjectId',
+                        clickable: true,
                     },
                     {
                         width: 200,
@@ -408,7 +406,7 @@ SecurityAnalysisResult.defaultProps = {
 
 SecurityAnalysisResult.propTypes = {
     result: PropTypes.object,
-    onClickConstraint: PropTypes.func,
+    onClickNmKConstraint: PropTypes.func,
 };
 
 export default SecurityAnalysisResult;

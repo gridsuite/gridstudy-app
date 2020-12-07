@@ -67,6 +67,9 @@ const lightTheme = createMuiTheme({
         stroke: '#212121',
         fill: '#212121',
     },
+    link: {
+        color: 'blue',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
@@ -89,6 +92,9 @@ const darkTheme = createMuiTheme({
     circle_hover: {
         stroke: 'white',
         fill: 'white',
+    },
+    link: {
+        color: 'green',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
