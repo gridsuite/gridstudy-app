@@ -419,7 +419,6 @@ export function fetchSecurityAnalysisStatus(studyName, userId) {
         if (response.ok) {
             return response.text();
         } else {
-            console.error(response);
             return Promise.resolve(0);
         }
     });

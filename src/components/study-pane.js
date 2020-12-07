@@ -390,7 +390,7 @@ const StudyPane = (props) => {
     ]);
 
     const updateNetwork = useCallback(
-        (substationsIds, network) => {
+        (substationsIds) => {
             const updatedEquipments = fetchAllEquipments(
                 studyName,
                 userId,
@@ -415,9 +415,9 @@ const StudyPane = (props) => {
                     console.error(error.message);
                     setStudyNotFound(true);
                 });
-            // Note: studyName and dispatch don't change
+            // Note: studyName don't change
         },
-        [studyName, userId]
+        [studyName, userId, network]
     );
 
     const loadGeoData = useCallback(() => {
@@ -625,9 +625,22 @@ const StudyPane = (props) => {
 
                 // update badge
                 dispatch(increaseResultCount());
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'study'
-            ) {
+            }
+        }
+        // Note: studyName, and loadNetwork don't change
+    }, [
+        studyUpdatedForce,
+        studyName,
+        loadNetwork,
+        updateLoadFlowResult,
+        updateSecurityAnalysisStatus,
+        updateSecurityAnalysisResult,
+        dispatch,
+    ]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
                 updateSld();
 
                 // study partial update : loading equipments involved in the study modification and updating the network
@@ -637,21 +650,10 @@ const StudyPane = (props) => {
                     .substring(1, ids.length - 1)
                     .split(','); // removing square brackets
 
-                updateNetwork(substationsIds, network);
+                updateNetwork(substationsIds);
             }
         }
-        // Note: studyName, and loadNetwork don't change
-        // eslint-disable-next-line
-    }, [
-        studyUpdatedForce,
-        studyName,
-        loadNetwork,
-        updateNetwork,
-        updateLoadFlowResult,
-        updateSecurityAnalysisStatus,
-        updateSecurityAnalysisResult,
-        dispatch,
-    ]);
+    }, [studyUpdatedForce, updateNetwork]);
 
     const mapRef = useRef();
     const centerSubstation = useCallback(
