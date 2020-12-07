@@ -629,28 +629,13 @@ const StudyPane = (props) => {
 
                 // update badge
                 dispatch(increaseResultCount());
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'study'
-            ) {
-                updateSld();
-
-                // study partial update : loading equipments involved in the study modification and updating the network
-                const ids =
-                    studyUpdatedForce.eventData.headers['substationsIds'];
-                const substationsIds = ids
-                    .substring(1, ids.length - 1)
-                    .split(','); // removing square brackets
-
-                updateNetwork(substationsIds, network);
             }
         }
         // Note: studyName, and loadNetwork don't change
-        // eslint-disable-next-line
     }, [
         studyUpdatedForce,
         studyName,
         loadNetwork,
-        updateNetwork,
         updateLoadFlowResult,
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
