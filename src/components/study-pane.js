@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -221,7 +221,7 @@ const StudyPane = (props) => {
 
     const location = useLocation();
 
-    const history = useHistory();
+    const history = useNavigate();
 
     const websocketExpectedCloseRef = useRef();
 

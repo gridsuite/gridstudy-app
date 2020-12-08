@@ -10,10 +10,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-    Redirect,
+    Navigate,
     Route,
-    Switch,
-    useHistory,
+    Routes,
+    useNavigate,
     useLocation,
 } from 'react-router-dom';
 
@@ -40,7 +40,6 @@ import {
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
-import { useRouteMatch } from 'react-router';
 import { FormattedMessage } from 'react-intl';
 
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
@@ -128,7 +127,7 @@ const App = () => {
 
     const [showParameters, setShowParameters] = useState(false);
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const dispatch = useDispatch();
 
@@ -140,14 +139,6 @@ const App = () => {
 
     const resultCount = useSelector((state) => state.resultCount);
 
-    // Can't use lazy initializer because useRouteMatch is a hook
-    const [initialMatchSilentRenewCallbackUrl] = useState(
-        useRouteMatch({
-            path: '/silent-renew-callback',
-            exact: true,
-        })
-    );
-
     useEffect(() => {
         document.addEventListener('contextmenu', (event) => {
             event.preventDefault();
@@ -157,15 +148,16 @@ const App = () => {
     useEffect(() => {
         initializeAuthenticationProd(
             dispatch,
-            initialMatchSilentRenewCallbackUrl != null,
+            location.pathname === '/silent-renew-callback',
             fetch('idpSettings.json')
         )
             .then((userManager) => {
                 setUserManager({ instance: userManager, error: null });
+                //console.info(initialMatchSilentRenewCallbackUrl);
                 userManager.getUser().then((user) => {
                     if (
                         user == null &&
-                        initialMatchSilentRenewCallbackUrl == null
+                      location.pathname !== '/silent-renew-callback'
                     ) {
                         userManager.signinSilent().catch((error) => {
                             const oidcHackReloaded =
@@ -175,7 +167,10 @@ const App = () => {
                                 error.message ===
                                     'authority mismatch on settings vs. signin state'
                             ) {
-                                sessionStorage.setItem(oidcHackReloaded, true);
+                                sessionStorage.setItem(
+                                    oidcHackReloaded,
+                                    'true'
+                                );
                                 console.log(
                                     'Hack oidc, reload page to make login work'
                                 );
@@ -190,7 +185,7 @@ const App = () => {
                 console.debug('error when importing the idp settings');
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
-    }, [initialMatchSilentRenewCallbackUrl, dispatch]);
+    }, [location, dispatch]);
 
     useEffect(() => {
         if (user !== null) {
@@ -201,7 +196,7 @@ const App = () => {
     }, [user]);
 
     function studyClickHandler(studyName, userId) {
-        history.push(
+        navigate(
             '/' +
                 encodeURIComponent(userId) +
                 '/studies/' +
@@ -218,7 +213,7 @@ const App = () => {
     }
 
     function onLogoClicked() {
-        history.replace('/');
+        navigate('/');
     }
 
     // if result tab is displayed, clean badge
@@ -285,21 +280,21 @@ const App = () => {
                     hideParameters={hideParameters}
                 />
                 {user !== null ? (
-                    <Switch>
-                        <Route exact path="/">
+                    <Routes>
+                        <Route path="/">
                             <StudyManager
                                 onClick={(name, userId) =>
                                     studyClickHandler(name, userId)
                                 }
                             />
                         </Route>
-                        <Route exact path="/:userId/studies/:studyName">
+                        <Route path="/:userId/studies/:studyName">
                             <StudyPane view={STUDY_VIEWS[tabIndex]} />
                         </Route>
-                        <Route exact path="/sign-in-callback">
-                            <Redirect to={getPreLoginPath() || '/'} />
+                        <Route path="/sign-in-callback">
+                            <Navigate to={getPreLoginPath() || '/'} />
                         </Route>
-                        <Route exact path="/logout-callback">
+                        <Route path="/logout-callback">
                             <h1>
                                 Error: logout failed; you are still logged in.
                             </h1>
@@ -309,13 +304,13 @@ const App = () => {
                                 message={<FormattedMessage id="PageNotFound" />}
                             />
                         </Route>
-                    </Switch>
+                    </Routes>
                 ) : (
                     <AuthenticationRouter
                         userManager={userManager}
                         signInCallbackError={signInCallbackError}
                         dispatch={dispatch}
-                        history={history}
+                        navigate={navigate}
                         location={location}
                     />
                 )}
