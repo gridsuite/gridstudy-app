@@ -47,6 +47,19 @@ export function fetchConfigParameters() {
 export function updateConfigParameter(json) {
     console.info('updating parameters : ' + json.toString());
     const updateParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
+    backendFetch(updateParams, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: json,
+    }).then();
+}
+
+export function updateConfigParameters(json) {
+    console.info('updating parameters : ' + json.toString());
+    const updateParams = PREFIX_CONFIG_QUERIES + '/v1/multiple-parameters';
     return backendFetch(updateParams, {
         method: 'put',
         headers: {

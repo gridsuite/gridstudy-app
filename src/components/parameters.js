@@ -9,7 +9,7 @@ import React, { useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -31,21 +31,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 
-import {
-    DARK_THEME,
-    LIGHT_THEME,
-    selectLineFlowMode,
-    selectLineFlowColorMode,
-    selectLineFlowAlertThreshold,
-    selectTheme,
-    selectSubstationLayout,
-    selectUseName,
-    selectCenterLabelState,
-    selectDiagonalLabelState,
-    selectLineFullPathState,
-    selectLineParallelPathState,
-    selectViewOverloadsTableState,
-} from '../redux/actions';
+import { DARK_THEME, LIGHT_THEME } from '../redux/actions';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
 import {
@@ -54,6 +40,19 @@ import {
     updateConfigParameter,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
+import {
+    PARAMS_CENTER_LABEL_KEY,
+    PARAMS_DIAGONAL_LABEL_KEY,
+    PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
+    PARAMS_LINE_FLOW_COLOR_MODE_KEY,
+    PARAMS_LINE_FLOW_MODE_KEY,
+    PARAMS_LINE_FULL_PATH_KEY,
+    PARAMS_LINE_PARALLEL_PATH_KEY,
+    PARAMS_SUBSTATION_LAYOUT_KEY,
+    PARAMS_THEME_KEY,
+    PARAMS_USE_NAME_KEY,
+    PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+} from '../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -71,8 +70,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Parameters = ({ showParameters, hideParameters }) => {
-    const dispatch = useDispatch();
-
     const classes = useStyles();
 
     const useName = useSelector((state) => state.useName);
@@ -127,21 +124,19 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
         let json = JSON.stringify({
-            theme: theme,
+            key: PARAMS_THEME_KEY,
+            value: theme,
         });
-        updateConfigParameter(json).then((res) => {
-            dispatch(selectTheme(res.theme));
-        });
+        updateConfigParameter(json);
     };
 
     const handleLineFlowModeChange = (event) => {
         const lineFlowMode = event.target.value;
         let json = JSON.stringify({
-            lineFlowMode: lineFlowMode,
+            key: PARAMS_LINE_FLOW_MODE_KEY,
+            value: lineFlowMode,
         });
-        updateConfigParameter(json).then((res) => {
-            dispatch(selectLineFlowMode(res.lineFlowMode));
-        });
+        updateConfigParameter(json);
     };
 
     const handleLineFlowColorModeChange = (event) => {
@@ -150,30 +145,27 @@ const Parameters = ({ showParameters, hideParameters }) => {
             lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
         );
         let json = JSON.stringify({
-            lineFlowColorMode: lineFlowColorMode,
+            key: PARAMS_LINE_FLOW_COLOR_MODE_KEY,
+            value: lineFlowColorMode,
         });
-        updateConfigParameter(json).then((res) => {
-            dispatch(selectLineFlowColorMode(res.lineFlowColorMode));
-        });
+        updateConfigParameter(json);
     };
 
     const handleLineFlowAlertThresholdChange = (event, value) => {
         let json = JSON.stringify({
-            lineFlowAlertThreshold: value,
+            key: PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
+            value: value,
         });
-        updateConfigParameter(json).then((res) => {
-            dispatch(selectLineFlowAlertThreshold(res.lineFlowAlertThreshold));
-        });
+        updateConfigParameter(json);
     };
 
     const handleSubstationLayoutChange = (event) => {
         const substationLayout = event.target.value;
         let json = JSON.stringify({
-            substationLayout: substationLayout,
+            key: PARAMS_SUBSTATION_LAYOUT_KEY,
+            value: substationLayout,
         });
-        updateConfigParameter(json).then((res) => {
-            dispatch(selectSubstationLayout(res.substationLayout));
-        });
+        updateConfigParameter(json);
     };
 
     function TabPanel(props) {
@@ -298,11 +290,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(useName, 'useName', () => {
                     let json = JSON.stringify({
-                        useName: !useName,
+                        key: PARAMS_USE_NAME_KEY,
+                        value: !useName,
                     });
-                    updateConfigParameter(json).then((res) => {
-                        dispatch(selectUseName(res.useName));
-                    });
+                    updateConfigParameter(json);
                 })}
 
                 <MakeLineSeparator />
@@ -336,20 +327,18 @@ const Parameters = ({ showParameters, hideParameters }) => {
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(diagonalLabel, 'diagonalLabel', () => {
                     let json = JSON.stringify({
-                        diagonalLabel: !diagonalLabel,
+                        key: PARAMS_DIAGONAL_LABEL_KEY,
+                        value: !diagonalLabel,
                     });
-                    updateConfigParameter(json).then((res) => {
-                        dispatch(selectDiagonalLabelState(res.diagonalLabel));
-                    });
+                    updateConfigParameter(json);
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(centerLabel, 'centerLabel', () => {
                     let json = JSON.stringify({
-                        centerLabel: !centerLabel,
+                        key: PARAMS_CENTER_LABEL_KEY,
+                        value: !centerLabel,
                     });
-                    updateConfigParameter(json).then((res) => {
-                        dispatch(selectCenterLabelState(res.centerLabel));
-                    });
+                    updateConfigParameter(json);
                 })}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
@@ -395,22 +384,18 @@ const Parameters = ({ showParameters, hideParameters }) => {
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(lineFullPath, 'lineFullPath', () => {
                     let json = JSON.stringify({
-                        lineFullPath: !lineFullPath,
+                        key: PARAMS_LINE_FULL_PATH_KEY,
+                        value: !lineFullPath,
                     });
-                    updateConfigParameter(json).then((res) => {
-                        dispatch(selectLineFullPathState(res.lineFullPath));
-                    });
+                    updateConfigParameter(json);
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {
                     let json = JSON.stringify({
-                        lineParallelPath: !lineParallelPath,
+                        key: PARAMS_LINE_PARALLEL_PATH_KEY,
+                        value: !lineParallelPath,
                     });
-                    updateConfigParameter(json).then((res) => {
-                        dispatch(
-                            selectLineParallelPathState(res.lineParallelPath)
-                        );
-                    });
+                    updateConfigParameter(json);
                 })}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
@@ -474,15 +459,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                             viewOverloadsTable
                     );
                     let json = JSON.stringify({
-                        viewOverloadsTable: !viewOverloadsTable,
+                        key: PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+                        value: !viewOverloadsTable,
                     });
-                    updateConfigParameter(json).then((res) => {
-                        dispatch(
-                            selectViewOverloadsTableState(
-                                res.viewOverloadsTable
-                            )
-                        );
-                    });
+                    updateConfigParameter(json);
                 })}
             </Grid>
         );
