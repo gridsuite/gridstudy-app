@@ -178,14 +178,12 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'subjectId',
-                        side: 'side',
                         clickable: true,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'LimitType' }),
                         dataKey: 'limitType',
-                        side: 'side',
                     },
                     {
                         width: 200,
@@ -193,7 +191,6 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         dataKey: 'limit',
                         numeric: true,
                         fractionDigits: 1,
-                        side: 'side',
                     },
                     {
                         width: 200,
@@ -201,7 +198,6 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         dataKey: 'value',
                         numeric: true,
                         fractionDigits: 1,
-                        side: 'side',
                     },
                     {
                         width: 200,
@@ -209,7 +205,6 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         dataKey: 'loading',
                         numeric: true,
                         fractionDigits: 1,
-                        side: 'side',
                     },
                 ]}
             />
@@ -296,13 +291,11 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'ContingencyId' }),
                         dataKey: 'contingencyId',
-                        side: 'side',
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'LimitType' }),
                         dataKey: 'limitType',
-                        side: 'side',
                     },
                     {
                         width: 200,
@@ -310,7 +303,6 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         dataKey: 'limit',
                         numeric: true,
                         fractionDigits: 1,
-                        side: 'side',
                     },
                     {
                         width: 200,
@@ -318,7 +310,6 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         dataKey: 'value',
                         numeric: true,
                         fractionDigits: 1,
-                        side: 'side',
                     },
                     {
                         width: 200,
@@ -326,7 +317,6 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         dataKey: 'loading',
                         numeric: true,
                         fractionDigits: 1,
-                        side: 'side',
                     },
                 ]}
             />
