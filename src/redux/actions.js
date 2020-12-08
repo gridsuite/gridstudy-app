@@ -184,3 +184,12 @@ export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 export function selectSubstationLayout(substationLayout) {
     return { type: SUBSTATION_LAYOUT, substationLayout: substationLayout };
 }
+
+export const SELECTED_ITEM_NETWORK = 'SELECTED_ITEM_NETWORK';
+
+export function selectItemNetwork(selectItemNetwork) {
+    return {
+        type: SELECTED_ITEM_NETWORK,
+        selectItemNetwork: selectItemNetwork,
+    };
+}

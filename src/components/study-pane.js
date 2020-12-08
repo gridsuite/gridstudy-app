@@ -44,6 +44,7 @@ import {
     loadGeoDataSuccess,
     loadNetworkSuccess,
     openStudy,
+    selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
 import Network from './network/network';
@@ -496,6 +497,7 @@ const StudyPane = (props) => {
 
     const showSubstationDiagram = useCallback(
         (substationId) => {
+            dispatch(selectItemNetwork(substationId));
             setUpdateSwitchMsg('');
             history.replace(
                 '/' +
@@ -509,7 +511,7 @@ const StudyPane = (props) => {
             );
         },
         // Note: studyName and history don't change
-        [studyName, userId, history]
+        [studyName, userId, history, dispatch]
     );
 
     const chooseVoltageLevelForSubstation = useCallback(
