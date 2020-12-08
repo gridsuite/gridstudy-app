@@ -420,7 +420,6 @@ class LineLayer extends CompositeLayer {
     }
 
     recomputeParallelLinesIndex(compositeData, props) {
-        console.info("recompute line Index");
         compositeData.forEach((compositeData) => {
             const mapOriginDestination = compositeData.mapOriginDestination;
             // calculate index for line with same substation set
