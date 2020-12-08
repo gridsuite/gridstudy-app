@@ -25,6 +25,7 @@ import {
     fetchLinePositions,
     fetchLines,
     fetchSecurityAnalysisResult,
+    fetchSecurityAnalysisStatus,
     fetchStudy,
     fetchSubstationPositions,
     fetchSubstations,
@@ -247,12 +248,30 @@ const StudyPane = (props) => {
         });
     }, [studyName, userId]);
 
+    function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
+        switch (securityAnalysisStatus) {
+            case 'COMPLETED':
+                return RunningStatus.SUCCEED;
+            case 'RUNNING':
+                return RunningStatus.RUNNING;
+            case 'NOT_DONE':
+                return RunningStatus.IDLE;
+            default:
+                return RunningStatus.IDLE;
+        }
+    }
+
+    const updateSecurityAnalysisStatus = useCallback(() => {
+        fetchSecurityAnalysisStatus(studyName, userId).then((status) => {
+            setSecurityAnalysisStatus(getSecurityAnalysisRunningStatus(status));
+        });
+    }, [studyName, userId]);
+
     const updateSecurityAnalysisResult = useCallback(() => {
         fetchSecurityAnalysisResult(studyName, userId).then(function (
             response
         ) {
             if (response.ok) {
-                setSecurityAnalysisStatus(RunningStatus.IDLE);
                 response.json().then((result) => {
                     setSecurityAnalysisResult(result);
                 });
@@ -267,8 +286,7 @@ const StudyPane = (props) => {
         // start server side security analysis
         startSecurityAnalysis(studyName, userId, contingencyListNames);
 
-        // update status and clean result
-        setSecurityAnalysisStatus(RunningStatus.RUNNING);
+        // clean result
         setSecurityAnalysisResult(null);
     };
 
@@ -318,6 +336,7 @@ const StudyPane = (props) => {
         console.info(`Loading network of study '${studyName}'...`);
         updateLoadFlowResult();
         updateSecurityAnalysisResult();
+        updateSecurityAnalysisStatus();
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
@@ -357,6 +376,7 @@ const StudyPane = (props) => {
         dispatch,
         updateLoadFlowResult,
         updateSecurityAnalysisResult,
+        updateSecurityAnalysisStatus,
     ]);
 
     const loadGeoData = useCallback(() => {
@@ -539,6 +559,7 @@ const StudyPane = (props) => {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
             }
+
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
@@ -549,6 +570,11 @@ const StudyPane = (props) => {
                 'loadflow_status'
             ) {
                 updateLoadFlowResult();
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'securityAnalysis_status'
+            ) {
+                updateSecurityAnalysisStatus();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'securityAnalysisResult'
@@ -565,6 +591,7 @@ const StudyPane = (props) => {
         studyName,
         loadNetwork,
         updateLoadFlowResult,
+        updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
         dispatch,
     ]);
@@ -663,17 +690,7 @@ const StudyPane = (props) => {
         }
 
         return (
-            <div
-                className={classes.main}
-            >
-                {waitingLoadGeoData && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        isFixed={true}
-                        loadingMessageText="loadingGeoData"
-                    />
-                )}
+            <div className={classes.main}>
                 <Drawer
                     variant={'persistent'}
                     className={classes.drawer}
@@ -750,37 +767,41 @@ const StudyPane = (props) => {
                             </IconButton>
                         </div>
                     )}
-                    {(displayedVoltageLevelId || displayedSubstationId) && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: drawerOpen ? 0 : 55,
-                                zIndex: 0,
-                            }}
-                            className={clsx(classes.content, {
-                                [classes.contentShift]: drawerOpen,
-                            })}
-                        >
-                            <SingleLineDiagram
-                                onClose={() => closeVoltageLevelDiagram()}
-                                onNextVoltageLevelClick={
-                                    showVoltageLevelDiagram
-                                }
-                                onBreakerClick={handleUpdateSwitchState}
-                                diagramTitle={sldTitle}
-                                svgUrl={svgUrl}
-                                ref={sldRef}
-                                updateSwitchMsg={updateSwitchMsg}
-                                isComputationRunning={isComputationRunning()}
-                                svgType={
-                                    displayedVoltageLevelId
-                                        ? SvgType.VOLTAGE_LEVEL
-                                        : SvgType.SUBSTATION
-                                }
-                            />
-                        </div>
-                    )}
-
+                    {/*
+                    Rendering single line diagram only in map view and if
+                    displayed voltage level or substation id has been set
+                    */}
+                    {props.view === StudyView.MAP &&
+                        (displayedVoltageLevelId || displayedSubstationId) && (
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: drawerOpen ? 0 : 55,
+                                    zIndex: 0,
+                                }}
+                                className={clsx(classes.content, {
+                                    [classes.contentShift]: drawerOpen,
+                                })}
+                            >
+                                <SingleLineDiagram
+                                    onClose={() => closeVoltageLevelDiagram()}
+                                    onNextVoltageLevelClick={
+                                        showVoltageLevelDiagram
+                                    }
+                                    onBreakerClick={handleUpdateSwitchState}
+                                    diagramTitle={sldTitle}
+                                    svgUrl={svgUrl}
+                                    ref={sldRef}
+                                    updateSwitchMsg={updateSwitchMsg}
+                                    isComputationRunning={isComputationRunning()}
+                                    svgType={
+                                        displayedVoltageLevelId
+                                            ? SvgType.VOLTAGE_LEVEL
+                                            : SvgType.SUBSTATION
+                                    }
+                                />
+                            </div>
+                        )}
                     {network && viewOverloadsTable && (
                         <div
                             style={{
@@ -802,7 +823,6 @@ const StudyPane = (props) => {
                             />
                         </div>
                     )}
-
                     {choiceVoltageLevelsSubstationId && (
                         <VoltageLevelChoice
                             handleClose={closeChoiceVoltageLevelMenu}
@@ -811,7 +831,6 @@ const StudyPane = (props) => {
                             position={[position[0] + 200, position[1]]}
                         />
                     )}
-
                     {network && (
                         <div
                             style={{

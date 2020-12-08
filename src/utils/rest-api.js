@@ -13,9 +13,7 @@ const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
 
-const PREFIX_APPS_URLS_QUERIES = process.env.REACT_APP_APPS_URLS;
-
-const ENV_VARIABLES = fetch('env.json');
+const APPS_METADATA_SERVER_URL = fetch('env.json');
 
 function getToken() {
     const state = store.getState();
@@ -361,6 +359,20 @@ export function fetchSecurityAnalysisResult(studyName, userId) {
     return backendFetch(url, { method: 'get' });
 }
 
+export function fetchSecurityAnalysisStatus(studyName, userId) {
+    console.info('Fetching security analysis status on ' + studyName + '...');
+    const url = getStudyUrl(studyName, userId) + '/security-analysis/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            console.error(response);
+            return Promise.resolve(0);
+        }
+    });
+}
+
 export function fetchContingencyLists() {
     console.info('Fetching contingency lists');
     const url = PREFIX_ACTIONS_QUERIES + '/v1/contingency-lists';
@@ -459,17 +471,12 @@ export function getExportUrl(userId, studyName, exportFormat) {
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    let url;
-    return ENV_VARIABLES.then((res) => res.json()).then((res) => {
-        if (res.isRunningInsideDockerCompose) {
-            url = PREFIX_APPS_URLS_QUERIES + '/dev-urls.json';
-        } else {
-            url = PREFIX_APPS_URLS_QUERIES + '/prod-urls.json';
-        }
-        console.log(url);
-        return backendFetch(url).then((response) => {
-            return response.json();
-        });
+    return APPS_METADATA_SERVER_URL.then((res) => res.json()).then((res) => {
+        return fetch(res.appsMetadataServerUrl + '/apps-metadata.json').then(
+            (response) => {
+                return response.json();
+            }
+        );
     });
 }
 
