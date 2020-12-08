@@ -98,11 +98,7 @@ gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
             instanceParallelIndexAndProximityFactor: {
                 size: 3,
                 type: GL.FLOAT,
-                accessor: (line) => [
-                    line.parallelIndex,
-                    line.proximityFactorStart,
-                    line.proximityFactorEnd,
-                ],
+                accessor: 'getParallelIndexAndProximityFactor',
             },
             instanceLineAngles: {
                 size: 3,

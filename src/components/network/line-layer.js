@@ -257,7 +257,8 @@ class LineLayer extends CompositeLayer {
         if (
             changeFlags.dataChanged ||
             (changeFlags.propsChanged &&
-                oldProps.lineParallelPath !== props.lineParallelPath)
+                (oldProps.lineFullPath !== props.lineFullPath ||
+                    props.lineParallelPath !== oldProps.lineParallelPath))
         ) {
             this.recomputeParallelLinesIndex(compositeData, props);
         }
@@ -291,7 +292,8 @@ class LineLayer extends CompositeLayer {
         if (
             changeFlags.dataChanged ||
             (changeFlags.propsChanged &&
-                oldProps.lineFullPath !== props.lineFullPath)
+                (props.lineFullPath !== oldProps.lineFullPath ||
+                    props.lineParallelPath !== oldProps.lineParallelPath))
         ) {
             this.recomputeForkLines(compositeData, props);
         }
@@ -418,6 +420,7 @@ class LineLayer extends CompositeLayer {
     }
 
     recomputeParallelLinesIndex(compositeData, props) {
+        console.info("recompute line Index");
         compositeData.forEach((compositeData) => {
             const mapOriginDestination = compositeData.mapOriginDestination;
             // calculate index for line with same substation set
@@ -527,10 +530,7 @@ class LineLayer extends CompositeLayer {
                         line.angle,
                         line.angleEnd,
                     ],
-                    getProximityFactors: (line) => [
-                        line.proximityFactorStart,
-                        line.proximityFactorEnd,
-                    ],
+                    getParallelIndexAndProximityFactor: (line) => [ line.parallelIndex, line.proximityFactorStart, line.proximityFactorEnd],
                     distanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
@@ -539,7 +539,8 @@ class LineLayer extends CompositeLayer {
                     ),
                     updateTriggers: {
                         getPath: [this.props.lineFullPath],
-                        getLineParallelIndex: [this.props.lineParallelPath],
+                        getParallelIndexAndProximityFactor: [this.props.lineParallelPath],
+                        getLineAngles: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -604,6 +605,7 @@ class LineLayer extends CompositeLayer {
                     updateTriggers: {
                         getLinePositions: [this.props.lineFullPath],
                         getLineParallelIndex: [this.props.lineParallelPath],
+                        getLineAngles: [this.props.lineFullPath],
                         getColor: [
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
@@ -643,6 +645,7 @@ class LineLayer extends CompositeLayer {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
+                        getLineAngle: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -683,6 +686,7 @@ class LineLayer extends CompositeLayer {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
+                        getLineAngle: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,

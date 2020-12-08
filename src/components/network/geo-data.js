@@ -264,6 +264,38 @@ export default class GeoData {
                 -distanceBetweenLines,
                 lineAngle
             );
+            if (cumulativeDistances.length === 2) {
+                // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
+                // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
+                position.position = computeDestinationPoint(
+                    position.position,
+                    -distanceBetweenLines,
+                    lineAngle
+                );
+            } else if (
+                goodSegment.idx === 0 ||
+                goodSegment.idx === cumulativeDistances.length - 2
+            ) {
+                // When the label is on the first or last segment and there is an intermediate point,
+                // when must shift by the percentange of position of the label on this segment
+                const segmentDistance =
+                    cumulativeDistances[goodSegment.idx + 1] -
+                    cumulativeDistances[goodSegment.idx];
+                const alreadyDoneDistance = segmentDistance - remainingDistance;
+                let labelDistanceInSegment;
+                if (goodSegment.idx === 0) {
+                    labelDistanceInSegment = -alreadyDoneDistance;
+                } else {
+                    labelDistanceInSegment = remainingDistance;
+                }
+                const labelPercentage =
+                    labelDistanceInSegment / segmentDistance;
+                position.position = computeDestinationPoint(
+                    position.position,
+                    distanceBetweenLines * labelPercentage,
+                    lineAngle
+                );
+            }
         }
         return position;
     }
