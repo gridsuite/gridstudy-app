@@ -529,7 +529,11 @@ class LineLayer extends CompositeLayer {
                         line.angle,
                         line.angleEnd,
                     ],
-                    getParallelIndexAndProximityFactor: (line) => [ line.parallelIndex, line.proximityFactorStart, line.proximityFactorEnd],
+                    getParallelIndexAndProximityFactor: (line) => [
+                        line.parallelIndex,
+                        line.proximityFactorStart,
+                        line.proximityFactorEnd,
+                    ],
                     distanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
@@ -538,7 +542,9 @@ class LineLayer extends CompositeLayer {
                     ),
                     updateTriggers: {
                         getPath: [this.props.lineFullPath],
-                        getParallelIndexAndProximityFactor: [this.props.lineParallelPath],
+                        getParallelIndexAndProximityFactor: [
+                            this.props.lineParallelPath,
+                        ],
                         getLineAngles: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
