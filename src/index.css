@@ -2,10 +2,7 @@ html {
     min-height: 100%;
 }
 
-script, head {
-    display:none;
-}
-* {
+html, body, #root {
     display: grid;
 }
 

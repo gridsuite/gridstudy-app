@@ -428,7 +428,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         inner = (
             <div
                 id="sld-svg"
-                style={{ height: '100%' }}
                 className={
                     svgType === SvgType.VOLTAGE_LEVEL
                         ? classes.divVoltageLevel

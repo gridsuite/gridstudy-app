@@ -108,7 +108,6 @@ const RunButton = (props) => {
 
     return (
         <SplitButton
-            fullWidth
             options={props.runnables}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}

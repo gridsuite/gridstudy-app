@@ -68,16 +68,13 @@ const SplitButton = (props) => {
         setOpen(false);
     };
 
-    const width = props.fullWidth ? '100%' : 'auto';
-
     const breakText = (text) => {
         return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
     };
 
     return (
-        <div>
+        <>
             <ButtonGroup
-                style={{ width: width }}
                 className={props.className}
                 variant="outlined"
                 color="primary"
@@ -86,7 +83,6 @@ const SplitButton = (props) => {
                 <Button
                     variant="outlined"
                     startIcon={props.startIcon}
-                    style={{ width: width }}
                     className={props.className}
                     disabled={props.buttonDisabled}
                     onClick={handleClick}
@@ -150,7 +146,7 @@ const SplitButton = (props) => {
                     </Grow>
                 )}
             </Popper>
-        </div>
+        </>
     );
 };
 
