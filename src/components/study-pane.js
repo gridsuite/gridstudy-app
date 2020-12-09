@@ -215,6 +215,8 @@ const StudyPane = (props) => {
         setShowContingencyListSelector,
     ] = useState(false);
 
+    const [visibleSubstation, setVisibleSubstation] = useState(null);
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -624,6 +626,7 @@ const StudyPane = (props) => {
         if (network) {
             if (column.dataKey === 'subjectId') {
                 let vlId;
+                let substationId;
 
                 let equipment = network.getLineOrTransformer(row.subjectId);
                 if (equipment) {
@@ -637,10 +640,13 @@ const StudyPane = (props) => {
                     } else {
                         vlId = equipment.voltageLevelId1;
                     }
+                    const vl = network.getVoltageLevel(vlId);
+                    substationId = vl.substationId;
                 } else {
                     equipment = network.getVoltageLevel(row.subjectId);
                     if (equipment) {
                         vlId = equipment.id;
+                        substationId = equipment.substationId;
                     }
                 }
 
@@ -650,6 +656,7 @@ const StudyPane = (props) => {
                     dispatch(selectItemNetwork(vlId));
                     props.onChangeTab(0); // switch to map view
                     showVoltageLevelDiagram(vlId); // show voltage level
+                    setVisibleSubstation(substationId);
                 }
             }
         }
@@ -760,6 +767,7 @@ const StudyPane = (props) => {
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
                             hideExplorer={toggleDrawer}
+                            visibleSubstation={visibleSubstation}
                         />
                     </div>
                 </Drawer>

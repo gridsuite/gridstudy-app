@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -88,6 +88,7 @@ const NetworkExplorer = ({
     onSubstationDisplayClick,
     onSubstationFocus,
     hideExplorer,
+    visibleSubstation,
 }) => {
     const intl = useIntl();
 
@@ -121,6 +122,8 @@ const NetworkExplorer = ({
             minHeight: itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
         })
     );
+
+    const listeRef = useRef(null);
 
     const generateFilteredSubstation = useCallback(
         (entry) => {
@@ -159,6 +162,25 @@ const NetworkExplorer = ({
             generateFilteredSubstation();
         }
     }, [network, identifiedElementComparator, generateFilteredSubstation]);
+
+    useEffect(() => {
+        if (visibleSubstation && listeRef.current) {
+            // calculate row index to scroll
+            let index = 0;
+            for (let i = 0; i < filteredVoltageLevels.length; i++) {
+                if (filteredVoltageLevels[i][0].id === visibleSubstation) {
+                    break;
+                } else {
+                    index++;
+                }
+            }
+            listeRef.current.scrollToRow(index);
+            // Workaround, remove when https://github.com/bvaughn/react-virtualized/issues/995 is resolved
+            setTimeout(() => {
+                listeRef.current.scrollToRow(index);
+            }, 0);
+        }
+    }, [visibleSubstation, filteredVoltageLevels]);
 
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
@@ -331,6 +353,7 @@ const NetworkExplorer = ({
                             <Divider />
                             <Grid item>
                                 <List
+                                    ref={listeRef}
                                     height={height - 46}
                                     rowHeight={cache.rowHeight}
                                     rowRenderer={subStationRow}
@@ -349,6 +372,7 @@ const NetworkExplorer = ({
 
 NetworkExplorer.defaultProps = {
     network: null,
+    visibleSubstation: null,
 };
 
 NetworkExplorer.propTypes = {
@@ -356,6 +380,7 @@ NetworkExplorer.propTypes = {
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,
+    visibleSubstation: PropTypes.string,
 };
 
 export default React.memo(NetworkExplorer);
