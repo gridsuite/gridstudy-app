@@ -657,6 +657,7 @@ const StudyPane = (props) => {
                     props.onChangeTab(0); // switch to map view
                     showVoltageLevelDiagram(vlId); // show voltage level
                     setVisibleSubstation(substationId);
+                    setDisplayedVoltageLevelId(vlId);
                 }
             }
         }
