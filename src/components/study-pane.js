@@ -78,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
     main: {
         flexGrow: 1,
         display: 'flex',
+        position: 'relative',
     },
     error: {
         padding: theme.spacing(2),
@@ -97,7 +98,6 @@ const useStyles = makeStyles((theme) => ({
     },
     drawer: {
         width: drawerWidth,
-        flexShrink: 0,
     },
     drawerPaper: {
         position: 'relative',
@@ -722,11 +722,44 @@ const StudyPane = (props) => {
                         />
                     </div>
                 </Drawer>
+                {/*
+                Rendering single line diagram only in map view and if
+                displayed voltage level or substation id has been set
+                */}
+                {props.view === StudyView.MAP &&
+                    (displayedVoltageLevelId || displayedSubstationId) && (
+                        <div
+                            style={{
+                                zIndex: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                            }}
+                        >
+                            <div style={{overflow: "hidden", flex: "1 1 0"}}>
+                            <SingleLineDiagram
+                                onClose={() => closeVoltageLevelDiagram()}
+                                onNextVoltageLevelClick={
+                                    showVoltageLevelDiagram
+                                }
+                                onBreakerClick={handleUpdateSwitchState}
+                                diagramTitle={sldTitle}
+                                svgUrl={svgUrl}
+                                ref={sldRef}
+                                updateSwitchMsg={updateSwitchMsg}
+                                isComputationRunning={isComputationRunning()}
+                                svgType={
+                                    displayedVoltageLevelId
+                                        ? SvgType.VOLTAGE_LEVEL
+                                        : SvgType.SUBSTATION
+                                }
+                            />
+                            </div>
+                        </div>
+                    )}
                 <div
                     style={{
-                        position: 'relative',
-                        width: '100%',
-                        marginLeft: -drawerWidth,
+                        position: 'absolute',
+                        top: 0, bottom: 0, left: 0, right: 0,
                     }}
                 >
                     <NetworkMap
@@ -767,41 +800,6 @@ const StudyPane = (props) => {
                             </IconButton>
                         </div>
                     )}
-                    {/*
-                    Rendering single line diagram only in map view and if
-                    displayed voltage level or substation id has been set
-                    */}
-                    {props.view === StudyView.MAP &&
-                        (displayedVoltageLevelId || displayedSubstationId) && (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: drawerOpen ? 0 : 55,
-                                    zIndex: 0,
-                                }}
-                                className={clsx(classes.content, {
-                                    [classes.contentShift]: drawerOpen,
-                                })}
-                            >
-                                <SingleLineDiagram
-                                    onClose={() => closeVoltageLevelDiagram()}
-                                    onNextVoltageLevelClick={
-                                        showVoltageLevelDiagram
-                                    }
-                                    onBreakerClick={handleUpdateSwitchState}
-                                    diagramTitle={sldTitle}
-                                    svgUrl={svgUrl}
-                                    ref={sldRef}
-                                    updateSwitchMsg={updateSwitchMsg}
-                                    isComputationRunning={isComputationRunning()}
-                                    svgType={
-                                        displayedVoltageLevelId
-                                            ? SvgType.VOLTAGE_LEVEL
-                                            : SvgType.SUBSTATION
-                                    }
-                                />
-                            </div>
-                        )}
                     {network && viewOverloadsTable && (
                         <div
                             style={{
