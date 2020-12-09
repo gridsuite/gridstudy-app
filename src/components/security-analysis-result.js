@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({ result }) => {
+const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -147,6 +147,7 @@ const SecurityAnalysisResult = ({ result }) => {
                             limit: limitViolation.limit,
                             value: limitViolation.value,
                             loading: computeLoading(limitViolation),
+                            side: limitViolation.side,
                         });
                     }
                 );
@@ -161,6 +162,7 @@ const SecurityAnalysisResult = ({ result }) => {
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
+                onCellClick={onClickNmKConstraint}
                 columns={[
                     {
                         width: 200,
@@ -176,6 +178,7 @@ const SecurityAnalysisResult = ({ result }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'subjectId',
+                        clickable: true,
                     },
                     {
                         width: 200,
@@ -234,12 +237,14 @@ const SecurityAnalysisResult = ({ result }) => {
 
                         contingencies.push({
                             contingencyId: postContingencyResult.contingency.id,
+                            constraintId: limitViolation.subjectId,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
                             }),
                             limit: limitViolation.limit,
                             value: limitViolation.value,
                             loading: limitViolation.loading,
+                            side: limitViolation.side,
                         });
                     }
                 );
@@ -254,10 +259,12 @@ const SecurityAnalysisResult = ({ result }) => {
             contingencies.forEach((contingency) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
+                    constraintId: contingency.constraintId,
                     limitType: contingency.limitType,
                     limit: contingency.limit,
                     value: contingency.value,
                     loading: contingency.loading,
+                    side: contingency.side,
                 });
             });
         });
@@ -272,11 +279,13 @@ const SecurityAnalysisResult = ({ result }) => {
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
+                onCellClick={onClickNmKConstraint}
                 columns={[
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'subjectId',
+                        clickable: true,
                     },
                     {
                         width: 200,
@@ -387,6 +396,7 @@ SecurityAnalysisResult.defaultProps = {
 
 SecurityAnalysisResult.propTypes = {
     result: PropTypes.object,
+    onClickNmKConstraint: PropTypes.func,
 };
 
 export default SecurityAnalysisResult;
