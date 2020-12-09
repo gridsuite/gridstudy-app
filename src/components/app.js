@@ -37,6 +37,7 @@ import {
     initializeAuthenticationProd,
     logout,
     TopBar,
+    SnackbarProvider,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -238,101 +239,112 @@ const App = () => {
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
-            <React.Fragment>
-                <CssBaseline />
-                <TopBar
-                    appName="Study"
-                    appColor="#0CA789"
-                    appLogo={
-                        theme === LIGHT_THEME ? (
-                            <GridStudyLogoLight />
-                        ) : (
-                            <GridStudyLogoDark />
-                        )
-                    }
-                    onParametersClick={() => showParametersClicked()}
-                    onLogoutClick={() => logout(dispatch, userManager.instance)}
-                    onLogoClick={() => onLogoClicked()}
-                    user={user}
-                    appsAndUrls={appsAndUrls}
-                >
-                    {studyName && (
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            variant="scrollable"
-                            scrollButtons="auto"
-                            onChange={(event, newTabIndex) => {
-                                onChangeTab(newTabIndex);
-                            }}
-                            aria-label="views"
-                            className={classes.tabs}
-                        >
-                            {STUDY_VIEWS.map((tabName) => {
-                                let label;
-                                if (
-                                    tabName === StudyView.RESULTS &&
-                                    resultCount > 0
-                                ) {
-                                    label = (
-                                        <Badge
-                                            badgeContent={resultCount}
-                                            color="secondary"
-                                        >
+            <SnackbarProvider hideIconVariant={false}>
+                <React.Fragment>
+                    <CssBaseline />
+                    <TopBar
+                        appName="Study"
+                        appColor="#0CA789"
+                        appLogo={
+                            theme === LIGHT_THEME ? (
+                                <GridStudyLogoLight />
+                            ) : (
+                                <GridStudyLogoDark />
+                            )
+                        }
+                        onParametersClick={() => showParametersClicked()}
+                        onLogoutClick={() =>
+                            logout(dispatch, userManager.instance)
+                        }
+                        onLogoClick={() => onLogoClicked()}
+                        user={user}
+                        appsAndUrls={appsAndUrls}
+                    >
+                        {studyName && (
+                            <Tabs
+                                value={tabIndex}
+                                indicatorColor="primary"
+                                variant="scrollable"
+                                scrollButtons="auto"
+                                onChange={(event, newTabIndex) => {
+                                    onChangeTab(newTabIndex);
+                                }}
+                                aria-label="views"
+                                className={classes.tabs}
+                            >
+                                {STUDY_VIEWS.map((tabName) => {
+                                    let label;
+                                    if (
+                                        tabName === StudyView.RESULTS &&
+                                        resultCount > 0
+                                    ) {
+                                        label = (
+                                            <Badge
+                                                badgeContent={resultCount}
+                                                color="secondary"
+                                            >
+                                                <FormattedMessage
+                                                    id={tabName}
+                                                />
+                                            </Badge>
+                                        );
+                                    } else {
+                                        label = (
                                             <FormattedMessage id={tabName} />
-                                        </Badge>
-                                    );
-                                } else {
-                                    label = <FormattedMessage id={tabName} />;
-                                }
-                                return <Tab key={tabName} label={label} />;
-                            })}
-                        </Tabs>
-                    )}
-                </TopBar>
-                <Parameters
-                    showParameters={showParameters}
-                    hideParameters={hideParameters}
-                />
-                {user !== null ? (
-                    <Switch>
-                        <Route exact path="/">
-                            <StudyManager
-                                onClick={(name, userId) =>
-                                    studyClickHandler(name, userId)
-                                }
-                            />
-                        </Route>
-                        <Route exact path="/:userId/studies/:studyName">
-                            <StudyPane
-                                view={STUDY_VIEWS[tabIndex]}
-                                onChangeTab={onChangeTab}
-                            />
-                        </Route>
-                        <Route exact path="/sign-in-callback">
-                            <Redirect to={getPreLoginPath() || '/'} />
-                        </Route>
-                        <Route exact path="/logout-callback">
-                            <h1>
-                                Error: logout failed; you are still logged in.
-                            </h1>
-                        </Route>
-                        <Route>
-                            <PageNotFound
-                                message={<FormattedMessage id="PageNotFound" />}
-                            />
-                        </Route>
-                    </Switch>
-                ) : (
-                    <AuthenticationRouter
-                        userManager={userManager}
-                        signInCallbackError={signInCallbackError}
-                        dispatch={dispatch}
-                        history={history}
-                        location={location}
+                                        );
+                                    }
+                                    return <Tab key={tabName} label={label} />;
+                                })}
+                            </Tabs>
+                        )}
+                    </TopBar>
+                    <Parameters
+                        showParameters={showParameters}
+                        hideParameters={hideParameters}
                     />
-                )}
-            </React.Fragment>
+                    {user !== null ? (
+                        <Switch>
+                            <Route exact path="/">
+                                <StudyManager
+                                    onClick={(name, userId) =>
+                                        studyClickHandler(name, userId)
+                                    }
+                                />
+                            </Route>
+                            <Route exact path="/:userId/studies/:studyName">
+                                <StudyPane
+                                    view={STUDY_VIEWS[tabIndex]}
+                                    onChangeTab={onChangeTab}
+                                />
+                            </Route>
+                            <Route exact path="/sign-in-callback">
+                                <Redirect to={getPreLoginPath() || '/'} />
+                            </Route>
+                            <Route exact path="/logout-callback">
+                                <h1>
+                                    Error: logout failed; you are still logged
+                                    in.
+                                </h1>
+                            </Route>
+                            <Route>
+                                <PageNotFound
+                                    message={
+                                        <FormattedMessage id="PageNotFound" />
+                                    }
+                                />
+                            </Route>
+                        </Switch>
+                    ) : (
+                        <AuthenticationRouter
+                            userManager={userManager}
+                            signInCallbackError={signInCallbackError}
+                            dispatch={dispatch}
+                            history={history}
+                            location={location}
+                        />
+                    )}
+                </React.Fragment>
+            </SnackbarProvider>
         </ThemeProvider>
     );
 };
