@@ -100,6 +100,9 @@ const lightTheme = createMuiTheme({
         stroke: '#212121',
         fill: '#212121',
     },
+    link: {
+        color: 'blue',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
@@ -122,6 +125,9 @@ const darkTheme = createMuiTheme({
     circle_hover: {
         stroke: 'white',
         fill: 'white',
+    },
+    link: {
+        color: 'green',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
@@ -176,15 +182,19 @@ const App = () => {
     const updateParams = useCallback(
         (params) => {
             params.forEach((param) => {
-                switch(param.name) {
+                switch (param.name) {
                     case PARAMS_THEME_KEY:
                         dispatch(selectTheme(param.value));
                         break;
                     case PARAMS_CENTER_LABEL_KEY:
-                        dispatch(selectCenterLabelState(param.value === 'true'));
+                        dispatch(
+                            selectCenterLabelState(param.value === 'true')
+                        );
                         break;
                     case PARAMS_DIAGONAL_LABEL_KEY:
-                        dispatch(selectDiagonalLabelState(param.value === 'true'));
+                        dispatch(
+                            selectDiagonalLabelState(param.value === 'true')
+                        );
                         break;
                     case PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY:
                         dispatch(selectLineFlowAlertThreshold(param.value));
@@ -196,7 +206,9 @@ const App = () => {
                         dispatch(selectLineFlowMode(param.value));
                         break;
                     case PARAMS_LINE_FULL_PATH_KEY:
-                        dispatch(selectLineFullPathState(param.value === 'true'));
+                        dispatch(
+                            selectLineFullPathState(param.value === 'true')
+                        );
                         break;
                     case PARAMS_LINE_PARALLEL_PATH_KEY:
                         dispatch(
@@ -208,7 +220,9 @@ const App = () => {
                         break;
                     case PARAMS_VIEW_OVERLOADS_TABLE_KEY:
                         dispatch(
-                            selectViewOverloadsTableState(param.value === 'true')
+                            selectViewOverloadsTableState(
+                                param.value === 'true'
+                            )
                         );
                         break;
                     case PARAMS_USE_NAME_KEY:
@@ -305,7 +319,7 @@ const App = () => {
                     let configJson = JSON.stringify(defaultParams);
                     updateConfigParameters(configJson);
                     fetchConfigParameters().then((params) => {
-                       updateParams(params);
+                        updateParams(params);
                     });
                 }
                 updateParams(params);
@@ -336,6 +350,10 @@ const App = () => {
 
     function onLogoClicked() {
         history.replace('/');
+    }
+
+    function onChangeTab(newTabIndex) {
+        setTabIndex(newTabIndex);
     }
 
     // if result tab is displayed, clean badge
@@ -369,9 +387,9 @@ const App = () => {
                             indicatorColor="primary"
                             variant="scrollable"
                             scrollButtons="auto"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
+                            onChange={(event, newTabIndex) => {
+                                onChangeTab(newTabIndex);
+                            }}
                             aria-label="views"
                             className={classes.tabs}
                         >
@@ -411,7 +429,10 @@ const App = () => {
                             />
                         </Route>
                         <Route exact path="/:userId/studies/:studyName">
-                            <StudyPane view={STUDY_VIEWS[tabIndex]} />
+                            <StudyPane
+                                view={STUDY_VIEWS[tabIndex]}
+                                onChangeTab={onChangeTab}
+                            />
                         </Route>
                         <Route exact path="/sign-in-callback">
                             <Redirect to={getPreLoginPath() || '/'} />
