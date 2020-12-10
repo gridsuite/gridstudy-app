@@ -318,9 +318,6 @@ const App = () => {
                 if (params.length === 0) {
                     let configJson = JSON.stringify(defaultParams);
                     updateConfigParameters(configJson);
-                    fetchConfigParameters().then((params) => {
-                        updateParams(params);
-                    });
                 }
                 updateParams(params);
             });
