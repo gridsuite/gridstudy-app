@@ -140,7 +140,7 @@ fetch(ArrowHover)
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
-    const svgPrevViewbox = useRef();
+    const svgPrevViewbox = useRef({ name: null, viewbox: null });
     const svgDraw = useRef();
     const dispatch = useDispatch();
 
@@ -152,10 +152,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
-            svgPrevViewbox.current = svgDraw.current.viewbox();
+            svgPrevViewbox.current = {
+                name: props.diagramTitle,
+                viewbox: svgDraw.current.viewbox(),
+            };
         }
         updateState((s) => !s);
-    }, []);
+    }, [props.diagramTitle]);
 
     useImperativeHandle(
         ref,
@@ -364,9 +367,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
                     margins: calcMargins(svgType, sizeWidth, sizeHeight),
                 });
-            if (svgPrevViewbox.current) {
-                draw.viewbox(svgPrevViewbox.current);
-                svgPrevViewbox.current = null;
+            if (
+                svgPrevViewbox.current.viewbox &&
+                svgPrevViewbox.current.name === props.diagramTitle
+            ) {
+                draw.viewbox(svgPrevViewbox.current.viewbox);
             }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
             draw.on('panStart', function (evt) {
@@ -392,7 +397,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         );
                         const switchId = switchMetadata.equipmentId;
                         const open = switchMetadata.open;
-                        svgPrevViewbox.current = draw.viewbox();
+                        svgPrevViewbox.current = {
+                            name: props.diagramTitle,
+                            viewbox: draw.viewbox(),
+                        };
                         onBreakerClick(switchId, !open, event.currentTarget);
                     });
                 });
@@ -407,11 +415,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isComputationRunning,
         svgType,
         theme,
+        props.diagramTitle,
     ]);
-
-    useEffect(() => {
-        svgPrevViewbox.current = null;
-    }, [props.updateSwitchMsg]);
 
     const classes = useStyles();
 
