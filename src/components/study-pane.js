@@ -646,11 +646,11 @@ const StudyPane = (props) => {
                 // study partial update : loading equipments involved in the study modification and updating the network
                 const ids =
                     studyUpdatedForce.eventData.headers['substationsIds'];
-                const substationsIds = ids
-                    .substring(1, ids.length - 1)
-                    .split(','); // removing square brackets
-
-                updateNetwork(substationsIds);
+                const tmp = ids.substring(1, ids.length - 1); // removing square brackets
+                if (tmp && tmp.length > 0) {
+                    const substationsIds = tmp.split(',');
+                    updateNetwork(substationsIds);
+                }
             }
         }
     }, [studyUpdatedForce, updateNetwork]);
