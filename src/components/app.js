@@ -45,6 +45,7 @@ import { FormattedMessage } from 'react-intl';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import { fetchAppsAndUrls } from '../utils/rest-api';
+import { useMatch } from 'react-router';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -139,6 +140,13 @@ const App = () => {
 
     const resultCount = useSelector((state) => state.resultCount);
 
+    // Can't use lazy initializer because useRouteMatch is a hook
+    const [initialMatchSilentRenewCallbackUrl] = useState(
+        useMatch({
+            path: '/silent-renew-callback',
+        })
+    );
+
     useEffect(() => {
         document.addEventListener('contextmenu', (event) => {
             event.preventDefault();
@@ -148,7 +156,7 @@ const App = () => {
     useEffect(() => {
         initializeAuthenticationProd(
             dispatch,
-            location.pathname === '/silent-renew-callback',
+            initialMatchSilentRenewCallbackUrl != null,
             fetch('idpSettings.json')
         )
             .then((userManager) => {
@@ -157,7 +165,7 @@ const App = () => {
                 userManager.getUser().then((user) => {
                     if (
                         user == null &&
-                      location.pathname !== '/silent-renew-callback'
+                        initialMatchSilentRenewCallbackUrl == null
                     ) {
                         userManager.signinSilent().catch((error) => {
                             const oidcHackReloaded =
@@ -185,7 +193,7 @@ const App = () => {
                 console.debug('error when importing the idp settings');
             });
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
-    }, [location, dispatch]);
+    }, [initialMatchSilentRenewCallbackUrl, dispatch]);
 
     useEffect(() => {
         if (user !== null) {
@@ -200,7 +208,8 @@ const App = () => {
             '/' +
                 encodeURIComponent(userId) +
                 '/studies/' +
-                encodeURIComponent(studyName)
+                encodeURIComponent(studyName),
+            { replace: true }
         );
     }
 
