@@ -176,32 +176,45 @@ const App = () => {
     const updateParams = useCallback(
         (params) => {
             params.forEach((param) => {
-                if (param.key === PARAMS_THEME_KEY) {
-                    dispatch(selectTheme(param.value));
-                } else if (param.key === PARAMS_CENTER_LABEL_KEY) {
-                    dispatch(selectCenterLabelState(param.value === 'true'));
-                } else if (param.key === PARAMS_DIAGONAL_LABEL_KEY) {
-                    dispatch(selectDiagonalLabelState(param.value === 'true'));
-                } else if (param.key === PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY) {
-                    dispatch(selectLineFlowAlertThreshold(param.value));
-                } else if (param.key === PARAMS_LINE_FLOW_COLOR_MODE_KEY) {
-                    dispatch(selectLineFlowColorMode(param.value));
-                } else if (param.key === PARAMS_LINE_FLOW_MODE_KEY) {
-                    dispatch(selectLineFlowMode(param.value));
-                } else if (param.key === PARAMS_LINE_FULL_PATH_KEY) {
-                    dispatch(selectLineFullPathState(param.value === 'true'));
-                } else if (param.key === PARAMS_LINE_PARALLEL_PATH_KEY) {
-                    dispatch(
-                        selectLineParallelPathState(param.value === 'true')
-                    );
-                } else if (param.key === PARAMS_SUBSTATION_LAYOUT_KEY) {
-                    dispatch(selectSubstationLayout(param.value));
-                } else if (param.key === PARAMS_VIEW_OVERLOADS_TABLE_KEY) {
-                    dispatch(
-                        selectViewOverloadsTableState(param.value === 'true')
-                    );
-                } else if (param.key === PARAMS_USE_NAME_KEY) {
-                    dispatch(selectUseName(param.value === 'true'));
+                switch(param.name) {
+                    case PARAMS_THEME_KEY:
+                        dispatch(selectTheme(param.value));
+                        break;
+                    case PARAMS_CENTER_LABEL_KEY:
+                        dispatch(selectCenterLabelState(param.value === 'true'));
+                        break;
+                    case PARAMS_DIAGONAL_LABEL_KEY:
+                        dispatch(selectDiagonalLabelState(param.value === 'true'));
+                        break;
+                    case PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY:
+                        dispatch(selectLineFlowAlertThreshold(param.value));
+                        break;
+                    case PARAMS_LINE_FLOW_COLOR_MODE_KEY:
+                        dispatch(selectLineFlowColorMode(param.value));
+                        break;
+                    case PARAMS_LINE_FLOW_MODE_KEY:
+                        dispatch(selectLineFlowMode(param.value));
+                        break;
+                    case PARAMS_LINE_FULL_PATH_KEY:
+                        dispatch(selectLineFullPathState(param.value === 'true'));
+                        break;
+                    case PARAMS_LINE_PARALLEL_PATH_KEY:
+                        dispatch(
+                            selectLineParallelPathState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_SUBSTATION_LAYOUT_KEY:
+                        dispatch(selectSubstationLayout(param.value));
+                        break;
+                    case PARAMS_VIEW_OVERLOADS_TABLE_KEY:
+                        dispatch(
+                            selectViewOverloadsTableState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_USE_NAME_KEY:
+                        dispatch(selectUseName(param.value === 'true'));
+                        break;
+                    default:
                 }
             });
         },
@@ -290,8 +303,9 @@ const App = () => {
                 //if it's the user first connexion we want to set the default parameters in the database
                 if (params.length === 0) {
                     let configJson = JSON.stringify(defaultParams);
-                    updateConfigParameters(configJson).then((res) => {
-                        updateParams(res);
+                    updateConfigParameters(configJson);
+                    fetchConfigParameters().then((params) => {
+                       updateParams(params);
                     });
                 }
                 updateParams(params);

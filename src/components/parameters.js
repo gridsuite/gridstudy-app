@@ -37,7 +37,7 @@ import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
     setLoadFlowParameters,
-    updateConfigParameter,
+    updateConfigParameters,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
@@ -123,20 +123,24 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
-        let json = JSON.stringify({
-            key: PARAMS_THEME_KEY,
-            value: theme,
-        });
-        updateConfigParameter(json);
+        let json = JSON.stringify([
+            {
+                name: PARAMS_THEME_KEY,
+                value: theme,
+            },
+        ]);
+        updateConfigParameters(json);
     };
 
     const handleLineFlowModeChange = (event) => {
         const lineFlowMode = event.target.value;
-        let json = JSON.stringify({
-            key: PARAMS_LINE_FLOW_MODE_KEY,
-            value: lineFlowMode,
-        });
-        updateConfigParameter(json);
+        let json = JSON.stringify([
+            {
+                name: PARAMS_LINE_FLOW_MODE_KEY,
+                value: lineFlowMode,
+            },
+        ]);
+        updateConfigParameters(json);
     };
 
     const handleLineFlowColorModeChange = (event) => {
@@ -144,28 +148,34 @@ const Parameters = ({ showParameters, hideParameters }) => {
         setDisabledFlowAlertThreshold(
             lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
         );
-        let json = JSON.stringify({
-            key: PARAMS_LINE_FLOW_COLOR_MODE_KEY,
-            value: lineFlowColorMode,
-        });
-        updateConfigParameter(json);
+        let json = JSON.stringify([
+            {
+                name: PARAMS_LINE_FLOW_COLOR_MODE_KEY,
+                value: lineFlowColorMode,
+            },
+        ]);
+        updateConfigParameters(json);
     };
 
     const handleLineFlowAlertThresholdChange = (event, value) => {
-        let json = JSON.stringify({
-            key: PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
-            value: value,
-        });
-        updateConfigParameter(json);
+        let json = JSON.stringify([
+            {
+                name: PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
+                value: value,
+            },
+        ]);
+        updateConfigParameters(json);
     };
 
     const handleSubstationLayoutChange = (event) => {
         const substationLayout = event.target.value;
-        let json = JSON.stringify({
-            key: PARAMS_SUBSTATION_LAYOUT_KEY,
-            value: substationLayout,
-        });
-        updateConfigParameter(json);
+        let json = JSON.stringify([
+            {
+                name: PARAMS_SUBSTATION_LAYOUT_KEY,
+                value: substationLayout,
+            },
+        ]);
+        updateConfigParameters(json);
     };
 
     function TabPanel(props) {
@@ -289,11 +299,13 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(useName, 'useName', () => {
-                    let json = JSON.stringify({
-                        key: PARAMS_USE_NAME_KEY,
-                        value: !useName,
-                    });
-                    updateConfigParameter(json);
+                    let json = JSON.stringify([
+                        {
+                            name: PARAMS_USE_NAME_KEY,
+                            value: !useName,
+                        },
+                    ]);
+                    updateConfigParameters(json);
                 })}
 
                 <MakeLineSeparator />
@@ -326,19 +338,23 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(diagonalLabel, 'diagonalLabel', () => {
-                    let json = JSON.stringify({
-                        key: PARAMS_DIAGONAL_LABEL_KEY,
-                        value: !diagonalLabel,
-                    });
-                    updateConfigParameter(json);
+                    let json = JSON.stringify([
+                        {
+                            name: PARAMS_DIAGONAL_LABEL_KEY,
+                            value: !diagonalLabel,
+                        },
+                    ]);
+                    updateConfigParameters(json);
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(centerLabel, 'centerLabel', () => {
-                    let json = JSON.stringify({
-                        key: PARAMS_CENTER_LABEL_KEY,
-                        value: !centerLabel,
-                    });
-                    updateConfigParameter(json);
+                    let json = JSON.stringify([
+                        {
+                            name: PARAMS_CENTER_LABEL_KEY,
+                            value: !centerLabel,
+                        },
+                    ]);
+                    updateConfigParameters(json);
                 })}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
@@ -383,19 +399,23 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(lineFullPath, 'lineFullPath', () => {
-                    let json = JSON.stringify({
-                        key: PARAMS_LINE_FULL_PATH_KEY,
-                        value: !lineFullPath,
-                    });
-                    updateConfigParameter(json);
+                    let json = JSON.stringify([
+                        {
+                            name: PARAMS_LINE_FULL_PATH_KEY,
+                            value: !lineFullPath,
+                        },
+                    ]);
+                    updateConfigParameters(json);
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {
-                    let json = JSON.stringify({
-                        key: PARAMS_LINE_PARALLEL_PATH_KEY,
-                        value: !lineParallelPath,
-                    });
-                    updateConfigParameter(json);
+                    let json = JSON.stringify([
+                        {
+                            name: PARAMS_LINE_PARALLEL_PATH_KEY,
+                            value: !lineParallelPath,
+                        },
+                    ]);
+                    updateConfigParameters(json);
                 })}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
@@ -458,11 +478,13 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         lineFlowColorMode === 'nominalVoltage' &&
                             viewOverloadsTable
                     );
-                    let json = JSON.stringify({
-                        key: PARAMS_VIEW_OVERLOADS_TABLE_KEY,
-                        value: !viewOverloadsTable,
-                    });
-                    updateConfigParameter(json);
+                    let json = JSON.stringify([
+                        {
+                            name: PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+                            value: !viewOverloadsTable,
+                        },
+                    ]);
+                    updateConfigParameters(json);
                 })}
             </Grid>
         );
