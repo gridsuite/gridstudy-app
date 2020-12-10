@@ -651,6 +651,7 @@ class LineLayer extends CompositeLayer {
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
                         getLineAngle: [this.props.lineFullPath],
+                        getProximityFactor: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -692,6 +693,7 @@ class LineLayer extends CompositeLayer {
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
                         getLineAngle: [this.props.lineFullPath],
+                        getProximityFactor: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
