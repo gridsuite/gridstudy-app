@@ -317,7 +317,8 @@ class LineLayer extends CompositeLayer {
                         arrowDirection,
                         line.parallelIndex,
                         (line.angle * 180) / Math.PI,
-                        props.distanceBetweenLines
+                        props.distanceBetweenLines,
+                        line.proximityFactorStart
                     );
                     let coordinates2 = props.geoData.labelDisplayPosition(
                         lineData.positions,
@@ -326,7 +327,8 @@ class LineLayer extends CompositeLayer {
                         arrowDirection,
                         line.parallelIndex,
                         (line.angle * 180) / Math.PI,
-                        props.distanceBetweenLines
+                        props.distanceBetweenLines,
+                        line.proximityFactorEnd
                     );
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
@@ -480,17 +482,13 @@ class LineLayer extends CompositeLayer {
     }
 
     getProximityFactor(firstPosition, secondPosition) {
-        if (getDistance(firstPosition, secondPosition) < 500) {
-            return -0.1;
-        } else if (getDistance(firstPosition, secondPosition) < 1000) {
-            return 0.1;
-        } else if (getDistance(firstPosition, secondPosition) < 1500) {
-            return 0.3;
-        } else if (getDistance(firstPosition, secondPosition) < 3000) {
-            return 0.5;
-        } else {
-            return 1;
+        let factor =
+            getDistance(firstPosition, secondPosition) /
+            (3 * this.props.distanceBetweenLines);
+        if (factor > 1) {
+            factor = 1;
         }
+        return factor;
     }
 
     computeAngle(props, position1, position2) {

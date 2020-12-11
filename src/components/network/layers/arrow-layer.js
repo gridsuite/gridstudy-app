@@ -414,7 +414,7 @@ export default class ArrowLayer extends Layer {
                 ],
                 timestamp,
                 webgl2,
-                distanceBetweenLines: this.props.distanceBetweenLines,
+                distanceBetweenLines: this.props.getDistanceBetweenLines,
                 maxParallelOffset: this.props.maxParallelOffset,
                 minParallelOffset: this.props.minParallelOffset,
             })

@@ -185,7 +185,8 @@ export default class GeoData {
         arrowDirection,
         lineParallelIndex,
         lineAngle,
-        distanceBetweenLines
+        distanceBetweenLines,
+        proximityFactor
     ) {
         if (arrowPosition > 1 || arrowPosition < 0) {
             throw new Error(
@@ -207,7 +208,8 @@ export default class GeoData {
             // when there are no intermediate points between the substations.
             // I'm not sure this is entirely correct but it displays well enough.
             wantedDistance =
-                wantedDistance - 2 * distanceBetweenLines * arrowPosition;
+                wantedDistance -
+                2 * distanceBetweenLines * arrowPosition * proximityFactor;
         }
 
         let goodSegment = this.findSegment(
@@ -261,7 +263,7 @@ export default class GeoData {
             // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
             position.position = computeDestinationPoint(
                 position.position,
-                -distanceBetweenLines,
+                -distanceBetweenLines * proximityFactor,
                 lineAngle
             );
         } else if (
