@@ -372,6 +372,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 svgPrevViewbox.current.name === props.diagramTitle
             ) {
                 draw.viewbox(svgPrevViewbox.current.viewbox);
+            } else {
+                svgPrevViewbox.current = {
+                    name: null,
+                    viewbox: null,
+                };
             }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
             draw.on('panStart', function (evt) {
