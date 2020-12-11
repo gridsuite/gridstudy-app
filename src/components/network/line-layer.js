@@ -316,7 +316,7 @@ class LineLayer extends CompositeLayer {
                         START_ARROW_POSITION,
                         arrowDirection,
                         line.parallelIndex,
-                        (line.angle * 180) / Math.PI,
+                        (line.angleStart * 180) / Math.PI,
                         props.distanceBetweenLines,
                         line.proximityFactorStart
                     );
@@ -326,7 +326,7 @@ class LineLayer extends CompositeLayer {
                         END_ARROW_POSITION,
                         arrowDirection,
                         line.parallelIndex,
-                        (line.angle * 180) / Math.PI,
+                        (line.angleEnd * 180) / Math.PI,
                         props.distanceBetweenLines,
                         line.proximityFactorEnd
                     );
