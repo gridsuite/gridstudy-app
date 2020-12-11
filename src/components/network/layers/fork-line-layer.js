@@ -60,10 +60,9 @@ uniform float minSubstationRadiusPixel;
 
     vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle ), 0, 0.) * instanceLineParallelIndex;
 
-    if( instanceLineParallelIndex != 0. ){
-        trans.x -= sin(instanceLineAngle) * instanceProximityFactor;
-        trans.y -= cos(instanceLineAngle) * instanceProximityFactor;
-    }
+    trans.x -= sin(instanceLineAngle) * instanceProximityFactor;
+    trans.y -= cos(instanceLineAngle) * instanceProximityFactor;
+
     source+=project_common_position_to_clipspace(trans * (offsetSubstationCommonSpace / sqrt(trans.x*trans.x+trans.y*trans.y))) - project_uCenter;
     target+=project_common_position_to_clipspace(trans * offsetCommonSpace) - project_uCenter;
 

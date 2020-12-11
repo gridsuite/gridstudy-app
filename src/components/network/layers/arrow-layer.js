@@ -53,7 +53,7 @@ const defaultProps = {
  * or with a parallel offset. The initial point is also shifted to coincide with the fork line ends.
  * Needs to be kept in sync with ForkLineLayer and ParallelPathLayer because they draw the lines.
  * props : getLineParallelIndex: accessor for real number representing the parallel translation, normalized to distanceBetweenLines
- *         getLineAngles: accessor for line angle in radian (3 angle substation1 / first pilone ; substation1/substation2 ; last pilone / substation2
+ *         getLineAngles: accessor for line angle in radian (3 angle substation1 / first pylon ; substation1/substation2 ; last pylon / substation2
  *         distanceBetweenLines: distance in meters between line when no pixel clamping is applied
  *         maxParallelOffset: max pixel distance
  *         minParallelOffset: min pixel distance
