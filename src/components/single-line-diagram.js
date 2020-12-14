@@ -173,19 +173,19 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgType,
     } = props;
 
-    const calcMargins = (svgType, width, height) => {
+    const calcMargins = (zoom) => {
         return {
-            top: height > 700 ? maxHeightSubstation - height : 40,
-            left: width > 2000 ? -(width - height) / 2 : 100,
-            bottom: height > 700 ? 300 : 250,
-            right: width > 2000 ? (width - height) / 4 : 100,
+            top: zoom < 0.5 ? 50 : 100,
+            left: zoom < 0.5 ? 50 : 100,
+            bottom: zoom < 0.5 ? 50 : 200,
+            right: zoom < 0.5 ? 50 : 100,
         };
     };
 
     useLayoutEffect(() => {
         if (svg.svg) {
             // calculate svg width and height from svg bounding box
-            const divElt = document.getElementById('sld-svg');
+            let divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
             const bbox = svgEl.getBBox();
             const xOrigin = bbox.x - 20;
@@ -207,29 +207,55 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         : svgHeight;
             }
 
+            /**
+             * Create svg
+             * @param value of zoom
+             * @param x for viewbox
+             * @param y for viewbox
+             * @param width for viewbox
+             * @param height for viewbox
+             */
+            const createSvg = (zoom, x, y, width, height) => {
+                divElt.innerHTML = ''; // clear the previous svg in div element before replacing
+                const customDraw = SVG()
+                    .addTo(divElt)
+                    .size(sizeWidth, sizeHeight)
+                    .viewbox(x, y, width, height)
+                    .panZoom({
+                        panning: true,
+                        zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
+                        zoomMax: 10,
+                        zoomFactor:
+                            svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
+                        margins: calcMargins(zoom),
+                    });
+                customDraw.svg(svg.svg).node.firstElementChild.style.overflow =
+                    'visible';
+                return customDraw;
+            };
+
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
-            divElt.innerHTML = ''; // clear the previous svg in div element before replacing
-            const draw = SVG()
-                .addTo(divElt)
-                .size(sizeWidth, sizeHeight)
-                .viewbox(xOrigin, yOrigin, sizeWidth, sizeHeight)
-                .panZoom({
-                    panning: true,
-                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
-                    zoomMax: 10,
-                    zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: calcMargins(svgType, svgWidth, svgHeight),
-                });
+            let draw = createSvg(1, xOrigin, yOrigin, sizeWidth, sizeHeight);
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);
                 svgPrevViewbox.current = null;
             }
-            draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
             });
             draw.on('panEnd', function (evt) {
                 divElt.style.cursor = 'default';
+            });
+            draw.on('zoom', function (ev) {
+                if (ev.detail.level < 0.5) {
+                    draw = createSvg(
+                        ev.detail.level,
+                        ev.target.viewBox.animVal.x,
+                        ev.target.viewBox.animVal.y,
+                        ev.target.viewBox.animVal.width,
+                        ev.target.viewBox.animVal.height
+                    );
+                }
             });
 
             // handling the navigation between voltage levels
