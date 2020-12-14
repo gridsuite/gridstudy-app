@@ -510,7 +510,6 @@ const StudyManager = ({ onClick }) => {
                         studyName +
                         '\n\n' +
                         error;
-                    console.log(errorMessage);
                     enqueueSnackbar(errorMessage, {
                         variant: 'error',
                         persist: true,
