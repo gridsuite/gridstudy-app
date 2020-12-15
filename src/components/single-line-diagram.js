@@ -225,9 +225,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             draw.on('zoom', function (event) {
                 draw.panZoom({
                     panning: true,
-                    zoomMin: 0.1,
+                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
-                    zoomFactor: 0.15,
+                    zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
                     margins: {
                         top: event.detail.level < 0.5 ? 50 : 100,
                         left: event.detail.level < 0.5 ? 50 : 100,
