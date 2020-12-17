@@ -22,16 +22,11 @@ import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
-    fetchGenerators,
     fetchLinePositions,
-    fetchLines,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
     fetchSubstationPositions,
-    fetchSubstations,
-    fetchThreeWindingsTransformers,
-    fetchTwoWindingsTransformers,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
@@ -350,32 +345,32 @@ const StudyPane = (props) => {
         updateLoadFlowResult();
         updateSecurityAnalysisResult();
         updateSecurityAnalysisStatus();
-        const substations = fetchSubstations(studyName, userId);
-        const lines = fetchLines(studyName, userId);
-        const twoWindingsTransformers = fetchTwoWindingsTransformers(
-            studyName,
-            userId
-        );
-        const threeWindingsTransformers = fetchThreeWindingsTransformers(
-            studyName,
-            userId
-        );
-        const generators = fetchGenerators(studyName, userId);
 
-        Promise.all([
-            substations,
-            lines,
-            twoWindingsTransformers,
-            threeWindingsTransformers,
-            generators,
-        ])
+        const equipments = fetchAllEquipments(studyName, userId);
+
+        Promise.all([equipments])
             .then((values) => {
                 const network = new Network();
-                network.setSubstations(values[0]);
-                network.setLines(values[1]);
-                network.setTwoWindingsTransformers(values[2]);
-                network.setThreeWindingsTransformers(values[3]);
-                network.setGenerators(values[4]);
+                network.setSubstations(values[0].substations);
+                network.setLines(values[0].lines);
+                network.setTwoWindingsTransformers(
+                    values[0].twoWindingsTransformers
+                );
+                network.setThreeWindingsTransformers(
+                    values[0].threeWindingsTransformers
+                );
+                network.setGenerators(values[0].generators);
+                network.setLoads(values[0].loads);
+                network.setBatteries(values[0].batteries);
+                network.setDanglingLines(values[0].danglingLines);
+                network.setLccConverterStations(values[0].lccConverterStations);
+                network.setVscConverterStations(values[0].vscConverterStations);
+                network.setHvdcLines(values[0].hvdcLines);
+                network.setShuntCompensators(values[0].shuntCompensators);
+                network.setStaticVarCompensators(
+                    values[0].staticVarCompensators
+                );
+
                 dispatch(loadNetworkSuccess(network));
             })
             .catch(function (error) {
@@ -411,6 +406,22 @@ const StudyPane = (props) => {
                         values[0].threeWindingsTransformers
                     );
                     network.updateGenerators(values[0].generators);
+                    network.updateLoads(values[0].loads);
+                    network.updateBatteries(values[0].batteries);
+                    network.updateDanglingLines(values[0].danglingLines);
+                    network.updateLccConverterStations(
+                        values[0].lccConverterStations
+                    );
+                    network.updateVscConverterStations(
+                        values[0].vscConverterStations
+                    );
+                    network.updateHvdcLines(values[0].hvdcLines);
+                    network.updateShuntCompensators(
+                        values[0].shuntCompensators
+                    );
+                    network.updateStaticVarCompensators(
+                        values[0].staticVarCompensators
+                    );
 
                     setUpdatedLines(values[0].lines);
                 })

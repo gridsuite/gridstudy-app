@@ -183,5 +183,32 @@
     "ContingenciesFromConstraints": "Constraints -> contingencies",
 
     "Equipment": "Equipment",
-    "Constraint": "Constraint"
+    "Constraint": "Constraint",
+
+    "Loads": "Loads",
+    "Batteries": "Batteries",
+    "ShuntCompensators": "Shunt Compensators",
+    "StaticVarCompensators": "Static Var Compensators",
+    "LccConverterStations": "LCC Converter Stations",
+    "VscConverterStations": "VSC Converter Stations",
+    "LoadType": "Type",
+    "ConstantActivePower": "Constant p (MW)",
+    "ConstantReactivePower": "Constant q (MVar)",
+    "DanglingLines": "Dangling Lines",
+    "UcteXnodeCode": "UCTE Xnode",
+    "HvdcLines": "HVDC Lines",
+    "ConvertersMode": "Converters mode",
+    "R": "Resistance",
+    "ActivePowerSetpoint": "Active power set point (MW)",
+    "MaxP": "Max P (MW)",
+    "TargetV": "Target V (kV)",
+    "TargetDeadband": "Target deadband",
+    "VoltageSetpoint": "Voltage set point",
+    "ReactivePowerSetpoint": "Reactive power set point",
+    "ConverterStationId1": "Converter Station Id 1",
+    "ConverterStationId2": "Converter Station Id 2",
+    "NominalV": "Nominal V",
+    "HvdcLineId": "HVDC Line Id",
+    "PowerFactor": "Power Factor",
+    "LossFactor": "Loss Factor"
 }

@@ -21,6 +21,24 @@ export default class Network {
 
     generators = [];
 
+    loads = [];
+
+    batteries = [];
+
+    danglingLines = [];
+
+    hvdcLines = [];
+
+    lccConverterStations = [];
+
+    vscConverterStations = [];
+
+    shuntCompensators = [];
+
+    staticVarCompensators = [];
+
+    voltageLevelsByNominalVoltage = new Map();
+
     voltageLevelsById = new Map();
 
     substationsById = new Map();
@@ -76,13 +94,17 @@ export default class Network {
         this.completeSubstationsInfos();
     }
 
-    updateSubstations(substations) {
-        this.substations.forEach((substation1, index) => {
-            const found = substations.filter(
-                (substation2) => substation2.id === substation1.id
+    updateEquipments(currentEquipments, newEquipements) {
+        currentEquipments.forEach((equipment1, index) => {
+            const found = newEquipements.filter(
+                (equipment2) => equipment2.id === equipment1.id
             );
-            this.substations[index] = found.length > 0 ? found[0] : substation1;
+            currentEquipments[index] = found.length > 0 ? found[0] : equipment1;
         });
+    }
+
+    updateSubstations(substations) {
+        this.updateEquipments(this.substations, substations);
 
         // add more infos
         this.completeSubstationsInfos();
@@ -101,10 +123,7 @@ export default class Network {
     }
 
     updateLines(lines) {
-        this.lines.forEach((line1, index) => {
-            const found = lines.filter((line2) => line2.id === line1.id);
-            this.lines[index] = found.length > 0 ? found[0] : line1;
-        });
+        this.updateEquipments(this.lines, lines);
     }
 
     setTwoWindingsTransformers(twoWindingsTransformers) {
@@ -126,13 +145,10 @@ export default class Network {
     }
 
     updateTwoWindingsTransformers(twoWindingsTransformers) {
-        this.twoWindingsTransformers.forEach((t1, index) => {
-            const found = twoWindingsTransformers.filter(
-                (t2) => t2.id === t1.id
-            );
-            this.twoWindingsTransformers[index] =
-                found.length > 0 ? found[0] : t1;
-        });
+        this.updateEquipments(
+            this.twoWindingsTransformers,
+            twoWindingsTransformers
+        );
     }
 
     setThreeWindingsTransformers(threeWindingsTransformers) {
@@ -154,13 +170,10 @@ export default class Network {
     }
 
     updateThreeWindingsTransformers(threeWindingsTransformers) {
-        this.threeWindingsTransformers.forEach((t1, index) => {
-            const found = threeWindingsTransformers.filter(
-                (t2) => t2.id === t1.id
-            );
-            this.threeWindingsTransformers[index] =
-                found.length > 0 ? found[0] : t1;
-        });
+        this.updateEquipments(
+            this.threeWindingsTransformers,
+            threeWindingsTransformers
+        );
     }
 
     setGenerators(generators) {
@@ -179,10 +192,74 @@ export default class Network {
     }
 
     updateGenerators(generators) {
-        this.generators.forEach((g1, index) => {
-            const found = generators.filter((g2) => g2.id === g1.id);
-            this.generators[index] = found.length > 0 ? found[0] : g1;
-        });
+        this.updateEquipments(this.generators, generators);
+    }
+
+    setBatteries(batteries) {
+        this.batteries = batteries;
+    }
+
+    updateBatteries(batteries) {
+        this.updateEquipments(this.batteries, batteries);
+    }
+
+    setLoads(loads) {
+        this.loads = loads;
+    }
+
+    updateLoads(loads) {
+        this.updateEquipments(this.loads, loads);
+    }
+
+    setDanglingLines(danglingLines) {
+        this.danglingLines = danglingLines;
+    }
+
+    updateDanglingLines(danglingLines) {
+        this.updateEquipments(this.danglingLines, danglingLines);
+    }
+
+    setShuntCompensators(shuntCompensators) {
+        this.shuntCompensators = shuntCompensators;
+    }
+
+    updateShuntCompensators(shuntCompensators) {
+        this.updateEquipments(this.shuntCompensators, shuntCompensators);
+    }
+
+    setStaticVarCompensators(staticVarCompensators) {
+        this.staticVarCompensators = staticVarCompensators;
+    }
+
+    updateStaticVarCompensators(staticVarCompensators) {
+        this.updateEquipments(
+            this.staticVarCompensators,
+            staticVarCompensators
+        );
+    }
+
+    setHvdcLines(hvdcLines) {
+        this.hvdcLines = hvdcLines;
+    }
+
+    updateHvdcLines(hvdcLines) {
+        this.updateEquipments(this.hvdcLines, hvdcLines);
+    }
+
+    setLccConverterStations(lccConverterStations) {
+        this.lccConverterStations = lccConverterStations;
+    }
+
+    updateLccConverterStations(lccConverterStations) {
+        this.updateEquipments(this.lccConverterStations, lccConverterStations);
+    }
+
+    setVscConverterStations(vscConverterStations) {
+        this.vscConverterStations = vscConverterStations;
+    }
+
+    updateVscConverterStations(vscConverterStations) {
+        this.updateEquipments(this.vscConverterStations, vscConverterStations);
     }
 
     getVoltageLevels() {
