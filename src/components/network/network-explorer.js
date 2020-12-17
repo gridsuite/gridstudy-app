@@ -31,7 +31,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import { DoubleArrow } from '@material-ui/icons';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { selectItemNetwork } from '../../redux/actions';
 
 const itemSize = 48;
@@ -347,7 +347,7 @@ const NetworkExplorer = ({
                                     }}
                                 />
                                 <IconButton onClick={hideExplorer}>
-                                    <DoubleArrow transform={'rotate(180)'} />
+                                    <ChevronLeftIcon />
                                 </IconButton>
                             </Grid>
                             <Divider />
