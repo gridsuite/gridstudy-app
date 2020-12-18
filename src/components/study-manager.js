@@ -495,10 +495,8 @@ const StudyManager = ({ onClick }) => {
         // Note: dispatch doesn't change
     }, [dispatch]);
 
-    const connectNotificationsUpdateStudies = useCallback(() => {
-        const ws = connectNotificationsWsUpdateStudies();
-
-        ws.onmessage = function (event) {
+    const displayErrorIfExist = useCallback(
+        (event) => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers) {
                 const error = eventData.headers['error'];
@@ -516,8 +514,17 @@ const StudyManager = ({ onClick }) => {
                         style: { whiteSpace: 'pre-line' },
                     });
                 }
-                dispatchStudies();
             }
+        },
+        [enqueueSnackbar, intl]
+    );
+
+    const connectNotificationsUpdateStudies = useCallback(() => {
+        const ws = connectNotificationsWsUpdateStudies();
+
+        ws.onmessage = function (event) {
+            displayErrorIfExist(event);
+            dispatchStudies();
         };
         ws.onclose = function (event) {
             if (!websocketExpectedCloseRef.current) {
@@ -528,7 +535,7 @@ const StudyManager = ({ onClick }) => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [dispatchStudies, enqueueSnackbar, intl]);
+    }, [dispatchStudies, displayErrorIfExist]);
 
     useEffect(() => {
         dispatchStudies();
