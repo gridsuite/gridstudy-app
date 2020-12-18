@@ -233,14 +233,7 @@ class LineLayer extends CompositeLayer {
                     let mapOriginDestination = new Map();
                     compositeData.mapOriginDestination = mapOriginDestination;
                     compositeData.lines.forEach((line) => {
-                        const key =
-                            line.voltageLevelId1 > line.voltageLevelId2
-                                ? line.voltageLevelId1 +
-                                  '##' +
-                                  line.voltageLevelId2
-                                : line.voltageLevelId2 +
-                                  '##' +
-                                  line.voltageLevelId1;
+                        const key = this.genLineKey(line);
                         let val = mapOriginDestination.get(key);
                         if (val == null)
                             mapOriginDestination.set(key, new Set([line]));
@@ -316,6 +309,7 @@ class LineLayer extends CompositeLayer {
                         START_ARROW_POSITION,
                         arrowDirection,
                         line.parallelIndex,
+                        (line.angle * 180) / Math.PI,
                         (line.angleStart * 180) / Math.PI,
                         props.distanceBetweenLines,
                         line.proximityFactorStart
@@ -326,6 +320,7 @@ class LineLayer extends CompositeLayer {
                         END_ARROW_POSITION,
                         arrowDirection,
                         line.parallelIndex,
+                        (line.angle * 180) / Math.PI,
                         (line.angleEnd * 180) / Math.PI,
                         props.distanceBetweenLines,
                         line.proximityFactorEnd
@@ -421,6 +416,12 @@ class LineLayer extends CompositeLayer {
         this.setState({ compositeData: compositeData });
     }
 
+    genLineKey(line) {
+        return line.voltageLevelId1 > line.voltageLevelId2
+            ? line.voltageLevelId1 + '##' + line.voltageLevelId2
+            : line.voltageLevelId2 + '##' + line.voltageLevelId1;
+    }
+
     recomputeParallelLinesIndex(compositeData, props) {
         compositeData.forEach((compositeData) => {
             const mapOriginDestination = compositeData.mapOriginDestination;
@@ -440,6 +441,7 @@ class LineLayer extends CompositeLayer {
     }
 
     recomputeForkLines(compositeData, props) {
+        const mapMinProximityFactor = new Map();
         compositeData.forEach((compositeData) => {
             compositeData.lines.forEach((line) => {
                 const positions = compositeData.lineMap.get(line.id).positions;
@@ -477,8 +479,29 @@ class LineLayer extends CompositeLayer {
                     positions[positions.length - 2],
                     positions[positions.length - 1]
                 );
+
+                let key = this.genLineKey(line);
+                let val = mapMinProximityFactor.get(key);
+                if (val == null)
+                    mapMinProximityFactor.set(key, {
+                        lines: [line],
+                        start: line.proximityFactorStart,
+                        end: line.proximityFactorEnd,
+                    });
+                else {
+                    val.lines.push(line);
+                    val.start = Math.min(val.start, line.proximityFactorStart);
+                    val.end = Math.min(val.end, line.proximityFactorEnd);
+                    mapMinProximityFactor.set(key, val);
+                }
             });
         });
+        mapMinProximityFactor.forEach((samePathLine) =>
+            samePathLine.lines.forEach((line) => {
+                line.proximityFactorStart = samePathLine.start;
+                line.proximityFactorEnd = samePathLine.end;
+            })
+        );
     }
 
     getProximityFactor(firstPosition, secondPosition) {

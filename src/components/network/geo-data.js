@@ -185,6 +185,7 @@ export default class GeoData {
         arrowDirection,
         lineParallelIndex,
         lineAngle,
+        proximityAngle,
         distanceBetweenLines,
         proximityFactor
     ) {
@@ -286,7 +287,7 @@ export default class GeoData {
             position.position = computeDestinationPoint(
                 position.position,
                 distanceBetweenLines * labelPercentage,
-                lineAngle
+                proximityAngle
             );
         }
 
