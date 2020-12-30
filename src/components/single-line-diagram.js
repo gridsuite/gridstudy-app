@@ -110,10 +110,11 @@ const useStyles = makeStyles((theme) => ({
         padding: '5px 10px 0',
     },
     notFullScreen: {
-        top: '0',
+        top: '-50px',
         position: 'relative',
         textAlign: 'right',
         padding: '5px 10px 0',
+        float: 'right',
     },
     fullScreenIcon: {
         cursor: 'pointer',
@@ -156,6 +157,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [loadingState, updateLoadingState] = useState(false);
 
     const [fullScreenWidth, setFullScreenWidth] = useState(0);
+
+    const [svgFullWidth, setSvgFullWidth] = useState(null);
+
+    const fullWidth = document.querySelector('body').offsetWidth;
+    const widthListNetwork = document.getElementById('network-list')
+        .offsetWidth;
 
     const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
@@ -203,6 +210,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     useEffect(() => {
         getSgv();
+        setSvgFullWidth(fullWidth - widthListNetwork);
     }, [forceState, getSgv]);
 
     const {
@@ -212,28 +220,22 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgType,
     } = props;
 
-    const calcMargins = useCallback(
-        (svgType, width, height, fullWidth) => {
-            return {
-                top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-                left:
-                    svgType === SvgType.VOLTAGE_LEVEL
-                        ? fullScreen
-                            ? -(fullWidth - width / 4)
-                            : width / 4
-                        : -Infinity,
-                bottom:
-                    svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-                right:
-                    svgType === SvgType.VOLTAGE_LEVEL
-                        ? fullScreen
-                            ? -(fullWidth - width / 4)
-                            : width / 4
-                        : -Infinity,
-            };
-        },
-        [fullScreen]
-    );
+    const calcMargins = useCallback(() => {
+        return {
+            top: fullScreen ? 100 : 100,
+            left: fullScreen
+                ? svgType === SvgType.VOLTAGE_LEVEL
+                    ? -(svgFullWidth / 6)
+                    : 100
+                : 100,
+            bottom: fullScreen ? 100 : 200,
+            right: fullScreen
+                ? svgType === SvgType.VOLTAGE_LEVEL
+                    ? -(svgFullWidth / 6)
+                    : 100
+                : 100,
+        };
+    }, [fullScreen]);
 
     useLayoutEffect(() => {
         if (svg.svg) {
@@ -268,18 +270,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             const draw = SVG()
                 .addTo(divElt)
                 .size(sizeWidth, sizeHeight)
-                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
+                .viewbox(xOrigin, yOrigin, sizeWidth, sizeHeight)
                 .panZoom({
                     panning: true,
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: calcMargins(
-                        svgType,
-                        sizeWidth,
-                        sizeHeight,
-                        fullScreenWidth
-                    ),
+                    margins: calcMargins(),
                 });
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);
@@ -291,6 +288,30 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             });
             draw.on('panEnd', function (evt) {
                 divElt.style.cursor = 'default';
+            });
+            draw.on('zoom', function (event) {
+                draw.panZoom({
+                    panning: true,
+                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
+                    zoomMax: 10,
+                    zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
+                    margins: {
+                        top: event.detail.level < 0.5 ? 50 : 100,
+                        left:
+                            event.detail.level < 1
+                                ? svgType === SvgType.VOLTAGE_LEVEL
+                                    ? -(svgFullWidth / 6)
+                                    : 50
+                                : 100,
+                        right:
+                            event.detail.level < 1
+                                ? svgType === SvgType.VOLTAGE_LEVEL
+                                    ? -(svgFullWidth / 6)
+                                    : 50
+                                : 100,
+                        bottom: event.detail.level < 0.5 ? 50 : 200,
+                    },
+                });
             });
 
             // handling the navigation between voltage levels

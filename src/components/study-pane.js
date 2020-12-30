@@ -681,6 +681,7 @@ const StudyPane = (props) => {
                 <Drawer
                     variant={'persistent'}
                     className={classes.drawer}
+                    id="network-list"
                     anchor="left"
                     style={{
                         flexShrink: 1,
