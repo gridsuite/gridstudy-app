@@ -39,12 +39,12 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid #7f7f7e',
         background: '#242424',
         color: '#fdfdfd',
-        '& ul' : {
+        '& ul': {
             padding: 0,
-            '& li:first-child' : {
+            '& li:first-child': {
                 borderBottom: '1px solid #7f7f7e',
-            }
-        }
+            },
+        },
     },
 }));
 
@@ -143,7 +143,7 @@ const SplitButton = (props) => {
                         }}
                     >
                         <Paper className={classes.listOptions}>
-                            <ClickAwayListener onClickAway={handleClose} >
+                            <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu">
                                     {props.options.map((option, index) => (
                                         <MenuItem
