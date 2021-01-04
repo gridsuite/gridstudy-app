@@ -1,9 +1,10 @@
 html {
-    min-height: 100%;
+    height: 100%;
 }
 
 html, body, #root {
     display: grid;
+    min-height: 0;
 }
 
 body {

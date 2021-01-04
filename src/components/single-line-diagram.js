@@ -56,18 +56,23 @@ const maxHeightSubstation = 700;
 
 const useStyles = makeStyles((theme) => ({
     divVoltageLevel: {
+        flex: "1 1 auto",
         maxWidth: maxWidthVoltageLevel,
         maxHeight: maxHeightVoltageLevel,
-        overflowX: 'hidden',
-        overflowY: 'hidden',
+        minHeight: 0,
     },
     divSubstation: {
+        flex: "1 1 auto",
         maxWidth: maxWidthSubstation,
         maxHeight: maxHeightSubstation,
-        overflowX: 'hidden',
-        overflowY: 'hidden',
+        minHeight: 0,
     },
     diagram: {
+        maxHeight: 700,
+        'display': 'flex',
+        'flex': '1 1 auto',
+        'flexDirection': 'column',
+        'minHeight': 0,
         '& .component-label': {
             fill: theme.palette.text.primary,
             'font-size': 12,
@@ -351,14 +356,12 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .size(sizeWidth, sizeHeight)
+                .width(sizeWidth)
+                .height("98%")
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
-                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
-                    zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: calcMargins(svgType, sizeWidth, sizeHeight),
                 });
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);

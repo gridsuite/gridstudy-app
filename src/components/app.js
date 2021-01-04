@@ -228,7 +228,7 @@ const App = () => {
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
-            <div style={{display:"flex", flexDirection:"column", flexGrow:1}}>
+            <div style={{display:"flex", flexDirection:"column", flexGrow:1, minHeight: 0}}>
                 <CssBaseline />
                 <TopBar
                     appName="Study"
@@ -286,7 +286,7 @@ const App = () => {
                 />
 
                 {user !== null ? (
-                    <div style={{flexGrow:1, display: "flex", flexDirection: "column"}}>
+                    <div style={{flexGrow:1, display: "flex", flexDirection: "column", minHeight: 0}}>
                     <Switch>
                         <Route exact path="/">
                             <StudyManager

@@ -100,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
         width: drawerWidth,
     },
     drawerPaper: {
-        position: 'relative',
+        position: 'static',
         overflow: 'hidden',
         zIndex: 98,
     },
@@ -735,7 +735,6 @@ const StudyPane = (props) => {
                                 flexDirection: "column",
                             }}
                         >
-                            <div style={{overflow: "hidden", flex: "1 1 0"}}>
                             <SingleLineDiagram
                                 onClose={() => closeVoltageLevelDiagram()}
                                 onNextVoltageLevelClick={
@@ -753,7 +752,6 @@ const StudyPane = (props) => {
                                         : SvgType.SUBSTATION
                                 }
                             />
-                            </div>
                         </div>
                     )}
                 <div
@@ -951,6 +949,7 @@ const StudyPane = (props) => {
                 <div
                     style={{
                         flexGrow:1,
+                        minHeight: 0,
                         display:
                             props.view === StudyView.MAP ? 'flex' : 'none',
                         pointerEvents: 'all',
@@ -961,6 +960,7 @@ const StudyPane = (props) => {
                 <div
                     style={{
                         flexGrow:1,
+                        minHeight: 0,
                         display:
                             props.view === StudyView.TABLE ? 'flex' : 'none',
                     }}
@@ -970,6 +970,7 @@ const StudyPane = (props) => {
                 <div
                     style={{
                         flexGrow:1,
+                        minHeight: 0,
                         display:
                             props.view === StudyView.RESULTS ? 'flex' : 'none',
                     }}
