@@ -51,12 +51,50 @@ const lightTheme = createMuiTheme({
     palette: {
         type: 'light',
     },
+    arrow: {
+        fill: '#212121',
+        stroke: '#212121',
+    },
+    arrow_hover: {
+        fill: 'white',
+        stroke: 'white',
+    },
+    circle: {
+        stroke: 'white',
+        fill: 'white',
+    },
+    circle_hover: {
+        stroke: '#212121',
+        fill: '#212121',
+    },
+    link: {
+        color: 'blue',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
 const darkTheme = createMuiTheme({
     palette: {
         type: 'dark',
+    },
+    arrow: {
+        fill: 'white',
+        stroke: 'white',
+    },
+    arrow_hover: {
+        fill: '#424242',
+        stroke: '#424242',
+    },
+    circle: {
+        stroke: '#424242',
+        fill: '#424242',
+    },
+    circle_hover: {
+        stroke: 'white',
+        fill: 'white',
+    },
+    link: {
+        color: 'green',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
@@ -189,6 +227,10 @@ const App = () => {
         history.replace('/');
     }
 
+    function onChangeTab(newTabIndex) {
+        setTabIndex(newTabIndex);
+    }
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -220,9 +262,9 @@ const App = () => {
                             indicatorColor="primary"
                             variant="scrollable"
                             scrollButtons="auto"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
+                            onChange={(event, newTabIndex) => {
+                                onChangeTab(newTabIndex);
+                            }}
                             aria-label="views"
                             className={classes.tabs}
                         >
@@ -262,7 +304,10 @@ const App = () => {
                             />
                         </Route>
                         <Route exact path="/:userId/studies/:studyName">
-                            <StudyPane view={STUDY_VIEWS[tabIndex]} />
+                            <StudyPane
+                                view={STUDY_VIEWS[tabIndex]}
+                                onChangeTab={onChangeTab}
+                            />
                         </Route>
                         <Route exact path="/sign-in-callback">
                             <Redirect to={getPreLoginPath() || '/'} />

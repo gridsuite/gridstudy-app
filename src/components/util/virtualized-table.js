@@ -39,6 +39,9 @@ const styles = (theme) => ({
     noClick: {
         cursor: 'initial',
     },
+    tableCellColor: {
+        color: theme.link.color,
+    },
     header: {
         marginLeft: 16,
     },
@@ -136,8 +139,14 @@ class MuiVirtualizedTable extends React.PureComponent {
         });
     };
 
-    cellRenderer = ({ cellData, columnIndex }) => {
-        const { columns, classes, rowHeight, onRowClick } = this.props;
+    cellRenderer = ({ cellData, columnIndex, rowIndex }) => {
+        const {
+            columns,
+            classes,
+            rowHeight,
+            onCellClick,
+            rowGetter,
+        } = this.props;
 
         let displayedValue;
         if (columns[columnIndex].numeric) {
@@ -168,7 +177,14 @@ class MuiVirtualizedTable extends React.PureComponent {
             <TableCell
                 component="div"
                 className={clsx(classes.tableCell, classes.flexContainer, {
-                    [classes.noClick]: onRowClick == null,
+                    [classes.noClick]:
+                        onCellClick == null ||
+                        columns[columnIndex].clickable === undefined ||
+                        !columns[columnIndex].clickable,
+                    [classes.tableCellColor]:
+                        onCellClick !== null &&
+                        columns[columnIndex].clickable !== undefined &&
+                        columns[columnIndex].clickable,
                 })}
                 variant="body"
                 style={{ height: rowHeight }}
@@ -178,6 +194,14 @@ class MuiVirtualizedTable extends React.PureComponent {
                         ? 'right'
                         : 'left'
                 }
+                onClick={(e) => {
+                    if (onCellClick) {
+                        onCellClick(
+                            rowGetter({ index: rowIndex }),
+                            columns[columnIndex]
+                        );
+                    }
+                }}
             >
                 {displayedValue}
             </TableCell>
@@ -287,6 +311,7 @@ MuiVirtualizedTable.propTypes = {
     sortable: PropTypes.bool,
     headerHeight: PropTypes.number,
     onRowClick: PropTypes.func,
+    onCellClick: PropTypes.func,
     rowHeight: PropTypes.number,
     filter: PropTypes.func,
 };

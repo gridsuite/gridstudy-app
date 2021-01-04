@@ -4,6 +4,7 @@
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyDescription": "study description",
+    "owner": "Owner",
     "caseName": "case name",
     "uploadCase": "Upload case",
     "public": "public",
@@ -157,7 +158,7 @@
     "descLfReadSlackBus": "Read slack bus from network",
     "descLfWriteSlackBus": "Write slack bus to network",
 
-    "securityAnalysisResults" : "Security analysis results",
+    "securityAnalysisResults": "Security analysis results",
     "loadFlowResults": "Loadflow results",
 
     "componentNum": "Component number",
@@ -169,7 +170,7 @@
     "isOk": "Ok",
     "metrics": "Metrics",
     "logs": "Logs",
-    
+
     "SubstationLayout": "Substation diagram layout",
     "HorizontalSubstationLayout": "Horizontal",
     "VerticalSubstationLayout": "Vertical",

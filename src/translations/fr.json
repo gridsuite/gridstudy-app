@@ -4,6 +4,7 @@
     "caseExist": "La situation existe-t-elle déjà ?",
     "studyName": "nom de l'étude",
     "studyDescription": "description de l'étude",
+    "owner": "Propriétaire",
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
     "public": "publique",
@@ -157,7 +158,7 @@
     "descLfReadSlackBus": "Lire le noeud bilan dans le réseau",
     "descLfWriteSlackBus": "Ecrire le noeud bilan dans le réseau",
 
-    "securityAnalysisResults" : "Résultats de l'analyse de sécurité",
+    "securityAnalysisResults": "Résultats de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
 
     "componentNum": "Numéro de composante",
@@ -169,7 +170,7 @@
     "isOk": "Ok",
     "metrics": "Métriques",
     "logs": "Logs",
-    
+
     "SubstationLayout": "Layout des images de sites",
     "HorizontalSubstationLayout": "Horizontal",
     "VerticalSubstationLayout": "Vertical",

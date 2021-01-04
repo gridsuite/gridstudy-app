@@ -25,6 +25,7 @@ import {
     fetchLinePositions,
     fetchLines,
     fetchSecurityAnalysisResult,
+    fetchSecurityAnalysisStatus,
     fetchStudy,
     fetchSubstationPositions,
     fetchSubstations,
@@ -43,6 +44,7 @@ import {
     loadGeoDataSuccess,
     loadNetworkSuccess,
     openStudy,
+    selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
 import Network from './network/network';
@@ -213,6 +215,8 @@ const StudyPane = (props) => {
         setShowContingencyListSelector,
     ] = useState(false);
 
+    const [visibleSubstation, setVisibleSubstation] = useState(null);
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -254,12 +258,30 @@ const StudyPane = (props) => {
         });
     }, [studyName, userId]);
 
+    function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
+        switch (securityAnalysisStatus) {
+            case 'COMPLETED':
+                return RunningStatus.SUCCEED;
+            case 'RUNNING':
+                return RunningStatus.RUNNING;
+            case 'NOT_DONE':
+                return RunningStatus.IDLE;
+            default:
+                return RunningStatus.IDLE;
+        }
+    }
+
+    const updateSecurityAnalysisStatus = useCallback(() => {
+        fetchSecurityAnalysisStatus(studyName, userId).then((status) => {
+            setSecurityAnalysisStatus(getSecurityAnalysisRunningStatus(status));
+        });
+    }, [studyName, userId]);
+
     const updateSecurityAnalysisResult = useCallback(() => {
         fetchSecurityAnalysisResult(studyName, userId).then(function (
             response
         ) {
             if (response.ok) {
-                setSecurityAnalysisStatus(RunningStatus.IDLE);
                 response.json().then((result) => {
                     setSecurityAnalysisResult(result);
                 });
@@ -274,8 +296,7 @@ const StudyPane = (props) => {
         // start server side security analysis
         startSecurityAnalysis(studyName, userId, contingencyListNames);
 
-        // update status and clean result
-        setSecurityAnalysisStatus(RunningStatus.RUNNING);
+        // clean result
         setSecurityAnalysisResult(null);
     };
 
@@ -325,6 +346,7 @@ const StudyPane = (props) => {
         console.info(`Loading network of study '${studyName}'...`);
         updateLoadFlowResult();
         updateSecurityAnalysisResult();
+        updateSecurityAnalysisStatus();
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
@@ -364,6 +386,7 @@ const StudyPane = (props) => {
         dispatch,
         updateLoadFlowResult,
         updateSecurityAnalysisResult,
+        updateSecurityAnalysisStatus,
     ]);
 
     const loadGeoData = useCallback(() => {
@@ -476,6 +499,7 @@ const StudyPane = (props) => {
 
     const showSubstationDiagram = useCallback(
         (substationId) => {
+            dispatch(selectItemNetwork(substationId));
             setUpdateSwitchMsg('');
             history.replace(
                 '/' +
@@ -489,7 +513,7 @@ const StudyPane = (props) => {
             );
         },
         // Note: studyName and history don't change
-        [studyName, userId, history]
+        [studyName, userId, history, dispatch]
     );
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -544,6 +568,7 @@ const StudyPane = (props) => {
                 setUpdateSwitchMsg('');
                 sldRef.current.reloadSvg();
             }
+
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
@@ -554,6 +579,11 @@ const StudyPane = (props) => {
                 'loadflow_status'
             ) {
                 updateLoadFlowResult();
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'securityAnalysis_status'
+            ) {
+                updateSecurityAnalysisStatus();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'securityAnalysisResult'
@@ -570,6 +600,7 @@ const StudyPane = (props) => {
         studyName,
         loadNetwork,
         updateLoadFlowResult,
+        updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
         dispatch,
     ]);
@@ -589,6 +620,47 @@ const StudyPane = (props) => {
     function choiceVoltageLevel(voltageLevelId) {
         showVoltageLevelDiagram(voltageLevelId);
         closeChoiceVoltageLevelMenu();
+    }
+
+    function onClickNmKConstraint(row, column) {
+        if (network) {
+            if (column.dataKey === 'subjectId') {
+                let vlId;
+                let substationId;
+
+                let equipment = network.getLineOrTransformer(row.subjectId);
+                if (equipment) {
+                    if (row.side) {
+                        vlId =
+                            row.side === 'ONE'
+                                ? equipment.voltageLevelId1
+                                : row.side === 'TWO'
+                                ? equipment.voltageLevelId2
+                                : equipment.voltageLevelId3;
+                    } else {
+                        vlId = equipment.voltageLevelId1;
+                    }
+                    const vl = network.getVoltageLevel(vlId);
+                    substationId = vl.substationId;
+                } else {
+                    equipment = network.getVoltageLevel(row.subjectId);
+                    if (equipment) {
+                        vlId = equipment.id;
+                        substationId = equipment.substationId;
+                    }
+                }
+
+                if (vlId) {
+                    setDisplayedVoltageLevelId(null);
+                    setDisplayedSubstationId(null);
+                    dispatch(selectItemNetwork(vlId));
+                    props.onChangeTab(0); // switch to map view
+                    showVoltageLevelDiagram(vlId); // show voltage level
+                    setVisibleSubstation(substationId);
+                    setDisplayedVoltageLevelId(vlId);
+                }
+            }
+        }
     }
 
     function renderMapView() {
@@ -669,14 +741,6 @@ const StudyPane = (props) => {
 
         return (
             <div className={classes.main}>
-                {waitingLoadGeoData && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        isFixed={true}
-                        loadingMessageText="loadingGeoData"
-                    />
-                )}
                 <Drawer
                     variant={'persistent'}
                     className={classes.drawer}
@@ -704,6 +768,7 @@ const StudyPane = (props) => {
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
                             hideExplorer={toggleDrawer}
+                            visibleSubstation={visibleSubstation}
                         />
                     </div>
                 </Drawer>
@@ -752,37 +817,41 @@ const StudyPane = (props) => {
                             </IconButton>
                         </div>
                     )}
-                    {(displayedVoltageLevelId || displayedSubstationId) && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                top: drawerOpen ? 0 : 55,
-                                zIndex: 0,
-                            }}
-                            className={clsx(classes.content, {
-                                [classes.contentShift]: drawerOpen,
-                            })}
-                        >
-                            <SingleLineDiagram
-                                onClose={() => closeVoltageLevelDiagram()}
-                                onNextVoltageLevelClick={
-                                    showVoltageLevelDiagram
-                                }
-                                onBreakerClick={handleUpdateSwitchState}
-                                diagramTitle={sldTitle}
-                                svgUrl={svgUrl}
-                                ref={sldRef}
-                                updateSwitchMsg={updateSwitchMsg}
-                                isComputationRunning={isComputationRunning()}
-                                svgType={
-                                    displayedVoltageLevelId
-                                        ? SvgType.VOLTAGE_LEVEL
-                                        : SvgType.SUBSTATION
-                                }
-                            />
-                        </div>
-                    )}
-
+                    {/*
+                    Rendering single line diagram only in map view and if
+                    displayed voltage level or substation id has been set
+                    */}
+                    {props.view === StudyView.MAP &&
+                        (displayedVoltageLevelId || displayedSubstationId) && (
+                            <div
+                                style={{
+                                    position: 'absolute',
+                                    top: drawerOpen ? 0 : 55,
+                                    zIndex: 0,
+                                }}
+                                className={clsx(classes.content, {
+                                    [classes.contentShift]: drawerOpen,
+                                })}
+                            >
+                                <SingleLineDiagram
+                                    onClose={() => closeVoltageLevelDiagram()}
+                                    onNextVoltageLevelClick={
+                                        showVoltageLevelDiagram
+                                    }
+                                    onBreakerClick={handleUpdateSwitchState}
+                                    diagramTitle={sldTitle}
+                                    svgUrl={svgUrl}
+                                    ref={sldRef}
+                                    updateSwitchMsg={updateSwitchMsg}
+                                    isComputationRunning={isComputationRunning()}
+                                    svgType={
+                                        displayedVoltageLevelId
+                                            ? SvgType.VOLTAGE_LEVEL
+                                            : SvgType.SUBSTATION
+                                    }
+                                />
+                            </div>
+                        )}
                     {network && viewOverloadsTable && (
                         <div
                             style={{
@@ -804,7 +873,6 @@ const StudyPane = (props) => {
                             />
                         </div>
                     )}
-
                     {choiceVoltageLevelsSubstationId && (
                         <VoltageLevelChoice
                             handleClose={closeChoiceVoltageLevelMenu}
@@ -813,7 +881,6 @@ const StudyPane = (props) => {
                             position={[position[0] + 200, position[1]]}
                         />
                     )}
-
                     {network && (
                         <div
                             style={{
@@ -901,7 +968,10 @@ const StudyPane = (props) => {
     function renderSecurityAnalysisResult() {
         return (
             <Paper className={classes.main}>
-                <SecurityAnalysisResult result={securityAnalysisResult} />
+                <SecurityAnalysisResult
+                    result={securityAnalysisResult}
+                    onClickNmKConstraint={onClickNmKConstraint}
+                />
             </Paper>
         );
     }
@@ -975,6 +1045,7 @@ StudyPane.defaultProps = {
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
+    onChangeTab: PropTypes.func,
 };
 
 export default StudyPane;
