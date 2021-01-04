@@ -81,14 +81,11 @@ class MuiVirtualizedTable extends React.PureComponent {
             const isNumeric = this.props.columns[key].numeric;
             const dataKey = this.props.columns[key].dataKey;
             if (dataKey && dataKey !== '' && this.state.direction !== '')
-                indexedArray.sort((a, b) =>
-                    compareValue(
-                        a[0][dataKey],
-                        b[0][dataKey],
-                        isNumeric,
-                        reverse
-                    )
-                );
+                if (this.props.sort)
+                    return this.props.sort(dataKey, reverse, isNumeric);
+            indexedArray.sort((a, b) =>
+                compareValue(a[0][dataKey], b[0][dataKey], isNumeric, reverse)
+            );
         }
         return indexedArray.map((k) => k[1]);
     });
@@ -316,6 +313,7 @@ MuiVirtualizedTable.propTypes = {
     onCellClick: PropTypes.func,
     rowHeight: PropTypes.number,
     filter: PropTypes.func,
+    sort: PropTypes.func,
 };
 
 const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
