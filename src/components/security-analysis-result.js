@@ -84,7 +84,7 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                 columns={[
                     {
                         width: 200,
-                        label: intl.formatMessage({ id: 'ID' }),
+                        label: intl.formatMessage({ id: 'Equipment' }),
                         dataKey: 'subjectId',
                     },
                     {
@@ -123,7 +123,8 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
         postContingencyResults.forEach((postContingencyResult, index) => {
             if (
                 postContingencyResult.limitViolationsResult.limitViolations
-                    .length > 0
+                    .length > 0 ||
+                !postContingencyResult.limitViolationsResult.computationOk
             ) {
                 rows.push({
                     contingencyIndex: index,
@@ -255,7 +256,7 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                     },
                     {
                         width: 200,
-                        label: intl.formatMessage({ id: 'ID' }),
+                        label: intl.formatMessage({ id: 'Constraint' }),
                         dataKey: 'subjectId',
                         clickable: true,
                     },
@@ -295,6 +296,16 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
         let mapConstraints = new Map();
 
         postContingencyResults.forEach((postContingencyResult, index) => {
+            if (!postContingencyResult.limitViolationsResult.computationOk) {
+                rows.push({
+                    contingencyId: postContingencyResult.contingency.id,
+                    computationOk: postContingencyResult.limitViolationsResult
+                        .computationOk
+                        ? intl.formatMessage({ id: 'true' })
+                        : intl.formatMessage({ id: 'false' }),
+                });
+            }
+
             if (
                 postContingencyResult.limitViolationsResult.limitViolations
                     .length > 0
@@ -316,6 +327,10 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
 
                         contingencies.push({
                             contingencyId: postContingencyResult.contingency.id,
+                            computationOk: postContingencyResult
+                                .limitViolationsResult.computationOk
+                                ? intl.formatMessage({ id: 'true' })
+                                : intl.formatMessage({ id: 'false' }),
                             constraintId: limitViolation.subjectId,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
@@ -341,6 +356,7 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
             contingencies.forEach((contingency) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
+                    computationOk: contingency.computationOk,
                     constraintId: contingency.constraintId,
                     limitType: contingency.limitType,
                     limit: contingency.limit,
@@ -376,7 +392,7 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                 columns={[
                     {
                         width: 200,
-                        label: intl.formatMessage({ id: 'ID' }),
+                        label: intl.formatMessage({ id: 'Constraint' }),
                         dataKey: 'subjectId',
                         clickable: true,
                     },
@@ -384,6 +400,11 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                         width: 200,
                         label: intl.formatMessage({ id: 'ContingencyId' }),
                         dataKey: 'contingencyId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ComputationOk' }),
+                        dataKey: 'computationOk',
                     },
                     {
                         width: 200,

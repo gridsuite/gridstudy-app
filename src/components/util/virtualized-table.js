@@ -175,13 +175,15 @@ class MuiVirtualizedTable extends React.PureComponent {
                 component="div"
                 className={clsx(classes.tableCell, classes.flexContainer, {
                     [classes.noClick]:
+                        displayedValue === undefined ||
                         onCellClick == null ||
                         columns[columnIndex].clickable === undefined ||
                         !columns[columnIndex].clickable,
                     [classes.tableCellColor]:
-                        onCellClick !== null &&
-                        columns[columnIndex].clickable !== undefined &&
-                        columns[columnIndex].clickable,
+                        displayedValue === undefined ||
+                        (onCellClick !== null &&
+                            columns[columnIndex].clickable !== undefined &&
+                            columns[columnIndex].clickable),
                 })}
                 variant="body"
                 style={{ height: rowHeight }}
