@@ -14,7 +14,6 @@ import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
-import { isNumeric } from 'rxjs/internal-compatibility';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
