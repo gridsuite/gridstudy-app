@@ -121,32 +121,38 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
     function flattenNmKresultsContingencies(postContingencyResults) {
         const rows = [];
         postContingencyResults.forEach((postContingencyResult, index) => {
-            rows.push({
-                contingencyIndex: index,
-                contingencyId: postContingencyResult.contingency.id,
-                computationOk: postContingencyResult.limitViolationsResult
-                    .computationOk
-                    ? intl.formatMessage({ id: 'true' })
-                    : intl.formatMessage({ id: 'false' }),
-                violationCount:
-                    postContingencyResult.limitViolationsResult.limitViolations
-                        .length,
-            });
-            postContingencyResult.limitViolationsResult.limitViolations.forEach(
-                (limitViolation) => {
-                    rows.push({
-                        contingencyIndex: index,
-                        subjectId: limitViolation.subjectId,
-                        limitType: intl.formatMessage({
-                            id: limitViolation.limitType,
-                        }),
-                        limit: limitViolation.limit,
-                        value: limitViolation.value,
-                        loading: computeLoading(limitViolation),
-                        side: limitViolation.side,
-                    });
-                }
-            );
+            if (
+                postContingencyResult.limitViolationsResult.limitViolations
+                    .length > 0 ||
+                !postContingencyResult.limitViolationsResult.computationOk
+            ) {
+                rows.push({
+                    contingencyIndex: index,
+                    contingencyId: postContingencyResult.contingency.id,
+                    computationOk: postContingencyResult.limitViolationsResult
+                        .computationOk
+                        ? intl.formatMessage({ id: 'true' })
+                        : intl.formatMessage({ id: 'false' }),
+                    violationCount:
+                        postContingencyResult.limitViolationsResult
+                            .limitViolations.length,
+                });
+                postContingencyResult.limitViolationsResult.limitViolations.forEach(
+                    (limitViolation) => {
+                        rows.push({
+                            contingencyIndex: index,
+                            subjectId: limitViolation.subjectId,
+                            limitType: intl.formatMessage({
+                                id: limitViolation.limitType,
+                            }),
+                            limit: limitViolation.limit,
+                            value: limitViolation.value,
+                            loading: computeLoading(limitViolation),
+                            side: limitViolation.side,
+                        });
+                    }
+                );
+            }
         });
         return rows;
     }
