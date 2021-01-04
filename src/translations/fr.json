@@ -179,6 +179,9 @@
     "SmartWithVerticalCompactionSubstationLayout": "Smart avec compaction verticale",
     "openSubstation": "Ouvrir le site",
 
-    "ConstraintsFromContingencies": "Contraintes par contingences",
-    "ContingenciesFromConstraints": "Contingences par contraintes"
+    "ConstraintsFromContingencies": "Contingences -> contraintes",
+    "ContingenciesFromConstraints": "Contraintes -> contingences",
+
+    "Equipment": "Ouvrage",
+    "Constraint": "Contrainte"
 }
