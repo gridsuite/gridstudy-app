@@ -44,8 +44,8 @@ export function fetchConfigParameters() {
     });
 }
 
-export function updateConfigParameters(json) {
-    console.info('updating parameters : ' + json.toString());
+export function updateConfigParameters(name, value) {
+    console.info('updating parameters : ' + name + ' : ' + value);
     const updateParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
     backendFetch(updateParams, {
         method: 'put',
@@ -53,7 +53,12 @@ export function updateConfigParameters(json) {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: json,
+        body: JSON.stringify([
+            {
+                name: name,
+                value: value,
+            },
+        ]),
     }).then();
 }
 

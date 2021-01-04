@@ -63,10 +63,8 @@ import {
     connectNotificationsWsUpdateConfig,
     fetchAppsAndUrls,
     fetchConfigParameters,
-    updateConfigParameters,
 } from '../utils/rest-api';
 import {
-    defaultParams,
     PARAMS_CENTER_LABEL_KEY,
     PARAMS_DIAGONAL_LABEL_KEY,
     PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
@@ -314,11 +312,6 @@ const App = () => {
             fetchConfigParameters().then((params) => {
                 console.debug('received UI parameters :');
                 console.debug(params);
-                //if it's the user first connexion we want to set the default parameters in the database
-                if (params.length === 0) {
-                    let configJson = JSON.stringify(defaultParams);
-                    updateConfigParameters(configJson);
-                }
                 updateParams(params);
             });
             const ws = connectNotificationsUpdateConfig();
