@@ -500,7 +500,7 @@ const StudyManager = ({ onClick }) => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers) {
                 const error = eventData.headers['error'];
-                if (error !== undefined) {
+                if (error && error !== undefined) {
                     const studyName = eventData.headers['studyName'];
                     const errorMessage =
                         intl.formatMessage({ id: 'studyCreatingError' }) +
