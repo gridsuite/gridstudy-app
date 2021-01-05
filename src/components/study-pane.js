@@ -71,7 +71,7 @@ import LoadFlowResult from './loadflow-result';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
-import { MenuOpen } from '@material-ui/icons';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const drawerWidth = 300;
 
@@ -813,7 +813,7 @@ const StudyPane = (props) => {
                             })}
                         >
                             <IconButton onClick={toggleDrawer}>
-                                <MenuOpen />
+                                <ChevronRightIcon />
                             </IconButton>
                         </div>
                     )}
