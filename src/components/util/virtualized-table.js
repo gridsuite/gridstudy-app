@@ -81,14 +81,11 @@ class MuiVirtualizedTable extends React.PureComponent {
             const isNumeric = this.props.columns[key].numeric;
             const dataKey = this.props.columns[key].dataKey;
             if (dataKey && dataKey !== '' && this.state.direction !== '')
-                indexedArray.sort((a, b) =>
-                    compareValue(
-                        a[0][dataKey],
-                        b[0][dataKey],
-                        isNumeric,
-                        reverse
-                    )
-                );
+                if (this.props.sort)
+                    return this.props.sort(dataKey, reverse, isNumeric);
+            indexedArray.sort((a, b) =>
+                compareValue(a[0][dataKey], b[0][dataKey], isNumeric, reverse)
+            );
         }
         return indexedArray.map((k) => k[1]);
     });
@@ -178,13 +175,15 @@ class MuiVirtualizedTable extends React.PureComponent {
                 component="div"
                 className={clsx(classes.tableCell, classes.flexContainer, {
                     [classes.noClick]:
+                        displayedValue === undefined ||
                         onCellClick == null ||
                         columns[columnIndex].clickable === undefined ||
                         !columns[columnIndex].clickable,
                     [classes.tableCellColor]:
-                        onCellClick !== null &&
-                        columns[columnIndex].clickable !== undefined &&
-                        columns[columnIndex].clickable,
+                        displayedValue === undefined ||
+                        (onCellClick !== null &&
+                            columns[columnIndex].clickable !== undefined &&
+                            columns[columnIndex].clickable),
                 })}
                 variant="body"
                 style={{ height: rowHeight }}
@@ -314,6 +313,7 @@ MuiVirtualizedTable.propTypes = {
     onCellClick: PropTypes.func,
     rowHeight: PropTypes.number,
     filter: PropTypes.func,
+    sort: PropTypes.func,
 };
 
 const VirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
