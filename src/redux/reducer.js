@@ -8,31 +8,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 
 import {
-    getLocalStorageCenterLabel,
-    getLocalStorageDiagonalLabel,
-    getLocalStorageLineFlowMode,
-    getLocalStorageLineFlowColorMode,
-    getLocalStorageLineFlowAlertThreshold,
-    getLocalStorageLineFullPath,
-    getLocalStorageLineParallelPath,
-    getLocalStorageTheme,
-    getLocalStorageUseName,
-    getLocalStorageViewOverloadsTable,
-    getLocalStorageSubstationLayout,
-    saveLocalStorageCenterLabel,
-    saveLocalStorageDiagonalLabel,
-    saveLocalStorageLineFlowMode,
-    saveLocalStorageLineFlowColorMode,
-    saveLocalStorageLineFlowAlertThreshold,
-    saveLocalStorageLineFullPath,
-    saveLocalStorageLineParallelPath,
-    saveLocalStorageTheme,
-    saveLocalStorageUseName,
-    saveLocalStorageViewOverloadsTable,
-    saveLocalStorageSubstationLayout,
-} from './local-storage';
-
-import {
     CENTER_LABEL,
     CLOSE_STUDY,
     DIAGONAL_LABEL,
@@ -63,6 +38,7 @@ import {
     SUBSTATION_LAYOUT,
     SELECTED_ITEM_NETWORK,
 } from './actions';
+import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
 
 const initialState = {
     studies: [],
@@ -75,21 +51,21 @@ const initialState = {
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    useName: getLocalStorageUseName(),
+    useName: true,
     user: null,
-    centerLabel: getLocalStorageCenterLabel(),
-    diagonalLabel: getLocalStorageDiagonalLabel(),
-    lineFullPath: getLocalStorageLineFullPath(),
-    lineParallelPath: getLocalStorageLineParallelPath(),
-    lineFlowMode: getLocalStorageLineFlowMode(),
-    lineFlowColorMode: getLocalStorageLineFlowColorMode(),
-    lineFlowAlertThreshold: getLocalStorageLineFlowAlertThreshold(),
+    centerLabel: false,
+    diagonalLabel: false,
+    lineFullPath: true,
+    lineParallelPath: true,
+    lineFlowMode: 'feeders',
+    lineFlowColorMode: 'nominalVoltage',
+    lineFlowAlertThreshold: 100,
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
-    viewOverloadsTable: getLocalStorageViewOverloadsTable(),
+    viewOverloadsTable: false,
     resultCount: 0,
     filteredNominalVoltages: null,
-    substationLayout: getLocalStorageSubstationLayout(),
+    substationLayout: 'horizontal',
     selectItemNetwork: null,
 };
 
@@ -154,57 +130,48 @@ export const reducer = createReducer(initialState, {
         state.selectedFile = null;
     },
 
-    [USE_NAME]: (state) => {
-        state.useName = !state.useName;
-        saveLocalStorageUseName(state.useName);
+    [USE_NAME]: (state, action) => {
+        state.useName = action.useName;
     },
 
     [USER]: (state, action) => {
         state.user = action.user;
     },
 
-    [CENTER_LABEL]: (state) => {
-        state.centerLabel = !state.centerLabel;
-        saveLocalStorageCenterLabel(state.centerLabel);
+    [CENTER_LABEL]: (state, action) => {
+        state.centerLabel = action.centerLabel;
     },
 
-    [DIAGONAL_LABEL]: (state) => {
-        state.diagonalLabel = !state.diagonalLabel;
-        saveLocalStorageDiagonalLabel(state.diagonalLabel);
+    [DIAGONAL_LABEL]: (state, action) => {
+        state.diagonalLabel = action.diagonalLabel;
     },
 
-    [LINE_FULL_PATH]: (state) => {
-        state.lineFullPath = !state.lineFullPath;
-        saveLocalStorageLineFullPath(state.lineFullPath);
+    [LINE_FULL_PATH]: (state, action) => {
+        state.lineFullPath = action.lineFullPath;
     },
 
-    [LINE_PARALLEL_PATH]: (state) => {
-        state.lineParallelPath = !state.lineParallelPath;
-        saveLocalStorageLineParallelPath(state.lineParallelPath);
+    [LINE_PARALLEL_PATH]: (state, action) => {
+        state.lineParallelPath = action.lineParallelPath;
     },
 
     [LINE_FLOW_MODE]: (state, action) => {
         state.lineFlowMode = action.lineFlowMode;
-        saveLocalStorageLineFlowMode(state.lineFlowMode);
     },
 
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
         state.lineFlowColorMode = action.lineFlowColorMode;
-        saveLocalStorageLineFlowColorMode(state.lineFlowColorMode);
     },
 
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
         state.lineFlowAlertThreshold = action.lineFlowAlertThreshold;
-        saveLocalStorageLineFlowAlertThreshold(state.lineFlowAlertThreshold);
     },
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
     },
 
-    [VIEW_OVERLOADS_TABLE]: (state) => {
-        state.viewOverloadsTable = !state.viewOverloadsTable;
-        saveLocalStorageViewOverloadsTable(state.viewOverloadsTable);
+    [VIEW_OVERLOADS_TABLE]: (state, action) => {
+        state.viewOverloadsTable = action.viewOverloadsTable;
     },
 
     [INCREASE_RESULT_COUNT]: (state) => {
@@ -221,7 +188,6 @@ export const reducer = createReducer(initialState, {
 
     [SUBSTATION_LAYOUT]: (state, action) => {
         state.substationLayout = action.substationLayout;
-        saveLocalStorageSubstationLayout(state.substationLayout);
     },
 
     [SELECTED_ITEM_NETWORK]: (state, action) => {
