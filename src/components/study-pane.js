@@ -826,7 +826,9 @@ const StudyPane = (props) => {
                         (displayedVoltageLevelId || displayedSubstationId) && (
                             <div
                                 style={{
-                                    position: fullScreen ? 'relative' : 'absolute',
+                                    position: fullScreen
+                                        ? 'relative'
+                                        : 'absolute',
                                     top: drawerOpen ? 0 : 55,
                                     zIndex: 2,
                                     height: fullScreen ? '100%' : 'auto',
