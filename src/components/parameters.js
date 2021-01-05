@@ -9,7 +9,7 @@ import React, { useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -31,28 +31,28 @@ import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 
-import {
-    DARK_THEME,
-    LIGHT_THEME,
-    selectLineFlowMode,
-    selectLineFlowColorMode,
-    selectLineFlowAlertThreshold,
-    selectTheme,
-    selectSubstationLayout,
-    toggleCenterLabelState,
-    toggleDiagonalLabelState,
-    toggleLineFullPathState,
-    toggleLineParallelPathState,
-    toggleUseNameState,
-    toggleViewOverloadsTableState,
-} from '../redux/actions';
+import { DARK_THEME, LIGHT_THEME } from '../redux/actions';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
     setLoadFlowParameters,
+    updateConfigParameters,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
+import {
+    PARAMS_CENTER_LABEL_KEY,
+    PARAMS_DIAGONAL_LABEL_KEY,
+    PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
+    PARAMS_LINE_FLOW_COLOR_MODE_KEY,
+    PARAMS_LINE_FLOW_MODE_KEY,
+    PARAMS_LINE_FULL_PATH_KEY,
+    PARAMS_LINE_PARALLEL_PATH_KEY,
+    PARAMS_SUBSTATION_LAYOUT_KEY,
+    PARAMS_THEME_KEY,
+    PARAMS_USE_NAME_KEY,
+    PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+} from '../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -70,8 +70,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Parameters = ({ showParameters, hideParameters }) => {
-    const dispatch = useDispatch();
-
     const classes = useStyles();
 
     const useName = useSelector((state) => state.useName);
@@ -125,12 +123,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
-        dispatch(selectTheme(theme));
+        updateConfigParameters(PARAMS_THEME_KEY, theme);
     };
 
     const handleLineFlowModeChange = (event) => {
         const lineFlowMode = event.target.value;
-        dispatch(selectLineFlowMode(lineFlowMode));
+        updateConfigParameters(PARAMS_LINE_FLOW_MODE_KEY, lineFlowMode);
     };
 
     const handleLineFlowColorModeChange = (event) => {
@@ -138,23 +136,19 @@ const Parameters = ({ showParameters, hideParameters }) => {
         setDisabledFlowAlertThreshold(
             lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
         );
-        dispatch(selectLineFlowColorMode(lineFlowColorMode));
+        updateConfigParameters(
+            PARAMS_LINE_FLOW_COLOR_MODE_KEY,
+            lineFlowColorMode
+        );
     };
 
     const handleLineFlowAlertThresholdChange = (event, value) => {
-        dispatch(selectLineFlowAlertThreshold(value));
-    };
-
-    const handleViewOverloadsTableChange = (event) => {
-        setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && viewOverloadsTable
-        );
-        dispatch(toggleViewOverloadsTableState());
+        updateConfigParameters(PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY, value);
     };
 
     const handleSubstationLayoutChange = (event) => {
         const substationLayout = event.target.value;
-        dispatch(selectSubstationLayout(substationLayout));
+        updateConfigParameters(PARAMS_SUBSTATION_LAYOUT_KEY, substationLayout);
     };
 
     function TabPanel(props) {
@@ -277,9 +271,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function GeneralTab() {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(useName, 'useName', () =>
-                    dispatch(toggleUseNameState())
-                )}
+                {MakeSwitch(useName, 'useName', () => {
+                    updateConfigParameters(PARAMS_USE_NAME_KEY, !useName);
+                })}
+
                 <MakeLineSeparator />
                 <Grid item xs={6}>
                     <Typography component="span" variant="body1">
@@ -309,13 +304,19 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function SingleLineDiagramParameters() {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(diagonalLabel, 'diagonalLabel', () =>
-                    dispatch(toggleDiagonalLabelState())
-                )}
+                {MakeSwitch(diagonalLabel, 'diagonalLabel', () => {
+                    updateConfigParameters(
+                        PARAMS_DIAGONAL_LABEL_KEY,
+                        !diagonalLabel
+                    );
+                })}
                 <MakeLineSeparator />
-                {MakeSwitch(centerLabel, 'centerLabel', () =>
-                    dispatch(toggleCenterLabelState())
-                )}
+                {MakeSwitch(centerLabel, 'centerLabel', () => {
+                    updateConfigParameters(
+                        PARAMS_CENTER_LABEL_KEY,
+                        !centerLabel
+                    );
+                })}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
                     <Typography component="span" variant="body1">
@@ -358,13 +359,19 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const MapParameters = () => {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(lineFullPath, 'lineFullPath', () =>
-                    dispatch(toggleLineFullPathState())
-                )}
+                {MakeSwitch(lineFullPath, 'lineFullPath', () => {
+                    updateConfigParameters(
+                        PARAMS_LINE_FULL_PATH_KEY,
+                        !lineFullPath
+                    );
+                })}
                 <MakeLineSeparator />
-                {MakeSwitch(lineParallelPath, 'lineParallelPath', () =>
-                    dispatch(toggleLineParallelPathState())
-                )}
+                {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {
+                    updateConfigParameters(
+                        PARAMS_LINE_PARALLEL_PATH_KEY,
+                        !lineParallelPath
+                    );
+                })}
                 <MakeLineSeparator />
                 <Grid item xs={6}>
                     <Typography component="span" variant="body1">
@@ -421,11 +428,16 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     alertThresholdMarks
                 )}
                 <MakeLineSeparator />
-                {MakeSwitch(
-                    viewOverloadsTable,
-                    'viewOverloadsTable',
-                    handleViewOverloadsTableChange
-                )}
+                {MakeSwitch(viewOverloadsTable, 'viewOverloadsTable', () => {
+                    setDisabledFlowAlertThreshold(
+                        lineFlowColorMode === 'nominalVoltage' &&
+                            viewOverloadsTable
+                    );
+                    updateConfigParameters(
+                        PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+                        !viewOverloadsTable
+                    );
+                })}
             </Grid>
         );
     };
