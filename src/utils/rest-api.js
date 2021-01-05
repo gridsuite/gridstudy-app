@@ -12,10 +12,11 @@ const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
+const PREFIX_CONFIG_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/config-notification';
+const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 
-const PREFIX_APPS_URLS_QUERIES = process.env.REACT_APP_APPS_URLS;
-
-const ENV_VARIABLES = fetch('env.json');
+const APPS_METADATA_SERVER_URL = fetch('env.json');
 
 function getToken() {
     const state = store.getState();
@@ -33,6 +34,32 @@ function backendFetch(url, init) {
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
 
     return fetch(url, initCopy);
+}
+
+export function fetchConfigParameters() {
+    console.info('Fetching UI configuration params ...');
+    const fetchParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
+    return backendFetch(fetchParams).then((res) => {
+        return res.json();
+    });
+}
+
+export function updateConfigParameters(name, value) {
+    console.info('updating parameters : ' + name + ' : ' + value);
+    const updateParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
+    backendFetch(updateParams, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([
+            {
+                name: name,
+                value: value,
+            },
+        ]),
+    }).then();
 }
 
 export function fetchStudies() {
@@ -361,6 +388,20 @@ export function fetchSecurityAnalysisResult(studyName, userId) {
     return backendFetch(url, { method: 'get' });
 }
 
+export function fetchSecurityAnalysisStatus(studyName, userId) {
+    console.info('Fetching security analysis status on ' + studyName + '...');
+    const url = getStudyUrl(studyName, userId) + '/security-analysis/status';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then(function (response) {
+        if (response.ok) {
+            return response.text();
+        } else {
+            console.error(response);
+            return Promise.resolve(0);
+        }
+    });
+}
+
 export function fetchContingencyLists() {
     console.info('Fetching contingency lists');
     const url = PREFIX_ACTIONS_QUERIES + '/v1/contingency-lists';
@@ -437,6 +478,27 @@ export function connectNotificationsWsUpdateStudies() {
     return reconnectingWebSocket;
 }
 
+export function connectNotificationsWsUpdateConfig() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/notify';
+
+    let webSocketUrlWithToken;
+    webSocketUrlWithToken = webSocketUrl + '?access_token=' + getToken();
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        webSocketUrlWithToken
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update config ui ' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
+}
+
 export function getAvailableExportFormats() {
     console.info('get export formats');
     const getExportFormatsUrl =
@@ -459,17 +521,12 @@ export function getExportUrl(userId, studyName, exportFormat) {
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    let url;
-    return ENV_VARIABLES.then((res) => res.json()).then((res) => {
-        if (res.isRunningInsideDockerCompose) {
-            url = PREFIX_APPS_URLS_QUERIES + '/dev-urls.json';
-        } else {
-            url = PREFIX_APPS_URLS_QUERIES + '/prod-urls.json';
-        }
-        console.log(url);
-        return backendFetch(url).then((response) => {
-            return response.json();
-        });
+    return APPS_METADATA_SERVER_URL.then((res) => res.json()).then((res) => {
+        return fetch(res.appsMetadataServerUrl + '/apps-metadata.json').then(
+            (response) => {
+                return response.json();
+            }
+        );
     });
 }
 

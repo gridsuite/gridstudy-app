@@ -18,11 +18,13 @@ import CardContent from '@material-ui/core/CardContent';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
+import { useSnackbar } from 'notistack';
 
 import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg';
 import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
 import { ReactComponent as UcteLogo } from '../images/ucte_logo.svg';
 import { ReactComponent as IeeeLogo } from '../images/ieee_logo.svg';
+import { ReactComponent as MatpowerLogo } from '../images/matpower_logo.svg';
 
 import {
     loadStudiesSuccess,
@@ -103,7 +105,19 @@ const useStyles = makeStyles((theme) => ({
     container: {
         position: 'relative',
     },
+    contentStyle: {
+        fontWeight: 400,
+        textTransform: 'lowercase',
+    },
 }));
+
+const CustomTypography = withStyles({
+    root: {
+        textTransform: 'uppercase',
+        fontWeight: 500,
+        fontSize: '16px',
+    },
+})(Typography);
 
 const DonwnloadIframe = 'downloadIframe';
 /**
@@ -131,6 +145,8 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
             case 'IEEE-CDF':
             case 'IEEE CDF': // for powsybl <= 3.1 compatibility
                 return <IeeeLogo className={classes.logo} />;
+            case 'MATPOWER':
+                return <MatpowerLogo className={classes.logo} />;
             default:
                 break;
         }
@@ -381,18 +397,24 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 </CardActions>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
-                        <Typography variant="button">
-                            <FormattedMessage id="studyName" />
-                        </Typography>
-                        <Typography variant="body2" paragraph>
-                            {study.studyName}
-                        </Typography>
-                        <Typography variant="button">
-                            <FormattedMessage id="studyDescription" />
-                        </Typography>
-                        <Typography variant="body2" paragraph>
-                            {study.description ? study.description : '—'}
-                        </Typography>
+                        <CustomTypography>
+                            <FormattedMessage id="studyName" />:{' '}
+                            <span className={classes.contentStyle}>
+                                {study.studyName}
+                            </span>
+                        </CustomTypography>
+                        <CustomTypography>
+                            <FormattedMessage id="studyDescription" />:{' '}
+                            <span className={classes.contentStyle}>
+                                {study.description ? study.description : '—'}
+                            </span>
+                        </CustomTypography>
+                        <CustomTypography>
+                            <FormattedMessage id="owner" />:{' '}
+                            <span className={classes.contentStyle}>
+                                {study.userId}
+                            </span>
+                        </CustomTypography>
                     </CardContent>
                 </Collapse>
             </Card>
@@ -449,6 +471,8 @@ StudyCard.propTypes = {
  * @param {EventListener} onClick Action to open the study
  */
 const StudyManager = ({ onClick }) => {
+    const intl = useIntl();
+
     const dispatch = useDispatch();
     const websocketExpectedCloseRef = useRef();
 
@@ -458,6 +482,8 @@ const StudyManager = ({ onClick }) => {
     );
 
     const classes = useStyles();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const dispatchStudies = useCallback(() => {
         fetchStudyCreationRequests().then((studies) => {
@@ -469,10 +495,35 @@ const StudyManager = ({ onClick }) => {
         // Note: dispatch doesn't change
     }, [dispatch]);
 
+    const displayErrorIfExist = useCallback(
+        (event) => {
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers) {
+                const error = eventData.headers['error'];
+                if (error && error !== undefined) {
+                    const studyName = eventData.headers['studyName'];
+                    const errorMessage =
+                        intl.formatMessage({ id: 'studyCreatingError' }) +
+                        ' : ' +
+                        studyName +
+                        '\n\n' +
+                        error;
+                    enqueueSnackbar(errorMessage, {
+                        variant: 'error',
+                        persist: true,
+                        style: { whiteSpace: 'pre-line' },
+                    });
+                }
+            }
+        },
+        [enqueueSnackbar, intl]
+    );
+
     const connectNotificationsUpdateStudies = useCallback(() => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
+            displayErrorIfExist(event);
             dispatchStudies();
         };
         ws.onclose = function (event) {
@@ -484,7 +535,7 @@ const StudyManager = ({ onClick }) => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [dispatchStudies]);
+    }, [dispatchStudies, displayErrorIfExist]);
 
     useEffect(() => {
         dispatchStudies();
@@ -544,7 +595,7 @@ const StudyManager = ({ onClick }) => {
                 id={DonwnloadIframe}
                 name={DonwnloadIframe}
                 title={DonwnloadIframe}
-                style={{ visibility: 'hidden', width: 0, height: 0 }}
+                style={{ display: 'none' }}
             />
         </Container>
     );

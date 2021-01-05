@@ -4,6 +4,7 @@
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
     "studyDescription": "study description",
+    "owner": "Owner",
     "caseName": "case name",
     "uploadCase": "Upload case",
     "public": "public",
@@ -178,6 +179,9 @@
     "SmartWithVerticalCompactionSubstationLayout": "Smart avec vertical compaction",
     "openSubstation": "Open the substation",
 
-    "ConstraintsFromContingencies": "Constraints from contingencies",
-    "ContingenciesFromConstraints": "Contingencies from constraints"
+    "ConstraintsFromContingencies": "Contingencies -> constraints",
+    "ContingenciesFromConstraints": "Constraints -> contingencies",
+
+    "Equipment": "Equipment",
+    "Constraint": "Constraint"
 }

@@ -18,6 +18,9 @@ import PropTypes from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { selectItemNetwork } from '../redux/actions';
+
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
@@ -32,8 +35,9 @@ import { fetchSvg } from '../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
-import { useSelector, useDispatch } from 'react-redux';
-
+import useTheme from '@material-ui/core/styles/useTheme';
+import Arrow from '../images/arrow.svg';
+import ArrowHover from '../images/arrow_hover.svg';
 import { fullScreenSingleLineDiagram } from '../redux/actions';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
@@ -144,6 +148,25 @@ const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
 const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
 
+let arrowSvg;
+let arrowHoverSvg;
+
+fetch(Arrow)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowSvg = data;
+    });
+
+fetch(ArrowHover)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowHoverSvg = data;
+    });
+
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
@@ -156,13 +179,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
-    const [fullScreenWidth, setFullScreenWidth] = useState(0);
-
-    const [svgFullWidth, setSvgFullWidth] = useState(null);
-
-    const fullWidth = document.querySelector('body').offsetWidth;
-    const widthListNetwork = document.getElementById('network-list')
-        .offsetWidth;
+    const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
         if (svgDraw.current) {
@@ -171,7 +188,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         updateState((s) => !s);
     }, []);
 
-    const getSgv = useCallback(() => {
+    useImperativeHandle(
+        ref,
+        () => ({
+            reloadSvg: forceUpdate,
+        }),
+        // Note: forceUpdate doesn't change
+        [forceUpdate]
+    );
+
+    useEffect(() => {
         if (props.svgUrl) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
@@ -197,21 +223,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl]);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
-
-    useEffect(() => {
-        getSgv();
-        setSvgFullWidth(fullWidth - widthListNetwork);
-    }, [forceState, getSgv]);
+    }, [props.svgUrl, forceState]);
 
     const {
         onNextVoltageLevelClick,
@@ -220,28 +232,124 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgType,
     } = props;
 
-    const calcMargins = useCallback(() => {
-        return {
-            top: fullScreen ? 100 : 100,
-            left: fullScreen
-                ? svgType === SvgType.VOLTAGE_LEVEL
-                    ? -(svgFullWidth / 6)
-                    : 100
-                : 100,
-            bottom: fullScreen ? 100 : 200,
-            right: fullScreen
-                ? svgType === SvgType.VOLTAGE_LEVEL
-                    ? -(svgFullWidth / 6)
-                    : 100
-                : 100,
-        };
-    }, [fullScreen]);
-
     useLayoutEffect(() => {
+        function createSvgArrow(element, position, x, highestY, lowestY) {
+            let svgInsert = document.getElementById(element.id).parentElement;
+            let group = document.createElementNS(
+                'http://www.w3.org/2000/svg',
+                'g'
+            );
+
+            let y;
+            if (position === 'TOP') {
+                y = lowestY - 65;
+                x = x - 22;
+            } else {
+                y = highestY + 65;
+                x = x + 22;
+            }
+
+            if (position === 'BOTTOM') {
+                group.setAttribute(
+                    'transform',
+                    'translate(' + x + ',' + y + ') rotate(180)'
+                );
+            } else {
+                group.setAttribute(
+                    'transform',
+                    'translate(' + x + ',' + y + ')'
+                );
+            }
+
+            group.innerHTML = arrowSvg + arrowHoverSvg;
+
+            //set initial colors depending on the theme
+            group.getElementsByClassName('arrow_hover')[0].style.fill =
+                theme.circle.fill;
+            group.getElementsByClassName('arrow')[0].style.fill =
+                theme.arrow.fill;
+
+            svgInsert.appendChild(group);
+
+            // handling the navigation between voltage levels
+            group.style.cursor = 'pointer';
+            group.addEventListener('click', function (e) {
+                const id = document.getElementById(element.id).id;
+                const meta = svg.metadata.nodes.find(
+                    (other) => other.id === id
+                );
+                onNextVoltageLevelClick(meta.nextVId);
+            });
+
+            //handling the color changes when hovering
+            group.addEventListener('mouseenter', function (e) {
+                e.target.querySelector('.arrow_hover').style.fill =
+                    theme.circle_hover.fill;
+                e.target.querySelector('.arrow').style.fill =
+                    theme.arrow_hover.fill;
+            });
+
+            group.addEventListener('mouseleave', function (e) {
+                e.target.querySelector('.arrow_hover').style.fill =
+                    theme.circle.fill;
+                e.target.querySelector('.arrow').style.fill = theme.arrow.fill;
+            });
+        }
+
+        function addNavigationArrow(svg) {
+            let navigable = svg.metadata.nodes.filter(
+                (el) => el.nextVId !== null
+            );
+
+            let vlList = svg.metadata.nodes.map((element) => element.vid);
+            vlList = vlList.filter(
+                (element, index) =>
+                    element !== '' && vlList.indexOf(element) === index
+            );
+
+            //remove arrows if the arrow points to the current svg
+            navigable = navigable.filter((element) => {
+                return vlList.indexOf(element.nextVId) === -1;
+            });
+
+            let highestY;
+            let lowestY;
+            let y;
+
+            navigable.forEach((element) => {
+                let transform = document
+                    .getElementById(element.id)
+                    .getAttribute('transform')
+                    .split(',');
+
+                y = parseInt(transform[1].match(/\d+/));
+                if (highestY === undefined || y > highestY) {
+                    highestY = y;
+                }
+                if (lowestY === undefined || y < lowestY) {
+                    lowestY = y;
+                }
+            });
+
+            navigable.forEach((element) => {
+                let transform = document
+                    .getElementById(element.id)
+                    .getAttribute('transform')
+                    .split(',');
+                let x = parseInt(transform[0].match(/\d+/));
+                createSvgArrow(
+                    element,
+                    element.direction,
+                    x,
+                    highestY,
+                    lowestY
+                );
+            });
+        }
+
         if (svg.svg) {
-            const widthOfFullScreen = document.getElementById('sld-svg')
-                .offsetWidth;
-            setFullScreenWidth(widthOfFullScreen);
+            //need to add it there so the bbox has the right size
+            addNavigationArrow(svg);
             // calculate svg width and height from svg bounding box
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -276,7 +384,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: calcMargins(),
+                    margins: { top: 100, left: 100, right: 100, bottom: 200 },
                 });
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);
@@ -297,38 +405,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
                     margins: {
                         top: event.detail.level < 0.5 ? 50 : 100,
-                        left:
-                            event.detail.level < 1
-                                ? svgType === SvgType.VOLTAGE_LEVEL
-                                    ? -(svgFullWidth / 6)
-                                    : 50
-                                : 100,
-                        right:
-                            event.detail.level < 1
-                                ? svgType === SvgType.VOLTAGE_LEVEL
-                                    ? -(svgFullWidth / 6)
-                                    : 50
-                                : 100,
+                        left: event.detail.level < 0.5 ? 50 : 100,
+                        right: event.detail.level < 0.5 ? 50 : 100,
                         bottom: event.detail.level < 0.5 ? 50 : 200,
                     },
                 });
             });
-
-            // handling the navigation between voltage levels
-            const elements = svg.metadata.nodes.filter(
-                (el) => el.nextVId !== null
-            );
-            elements.forEach((el) => {
-                const domEl = document.getElementById(el.id);
-                domEl.style.cursor = 'pointer';
-                domEl.addEventListener('click', function (e) {
-                    const id = e.target.parentElement.id;
-                    const meta = svg.metadata.nodes.find(
-                        (other) => other.id === id
-                    );
-                    onNextVoltageLevelClick(meta.nextVId);
-                });
-            });
+            addNavigationArrow(svg);
 
             // handling the click on a switch
             if (!isComputationRunning) {
@@ -350,7 +433,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     });
                 });
             }
-
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
@@ -360,8 +442,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onBreakerClick,
         isComputationRunning,
         svgType,
-        calcMargins,
-        fullScreenWidth,
+        theme,
     ]);
 
     useEffect(() => {
@@ -372,6 +453,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
+            dispatch(selectItemNetwork(null));
             dispatch(fullScreenSingleLineDiagram(false));
             props.onClose();
         }
@@ -379,7 +461,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const showFullScreen = () => {
         dispatch(fullScreenSingleLineDiagram(true));
-        getSgv();
     };
 
     const hideFullScreen = () => {

@@ -4,6 +4,7 @@
     "caseExist": "La situation existe-t-elle déjà ?",
     "studyName": "nom de l'étude",
     "studyDescription": "description de l'étude",
+    "owner": "Propriétaire",
     "caseName": "nom de la situation",
     "uploadCase": "télécharger la situation",
     "public": "publique",
@@ -178,6 +179,9 @@
     "SmartWithVerticalCompactionSubstationLayout": "Smart avec compaction verticale",
     "openSubstation": "Ouvrir le site",
 
-    "ConstraintsFromContingencies": "Contraintes par contingences",
-    "ContingenciesFromConstraints": "Contingences par contraintes"
+    "ConstraintsFromContingencies": "Contingences -> contraintes",
+    "ContingenciesFromConstraints": "Contraintes -> contingences",
+
+    "Equipment": "Ouvrage",
+    "Constraint": "Contrainte"
 }

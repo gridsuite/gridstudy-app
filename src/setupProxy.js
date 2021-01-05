@@ -1,14 +1,6 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 module.exports = function (app) {
     app.use(
-        createProxyMiddleware(
-            'http://localhost:8070/api/apps-metadata-server',
-            {
-                pathRewrite: { '^/api/apps-metadata-server/': '/' },
-            }
-        )
-    );
-    app.use(
         createProxyMiddleware('http://localhost:5001/api/study-server', {
             pathRewrite: { '^/api/study-server/': '/' },
         })
@@ -28,6 +20,16 @@ module.exports = function (app) {
     );
 
     app.use(
+        createProxyMiddleware(
+            'http://localhost:9000/ws/gateway/config-notification',
+            {
+                pathRewrite: { '^/ws/gateway/': '/' },
+                ws: true,
+            }
+        )
+    );
+
+    app.use(
         createProxyMiddleware('http://localhost:9000/api/gateway', {
             pathRewrite: { '^/api/gateway/': '/' },
         })
@@ -38,5 +40,15 @@ module.exports = function (app) {
             pathRewrite: { '^/ws/notification-server/': '/' },
             ws: true,
         })
+    );
+
+    app.use(
+        createProxyMiddleware(
+            'http://localhost:5010/ws/config-notification-server',
+            {
+                pathRewrite: { '^/ws/config-notification-server': '/' },
+                ws: true,
+            }
+        )
     );
 };
