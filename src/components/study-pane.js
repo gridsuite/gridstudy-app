@@ -22,11 +22,24 @@ import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
+    fetchGenerators,
     fetchLinePositions,
+    fetchLines,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
     fetchSubstationPositions,
+    fetchSubstations,
+    fetchThreeWindingsTransformers,
+    fetchTwoWindingsTransformers,
+    fetchLoads,
+    fetchDanglingLines,
+    fetchBatteries,
+    fetchHvdcLines,
+    fetchLccConverterStations,
+    fetchVscConverterStations,
+    fetchShuntCompensators,
+    fetchStaticVarCompensators,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
@@ -346,30 +359,65 @@ const StudyPane = (props) => {
         updateSecurityAnalysisResult();
         updateSecurityAnalysisStatus();
 
-        const equipments = fetchAllEquipments(studyName, userId);
+        const substations = fetchSubstations(studyName, userId);
+        const lines = fetchLines(studyName, userId);
+        const twoWindingsTransformers = fetchTwoWindingsTransformers(
+            studyName,
+            userId
+        );
+        const threeWindingsTransformers = fetchThreeWindingsTransformers(
+            studyName,
+            userId
+        );
+        const generators = fetchGenerators(studyName, userId);
+        const loads = fetchLoads(studyName, userId);
+        const batteries = fetchBatteries(studyName, userId);
+        const danglingLines = fetchDanglingLines(studyName, userId);
+        const hvdcLines = fetchHvdcLines(studyName, userId);
+        const lccConverterStations = fetchLccConverterStations(
+            studyName,
+            userId
+        );
+        const vscConverterStations = fetchVscConverterStations(
+            studyName,
+            userId
+        );
+        const shuntCompensators = fetchShuntCompensators(studyName, userId);
+        const staticVarCompensators = fetchStaticVarCompensators(
+            studyName,
+            userId
+        );
 
-        Promise.all([equipments])
+        Promise.all([
+            substations,
+            lines,
+            twoWindingsTransformers,
+            threeWindingsTransformers,
+            generators,
+            loads,
+            batteries,
+            danglingLines,
+            hvdcLines,
+            lccConverterStations,
+            vscConverterStations,
+            shuntCompensators,
+            staticVarCompensators,
+        ])
             .then((values) => {
                 const network = new Network();
-                network.setSubstations(values[0].substations);
-                network.setLines(values[0].lines);
-                network.setTwoWindingsTransformers(
-                    values[0].twoWindingsTransformers
-                );
-                network.setThreeWindingsTransformers(
-                    values[0].threeWindingsTransformers
-                );
-                network.setGenerators(values[0].generators);
-                network.setLoads(values[0].loads);
-                network.setBatteries(values[0].batteries);
-                network.setDanglingLines(values[0].danglingLines);
-                network.setLccConverterStations(values[0].lccConverterStations);
-                network.setVscConverterStations(values[0].vscConverterStations);
-                network.setHvdcLines(values[0].hvdcLines);
-                network.setShuntCompensators(values[0].shuntCompensators);
-                network.setStaticVarCompensators(
-                    values[0].staticVarCompensators
-                );
+                network.setSubstations(values[0]);
+                network.setLines(values[1]);
+                network.setTwoWindingsTransformers(values[2]);
+                network.setThreeWindingsTransformers(values[3]);
+                network.setGenerators(values[4]);
+                network.setLoads(values[5]);
+                network.setBatteries(values[6]);
+                network.setDanglingLines(values[7]);
+                network.setHvdcLines(values[8]);
+                network.setLccConverterStations(values[9]);
+                network.setVscConverterStations(values[10]);
+                network.setShuntCompensators(values[11]);
+                network.setStaticVarCompensators(values[12]);
 
                 dispatch(loadNetworkSuccess(network));
             })
