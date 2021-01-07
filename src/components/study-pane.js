@@ -45,6 +45,7 @@ import {
     loadGeoDataSuccess,
     loadNetworkSuccess,
     openStudy,
+    selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
 import Network from './network/network';
@@ -71,7 +72,7 @@ import LoadFlowResult from './loadflow-result';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
-import { MenuOpen } from '@material-ui/icons';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const drawerWidth = 300;
 
@@ -216,6 +217,8 @@ const StudyPane = (props) => {
         showContingencyListSelector,
         setShowContingencyListSelector,
     ] = useState(false);
+
+    const [visibleSubstation, setVisibleSubstation] = useState(null);
 
     const dispatch = useDispatch();
 
@@ -530,6 +533,7 @@ const StudyPane = (props) => {
 
     const showSubstationDiagram = useCallback(
         (substationId) => {
+            dispatch(selectItemNetwork(substationId));
             setUpdateSwitchMsg('');
             history.replace(
                 '/' +
@@ -543,7 +547,7 @@ const StudyPane = (props) => {
             );
         },
         // Note: studyName and history don't change
-        [studyName, userId, history]
+        [studyName, userId, history, dispatch]
     );
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -672,6 +676,47 @@ const StudyPane = (props) => {
         closeChoiceVoltageLevelMenu();
     }
 
+    function onClickNmKConstraint(row, column) {
+        if (network) {
+            if (column.dataKey === 'subjectId') {
+                let vlId;
+                let substationId;
+
+                let equipment = network.getLineOrTransformer(row.subjectId);
+                if (equipment) {
+                    if (row.side) {
+                        vlId =
+                            row.side === 'ONE'
+                                ? equipment.voltageLevelId1
+                                : row.side === 'TWO'
+                                ? equipment.voltageLevelId2
+                                : equipment.voltageLevelId3;
+                    } else {
+                        vlId = equipment.voltageLevelId1;
+                    }
+                    const vl = network.getVoltageLevel(vlId);
+                    substationId = vl.substationId;
+                } else {
+                    equipment = network.getVoltageLevel(row.subjectId);
+                    if (equipment) {
+                        vlId = equipment.id;
+                        substationId = equipment.substationId;
+                    }
+                }
+
+                if (vlId) {
+                    setDisplayedVoltageLevelId(null);
+                    setDisplayedSubstationId(null);
+                    dispatch(selectItemNetwork(vlId));
+                    props.onChangeTab(0); // switch to map view
+                    showVoltageLevelDiagram(vlId); // show voltage level
+                    setVisibleSubstation(substationId);
+                    setDisplayedVoltageLevelId(vlId);
+                }
+            }
+        }
+    }
+
     function renderMapView() {
         let displayedVoltageLevel;
         if (network) {
@@ -777,6 +822,7 @@ const StudyPane = (props) => {
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
                             hideExplorer={toggleDrawer}
+                            visibleSubstation={visibleSubstation}
                         />
                     </div>
                 </Drawer>
@@ -822,7 +868,7 @@ const StudyPane = (props) => {
                             })}
                         >
                             <IconButton onClick={toggleDrawer}>
-                                <MenuOpen />
+                                <ChevronRightIcon />
                             </IconButton>
                         </div>
                     )}
@@ -977,7 +1023,10 @@ const StudyPane = (props) => {
     function renderSecurityAnalysisResult() {
         return (
             <Paper className={classes.main}>
-                <SecurityAnalysisResult result={securityAnalysisResult} />
+                <SecurityAnalysisResult
+                    result={securityAnalysisResult}
+                    onClickNmKConstraint={onClickNmKConstraint}
+                />
             </Paper>
         );
     }
@@ -1051,6 +1100,7 @@ StudyPane.defaultProps = {
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
+    onChangeTab: PropTypes.func,
 };
 
 export default StudyPane;

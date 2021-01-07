@@ -18,6 +18,9 @@ import PropTypes from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 
+import { useDispatch } from 'react-redux';
+import { selectItemNetwork } from '../redux/actions';
+
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
@@ -139,6 +142,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
     const svgDraw = useRef();
+    const dispatch = useDispatch();
 
     const [forceState, updateState] = useState(false);
 
@@ -196,15 +200,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isComputationRunning,
         svgType,
     } = props;
-
-    const calcMargins = (svgType, width, height) => {
-        return {
-            top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            left: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-            bottom: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            right: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-        };
-    };
 
     useLayoutEffect(() => {
         function createSvgArrow(element, position, x, highestY, lowestY) {
@@ -352,13 +347,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             const draw = SVG()
                 .addTo(divElt)
                 .size(sizeWidth, sizeHeight)
-                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
+                .viewbox(xOrigin, yOrigin, sizeWidth, sizeHeight)
                 .panZoom({
                     panning: true,
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: calcMargins(svgType, sizeWidth, sizeHeight),
+                    margins: { top: 100, left: 100, right: 100, bottom: 200 },
                 });
             if (svgPrevViewbox.current) {
                 draw.viewbox(svgPrevViewbox.current);
@@ -370,6 +365,20 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             });
             draw.on('panEnd', function (evt) {
                 divElt.style.cursor = 'default';
+            });
+            draw.on('zoom', function (event) {
+                draw.panZoom({
+                    panning: true,
+                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
+                    zoomMax: 10,
+                    zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
+                    margins: {
+                        top: event.detail.level < 0.5 ? 50 : 100,
+                        left: event.detail.level < 0.5 ? 50 : 100,
+                        right: event.detail.level < 0.5 ? 50 : 100,
+                        bottom: event.detail.level < 0.5 ? 50 : 200,
+                    },
+                });
             });
             addNavigationArrow(svg);
 
@@ -413,6 +422,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
+            dispatch(selectItemNetwork(null));
             props.onClose();
         }
     };

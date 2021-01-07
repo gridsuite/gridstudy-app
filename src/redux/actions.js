@@ -81,8 +81,8 @@ export function removeSelectedFile() {
 
 export const USE_NAME = 'USE_NAME';
 
-export function toggleUseNameState() {
-    return { type: USE_NAME };
+export function selectUseName(useName) {
+    return { type: USE_NAME, useName: useName };
 }
 
 export const USER = 'USER';
@@ -93,26 +93,26 @@ export function setLoggedUser(user) {
 
 export const CENTER_LABEL = 'CENTER_LABEL';
 
-export function toggleCenterLabelState() {
-    return { type: CENTER_LABEL };
+export function selectCenterLabelState(centerLabel) {
+    return { type: CENTER_LABEL, centerLabel: centerLabel };
 }
 
 export const DIAGONAL_LABEL = 'DIAGONAL_LABEL';
 
-export function toggleDiagonalLabelState() {
-    return { type: DIAGONAL_LABEL };
+export function selectDiagonalLabelState(diagonalLabel) {
+    return { type: DIAGONAL_LABEL, diagonalLabel: diagonalLabel };
 }
 
 export const LINE_FULL_PATH = 'LINE_FULL_PATH';
 
-export function toggleLineFullPathState() {
-    return { type: LINE_FULL_PATH };
+export function selectLineFullPathState(lineFullPath) {
+    return { type: LINE_FULL_PATH, lineFullPath: lineFullPath };
 }
 
 export const LINE_PARALLEL_PATH = 'LINE_PARALLEL_PATH';
 
-export function toggleLineParallelPathState() {
-    return { type: LINE_PARALLEL_PATH };
+export function selectLineParallelPathState(lineParallelPath) {
+    return { type: LINE_PARALLEL_PATH, lineParallelPath: lineParallelPath };
 }
 
 export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
@@ -153,8 +153,11 @@ export function studyUpdated(eventData) {
 
 export const VIEW_OVERLOADS_TABLE = 'VIEW_OVERLOADS_TABLE';
 
-export function toggleViewOverloadsTableState() {
-    return { type: VIEW_OVERLOADS_TABLE };
+export function selectViewOverloadsTableState(viewOverloadsTable) {
+    return {
+        type: VIEW_OVERLOADS_TABLE,
+        viewOverloadsTable: viewOverloadsTable,
+    };
 }
 
 export const INCREASE_RESULT_COUNT = 'INCREASE_RESULT_COUNT';
@@ -183,4 +186,13 @@ export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 
 export function selectSubstationLayout(substationLayout) {
     return { type: SUBSTATION_LAYOUT, substationLayout: substationLayout };
+}
+
+export const SELECTED_ITEM_NETWORK = 'SELECTED_ITEM_NETWORK';
+
+export function selectItemNetwork(selectItemNetwork) {
+    return {
+        type: SELECTED_ITEM_NETWORK,
+        selectItemNetwork: selectItemNetwork,
+    };
 }
