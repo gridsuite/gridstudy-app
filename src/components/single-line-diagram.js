@@ -108,8 +108,9 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     fullScreen: {
-        top: '-48px',
-        position: 'relative',
+        bottom: 5,
+        right: 5,
+        position: 'absolute',
         textAlign: 'right',
         padding: '5px 10px 0',
     },
