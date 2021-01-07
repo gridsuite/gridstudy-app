@@ -76,59 +76,15 @@ export default class GeoData {
         );
         if (detailed) {
             const linePositions = this.linePositionsById.get(line.id);
-
+            console.info(linePositions);
             // Is there any position for this line ?
             if (linePositions) {
-                // Get the first line position
-                const firstPosition = linePositions[0];
+                const positions = new Array(linePositions.length);
 
-                // Distance between substation 1 and the first line position
-                const distSub1 = getDistance(
-                    {
-                        latitude: substationPosition1[1],
-                        longitude: substationPosition1[0],
-                    },
-                    {
-                        latitude: firstPosition.lat,
-                        longitude: firstPosition.lon,
-                    }
-                );
-
-                // Distance between substation 2 and the first line position
-                const distSub2 = getDistance(
-                    {
-                        latitude: substationPosition2[1],
-                        longitude: substationPosition2[0],
-                    },
-                    {
-                        latitude: firstPosition.lat,
-                        longitude: firstPosition.lon,
-                    }
-                );
-
-                // Create an array with 2 more position to add inside the two substation positions
-                const positions = new Array(linePositions.length + 2);
-
-                // Add the endpoints (side 1, side 2)
-                positions[0] = substationPosition1;
-                positions[positions.length - 1] = substationPosition2;
-
-                // If the first line position was closer from the sub1, add the sub1 + line + sub2
-                if (distSub1 < distSub2) {
-                    for (const [index, position] of linePositions.entries()) {
-                        positions[index + 1] = [position.lon, position.lat];
-                    }
+                for (const [index, position] of linePositions.entries()) {
+                    positions[index] = [position.lon, position.lat];
                 }
-                // If the first line position was closer from the sub2, add the sub1 + invert(line) + sub2
-                else {
-                    // reverse positions order to go from side 1 to 2
-                    for (const [index, position] of linePositions.entries()) {
-                        positions[positions.length - 2 - index] = [
-                            position.lon,
-                            position.lat,
-                        ];
-                    }
-                }
+
                 return positions;
             }
         }
