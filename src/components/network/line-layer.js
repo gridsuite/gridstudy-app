@@ -31,12 +31,10 @@ export const LineFlowColorMode = {
 const noDashArray = [0, 0];
 const dashArray = [15, 10];
 
-function doDash(line) {
-    return !line.terminal1Connected || !line.terminal2Connected;
-}
-
-function isDisconnected(line) {
-    return !line.terminal1Connected && !line.terminal2Connected;
+function doDash(lineConnection) {
+    return (
+        !lineConnection.terminal1Connected || !lineConnection.terminal2Connected
+    );
 }
 
 function getArrowDirection(p) {
@@ -99,9 +97,12 @@ function getLineLoadingZoneColor(zone) {
     }
 }
 
-function getLineColor(line, nominalVoltageColor, props) {
+function getLineColor(line, nominalVoltageColor, props, lineConnection) {
     if (props.lineFlowColorMode === LineFlowColorMode.NOMINAL_VOLTAGE) {
-        if (isDisconnected(line)) {
+        if (
+            !lineConnection.terminal1Connected &&
+            !lineConnection.terminal2Connected
+        ) {
             return props.disconnectedLineColor;
         } else {
             return nominalVoltageColor;
@@ -168,15 +169,19 @@ class LineLayer extends CompositeLayer {
 
         this.state = {
             compositeData: [],
+            linesConnection: new Map(),
         };
     }
 
     //TODO this is a huge function, refactor
     updateState({ props, oldProps, changeFlags }) {
         let compositeData;
+        let linesConnection;
 
         if (changeFlags.dataChanged) {
             compositeData = [];
+
+            linesConnection = new Map();
 
             if (props.network != null && props.geoData != null) {
                 // group lines by nominal voltage
@@ -208,6 +213,11 @@ class LineLayer extends CompositeLayer {
                     let mapOriginDestination = new Map();
                     compositeData.mapOriginDestination = mapOriginDestination;
                     compositeData.lines.forEach((line) => {
+                        linesConnection.set(line.id, {
+                            terminal1Connected: line.terminal1Connected,
+                            terminal2Connected: line.terminal2Connected,
+                        });
+
                         const key =
                             line.voltageLevelId1 > line.voltageLevelId2
                                 ? line.voltageLevelId1 +
@@ -227,6 +237,16 @@ class LineLayer extends CompositeLayer {
             }
         } else {
             compositeData = this.state.compositeData;
+            linesConnection = this.state.linesConnection;
+
+            if (props.updatedLines !== oldProps.updatedLines) {
+                props.updatedLines.forEach((line1) => {
+                    linesConnection.set(line1.id, {
+                        terminal1Connected: line1.terminal1Connected,
+                        terminal2Connected: line1.terminal2Connected,
+                    });
+                });
+            }
         }
 
         if (
@@ -425,11 +445,15 @@ class LineLayer extends CompositeLayer {
                 });
             });
         }
-        this.setState({ compositeData: compositeData });
+        this.setState({
+            compositeData: compositeData,
+            linesConnection: linesConnection,
+        });
     }
 
     renderLayers() {
         const layers = [];
+
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.compositeData.forEach((compositeData) => {
             const nominalVoltageColor = this.props.getNominalVoltageColor(
@@ -449,7 +473,12 @@ class LineLayer extends CompositeLayer {
                             this.props.lineFullPath
                         ),
                     getColor: (line) =>
-                        getLineColor(line, nominalVoltageColor, this.props),
+                        getLineColor(
+                            line,
+                            nominalVoltageColor,
+                            this.props,
+                            this.state.linesConnection.get(line.id)
+                        ),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angle,
@@ -466,10 +495,14 @@ class LineLayer extends CompositeLayer {
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
+                            this.props.updatedLines,
                         ],
+                        getDashArray: [this.props.updatedLines],
                     },
                     getDashArray: (line) =>
-                        doDash(line) ? dashArray : noDashArray,
+                        doDash(this.state.linesConnection.get(line.id))
+                            ? dashArray
+                            : noDashArray,
                     extensions: [new PathStyleExtension({ dash: true })],
                 })
             );
@@ -493,7 +526,8 @@ class LineLayer extends CompositeLayer {
                         getLineColor(
                             arrow.line,
                             nominalVoltageColor,
-                            this.props
+                            this.props,
+                            this.state.linesConnection.get(arrow.line.id)
                         ),
                     getSize: 700,
                     getSpeedFactor: (arrow) =>
@@ -521,6 +555,7 @@ class LineLayer extends CompositeLayer {
                         getColor: [
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
+                            this.props.updatedLines,
                         ],
                     },
                 })
@@ -537,7 +572,12 @@ class LineLayer extends CompositeLayer {
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
                     getColor: (line) =>
-                        getLineColor(line, nominalVoltageColor, this.props),
+                        getLineColor(
+                            line,
+                            nominalVoltageColor,
+                            this.props,
+                            this.state.linesConnection.get(line.id)
+                        ),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
                     getLineAngle: (line) => line.angle,
@@ -555,6 +595,7 @@ class LineLayer extends CompositeLayer {
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
+                            this.props.updatedLines,
                         ],
                     },
                 })
@@ -571,7 +612,12 @@ class LineLayer extends CompositeLayer {
                     widthMinPixels: 1,
                     widthMaxPixels: 2,
                     getColor: (line) =>
-                        getLineColor(line, nominalVoltageColor, this.props),
+                        getLineColor(
+                            line,
+                            nominalVoltageColor,
+                            this.props,
+                            this.state.linesConnection.get(line.id)
+                        ),
                     getWidth: 2,
                     getLineParallelIndex: (line) => -line.parallelIndex,
                     getLineAngle: (line) => line.angle + Math.PI,
@@ -589,6 +635,7 @@ class LineLayer extends CompositeLayer {
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
+                            this.props.updatedLines,
                         ],
                     },
                 })

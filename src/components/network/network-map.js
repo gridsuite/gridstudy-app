@@ -286,6 +286,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 id: LINE_LAYER_PREFIX,
                 data: props.network.lines,
                 network: props.network,
+                updatedLines: props.updatedLines,
                 geoData: props.geoData,
                 useName: props.useName,
                 getNominalVoltageColor: getNominalVoltageColor,
@@ -402,6 +403,7 @@ NetworkMap.propTypes = {
     lineFlowColorMode: PropTypes.oneOf(Object.values(LineFlowColorMode)),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
     visible: PropTypes.bool,
+    updatedLines: PropTypes.array,
 };
 
 export default React.memo(NetworkMap);
