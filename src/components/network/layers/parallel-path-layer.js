@@ -69,19 +69,18 @@ float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParal
 float offsetCommonSpace = project_pixel_size(offsetPixels);
 vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle), 0, 0.) * instanceLineParallelIndex;
 
-if (instanceLineParallelIndex != 0. ){
-    if(isSegmentEnd && isLastSegment) {
-      float pf = instanceParallelIndexAndProximityFactor[2];
-      trans.x += sin(instanceLineAngle) * pf ;
-      trans.y += cos(instanceLineAngle) * pf;
-    }
-    else if (!isSegmentEnd && isFirstSegment)
-    {
-      float pf = instanceParallelIndexAndProximityFactor[1];
-      trans.x -= sin(instanceLineAngle) * pf;
-      trans.y -= cos(instanceLineAngle) * pf;
-    }
+if(isSegmentEnd && isLastSegment) {
+  float pf = instanceParallelIndexAndProximityFactor[2];
+  trans.x += sin(instanceLineAngle) * pf ;
+  trans.y += cos(instanceLineAngle) * pf;
 }
+else if (!isSegmentEnd && isFirstSegment)
+{
+  float pf = instanceParallelIndexAndProximityFactor[1];
+  trans.x -= sin(instanceLineAngle) * pf;
+  trans.y -= cos(instanceLineAngle) * pf;
+}
+
 trans = trans * offsetCommonSpace;
 gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
 `,
