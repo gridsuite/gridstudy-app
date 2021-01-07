@@ -116,13 +116,6 @@ export default class Network {
     }
 
     updateLines(lines) {
-        this.lines.forEach((line1, index) => {
-            const found = lines.filter((line2) => line2.id === line1.id);
-            this.lines[index] = found.length > 0 ? found[0] : line1;
-        });
-    }
-
-    updateLines(lines) {
         this.updateEquipments(this.lines, lines);
     }
 
@@ -132,16 +125,6 @@ export default class Network {
             elementIdIndexer,
             new Map()
         );
-    }
-
-    updateTwoWindingsTransformers(twoWindingsTransformers) {
-        this.twoWindingsTransformers.forEach((t1, index) => {
-            const found = twoWindingsTransformers.filter(
-                (t2) => t2.id === t1.id
-            );
-            this.twoWindingsTransformers[index] =
-                found.length > 0 ? found[0] : t1;
-        });
     }
 
     updateTwoWindingsTransformers(twoWindingsTransformers) {
@@ -160,16 +143,6 @@ export default class Network {
     }
 
     updateThreeWindingsTransformers(threeWindingsTransformers) {
-        this.threeWindingsTransformers.forEach((t1, index) => {
-            const found = threeWindingsTransformers.filter(
-                (t2) => t2.id === t1.id
-            );
-            this.threeWindingsTransformers[index] =
-                found.length > 0 ? found[0] : t1;
-        });
-    }
-
-    updateThreeWindingsTransformers(threeWindingsTransformers) {
         this.updateEquipments(
             this.threeWindingsTransformers,
             threeWindingsTransformers
@@ -182,13 +155,6 @@ export default class Network {
             elementIdIndexer,
             new Map()
         );
-    }
-
-    updateGenerators(generators) {
-        this.generators.forEach((g1, index) => {
-            const found = generators.filter((g2) => g2.id === g1.id);
-            this.generators[index] = found.length > 0 ? found[0] : g1;
-        });
     }
 
     updateGenerators(generators) {
