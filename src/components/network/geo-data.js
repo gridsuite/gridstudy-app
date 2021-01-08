@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import getDistance from 'geolib/es/getDistance';
 import computeDestinationPoint from 'geolib/es/computeDestinationPoint';
 import cheapRuler from 'cheap-ruler';
 import getGreatCircleBearing from 'geolib/es/getGreatCircleBearing';
