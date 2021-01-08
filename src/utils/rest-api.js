@@ -100,7 +100,7 @@ function getStudyUrl(studyName, userId) {
 }
 
 export function fetchStudy(studyName, userId) {
-    console.info('Fetching studies...');
+    console.info(`Fetching study '${studyName}' for user id '${userId}' ...`);
     const fetchStudiesUrl = getStudyUrl(studyName, userId);
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
@@ -176,12 +176,25 @@ export function fetchSvg(svgUrl) {
     );
 }
 
-export function fetchSubstations(studyName, userId) {
+function getSubstationsIdsListsQueryParams(substationsIds) {
+    if (substationsIds !== undefined && substationsIds.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        substationsIds.forEach((substationId) =>
+            urlSearchParams.append('substationId', substationId)
+        );
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
+export function fetchSubstations(studyName, userId, substationsIds) {
     console.info(
-        `Fetching substations of study '${studyName}' of user '${userId}'...`
+        `Fetching substations of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
     );
     const fetchSubstationsUrl =
-        getStudyUrl(studyName, userId) + '/network-map/substations';
+        getStudyUrl(studyName, userId) +
+        '/network-map/substations' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchSubstationsUrl);
     return backendFetch(fetchSubstationsUrl).then((response) =>
         response.json()
@@ -198,39 +211,78 @@ export function fetchSubstationPositions(studyName, userId) {
     );
 }
 
-export function fetchLines(studyName, userId) {
-    console.info(`Fetching lines of study '${studyName}'...`);
-    const fetchLinesUrl = getStudyUrl(studyName, userId) + '/network-map/lines';
+export function fetchLines(studyName, userId, substationsIds) {
+    console.info(
+        `Fetching lines of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
+    const fetchLinesUrl =
+        getStudyUrl(studyName, userId) +
+        '/network-map/lines' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchLinesUrl);
     return backendFetch(fetchLinesUrl).then((response) => response.json());
 }
 
-export function fetchTwoWindingsTransformers(studyName, userId) {
-    console.info(`Fetching 2 windings transformers of study '${studyName}'...`);
+export function fetchTwoWindingsTransformers(
+    studyName,
+    userId,
+    substationsIds
+) {
+    console.info(
+        `Fetching 2 windings transformers of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
     const fetchTwoWindingsTransformersUrl =
-        getStudyUrl(studyName, userId) + '/network-map/2-windings-transformers';
+        getStudyUrl(studyName, userId) +
+        '/network-map/2-windings-transformers' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchTwoWindingsTransformersUrl);
     return backendFetch(fetchTwoWindingsTransformersUrl).then((response) =>
         response.json()
     );
 }
 
-export function fetchThreeWindingsTransformers(studyName, userId) {
-    console.info(`Fetching 3 windings transformers of study '${studyName}'...`);
+export function fetchThreeWindingsTransformers(
+    studyName,
+    userId,
+    substationsIds
+) {
+    console.info(
+        `Fetching 3 windings transformers of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
     const fetchThreeWindingsTransformersUrl =
-        getStudyUrl(studyName, userId) + '/network-map/3-windings-transformers';
+        getStudyUrl(studyName, userId) +
+        '/network-map/3-windings-transformers' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchThreeWindingsTransformersUrl);
     return backendFetch(fetchThreeWindingsTransformersUrl).then((response) =>
         response.json()
     );
 }
 
-export function fetchGenerators(studyName, userId) {
-    console.info(`Fetching generators of study '${studyName}'...`);
+export function fetchGenerators(studyName, userId, substationsIds) {
+    console.info(
+        `Fetching generators of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
     const fetchGeneratorsUrl =
-        getStudyUrl(studyName, userId) + '/network-map/generators';
+        getStudyUrl(studyName, userId) +
+        '/network-map/generators' +
+        getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchGeneratorsUrl);
     return backendFetch(fetchGeneratorsUrl).then((response) => response.json());
+}
+
+export function fetchAllEquipments(studyName, userId, substationsIds) {
+    console.info(
+        `Fetching equipments of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
+    const fetchAllEquipmentsUrl =
+        getStudyUrl(studyName, userId) +
+        '/network-map/all' +
+        getSubstationsIdsListsQueryParams(substationsIds);
+    console.debug(fetchAllEquipmentsUrl);
+    return backendFetch(fetchAllEquipmentsUrl).then((response) =>
+        response.json()
+    );
 }
 
 export function fetchLinePositions(studyName, userId) {
@@ -396,7 +448,6 @@ export function fetchSecurityAnalysisStatus(studyName, userId) {
         if (response.ok) {
             return response.text();
         } else {
-            console.error(response);
             return Promise.resolve(0);
         }
     });

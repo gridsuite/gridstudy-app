@@ -185,7 +185,9 @@ export default class GeoData {
         arrowDirection,
         lineParallelIndex,
         lineAngle,
-        distanceBetweenLines
+        proximityAngle,
+        distanceBetweenLines,
+        proximityFactor
     ) {
         if (arrowPosition > 1 || arrowPosition < 0) {
             throw new Error(
@@ -202,15 +204,13 @@ export default class GeoData {
         let lineDistance = cumulativeDistances[cumulativeDistances.length - 1];
         let wantedDistance = lineDistance * arrowPosition;
 
-        if (
-            Math.abs(lineParallelIndex) !== 9999 &&
-            cumulativeDistances.length === 2
-        ) {
+        if (cumulativeDistances.length === 2) {
             // For parallel lines, the initial fork line distance does not count
             // when there are no intermediate points between the substations.
             // I'm not sure this is entirely correct but it displays well enough.
             wantedDistance =
-                wantedDistance - 2 * distanceBetweenLines * arrowPosition;
+                wantedDistance -
+                2 * distanceBetweenLines * arrowPosition * proximityFactor;
         }
 
         let goodSegment = this.findSegment(
@@ -253,46 +253,44 @@ export default class GeoData {
             angle: angle,
             offset: neededOffset,
         };
-        if (Math.abs(lineParallelIndex) !== 9999) {
-            // apply parallel spread between lines
+        // apply parallel spread between lines
+        position.position = computeDestinationPoint(
+            position.position,
+            distanceBetweenLines * lineParallelIndex,
+            lineAngle + 90
+        );
+        if (cumulativeDistances.length === 2) {
+            // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
+            // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
             position.position = computeDestinationPoint(
                 position.position,
-                distanceBetweenLines * lineParallelIndex,
-                lineAngle + 90
+                -distanceBetweenLines * proximityFactor,
+                lineAngle
             );
-            if (cumulativeDistances.length === 2) {
-                // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
-                // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
-                position.position = computeDestinationPoint(
-                    position.position,
-                    -distanceBetweenLines,
-                    lineAngle
-                );
-            } else if (
-                goodSegment.idx === 0 ||
-                goodSegment.idx === cumulativeDistances.length - 2
-            ) {
-                // When the label is on the first or last segment and there is an intermediate point,
-                // when must shift by the percentange of position of the label on this segment
-                const segmentDistance =
-                    cumulativeDistances[goodSegment.idx + 1] -
-                    cumulativeDistances[goodSegment.idx];
-                const alreadyDoneDistance = segmentDistance - remainingDistance;
-                let labelDistanceInSegment;
-                if (goodSegment.idx === 0) {
-                    labelDistanceInSegment = -alreadyDoneDistance;
-                } else {
-                    labelDistanceInSegment = remainingDistance;
-                }
-                const labelPercentage =
-                    labelDistanceInSegment / segmentDistance;
-                position.position = computeDestinationPoint(
-                    position.position,
-                    distanceBetweenLines * labelPercentage,
-                    lineAngle
-                );
+        } else if (
+            goodSegment.idx === 0 ||
+            goodSegment.idx === cumulativeDistances.length - 2
+        ) {
+            // When the label is on the first or last segment and there is an intermediate point,
+            // when must shift by the percentange of position of the label on this segment
+            const segmentDistance =
+                cumulativeDistances[goodSegment.idx + 1] -
+                cumulativeDistances[goodSegment.idx];
+            const alreadyDoneDistance = segmentDistance - remainingDistance;
+            let labelDistanceInSegment;
+            if (goodSegment.idx === 0) {
+                labelDistanceInSegment = -alreadyDoneDistance;
+            } else {
+                labelDistanceInSegment = remainingDistance;
             }
+            const labelPercentage = labelDistanceInSegment / segmentDistance;
+            position.position = computeDestinationPoint(
+                position.position,
+                distanceBetweenLines * labelPercentage,
+                proximityAngle
+            );
         }
+
         return position;
     }
 

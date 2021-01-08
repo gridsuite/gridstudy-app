@@ -21,6 +21,7 @@ import NetworkMap from './network/network-map';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
+    fetchAllEquipments,
     fetchGenerators,
     fetchLinePositions,
     fetchLines,
@@ -176,6 +177,8 @@ const StudyPane = (props) => {
     const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
 
     const [studyNotFound, setStudyNotFound] = useState(false);
+
+    const [updatedLines, setUpdatedLines] = useState([]);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(
         null
@@ -390,6 +393,37 @@ const StudyPane = (props) => {
         updateSecurityAnalysisStatus,
     ]);
 
+    const updateNetwork = useCallback(
+        (substationsIds) => {
+            const updatedEquipments = fetchAllEquipments(
+                studyName,
+                userId,
+                substationsIds
+            );
+
+            Promise.all([updatedEquipments])
+                .then((values) => {
+                    network.updateSubstations(values[0].substations);
+                    network.updateLines(values[0].lines);
+                    network.updateTwoWindingsTransformers(
+                        values[0].twoWindingsTransformers
+                    );
+                    network.updateThreeWindingsTransformers(
+                        values[0].threeWindingsTransformers
+                    );
+                    network.updateGenerators(values[0].generators);
+
+                    setUpdatedLines(values[0].lines);
+                })
+                .catch(function (error) {
+                    console.error(error.message);
+                    setStudyNotFound(true);
+                });
+            // Note: studyName don't change
+        },
+        [studyName, userId, network]
+    );
+
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyName}'...`);
 
@@ -563,17 +597,20 @@ const StudyPane = (props) => {
         [studyName, userId]
     );
 
+    const updateSld = () => {
+        if (sldRef.current) {
+            setUpdateSwitchMsg('');
+            sldRef.current.reloadSvg();
+        }
+    };
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (sldRef.current) {
-                setUpdateSwitchMsg('');
-                sldRef.current.reloadSvg();
-            }
-
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
+                updateSld();
                 loadNetwork();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
@@ -605,6 +642,23 @@ const StudyPane = (props) => {
         updateSecurityAnalysisResult,
         dispatch,
     ]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
+                updateSld();
+
+                // study partial update : loading equipments involved in the study modification and updating the network
+                const ids =
+                    studyUpdatedForce.eventData.headers['substationsIds'];
+                const tmp = ids.substring(1, ids.length - 1); // removing square brackets
+                if (tmp && tmp.length > 0) {
+                    const substationsIds = tmp.split(',');
+                    updateNetwork(substationsIds);
+                }
+            }
+        }
+    }, [studyUpdatedForce, updateNetwork]);
 
     const mapRef = useRef();
     const centerSubstation = useCallback(
@@ -782,6 +836,7 @@ const StudyPane = (props) => {
                 >
                     <NetworkMap
                         network={network}
+                        updatedLines={updatedLines}
                         geoData={geoData}
                         useName={useName}
                         filteredNominalVoltages={filteredNominalVoltages}
