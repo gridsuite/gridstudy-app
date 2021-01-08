@@ -75,7 +75,6 @@ export default class GeoData {
         );
         if (detailed) {
             const linePositions = this.linePositionsById.get(line.id);
-            console.info(linePositions);
             // Is there any position for this line ?
             if (linePositions) {
                 const positions = new Array(linePositions.length);
