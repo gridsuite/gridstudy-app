@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
             height: 'calc(100vh - 48px)',
         },
         [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 65px)',
+            height: 'calc(100vh - 75px)',
         },
         display: 'flex',
     },
@@ -205,6 +205,7 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [drawerOpen, setDrawerOpen] = useState(true);
+    const fullScreen = useSelector((state) => state.fullScreen);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -880,9 +881,12 @@ const StudyPane = (props) => {
                         (displayedVoltageLevelId || displayedSubstationId) && (
                             <div
                                 style={{
-                                    position: 'absolute',
+                                    position: fullScreen
+                                        ? 'relative'
+                                        : 'absolute',
                                     top: drawerOpen ? 0 : 55,
-                                    zIndex: 0,
+                                    zIndex: 2,
+                                    height: fullScreen ? '100%' : 'auto',
                                 }}
                                 className={clsx(classes.content, {
                                     [classes.contentShift]: drawerOpen,
