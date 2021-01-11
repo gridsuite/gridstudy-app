@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
             height: 'calc(100vh - 48px)',
         },
         [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 75px)',
+            height: 'calc(100vh - 65px)',
         },
         display: 'flex',
     },
