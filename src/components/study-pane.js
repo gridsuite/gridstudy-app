@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -32,6 +32,14 @@ import {
     fetchSubstations,
     fetchThreeWindingsTransformers,
     fetchTwoWindingsTransformers,
+    fetchLoads,
+    fetchDanglingLines,
+    fetchBatteries,
+    fetchHvdcLines,
+    fetchLccConverterStations,
+    fetchVscConverterStations,
+    fetchShuntCompensators,
+    fetchStaticVarCompensators,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
@@ -351,6 +359,7 @@ const StudyPane = (props) => {
         updateLoadFlowResult();
         updateSecurityAnalysisResult();
         updateSecurityAnalysisStatus();
+
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
@@ -362,6 +371,23 @@ const StudyPane = (props) => {
             userId
         );
         const generators = fetchGenerators(studyName, userId);
+        const loads = fetchLoads(studyName, userId);
+        const batteries = fetchBatteries(studyName, userId);
+        const danglingLines = fetchDanglingLines(studyName, userId);
+        const hvdcLines = fetchHvdcLines(studyName, userId);
+        const lccConverterStations = fetchLccConverterStations(
+            studyName,
+            userId
+        );
+        const vscConverterStations = fetchVscConverterStations(
+            studyName,
+            userId
+        );
+        const shuntCompensators = fetchShuntCompensators(studyName, userId);
+        const staticVarCompensators = fetchStaticVarCompensators(
+            studyName,
+            userId
+        );
 
         Promise.all([
             substations,
@@ -369,6 +395,14 @@ const StudyPane = (props) => {
             twoWindingsTransformers,
             threeWindingsTransformers,
             generators,
+            loads,
+            batteries,
+            danglingLines,
+            hvdcLines,
+            lccConverterStations,
+            vscConverterStations,
+            shuntCompensators,
+            staticVarCompensators,
         ])
             .then((values) => {
                 const network = new Network();
@@ -377,6 +411,15 @@ const StudyPane = (props) => {
                 network.setTwoWindingsTransformers(values[2]);
                 network.setThreeWindingsTransformers(values[3]);
                 network.setGenerators(values[4]);
+                network.setLoads(values[5]);
+                network.setBatteries(values[6]);
+                network.setDanglingLines(values[7]);
+                network.setHvdcLines(values[8]);
+                network.setLccConverterStations(values[9]);
+                network.setVscConverterStations(values[10]);
+                network.setShuntCompensators(values[11]);
+                network.setStaticVarCompensators(values[12]);
+
                 dispatch(loadNetworkSuccess(network));
             })
             .catch(function (error) {
@@ -412,6 +455,22 @@ const StudyPane = (props) => {
                         values[0].threeWindingsTransformers
                     );
                     network.updateGenerators(values[0].generators);
+                    network.updateLoads(values[0].loads);
+                    network.updateBatteries(values[0].batteries);
+                    network.updateDanglingLines(values[0].danglingLines);
+                    network.updateLccConverterStations(
+                        values[0].lccConverterStations
+                    );
+                    network.updateVscConverterStations(
+                        values[0].vscConverterStations
+                    );
+                    network.updateHvdcLines(values[0].hvdcLines);
+                    network.updateShuntCompensators(
+                        values[0].shuntCompensators
+                    );
+                    network.updateStaticVarCompensators(
+                        values[0].staticVarCompensators
+                    );
 
                     setUpdatedLines(values[0].lines);
                 })
