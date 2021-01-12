@@ -11,6 +11,11 @@ import ArrowLayer, { ArrowDirection } from './layers/arrow-layer';
 import ParallelPathLayer from './layers/parallel-path-layer';
 import ForkLineLayer from './layers/fork-line-layer';
 import getDistance from 'geolib/es/getDistance';
+import {
+    SUBSTATION_RADIUS,
+    SUBSTATION_RADIUS_MAX_PIXEL,
+    SUBSTATION_RADIUS_MIN_PIXEL,
+} from './constants';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
@@ -173,6 +178,23 @@ class LineLayer extends CompositeLayer {
         };
     }
 
+    getVoltageLevelIndex(voltageLevelId) {
+        const { network } = this.props;
+        const vl = network.getVoltageLevel(voltageLevelId);
+        const substation = network.getSubstation(vl.substationId);
+        return (
+            [
+                ...new Set(
+                    substation.voltageLevels.map((vl) => vl.nominalVoltage) // only one voltage level
+                ),
+            ]
+                .sort((a, b) => {
+                    return a - b; // force numerical sort
+                })
+                .indexOf(vl.nominalVoltage) + 1
+        );
+    }
+
     //TODO this is a huge function, refactor
     updateState({ props, oldProps, changeFlags }) {
         let compositeData;
@@ -186,15 +208,18 @@ class LineLayer extends CompositeLayer {
             if (props.network != null && props.geoData != null) {
                 // group lines by nominal voltage
                 const lineNominalVoltageIndexer = (map, line) => {
-                    const vl =
-                        props.network.getVoltageLevel(line.voltageLevelId1) ||
-                        props.network.getVoltageLevel(line.voltageLevelId2);
+                    const network = props.network;
+                    const vl1 = network.getVoltageLevel(line.voltageLevelId1);
+                    const vl2 = network.getVoltageLevel(line.voltageLevelId2);
+                    const vl = vl1 || vl2;
                     let list = map.get(vl.nominalVoltage);
                     if (!list) {
                         list = [];
                         map.set(vl.nominalVoltage, list);
                     }
-                    list.push(line);
+                    if (vl1.substationId !== vl2.substationId) {
+                        list.push(line);
+                    }
                     return map;
                 };
                 const linesByNominalVoltage = props.data.reduce(
@@ -209,7 +234,7 @@ class LineLayer extends CompositeLayer {
                     .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
 
                 compositeData.forEach((compositeData) => {
-                    //find lines with same subsations set
+                    //find lines with same substations set
                     let mapOriginDestination = new Map();
                     compositeData.mapOriginDestination = mapOriginDestination;
                     compositeData.lines.forEach((line) => {
@@ -218,14 +243,7 @@ class LineLayer extends CompositeLayer {
                             terminal2Connected: line.terminal2Connected,
                         });
 
-                        const key =
-                            line.voltageLevelId1 > line.voltageLevelId2
-                                ? line.voltageLevelId1 +
-                                  '##' +
-                                  line.voltageLevelId2
-                                : line.voltageLevelId2 +
-                                  '##' +
-                                  line.voltageLevelId1;
+                        const key = this.genLineKey(line);
                         let val = mapOriginDestination.get(key);
                         if (val == null)
                             mapOriginDestination.set(key, new Set([line]));
@@ -252,29 +270,10 @@ class LineLayer extends CompositeLayer {
         if (
             changeFlags.dataChanged ||
             (changeFlags.propsChanged &&
-                oldProps.lineParallelPath !== props.lineParallelPath)
+                (oldProps.lineFullPath !== props.lineFullPath ||
+                    props.lineParallelPath !== oldProps.lineParallelPath))
         ) {
-            compositeData.forEach((compositeData) => {
-                const mapOriginDestination = compositeData.mapOriginDestination;
-                // calculate index for line with same subsation set
-                // The index is a real number in a normalized unit.
-                // +1 => distanceBetweenLines on side
-                // -1 => distanceBetweenLines on the other side
-                // 0.5 => half of distanceBetweenLines
-                //The special value 9999 or -9999 mean that we
-                //don't want parallel path translations for this line
-                mapOriginDestination.forEach((samePathLine) => {
-                    let index = -(samePathLine.size - 1) / 2;
-                    samePathLine.forEach((line) => {
-                        if (props.lineParallelPath && samePathLine.size > 1) {
-                            line.parallelIndex = index;
-                            index += 1;
-                        } else {
-                            line.parallelIndex = 9999;
-                        }
-                    });
-                });
-            });
+            this.recomputeParallelLinesIndex(compositeData, props);
         }
 
         if (
@@ -303,28 +302,13 @@ class LineLayer extends CompositeLayer {
             });
         }
 
-        if (changeFlags.dataChanged) {
-            compositeData.forEach((compositeData) => {
-                compositeData.lines.forEach((line) => {
-                    const positions = compositeData.lineMap.get(line.id)
-                        .positions;
-                    //the first and last in positions doesn't depend on lineFullPath
-                    line.origin = positions[0];
-                    line.end = positions[positions.length - 1];
-
-                    //TODO right now the angle doesn't depend on linefullpath (we always use the angle between the substations)
-                    //but in the future, we will also compute the angle between the substations and the first point to have forklines
-                    //going in the direction of the first segment, not the direction of the line between the substations. We will still
-                    //need to keep the angle between the substations for the shift of the line, so we will have 3 angles.
-                    let angle = props.geoData.getMapAngle(
-                        positions[0],
-                        positions[positions.length - 1]
-                    );
-                    angle = (angle * Math.PI) / 180 + Math.PI;
-                    if (line.angle < 0) angle += 2 * Math.PI;
-                    line.angle = angle;
-                });
-            });
+        if (
+            changeFlags.dataChanged ||
+            (changeFlags.propsChanged &&
+                (props.lineFullPath !== oldProps.lineFullPath ||
+                    props.lineParallelPath !== oldProps.lineParallelPath))
+        ) {
+            this.recomputeForkLines(compositeData, props);
         }
 
         if (
@@ -346,7 +330,9 @@ class LineLayer extends CompositeLayer {
                         arrowDirection,
                         line.parallelIndex,
                         (line.angle * 180) / Math.PI,
-                        props.distanceBetweenLines
+                        (line.angleStart * 180) / Math.PI,
+                        props.distanceBetweenLines,
+                        line.proximityFactorStart
                     );
                     let coordinates2 = props.geoData.labelDisplayPosition(
                         lineData.positions,
@@ -355,7 +341,9 @@ class LineLayer extends CompositeLayer {
                         arrowDirection,
                         line.parallelIndex,
                         (line.angle * 180) / Math.PI,
-                        props.distanceBetweenLines
+                        (line.angleEnd * 180) / Math.PI,
+                        props.distanceBetweenLines,
+                        line.proximityFactorEnd
                     );
                     if (coordinates1 !== null && coordinates2 !== null) {
                         compositeData.activePower.push({
@@ -451,6 +439,111 @@ class LineLayer extends CompositeLayer {
         });
     }
 
+    genLineKey(line) {
+        return line.voltageLevelId1 > line.voltageLevelId2
+            ? line.voltageLevelId1 + '##' + line.voltageLevelId2
+            : line.voltageLevelId2 + '##' + line.voltageLevelId1;
+    }
+
+    recomputeParallelLinesIndex(compositeData, props) {
+        compositeData.forEach((compositeData) => {
+            const mapOriginDestination = compositeData.mapOriginDestination;
+            // calculate index for line with same substation set
+            // The index is a real number in a normalized unit.
+            // +1 => distanceBetweenLines on side
+            // -1 => distanceBetweenLines on the other side
+            // 0.5 => half of distanceBetweenLines
+            mapOriginDestination.forEach((samePathLine) => {
+                let index = -(samePathLine.size - 1) / 2;
+                samePathLine.forEach((line) => {
+                    line.parallelIndex = props.lineParallelPath ? index : 0;
+                    index += 1;
+                });
+            });
+        });
+    }
+
+    recomputeForkLines(compositeData, props) {
+        const mapMinProximityFactor = new Map();
+        compositeData.forEach((compositeData) => {
+            compositeData.lines.forEach((line) => {
+                const positions = compositeData.lineMap.get(line.id).positions;
+                //the first and last in positions doesn't depend on lineFullPath
+                line.origin = positions[0];
+                line.end = positions[positions.length - 1];
+
+                line.substationIndexStart = this.getVoltageLevelIndex(
+                    line.voltageLevelId1
+                );
+                line.substationIndexEnd = this.getVoltageLevelIndex(
+                    line.voltageLevelId2
+                );
+
+                line.angle = this.computeAngle(
+                    props,
+                    positions[0],
+                    positions[positions.length - 1]
+                );
+                line.angleStart = this.computeAngle(
+                    props,
+                    positions[0],
+                    positions[1]
+                );
+                line.angleEnd = this.computeAngle(
+                    props,
+                    positions[positions.length - 2],
+                    positions[positions.length - 1]
+                );
+                line.proximityFactorStart = this.getProximityFactor(
+                    positions[0],
+                    positions[1]
+                );
+                line.proximityFactorEnd = this.getProximityFactor(
+                    positions[positions.length - 2],
+                    positions[positions.length - 1]
+                );
+
+                let key = this.genLineKey(line);
+                let val = mapMinProximityFactor.get(key);
+                if (val == null)
+                    mapMinProximityFactor.set(key, {
+                        lines: [line],
+                        start: line.proximityFactorStart,
+                        end: line.proximityFactorEnd,
+                    });
+                else {
+                    val.lines.push(line);
+                    val.start = Math.min(val.start, line.proximityFactorStart);
+                    val.end = Math.min(val.end, line.proximityFactorEnd);
+                    mapMinProximityFactor.set(key, val);
+                }
+            });
+        });
+        mapMinProximityFactor.forEach((samePathLine) =>
+            samePathLine.lines.forEach((line) => {
+                line.proximityFactorStart = samePathLine.start;
+                line.proximityFactorEnd = samePathLine.end;
+            })
+        );
+    }
+
+    getProximityFactor(firstPosition, secondPosition) {
+        let factor =
+            getDistance(firstPosition, secondPosition) /
+            (3 * this.props.distanceBetweenLines);
+        if (factor > 1) {
+            factor = 1;
+        }
+        return factor;
+    }
+
+    computeAngle(props, position1, position2) {
+        let angle = props.geoData.getMapAngle(position1, position2);
+        angle = (angle * Math.PI) / 180 + Math.PI;
+        if (angle < 0) angle += 2 * Math.PI;
+        return angle;
+    }
+
     renderLayers() {
         const layers = [];
 
@@ -481,7 +574,16 @@ class LineLayer extends CompositeLayer {
                         ),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
-                    getLineAngle: (line) => line.angle,
+                    getLineAngles: (line) => [
+                        line.angleStart,
+                        line.angle,
+                        line.angleEnd,
+                    ],
+                    getParallelIndexAndProximityFactor: (line) => [
+                        line.parallelIndex,
+                        line.proximityFactorStart,
+                        line.proximityFactorEnd,
+                    ],
                     distanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
@@ -490,7 +592,10 @@ class LineLayer extends CompositeLayer {
                     ),
                     updateTriggers: {
                         getPath: [this.props.lineFullPath],
-                        getLineParallelIndex: [this.props.lineParallelPath],
+                        getParallelIndexAndProximityFactor: [
+                            this.props.lineParallelPath,
+                        ],
+                        getLineAngles: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -533,7 +638,15 @@ class LineLayer extends CompositeLayer {
                     getSpeedFactor: (arrow) =>
                         getArrowSpeedFactor(getArrowSpeed(arrow.line)),
                     getLineParallelIndex: (arrow) => arrow.line.parallelIndex,
-                    getLineAngle: (arrow) => arrow.line.angle,
+                    getLineAngles: (arrow) => [
+                        arrow.line.angleStart,
+                        arrow.line.angle,
+                        arrow.line.angleEnd,
+                    ],
+                    getProximityFactors: (arrow) => [
+                        arrow.line.proximityFactorStart,
+                        arrow.line.proximityFactorEnd,
+                    ],
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
                     minParallelOffset: this.props.minParallelOffset,
@@ -552,6 +665,7 @@ class LineLayer extends CompositeLayer {
                     updateTriggers: {
                         getLinePositions: [this.props.lineFullPath],
                         getLineParallelIndex: [this.props.lineParallelPath],
+                        getLineAngles: [this.props.lineFullPath],
                         getColor: [
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
@@ -567,6 +681,7 @@ class LineLayer extends CompositeLayer {
                     id: 'LineForkStart' + compositeData.nominalVoltage,
                     getSourcePosition: (line) => line.origin,
                     getTargetPosition: (line) => line.end,
+                    getSubstationOffset: (line) => line.substationIndexStart,
                     data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
@@ -579,11 +694,16 @@ class LineLayer extends CompositeLayer {
                             this.state.linesConnection.get(line.id)
                         ),
                     getWidth: 2,
+                    getProximityFactor: (line) => line.proximityFactorStart,
                     getLineParallelIndex: (line) => line.parallelIndex,
-                    getLineAngle: (line) => line.angle,
+                    getLineAngle: (line) => line.angleStart,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     getMaxParallelOffset: this.props.maxParallelOffset,
                     getMinParallelOffset: this.props.minParallelOffset,
+                    getSubstationRadius: this.props.substationRadius,
+                    getSubstationMaxPixel: this.props.substationMaxPixel,
+                    getMinSubstationRadiusPixel: this.props
+                        .minSubstationRadiusPixel,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),
@@ -591,6 +711,8 @@ class LineLayer extends CompositeLayer {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
+                        getLineAngle: [this.props.lineFullPath],
+                        getProximityFactor: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -607,6 +729,7 @@ class LineLayer extends CompositeLayer {
                     id: 'LineForkEnd' + compositeData.nominalVoltage,
                     getSourcePosition: (line) => line.end,
                     getTargetPosition: (line) => line.origin,
+                    getSubstationOffset: (line) => line.substationIndexEnd,
                     data: compositeData.lines,
                     widthScale: 20,
                     widthMinPixels: 1,
@@ -619,11 +742,16 @@ class LineLayer extends CompositeLayer {
                             this.state.linesConnection.get(line.id)
                         ),
                     getWidth: 2,
+                    getProximityFactor: (line) => line.proximityFactorEnd,
                     getLineParallelIndex: (line) => -line.parallelIndex,
-                    getLineAngle: (line) => line.angle + Math.PI,
+                    getLineAngle: (line) => line.angleEnd + Math.PI,
                     getDistanceBetweenLines: this.props.distanceBetweenLines,
                     getMaxParallelOffset: this.props.maxParallelOffset,
                     getMinParallelOffset: this.props.minParallelOffset,
+                    getSubstationRadius: this.props.substationRadius,
+                    getSubstationMaxPixel: this.props.substationMaxPixel,
+                    getMinSubstationRadiusPixel: this.props
+                        .minSubstationRadiusPixel,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),
@@ -631,6 +759,8 @@ class LineLayer extends CompositeLayer {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getSourcePosition: [this.props.lineFullPath],
                         getTargetPosition: [this.props.lineFullPath],
+                        getLineAngle: [this.props.lineFullPath],
+                        getProximityFactor: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -696,6 +826,12 @@ LineLayer.defaultProps = {
     distanceBetweenLines: 1000,
     maxParallelOffset: 100,
     minParallelOffset: 3,
+    substationRadius: { type: 'number', value: SUBSTATION_RADIUS },
+    substationMaxPixel: { type: 'number', value: SUBSTATION_RADIUS_MAX_PIXEL },
+    minSubstationRadiusPixel: {
+        type: 'number',
+        value: SUBSTATION_RADIUS_MIN_PIXEL,
+    },
 };
 
 export default LineLayer;

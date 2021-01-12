@@ -196,3 +196,9 @@ export function selectItemNetwork(selectItemNetwork) {
         selectItemNetwork: selectItemNetwork,
     };
 }
+
+export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
+
+export function fullScreenSingleLineDiagram(fullScreen) {
+    return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
+}

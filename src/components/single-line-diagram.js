@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectItemNetwork } from '../redux/actions';
 
 import Container from '@material-ui/core/Container';
@@ -38,6 +38,9 @@ import '@svgdotjs/svg.panzoom.js';
 import useTheme from '@material-ui/core/styles/useTheme';
 import Arrow from '../images/arrow.svg';
 import ArrowHover from '../images/arrow_hover.svg';
+import { fullScreenSingleLineDiagram } from '../redux/actions';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -96,6 +99,33 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         backgroundColor: theme.palette.background.default,
     },
+    fullScreenSingleLineDiagram: {
+        width: '100%',
+        textAlign: 'center',
+        '& svg': {
+            width: '100%',
+            height: 'calc(100vh - 120px)', // Temporary: it will be fixed in the us of deleting scroll
+        },
+    },
+    fullScreen: {
+        bottom: 5,
+        right: 5,
+        position: 'absolute',
+        textAlign: 'right',
+        padding: '5px 10px 0',
+    },
+    notFullScreen: {
+        top: '-50px',
+        position: 'relative',
+        textAlign: 'right',
+        padding: '5px 10px 0',
+        float: 'right',
+    },
+    fullScreenIcon: {
+        cursor: 'pointer',
+        fontSize: '35px',
+        zIndex: '3',
+    },
 }));
 
 const SvgNotFound = (props) => {
@@ -143,6 +173,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const svgPrevViewbox = useRef();
     const svgDraw = useRef();
     const dispatch = useDispatch();
+
+    const fullScreen = useSelector((state) => state.fullScreen);
 
     const [forceState, updateState] = useState(false);
 
@@ -423,8 +455,17 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const onCloseHandler = () => {
         if (props.onClose !== null) {
             dispatch(selectItemNetwork(null));
+            dispatch(fullScreenSingleLineDiagram(false));
             props.onClose();
         }
+    };
+
+    const showFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(true));
+    };
+
+    const hideFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(false));
     };
 
     let inner;
@@ -437,9 +478,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         inner = (
             <div
                 id="sld-svg"
-                style={{ height: '100%' }}
+                style={{ height: fullScreen ? 'auto' : '100%' }}
                 className={
-                    svgType === SvgType.VOLTAGE_LEVEL
+                    fullScreen
+                        ? classes.fullScreenSingleLineDiagram
+                        : svgType === SvgType.VOLTAGE_LEVEL
                         ? classes.divVoltageLevel
                         : classes.divSubstation
                 }
@@ -472,6 +515,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             variant="outlined"
             square="true"
             className={finalClasses}
+            style={{
+                height: fullScreen ? '100%' : 'auto',
+            }}
         >
             <Box className={classes.header}>
                 <Box flexGrow={1}>
@@ -484,6 +530,25 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             <Box height={2}>{displayProgress}</Box>
             {msgUpdateSwitch}
             {inner}
+            {!loadingState && (
+                <Box
+                    className={
+                        fullScreen ? classes.fullScreen : classes.notFullScreen
+                    }
+                >
+                    {fullScreen ? (
+                        <FullscreenExitIcon
+                            onClick={hideFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ) : (
+                        <FullscreenIcon
+                            onClick={showFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    )}
+                </Box>
+            )}
         </Paper>
     );
 });
