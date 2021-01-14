@@ -71,13 +71,14 @@ import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
 import { MenuOpen } from '@material-ui/icons';
+import Divider from '@material-ui/core/Divider';
 
 const drawerWidth = 300;
 
 const useStyles = makeStyles((theme) => ({
     main: {
-        flexGrow: 1,
         display: 'flex',
+        flexDirection: 'row',
         position: 'relative',
     },
     error: {
@@ -102,10 +103,6 @@ const useStyles = makeStyles((theme) => ({
     drawerPaper: {
         position: 'static',
         overflow: 'hidden',
-        zIndex: 98,
-    },
-    drawerDiv: {
-        pointerEvents: 'all',
     },
     content: {
         flexGrow: 1,
@@ -114,6 +111,13 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         marginLeft: 0,
+    },
+    drawerShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: -drawerWidth,
     },
     contentShift: {
         transition: theme.transitions.create('margin', {
@@ -688,72 +692,26 @@ const StudyPane = (props) => {
                 substationLayout
             );
         }
+        const sldShowing = (displayedVoltageLevelId || displayedSubstationId);
+        let openDrawerComponent = null;
+        if (!drawerOpen) {
+            if (sldShowing) {
+                openDrawerComponent = <>
+                    <IconButton style={{zIndex:1, padding: 0}} onClick={toggleDrawer}>
+                      <MenuOpen />
+                    </IconButton>
+                    <Divider orientation="vertical" flexItem variant="middle" /> 
+                </>
+            } else {
+                openDrawerComponent =
+                    <IconButton style={{zIndex:1, alignSelf: "flex-start"}} onClick={toggleDrawer}>
+                      <MenuOpen />
+                    </IconButton>;
+            }
+        } 
 
         return (
-            <div className={classes.main}>
-                <Drawer
-                    variant={'persistent'}
-                    className={classes.drawer}
-                    anchor="left"
-                    style={{
-                        flexShrink: 1,
-                        overflowY: 'hidden',
-                        overflowX: 'hidden',
-                    }}
-                    open={drawerOpen}
-                    classes={{
-                        paper: classes.drawerPaper,
-                    }}
-                >
-                    <div
-                        style={{
-                            flex:'1 1 auto',
-                            overflowY: 'none',
-                            overflowX: 'none',
-                        }}
-                        className={classes.drawerDiv}
-                    >
-                        <NetworkExplorer
-                            network={network}
-                            onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                            onSubstationDisplayClick={showSubstationDiagram}
-                            onSubstationFocus={centerSubstation}
-                            hideExplorer={toggleDrawer}
-                        />
-                    </div>
-                </Drawer>
-                {/*
-                Rendering single line diagram only in map view and if
-                displayed voltage level or substation id has been set
-                */}
-                {props.view === StudyView.MAP &&
-                    (displayedVoltageLevelId || displayedSubstationId) && (
-                        <div
-                            style={{
-                                zIndex: 1,
-                                display: "flex",
-                                flexDirection: "column",
-                            }}
-                        >
-                            <SingleLineDiagram
-                                onClose={() => closeVoltageLevelDiagram()}
-                                onNextVoltageLevelClick={
-                                    showVoltageLevelDiagram
-                                }
-                                onBreakerClick={handleUpdateSwitchState}
-                                diagramTitle={sldTitle}
-                                svgUrl={svgUrl}
-                                ref={sldRef}
-                                updateSwitchMsg={updateSwitchMsg}
-                                isComputationRunning={isComputationRunning()}
-                                svgType={
-                                    displayedVoltageLevelId
-                                        ? SvgType.VOLTAGE_LEVEL
-                                        : SvgType.SUBSTATION
-                                }
-                            />
-                        </div>
-                    )}
+            <div className='grow-branch'>
                 <div
                     style={{
                         position: 'absolute',
@@ -781,23 +739,6 @@ const StudyPane = (props) => {
                             chooseVoltageLevelForSubstation
                         }
                     />
-                    {!drawerOpen && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                left: '0px',
-                                zIndex: 1,
-                                flex: 1,
-                            }}
-                            className={clsx(classes.content, {
-                                [classes.contentShift]: drawerOpen,
-                            })}
-                        >
-                            <IconButton onClick={toggleDrawer}>
-                                <MenuOpen />
-                            </IconButton>
-                        </div>
-                    )}
                     {network && viewOverloadsTable && (
                         <div
                             style={{
@@ -858,6 +799,77 @@ const StudyPane = (props) => {
                             getStartIcon={getRunningIcon}
                         />
                     </div>
+                </div>
+                <div className={clsx('grow-branch', classes.main)} style={{
+                    position: 'relative'
+                }}>
+                    <Drawer
+                        variant={'persistent'}
+                        className={clsx(classes.drawer, {
+                                    [classes.drawerShift]: !drawerOpen,
+                                })}
+                        anchor="left"
+                        style={{
+                            flexShrink: 1,
+                            overflowY: 'hidden',
+                            overflowX: 'hidden',
+                        }}
+                        open={drawerOpen}
+                        classes={{
+                            paper: classes.drawerPaper,
+                        }}
+                    >
+                        <div
+                            style={{
+                                flex:'1 1 auto',
+                                overflowY: 'none',
+                                overflowX: 'none',
+                            }}
+                            className={classes.drawerDiv}
+                        >
+                            <NetworkExplorer
+                                network={network}
+                                onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+                                onSubstationDisplayClick={showSubstationDiagram}
+                                onSubstationFocus={centerSubstation}
+                                hideExplorer={toggleDrawer}
+                            />
+                        </div>
+                    </Drawer>
+                    {!sldShowing && openDrawerComponent}
+                    {/*
+                    Rendering single line diagram only in map view and if
+                    displayed voltage level or substation id has been set
+                    */}
+                    {props.view === StudyView.MAP &&
+                        (displayedVoltageLevelId || displayedSubstationId) && (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignSelf: "flex-start",
+                                    flexDirection: "column",
+                                }}
+                            >
+                                <SingleLineDiagram
+                                    onClose={() => closeVoltageLevelDiagram()}
+                                    onNextVoltageLevelClick={
+                                        showVoltageLevelDiagram
+                                    }
+                                    onBreakerClick={handleUpdateSwitchState}
+                                    diagramTitle={sldTitle}
+                                    diagramAction={openDrawerComponent}
+                                    svgUrl={svgUrl}
+                                    ref={sldRef}
+                                    updateSwitchMsg={updateSwitchMsg}
+                                    isComputationRunning={isComputationRunning()}
+                                    svgType={
+                                        displayedVoltageLevelId
+                                            ? SvgType.VOLTAGE_LEVEL
+                                            : SvgType.SUBSTATION
+                                    }
+                                />
+                            </div>
+                    )}
                 </div>
                 <ContingencyListSelector
                     open={showContingencyListSelector}
@@ -946,33 +958,26 @@ const StudyPane = (props) => {
                     />
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
-                <div
+                <div className="grow-branch"
                     style={{
-                        flexGrow:1,
-                        minHeight: 0,
                         display:
-                            props.view === StudyView.MAP ? 'flex' : 'none',
-                        pointerEvents: 'all',
+                            props.view === StudyView.MAP ? null : 'none',
                     }}
                 >
                     {renderMapView()}
                 </div>
-                <div
+                <div className="grow-branch"
                     style={{
-                        flexGrow:1,
-                        minHeight: 0,
                         display:
-                            props.view === StudyView.TABLE ? 'flex' : 'none',
+                            props.view === StudyView.TABLE ? null : 'none',
                     }}
                 >
                     {renderTableView()}
                 </div>
-                <div
+                <div className="grow-branch"
                     style={{
-                        flexGrow:1,
-                        minHeight: 0,
                         display:
-                            props.view === StudyView.RESULTS ? 'flex' : 'none',
+                            props.view === StudyView.RESULTS ? null : 'none',
                     }}
                 >
                     {renderResultsView()}

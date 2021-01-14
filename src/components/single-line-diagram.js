@@ -463,9 +463,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             elevation={1}
             variant="outlined"
             square="true"
+            style={{
+                                pointerEvents: 'auto',
+            }}
             className={finalClasses}
         >
             <Box className={classes.header}>
+                {props.diagramAction}
                 <Box flexGrow={1}>
                     <Typography>{props.diagramTitle}</Typography>
                 </Box>

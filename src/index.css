@@ -1,10 +1,17 @@
 html {
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-html, body, #root {
-    display: grid;
-    min-height: 0;
+body, #root, .grow-branch {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.grow-leaf {
+    flex-grow: 1;
 }
 
 body {
