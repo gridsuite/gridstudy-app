@@ -491,7 +491,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 variant="outlined"
                 square="true"
                 style={{
-                   pointerEvents: 'auto',
+                   pointerEvents: "auto",
                    position: 'absolute',
                    width: sizeWidth, height: sizeHeight,
                 }}

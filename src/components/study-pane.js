@@ -851,6 +851,7 @@ const StudyPane = (props) => {
                                 flexGrow: 1,
                                 position: 'relative',
                                 display: "flex",
+                                pointerEvents: "none",
                                 flexDirection: "column",
                             }}
                         >

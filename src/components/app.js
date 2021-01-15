@@ -289,7 +289,7 @@ const App = () => {
                 />
 
                 <div className="singlestretch-parent" style={{
-                    flexGrow: 1
+                    flexGrow: 1, minHeight: 0, overflow: "auto",
                 }}>
                     {user !== null ? (
                         <Switch>
