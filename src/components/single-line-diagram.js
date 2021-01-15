@@ -36,6 +36,9 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import Arrow from '../images/arrow.svg';
 import ArrowHover from '../images/arrow_hover.svg';
 
+import { AutoSizer } from 'react-virtualized';
+import clsx from 'clsx';
+
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',
@@ -57,18 +60,18 @@ const maxHeightSubstation = 700;
 const useStyles = makeStyles((theme) => ({
     divVoltageLevel: {
         flex: "1 1 auto",
-        maxWidth: maxWidthVoltageLevel,
-        maxHeight: maxHeightVoltageLevel,
+//        maxWidth: maxWidthVoltageLevel,
+//        maxHeight: maxHeightVoltageLevel,
         minHeight: 0,
     },
     divSubstation: {
         flex: "1 1 auto",
-        maxWidth: maxWidthSubstation,
-        maxHeight: maxHeightSubstation,
+//        maxWidth: maxWidthSubstation,
+//        maxHeight: maxHeightSubstation,
         minHeight: 0,
     },
     diagram: {
-        maxHeight: 700,
+//        maxHeight: 700,
         'display': 'flex',
         'flex': '1 1 auto',
         'flexDirection': 'column',
@@ -83,8 +86,8 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
     },
     error: {
-        maxWidth: maxWidthVoltageLevel,
-        maxHeight: maxHeightVoltageLevel,
+//        maxWidth: maxWidthVoltageLevel,
+//        maxHeight: maxHeightVoltageLevel,
     },
     errorUpdateSwitch: {
         position: 'absolute',
@@ -143,6 +146,7 @@ fetch(ArrowHover)
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const svgPrevViewbox = useRef();
+    const svgSize = useRef();
     const svgDraw = useRef();
 
     const [forceState, updateState] = useState(false);
@@ -352,11 +356,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         : svgHeight;
             }
 
+            svgSize.current = { width: sizeWidth, height: sizeHeight };
+
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .width(sizeWidth)
+                .width("98%")
                 .height("98%")
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
@@ -428,15 +434,18 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     } else {
         finalClasses = classes.diagram;
         inner = (
-            <div
-                id="sld-svg"
-                className={
-                    svgType === SvgType.VOLTAGE_LEVEL
-                        ? classes.divVoltageLevel
-                        : classes.divSubstation
-                }
-                dangerouslySetInnerHTML={{ __html: svg.svg }}
-            />
+            <div style={{flexGrow: 1, minHeight: 0}}>
+                    <div
+                        id="sld-svg"
+                        className={
+                            svgType === SvgType.VOLTAGE_LEVEL
+                                ? classes.divVoltageLevel
+                                : classes.divSubstation
+                        }
+                        style={{width: "98%", height: "98%"}}
+                        dangerouslySetInnerHTML={{ __html: svg.svg }}
+                    />
+            </div>
         );
     }
 
@@ -459,28 +468,50 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     }
 
     return (
-        <Paper
-            elevation={1}
-            variant="outlined"
-            square="true"
-            style={{
-                                pointerEvents: 'auto',
-            }}
-            className={finalClasses}
-        >
-            <Box className={classes.header}>
-                {props.diagramAction}
-                <Box flexGrow={1}>
-                    <Typography>{props.diagramTitle}</Typography>
+        <AutoSizer>
+            {({ height, width }) => {
+                    let sizeWidth;
+                    let sizeHeight;
+                    // To allow controls that are in the corners of the map to not be hidden
+                    const mapRightOffset = 50;
+                    const mapBottomOffset = 80;
+                    if (typeof(svgSize.current) != "undefined") {
+                        sizeWidth =
+                            svgSize.current.width > width - mapRightOffset
+                                ? width - mapRightOffset
+                                : svgSize.current.width;
+                        sizeHeight =
+                            svgSize.current.height > height - mapBottomOffset
+                                ? height - mapBottomOffset
+                                : svgSize.current.height;
+                    }
+            return (
+            <Paper
+                elevation={1}
+                variant="outlined"
+                square="true"
+                style={{
+                   pointerEvents: 'auto',
+                   position: 'absolute',
+                   width: sizeWidth, height: sizeHeight,
+                }}
+                className={finalClasses}
+            >
+                <Box className={classes.header}>
+                    {props.diagramAction}
+                    <Box flexGrow={1}>
+                        <Typography>{props.diagramTitle}</Typography>
+                    </Box>
+                    <IconButton className={classes.close} onClick={onCloseHandler}>
+                        <CloseIcon />
+                    </IconButton>
                 </Box>
-                <IconButton className={classes.close} onClick={onCloseHandler}>
-                    <CloseIcon />
-                </IconButton>
-            </Box>
-            <Box height={2}>{displayProgress}</Box>
-            {msgUpdateSwitch}
-            {inner}
-        </Paper>
+                <Box height={2}>{displayProgress}</Box>
+                {msgUpdateSwitch}
+                {inner}
+            </Paper>
+            );}}
+        </AutoSizer>
     );
 });
 
