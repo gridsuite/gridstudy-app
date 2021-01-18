@@ -23,6 +23,7 @@ import Grid from '@material-ui/core/Grid';
 import { requestNetworkChange } from '../../utils/rest-api';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
+import LoaderWithOverlay from '../loader-with-overlay';
 
 const TABLE_NAMES = [
     'Substations',
@@ -69,6 +70,8 @@ const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = React.useState(0);
     const [lineEdit, setLineEdit] = React.useState({});
     const [rowFilter, setRowFilter] = React.useState(undefined);
+
+    const [dataFetched, setDataFetched] = React.useState({});
     const intl = useIntl();
 
     const rowHeight = 48;
@@ -244,8 +247,10 @@ const NetworkTable = (props) => {
     function renderSubstationsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.substations.length}
-                rowGetter={({ index }) => props.network.substations[index]}
+                rowCount={props.network.substations.length()}
+                rowGetter={({ index }) =>
+                    props.network.substations.get()[index]
+                }
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -308,8 +313,8 @@ const NetworkTable = (props) => {
     function renderLinesTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.lines.length}
-                rowGetter={({ index }) => props.network.lines[index]}
+                rowCount={props.network.lines.length()}
+                rowGetter={({ index }) => props.network.lines.get()[index]}
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -383,9 +388,9 @@ const NetworkTable = (props) => {
     function renderTwoWindingsTransformersTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.twoWindingsTransformers.length}
+                rowCount={props.network.twoWindingsTransformers.length()}
                 rowGetter={({ index }) =>
-                    props.network.twoWindingsTransformers[index]
+                    props.network.twoWindingsTransformers.get()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -475,9 +480,9 @@ const NetworkTable = (props) => {
     function renderThreeWindingsTransformersTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.threeWindingsTransformers.length}
+                rowCount={props.network.threeWindingsTransformers.length()}
                 rowGetter={({ index }) =>
-                    props.network.threeWindingsTransformers[index]
+                    props.network.threeWindingsTransformers.get()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -636,8 +641,8 @@ const NetworkTable = (props) => {
     function renderGeneratorsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.generators.length}
-                rowGetter={({ index }) => props.network.generators[index]}
+                rowCount={props.network.generators.length()}
+                rowGetter={({ index }) => props.network.generators.get()[index]}
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -693,8 +698,8 @@ const NetworkTable = (props) => {
     function renderLoadsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.loads.length}
-                rowGetter={({ index }) => props.network.loads[index]}
+                rowCount={props.network.loads.length()}
+                rowGetter={({ index }) => props.network.loads.get()[index]}
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -760,8 +765,8 @@ const NetworkTable = (props) => {
     function renderBatteriesTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.batteries.length}
-                rowGetter={({ index }) => props.network.batteries[index]}
+                rowCount={props.network.batteries.length()}
+                rowGetter={({ index }) => props.network.batteries.get()[index]}
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -822,8 +827,10 @@ const NetworkTable = (props) => {
     function renderDanglingLinesTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.danglingLines.length}
-                rowGetter={({ index }) => props.network.danglingLines[index]}
+                rowCount={props.network.danglingLines.length()}
+                rowGetter={({ index }) =>
+                    props.network.danglingLines.get()[index]
+                }
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -889,8 +896,8 @@ const NetworkTable = (props) => {
     function renderHvdcLinesTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.hvdcLines.length}
-                rowGetter={({ index }) => props.network.hvdcLines[index]}
+                rowCount={props.network.hvdcLines.length()}
+                rowGetter={({ index }) => props.network.hvdcLines.get()[index]}
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -961,9 +968,9 @@ const NetworkTable = (props) => {
     function renderShuntCompensatorsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.shuntCompensators.length}
+                rowCount={props.network.shuntCompensators.length()}
                 rowGetter={({ index }) =>
-                    props.network.shuntCompensators[index]
+                    props.network.shuntCompensators.get()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -1018,9 +1025,9 @@ const NetworkTable = (props) => {
     function renderStaticVarCompensatorsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.staticVarCompensators.length}
+                rowCount={props.network.staticVarCompensators.length()}
                 rowGetter={({ index }) =>
-                    props.network.staticVarCompensators[index]
+                    props.network.staticVarCompensators.get()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -1082,9 +1089,9 @@ const NetworkTable = (props) => {
     function renderLccConverterStationsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.lccConverterStations.length}
+                rowCount={props.network.lccConverterStations.length()}
                 rowGetter={({ index }) =>
-                    props.network.lccConverterStations[index]
+                    props.network.lccConverterStations.get()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -1153,9 +1160,9 @@ const NetworkTable = (props) => {
     function renderVscConverterStationsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.vscConverterStations.length}
+                rowCount={props.network.vscConverterStations.length()}
                 rowGetter={({ index }) =>
-                    props.network.vscConverterStations[index]
+                    props.network.vscConverterStations.get()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -1234,6 +1241,26 @@ const NetworkTable = (props) => {
         [rowFilter]
     );
 
+    function TabHolder(index, resource, renderer) {
+        if (tabIndex !== index) return;
+        if (resource.values === undefined) {
+            if (dataFetched[index])
+                setDataFetched({ ...dataFetched, ...{ [index]: false } });
+            resource.get(() =>
+                setDataFetched({ ...dataFetched, ...{ [index]: true } })
+            );
+            return (
+                <LoaderWithOverlay
+                    color="inherit"
+                    loaderSize={70}
+                    isFixed={true}
+                    loadingMessageText={'Loading'}
+                />
+            );
+        }
+        return renderer();
+    }
+
     return (
         props.network && (
             <AutoSizer>
@@ -1291,21 +1318,68 @@ const NetworkTable = (props) => {
                             </Grid>
                         </Grid>
                         {/*This render is fast, rerender full dom everytime*/}
-                        {tabIndex === 0 && renderSubstationsTable()}
-                        {tabIndex === 1 && renderVoltageLevelsTable()}
-                        {tabIndex === 2 && renderLinesTable()}
-                        {tabIndex === 3 && renderTwoWindingsTransformersTable()}
-                        {tabIndex === 4 &&
-                            renderThreeWindingsTransformersTable()}
-                        {tabIndex === 5 && renderGeneratorsTable()}
-                        {tabIndex === 6 && renderLoadsTable()}
-                        {tabIndex === 7 && renderShuntCompensatorsTable()}
-                        {tabIndex === 8 && renderStaticVarCompensatorsTable()}
-                        {tabIndex === 9 && renderBatteriesTable()}
-                        {tabIndex === 10 && renderHvdcLinesTable()}
-                        {tabIndex === 11 && renderLccConverterStationsTable()}
-                        {tabIndex === 12 && renderVscConverterStationsTable()}
-                        {tabIndex === 13 && renderDanglingLinesTable()}
+                        {TabHolder(
+                            0,
+                            props.network.substations,
+                            renderSubstationsTable
+                        )}
+                        {TabHolder(
+                            1,
+                            props.network.substations,
+                            renderVoltageLevelsTable
+                        )}
+                        {TabHolder(2, props.network.lines, renderLinesTable)}
+                        {TabHolder(
+                            3,
+                            props.network.twoWindingsTransformers,
+                            renderTwoWindingsTransformersTable
+                        )}
+                        {TabHolder(
+                            4,
+                            props.network.threeWindingsTransformers,
+                            renderThreeWindingsTransformersTable
+                        )}
+                        {TabHolder(
+                            5,
+                            props.network.generators,
+                            renderGeneratorsTable
+                        )}
+                        {TabHolder(6, props.network.loads, renderLoadsTable)}
+                        {TabHolder(
+                            7,
+                            props.network.shuntCompensators,
+                            renderShuntCompensatorsTable
+                        )}
+                        {TabHolder(
+                            8,
+                            props.network.staticVarCompensators,
+                            renderStaticVarCompensatorsTable
+                        )}
+                        {TabHolder(
+                            9,
+                            props.network.batteries,
+                            renderBatteriesTable
+                        )}
+                        {TabHolder(
+                            10,
+                            props.network.hvdcLines,
+                            renderHvdcLinesTable
+                        )}
+                        {TabHolder(
+                            11,
+                            props.network.lccConverterStations,
+                            renderLccConverterStationsTable
+                        )}
+                        {TabHolder(
+                            12,
+                            props.network.vscConverterStations,
+                            renderVscConverterStationsTable
+                        )}
+                        {TabHolder(
+                            13,
+                            props.network.danglingLines,
+                            renderDanglingLinesTable
+                        )}
                     </div>
                 )}
             </AutoSizer>

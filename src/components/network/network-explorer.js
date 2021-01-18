@@ -105,6 +105,12 @@ const NetworkExplorer = ({
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
     );
+    const [substationsLoaded, setSubstationLoaded] = React.useState(false);
+
+    useEffect(() => {
+        if (network && !substationsLoaded)
+            network.substations.get(() => setSubstationLoaded(true));
+    }, [substationsLoaded, network]);
 
     const identifiedElementComparator = useCallback(
         (vl1, vl2) => {
@@ -161,7 +167,12 @@ const NetworkExplorer = ({
         if (network) {
             generateFilteredSubstation();
         }
-    }, [network, identifiedElementComparator, generateFilteredSubstation]);
+    }, [
+        network,
+        identifiedElementComparator,
+        generateFilteredSubstation,
+        substationsLoaded,
+    ]);
 
     useEffect(() => {
         if (visibleSubstation && listeRef.current) {
@@ -180,7 +191,7 @@ const NetworkExplorer = ({
                 listeRef.current.scrollToRow(index);
             }, 0);
         }
-    }, [visibleSubstation, filteredVoltageLevels]);
+    }, [visibleSubstation, filteredVoltageLevels, substationsLoaded]);
 
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {

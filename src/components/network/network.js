@@ -10,32 +10,77 @@ const elementIdIndexer = (map, element) => {
     return map;
 };
 
+export class EquipmentHandler {
+    fetcher = undefined;
+    errorHandler = undefined;
+    postUpdate = undefined;
+
+    constructor(fetcher, errorHandler, postUpdate) {
+        this.fetcher = fetcher;
+        this.errorHandler = errorHandler;
+        this.postUpdate = postUpdate;
+    }
+
+    values = undefined;
+    updating = undefined;
+
+    cbUpdateDone = new Set();
+
+    get(cbUpdateDone) {
+        if (this.values === undefined) {
+            if (cbUpdateDone) this.cbUpdateDone.add(cbUpdateDone);
+            if (!this.updating) {
+                this.updating = true;
+                Promise.all([this.fetcher()])
+                    .then((val) => {
+                        this.values = val[0];
+                        if (this.postUpdate) this.postUpdate(this.values);
+                        this.updating = false;
+                        this.cbUpdateDone.forEach((cb) => cb());
+                        this.cbUpdateDone.clear();
+                    })
+                    .catch((error) => this.errorHandler(error));
+            }
+            return undefined;
+        }
+        if (cbUpdateDone) cbUpdateDone();
+        return this.values;
+    }
+
+    length(cbUpdateDone) {
+        return (
+            (this.values !== undefined && this.values.length) ||
+            this.get(cbUpdateDone)
+        );
+    }
+}
+
 export default class Network {
-    substations = [];
+    substations;
 
-    lines = [];
+    lines = undefined;
 
-    twoWindingsTransformers = [];
+    twoWindingsTransformers = undefined;
 
-    threeWindingsTransformers = [];
+    threeWindingsTransformers = undefined;
 
-    generators = [];
+    generators = undefined;
 
-    loads = [];
+    loads = undefined;
 
-    batteries = [];
+    batteries = undefined;
 
-    danglingLines = [];
+    danglingLines = undefined;
 
-    hvdcLines = [];
+    hvdcLines = undefined;
 
-    lccConverterStations = [];
+    lccConverterStations = undefined;
 
-    vscConverterStations = [];
+    vscConverterStations = undefined;
 
-    shuntCompensators = [];
+    shuntCompensators = undefined;
 
-    staticVarCompensators = [];
+    staticVarCompensators = undefined;
 
     voltageLevelsByNominalVoltage = new Map();
 
@@ -53,9 +98,9 @@ export default class Network {
 
     nominalVoltages = [];
 
-    completeSubstationsInfos = () => {
+    completeSubstationsInfos = (substations) => {
         const nominalVoltagesSet = new Set();
-        this.substations.forEach((substation) => {
+        substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
                 (voltageLevel1, voltageLevel2) =>
@@ -73,9 +118,9 @@ export default class Network {
             });
         });
 
-        this.voltageLevels = this.substations.flatMap(
-            (substation) => substation.voltageLevels
-        );
+        this.voltageLevels = this.substations
+            .get()
+            .flatMap((substation) => substation.voltageLevels);
 
         this.voltageLevelsById = this.voltageLevels.reduce(
             elementIdIndexer,
@@ -87,15 +132,8 @@ export default class Network {
         );
     };
 
-    setSubstations(substations) {
-        this.substations = substations;
-
-        // add more infos
-        this.completeSubstationsInfos();
-    }
-
     updateEquipments(currentEquipments, newEquipements) {
-        currentEquipments.forEach((equipment1, index) => {
+        currentEquipments.values.forEach((equipment1, index) => {
             const found = newEquipements.filter(
                 (equipment2) => equipment2.id === equipment1.id
             );
@@ -110,18 +148,16 @@ export default class Network {
         this.completeSubstationsInfos();
     }
 
-    setLines(lines) {
-        this.lines = lines;
-        this.linesById = this.lines.reduce(elementIdIndexer, new Map());
+    completeLinesInfos(lines) {
+        this.linesById = lines.reduce(elementIdIndexer, new Map());
     }
 
     updateLines(lines) {
         this.updateEquipments(this.lines, lines);
     }
 
-    setTwoWindingsTransformers(twoWindingsTransformers) {
-        this.twoWindingsTransformers = twoWindingsTransformers;
-        this.twoWindingsTransformersById = this.twoWindingsTransformers.reduce(
+    completeTwoWindingsTransformersInfos(twoWindingsTransformers) {
+        this.twoWindingsTransformersById = twoWindingsTransformers.reduce(
             elementIdIndexer,
             new Map()
         );
@@ -134,9 +170,8 @@ export default class Network {
         );
     }
 
-    setThreeWindingsTransformers(threeWindingsTransformers) {
-        this.threeWindingsTransformers = threeWindingsTransformers;
-        this.threeWindingsTransformersById = this.threeWindingsTransformers.reduce(
+    completeThreeWindingsTransformersInfos(threeWindingsTransformers) {
+        this.threeWindingsTransformersById = threeWindingsTransformers.reduce(
             elementIdIndexer,
             new Map()
         );
@@ -149,52 +184,28 @@ export default class Network {
         );
     }
 
-    setGenerators(generators) {
-        this.generators = generators;
-        this.generatorsById = this.generators.reduce(
-            elementIdIndexer,
-            new Map()
-        );
+    completeGeneratorsInfos(generators) {
+        this.generatorsById = generators.reduce(elementIdIndexer, new Map());
     }
 
     updateGenerators(generators) {
         this.updateEquipments(this.generators, generators);
     }
 
-    setBatteries(batteries) {
-        this.batteries = batteries;
-    }
-
     updateBatteries(batteries) {
         this.updateEquipments(this.batteries, batteries);
-    }
-
-    setLoads(loads) {
-        this.loads = loads;
     }
 
     updateLoads(loads) {
         this.updateEquipments(this.loads, loads);
     }
 
-    setDanglingLines(danglingLines) {
-        this.danglingLines = danglingLines;
-    }
-
     updateDanglingLines(danglingLines) {
         this.updateEquipments(this.danglingLines, danglingLines);
     }
 
-    setShuntCompensators(shuntCompensators) {
-        this.shuntCompensators = shuntCompensators;
-    }
-
     updateShuntCompensators(shuntCompensators) {
         this.updateEquipments(this.shuntCompensators, shuntCompensators);
-    }
-
-    setStaticVarCompensators(staticVarCompensators) {
-        this.staticVarCompensators = staticVarCompensators;
     }
 
     updateStaticVarCompensators(staticVarCompensators) {
@@ -204,24 +215,12 @@ export default class Network {
         );
     }
 
-    setHvdcLines(hvdcLines) {
-        this.hvdcLines = hvdcLines;
-    }
-
     updateHvdcLines(hvdcLines) {
         this.updateEquipments(this.hvdcLines, hvdcLines);
     }
 
-    setLccConverterStations(lccConverterStations) {
-        this.lccConverterStations = lccConverterStations;
-    }
-
     updateLccConverterStations(lccConverterStations) {
         this.updateEquipments(this.lccConverterStations, lccConverterStations);
-    }
-
-    setVscConverterStations(vscConverterStations) {
-        this.vscConverterStations = vscConverterStations;
     }
 
     updateVscConverterStations(vscConverterStations) {
@@ -269,6 +268,73 @@ export default class Network {
             this.getLine(id) ||
             this.getTwoWindingsTransformer(id) ||
             this.getThreeWindingsTransformer(id)
+        );
+    }
+
+    makeEqHandler(cb, errHandler, postUpdateCB) {
+        return new EquipmentHandler(cb, errHandler, postUpdateCB);
+    }
+    constructor(
+        substations,
+        lines,
+        twoWindingsTransformers,
+        threeWindingsTransformers,
+        generators,
+        loads,
+        batteries,
+        danglingLines,
+        hvdcLines,
+        lccConverterStations,
+        vscConverterStations,
+        shuntCompensators,
+        staticVarCompensators,
+        errHandler
+    ) {
+        this.substations = this.makeEqHandler(
+            substations,
+            errHandler,
+            this.completeSubstationsInfos
+        );
+
+        this.lines = this.makeEqHandler(
+            lines,
+            errHandler,
+            this.completeLinesInfos
+        );
+        this.twoWindingsTransformers = this.makeEqHandler(
+            twoWindingsTransformers,
+            errHandler,
+            this.completeTwoWindingsTransformersInfos
+        );
+        this.threeWindingsTransformers = this.makeEqHandler(
+            threeWindingsTransformers,
+            errHandler,
+            this.completeThreeWindingsTransformersInfos
+        );
+        this.generators = this.makeEqHandler(
+            generators,
+            errHandler,
+            this.completeGeneratorsInfos
+        );
+        this.loads = this.makeEqHandler(loads, errHandler);
+        this.batteries = this.makeEqHandler(batteries, errHandler);
+        this.danglingLines = this.makeEqHandler(danglingLines, errHandler);
+        this.hvdcLines = this.makeEqHandler(hvdcLines, errHandler);
+        this.lccConverterStations = this.makeEqHandler(
+            lccConverterStations,
+            errHandler
+        );
+        this.vscConverterStations = this.makeEqHandler(
+            vscConverterStations,
+            errHandler
+        );
+        this.shuntCompensators = this.makeEqHandler(
+            shuntCompensators,
+            errHandler
+        );
+        this.staticVarCompensators = this.makeEqHandler(
+            staticVarCompensators,
+            errHandler
         );
     }
 }

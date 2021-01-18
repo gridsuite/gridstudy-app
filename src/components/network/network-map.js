@@ -54,6 +54,10 @@ const NetworkMap = forwardRef((props, ref) => {
     const [tooltip, setTooltip] = useState({});
 
     const theme = useTheme();
+
+    const [substationLoaded, setSubstationLoaded] = useState(false);
+    const [linesLoaded, setLinesLoaded] = useState(false);
+
     const foregroundNeutralColor = useMemo(() => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
@@ -257,15 +261,21 @@ const NetworkMap = forwardRef((props, ref) => {
 
     const layers = [];
 
+    if (!substationLoaded && props.network)
+        props.network.substations.get(() => setSubstationLoaded(true));
+    if (!linesLoaded && props.network)
+        props.network.lines.get(() => setLinesLoaded(true));
     if (
         props.network !== null &&
         props.geoData !== null &&
-        props.filteredNominalVoltages !== null
+        props.filteredNominalVoltages !== null &&
+        substationLoaded &&
+        linesLoaded
     ) {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
-                data: props.network.substations,
+                data: props.network.substations.values || [],
                 network: props.network,
                 geoData: props.geoData,
                 useName: props.useName,

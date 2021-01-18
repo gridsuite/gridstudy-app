@@ -173,6 +173,7 @@ const StudyPane = (props) => {
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
 
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
+    const [substationsLoaded, setSubstationLoaded] = useState(false);
 
     const lineFlowAlertThreshold = useSelector((state) =>
         Number(state.lineFlowAlertThreshold)
@@ -359,74 +360,27 @@ const StudyPane = (props) => {
         updateLoadFlowResult();
         updateSecurityAnalysisResult();
         updateSecurityAnalysisStatus();
-
-        const substations = fetchSubstations(studyName, userId);
-        const lines = fetchLines(studyName, userId);
-        const twoWindingsTransformers = fetchTwoWindingsTransformers(
-            studyName,
-            userId
-        );
-        const threeWindingsTransformers = fetchThreeWindingsTransformers(
-            studyName,
-            userId
-        );
-        const generators = fetchGenerators(studyName, userId);
-        const loads = fetchLoads(studyName, userId);
-        const batteries = fetchBatteries(studyName, userId);
-        const danglingLines = fetchDanglingLines(studyName, userId);
-        const hvdcLines = fetchHvdcLines(studyName, userId);
-        const lccConverterStations = fetchLccConverterStations(
-            studyName,
-            userId
-        );
-        const vscConverterStations = fetchVscConverterStations(
-            studyName,
-            userId
-        );
-        const shuntCompensators = fetchShuntCompensators(studyName, userId);
-        const staticVarCompensators = fetchStaticVarCompensators(
-            studyName,
-            userId
-        );
-
-        Promise.all([
-            substations,
-            lines,
-            twoWindingsTransformers,
-            threeWindingsTransformers,
-            generators,
-            loads,
-            batteries,
-            danglingLines,
-            hvdcLines,
-            lccConverterStations,
-            vscConverterStations,
-            shuntCompensators,
-            staticVarCompensators,
-        ])
-            .then((values) => {
-                const network = new Network();
-                network.setSubstations(values[0]);
-                network.setLines(values[1]);
-                network.setTwoWindingsTransformers(values[2]);
-                network.setThreeWindingsTransformers(values[3]);
-                network.setGenerators(values[4]);
-                network.setLoads(values[5]);
-                network.setBatteries(values[6]);
-                network.setDanglingLines(values[7]);
-                network.setHvdcLines(values[8]);
-                network.setLccConverterStations(values[9]);
-                network.setVscConverterStations(values[10]);
-                network.setShuntCompensators(values[11]);
-                network.setStaticVarCompensators(values[12]);
-
-                dispatch(loadNetworkSuccess(network));
-            })
-            .catch(function (error) {
+        const network = new Network(
+            () => fetchSubstations(studyName, userId),
+            () => fetchLines(studyName, userId),
+            () => fetchTwoWindingsTransformers(studyName, userId),
+            () => fetchThreeWindingsTransformers(studyName, userId),
+            () => fetchGenerators(studyName, userId),
+            () => fetchLoads(studyName, userId),
+            () => fetchBatteries(studyName, userId),
+            () => fetchDanglingLines(studyName, userId),
+            () => fetchHvdcLines(studyName, userId),
+            () => fetchLccConverterStations(studyName, userId),
+            () => fetchVscConverterStations(studyName, userId),
+            () => fetchShuntCompensators(studyName, userId),
+            () => fetchStaticVarCompensators(studyName, userId),
+            (error) => {
                 console.error(error.message);
                 setStudyNotFound(true);
-            });
-        // Note: studyName and dispatch don't change
+            }
+        );
+
+        dispatch(loadNetworkSuccess(network));
     }, [
         studyName,
         userId,
@@ -530,7 +484,6 @@ const StudyPane = (props) => {
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
         dispatch(openStudy(studyName, userId));
-
         loadNetwork();
         loadGeoData();
         const ws = connectNotifications(studyName);
@@ -566,12 +519,17 @@ const StudyPane = (props) => {
     }, [location.search]);
 
     useEffect(() => {
-        if (network && !filteredNominalVoltages) {
+        if (network && !substationsLoaded)
+            network.substations.get(() => setSubstationLoaded(true));
+    }, [substationsLoaded, network]);
+
+    useEffect(() => {
+        if (network && substationsLoaded && !filteredNominalVoltages) {
             dispatch(
                 filteredNominalVoltagesUpdated(network.getNominalVoltages())
             );
         }
-    }, [network, filteredNominalVoltages, dispatch]);
+    }, [network, filteredNominalVoltages, dispatch, substationsLoaded]);
 
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
