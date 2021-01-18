@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-const voltageLevelIdIndexer = (map, voltageLevel) => {
-    map.set(voltageLevel.id, voltageLevel);
+const elementIdIndexer = (map, element) => {
+    map.set(element.id, element);
     return map;
 };
 
@@ -21,20 +21,23 @@ export default class Network {
 
     generators = [];
 
-    voltageLevelsByNominalVoltage = new Map();
-
     voltageLevelsById = new Map();
 
     substationsById = new Map();
 
+    linesById = new Map();
+
+    twoWindingsTransformersById = new Map();
+
+    threeWindingsTransformersById = new Map();
+
+    generatorsById = new Map();
+
     nominalVoltages = [];
 
-    setSubstations(substations) {
-        this.substations = substations;
-
-        // add more infos
+    completeSubstationsInfos = () => {
         const nominalVoltagesSet = new Set();
-        substations.forEach((substation) => {
+        this.substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
                 (voltageLevel1, voltageLevel2) =>
@@ -57,29 +60,95 @@ export default class Network {
         );
 
         this.voltageLevelsById = this.voltageLevels.reduce(
-            voltageLevelIdIndexer,
+            elementIdIndexer,
             new Map()
         );
 
         this.nominalVoltages = Array.from(nominalVoltagesSet).sort(
             (a, b) => b - a
         );
+    };
+
+    setSubstations(substations) {
+        this.substations = substations;
+
+        // add more infos
+        this.completeSubstationsInfos();
+    }
+
+    updateSubstations(substations) {
+        this.substations.forEach((substation1, index) => {
+            const found = substations.filter(
+                (substation2) => substation2.id === substation1.id
+            );
+            this.substations[index] = found.length > 0 ? found[0] : substation1;
+        });
+
+        // add more infos
+        this.completeSubstationsInfos();
     }
 
     setLines(lines) {
         this.lines = lines;
+        this.linesById = this.lines.reduce(elementIdIndexer, new Map());
+    }
+
+    updateLines(lines) {
+        this.lines.forEach((line1, index) => {
+            const found = lines.filter((line2) => line2.id === line1.id);
+            this.lines[index] = found.length > 0 ? found[0] : line1;
+        });
     }
 
     setTwoWindingsTransformers(twoWindingsTransformers) {
         this.twoWindingsTransformers = twoWindingsTransformers;
+        this.twoWindingsTransformersById = this.twoWindingsTransformers.reduce(
+            elementIdIndexer,
+            new Map()
+        );
+    }
+
+    updateTwoWindingsTransformers(twoWindingsTransformers) {
+        this.twoWindingsTransformers.forEach((t1, index) => {
+            const found = twoWindingsTransformers.filter(
+                (t2) => t2.id === t1.id
+            );
+            this.twoWindingsTransformers[index] =
+                found.length > 0 ? found[0] : t1;
+        });
     }
 
     setThreeWindingsTransformers(threeWindingsTransformers) {
         this.threeWindingsTransformers = threeWindingsTransformers;
+        this.threeWindingsTransformersById = this.threeWindingsTransformers.reduce(
+            elementIdIndexer,
+            new Map()
+        );
+    }
+
+    updateThreeWindingsTransformers(threeWindingsTransformers) {
+        this.threeWindingsTransformers.forEach((t1, index) => {
+            const found = threeWindingsTransformers.filter(
+                (t2) => t2.id === t1.id
+            );
+            this.threeWindingsTransformers[index] =
+                found.length > 0 ? found[0] : t1;
+        });
     }
 
     setGenerators(generators) {
         this.generators = generators;
+        this.generatorsById = this.generators.reduce(
+            elementIdIndexer,
+            new Map()
+        );
+    }
+
+    updateGenerators(generators) {
+        this.generators.forEach((g1, index) => {
+            const found = generators.filter((g2) => g2.id === g1.id);
+            this.generators[index] = found.length > 0 ? found[0] : g1;
+        });
     }
 
     getVoltageLevels() {
@@ -100,5 +169,29 @@ export default class Network {
 
     getNominalVoltages() {
         return this.nominalVoltages;
+    }
+
+    getLine(id) {
+        return this.linesById.get(id);
+    }
+
+    getTwoWindingsTransformer(id) {
+        return this.twoWindingsTransformersById.get(id);
+    }
+
+    getThreeWindingsTransformer(id) {
+        return this.threeWindingsTransformersById.get(id);
+    }
+
+    getGenerator(id) {
+        return this.generatorsById.get(id);
+    }
+
+    getLineOrTransformer(id) {
+        return (
+            this.getLine(id) ||
+            this.getTwoWindingsTransformer(id) ||
+            this.getThreeWindingsTransformer(id)
+        );
     }
 }

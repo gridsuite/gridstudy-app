@@ -29,6 +29,23 @@ const useStyles = makeStyles((theme) => ({
     expandOpen: {
         transform: 'rotate(0deg)',
     },
+    listOptions: {
+        minWidth: 275,
+        left: '-21px',
+        top: '1px',
+        position: 'relative',
+        boxShadow: 'none',
+        borderRadius: '0',
+        border: '1px solid #7f7f7e',
+        background: '#242424',
+        color: '#fdfdfd',
+        '& ul': {
+            padding: 0,
+            '& li:first-child': {
+                borderBottom: '1px solid #7f7f7e',
+            },
+        },
+    },
 }));
 
 const SplitButton = (props) => {
@@ -121,7 +138,7 @@ const SplitButton = (props) => {
                                     : 'center bottom',
                         }}
                     >
-                        <Paper>
+                        <Paper className={classes.listOptions}>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu">
                                     {props.options.map((option, index) => (

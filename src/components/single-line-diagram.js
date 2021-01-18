@@ -18,6 +18,9 @@ import PropTypes from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { selectItemNetwork } from '../redux/actions';
+
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
@@ -35,6 +38,9 @@ import '@svgdotjs/svg.panzoom.js';
 import useTheme from '@material-ui/core/styles/useTheme';
 import Arrow from '../images/arrow.svg';
 import ArrowHover from '../images/arrow_hover.svg';
+import { fullScreenSingleLineDiagram } from '../redux/actions';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
 import clsx from 'clsx';
@@ -101,6 +107,33 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         backgroundColor: theme.palette.background.default,
     },
+    fullScreenSingleLineDiagram: {
+        width: '100%',
+        textAlign: 'center',
+        '& svg': {
+            width: '100%',
+            height: 'calc(100vh - 120px)', // Temporary: it will be fixed in the us of deleting scroll
+        },
+    },
+    fullScreen: {
+        bottom: 5,
+        right: 5,
+        position: 'absolute',
+        textAlign: 'right',
+        padding: '5px 10px 0',
+    },
+    notFullScreen: {
+        top: '-50px',
+        position: 'relative',
+        textAlign: 'right',
+        padding: '5px 10px 0',
+        float: 'right',
+    },
+    fullScreenIcon: {
+        cursor: 'pointer',
+        fontSize: '35px',
+        zIndex: '3',
+    },
 }));
 
 const SvgNotFound = (props) => {
@@ -148,6 +181,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const svgPrevViewbox = useRef();
     const svgSize = useRef();
     const svgDraw = useRef();
+    const dispatch = useDispatch();
+
+    const fullScreen = useSelector((state) => state.fullScreen);
 
     const [forceState, updateState] = useState(false);
 
@@ -205,15 +241,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         isComputationRunning,
         svgType,
     } = props;
-
-    const calcMargins = (svgType, width, height) => {
-        return {
-            top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            left: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-            bottom: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            right: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-        };
-    };
 
     useLayoutEffect(() => {
         function createSvgArrow(element, position, x, highestY, lowestY) {
@@ -367,6 +394,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
+                    margins: { top: 100, left: 100, right: 100, bottom: 200 },
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
                 });
             if (svgPrevViewbox.current) {
@@ -422,8 +450,18 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
+            dispatch(selectItemNetwork(null));
+            dispatch(fullScreenSingleLineDiagram(false));
             props.onClose();
         }
+    };
+
+    const showFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(true));
+    };
+
+    const hideFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(false));
     };
 
     let inner;
@@ -438,7 +476,9 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     <div
                         id="sld-svg"
                         className={
-                            svgType === SvgType.VOLTAGE_LEVEL
+                            fullScreen
+                                ? classes.fullScreenSingleLineDiagram
+                                : svgType === SvgType.VOLTAGE_LEVEL
                                 ? classes.divVoltageLevel
                                 : classes.divSubstation
                         }
@@ -475,7 +515,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     // To allow controls that are in the corners of the map to not be hidden
                     const mapRightOffset = 50;
                     const mapBottomOffset = 80;
-                    if (typeof(svgSize.current) != "undefined") {
+                    if (fullScreen) {
+                        sizeWidth = width;
+                        sizeHeight = height;
+                    } else if (typeof(svgSize.current) != "undefined") {
                         sizeWidth =
                             svgSize.current.width > width - mapRightOffset
                                 ? width - mapRightOffset
@@ -509,6 +552,25 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 <Box height={2}>{displayProgress}</Box>
                 {msgUpdateSwitch}
                 {inner}
+            {!loadingState && (
+                <Box
+                    className={
+                        fullScreen ? classes.fullScreen : classes.notFullScreen
+                    }
+                >
+                    {fullScreen ? (
+                        <FullscreenExitIcon
+                            onClick={hideFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ) : (
+                        <FullscreenIcon
+                            onClick={showFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    )}
+                </Box>
+            )}
             </Paper>
             );}}
         </AutoSizer>

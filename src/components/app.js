@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -28,7 +28,21 @@ import {
 import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
-import { LIGHT_THEME, resetResultCount } from '../redux/actions';
+import {
+    LIGHT_THEME,
+    resetResultCount,
+    selectCenterLabelState,
+    selectDiagonalLabelState,
+    selectLineFlowAlertThreshold,
+    selectLineFlowColorMode,
+    selectLineFlowMode,
+    selectLineFullPathState,
+    selectLineParallelPathState,
+    selectSubstationLayout,
+    selectTheme,
+    selectUseName,
+    selectViewOverloadsTableState,
+} from '../redux/actions';
 import Parameters from './parameters';
 
 import {
@@ -37,6 +51,7 @@ import {
     initializeAuthenticationProd,
     logout,
     TopBar,
+    SnackbarProvider,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -45,7 +60,24 @@ import { FormattedMessage } from 'react-intl';
 
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
-import { fetchAppsAndUrls } from '../utils/rest-api';
+import {
+    connectNotificationsWsUpdateConfig,
+    fetchAppsAndUrls,
+    fetchConfigParameters,
+} from '../utils/rest-api';
+import {
+    PARAMS_CENTER_LABEL_KEY,
+    PARAMS_DIAGONAL_LABEL_KEY,
+    PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
+    PARAMS_LINE_FLOW_COLOR_MODE_KEY,
+    PARAMS_LINE_FLOW_MODE_KEY,
+    PARAMS_LINE_FULL_PATH_KEY,
+    PARAMS_LINE_PARALLEL_PATH_KEY,
+    PARAMS_SUBSTATION_LAYOUT_KEY,
+    PARAMS_THEME_KEY,
+    PARAMS_USE_NAME_KEY,
+    PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+} from '../utils/config-params';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -66,6 +98,9 @@ const lightTheme = createMuiTheme({
     circle_hover: {
         stroke: '#212121',
         fill: '#212121',
+    },
+    link: {
+        color: 'blue',
     },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
@@ -89,6 +124,9 @@ const darkTheme = createMuiTheme({
     circle_hover: {
         stroke: 'white',
         fill: 'white',
+    },
+    link: {
+        color: 'green',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
@@ -139,6 +177,76 @@ const App = () => {
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const resultCount = useSelector((state) => state.resultCount);
+
+    const updateParams = useCallback(
+        (params) => {
+            params.forEach((param) => {
+                switch (param.name) {
+                    case PARAMS_THEME_KEY:
+                        dispatch(selectTheme(param.value));
+                        break;
+                    case PARAMS_CENTER_LABEL_KEY:
+                        dispatch(
+                            selectCenterLabelState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_DIAGONAL_LABEL_KEY:
+                        dispatch(
+                            selectDiagonalLabelState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY:
+                        dispatch(selectLineFlowAlertThreshold(param.value));
+                        break;
+                    case PARAMS_LINE_FLOW_COLOR_MODE_KEY:
+                        dispatch(selectLineFlowColorMode(param.value));
+                        break;
+                    case PARAMS_LINE_FLOW_MODE_KEY:
+                        dispatch(selectLineFlowMode(param.value));
+                        break;
+                    case PARAMS_LINE_FULL_PATH_KEY:
+                        dispatch(
+                            selectLineFullPathState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_LINE_PARALLEL_PATH_KEY:
+                        dispatch(
+                            selectLineParallelPathState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_SUBSTATION_LAYOUT_KEY:
+                        dispatch(selectSubstationLayout(param.value));
+                        break;
+                    case PARAMS_VIEW_OVERLOADS_TABLE_KEY:
+                        dispatch(
+                            selectViewOverloadsTableState(
+                                param.value === 'true'
+                            )
+                        );
+                        break;
+                    case PARAMS_USE_NAME_KEY:
+                        dispatch(selectUseName(param.value === 'true'));
+                        break;
+                    default:
+                }
+            });
+        },
+        [dispatch]
+    );
+
+    const connectNotificationsUpdateConfig = useCallback(() => {
+        const ws = connectNotificationsWsUpdateConfig();
+
+        ws.onmessage = function (event) {
+            fetchConfigParameters().then((params) => {
+                updateParams(params);
+            });
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, [updateParams]);
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
@@ -200,6 +308,20 @@ const App = () => {
         }
     }, [user]);
 
+    useEffect(() => {
+        if (user !== null) {
+            fetchConfigParameters().then((params) => {
+                console.debug('received UI parameters :');
+                console.debug(params);
+                updateParams(params);
+            });
+            const ws = connectNotificationsUpdateConfig();
+            return function () {
+                ws.close();
+            };
+        }
+    }, [user, dispatch, updateParams, connectNotificationsUpdateConfig]);
+
     function studyClickHandler(studyName, userId) {
         history.push(
             '/' +
@@ -221,6 +343,10 @@ const App = () => {
         history.replace('/');
     }
 
+    function onChangeTab(newTabIndex) {
+        setTabIndex(newTabIndex);
+    }
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -228,6 +354,7 @@ const App = () => {
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
+            <SnackbarProvider hideIconVariant={false}>
             <CssBaseline />
             <div className="singlestretch-child" style={{
                 display: 'flex',
@@ -255,9 +382,9 @@ const App = () => {
                             indicatorColor="primary"
                             variant="scrollable"
                             scrollButtons="auto"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
+                                onChange={(event, newTabIndex) => {
+                                    onChangeTab(newTabIndex);
+                                }}
                             aria-label="views"
                             className={classes.tabs}
                         >
@@ -301,14 +428,18 @@ const App = () => {
                                 />
                             </Route>
                             <Route exact path="/:userId/studies/:studyName">
-                                <StudyPane view={STUDY_VIEWS[tabIndex]} />
+                                <StudyPane
+                                    view={STUDY_VIEWS[tabIndex]}
+                                    onChangeTab={onChangeTab}
+                                />
                             </Route>
                             <Route exact path="/sign-in-callback">
                                 <Redirect to={getPreLoginPath() || '/'} />
                             </Route>
                             <Route exact path="/logout-callback">
                                 <h1>
-                                    Error: logout failed; you are still logged in.
+                                    Error: logout failed; you are still logged
+                                    in.
                                 </h1>
                             </Route>
                             <Route>
@@ -328,6 +459,7 @@ const App = () => {
                     )}
                 </div>
             </div>
+            </SnackbarProvider>
         </ThemeProvider>
     );
 };
