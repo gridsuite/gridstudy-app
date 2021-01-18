@@ -98,9 +98,9 @@ export default class Network {
 
     nominalVoltages = [];
 
-    completeSubstationsInfos = (substations) => {
+    completeSubstationsInfos = () => {
         const nominalVoltagesSet = new Set();
-        substations.forEach((substation) => {
+        this.substations.values.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
                 (voltageLevel1, voltageLevel2) =>
@@ -133,11 +133,7 @@ export default class Network {
     };
 
     updateEquipments(currentEquipments, newEquipements) {
-        console.info('currentEquipments');
-        console.info(currentEquipments);
-        console.info('newEquipements');
-        console.info(newEquipements);
-
+        if (currentEquipments.values === undefined) return;
         currentEquipments.values.forEach((equipment1, index) => {
             const found = newEquipements.filter(
                 (equipment2) => equipment2.id === equipment1.id

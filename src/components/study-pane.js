@@ -355,40 +355,44 @@ const StudyPane = (props) => {
 
     const [position, setPosition] = useState([-1, -1]);
 
-    const loadNetwork = useCallback(() => {
-        console.info(`Loading network of study '${studyName}'...`);
-        updateLoadFlowResult();
-        updateSecurityAnalysisResult();
-        updateSecurityAnalysisStatus();
-        const network = new Network(
-            () => fetchSubstations(studyName, userId),
-            () => fetchLines(studyName, userId),
-            () => fetchTwoWindingsTransformers(studyName, userId),
-            () => fetchThreeWindingsTransformers(studyName, userId),
-            () => fetchGenerators(studyName, userId),
-            () => fetchLoads(studyName, userId),
-            () => fetchBatteries(studyName, userId),
-            () => fetchDanglingLines(studyName, userId),
-            () => fetchHvdcLines(studyName, userId),
-            () => fetchLccConverterStations(studyName, userId),
-            () => fetchVscConverterStations(studyName, userId),
-            () => fetchShuntCompensators(studyName, userId),
-            () => fetchStaticVarCompensators(studyName, userId),
-            (error) => {
-                console.error(error.message);
-                setStudyNotFound(true);
+    const loadNetwork = useCallback(
+        (isJusteUpdate) => {
+            console.info(`Loading network of study '${studyName}'...`);
+            updateLoadFlowResult();
+            updateSecurityAnalysisResult();
+            updateSecurityAnalysisStatus();
+            if (!isJusteUpdate) {
+                const network = new Network(
+                    () => fetchSubstations(studyName, userId),
+                    () => fetchLines(studyName, userId),
+                    () => fetchTwoWindingsTransformers(studyName, userId),
+                    () => fetchThreeWindingsTransformers(studyName, userId),
+                    () => fetchGenerators(studyName, userId),
+                    () => fetchLoads(studyName, userId),
+                    () => fetchBatteries(studyName, userId),
+                    () => fetchDanglingLines(studyName, userId),
+                    () => fetchHvdcLines(studyName, userId),
+                    () => fetchLccConverterStations(studyName, userId),
+                    () => fetchVscConverterStations(studyName, userId),
+                    () => fetchShuntCompensators(studyName, userId),
+                    () => fetchStaticVarCompensators(studyName, userId),
+                    (error) => {
+                        console.error(error.message);
+                        setStudyNotFound(true);
+                    }
+                );
+                dispatch(loadNetworkSuccess(network));
             }
-        );
-
-        dispatch(loadNetworkSuccess(network));
-    }, [
-        studyName,
-        userId,
-        dispatch,
-        updateLoadFlowResult,
-        updateSecurityAnalysisResult,
-        updateSecurityAnalysisStatus,
-    ]);
+        },
+        [
+            studyName,
+            userId,
+            dispatch,
+            updateLoadFlowResult,
+            updateSecurityAnalysisResult,
+            updateSecurityAnalysisStatus,
+        ]
+    );
 
     const updateNetwork = useCallback(
         (substationsIds) => {
@@ -628,7 +632,7 @@ const StudyPane = (props) => {
             ) {
                 //TODO reload data more intelligently
                 updateSld();
-                loadNetwork();
+                loadNetwork(true);
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'loadflow_status'
