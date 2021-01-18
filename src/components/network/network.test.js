@@ -35,21 +35,22 @@ const substations = [
 
 test('network', () => {
     // Data initialisation
-    const network = new Network();
-    network.setSubstations(substations);
+    const network = new Network(() => substations);
+    //network.setSubstations(substations);
+    network.getSubstation(() => {
+        // Substation
+        expect(network.substations.values).toHaveLength(2);
+        expect(network.substations[0].id).toEqual('S1');
+        expect(network.substations[1].id).toEqual('S2');
+        expect(network.getSubstation('S1')).not.toBeNull();
+        expect(network.getSubstation('S2').id).toEqual('S2');
+        expect(network.getSubstations()).toHaveLength(2);
 
-    // Substation
-    expect(network.substations).toHaveLength(2);
-    expect(network.substations[0].id).toEqual('S1');
-    expect(network.substations[1].id).toEqual('S2');
-    expect(network.getSubstation('S1')).not.toBeNull();
-    expect(network.getSubstation('S2').id).toEqual('S2');
-    expect(network.getSubstations()).toHaveLength(2);
-
-    // Voltage level
-    expect(network.substations[0].voltageLevels[0].id).toEqual('S1_6');
-    expect(network.substations[0].voltageLevels[1].id).toEqual('S1_7');
-    expect(network.getVoltageLevel('S1_7')).not.toBeNull();
-    expect(network.getVoltageLevel('S2_6').id).toEqual('S2_6');
-    expect(network.getVoltageLevels()).toHaveLength(3);
+        // Voltage level
+        expect(network.substations[0].voltageLevels[0].id).toEqual('S1_6');
+        expect(network.substations[0].voltageLevels[1].id).toEqual('S1_7');
+        expect(network.getVoltageLevel('S1_7')).not.toBeNull();
+        expect(network.getVoltageLevel('S2_6').id).toEqual('S2_6');
+        expect(network.getVoltageLevels()).toHaveLength(3);
+    });
 });
