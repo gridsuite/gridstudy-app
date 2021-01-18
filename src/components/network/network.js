@@ -133,12 +133,20 @@ export default class Network {
     };
 
     updateEquipments(currentEquipments, newEquipements) {
+        console.info('currentEquipments');
+        console.info(currentEquipments);
+        console.info('newEquipements');
+        console.info(newEquipements);
+
         currentEquipments.values.forEach((equipment1, index) => {
             const found = newEquipements.filter(
                 (equipment2) => equipment2.id === equipment1.id
             );
-            currentEquipments[index] = found.length > 0 ? found[0] : equipment1;
+            currentEquipments.values[index] =
+                found.length > 0 ? found[0] : equipment1;
         });
+        console.info('updatedEquipements');
+        console.info(newEquipements);
     }
 
     updateSubstations(substations) {

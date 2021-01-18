@@ -397,7 +397,7 @@ const StudyPane = (props) => {
                 userId,
                 substationsIds
             );
-
+            console.info('network update');
             Promise.all([updatedEquipments])
                 .then((values) => {
                     network.updateSubstations(values[0].substations);

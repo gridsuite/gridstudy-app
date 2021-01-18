@@ -99,7 +99,8 @@ const OverloadedLinesView = (props) => {
             }
             return fields;
         };
-        if (!lineLoaded) props.lines.get(() => setLineLoaded(true));
+        if (props.lines.get(() => setLineLoaded(true)) === undefined)
+            setLineLoaded(false);
         else
             setLines(
                 props.lines

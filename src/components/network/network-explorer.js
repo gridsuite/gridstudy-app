@@ -108,8 +108,12 @@ const NetworkExplorer = ({
     const [substationsLoaded, setSubstationLoaded] = React.useState(false);
 
     useEffect(() => {
-        if (network && !substationsLoaded)
-            network.substations.get(() => setSubstationLoaded(true));
+        if (
+            network &&
+            network.substations.get(() => setSubstationLoaded(true)) ===
+                undefined
+        )
+            setSubstationLoaded(false);
     }, [substationsLoaded, network]);
 
     const identifiedElementComparator = useCallback(

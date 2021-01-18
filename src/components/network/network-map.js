@@ -7,6 +7,7 @@
 
 import React, {
     forwardRef,
+    useEffect,
     useImperativeHandle,
     useMemo,
     useRef,
@@ -79,6 +80,23 @@ const NetworkMap = forwardRef((props, ref) => {
         }),
         [setCentered]
     );
+
+    useEffect(() => {
+        if (
+            props.network &&
+            props.network.substations.get(() => setSubstationLoaded(true)) ===
+                undefined
+        )
+            setSubstationLoaded(false);
+    }, [props.network, substationLoaded]);
+
+    useEffect(() => {
+        if (
+            props.network &&
+            props.network.lines.get(() => setLinesLoaded(true)) === undefined
+        )
+            setLinesLoaded(false);
+    }, [props.network, linesLoaded]);
 
     // Do this in onAfterRender because when doing it in useEffect (triggered by calling setDeck()),
     // it doesn't work in the case of using the browser backward/forward buttons (because in this particular case,
@@ -261,10 +279,6 @@ const NetworkMap = forwardRef((props, ref) => {
 
     const layers = [];
 
-    if (!substationLoaded && props.network)
-        props.network.substations.get(() => setSubstationLoaded(true));
-    if (!linesLoaded && props.network)
-        props.network.lines.get(() => setLinesLoaded(true));
     if (
         props.network !== null &&
         props.geoData !== null &&
