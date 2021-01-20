@@ -81,6 +81,7 @@ import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { RemoteRessourceHandler } from './util/remote-ressource-handler';
 
 const drawerWidth = 300;
 
@@ -291,15 +292,11 @@ const StudyPane = (props) => {
     }, [studyName, userId]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
-        fetchSecurityAnalysisResult(studyName, userId).then(function (
-            response
-        ) {
-            if (response.ok) {
-                response.json().then((result) => {
-                    setSecurityAnalysisResult(result);
-                });
-            }
-        });
+        setSecurityAnalysisResult(
+            new RemoteRessourceHandler(() =>
+                fetchSecurityAnalysisResult(studyName, userId)
+            )
+        );
     }, [studyName, userId]);
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
@@ -1049,7 +1046,7 @@ const StudyPane = (props) => {
         return (
             <Paper className={classes.main}>
                 <SecurityAnalysisResult
-                    result={securityAnalysisResult}
+                    resultFetcher={securityAnalysisResult}
                     onClickNmKConstraint={onClickNmKConstraint}
                 />
             </Paper>

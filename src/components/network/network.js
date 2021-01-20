@@ -5,55 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { RemoteRessourceHandler } from '../util/remote-ressource-handler';
+
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
     return map;
 };
-
-export class EquipmentHandler {
-    fetcher = undefined;
-    errorHandler = undefined;
-    postUpdate = undefined;
-
-    constructor(fetcher, errorHandler, postUpdate) {
-        this.fetcher = fetcher;
-        this.errorHandler = errorHandler;
-        this.postUpdate = postUpdate;
-    }
-
-    values = undefined;
-    updating = undefined;
-
-    cbUpdateDone = new Set();
-
-    get(cbUpdateDone) {
-        if (this.values === undefined) {
-            if (cbUpdateDone) this.cbUpdateDone.add(cbUpdateDone);
-            if (!this.updating) {
-                this.updating = true;
-                Promise.all([this.fetcher()])
-                    .then((val) => {
-                        this.values = val[0];
-                        if (this.postUpdate) this.postUpdate(this.values);
-                        this.updating = false;
-                        this.cbUpdateDone.forEach((cb) => cb());
-                        this.cbUpdateDone.clear();
-                    })
-                    .catch((error) => this.errorHandler(error));
-            }
-            return undefined;
-        }
-        if (cbUpdateDone) cbUpdateDone();
-        return this.values;
-    }
-
-    length(cbUpdateDone) {
-        return (
-            (this.values !== undefined && this.values.length) ||
-            this.get(cbUpdateDone)
-        );
-    }
-}
 
 export default class Network {
     substations;
@@ -276,7 +233,7 @@ export default class Network {
     }
 
     makeEqHandler(cb, errHandler, postUpdateCB) {
-        return new EquipmentHandler(cb, errHandler, postUpdateCB);
+        return new RemoteRessourceHandler(cb, errHandler, postUpdateCB);
     }
     constructor(
         substations,

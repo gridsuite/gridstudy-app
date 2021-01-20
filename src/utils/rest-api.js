@@ -498,7 +498,9 @@ export function fetchSecurityAnalysisResult(studyName, userId) {
     console.info('Fetching security analysis on ' + studyName + '...');
     const url = getStudyUrl(studyName, userId) + '/security-analysis/result';
     console.debug(url);
-    return backendFetch(url, { method: 'get' });
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
 }
 
 export function fetchSecurityAnalysisStatus(studyName, userId) {
