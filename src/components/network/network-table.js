@@ -53,14 +53,16 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'initial',
     },
     searchSection: {
-        height: '48px',
         paddingRight: '10px',
         alignItems: 'center',
-        minWidth: '300px',
     },
     table: {
         marginTop: '20px',
     },
+    containerSearchInput: {
+        marginTop: '15px',
+        marginLeft: '10px',
+    }
 }));
 
 const NetworkTable = (props) => {
@@ -1264,17 +1266,16 @@ const NetworkTable = (props) => {
                             <Grid
                                 item
                                 alignContent={'flex-end'}
-                                className={classes.searchSection}
+                                className={classes.containerSearchInput}
                             >
                                 <TextField
-                                    className={classes.textField}
-                                    size="medium"
+                                    size="small"
                                     placeholder={
                                         intl.formatMessage({ id: 'filter' }) +
                                         '...'
                                     }
                                     onChange={setFilter}
-                                    variant="standard"
+                                    variant="outlined"
                                     classes={classes.searchSection}
                                     fullWidth
                                     InputProps={{
