@@ -62,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
     containerSearchInput: {
         marginTop: '15px',
         marginLeft: '10px',
-    }
+    },
 }));
 
 const NetworkTable = (props) => {
