@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
     table: {
         marginTop: '20px',
     },
-    containerSearchInput: {
+    containerInputSearch: {
         marginTop: '15px',
         marginLeft: '10px',
     },
@@ -1266,9 +1266,10 @@ const NetworkTable = (props) => {
                             <Grid
                                 item
                                 alignContent={'flex-end'}
-                                className={classes.containerSearchInput}
+                                className={classes.containerInputSearch}
                             >
                                 <TextField
+                                    className={classes.textField}
                                     size="small"
                                     placeholder={
                                         intl.formatMessage({ id: 'filter' }) +
