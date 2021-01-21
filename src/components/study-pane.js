@@ -174,7 +174,7 @@ const StudyPane = (props) => {
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
 
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
-    const [substationsLoaded, setSubstationLoaded] = useState(false);
+    const [substationsLoaded, setSubstationsLoaded] = useState(false);
 
     const lineFlowAlertThreshold = useSelector((state) =>
         Number(state.lineFlowAlertThreshold)
@@ -353,12 +353,12 @@ const StudyPane = (props) => {
     const [position, setPosition] = useState([-1, -1]);
 
     const loadNetwork = useCallback(
-        (isJusteUpdate) => {
+        (isUpdate) => {
             console.info(`Loading network of study '${studyName}'...`);
             updateLoadFlowResult();
             updateSecurityAnalysisResult();
             updateSecurityAnalysisStatus();
-            if (!isJusteUpdate) {
+            if (!isUpdate) {
                 const network = new Network(
                     () => fetchSubstations(studyName, userId),
                     () => fetchLines(studyName, userId),
@@ -521,7 +521,7 @@ const StudyPane = (props) => {
 
     useEffect(() => {
         if (network && !substationsLoaded)
-            network.substations.get(() => setSubstationLoaded(true));
+            network.substations.get(() => setSubstationsLoaded(true));
     }, [substationsLoaded, network]);
 
     useEffect(() => {

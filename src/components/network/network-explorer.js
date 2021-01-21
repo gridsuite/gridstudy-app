@@ -105,15 +105,15 @@ const NetworkExplorer = ({
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
     );
-    const [substationsLoaded, setSubstationLoaded] = React.useState(false);
+    const [substationsLoaded, setSubstationsLoaded] = React.useState(false);
 
     useEffect(() => {
         if (
             network &&
-            network.substations.get(() => setSubstationLoaded(true)) ===
+            network.substations.get(() => setSubstationsLoaded(true)) ===
                 undefined
         )
-            setSubstationLoaded(false);
+            setSubstationsLoaded(false);
     }, [substationsLoaded, network]);
 
     const identifiedElementComparator = useCallback(

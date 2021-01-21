@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NominalVoltageFilter = (props) => {
-    const [substationsLoaded, setSubstationLoaded] = useState(false);
+    const [substationsLoaded, setSubstationsLoaded] = useState(false);
     const network = useSelector((state) => state.network);
 
     const filteredNominalVoltages = useSelector(
@@ -78,7 +78,7 @@ const NominalVoltageFilter = (props) => {
     };
 
     if (!substationsLoaded)
-        network.substations.get(() => setSubstationLoaded(true));
+        network.substations.get(() => setSubstationsLoaded(true));
 
     return (
         substationsLoaded && (
