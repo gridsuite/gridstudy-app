@@ -634,18 +634,22 @@ const StudyPane = (props) => {
     const sldRef = useRef();
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            let eltOpen = switchElement.querySelector('.open');
-            let eltClose = switchElement.querySelector('.closed');
-
-            eltOpen.style.visibility = open ? 'visible' : 'hidden';
-            eltClose.style.visibility = open ? 'hidden' : 'visible';
+            if (open) {
+                switchElement.classList.replace('closed', 'open')
+            } else {
+                switchElement.classList.replace('open', 'closed')
+            }
 
             updateSwitchState(studyName, userId, breakerId, open).then(
                 (response) => {
                     if (!response.ok) {
                         console.error(response);
-                        eltOpen.style.visibility = open ? 'hidden' : 'visible';
-                        eltClose.style.visibility = open ? 'visible' : 'hidden';
+                        // revert switch position change
+                        if (open) {
+                            switchElement.classList.replace('open', 'closed')
+                        } else {
+                            switchElement.classList.replace('closed', 'open')
+                        }
                         setUpdateSwitchMsg(
                             response.status + ' : ' + response.statusText
                         );

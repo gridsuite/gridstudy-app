@@ -426,7 +426,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     domEl.style.cursor = 'pointer';
                     domEl.addEventListener('click', function (event) {
                         const clickedElementId = event.currentTarget.id;
-                        const switchMetadata = svg.metadata.nodes.find(
+                        const switchMetadata = switches.find(
                             (value) => value.id === clickedElementId
                         );
                         const switchId = switchMetadata.equipmentId;
