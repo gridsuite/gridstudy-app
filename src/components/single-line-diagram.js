@@ -425,7 +425,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     const domEl = document.getElementById(aSwitch.id);
                     domEl.style.cursor = 'pointer';
                     domEl.addEventListener('click', function (event) {
-                        const clickedElementId = event.currentTarget.id;
                         const switchId = aSwitch.equipmentId;
                         const open = aSwitch.open;
                         svgPrevViewbox.current = draw.viewbox();
