@@ -426,11 +426,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     domEl.style.cursor = 'pointer';
                     domEl.addEventListener('click', function (event) {
                         const clickedElementId = event.currentTarget.id;
-                        const switchMetadata = switches.find(
-                            (value) => value.id === clickedElementId
-                        );
-                        const switchId = switchMetadata.equipmentId;
-                        const open = switchMetadata.open;
+                        const switchId = aSwitch.equipmentId;
+                        const open = aSwitch.open;
                         svgPrevViewbox.current = draw.viewbox();
                         onBreakerClick(switchId, !open, event.currentTarget);
                     });
