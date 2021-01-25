@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
         },
         '& .disconnector.constant-color, .disconnected, wire-connected-disconnected, wire-disconnected-connected': {
             stroke: theme.palette.text.primary,
-        }
+        },
     },
     close: {
         padding: 0,
