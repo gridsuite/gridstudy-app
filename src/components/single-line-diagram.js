@@ -78,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
-        '& .disconnector.constant-color, .disconnected, wire-connected-disconnected, wire-disconnected-connected': {
+        '& .disconnector.constant-color, :not(.breaker).disconnected, wire-connected-disconnected, wire-disconnected-connected': {
             stroke: theme.palette.text.primary,
         },
     },
