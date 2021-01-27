@@ -732,7 +732,7 @@ const StudyPane = (props) => {
     }
 
     function choiceVoltageLevel(voltageLevelId) {
-        showVoltageLevelDiagram(voltageLevelId);
+        scrollAndOpenVoltageLevel(voltageLevelId);
         closeChoiceVoltageLevelMenu();
     }
 
@@ -775,6 +775,14 @@ const StudyPane = (props) => {
                 }
             }
         }
+    }
+
+    function scrollAndOpenVoltageLevel(vlId) {
+        if (!network) return;
+        dispatch(selectItemNetwork(vlId));
+        showVoltageLevelDiagram(vlId); // show voltage level
+        setVisibleSubstation(network.getVoltageLevel(vlId).substationId);
+        setDisplayedVoltageLevelId(vlId);
     }
 
     function renderMapView() {
@@ -909,7 +917,7 @@ const StudyPane = (props) => {
                         lineFlowColorMode={lineFlowColorMode}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
                         ref={mapRef}
-                        onSubstationClick={showVoltageLevelDiagram}
+                        onSubstationClick={scrollAndOpenVoltageLevel}
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
@@ -954,7 +962,7 @@ const StudyPane = (props) => {
                                 <SingleLineDiagram
                                     onClose={() => closeVoltageLevelDiagram()}
                                     onNextVoltageLevelClick={
-                                        showVoltageLevelDiagram
+                                        scrollAndOpenVoltageLevel
                                     }
                                     onBreakerClick={handleUpdateSwitchState}
                                     diagramTitle={sldTitle}
