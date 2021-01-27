@@ -671,7 +671,9 @@ class LineLayer extends CompositeLayer {
                         getTargetPosition: (line) =>
                             isStart ? line.end : line.origin,
                         getSubstationOffset: (line) =>
-                            line.substationIndexStart,
+                            isStart
+                                ? line.substationIndexStart
+                                : line.substationIndexEnd,
                         data: state.linesByNominalVoltage.get(vlIndex),
                         widthScale: 20,
                         widthMinPixels: 1,
