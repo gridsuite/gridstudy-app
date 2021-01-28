@@ -174,6 +174,7 @@ const PATH_UPDATED = 'lastPathUpdate';
 const LINE_UPDATED = 'lineUpdated';
 const PROXIMITY_UPDATED = 'lastPathUpdate';
 const ARROW_UPDATE = 'lastArrowUpdate';
+const ACTIVE_POWER = 'lastPowerUpdate';
 
 class LineLayer extends CompositeLayer {
     initializeState() {
@@ -184,6 +185,7 @@ class LineLayer extends CompositeLayer {
             lineMap: new Map(),
             layers: new Map(),
             linesByNominalVoltage: undefined,
+            activePower: new Map(),
         };
     }
 
@@ -223,9 +225,14 @@ class LineLayer extends CompositeLayer {
                 vl1.substationId !== vl2.substationId
             );
         };
-        linesByNominalVoltage.set(vlIndex, [
-            ...this.props.data.values.filter(voltageLevelFilter),
-        ]);
+        linesByNominalVoltage.set(
+            vlIndex,
+            new Map(
+                this.props.data.values
+                    .filter(voltageLevelFilter)
+                    .map((line) => [line.id, line])
+            )
+        );
         let next;
         if (this.hasNextNominalVoltage(vlIndex)) {
             next = (ts) =>
@@ -261,7 +268,7 @@ class LineLayer extends CompositeLayer {
                 terminal1Connected: line.terminal1Connected,
                 terminal2Connected: line.terminal2Connected,
             });
-
+            line.geo={};
             const key = this.genLineKey(line);
             let val = mapOriginDestination.get(key);
             if (val == null) mapOriginDestination.set(key, new Set([line]));
@@ -297,7 +304,9 @@ class LineLayer extends CompositeLayer {
         this.state.mapOriginDestination.forEach((samePathLine) => {
             let index = -(samePathLine.size - 1) / 2;
             samePathLine.forEach((line) => {
-                line.parallelIndex = this.props.lineParallelPath ? index : 0;
+                line.geo.parallelIndex = this.props.lineParallelPath
+                    ? index
+                    : 0;
                 index += 1;
             });
         });
@@ -305,10 +314,8 @@ class LineLayer extends CompositeLayer {
     }
 
     generateLineMap(ts, vlIndex) {
-        const lines = this.state.linesByNominalVoltage.get(vlIndex);
         const lineMap = this.state.lineMap;
-        if (vlIndex === 0) lineMap.clear();
-        lines.forEach((line) => {
+        this.state.linesByNominalVoltage.get(vlIndex).forEach((line) => {
             const positions = this.props.geoData.getLinePositions(
                 this.props.network,
                 line,
@@ -333,37 +340,37 @@ class LineLayer extends CompositeLayer {
         this.state.linesByNominalVoltage.get(vlIndex).forEach((line) => {
             const positions = this.state.lineMap.get(line.id).positions;
             //the first and last in positions doesn't depend on lineFullPath
-            line.origin = positions[0];
-            line.end = positions[positions.length - 1];
+            line.geo.origin = positions[0];
+            line.geo.end = positions[positions.length - 1];
 
-            line.substationIndexStart = this.getVoltageLevelIndex(
+            line.geo.substationIndexStart = this.getVoltageLevelIndex(
                 line.voltageLevelId1
             );
-            line.substationIndexEnd = this.getVoltageLevelIndex(
+            line.geo.substationIndexEnd = this.getVoltageLevelIndex(
                 line.voltageLevelId2
             );
 
-            if (!line.angle)
-                line.angle = this.computeAngle(
+            if (!line.geo.angle)
+                line.geo.angle = this.computeAngle(
                     this.props,
                     positions[0],
                     positions[positions.length - 1]
                 );
-            line.angleStart = this.computeAngle(
+            line.geo.angleStart = this.computeAngle(
                 this.props,
                 positions[0],
                 positions[1]
             );
-            line.angleEnd = this.computeAngle(
+            line.geo.angleEnd = this.computeAngle(
                 this.props,
                 positions[positions.length - 2],
                 positions[positions.length - 1]
             );
-            line.proximityFactorStart = this.getProximityFactor(
+            line.geo.proximityFactorStart = this.getProximityFactor(
                 positions[0],
                 positions[1]
             );
-            line.proximityFactorEnd = this.getProximityFactor(
+            line.geo.proximityFactorEnd = this.getProximityFactor(
                 positions[positions.length - 2],
                 positions[positions.length - 1]
             );
@@ -373,13 +380,13 @@ class LineLayer extends CompositeLayer {
             if (val == null)
                 mapMinProximityFactor.set(key, {
                     lines: [line],
-                    start: line.proximityFactorStart,
-                    end: line.proximityFactorEnd,
+                    start: line.geo.proximityFactorStart,
+                    end: line.geo.proximityFactorEnd,
                 });
             else {
                 val.lines.push(line);
-                val.start = Math.min(val.start, line.proximityFactorStart);
-                val.end = Math.min(val.end, line.proximityFactorEnd);
+                val.start = Math.min(val.start, line.geo.proximityFactorStart);
+                val.end = Math.min(val.end, line.geo.proximityFactorEnd);
                 mapMinProximityFactor.set(key, val);
             }
         });
@@ -387,8 +394,8 @@ class LineLayer extends CompositeLayer {
         if (vlIndex === this.props.network.nominalVoltages.length - 1) {
             mapMinProximityFactor.forEach((samePathLine) =>
                 samePathLine.lines.forEach((line) => {
-                    line.proximityFactorStart = samePathLine.start;
-                    line.proximityFactorEnd = samePathLine.end;
+                    line.geo.proximityFactorStart = samePathLine.start;
+                    line.geo.proximityFactorEnd = samePathLine.end;
                 })
             );
             this.setState({
@@ -412,54 +419,54 @@ class LineLayer extends CompositeLayer {
         const lineMap = this.state.lineMap;
 
         // create one arrow each DISTANCE_BETWEEN_ARROWS
-        let arrows = this.state.linesByNominalVoltage
-            .get(vlIndex)
-            .flatMap((line) => {
-                let lineData = lineMap.get(line.id);
-                line.cumulativeDistances = lineData.cumulativeDistances;
-                line.positions = lineData.positions;
+        let arrows = [
+            ...this.state.linesByNominalVoltage.get(vlIndex).values(),
+        ].flatMap((line) => {
+            let lineData = lineMap.get(line.id);
+            line.cumulativeDistances = lineData.cumulativeDistances;
+            line.positions = lineData.positions;
 
-                if (this.props.lineFlowMode === LineFlowMode.FEEDERS) {
-                    //If we use Feeders Mode, we build only two arrows
-                    return [
-                        {
-                            distance: START_ARROW_POSITION,
-                            line: line,
-                        },
-                        {
-                            distance: END_ARROW_POSITION,
-                            line: line,
-                        },
-                    ];
-                }
-
-                // calculate distance between 2 substations as a raw estimate of line size
-                const directLinePositions = [
-                    lineData.positions[0],
-                    lineData.positions[lineData.positions.length - 1],
-                ];
-                //TODO this doesn't need to be an approximation anymore, we have the value anyway
-                const directLineDistance = getDistance(
+            if (this.props.lineFlowMode === LineFlowMode.FEEDERS) {
+                //If we use Feeders Mode, we build only two arrows
+                return [
                     {
-                        latitude: directLinePositions[0][1],
-                        longitude: directLinePositions[0][0],
+                        distance: START_ARROW_POSITION,
+                        line: line,
                     },
                     {
-                        latitude: directLinePositions[1][1],
-                        longitude: directLinePositions[1][0],
-                    }
-                );
-                const arrowCount = Math.ceil(
-                    directLineDistance / DISTANCE_BETWEEN_ARROWS
-                );
-
-                return [...new Array(arrowCount).keys()].map((index) => {
-                    return {
-                        distance: index / arrowCount,
+                        distance: END_ARROW_POSITION,
                         line: line,
-                    };
-                });
+                    },
+                ];
+            }
+
+            // calculate distance between 2 substations as a raw estimate of line size
+            const directLinePositions = [
+                lineData.positions[0],
+                lineData.positions[lineData.positions.length - 1],
+            ];
+            //TODO this doesn't need to be an approximation anymore, we have the value anyway
+            const directLineDistance = getDistance(
+                {
+                    latitude: directLinePositions[0][1],
+                    longitude: directLinePositions[0][0],
+                },
+                {
+                    latitude: directLinePositions[1][1],
+                    longitude: directLinePositions[1][0],
+                }
+            );
+            const arrowCount = Math.ceil(
+                directLineDistance / DISTANCE_BETWEEN_ARROWS
+            );
+
+            return [...new Array(arrowCount).keys()].map((index) => {
+                return {
+                    distance: index / arrowCount,
+                    line: line,
+                };
             });
+        });
         this.setState({ [ARROW_UPDATE + vlIndex]: ts });
         this.scheduleNext(
             ts,
@@ -478,7 +485,7 @@ class LineLayer extends CompositeLayer {
                 lineData.cumulativeDistances,
                 START_ARROW_POSITION,
                 arrowDirection,
-                line.parallelIndex,
+                line.geo.parallelIndex,
                 (line.angle * 180) / Math.PI,
                 (line.angleStart * 180) / Math.PI,
                 this.props.distanceBetweenLines,
@@ -489,11 +496,11 @@ class LineLayer extends CompositeLayer {
                 lineData.cumulativeDistances,
                 END_ARROW_POSITION,
                 arrowDirection,
-                line.parallelIndex,
-                (line.angle * 180) / Math.PI,
-                (line.angleEnd * 180) / Math.PI,
+                line.geo.parallelIndex,
+                (line.geo.angle * 180) / Math.PI,
+                (line.geo.angleEnd * 180) / Math.PI,
                 this.props.distanceBetweenLines,
-                line.proximityFactorEnd
+                line.geo.proximityFactorEnd
             );
             if (coordinates1 !== null && coordinates2 !== null) {
                 activePower.push({
@@ -516,38 +523,62 @@ class LineLayer extends CompositeLayer {
                 });
             }
         });
+        let mapPower = this.state.activePower;
+        mapPower.set(vlIndex, activePower);
+        this.setState({ activePower: mapPower, [ACTIVE_POWER + vlIndex]: ts });
+        this.scheduleNext(ts, (ts) => this.generateLabelLayer(ts, vlIndex));
+    }
+
+    updateLines(ts, updatedLines) {
+        const linesByNominalVoltage = this.state.linesByNominalVoltage;
+        const vlUpdated = new Set();
+        updatedLines.forEach((line) => {
+            const vl1 = this.props.network.getVoltageLevel(
+                line.voltageLevelId1
+            );
+            const vl2 = this.props.network.getVoltageLevel(
+                line.voltageLevelId2
+            );
+            const vl = vl1 || vl2;
+
+            let vlIndex = this.props.network.nominalVoltages.indexOf(
+                vl.nominalVoltage
+            );
+            let oldLine = linesByNominalVoltage.get(vlIndex).get(line.id);
+            if (oldLine) {
+                line.geo = oldLine.geo;
+                linesByNominalVoltage.get(vlIndex).set(line.id, line);
+            }
+            vlUpdated.add(vlIndex);
+        });
+        this.setState({linesByNominalVoltage:linesByNominalVoltage});
         this.scheduleNext(ts, (ts) =>
-            this.generateLabelLayer(ts, vlIndex, activePower)
+            this.computeLinesConnections(ts, updatedLines, vlUpdated)
         );
     }
 
-    computeLinesConnections(ts, props) {
+    computeLinesConnections(ts, updatedLines, vlUpdated) {
         let linesConnection = this.state.linesConnection;
-        const vlUpdated = {};
-        props.updatedLines.forEach((line) => {
+        let updates = {};
+        updatedLines.forEach((line) => {
             linesConnection.set(line.id, {
                 terminal1Connected: line.terminal1Connected,
                 terminal2Connected: line.terminal2Connected,
             });
-            vlUpdated[
-                LINE_UPDATED +
-                    (this.getVoltageLevelIndex(line.voltageLevelId1) - 1)
-            ] = ts;
-            vlUpdated[
-                LINE_UPDATED +
-                    (this.getVoltageLevelIndex(line.voltageLevelId2) - 1)
-            ] = ts;
         });
+        vlUpdated.forEach((vl) => (updates[LINE_UPDATED + vl] = ts));
         this.setState({
             ...{ linesConnection: linesConnection },
-            ...vlUpdated,
+            ...updates,
         });
+
+        vlUpdated.forEach(vlIndex => this.computeArrows(ts, vlIndex));
     }
 
     updateState({ props, oldProps, changeFlags }) {
         if (!props.data.values) return;
         if (changeFlags.dataChanged) {
-            window.requestAnimationFrame((timestamp) =>
+            this.scheduleNext(performance.now(), (timestamp) =>
                 this.indexLinesByNominalVoltage(timestamp, 0, new Map())
             );
         } else if (changeFlags.propsChanged) {
@@ -556,7 +587,7 @@ class LineLayer extends CompositeLayer {
                 props.lineParallelPath !== oldProps.lineParallelPath
             )
                 /* this update will start with lines, then arrow, then labels*/
-                window.requestAnimationFrame((ts) =>
+                window.scheduleNext(performance.now(), (ts) =>
                     this.generateLinesParallelIndex(ts)
                 );
             else if (
@@ -564,13 +595,16 @@ class LineLayer extends CompositeLayer {
                 (props.lineFlowMode === LineFlowMode.FEEDERS ||
                     oldProps.lineFlowMode === LineFlowMode.FEEDERS)
             ) {
-                window.requestAnimationFrame((ts) =>
+                window.scheduleNext(performance.now(), (ts) =>
                     this.computeArrows(ts, 0, true)
                 );
             }
-            if (props.updatedLines !== oldProps.updatedLines) {
-                window.requestAnimationFrame((ts) =>
-                    this.computeLinesConnections(ts, props)
+            if (
+                props.updatedLines !== oldProps.updatedLines &&
+                props.updatedLines
+            ) {
+                this.scheduleNext(performance.now(), (ts) =>
+                    this.updateLines(ts, [...props.updatedLines])
                 );
             }
         }
@@ -589,7 +623,11 @@ class LineLayer extends CompositeLayer {
                 new ParallelPathLayer(
                     this.getSubLayerProps({
                         id: idLayer,
-                        data: state.linesByNominalVoltage.get(vlIndex),
+                        data: [
+                            ...state.linesByNominalVoltage
+                                .get(vlIndex)
+                                .values(),
+                        ],
                         widthScale: 20,
                         widthMinPixels: 1,
                         widthMaxPixels: 2,
@@ -604,14 +642,14 @@ class LineLayer extends CompositeLayer {
                         getWidth: 2,
                         getLineParallelIndex: (line) => line.parallelIndex,
                         getLineAngles: (line) => [
-                            line.angleStart,
-                            line.angle,
-                            line.angleEnd,
+                            line.geo.angleStart,
+                            line.geo.angle,
+                            line.geo.angleEnd,
                         ],
                         getParallelIndexAndProximityFactor: (line) => [
-                            line.parallelIndex,
-                            line.proximityFactorStart,
-                            line.proximityFactorEnd,
+                            line.geo.parallelIndex,
+                            line.geo.proximityFactorStart,
+                            line.geo.proximityFactorEnd,
                         ],
                         distanceBetweenLines: props.distanceBetweenLines,
                         maxParallelOffset: props.maxParallelOffset,
@@ -667,14 +705,18 @@ class LineLayer extends CompositeLayer {
                     this.getSubLayerProps({
                         id: idLayer,
                         getSourcePosition: (line) =>
-                            isStart ? line.origin : line.end,
+                            isStart ? line.geo.origin : line.geo.end,
                         getTargetPosition: (line) =>
-                            isStart ? line.end : line.origin,
+                            isStart ? line.geo.end : line.geo.origin,
                         getSubstationOffset: (line) =>
                             isStart
-                                ? line.substationIndexStart
-                                : line.substationIndexEnd,
-                        data: state.linesByNominalVoltage.get(vlIndex),
+                                ? line.geo.substationIndexStart
+                                : line.geo.substationIndexEnd,
+                        data: [
+                            ...state.linesByNominalVoltage
+                                .get(vlIndex)
+                                .values(),
+                        ],
                         widthScale: 20,
                         widthMinPixels: 1,
                         widthMaxPixels: 2,
@@ -688,12 +730,16 @@ class LineLayer extends CompositeLayer {
                         getWidth: 2,
                         getProximityFactor: (line) =>
                             isStart
-                                ? line.proximityFactorStart
-                                : line.proximityFactorEnd,
+                                ? line.geo.proximityFactorStart
+                                : line.geo.proximityFactorEnd,
                         getLineParallelIndex: (line) =>
-                            isStart ? line.parallelIndex : -line.parallelIndex,
+                            isStart
+                                ? line.geo.parallelIndex
+                                : -line.geo.parallelIndex,
                         getLineAngle: (line) =>
-                            isStart ? line.angleStart : line.angleEnd + Math.PI,
+                            isStart
+                                ? line.geo.angleStart
+                                : line.geo.angleEnd + Math.PI,
                         getDistanceBetweenLines: props.distanceBetweenLines,
                         getMaxParallelOffset: props.maxParallelOffset,
                         getMinParallelOffset: props.minParallelOffset,
@@ -782,15 +828,15 @@ class LineLayer extends CompositeLayer {
                         getSpeedFactor: (arrow) =>
                             getArrowSpeedFactor(getArrowSpeed(arrow.line)),
                         getLineParallelIndex: (arrow) =>
-                            arrow.line.parallelIndex,
+                            arrow.line.geo.parallelIndex,
                         getLineAngles: (arrow) => [
-                            arrow.line.angleStart,
-                            arrow.line.angle,
-                            arrow.line.angleEnd,
+                            arrow.line.geo.angleStart,
+                            arrow.line.geo.angle,
+                            arrow.line.geo.angleEnd,
                         ],
                         getProximityFactors: (arrow) => [
-                            arrow.line.proximityFactorStart,
-                            arrow.line.proximityFactorEnd,
+                            arrow.line.geo.proximityFactorStart,
+                            arrow.line.geo.proximityFactorEnd,
                         ],
                         getDistanceBetweenLines: props.distanceBetweenLines,
                         maxParallelOffset: props.maxParallelOffset,
@@ -831,7 +877,7 @@ class LineLayer extends CompositeLayer {
         if (next !== undefined) this.scheduleNext(timestamp, next, true);
     }
 
-    generateLabelLayer(timestamp, vlIndex, activePower) {
+    generateLabelLayer(timestamp, vlIndex) {
         const nominalVoltage = this.props.network.nominalVoltages[vlIndex];
         let layers = this.state.layers;
         const idLayer = 'ActivePower' + nominalVoltage;
@@ -841,7 +887,7 @@ class LineLayer extends CompositeLayer {
                 new TextLayer(
                     this.getSubLayerProps({
                         id: idLayer,
-                        data: activePower,
+                        data: state.activePower.get(vlIndex),
                         getText: (activePower) =>
                             activePower.p !== undefined
                                 ? Math.round(activePower.p).toString()
@@ -858,8 +904,10 @@ class LineLayer extends CompositeLayer {
                                 nominalVoltage
                             ) && props.labelsVisible,
                         updateTriggers: {
-                            getPosition: [state[PATH_UPDATED + vlIndex]],
-                            getPixelOffset: [state[PATH_UPDATED + vlIndex]],
+                            getPosition: [state[ACTIVE_POWER + vlIndex]],
+                            getPixelOffset: [state[ACTIVE_POWER + vlIndex]],
+                            getText: [state[ACTIVE_POWER + vlIndex]],
+                            data: [state[ACTIVE_POWER + vlIndex]],
                         },
                     })
                 )
@@ -918,7 +966,7 @@ class LineLayer extends CompositeLayer {
         if (onNext === undefined) return;
         if (force || performance.now() > timestamp + tsThreshold) {
             // to keep everything smooth
-            window.requestAnimationFrame(onNext);
+            window.requestAnimationFrame((ts) => onNext(ts));
         } else onNext(timestamp);
     }
 }

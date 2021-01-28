@@ -96,10 +96,13 @@ export default class Network {
                 (equipment2) => equipment2.id === equipment1.id
             );
             currentEquipments.values[index] =
-                found.length > 0 ? found[0] : equipment1;
+                found.length > 0
+                    ? found[0]
+                    : {
+                          ...currentEquipments.values[index],
+                          ...equipment1,
+                      };
         });
-        console.info('updatedEquipements');
-        console.info(newEquipements);
     }
 
     updateSubstations(substations) {

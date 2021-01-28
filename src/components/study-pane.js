@@ -630,6 +630,7 @@ const StudyPane = (props) => {
                 //TODO reload data more intelligently
                 updateSld();
                 loadNetwork(true);
+                updateNetwork();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'loadflow_status'
@@ -655,6 +656,7 @@ const StudyPane = (props) => {
         studyUpdatedForce,
         studyName,
         loadNetwork,
+        updateNetwork,
         updateLoadFlowResult,
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,

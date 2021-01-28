@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -77,8 +77,12 @@ const NominalVoltageFilter = (props) => {
         dispatch(filteredNominalVoltagesUpdated(newFiltered));
     };
 
-    if (!substationsLoaded)
-        network.substations.get(() => setSubstationsLoaded(true));
+    useEffect(() => {
+        if (network.substations.values === undefined) {
+            if (substationsLoaded) setSubstationsLoaded(false);
+            network.substations.get(() => setSubstationsLoaded(true));
+        }
+    }, [substationsLoaded, network.substations]);
 
     return (
         substationsLoaded && (
