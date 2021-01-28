@@ -85,7 +85,6 @@ const useStyles = makeStyles((theme) => ({
         height: (itemSize * 3) / 4,
         fontSize: '20px',
         padding: '8px',
-        backgroundColor: theme.palette.type === 'dark' ? '#262626' : '#C8C8C8',
         '& > span': {
             width: 230,
             overflow: 'hidden',
@@ -96,12 +95,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const useStylesCustomTooltip = makeStyles((theme) => ({
-    arrow: {
-        color: theme.palette.type === 'dark' ? '#404040' : '#f0f0f0',
-    },
     tooltip: {
-        backgroundColor: theme.palette.type === 'dark' ? '#404040' : '#f0f0f0',
-        color: theme.palette.type === 'dark' ? '#f0f0f0' : '#404040',
         boxShadow: theme.shadows[1],
         fontSize: '20px',
         textTransform: 'capitalize',
