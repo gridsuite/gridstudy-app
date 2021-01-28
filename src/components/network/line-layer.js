@@ -268,7 +268,7 @@ class LineLayer extends CompositeLayer {
                 terminal1Connected: line.terminal1Connected,
                 terminal2Connected: line.terminal2Connected,
             });
-            line.geo={};
+            line.geo = {};
             const key = this.genLineKey(line);
             let val = mapOriginDestination.get(key);
             if (val == null) mapOriginDestination.set(key, new Set([line]));
@@ -551,7 +551,7 @@ class LineLayer extends CompositeLayer {
             }
             vlUpdated.add(vlIndex);
         });
-        this.setState({linesByNominalVoltage:linesByNominalVoltage});
+        this.setState({ linesByNominalVoltage: linesByNominalVoltage });
         this.scheduleNext(ts, (ts) =>
             this.computeLinesConnections(ts, updatedLines, vlUpdated)
         );
@@ -572,7 +572,7 @@ class LineLayer extends CompositeLayer {
             ...updates,
         });
 
-        vlUpdated.forEach(vlIndex => this.computeArrows(ts, vlIndex));
+        vlUpdated.forEach((vlIndex) => this.computeArrows(ts, vlIndex));
     }
 
     updateState({ props, oldProps, changeFlags }) {
