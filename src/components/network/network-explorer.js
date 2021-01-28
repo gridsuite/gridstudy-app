@@ -182,6 +182,14 @@ const NetworkExplorer = ({
         }
     }, [visibleSubstation, filteredVoltageLevels]);
 
+    /* precalculate row height cache */
+    useEffect(() => {
+        if( filteredVoltageLevels && listeRef.current != null ) {
+            listeRef.current.scrollToRow(filteredVoltageLevels.length - 1);
+            listeRef.current.scrollToRow(0);
+        }
+    }, [network, listeRef]);
+
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
             onVoltageLevelDisplayClick(vl.id);

@@ -779,10 +779,15 @@ const StudyPane = (props) => {
 
     function scrollAndOpenVoltageLevel(vlId) {
         if (!network) return;
-        dispatch(selectItemNetwork(vlId));
-        showVoltageLevelDiagram(vlId); // show voltage level
-        setVisibleSubstation(network.getVoltageLevel(vlId).substationId);
         setDisplayedVoltageLevelId(vlId);
+        window.setTimeout(
+            () =>
+                setVisibleSubstation(
+                    network.getVoltageLevel(vlId).substationId
+                ),
+            0
+        );
+        dispatch(selectItemNetwork(vlId));
     }
 
     function renderMapView() {
