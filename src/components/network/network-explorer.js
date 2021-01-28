@@ -184,7 +184,7 @@ const NetworkExplorer = ({
 
     /* precalculate row height cache */
     useEffect(() => {
-        if( filteredVoltageLevels && listeRef.current != null ) {
+        if (filteredVoltageLevels && listeRef.current != null) {
             listeRef.current.scrollToRow(filteredVoltageLevels.length - 1);
             listeRef.current.scrollToRow(0);
         }
