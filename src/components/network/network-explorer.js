@@ -188,7 +188,7 @@ const NetworkExplorer = ({
             listeRef.current.scrollToRow(filteredVoltageLevels.length - 1);
             listeRef.current.scrollToRow(0);
         }
-    }, [network, listeRef]);
+    }, [filteredVoltageLevels, listeRef]);
 
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
