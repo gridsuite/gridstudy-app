@@ -74,11 +74,11 @@ const useStyles = makeStyles((theme) => ({
         overflowY: 'hidden',
     },
     diagram: {
-        '& .component-label, .graph-label, .arrow-label': {
+        '& .sld-label, .sld-graph-label': {
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
-        '& .disconnector.constant-color, :not(.breaker).disconnected, wire-connected-disconnected, wire-disconnected-connected': {
+        '& .sld-disconnector.sld-constant-color, :not(.sld-breaker).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected': {
             stroke: theme.palette.text.primary,
         },
     },
