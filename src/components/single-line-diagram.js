@@ -172,7 +172,7 @@ fetch(ArrowHover)
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
-    const svgPrevViewbox = useRef();
+    const svgUrl = useRef('');
     const svgDraw = useRef();
     const dispatch = useDispatch();
 
@@ -185,9 +185,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
-        if (svgDraw.current) {
-            svgPrevViewbox.current = svgDraw.current.viewbox();
-        }
         updateState((s) => !s);
     }, []);
 
@@ -389,10 +386,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
                     margins: { top: 100, left: 100, right: 100, bottom: 200 },
                 });
-            if (svgPrevViewbox.current) {
-                draw.viewbox(svgPrevViewbox.current);
-                svgPrevViewbox.current = null;
-            }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
@@ -427,11 +420,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     domEl.addEventListener('click', function (event) {
                         const switchId = aSwitch.equipmentId;
                         const open = aSwitch.open;
-                        svgPrevViewbox.current = draw.viewbox();
                         onBreakerClick(switchId, !open, event.currentTarget);
                     });
                 });
             }
+
+            if (svgDraw.current && svgUrl.current === svg.svgUrl) {
+                draw.viewbox(svgDraw.current.viewbox());
+            }
+            svgUrl.current = svg.svgUrl;
+
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
@@ -443,10 +441,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         svgType,
         theme,
     ]);
-
-    useEffect(() => {
-        svgPrevViewbox.current = null;
-    }, [props.updateSwitchMsg]);
 
     const classes = useStyles();
 
