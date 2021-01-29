@@ -473,6 +473,14 @@ export function startLoadFlow(studyName, userId) {
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
+export function stopSecurityAnalysis(studyName, userId) {
+    console.info('Stopping security analysis on ' + studyName + '...');
+    const stopSecurityAnalysisUrl =
+        getStudyUrl(studyName, userId) + '/security-analysis/stop';
+    console.debug(stopSecurityAnalysisUrl);
+    return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
+}
+
 function getContingencyListsQueryParams(contingencyListNames) {
     if (contingencyListNames.length > 0) {
         const urlSearchParams = new URLSearchParams();

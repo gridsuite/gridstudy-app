@@ -107,9 +107,32 @@ const RunButton = (props) => {
         }
     }
 
+    function getOptions(runningStatus, runnables, stopComputation) {
+        switch (runningStatus) {
+            case RunningStatus.SUCCEED:
+            case RunningStatus.FAILED:
+            case RunningStatus.IDLE:
+                return runnables;
+            case RunningStatus.RUNNING:
+                return stopComputation;
+            default:
+                return '';
+        }
+    }
+
+    function isRunning(runningStatus) {
+        return runningStatus === RunningStatus.RUNNING;
+    }
+
     const handleClick = () => {
         if (props.onStartClick) {
             props.onStartClick(getRunnable());
+        }
+    };
+
+    const handleStopComputationClick = () => {
+        if (props.onStopComputationClick) {
+            props.onStopComputationClick(getRunnable());
         }
     };
 
@@ -130,19 +153,28 @@ const RunButton = (props) => {
     return (
         <SplitButton
             fullWidth
-            options={props.runnables}
+            options={getOptions(
+                runningStatus,
+                props.runnables,
+                props.stopComputationText
+            )}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
             className={getStyle(runningStatus)}
             buttonDisabled={disabled}
-            selectionDisabled={runningStatus === RunningStatus.RUNNING}
+            selectionDisabled={
+                selectedIndex === 0 && runningStatus === RunningStatus.RUNNING
+            }
             startIcon={props.getStartIcon(getRunningStatus())}
             text={
                 props.getText
                     ? props.getText(getRunnable(), getRunningStatus())
                     : ''
             }
+            onStopComputation={handleStopComputationClick}
+            isRunning={isRunning(runningStatus)}
+            computationStopped={props.computationStopped}
         />
     );
 };
@@ -153,6 +185,8 @@ RunButton.propTypes = {
     getText: PropTypes.func.isRequired,
     getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
+    stopComputationText: PropTypes.array.isRequired,
+    computationStopped: PropTypes.bool,
 };
 
 export default RunButton;
