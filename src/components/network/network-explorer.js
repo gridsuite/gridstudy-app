@@ -174,21 +174,15 @@ const NetworkExplorer = ({
                     index++;
                 }
             }
-            listeRef.current.scrollToRow(index);
-            // Workaround, remove when https://github.com/bvaughn/react-virtualized/issues/995 is resolved
             setTimeout(() => {
                 listeRef.current.scrollToRow(index);
+                // Workaround, remove when https://github.com/bvaughn/react-virtualized/issues/995 is resolved
+                setTimeout(() => {
+                    listeRef.current.scrollToRow(index);
+                }, 0);
             }, 0);
         }
     }, [visibleSubstation, filteredVoltageLevels]);
-
-    /* precalculate row height cache */
-    useEffect(() => {
-        if (filteredVoltageLevels && listeRef.current != null) {
-            listeRef.current.scrollToRow(filteredVoltageLevels.length - 1);
-            listeRef.current.scrollToRow(0);
-        }
-    }, [filteredVoltageLevels, listeRef]);
 
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
