@@ -22,7 +22,6 @@ export class RemoteRessourceHandler {
     cbUpdateDone = new Set();
 
     get(cbUpdateDone) {
-        console.info(cbUpdateDone);
         if (this.values === undefined) {
             if (cbUpdateDone) this.cbUpdateDone.add(cbUpdateDone);
             if (!this.updating) {
