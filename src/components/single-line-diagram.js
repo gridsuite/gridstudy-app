@@ -150,7 +150,7 @@ fetch(ArrowHover)
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
-    const svgPreferredSize = useRef();
+    const [svgPreferredSize, setSvgPreferredSize] = useState();
     const [headerPreferredSize, setHeaderPreferredSize] = useState();
     const svgUrl = useRef('');
     const svgDraw = useRef();
@@ -342,7 +342,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             let sizeWidth = svgWidth;
             let sizeHeight = svgHeight;
 
-            svgPreferredSize.current = { width: sizeWidth, height: sizeHeight };
+            setSvgPreferredSize({ width: sizeWidth, height: sizeHeight });
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
@@ -464,7 +464,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     const mapRightOffset = 50;
                     const mapBottomOffset = 80;
                     const borders = 2; // we use content-size: border-box so this needs to be included..
-                    if (fullScreen && typeof(svgPreferredSize.current) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+                    if (fullScreen && typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
                         sizeWidth = width;
                         sizeHeight = height;
                         const headerSizeHeight = headerPreferredSize.height;
@@ -476,7 +476,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                             svgEl.setAttribute("width", svgSizeWidth); // TODO don't do this in render()
                             svgEl.setAttribute("height", svgSizeHeight); // TODO don't do this in render()
                         }
-                    } else if (typeof(svgPreferredSize.current) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+                    } else if (typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
                         let maxWidth, maxHeight;
                         if (svgType === SvgType.VOLTAGE_LEVEL) {
                            maxWidth = maxWidthVoltageLevel;
@@ -487,13 +487,13 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         }
                         const headerSizeHeight = headerPreferredSize.height;
                         const svgSizeWidth =
-                            svgPreferredSize.current.width > width - mapRightOffset
+                            svgPreferredSize.width > width - mapRightOffset
                                 ? width - mapRightOffset
-                                : svgPreferredSize.current.width;
+                                : svgPreferredSize.width;
                         const svgSizeHeight =
-                            svgPreferredSize.current.height > height - headerSizeHeight - mapBottomOffset
+                            svgPreferredSize.height > height - headerSizeHeight - mapBottomOffset
                                 ? height - headerSizeHeight - mapBottomOffset
-                                : svgPreferredSize.current.height;
+                                : svgPreferredSize.height;
                         const svgMaxSizeWidth =
                             svgSizeWidth > maxWidth
                                 ? maxWidth
