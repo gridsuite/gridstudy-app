@@ -1043,7 +1043,6 @@ class LineLayer extends CompositeLayer {
      *  function used to call onNext in the same 'frame' on the next one if we're short on time
      *   timestamp : when the 'frame' started
      *   onNext : callback to call, if undefined does nothing
-     *   force : force the callback on the next 'frame'
      * */
     scheduleNext(timestamp, onNext) {
         if (onNext !== undefined)

@@ -102,6 +102,8 @@ const NetworkExplorer = ({
 
     const classes = useStyles();
 
+    const [currentFilter, setCurrentFilter] = React.useState('');
+
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
     );
@@ -169,13 +171,14 @@ const NetworkExplorer = ({
 
     useEffect(() => {
         if (network) {
-            generateFilteredSubstation();
+            generateFilteredSubstation(currentFilter);
         }
     }, [
         network,
         identifiedElementComparator,
         generateFilteredSubstation,
         substationsLoaded,
+        currentFilter,
     ]);
 
     useEffect(() => {
@@ -336,8 +339,10 @@ const NetworkExplorer = ({
     };
 
     const filter = (event) => {
-        generateFilteredSubstation(event.target.value.toLowerCase());
+        const filterText = event.target.value.toLowerCase();
+        generateFilteredSubstation(filterText);
         cache.clearAll();
+        setCurrentFilter(filterText);
     };
 
     return (
