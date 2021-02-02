@@ -183,5 +183,32 @@
     "ContingenciesFromConstraints": "Contraintes -> contingences",
 
     "Equipment": "Ouvrage",
-    "Constraint": "Contrainte"
+    "Constraint": "Contrainte",
+
+    "Loads": "Consommations",
+    "Batteries": "Batteries",
+    "ShuntCompensators": "Moyens de compensation",
+    "StaticVarCompensators": "CSPR",
+    "LccConverterStations": "Stations conversion LCC",
+    "VscConverterStations": "Stations conversion VSC",
+    "LoadType": "Type",
+    "ConstantActivePower": "P constant (MW)",
+    "ConstantReactivePower": "Q constant (MVar)",
+    "DanglingLines": "Lignes frontières",
+    "UcteXnodeCode": "Xnode UCTE",
+    "HvdcLines": "Lignes HVDC",
+    "ConvertersMode": "Mode du convertisseur",
+    "R": "Résistance",
+    "ActivePowerSetpoint": "Consigne p active (MW)",
+    "MaxP": "P max (MW)",
+    "TargetV": "Consigne tension (kV)",
+    "TargetDeadband": "Consigne bande morte",
+    "VoltageSetpoint": "Consigne tension (kV)",
+    "ReactivePowerSetpoint": "Consigne puissance réactive (MVAR)",
+    "ConverterStationId1": "ID station conversion 1",
+    "ConverterStationId2": "ID station conversion 2",
+    "NominalV": "Tension nominale (kV)",
+    "HvdcLineId": "ID ligne HVDC",
+    "PowerFactor": "Facteur de puissance",
+    "LossFactor": "Facteur de perte"
 }

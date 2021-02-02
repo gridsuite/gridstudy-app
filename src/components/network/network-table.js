@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -31,6 +31,14 @@ const TABLE_NAMES = [
     'TwoWindingsTransformers',
     'ThreeWindingsTransformers',
     'Generators',
+    'Loads',
+    'ShuntCompensators',
+    'StaticVarCompensators',
+    'Batteries',
+    'HvdcLines',
+    'LccConverterStations',
+    'VscConverterStations',
+    'DanglingLines',
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -45,10 +53,15 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'initial',
     },
     searchSection: {
-        height: '48px',
         paddingRight: '10px',
         alignItems: 'center',
-        minWidth: '300px',
+    },
+    table: {
+        marginTop: '20px',
+    },
+    containerInputSearch: {
+        marginTop: '15px',
+        marginLeft: '10px',
     },
 }));
 
@@ -236,6 +249,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.substations.length}
                 rowGetter={({ index }) => props.network.substations[index]}
                 filter={filter}
+                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -264,6 +278,7 @@ const NetworkTable = (props) => {
                 rowCount={voltageLevels.length}
                 rowGetter={({ index }) => voltageLevels[index]}
                 filter={filter}
+                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -298,6 +313,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.lines.length}
                 rowGetter={({ index }) => props.network.lines[index]}
                 filter={filter}
+                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -374,6 +390,7 @@ const NetworkTable = (props) => {
                     props.network.twoWindingsTransformers[index]
                 }
                 filter={filter}
+                className={classes.table}
                 columns={[
                     makeHeaderCell('TwoWindingsTransformer'),
                     {
@@ -465,6 +482,7 @@ const NetworkTable = (props) => {
                     props.network.threeWindingsTransformers[index]
                 }
                 filter={filter}
+                className={classes.table}
                 columns={[
                     makeHeaderCell('ThreeWindingsTransformer'),
                     {
@@ -623,6 +641,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.generators.length}
                 rowGetter={({ index }) => props.network.generators[index]}
                 filter={filter}
+                className={classes.table}
                 columns={[
                     makeHeaderCell('Generator'),
                     {
@@ -673,6 +692,528 @@ const NetworkTable = (props) => {
         );
     }
 
+    function renderLoadsTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.loads.length}
+                rowGetter={({ index }) => props.network.loads[index]}
+                filter={filter}
+                className={classes.table}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'LoadType' }),
+                        dataKey: 'type',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelId',
+                        }),
+                        dataKey: 'voltageLevelId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePower' }),
+                        dataKey: 'p',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePower' }),
+                        dataKey: 'q',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'ConstantActivePower',
+                        }),
+                        dataKey: 'p0',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'ConstantReactivePower',
+                        }),
+                        dataKey: 'q0',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderBatteriesTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.batteries.length}
+                rowGetter={({ index }) => props.network.batteries[index]}
+                filter={filter}
+                className={classes.table}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelId',
+                        }),
+                        dataKey: 'voltageLevelId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePower' }),
+                        dataKey: 'p',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePower' }),
+                        dataKey: 'q',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'ConstantActivePower',
+                        }),
+                        dataKey: 'p0',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'ConstantReactivePower',
+                        }),
+                        dataKey: 'q0',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderDanglingLinesTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.danglingLines.length}
+                rowGetter={({ index }) => props.network.danglingLines[index]}
+                filter={filter}
+                className={classes.table}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelId',
+                        }),
+                        dataKey: 'voltageLevelId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'UcteXnodeCode' }),
+                        dataKey: 'ucteXnodeCode',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePower' }),
+                        dataKey: 'p',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePower' }),
+                        dataKey: 'q',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'ConstantActivePower',
+                        }),
+                        dataKey: 'p0',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'ConstantReactivePower',
+                        }),
+                        dataKey: 'q0',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderHvdcLinesTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.hvdcLines.length}
+                rowGetter={({ index }) => props.network.hvdcLines[index]}
+                filter={filter}
+                className={classes.table}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ConvertersMode' }),
+                        dataKey: 'convertersMode',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'ConverterStationId1',
+                        }),
+                        dataKey: 'converterStationId1',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'ConverterStationId2',
+                        }),
+                        dataKey: 'converterStationId2',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'R' }),
+                        dataKey: 'r',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'NominalV' }),
+                        dataKey: 'nominalV',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 300,
+                        label: intl.formatMessage({
+                            id: 'ActivePowerSetpoint',
+                        }),
+                        dataKey: 'activePowerSetpoint',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'MaxP' }),
+                        dataKey: 'maxP',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderShuntCompensatorsTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.shuntCompensators.length}
+                rowGetter={({ index }) =>
+                    props.network.shuntCompensators[index]
+                }
+                filter={filter}
+                className={classes.table}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelId',
+                        }),
+                        dataKey: 'voltageLevelId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePower' }),
+                        dataKey: 'q',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'TargetV',
+                        }),
+                        dataKey: 'targetV',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'TargetDeadband',
+                        }),
+                        dataKey: 'targetDeadband',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderStaticVarCompensatorsTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.staticVarCompensators.length}
+                rowGetter={({ index }) =>
+                    props.network.staticVarCompensators[index]
+                }
+                filter={filter}
+                className={classes.table}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelId',
+                        }),
+                        dataKey: 'voltageLevelId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePower' }),
+                        dataKey: 'p',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePower' }),
+                        dataKey: 'q',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'VoltageSetpoint',
+                        }),
+                        dataKey: 'voltageSetpoint',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'ReactivePowerSetpoint',
+                        }),
+                        dataKey: 'reactivePowerSetpoint',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderLccConverterStationsTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.lccConverterStations.length}
+                rowGetter={({ index }) =>
+                    props.network.lccConverterStations[index]
+                }
+                filter={filter}
+                className={classes.table}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelId',
+                        }),
+                        dataKey: 'voltageLevelId',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'HvdcLineId',
+                        }),
+                        dataKey: 'hvdcLineId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePower' }),
+                        dataKey: 'p',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePower' }),
+                        dataKey: 'q',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'PowerFactor',
+                        }),
+                        dataKey: 'powerFactor',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'LossFactor',
+                        }),
+                        dataKey: 'lossFactor',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
+    function renderVscConverterStationsTable() {
+        return (
+            <VirtualizedTable
+                rowCount={props.network.vscConverterStations.length}
+                rowGetter={({ index }) =>
+                    props.network.vscConverterStations[index]
+                }
+                filter={filter}
+                className={classes.table}
+                columns={[
+                    {
+                        width: 400,
+                        label: intl.formatMessage({ id: 'ID' }),
+                        dataKey: 'id',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'Name' }),
+                        dataKey: 'name',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'VoltageLevelId',
+                        }),
+                        dataKey: 'voltageLevelId',
+                    },
+                    {
+                        width: 400,
+                        label: intl.formatMessage({
+                            id: 'HvdcLineId',
+                        }),
+                        dataKey: 'hvdcLineId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ActivePower' }),
+                        dataKey: 'p',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ReactivePower' }),
+                        dataKey: 'q',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({
+                            id: 'LossFactor',
+                        }),
+                        dataKey: 'lossFactor',
+                        numeric: true,
+                        fractionDigits: 1,
+                    },
+                ]}
+            />
+        );
+    }
+
     function setFilter(event) {
         const value = event.target.value;
         setRowFilter(
@@ -701,7 +1242,7 @@ const NetworkTable = (props) => {
                 {({ width, height }) => (
                     <div style={{ width: width, height: height - 48 }}>
                         <Grid container justify={'space-between'}>
-                            <Grid item>
+                            <Grid container justify={'space-between'} item>
                                 <Tabs
                                     value={tabIndex}
                                     indicatorColor="primary"
@@ -725,17 +1266,17 @@ const NetworkTable = (props) => {
                             <Grid
                                 item
                                 alignContent={'flex-end'}
-                                className={classes.searchSection}
+                                className={classes.containerInputSearch}
                             >
                                 <TextField
                                     className={classes.textField}
-                                    size="medium"
+                                    size="small"
                                     placeholder={
                                         intl.formatMessage({ id: 'filter' }) +
                                         '...'
                                     }
                                     onChange={setFilter}
-                                    variant="standard"
+                                    variant="outlined"
                                     classes={classes.searchSection}
                                     fullWidth
                                     InputProps={{
@@ -759,6 +1300,14 @@ const NetworkTable = (props) => {
                         {tabIndex === 4 &&
                             renderThreeWindingsTransformersTable()}
                         {tabIndex === 5 && renderGeneratorsTable()}
+                        {tabIndex === 6 && renderLoadsTable()}
+                        {tabIndex === 7 && renderShuntCompensatorsTable()}
+                        {tabIndex === 8 && renderStaticVarCompensatorsTable()}
+                        {tabIndex === 9 && renderBatteriesTable()}
+                        {tabIndex === 10 && renderHvdcLinesTable()}
+                        {tabIndex === 11 && renderLccConverterStationsTable()}
+                        {tabIndex === 12 && renderVscConverterStationsTable()}
+                        {tabIndex === 13 && renderDanglingLinesTable()}
                     </div>
                 )}
             </AutoSizer>
