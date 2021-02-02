@@ -58,6 +58,7 @@ export const SvgType = {
     SUBSTATION: 'substation',
 };
 
+const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
 const maxHeightVoltageLevel = 700;
 const maxWidthSubstation = 1200;
@@ -463,7 +464,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     const mapRightOffset = 50;
                     const mapBottomOffset = 80;
                     const borders = 2; // we use content-size: border-box so this needs to be included..
-                    if (fullScreen) {
+                    if (fullScreen && typeof(svgPreferredSize.current) != "undefined" && typeof(headerPreferredSize) != "undefined") {
                         sizeWidth = width;
                         sizeHeight = height;
                         const headerSizeHeight = headerPreferredSize.height;
@@ -509,8 +510,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                             svgEl.setAttribute("width", svgMaxSizeWidth); // TODO don't do this in render()
                             svgEl.setAttribute("height", svgMaxSizeHeight); // TODO don't do this in render()
                         }
+                    } else if (loadingState) {
+                        sizeWidth = loadingWidth;
                     } else {
-                        sizeWidth = width; // like a block; height is auto
+                        sizeWidth = width; // like a block; height is auto; this is for example used for errors
                     }
             return (
             <Paper

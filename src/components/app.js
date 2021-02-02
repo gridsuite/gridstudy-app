@@ -416,7 +416,7 @@ const App = () => {
                 />
 
                 <div className="singlestretch-parent" style={{
-                    flexGrow: 1, minHeight: 0, overflow: "auto",
+                    flexGrow: 1, overflow: "auto",
                 }}>
                     {user !== null ? (
                         <Switch>

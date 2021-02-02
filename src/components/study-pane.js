@@ -860,7 +860,7 @@ const StudyPane = (props) => {
                     <IconButton style={{padding: 0}} onClick={toggleDrawer}>
                         <ChevronRightIcon />
                     </IconButton>
-                    <Divider orientation="vertical" flexItem variant="middle" /> 
+                    <Divider orientation="vertical" flexItem variant="middle" />
                 </>
             } else {
                 openDrawerComponent =
@@ -868,7 +868,7 @@ const StudyPane = (props) => {
                         <ChevronRightIcon />
                     </IconButton>;
             }
-        } 
+        }
 
         return (
             <div className={clsx('relative singlestretch-child', classes.main)}>
