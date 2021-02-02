@@ -64,24 +64,17 @@ const maxWidthSubstation = 1200;
 const maxHeightSubstation = 700;
 
 const useStyles = makeStyles((theme) => ({
-    divVoltageLevel: {
-        flex: "1 1 auto",
-//        maxWidth: maxWidthVoltageLevel,
-//        maxHeight: maxHeightVoltageLevel,
-        minHeight: 0,
-    },
-    divSubstation: {
-        flex: "1 1 auto",
-//        maxWidth: maxWidthSubstation,
-//        maxHeight: maxHeightSubstation,
-        minHeight: 0,
+    divSld: {
+        '& svg': {
+            // necessary because the default (inline-block) adds vertical space
+            // to our otherwise pixel accurate computations (scrollbar in fullscreen)
+            display: 'block',
+        }
     },
     diagram: {
-//        maxHeight: 700,
+        position: 'relative',
         'display': 'flex',
-        'flex': '1 1 auto',
         'flexDirection': 'column',
-        'minHeight': 0,
         '& .component-label': {
             fill: theme.palette.text.primary,
             'font-size': 12,
@@ -92,8 +85,8 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
     },
     error: {
-//        maxWidth: maxWidthVoltageLevel,
-//        maxHeight: maxHeightVoltageLevel,
+        maxWidth: maxWidthVoltageLevel,
+        maxHeight: maxHeightVoltageLevel,
     },
     errorUpdateSwitch: {
         position: 'absolute',
@@ -107,39 +100,17 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         backgroundColor: theme.palette.background.default,
     },
-    fullScreenSingleLineDiagram: {
-        width: '100%',
-        textAlign: 'center',
-        '& svg': {
-            width: '100%',
-            height: 'calc(100vh - 120px)', // Temporary: it will be fixed in the us of deleting scroll
-        },
-    },
-    fullScreen: {
+    fullScreenIcon: {
         bottom: 5,
         right: 5,
         position: 'absolute',
-        textAlign: 'right',
-        padding: '5px 10px 0',
-    },
-    notFullScreen: {
-        top: '-50px',
-        position: 'relative',
-        textAlign: 'right',
-        padding: '5px 10px 0',
-        float: 'right',
-    },
-    fullScreenIcon: {
         cursor: 'pointer',
-        fontSize: '35px',
-        zIndex: '3',
     },
 }));
 
 const SvgNotFound = (props) => {
-    const classes = useStyles();
     return (
-        <Container className={classes.error}>
+        <Container>
             <Typography variant="h5">
                 <FormattedMessage
                     id="svgNotFound"
@@ -178,7 +149,8 @@ fetch(ArrowHover)
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
-    const svgSize = useRef();
+    const svgPreferredSize = useRef();
+    const [headerPreferredSize, setHeaderPreferredSize] = useState();
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const dispatch = useDispatch();
@@ -368,26 +340,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
             let sizeWidth = svgWidth;
             let sizeHeight = svgHeight;
-            if (svgType === 'substation') {
-                // fit substation diagram to content
-                sizeWidth =
-                    svgWidth > maxWidthSubstation
-                        ? maxWidthSubstation
-                        : svgWidth;
-                sizeHeight =
-                    svgHeight > maxHeightSubstation
-                        ? maxHeightSubstation
-                        : svgHeight;
-            }
 
-            svgSize.current = { width: sizeWidth, height: sizeHeight };
+            svgPreferredSize.current = { width: sizeWidth, height: sizeHeight };
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .width("98%")
-                .height("98%")
+                .width(sizeWidth)
+                .height(sizeHeight)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
@@ -466,20 +427,11 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     } else {
         finalClasses = classes.diagram;
         inner = (
-            <div style={{flexGrow: 1, minHeight: 0}}>
-                    <div
-                        id="sld-svg"
-                        className={
-                            fullScreen
-                                ? classes.fullScreenSingleLineDiagram
-                                : svgType === SvgType.VOLTAGE_LEVEL
-                                ? classes.divVoltageLevel
-                                : classes.divSubstation
-                        }
-                        style={{width: "98%", height: "98%"}}
-                        dangerouslySetInnerHTML={{ __html: svg.svg }}
-                    />
-            </div>
+            <div
+                id="sld-svg"
+                className={ classes.divSld }
+                dangerouslySetInnerHTML={{ __html: svg.svg }}
+            />
         );
     }
 
@@ -506,21 +458,59 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             {({ height, width }) => {
                     let sizeWidth;
                     let sizeHeight;
-                    // To allow controls that are in the corners of the map to not be hidden
+                    // To allow controls that are in the corners of the map to not be hidden in normal mode
+                    // (but they are still hidden in fullscreen mode)
                     const mapRightOffset = 50;
                     const mapBottomOffset = 80;
+                    const borders = 2; // we use content-size: border-box so this needs to be included..
                     if (fullScreen) {
                         sizeWidth = width;
                         sizeHeight = height;
-                    } else if (typeof(svgSize.current) != "undefined") {
-                        sizeWidth =
-                            svgSize.current.width > width - mapRightOffset
+                        const headerSizeHeight = headerPreferredSize.height;
+                        const svgSizeWidth = width - borders;
+                        const svgSizeHeight = height - headerSizeHeight - borders;
+                        const divElt = document.getElementById('sld-svg');
+                        if (divElt != null) {
+                            const svgEl = divElt.getElementsByTagName('svg')[0];
+                            svgEl.setAttribute("width", svgSizeWidth); // TODO don't do this in render()
+                            svgEl.setAttribute("height", svgSizeHeight); // TODO don't do this in render()
+                        }
+                    } else if (typeof(svgPreferredSize.current) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+                        let maxWidth, maxHeight;
+                        if (svgType === SvgType.VOLTAGE_LEVEL) {
+                           maxWidth = maxWidthVoltageLevel;
+                           maxHeight = maxHeightVoltageLevel;
+                        } else {
+                           maxWidth = maxWidthSubstation;
+                           maxHeight = maxHeightSubstation;
+                        }
+                        const headerSizeHeight = headerPreferredSize.height;
+                        const svgSizeWidth =
+                            svgPreferredSize.current.width > width - mapRightOffset
                                 ? width - mapRightOffset
-                                : svgSize.current.width;
-                        sizeHeight =
-                            svgSize.current.height > height - mapBottomOffset
-                                ? height - mapBottomOffset
-                                : svgSize.current.height;
+                                : svgPreferredSize.current.width;
+                        const svgSizeHeight =
+                            svgPreferredSize.current.height > height - headerSizeHeight - mapBottomOffset
+                                ? height - headerSizeHeight - mapBottomOffset
+                                : svgPreferredSize.current.height;
+                        const svgMaxSizeWidth =
+                            svgSizeWidth > maxWidth
+                                ? maxWidth
+                                : svgSizeWidth;
+                        const svgMaxSizeHeight =
+                            svgSizeHeight > maxHeight
+                                ? maxHeight
+                                : svgSizeHeight;
+                        sizeWidth = svgMaxSizeWidth + borders;
+                        sizeHeight = svgMaxSizeHeight + headerSizeHeight + borders;
+                        const divElt = document.getElementById('sld-svg');
+                        if (divElt != null) {
+                            const svgEl = divElt.getElementsByTagName('svg')[0];
+                            svgEl.setAttribute("width", svgMaxSizeWidth); // TODO don't do this in render()
+                            svgEl.setAttribute("height", svgMaxSizeHeight); // TODO don't do this in render()
+                        }
+                    } else {
+                        sizeWidth = width; // like a block; height is auto
                     }
             return (
             <Paper
@@ -529,11 +519,15 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 square="true"
                 style={{
                    pointerEvents: "auto",
-                   position: 'absolute',
                    width: sizeWidth, height: sizeHeight,
                 }}
                 className={finalClasses}
             >
+                <div>
+                <AutoSizer onResize={(preferredSize) => { setHeaderPreferredSize(preferredSize); }}>
+                    {() => /* just for measuring the header*/ { }}
+                </AutoSizer>
+
                 <Box className={classes.header}>
                     {props.diagramAction}
                     <Box flexGrow={1}>
@@ -545,14 +539,10 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 </Box>
                 <Box height={2}>{displayProgress}</Box>
                 {msgUpdateSwitch}
+                </div>
                 {inner}
-            {!loadingState && (
-                <Box
-                    className={
-                        fullScreen ? classes.fullScreen : classes.notFullScreen
-                    }
-                >
-                    {fullScreen ? (
+            {!loadingState && !svg.error && (
+                    fullScreen ? (
                         <FullscreenExitIcon
                             onClick={hideFullScreen}
                             className={classes.fullScreenIcon}
@@ -562,8 +552,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                             onClick={showFullScreen}
                             className={classes.fullScreenIcon}
                         />
-                    )}
-                </Box>
+                    )
             )}
             </Paper>
             );}}
