@@ -66,12 +66,18 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: maxHeightVoltageLevel,
         overflowX: 'hidden',
         overflowY: 'hidden',
+        '& polyline': {
+            pointerEvents: 'none',
+        },
     },
     divSubstation: {
         maxWidth: maxWidthSubstation,
         maxHeight: maxHeightSubstation,
         overflowX: 'hidden',
         overflowY: 'hidden',
+        '& polyline': {
+            pointerEvents: 'none',
+        },
     },
     diagram: {
         '& .component-label': {
@@ -125,6 +131,18 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         fontSize: '35px',
         zIndex: '3',
+    },
+    /*arrow:{
+        zIndex:'30'
+    },
+    arrow_hover:{
+        zIndex:'30'
+    },*/
+    wire: {
+        pointerEvents: 'none',
+    },
+    polyline: {
+        pointerEvents: 'none',
     },
 }));
 
