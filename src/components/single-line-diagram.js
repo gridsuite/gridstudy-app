@@ -125,62 +125,90 @@ const SvgNotFound = (props) => {
     );
 };
 
-const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
+const mapRightOffset = 50;
+const mapBottomOffset = 80;
+const borders = 2; // we use content-size: border-box so this needs to be included..
+const computePaperAndSvgSizesIfReady = (fullScreen, totalSize, svgPreferredSize, headerPreferredSize, svgType ) => {
+        let sizeWidth;
+        let sizeHeight;
+        // To allow controls that are in the corners of the map to not be hidden in normal mode
+        // (but they are still hidden in fullscreen mode)
+        if (fullScreen && typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+            console.log("NOJ useLayoutEffect FinalWidth fullscreen");
+            sizeWidth = totalSize.width;
+            sizeHeight = totalSize.height;
+            const headerSizeHeight = headerPreferredSize.height;
+            const svgSizeWidth = totalSize.width - borders;
+            const svgSizeHeight = totalSize.height - headerSizeHeight - borders;
+            return { paperWidth: sizeWidth, paperHeight: sizeHeight, svgWidth: svgSizeWidth, svgHeight: svgSizeHeight };
+        } else if (typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+            console.log("NOJ useLayoutEffect FinalWidth normal");
+            let maxWidth, maxHeight;
+            if (svgType === SvgType.VOLTAGE_LEVEL) {
+               maxWidth = maxWidthVoltageLevel;
+               maxHeight = maxHeightVoltageLevel;
+            } else {
+               maxWidth = maxWidthSubstation;
+               maxHeight = maxHeightSubstation;
+            }
+            const headerSizeHeight = headerPreferredSize.height;
+            const svgSizeWidth =
+                svgPreferredSize.width > totalSize.width - mapRightOffset
+                    ? totalSize.width - mapRightOffset
+                    : svgPreferredSize.width;
+            const svgSizeHeight =
+                svgPreferredSize.height > totalSize.height - headerSizeHeight - mapBottomOffset
+                    ? totalSize.height - headerSizeHeight - mapBottomOffset
+                    : svgPreferredSize.height;
+            const svgMaxSizeWidth =
+                svgSizeWidth > maxWidth
+                    ? maxWidth
+                    : svgSizeWidth;
+            const svgMaxSizeHeight =
+                svgSizeHeight > maxHeight
+                    ? maxHeight
+                    : svgSizeHeight;
+            sizeWidth = svgMaxSizeWidth + borders;
+            sizeHeight = svgMaxSizeHeight + headerSizeHeight + borders;
+            return { paperWidth: sizeWidth, paperHeight: sizeHeight, svgWidth: svgSizeWidth, svgHeight: svgSizeHeight };
+        } else {
+            console.log("NOJ useLayoutEFFect finalWidth.. but width/Height or preffered not ready", totalSize.width, ",", totalSize.height, "," , svgPreferredSize && svgPreferredSize.height, ", ", headerPreferredSize && headerPreferredSize.height);
+        } 
+}
 
-const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
+const Inner = (props) => { 
 
-let arrowSvg;
-let arrowHoverSvg;
-
-fetch(Arrow)
-    .then((data) => {
-        return data.text();
-    })
-    .then((data) => {
-        arrowSvg = data;
-    });
-
-fetch(ArrowHover)
-    .then((data) => {
-        return data.text();
-    })
-    .then((data) => {
-        arrowHoverSvg = data;
-    });
-
-const SingleLineDiagram = forwardRef((props, ref) => {
-    const [svg, setSvg] = useState(noSvg);
-    const [svgPreferredSize, setSvgPreferredSize] = useState();
-    const [headerPreferredSize, setHeaderPreferredSize] = useState();
-    const [svgFinalWidth, setSvgFinalWidth] = useState();
-    const [svgFinalHeight, setSvgFinalHeight] = useState();
-    const svgUrl = useRef('');
-    const svgDraw = useRef();
-    const dispatch = useDispatch();
-
+    console.log("NOJ  render inner");
     const fullScreen = useSelector((state) => state.fullScreen);
 
-    const [forceState, updateState] = useState(false);
+    const [svgPreferredSize, setSvgPreferredSize] = useState();
+    const [headerPreferredSize, setHeaderPreferredSize] = useState();
+    const [finalWidth, setFinalWidth] = useState();
+    const [finalHeight, setFinalHeight] = useState();
+
+    const {width, height, svgType} = props;
+
+    useLayoutEffect(() => {
+        const sizes = computePaperAndSvgSizesIfReady(fullScreen, {width, height}, svgPreferredSize, headerPreferredSize, svgType);
+        if (typeof(sizes) != 'undefined') {
+            setSvgFinalWidth(sizes.svgWidth);
+            setSvgFinalHeight(sizes.svgHeight);
+            setFinalWidth(sizes.paperWidth);
+            setFinalHeight(sizes.paperHeight);
+        }
+    }, [width,height, svgPreferredSize, headerPreferredSize]);
 
     const [loadingState, updateLoadingState] = useState(false);
+    const [svg, setSvg] = useState(noSvg);
+    const svgUrl = useRef('');
+    const svgDraw = useRef();
+    const dispatch =useDispatch();
 
     const theme = useTheme();
 
-    const forceUpdate = useCallback(() => {
-        updateState((s) => !s);
-    }, []);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
-
     useEffect(() => {
         if (props.svgUrl) {
+            console.log("NOJ useffect download" , props.svgUrl);
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -203,16 +231,70 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     updateLoadingState(false);
                 });
         } else {
+            console.log("NOJ useEffect download no svg");
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState]);
+    }, [props.svgUrl]);
 
     const {
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
-        svgType,
     } = props;
+
+    const classes = useStyles();
+
+    const onCloseHandler = () => {
+        if (props.onClose !== null) {
+            dispatch(selectItemNetwork(null));
+            dispatch(fullScreenSingleLineDiagram(false));
+            props.onClose();
+        }
+    };
+
+    const showFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(true));
+    };
+
+    const hideFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(false));
+    };
+
+    let inner;
+    let finalClasses;
+    if (svg.error) {
+        finalClasses = classes.error;
+        inner = <SvgNotFound svgUrl={svg.svgUrl} error={svg.error} />;
+    } else {
+        finalClasses = classes.diagram;
+        inner = (
+            <div
+                id="sld-svg"
+                className={ classes.divSld }
+                dangerouslySetInnerHTML={{ __html: svg.svg }}
+            />
+        );
+    }
+
+    let msgUpdateSwitch;
+    if (props.updateSwitchMsg !== '') {
+        msgUpdateSwitch = (
+            <Alert className={classes.errorUpdateSwitch} severity="error">
+                {props.updateSwitchMsg}
+            </Alert>
+        );
+    } else {
+        msgUpdateSwitch = '';
+    }
+
+    let displayProgress;
+    if (loadingState) {
+        displayProgress = <LinearProgress />;
+    } else {
+        displayProgress = '';
+    }
+    const [svgFinalWidth, setSvgFinalWidth] = useState();
+    const [svgFinalHeight, setSvgFinalHeight] = useState();
 
     useLayoutEffect(() => {
         function createSvgArrow(element, position, x, highestY, lowestY) {
@@ -330,6 +412,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         }
 
         if (svg.svg) {
+
+            console.log("NOJ useLayoutEffect createSVG ");
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
             // calculate svg width and height from svg bounding box
@@ -393,6 +477,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             svgUrl.current = svg.svgUrl;
 
             svgDraw.current = draw;
+        } else {
+            console.log("NOJ useLayoutEffect createSVG but svg not ready..")
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
     }, [
@@ -406,166 +492,121 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         if (typeof(svgFinalWidth) != 'undefined' && typeof(svgFinalHeight) != 'undefined') {
+            console.log("NOJ useLayoutEffect update svg width/height");
             const divElt = document.getElementById('sld-svg');
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
                 svgEl.setAttribute("width", svgFinalWidth);
                 svgEl.setAttribute("height", svgFinalHeight);
             }
+        } else {
+            console.log("NOJ useLayoutEffect update svg width/height but no svg");
         }
     }, [svgFinalWidth, svgFinalHeight]);
 
-    const classes = useStyles();
 
-    const onCloseHandler = () => {
-        if (props.onClose !== null) {
-            dispatch(selectItemNetwork(null));
-            dispatch(fullScreenSingleLineDiagram(false));
-            props.onClose();
-        }
-    };
-
-    const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(true));
-    };
-
-    const hideFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(false));
-    };
-
-    let inner;
-    let finalClasses;
-    if (svg.error) {
-        finalClasses = classes.error;
-        inner = <SvgNotFound svgUrl={svg.svgUrl} error={svg.error} />;
-    } else {
-        finalClasses = classes.diagram;
-        inner = (
-            <div
-                id="sld-svg"
-                className={ classes.divSld }
-                dangerouslySetInnerHTML={{ __html: svg.svg }}
-            />
-        );
-    }
-
-    let msgUpdateSwitch;
-    if (props.updateSwitchMsg !== '') {
-        msgUpdateSwitch = (
-            <Alert className={classes.errorUpdateSwitch} severity="error">
-                {props.updateSwitchMsg}
-            </Alert>
-        );
-    } else {
-        msgUpdateSwitch = '';
-    }
-
-    let displayProgress;
+    let sizeWidth, sizeHeight;
     if (loadingState) {
-        displayProgress = <LinearProgress />;
+        sizeWidth = loadingWidth;
+    } else if (typeof(finalWidth) != 'undefined' && typeof(finalHeight) != 'undefined' ) {
+        sizeWidth = finalWidth;
+        sizeHeight = finalHeight;
     } else {
-        displayProgress = '';
+        sizeWidth = width; // like a block; height is auto; this is for example used for errors
     }
 
+
+ return (
+<Paper
+    elevation={1}
+    variant="outlined"
+    square="true"
+    style={{
+       pointerEvents: "auto",
+       width: sizeWidth, height: sizeHeight,
+    }}
+    className={finalClasses}
+>
+    <div>
+    <AutoSizer onResize={ setHeaderPreferredSize }>
+        {() => /* just for measuring the header */ { }}
+    </AutoSizer>
+
+    <Box className={classes.header}>
+        {props.diagramAction}
+        <Box flexGrow={1}>
+            <Typography>{props.diagramTitle}</Typography>
+        </Box>
+        <IconButton className={classes.close} onClick={onCloseHandler}>
+            <CloseIcon />
+        </IconButton>
+    </Box>
+    <Box height={2}>{displayProgress}</Box>
+    {msgUpdateSwitch}
+    </div>
+    {inner}
+{!loadingState && !svg.error && (
+        fullScreen ? (
+            <FullscreenExitIcon
+                onClick={hideFullScreen}
+                className={classes.fullScreenIcon}
+            />
+        ) : (
+            <FullscreenIcon
+                onClick={showFullScreen}
+                className={classes.fullScreenIcon}
+            />
+        )
+)}
+</Paper>
+)};
+
+const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
+
+const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
+
+let arrowSvg;
+let arrowHoverSvg;
+
+fetch(Arrow)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowSvg = data;
+    });
+
+fetch(ArrowHover)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowHoverSvg = data;
+    });
+
+const SingleLineDiagram = forwardRef((props, ref) => {
+
+    const [forceState, updateState] = useState(false);
+
+    const forceUpdate = useCallback(() => {
+        updateState((s) => !s);
+    }, []);
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            reloadSvg: forceUpdate,
+        }),
+        // Note: forceUpdate doesn't change
+        [forceUpdate]
+    );
+
+    console.log("NOJ render outer");
     return (
         <AutoSizer>
-            {({ height, width }) => {
-                    let sizeWidth;
-                    let sizeHeight;
-                    // To allow controls that are in the corners of the map to not be hidden in normal mode
-                    // (but they are still hidden in fullscreen mode)
-                    const mapRightOffset = 50;
-                    const mapBottomOffset = 80;
-                    const borders = 2; // we use content-size: border-box so this needs to be included..
-                    if (fullScreen && typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
-                        sizeWidth = width;
-                        sizeHeight = height;
-                        const headerSizeHeight = headerPreferredSize.height;
-                        const svgSizeWidth = width - borders;
-                        const svgSizeHeight = height - headerSizeHeight - borders;
-                        setSvgFinalWidth(svgSizeWidth);
-                        setSvgFinalHeight(svgSizeHeight);
-                    } else if (typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
-                        let maxWidth, maxHeight;
-                        if (svgType === SvgType.VOLTAGE_LEVEL) {
-                           maxWidth = maxWidthVoltageLevel;
-                           maxHeight = maxHeightVoltageLevel;
-                        } else {
-                           maxWidth = maxWidthSubstation;
-                           maxHeight = maxHeightSubstation;
-                        }
-                        const headerSizeHeight = headerPreferredSize.height;
-                        const svgSizeWidth =
-                            svgPreferredSize.width > width - mapRightOffset
-                                ? width - mapRightOffset
-                                : svgPreferredSize.width;
-                        const svgSizeHeight =
-                            svgPreferredSize.height > height - headerSizeHeight - mapBottomOffset
-                                ? height - headerSizeHeight - mapBottomOffset
-                                : svgPreferredSize.height;
-                        const svgMaxSizeWidth =
-                            svgSizeWidth > maxWidth
-                                ? maxWidth
-                                : svgSizeWidth;
-                        const svgMaxSizeHeight =
-                            svgSizeHeight > maxHeight
-                                ? maxHeight
-                                : svgSizeHeight;
-                        sizeWidth = svgMaxSizeWidth + borders;
-                        sizeHeight = svgMaxSizeHeight + headerSizeHeight + borders;
-                        setSvgFinalWidth(svgSizeWidth);
-                        setSvgFinalHeight(svgSizeHeight);
-                    } else if (loadingState) {
-                        sizeWidth = loadingWidth;
-                    } else {
-                        sizeWidth = width; // like a block; height is auto; this is for example used for errors
-                    }
-            return (
-            <Paper
-                elevation={1}
-                variant="outlined"
-                square="true"
-                style={{
-                   pointerEvents: "auto",
-                   width: sizeWidth, height: sizeHeight,
-                }}
-                className={finalClasses}
-            >
-                <div>
-                <AutoSizer onResize={(preferredSize) => { setHeaderPreferredSize(preferredSize); }}>
-                    {() => /* just for measuring the header*/ { }}
-                </AutoSizer>
-
-                <Box className={classes.header}>
-                    {props.diagramAction}
-                    <Box flexGrow={1}>
-                        <Typography>{props.diagramTitle}</Typography>
-                    </Box>
-                    <IconButton className={classes.close} onClick={onCloseHandler}>
-                        <CloseIcon />
-                    </IconButton>
-                </Box>
-                <Box height={2}>{displayProgress}</Box>
-                {msgUpdateSwitch}
-                </div>
-                {inner}
-            {!loadingState && !svg.error && (
-                    fullScreen ? (
-                        <FullscreenExitIcon
-                            onClick={hideFullScreen}
-                            className={classes.fullScreenIcon}
-                        />
-                    ) : (
-                        <FullscreenIcon
-                            onClick={showFullScreen}
-                            className={classes.fullScreenIcon}
-                        />
-                    )
-            )}
-            </Paper>
-            );}}
+            {({ height, width }) => <Inner width={width} height={height} {...props}/> }
         </AutoSizer>
-    );
+    )
 });
 
 SingleLineDiagram.propTypes = {
