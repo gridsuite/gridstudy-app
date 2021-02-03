@@ -152,6 +152,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
     const [svgPreferredSize, setSvgPreferredSize] = useState();
     const [headerPreferredSize, setHeaderPreferredSize] = useState();
+    const [svgFinalWidth, setSvgFinalWidth] = useState();
+    const [svgFinalHeight, setSvgFinalHeight] = useState();
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const dispatch = useDispatch();
@@ -402,6 +404,17 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         theme,
     ]);
 
+    useLayoutEffect(() => {
+        if (typeof(svgFinalWidth) != 'undefined' && typeof(svgFinalHeight) != 'undefined') {
+            const divElt = document.getElementById('sld-svg');
+            if (divElt != null) {
+                const svgEl = divElt.getElementsByTagName('svg')[0];
+                svgEl.setAttribute("width", svgFinalWidth);
+                svgEl.setAttribute("height", svgFinalHeight);
+            }
+        }
+    }, [svgFinalWidth, svgFinalHeight]);
+
     const classes = useStyles();
 
     const onCloseHandler = () => {
@@ -470,12 +483,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         const headerSizeHeight = headerPreferredSize.height;
                         const svgSizeWidth = width - borders;
                         const svgSizeHeight = height - headerSizeHeight - borders;
-                        const divElt = document.getElementById('sld-svg');
-                        if (divElt != null) {
-                            const svgEl = divElt.getElementsByTagName('svg')[0];
-                            svgEl.setAttribute("width", svgSizeWidth); // TODO don't do this in render()
-                            svgEl.setAttribute("height", svgSizeHeight); // TODO don't do this in render()
-                        }
+                        setSvgFinalWidth(svgSizeWidth);
+                        setSvgFinalHeight(svgSizeHeight);
                     } else if (typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
                         let maxWidth, maxHeight;
                         if (svgType === SvgType.VOLTAGE_LEVEL) {
@@ -504,12 +513,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                                 : svgSizeHeight;
                         sizeWidth = svgMaxSizeWidth + borders;
                         sizeHeight = svgMaxSizeHeight + headerSizeHeight + borders;
-                        const divElt = document.getElementById('sld-svg');
-                        if (divElt != null) {
-                            const svgEl = divElt.getElementsByTagName('svg')[0];
-                            svgEl.setAttribute("width", svgMaxSizeWidth); // TODO don't do this in render()
-                            svgEl.setAttribute("height", svgMaxSizeHeight); // TODO don't do this in render()
-                        }
+                        setSvgFinalWidth(svgSizeWidth);
+                        setSvgFinalHeight(svgSizeHeight);
                     } else if (loadingState) {
                         sizeWidth = loadingWidth;
                     } else {
