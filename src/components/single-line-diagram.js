@@ -43,7 +43,6 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
-import clsx from 'clsx';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -125,78 +124,85 @@ const SvgNotFound = (props) => {
     );
 };
 
+const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
+
+// To allow controls that are in the corners of the map to not be hidden in normal mode
+// (but they are still hidden in fullscreen mode)
 const mapRightOffset = 50;
 const mapBottomOffset = 80;
 const borders = 2; // we use content-size: border-box so this needs to be included..
-const computePaperAndSvgSizesIfReady = (fullScreen, totalSize, svgPreferredSize, headerPreferredSize, svgType ) => {
-        let sizeWidth;
-        let sizeHeight;
-        // To allow controls that are in the corners of the map to not be hidden in normal mode
-        // (but they are still hidden in fullscreen mode)
-        if (fullScreen && typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
+const computePaperAndSvgSizesIfReady = (fullScreen, svgType, totalSize, svgPreferredSize, headerPreferredSize ) => {
+    if (typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+        let paperWidth, paperHeight, svgWidth, svgHeight;
+        if (fullScreen) {
             console.log("NOJ useLayoutEffect FinalWidth fullscreen");
-            sizeWidth = totalSize.width;
-            sizeHeight = totalSize.height;
-            const headerSizeHeight = headerPreferredSize.height;
-            const svgSizeWidth = totalSize.width - borders;
-            const svgSizeHeight = totalSize.height - headerSizeHeight - borders;
-            return { paperWidth: sizeWidth, paperHeight: sizeHeight, svgWidth: svgSizeWidth, svgHeight: svgSizeHeight };
-        } else if (typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+            paperWidth = totalSize.width;
+            paperHeight = totalSize.height;
+            svgWidth = totalSize.width - borders;
+            svgHeight = totalSize.height - headerPreferredSize.height - borders;
+        } else {
             console.log("NOJ useLayoutEffect FinalWidth normal");
             let maxWidth, maxHeight;
             if (svgType === SvgType.VOLTAGE_LEVEL) {
-               maxWidth = maxWidthVoltageLevel;
-               maxHeight = maxHeightVoltageLevel;
+                maxWidth = maxWidthVoltageLevel;
+                maxHeight = maxHeightVoltageLevel;
             } else {
-               maxWidth = maxWidthSubstation;
-               maxHeight = maxHeightSubstation;
+                maxWidth = maxWidthSubstation;
+                maxHeight = maxHeightSubstation;
             }
-            const headerSizeHeight = headerPreferredSize.height;
-            const svgSizeWidth =
-                svgPreferredSize.width > totalSize.width - mapRightOffset
-                    ? totalSize.width - mapRightOffset
-                    : svgPreferredSize.width;
-            const svgSizeHeight =
-                svgPreferredSize.height > totalSize.height - headerSizeHeight - mapBottomOffset
-                    ? totalSize.height - headerSizeHeight - mapBottomOffset
-                    : svgPreferredSize.height;
-            const svgMaxSizeWidth =
-                svgSizeWidth > maxWidth
-                    ? maxWidth
-                    : svgSizeWidth;
-            const svgMaxSizeHeight =
-                svgSizeHeight > maxHeight
-                    ? maxHeight
-                    : svgSizeHeight;
-            sizeWidth = svgMaxSizeWidth + borders;
-            sizeHeight = svgMaxSizeHeight + headerSizeHeight + borders;
-            return { paperWidth: sizeWidth, paperHeight: sizeHeight, svgWidth: svgSizeWidth, svgHeight: svgSizeHeight };
-        } else {
-            console.log("NOJ useLayoutEFFect finalWidth.. but width/Height or preffered not ready", totalSize.width, ",", totalSize.height, "," , svgPreferredSize && svgPreferredSize.height, ", ", headerPreferredSize && headerPreferredSize.height);
+            svgWidth = Math.min( svgPreferredSize.width, totalSize.width - mapRightOffset, maxWidth );
+            svgHeight = Math.min( svgPreferredSize.height, totalSize.height - mapBottomOffset, maxHeight );
+            paperWidth = svgWidth + borders;
+            paperHeight = svgHeight + headerPreferredSize.height + borders;
         } 
+        return { paperWidth, paperHeight, svgWidth, svgHeight};
+    }
 }
 
-const Inner = (props) => { 
+const Inner = forwardRef((props, ref) => {
+
+    const [forceState, updateState] = useState(false);
+
+    const forceUpdate = useCallback(() => {
+        updateState((s) => !s);
+    }, []);
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            reloadSvg: forceUpdate,
+        }),
+        // Note: forceUpdate doesn't change
+        [forceUpdate]
+    );
 
     console.log("NOJ  render inner");
     const fullScreen = useSelector((state) => state.fullScreen);
 
-    const [svgPreferredSize, setSvgPreferredSize] = useState();
-    const [headerPreferredSize, setHeaderPreferredSize] = useState();
-    const [finalWidth, setFinalWidth] = useState();
-    const [finalHeight, setFinalHeight] = useState();
+    // using many useState() calls with literal values only to
+    // easily avoid recomputing stuff when updating with the same values
+    const [svgPreferredWidth, setSvgPreferredWidth] = useState();
+    const [svgPreferredHeight, setSvgPreferredHeight] = useState();
+    const [headerPreferredWidth, setHeaderPreferredWidth] = useState();
+    const [headerPreferredHeight, setHeaderPreferredHeight] = useState();
+    const [finalPaperWidth, setFinalPaperWidth] = useState();
+    const [finalPaperHeight, setFinalPaperHeight] = useState();
+    const [svgFinalWidth, setSvgFinalWidth] = useState();
+    const [svgFinalHeight, setSvgFinalHeight] = useState();
 
-    const {width, height, svgType} = props;
+    const {totalWidth, totalHeight, svgType} = props;
 
     useLayoutEffect(() => {
-        const sizes = computePaperAndSvgSizesIfReady(fullScreen, {width, height}, svgPreferredSize, headerPreferredSize, svgType);
+        const sizes = computePaperAndSvgSizesIfReady(fullScreen, svgType, {width: totalWidth, height: totalHeight}, {width: svgPreferredWidth, height: svgPreferredHeight}, {width: headerPreferredWidth, height: headerPreferredHeight});
         if (typeof(sizes) != 'undefined') {
             setSvgFinalWidth(sizes.svgWidth);
             setSvgFinalHeight(sizes.svgHeight);
-            setFinalWidth(sizes.paperWidth);
-            setFinalHeight(sizes.paperHeight);
+            setFinalPaperWidth(sizes.paperWidth);
+            setFinalPaperHeight(sizes.paperHeight);
+            console.log("NOJ useLayoutEFFect set finalSizes ", sizes.paperWidth );
         }
-    }, [width,height, svgPreferredSize, headerPreferredSize]);
+    }, [totalWidth,totalHeight, svgType, svgPreferredWidth, svgPreferredHeight, headerPreferredWidth, headerPreferredHeight]);
 
     const [loadingState, updateLoadingState] = useState(false);
     const [svg, setSvg] = useState(noSvg);
@@ -234,7 +240,7 @@ const Inner = (props) => {
             console.log("NOJ useEffect download no svg");
             setSvg(noSvg);
         }
-    }, [props.svgUrl]);
+    }, [props.svgUrl, forceState]);
 
     const {
         onNextVoltageLevelClick,
@@ -293,8 +299,6 @@ const Inner = (props) => {
     } else {
         displayProgress = '';
     }
-    const [svgFinalWidth, setSvgFinalWidth] = useState();
-    const [svgFinalHeight, setSvgFinalHeight] = useState();
 
     useLayoutEffect(() => {
         function createSvgArrow(element, position, x, highestY, lowestY) {
@@ -428,7 +432,8 @@ const Inner = (props) => {
             let sizeWidth = svgWidth;
             let sizeHeight = svgHeight;
 
-            setSvgPreferredSize({ width: sizeWidth, height: sizeHeight });
+            setSvgPreferredWidth(sizeWidth);
+            setSvgPreferredHeight(sizeHeight);
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
@@ -496,8 +501,10 @@ const Inner = (props) => {
             const divElt = document.getElementById('sld-svg');
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
-                svgEl.setAttribute("width", svgFinalWidth);
-                svgEl.setAttribute("height", svgFinalHeight);
+                if (svgEl != null) {
+                    svgEl.setAttribute("width", svgFinalWidth);
+                    svgEl.setAttribute("height", svgFinalHeight);
+                }
             }
         } else {
             console.log("NOJ useLayoutEffect update svg width/height but no svg");
@@ -506,15 +513,14 @@ const Inner = (props) => {
 
 
     let sizeWidth, sizeHeight;
-    if (loadingState) {
-        sizeWidth = loadingWidth;
-    } else if (typeof(finalWidth) != 'undefined' && typeof(finalHeight) != 'undefined' ) {
-        sizeWidth = finalWidth;
-        sizeHeight = finalHeight;
+    if (typeof(finalPaperWidth) != 'undefined' && typeof(finalPaperHeight) != 'undefined' ) {
+        sizeWidth = finalPaperWidth;
+        sizeHeight = finalPaperHeight;
+    } else if (loadingState) {
+        sizeWidth = loadingWidth; // height is auto;
     } else {
-        sizeWidth = width; // like a block; height is auto; this is for example used for errors
+        sizeWidth = totalWidth; // like a block; height is auto; this is for example used for errors
     }
-
 
  return (
 <Paper
@@ -528,7 +534,7 @@ const Inner = (props) => {
     className={finalClasses}
 >
     <div>
-    <AutoSizer onResize={ setHeaderPreferredSize }>
+    <AutoSizer onResize={ ({width, height}) => {setHeaderPreferredWidth(width); setHeaderPreferredHeight(height);} }>
         {() => /* just for measuring the header */ { }}
     </AutoSizer>
 
@@ -559,9 +565,7 @@ const Inner = (props) => {
         )
 )}
 </Paper>
-)};
-
-const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
+)});
 
 const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
 
@@ -586,25 +590,10 @@ fetch(ArrowHover)
 
 const SingleLineDiagram = forwardRef((props, ref) => {
 
-    const [forceState, updateState] = useState(false);
-
-    const forceUpdate = useCallback(() => {
-        updateState((s) => !s);
-    }, []);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
-
     console.log("NOJ render outer");
     return (
         <AutoSizer>
-            {({ height, width }) => <Inner width={width} height={height} {...props}/> }
+            {({ width, height }) => <Inner ref={ref} totalWidth={width} totalHeight={height} {...props}/> }
         </AutoSizer>
     )
 });
