@@ -95,11 +95,28 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SvgNotFound = (props) => {
-    return <Container></Container>;
-};
-
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
+
+const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
+
+let arrowSvg;
+let arrowHoverSvg;
+
+fetch(Arrow)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowSvg = data;
+    });
+
+fetch(ArrowHover)
+    .then((data) => {
+        return data.text();
+    })
+    .then((data) => {
+        arrowHoverSvg = data;
+    });
 
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
@@ -570,27 +587,6 @@ const Inner = forwardRef((props, ref) => {
         </Paper>
     );
 });
-
-const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
-
-let arrowSvg;
-let arrowHoverSvg;
-
-fetch(Arrow)
-    .then((data) => {
-        return data.text();
-    })
-    .then((data) => {
-        arrowSvg = data;
-    });
-
-fetch(ArrowHover)
-    .then((data) => {
-        return data.text();
-    })
-    .then((data) => {
-        arrowHoverSvg = data;
-    });
 
 const SingleLineDiagram = forwardRef((props, ref) => {
     return (
