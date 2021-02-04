@@ -169,7 +169,7 @@ const computePaperAndSvgSizesIfReady = (
     }
 };
 
-const Inner = forwardRef((props, ref) => {
+const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [forceState, updateState] = useState(false);
 
     const forceUpdate = useCallback(() => {
@@ -592,7 +592,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     return (
         <AutoSizer>
             {({ width, height }) => (
-                <Inner
+                <SizedSingleLineDiagram
                     ref={ref}
                     totalWidth={width}
                     totalHeight={height}
@@ -610,6 +610,9 @@ SingleLineDiagram.propTypes = {
     updateSwitchMsg: PropTypes.string.isRequired,
     isComputationRunning: PropTypes.bool.isRequired,
     svgType: PropTypes.string.isRequired,
+    onNextVoltageLevelClick: PropTypes.func,
+    onBreakerClick: PropTypes.func,
+    diagramAction: PropTypes.node,
 };
 
 export default SingleLineDiagram;
