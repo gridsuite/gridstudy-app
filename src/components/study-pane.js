@@ -125,21 +125,21 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: -drawerWidth,
     },
     mapCtrlBottomLeft: {
-        "& .mapboxgl-ctrl-bottom-left": {
+        '& .mapboxgl-ctrl-bottom-left': {
             transition: theme.transitions.create('left', {
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
             }),
-        }
+        },
     },
     mapCtrlBottomLeftShift: {
-        "& .mapboxgl-ctrl-bottom-left": {
+        '& .mapboxgl-ctrl-bottom-left': {
             transition: theme.transitions.create('left', {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
             left: drawerWidth,
-        }
+        },
     },
 }));
 
@@ -852,30 +852,51 @@ const StudyPane = (props) => {
                 substationLayout
             );
         }
-        const sldShowing = (displayedVoltageLevelId || displayedSubstationId);
+        const sldShowing = displayedVoltageLevelId || displayedSubstationId;
         let openDrawerComponent = null;
         if (!drawerOpen) {
             if (sldShowing) {
-                openDrawerComponent = <>
-                    <IconButton style={{padding: 0}} onClick={toggleDrawer}>
+                openDrawerComponent = (
+                    <>
+                        <IconButton
+                            style={{ padding: 0 }}
+                            onClick={toggleDrawer}
+                        >
+                            <ChevronRightIcon />
+                        </IconButton>
+                        <Divider
+                            orientation="vertical"
+                            flexItem
+                            variant="middle"
+                        />
+                    </>
+                );
+            } else {
+                openDrawerComponent = (
+                    <IconButton
+                        style={{ alignSelf: 'flex-start' }}
+                        onClick={toggleDrawer}
+                    >
                         <ChevronRightIcon />
                     </IconButton>
-                    <Divider orientation="vertical" flexItem variant="middle" />
-                </>
-            } else {
-                openDrawerComponent =
-                    <IconButton style={{alignSelf: "flex-start"}} onClick={toggleDrawer}>
-                        <ChevronRightIcon />
-                    </IconButton>;
+                );
             }
         }
 
         return (
             <div className={clsx('relative singlestretch-child', classes.main)}>
-                <div className={drawerOpen ? classes.mapCtrlBottomLeftShift : classes.mapCtrlBottomLeft }
+                <div
+                    className={
+                        drawerOpen
+                            ? classes.mapCtrlBottomLeftShift
+                            : classes.mapCtrlBottomLeft
+                    }
                     style={{
                         position: 'absolute',
-                        top: 0, bottom: 0, left: 0, right: 0,
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
                     }}
                 >
                     <NetworkMap
@@ -961,8 +982,8 @@ const StudyPane = (props) => {
                 <Drawer
                     variant={'persistent'}
                     className={clsx(classes.drawer, {
-                                [classes.drawerShift]: !drawerOpen,
-                            })}
+                        [classes.drawerShift]: !drawerOpen,
+                    })}
                     anchor="left"
                     style={{
                         position: 'relative',
@@ -977,7 +998,7 @@ const StudyPane = (props) => {
                 >
                     <div
                         style={{
-                            flex:'1 1 auto',
+                            flex: '1 1 auto',
                             overflowY: 'none',
                             overflowX: 'none',
                         }}
@@ -1003,9 +1024,9 @@ const StudyPane = (props) => {
                             style={{
                                 flexGrow: 1,
                                 position: 'relative',
-                                display: "flex",
-                                pointerEvents: "none",
-                                flexDirection: "column",
+                                display: 'flex',
+                                pointerEvents: 'none',
+                                flexDirection: 'column',
                             }}
                         >
                             <SingleLineDiagram
@@ -1027,7 +1048,7 @@ const StudyPane = (props) => {
                                 }
                             />
                         </div>
-                )}
+                    )}
                 <ContingencyListSelector
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
@@ -1039,7 +1060,7 @@ const StudyPane = (props) => {
 
     function renderTableView() {
         return (
-            <Paper className={clsx("singlestretch-child", classes.main)}>
+            <Paper className={clsx('singlestretch-child', classes.main)}>
                 <NetworkTable
                     network={network}
                     studyName={studyName}
@@ -1055,9 +1076,7 @@ const StudyPane = (props) => {
                 <Tabs
                     value={tabIndex}
                     indicatorColor="primary"
-                    onChange={(event, newTabIndex) =>
-                        setTabIndex(newTabIndex)
-                    }
+                    onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
                 >
                     <Tab
                         label={intl.formatMessage({
@@ -1079,7 +1098,10 @@ const StudyPane = (props) => {
     function renderSecurityAnalysisResult() {
         return (
             <Paper className={clsx('singlestretch-child', classes.main)}>
-                <SecurityAnalysisResult result={securityAnalysisResult} onClickNmKConstraint={onClickNmKConstraint} />
+                <SecurityAnalysisResult
+                    result={securityAnalysisResult}
+                    onClickNmKConstraint={onClickNmKConstraint}
+                />
             </Paper>
         );
     }
@@ -1115,23 +1137,24 @@ const StudyPane = (props) => {
                     />
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
-                <div className="singlestretch-parent singlestretch-child"
+                <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
-                        display:
-                            props.view === StudyView.MAP ? null : 'none',
+                        display: props.view === StudyView.MAP ? null : 'none',
                     }}
                 >
                     {renderMapView()}
                 </div>
-                <div className="singlestretch-parent singlestretch-child"
+                <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
-                        display:
-                            props.view === StudyView.TABLE ? null : 'none',
+                        display: props.view === StudyView.TABLE ? null : 'none',
                     }}
                 >
                     {renderTableView()}
                 </div>
-                <div className="singlestretch-parent singlestretch-child"
+                <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
                         display:
                             props.view === StudyView.RESULTS ? null : 'none',

@@ -7,7 +7,7 @@
 .singlestretch-parent {
 }
 .singlestretch-child {
-    height:100%;
+    height: 100%;
 }
 /* alternative implementations */
 /*
@@ -40,7 +40,6 @@
 .singlestretch-child {
 }
 */
-
 
 html {
     height: 100%;

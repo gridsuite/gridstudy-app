@@ -96,10 +96,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SvgNotFound = (props) => {
-    return (
-        <Container>
-        </Container>
-    );
+    return <Container></Container>;
 };
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
@@ -110,8 +107,19 @@ const mapRightOffset = 50;
 const mapBottomOffset = 80;
 const borders = 2; // we use content-size: border-box so this needs to be included..
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
-const computePaperAndSvgSizesIfReady = (fullScreen, svgType, totalWidth, totalHeight, svgPreferredWidth, svgPreferredHeight, headerPreferredHeight ) => {
-    if (typeof(svgPreferredWidth) != "undefined" && typeof(headerPreferredHeight) != "undefined") {
+const computePaperAndSvgSizesIfReady = (
+    fullScreen,
+    svgType,
+    totalWidth,
+    totalHeight,
+    svgPreferredWidth,
+    svgPreferredHeight,
+    headerPreferredHeight
+) => {
+    if (
+        typeof svgPreferredWidth != 'undefined' &&
+        typeof headerPreferredHeight != 'undefined'
+    ) {
         let paperWidth, paperHeight, svgWidth, svgHeight;
         if (fullScreen) {
             paperWidth = totalWidth;
@@ -127,17 +135,24 @@ const computePaperAndSvgSizesIfReady = (fullScreen, svgType, totalWidth, totalHe
                 maxWidth = maxWidthSubstation;
                 maxHeight = maxHeightSubstation;
             }
-            svgWidth = Math.min( svgPreferredWidth, totalWidth - mapRightOffset, maxWidth );
-            svgHeight = Math.min( svgPreferredHeight, totalHeight - mapBottomOffset, maxHeight );
+            svgWidth = Math.min(
+                svgPreferredWidth,
+                totalWidth - mapRightOffset,
+                maxWidth
+            );
+            svgHeight = Math.min(
+                svgPreferredHeight,
+                totalHeight - mapBottomOffset,
+                maxHeight
+            );
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
-        } 
-        return { paperWidth, paperHeight, svgWidth, svgHeight};
+        }
+        return { paperWidth, paperHeight, svgWidth, svgHeight };
     }
-}
+};
 
 const Inner = forwardRef((props, ref) => {
-
     const [forceState, updateState] = useState(false);
 
     const forceUpdate = useCallback(() => {
@@ -165,23 +180,39 @@ const Inner = forwardRef((props, ref) => {
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
 
-    const {totalWidth, totalHeight, svgType} = props;
+    const { totalWidth, totalHeight, svgType } = props;
 
     useLayoutEffect(() => {
-        const sizes = computePaperAndSvgSizesIfReady(fullScreen, svgType, totalWidth, totalHeight, svgPreferredWidth, svgPreferredHeight, headerPreferredHeight);
-        if (typeof(sizes) != 'undefined') {
+        const sizes = computePaperAndSvgSizesIfReady(
+            fullScreen,
+            svgType,
+            totalWidth,
+            totalHeight,
+            svgPreferredWidth,
+            svgPreferredHeight,
+            headerPreferredHeight
+        );
+        if (typeof sizes != 'undefined') {
             setSvgFinalWidth(sizes.svgWidth);
             setSvgFinalHeight(sizes.svgHeight);
             setFinalPaperWidth(sizes.paperWidth);
             setFinalPaperHeight(sizes.paperHeight);
         }
-    }, [fullScreen, totalWidth,totalHeight, svgType, svgPreferredWidth, svgPreferredHeight, headerPreferredHeight]);
+    }, [
+        fullScreen,
+        totalWidth,
+        totalHeight,
+        svgType,
+        svgPreferredWidth,
+        svgPreferredHeight,
+        headerPreferredHeight,
+    ]);
 
     const [loadingState, updateLoadingState] = useState(false);
     const [svg, setSvg] = useState(noSvg);
     const svgUrl = useRef('');
     const svgDraw = useRef();
-    const dispatch =useDispatch();
+    const dispatch = useDispatch();
 
     const theme = useTheme();
 
@@ -353,7 +384,6 @@ const Inner = forwardRef((props, ref) => {
         }
 
         if (svg.svg) {
-
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
             // calculate svg width and height from svg bounding box
@@ -431,24 +461,29 @@ const Inner = forwardRef((props, ref) => {
     ]);
 
     useLayoutEffect(() => {
-        if (typeof(svgFinalWidth) != 'undefined' && typeof(svgFinalHeight) != 'undefined') {
+        if (
+            typeof svgFinalWidth != 'undefined' &&
+            typeof svgFinalHeight != 'undefined'
+        ) {
             const divElt = document.getElementById('sld-svg');
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
                 if (svgEl != null) {
-                    svgEl.setAttribute("width", svgFinalWidth);
-                    svgEl.setAttribute("height", svgFinalHeight);
+                    svgEl.setAttribute('width', svgFinalWidth);
+                    svgEl.setAttribute('height', svgFinalHeight);
                 }
             }
         } else {
         }
     }, [svgFinalWidth, svgFinalHeight]);
 
-
     let sizeWidth, sizeHeight;
     if (svg.error) {
         sizeWidth = errorWidth; // height is not set so height is auto;
-    } else if (typeof(finalPaperWidth) != 'undefined' && typeof(finalPaperHeight) != 'undefined' ) {
+    } else if (
+        typeof finalPaperWidth != 'undefined' &&
+        typeof finalPaperHeight != 'undefined'
+    ) {
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
     } else if (loadingState) {
@@ -457,67 +492,84 @@ const Inner = forwardRef((props, ref) => {
         sizeWidth = totalWidth; // happens during initalization
     }
 
- return (
-<Paper
-    elevation={1}
-    variant="outlined"
-    square="true"
-    style={{
-       pointerEvents: "auto",
-       width: sizeWidth, height: sizeHeight,
-    }}
->
-    <Box>
-        <AutoSizer onResize={ ({height}) => {setHeaderPreferredHeight(height);} }>
-            {() => /* just for measuring the header */ { }}
-        </AutoSizer>
-
-        <Box className={classes.header}>
-            {props.diagramAction}
-            <Box flexGrow={1}>
-                <Typography>{props.diagramTitle}</Typography>
-            </Box>
-            <IconButton className={classes.close} onClick={onCloseHandler}>
-                <CloseIcon />
-            </IconButton>
-        </Box>
-    </Box>
-    <Box position="relative">
-        <Box position="absolute" left={0} right={0} top={0}>
-            {loadingState && <Box height={2}><LinearProgress/></Box>}
-            {props.updateSwitchMsg && <Alert severity="error">{props.updateSwitchMsg}</Alert>}
-        </Box>
-        {svg.error ? ( <Typography variant="h5">
-                <FormattedMessage
-                    id="svgNotFound"
-                    values={{
-                        svgUrl: svg.svgUrl,
-                        error: svg.error.message,
+    return (
+        <Paper
+            elevation={1}
+            variant="outlined"
+            square="true"
+            style={{
+                pointerEvents: 'auto',
+                width: sizeWidth,
+                height: sizeHeight,
+            }}
+        >
+            <Box>
+                <AutoSizer
+                    onResize={({ height }) => {
+                        setHeaderPreferredHeight(height);
                     }}
-                />
-            </Typography> ) : (
-            <div
-                id="sld-svg"
-                className={ classes.divSld }
-                dangerouslySetInnerHTML={{ __html: svg.svg }}
-            />
-        )}
-        {!loadingState && !svg.error && (
-                fullScreen ? (
-                    <FullscreenExitIcon
-                        onClick={hideFullScreen}
-                        className={classes.fullScreenIcon}
-                    />
+                >
+                    {() => /* just for measuring the header */ {}}
+                </AutoSizer>
+
+                <Box className={classes.header}>
+                    {props.diagramAction}
+                    <Box flexGrow={1}>
+                        <Typography>{props.diagramTitle}</Typography>
+                    </Box>
+                    <IconButton
+                        className={classes.close}
+                        onClick={onCloseHandler}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+            </Box>
+            <Box position="relative">
+                <Box position="absolute" left={0} right={0} top={0}>
+                    {loadingState && (
+                        <Box height={2}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    {props.updateSwitchMsg && (
+                        <Alert severity="error">{props.updateSwitchMsg}</Alert>
+                    )}
+                </Box>
+                {svg.error ? (
+                    <Typography variant="h5">
+                        <FormattedMessage
+                            id="svgNotFound"
+                            values={{
+                                svgUrl: svg.svgUrl,
+                                error: svg.error.message,
+                            }}
+                        />
+                    </Typography>
                 ) : (
-                    <FullscreenIcon
-                        onClick={showFullScreen}
-                        className={classes.fullScreenIcon}
+                    <div
+                        id="sld-svg"
+                        className={classes.divSld}
+                        dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
-                )
-        )}
-    </Box>
-</Paper>
-)});
+                )}
+                {!loadingState &&
+                    !svg.error &&
+                    (fullScreen ? (
+                        <FullscreenExitIcon
+                            onClick={hideFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ) : (
+                        <FullscreenIcon
+                            onClick={showFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ))}
+            </Box>
+        </Paper>
+    );
+});
 
 const SWITCH_COMPONENT_TYPES = ['BREAKER', 'DISCONNECTOR', 'LOAD_BREAK_SWITCH'];
 
@@ -541,12 +593,18 @@ fetch(ArrowHover)
     });
 
 const SingleLineDiagram = forwardRef((props, ref) => {
-
     return (
         <AutoSizer>
-            {({ width, height }) => <Inner ref={ref} totalWidth={width} totalHeight={height} {...props}/> }
+            {({ width, height }) => (
+                <Inner
+                    ref={ref}
+                    totalWidth={width}
+                    totalHeight={height}
+                    {...props}
+                />
+            )}
         </AutoSizer>
-    )
+    );
 });
 
 SingleLineDiagram.propTypes = {
