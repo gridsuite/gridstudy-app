@@ -35,7 +35,6 @@ const styles = (theme) => ({
     },
     tableCell: {
         flex: 1,
-        padding: '16px 8px',
     },
     noClick: {
         cursor: 'initial',
