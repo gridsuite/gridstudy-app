@@ -225,6 +225,8 @@ const StudyPane = (props) => {
         setShowContingencyListSelector,
     ] = useState(false);
 
+    const [visibleSubstation, setVisibleSubstation] = useState(null);
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -766,6 +768,7 @@ const StudyPane = (props) => {
                     dispatch(selectItemNetwork(vlId));
                     props.onChangeTab(0); // switch to map view
                     showVoltageLevelDiagram(vlId); // show voltage level
+                    setVisibleSubstation(substationId);
                     setDisplayedVoltageLevelId(vlId);
                 }
             }
@@ -1005,6 +1008,7 @@ const StudyPane = (props) => {
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
                             hideExplorer={toggleDrawer}
+                            visibleSubstation={visibleSubstation}
                         />
                     </div>
                 </Drawer>
