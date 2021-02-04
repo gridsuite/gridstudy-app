@@ -21,7 +21,6 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectItemNetwork } from '../redux/actions';
 
-import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';

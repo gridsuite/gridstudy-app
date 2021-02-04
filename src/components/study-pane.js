@@ -60,7 +60,6 @@ import Network from './network/network';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Paper from '@material-ui/core/Paper';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import PageNotFound from './page-not-found';
@@ -213,7 +212,6 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [drawerOpen, setDrawerOpen] = useState(true);
-    const fullScreen = useSelector((state) => state.fullScreen);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -226,8 +224,6 @@ const StudyPane = (props) => {
         showContingencyListSelector,
         setShowContingencyListSelector,
     ] = useState(false);
-
-    const [visibleSubstation, setVisibleSubstation] = useState(null);
 
     const dispatch = useDispatch();
 
