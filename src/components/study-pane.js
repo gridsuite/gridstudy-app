@@ -780,13 +780,7 @@ const StudyPane = (props) => {
     function scrollAndOpenVoltageLevel(vlId) {
         if (!network) return;
         setDisplayedVoltageLevelId(vlId);
-        window.setTimeout(
-            () =>
-                setVisibleSubstation(
-                    network.getVoltageLevel(vlId).substationId
-                ),
-            0
-        );
+        setVisibleSubstation(network.getVoltageLevel(vlId).substationId);
         dispatch(selectItemNetwork(vlId));
     }
 
