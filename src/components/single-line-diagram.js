@@ -394,20 +394,27 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             const svgWidth = bbox.width + 40;
             const svgHeight = bbox.height + 40;
 
-            let sizeWidth = svgWidth;
-            let sizeHeight = svgHeight;
+            setSvgPreferredWidth(svgWidth);
+            setSvgPreferredHeight(svgHeight);
 
-            setSvgPreferredWidth(sizeWidth);
-            setSvgPreferredHeight(sizeHeight);
-
-            let viewboxWidth = Math.min(svgWidth, svgType == SvgType.VOLTAGE_LEVEL ? maxWidthVoltageLevel : maxWidthSubstation);
-            let viewboxHeight = Math.min(svgHeight, svgType == SvgType.VOLTAGE_LEVEL ? maxHeightVoltageLevel : maxHeightSubstation);
+            let viewboxWidth = Math.min(
+                svgWidth,
+                svgType === SvgType.VOLTAGE_LEVEL
+                    ? maxWidthVoltageLevel
+                    : maxWidthSubstation
+            );
+            let viewboxHeight = Math.min(
+                svgHeight,
+                svgType === SvgType.VOLTAGE_LEVEL
+                    ? maxHeightVoltageLevel
+                    : maxHeightSubstation
+            );
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .size(sizeWidth, sizeHeight)
+                .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, viewboxWidth, viewboxHeight)
                 .panZoom({
                     panning: true,
