@@ -169,7 +169,18 @@ const computePaperAndSvgSizesIfReady = (
 };
 
 const SizedSingleLineDiagram = forwardRef((props, ref) => {
+    const [svg, setSvg] = useState(noSvg);
+    const svgUrl = useRef('');
+    const svgDraw = useRef();
+    const dispatch = useDispatch();
+
+    const fullScreen = useSelector((state) => state.fullScreen);
+
     const [forceState, updateState] = useState(false);
+
+    const [loadingState, updateLoadingState] = useState(false);
+
+    const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
@@ -183,8 +194,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         // Note: forceUpdate doesn't change
         [forceUpdate]
     );
-
-    const fullScreen = useSelector((state) => state.fullScreen);
 
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
@@ -224,14 +233,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         headerPreferredHeight,
     ]);
 
-    const [loadingState, updateLoadingState] = useState(false);
-    const [svg, setSvg] = useState(noSvg);
-    const svgUrl = useRef('');
-    const svgDraw = useRef();
-    const dispatch = useDispatch();
-
-    const theme = useTheme();
-
     useEffect(() => {
         if (props.svgUrl) {
             updateLoadingState(true);
@@ -265,24 +266,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         onBreakerClick,
         isComputationRunning,
     } = props;
-
-    const classes = useStyles();
-
-    const onCloseHandler = () => {
-        if (props.onClose !== null) {
-            dispatch(selectItemNetwork(null));
-            dispatch(fullScreenSingleLineDiagram(false));
-            props.onClose();
-        }
-    };
-
-    const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(true));
-    };
-
-    const hideFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(false));
-    };
 
     useLayoutEffect(() => {
         function createSvgArrow(element, position, x, highestY, lowestY) {
@@ -426,8 +409,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
-                    margins: { top: 100, left: 100, right: 100, bottom: 200 },
+                    zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
+                    zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
+                    margins: { top: 100, left: 100, right: 100, bottom: 200 },
                 });
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
             draw.on('panStart', function (evt) {
@@ -464,7 +449,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             svgUrl.current = svg.svgUrl;
 
             svgDraw.current = draw;
-        } else {
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
     }, [
@@ -492,6 +476,24 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
         }
     }, [svgFinalWidth, svgFinalHeight]);
+
+    const classes = useStyles();
+
+    const onCloseHandler = () => {
+        if (props.onClose !== null) {
+            dispatch(selectItemNetwork(null));
+            dispatch(fullScreenSingleLineDiagram(false));
+            props.onClose();
+        }
+    };
+
+    const showFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(true));
+    };
+
+    const hideFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(false));
+    };
 
     let sizeWidth, sizeHeight;
     if (svg.error) {
