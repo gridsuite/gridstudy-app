@@ -97,7 +97,6 @@ const RenameDialog = ({
     message,
     currentName,
     error,
-    child,
 }) => {
     const [newNameValue, setNewNameValue] = React.useState(currentName);
 
@@ -150,7 +149,6 @@ const RenameDialog = ({
                 <br />
                 <br />
                 {error !== '' && <Alert severity="error">{error}</Alert>}
-                {child}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="text">

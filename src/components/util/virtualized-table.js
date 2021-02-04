@@ -214,7 +214,11 @@ class MuiVirtualizedTable extends React.PureComponent {
         return (
             <TableCell
                 component="div"
-                className={clsx(classes.tableCell, classes.noClick)}
+                className={clsx(
+                    classes.tableCell,
+                    classes.flexContainer,
+                    classes.noClick
+                )}
                 variant="head"
                 style={{ height: headerHeight }}
                 align={columns[columnIndex].numeric || false ? 'right' : 'left'}
@@ -279,7 +283,6 @@ class MuiVirtualizedTable extends React.PureComponent {
                                     className={classes.flexContainer}
                                     cellRenderer={this.cellRenderer}
                                     dataKey={dataKey}
-                                    width={width}
                                     {...other}
                                 />
                             );
@@ -300,8 +303,7 @@ MuiVirtualizedTable.propTypes = {
             dataKey: PropTypes.string.isRequired,
             label: PropTypes.string.isRequired,
             numeric: PropTypes.bool,
-            width: PropTypes.number,
-            minWidth: PropTypes.number,
+            width: PropTypes.number.isRequired,
             unit: PropTypes.string,
             fractionDigits: PropTypes.number,
         })
