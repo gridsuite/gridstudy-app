@@ -119,7 +119,7 @@ fetch(ArrowHover)
 
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
-const mapRightOffset = 50;
+const mapRightOffset = 120;
 const mapBottomOffset = 80;
 const borders = 2; // we use content-size: border-box so this needs to be included..
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
@@ -158,7 +158,7 @@ const computePaperAndSvgSizesIfReady = (
             );
             svgHeight = Math.min(
                 svgPreferredHeight,
-                totalHeight - mapBottomOffset,
+                totalHeight - mapBottomOffset - headerPreferredHeight,
                 maxHeight
             );
             paperWidth = svgWidth + borders;
