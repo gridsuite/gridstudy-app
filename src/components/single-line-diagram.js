@@ -62,19 +62,16 @@ const maxWidthVoltageLevel = 800;
 const maxHeightVoltageLevel = 700;
 const maxWidthSubstation = 1200;
 const maxHeightSubstation = 700;
+const errorWidth = maxWidthVoltageLevel;
 
 const useStyles = makeStyles((theme) => ({
     divSld: {
         '& svg': {
             // necessary because the default (inline-block) adds vertical space
-            // to our otherwise pixel accurate computations (scrollbar in fullscreen)
+            // to our otherwise pixel accurate computations (this makes a
+            // scrollbar appear in fullscreen mode)
             display: 'block',
-        }
-    },
-    diagram: {
-        position: 'relative',
-        'display': 'flex',
-        'flexDirection': 'column',
+        },
         '& .component-label': {
             fill: theme.palette.text.primary,
             'font-size': 12,
@@ -83,16 +80,6 @@ const useStyles = makeStyles((theme) => ({
     },
     close: {
         padding: 0,
-    },
-    error: {
-        maxWidth: maxWidthVoltageLevel,
-        maxHeight: maxHeightVoltageLevel,
-    },
-    errorUpdateSwitch: {
-        position: 'absolute',
-        top: 25,
-        left: 0,
-        right: 0,
     },
     header: {
         padding: 5,
@@ -111,15 +98,6 @@ const useStyles = makeStyles((theme) => ({
 const SvgNotFound = (props) => {
     return (
         <Container>
-            <Typography variant="h5">
-                <FormattedMessage
-                    id="svgNotFound"
-                    values={{
-                        svgUrl: props.svgUrl,
-                        error: props.error.message,
-                    }}
-                />
-            </Typography>
         </Container>
     );
 };
@@ -132,15 +110,15 @@ const mapRightOffset = 50;
 const mapBottomOffset = 80;
 const borders = 2; // we use content-size: border-box so this needs to be included..
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
-const computePaperAndSvgSizesIfReady = (fullScreen, svgType, totalSize, svgPreferredSize, headerPreferredSize ) => {
-    if (typeof(svgPreferredSize) != "undefined" && typeof(headerPreferredSize) != "undefined") {
+const computePaperAndSvgSizesIfReady = (fullScreen, svgType, totalWidth, totalHeight, svgPreferredWidth, svgPreferredHeight, headerPreferredHeight ) => {
+    if (typeof(svgPreferredWidth) != "undefined" && typeof(headerPreferredHeight) != "undefined") {
         let paperWidth, paperHeight, svgWidth, svgHeight;
         if (fullScreen) {
             console.log("NOJ useLayoutEffect FinalWidth fullscreen");
-            paperWidth = totalSize.width;
-            paperHeight = totalSize.height;
-            svgWidth = totalSize.width - borders;
-            svgHeight = totalSize.height - headerPreferredSize.height - borders;
+            paperWidth = totalWidth;
+            paperHeight = totalHeight;
+            svgWidth = totalWidth - borders;
+            svgHeight = totalHeight - headerPreferredHeight - borders;
         } else {
             console.log("NOJ useLayoutEffect FinalWidth normal");
             let maxWidth, maxHeight;
@@ -151,10 +129,10 @@ const computePaperAndSvgSizesIfReady = (fullScreen, svgType, totalSize, svgPrefe
                 maxWidth = maxWidthSubstation;
                 maxHeight = maxHeightSubstation;
             }
-            svgWidth = Math.min( svgPreferredSize.width, totalSize.width - mapRightOffset, maxWidth );
-            svgHeight = Math.min( svgPreferredSize.height, totalSize.height - mapBottomOffset, maxHeight );
+            svgWidth = Math.min( svgPreferredWidth, totalWidth - mapRightOffset, maxWidth );
+            svgHeight = Math.min( svgPreferredHeight, totalHeight - mapBottomOffset, maxHeight );
             paperWidth = svgWidth + borders;
-            paperHeight = svgHeight + headerPreferredSize.height + borders;
+            paperHeight = svgHeight + headerPreferredHeight + borders;
         } 
         return { paperWidth, paperHeight, svgWidth, svgHeight};
     }
@@ -184,7 +162,6 @@ const Inner = forwardRef((props, ref) => {
     // easily avoid recomputing stuff when updating with the same values
     const [svgPreferredWidth, setSvgPreferredWidth] = useState();
     const [svgPreferredHeight, setSvgPreferredHeight] = useState();
-    const [headerPreferredWidth, setHeaderPreferredWidth] = useState();
     const [headerPreferredHeight, setHeaderPreferredHeight] = useState();
     const [finalPaperWidth, setFinalPaperWidth] = useState();
     const [finalPaperHeight, setFinalPaperHeight] = useState();
@@ -194,15 +171,14 @@ const Inner = forwardRef((props, ref) => {
     const {totalWidth, totalHeight, svgType} = props;
 
     useLayoutEffect(() => {
-        const sizes = computePaperAndSvgSizesIfReady(fullScreen, svgType, {width: totalWidth, height: totalHeight}, {width: svgPreferredWidth, height: svgPreferredHeight}, {width: headerPreferredWidth, height: headerPreferredHeight});
+        const sizes = computePaperAndSvgSizesIfReady(fullScreen, svgType, totalWidth, totalHeight, svgPreferredWidth, svgPreferredHeight, headerPreferredHeight);
         if (typeof(sizes) != 'undefined') {
             setSvgFinalWidth(sizes.svgWidth);
             setSvgFinalHeight(sizes.svgHeight);
             setFinalPaperWidth(sizes.paperWidth);
             setFinalPaperHeight(sizes.paperHeight);
-            console.log("NOJ useLayoutEFFect set finalSizes ", sizes.paperWidth );
         }
-    }, [totalWidth,totalHeight, svgType, svgPreferredWidth, svgPreferredHeight, headerPreferredWidth, headerPreferredHeight]);
+    }, [totalWidth,totalHeight, svgType, svgPreferredWidth, svgPreferredHeight, headerPreferredHeight]);
 
     const [loadingState, updateLoadingState] = useState(false);
     const [svg, setSvg] = useState(noSvg);
@@ -225,6 +201,7 @@ const Inner = forwardRef((props, ref) => {
                         svgUrl: props.svgUrl,
                     });
                     updateLoadingState(false);
+                    console.log("NAJ fetched");
                 })
                 .catch(function (error) {
                     console.error(error.message);
@@ -265,40 +242,6 @@ const Inner = forwardRef((props, ref) => {
     const hideFullScreen = () => {
         dispatch(fullScreenSingleLineDiagram(false));
     };
-
-    let inner;
-    let finalClasses;
-    if (svg.error) {
-        finalClasses = classes.error;
-        inner = <SvgNotFound svgUrl={svg.svgUrl} error={svg.error} />;
-    } else {
-        finalClasses = classes.diagram;
-        inner = (
-            <div
-                id="sld-svg"
-                className={ classes.divSld }
-                dangerouslySetInnerHTML={{ __html: svg.svg }}
-            />
-        );
-    }
-
-    let msgUpdateSwitch;
-    if (props.updateSwitchMsg !== '') {
-        msgUpdateSwitch = (
-            <Alert className={classes.errorUpdateSwitch} severity="error">
-                {props.updateSwitchMsg}
-            </Alert>
-        );
-    } else {
-        msgUpdateSwitch = '';
-    }
-
-    let displayProgress;
-    if (loadingState) {
-        displayProgress = <LinearProgress />;
-    } else {
-        displayProgress = '';
-    }
 
     useLayoutEffect(() => {
         function createSvgArrow(element, position, x, highestY, lowestY) {
@@ -513,13 +456,19 @@ const Inner = forwardRef((props, ref) => {
 
 
     let sizeWidth, sizeHeight;
-    if (typeof(finalPaperWidth) != 'undefined' && typeof(finalPaperHeight) != 'undefined' ) {
+    if (svg.error) {
+        console.log("NAJ ERROR");
+        sizeWidth = errorWidth; // height is not set so height is auto;
+    } else if (typeof(finalPaperWidth) != 'undefined' && typeof(finalPaperHeight) != 'undefined' ) {
+        console.log("NAJ FINAL", finalPaperWidth, finalPaperHeight);
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
     } else if (loadingState) {
-        sizeWidth = loadingWidth; // height is auto;
+        console.log("NAJ LOADING");
+        sizeWidth = loadingWidth; // height is not set so height is auto; used for the first load
     } else {
-        sizeWidth = totalWidth; // like a block; height is auto; this is for example used for errors
+        console.log("NAJ DEFAULT");
+        sizeWidth = totalWidth; // happens during initalization
     }
 
  return (
@@ -531,39 +480,56 @@ const Inner = forwardRef((props, ref) => {
        pointerEvents: "auto",
        width: sizeWidth, height: sizeHeight,
     }}
-    className={finalClasses}
 >
-    <div>
-    <AutoSizer onResize={ ({width, height}) => {setHeaderPreferredWidth(width); setHeaderPreferredHeight(height);} }>
-        {() => /* just for measuring the header */ { }}
-    </AutoSizer>
+    <Box>
+        <AutoSizer onResize={ ({height}) => {setHeaderPreferredHeight(height);} }>
+            {() => /* just for measuring the header */ { }}
+        </AutoSizer>
 
-    <Box className={classes.header}>
-        {props.diagramAction}
-        <Box flexGrow={1}>
-            <Typography>{props.diagramTitle}</Typography>
+        <Box className={classes.header}>
+            {props.diagramAction}
+            <Box flexGrow={1}>
+                <Typography>{props.diagramTitle}</Typography>
+            </Box>
+            <IconButton className={classes.close} onClick={onCloseHandler}>
+                <CloseIcon />
+            </IconButton>
         </Box>
-        <IconButton className={classes.close} onClick={onCloseHandler}>
-            <CloseIcon />
-        </IconButton>
     </Box>
-    <Box height={2}>{displayProgress}</Box>
-    {msgUpdateSwitch}
-    </div>
-    {inner}
-{!loadingState && !svg.error && (
-        fullScreen ? (
-            <FullscreenExitIcon
-                onClick={hideFullScreen}
-                className={classes.fullScreenIcon}
+    <Box position="relative">
+        <Box position="absolute" left={0} right={0} top={0}>
+            {loadingState && <Box height={2}><LinearProgress/></Box>}
+            {props.updateSwitchMsg && <Alert severity="error">{props.updateSwitchMsg}</Alert>}
+        </Box>
+        {svg.error ? ( <Typography variant="h5">
+                <FormattedMessage
+                    id="svgNotFound"
+                    values={{
+                        svgUrl: svg.svgUrl,
+                        error: svg.error.message,
+                    }}
+                />
+            </Typography> ) : (
+            <div
+                id="sld-svg"
+                className={ classes.divSld }
+                dangerouslySetInnerHTML={{ __html: svg.svg }}
             />
-        ) : (
-            <FullscreenIcon
-                onClick={showFullScreen}
-                className={classes.fullScreenIcon}
-            />
-        )
-)}
+        )}
+        {!loadingState && !svg.error && (
+                fullScreen ? (
+                    <FullscreenExitIcon
+                        onClick={hideFullScreen}
+                        className={classes.fullScreenIcon}
+                    />
+                ) : (
+                    <FullscreenIcon
+                        onClick={showFullScreen}
+                        className={classes.fullScreenIcon}
+                    />
+                )
+        )}
+    </Box>
 </Paper>
 )});
 
