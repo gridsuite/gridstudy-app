@@ -114,13 +114,11 @@ const computePaperAndSvgSizesIfReady = (fullScreen, svgType, totalWidth, totalHe
     if (typeof(svgPreferredWidth) != "undefined" && typeof(headerPreferredHeight) != "undefined") {
         let paperWidth, paperHeight, svgWidth, svgHeight;
         if (fullScreen) {
-            console.log("NOJ useLayoutEffect FinalWidth fullscreen");
             paperWidth = totalWidth;
             paperHeight = totalHeight;
             svgWidth = totalWidth - borders;
             svgHeight = totalHeight - headerPreferredHeight - borders;
         } else {
-            console.log("NOJ useLayoutEffect FinalWidth normal");
             let maxWidth, maxHeight;
             if (svgType === SvgType.VOLTAGE_LEVEL) {
                 maxWidth = maxWidthVoltageLevel;
@@ -155,7 +153,6 @@ const Inner = forwardRef((props, ref) => {
         [forceUpdate]
     );
 
-    console.log("NOJ  render inner");
     const fullScreen = useSelector((state) => state.fullScreen);
 
     // using many useState() calls with literal values only to
@@ -178,7 +175,7 @@ const Inner = forwardRef((props, ref) => {
             setFinalPaperWidth(sizes.paperWidth);
             setFinalPaperHeight(sizes.paperHeight);
         }
-    }, [totalWidth,totalHeight, svgType, svgPreferredWidth, svgPreferredHeight, headerPreferredHeight]);
+    }, [fullScreen, totalWidth,totalHeight, svgType, svgPreferredWidth, svgPreferredHeight, headerPreferredHeight]);
 
     const [loadingState, updateLoadingState] = useState(false);
     const [svg, setSvg] = useState(noSvg);
@@ -190,7 +187,6 @@ const Inner = forwardRef((props, ref) => {
 
     useEffect(() => {
         if (props.svgUrl) {
-            console.log("NOJ useffect download" , props.svgUrl);
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -201,7 +197,6 @@ const Inner = forwardRef((props, ref) => {
                         svgUrl: props.svgUrl,
                     });
                     updateLoadingState(false);
-                    console.log("NAJ fetched");
                 })
                 .catch(function (error) {
                     console.error(error.message);
@@ -214,7 +209,6 @@ const Inner = forwardRef((props, ref) => {
                     updateLoadingState(false);
                 });
         } else {
-            console.log("NOJ useEffect download no svg");
             setSvg(noSvg);
         }
     }, [props.svgUrl, forceState]);
@@ -360,7 +354,6 @@ const Inner = forwardRef((props, ref) => {
 
         if (svg.svg) {
 
-            console.log("NOJ useLayoutEffect createSVG ");
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
             // calculate svg width and height from svg bounding box
@@ -426,7 +419,6 @@ const Inner = forwardRef((props, ref) => {
 
             svgDraw.current = draw;
         } else {
-            console.log("NOJ useLayoutEffect createSVG but svg not ready..")
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
     }, [
@@ -440,7 +432,6 @@ const Inner = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         if (typeof(svgFinalWidth) != 'undefined' && typeof(svgFinalHeight) != 'undefined') {
-            console.log("NOJ useLayoutEffect update svg width/height");
             const divElt = document.getElementById('sld-svg');
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -450,24 +441,19 @@ const Inner = forwardRef((props, ref) => {
                 }
             }
         } else {
-            console.log("NOJ useLayoutEffect update svg width/height but no svg");
         }
     }, [svgFinalWidth, svgFinalHeight]);
 
 
     let sizeWidth, sizeHeight;
     if (svg.error) {
-        console.log("NAJ ERROR");
         sizeWidth = errorWidth; // height is not set so height is auto;
     } else if (typeof(finalPaperWidth) != 'undefined' && typeof(finalPaperHeight) != 'undefined' ) {
-        console.log("NAJ FINAL", finalPaperWidth, finalPaperHeight);
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
     } else if (loadingState) {
-        console.log("NAJ LOADING");
         sizeWidth = loadingWidth; // height is not set so height is auto; used for the first load
     } else {
-        console.log("NAJ DEFAULT");
         sizeWidth = totalWidth; // happens during initalization
     }
 
@@ -556,7 +542,6 @@ fetch(ArrowHover)
 
 const SingleLineDiagram = forwardRef((props, ref) => {
 
-    console.log("NOJ render outer");
     return (
         <AutoSizer>
             {({ width, height }) => <Inner ref={ref} totalWidth={width} totalHeight={height} {...props}/> }
