@@ -263,9 +263,9 @@ const App = () => {
         }) !== null;
 
     useEffect(() => {
-        document.addEventListener('contextmenu', (event) => {
+        /*document.addEventListener('contextmenu', (event) => {
             event.preventDefault();
-        });
+        });*/
     });
 
     useEffect(() => {

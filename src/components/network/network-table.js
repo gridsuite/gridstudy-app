@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import Network from './network';
 import VirtualizedTable from '../util/virtualized-table';
@@ -22,6 +22,15 @@ import Grid from '@material-ui/core/Grid';
 import { requestNetworkChange } from '../../utils/rest-api';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
+
+import ViewListIcon from '@material-ui/icons/ViewList';
+import { FormattedMessage } from 'react-intl';
+import { SelectColumnsNames } from '../../utils/dialogs';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
 
 const TABLE_NAMES = [
     'Substations',
@@ -62,6 +71,14 @@ const useStyles = makeStyles((theme) => ({
         marginTop: '15px',
         marginLeft: '10px',
     },
+    checkboxSelectAll: {
+        padding: '0 32px 15px 15px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+    },
+    checkboxItem: {
+        cursor: 'pointer',
+    },
 }));
 
 const NetworkTable = (props) => {
@@ -70,6 +87,11 @@ const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = React.useState(0);
     const [lineEdit, setLineEdit] = React.useState({});
     const [rowFilter, setRowFilter] = React.useState(undefined);
+    const [popupSelectListName, setPopupSelectListName] = React.useState(false);
+    const [listColumnsNames, setListColumnsNames] = useState([]);
+    const [checked, setChecked] = React.useState([]);
+    const [selectedListName, setSelectedListName] = useState([]);
+
     const intl = useIntl();
 
     const rowHeight = 48;
@@ -242,7 +264,13 @@ const NetworkTable = (props) => {
         );
     }
 
-    function renderSubstationsTable() {
+    const showSelectedColumn = (key) => {
+        return selectedListName.includes(intl.formatMessage({ id: key }))
+            ? ''
+            : 'none';
+    };
+
+    const renderSubstationsTable = () => {
         return (
             <VirtualizedTable
                 rowCount={props.network.substations.length}
@@ -253,21 +281,39 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Country' }),
                         dataKey: 'countryName',
+                        headerStyle: {
+                            display: showSelectedColumn('Country'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Country'),
+                        },
                     },
                 ]}
             />
         );
-    }
+    };
 
     function renderVoltageLevelsTable() {
         const voltageLevels = props.network.getVoltageLevels();
@@ -281,16 +327,34 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
                         label: intl.formatMessage({ id: 'SubstationId' }),
                         dataKey: 'substationId',
+                        headerStyle: {
+                            display: showSelectedColumn('SubstationId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('SubstationId'),
+                        },
                     },
                     {
                         width: 200,
@@ -298,6 +362,12 @@ const NetworkTable = (props) => {
                         dataKey: 'nominalVoltage',
                         numeric: true,
                         fractionDigits: 0,
+                        headerStyle: {
+                            display: showSelectedColumn('NominalVoltage'),
+                        },
+                        style: {
+                            display: showSelectedColumn('NominalVoltage'),
+                        },
                     },
                 ]}
             />
@@ -315,11 +385,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -327,6 +409,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelIdSide1',
                         }),
                         dataKey: 'voltageLevelId1',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelIdSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelIdSide1'),
+                        },
                     },
                     {
                         width: 400,
@@ -334,6 +422,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelIdSide2',
                         }),
                         dataKey: 'voltageLevelId2',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelIdSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelIdSide2'),
+                        },
                     },
                     {
                         width: 200,
@@ -341,6 +435,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p1',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePowerSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePowerSide1'),
+                        },
                     },
                     {
                         width: 200,
@@ -348,6 +448,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p2',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePowerSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePowerSide2'),
+                        },
                     },
                     {
                         width: 200,
@@ -355,6 +461,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q1',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePowerSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePowerSide1'),
+                        },
                     },
                     {
                         width: 200,
@@ -362,6 +474,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q2',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePowerSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePowerSide2'),
+                        },
                     },
                 ]}
             />
@@ -373,6 +491,9 @@ const NetworkTable = (props) => {
             width: 80,
             label: '',
             dataKey: '',
+            style: {
+                display: selectedListName.length > 0 ? '' : 'none',
+            },
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
         };
@@ -392,11 +513,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -404,6 +537,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelIdSide1',
                         }),
                         dataKey: 'voltageLevelId1',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelIdSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelIdSide1'),
+                        },
                     },
                     {
                         width: 400,
@@ -411,6 +550,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelIdSide2',
                         }),
                         dataKey: 'voltageLevelId2',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelIdSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelIdSide2'),
+                        },
                     },
                     {
                         width: 200,
@@ -418,6 +563,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p1',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePowerSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePowerSide1'),
+                        },
                     },
                     {
                         width: 200,
@@ -425,6 +576,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p2',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePowerSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePowerSide2'),
+                        },
                     },
                     {
                         width: 200,
@@ -432,6 +589,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q1',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePowerSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePowerSide1'),
+                        },
                     },
                     {
                         width: 200,
@@ -439,11 +602,23 @@ const NetworkTable = (props) => {
                         dataKey: 'q2',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePowerSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePowerSide2'),
+                        },
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap' }),
                         dataKey: 'ratioTapChangerPosition',
+                        headerStyle: {
+                            display: showSelectedColumn('RatioTap'),
+                        },
+                        style: {
+                            display: showSelectedColumn('RatioTap'),
+                        },
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -456,6 +631,12 @@ const NetworkTable = (props) => {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap' }),
                         dataKey: 'phaseTapChangerPosition',
+                        headerStyle: {
+                            display: showSelectedColumn('PhaseTap'),
+                        },
+                        style: {
+                            display: showSelectedColumn('PhaseTap'),
+                        },
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -483,11 +664,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -495,6 +688,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelIdSide1',
                         }),
                         dataKey: 'voltageLevelId1',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelIdSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelIdSide1'),
+                        },
                     },
                     {
                         width: 400,
@@ -502,6 +701,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelIdSide2',
                         }),
                         dataKey: 'voltageLevelId2',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelIdSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelIdSide2'),
+                        },
                     },
                     {
                         width: 400,
@@ -509,6 +714,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelIdSide3',
                         }),
                         dataKey: 'voltageLevelId3',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelIdSide3'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelIdSide3'),
+                        },
                     },
                     {
                         width: 200,
@@ -516,6 +727,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p1',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePowerSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePowerSide1'),
+                        },
                     },
                     {
                         width: 200,
@@ -523,6 +740,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p2',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePowerSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePowerSide2'),
+                        },
                     },
                     {
                         width: 200,
@@ -530,6 +753,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p3',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePowerSide3'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePowerSide3'),
+                        },
                     },
                     {
                         width: 200,
@@ -537,6 +766,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q1',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePowerSide1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePowerSide1'),
+                        },
                     },
                     {
                         width: 200,
@@ -544,6 +779,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q2',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePowerSide2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePowerSide2'),
+                        },
                     },
                     {
                         width: 200,
@@ -551,11 +792,23 @@ const NetworkTable = (props) => {
                         dataKey: 'q3',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePowerSide3'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePowerSide3'),
+                        },
                     },
                     {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap1' }),
                         dataKey: 'ratioTapChanger1Position',
+                        headerStyle: {
+                            display: showSelectedColumn('RatioTap1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('RatioTap1'),
+                        },
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -568,6 +821,13 @@ const NetworkTable = (props) => {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap2' }),
                         dataKey: 'ratioTapChanger2Position',
+                        headerStyle: {
+                            display: showSelectedColumn('RatioTap2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('RatioTap2'),
+                        },
+
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -580,6 +840,12 @@ const NetworkTable = (props) => {
                         width: 150,
                         label: intl.formatMessage({ id: 'RatioTap3' }),
                         dataKey: 'ratioTapChanger3Position',
+                        headerStyle: {
+                            display: showSelectedColumn('RatioTap3'),
+                        },
+                        style: {
+                            display: showSelectedColumn('RatioTap3'),
+                        },
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -592,6 +858,12 @@ const NetworkTable = (props) => {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap1' }),
                         dataKey: 'phaseTapChanger1Position',
+                        headerStyle: {
+                            display: showSelectedColumn('PhaseTap1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('PhaseTap1'),
+                        },
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -604,6 +876,12 @@ const NetworkTable = (props) => {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap2' }),
                         dataKey: 'phaseTapChanger2Position',
+                        headerStyle: {
+                            display: showSelectedColumn('PhaseTap2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('PhaseTap2'),
+                        },
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -616,6 +894,12 @@ const NetworkTable = (props) => {
                         width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap3' }),
                         numeric: true,
+                        headerStyle: {
+                            display: showSelectedColumn('PhaseTap3'),
+                        },
+                        style: {
+                            display: showSelectedColumn('PhaseTap3'),
+                        },
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -641,11 +925,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -653,6 +949,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
                     },
                     {
                         width: 200,
@@ -660,6 +962,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -667,11 +975,23 @@ const NetworkTable = (props) => {
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'TargetP' }),
                         dataKey: 'targetP',
+                        headerStyle: {
+                            display: showSelectedColumn('TargetP'),
+                        },
+                        style: {
+                            display: showSelectedColumn('TargetP'),
+                        },
                         cellRenderer: (cell) =>
                             EditableCellRender(
                                 cell,
@@ -696,16 +1016,34 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'LoadType' }),
                         dataKey: 'type',
+                        headerStyle: {
+                            display: showSelectedColumn('LoadType'),
+                        },
+                        style: {
+                            display: showSelectedColumn('LoadType'),
+                        },
                     },
                     {
                         width: 400,
@@ -713,6 +1051,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
                     },
                     {
                         width: 200,
@@ -720,6 +1064,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -727,6 +1077,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -736,6 +1092,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p0',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ConstantActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ConstantActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -745,6 +1107,16 @@ const NetworkTable = (props) => {
                         dataKey: 'q0',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn(
+                                'ConstantReactivePower'
+                            ),
+                        },
+                        style: {
+                            display: showSelectedColumn(
+                                'ConstantReactivePower'
+                            ),
+                        },
                     },
                 ]}
             />
@@ -762,11 +1134,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -774,6 +1158,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
                     },
                     {
                         width: 200,
@@ -781,6 +1171,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -788,6 +1184,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -797,6 +1199,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p0',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ConstantActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ConstantActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -806,6 +1214,16 @@ const NetworkTable = (props) => {
                         dataKey: 'q0',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn(
+                                'ConstantReactivePower'
+                            ),
+                        },
+                        style: {
+                            display: showSelectedColumn(
+                                'ConstantReactivePower'
+                            ),
+                        },
                     },
                 ]}
             />
@@ -823,11 +1241,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -835,11 +1265,23 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'UcteXnodeCode' }),
                         dataKey: 'ucteXnodeCode',
+                        headerStyle: {
+                            display: showSelectedColumn('UcteXnodeCode'),
+                        },
+                        style: {
+                            display: showSelectedColumn('UcteXnodeCode'),
+                        },
                     },
                     {
                         width: 200,
@@ -847,6 +1289,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -854,6 +1302,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -863,6 +1317,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p0',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ConstantActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ConstantActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -872,6 +1332,16 @@ const NetworkTable = (props) => {
                         dataKey: 'q0',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn(
+                                'ConstantReactivePower'
+                            ),
+                        },
+                        style: {
+                            display: showSelectedColumn(
+                                'ConstantReactivePower'
+                            ),
+                        },
                     },
                 ]}
             />
@@ -889,16 +1359,34 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
                         label: intl.formatMessage({ id: 'ConvertersMode' }),
                         dataKey: 'convertersMode',
+                        headerStyle: {
+                            display: showSelectedColumn('ConvertersMode'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ConvertersMode'),
+                        },
                     },
                     {
                         width: 400,
@@ -906,6 +1394,12 @@ const NetworkTable = (props) => {
                             id: 'ConverterStationId1',
                         }),
                         dataKey: 'converterStationId1',
+                        headerStyle: {
+                            display: showSelectedColumn('ConverterStationId1'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ConverterStationId1'),
+                        },
                     },
                     {
                         width: 400,
@@ -913,6 +1407,12 @@ const NetworkTable = (props) => {
                             id: 'ConverterStationId2',
                         }),
                         dataKey: 'converterStationId2',
+                        headerStyle: {
+                            display: showSelectedColumn('ConverterStationId2'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ConverterStationId2'),
+                        },
                     },
                     {
                         width: 200,
@@ -920,6 +1420,12 @@ const NetworkTable = (props) => {
                         dataKey: 'r',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('R'),
+                        },
+                        style: {
+                            display: showSelectedColumn('R'),
+                        },
                     },
                     {
                         width: 200,
@@ -927,6 +1433,12 @@ const NetworkTable = (props) => {
                         dataKey: 'nominalV',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('NominalV'),
+                        },
+                        style: {
+                            display: showSelectedColumn('NominalV'),
+                        },
                     },
                     {
                         width: 300,
@@ -936,6 +1448,12 @@ const NetworkTable = (props) => {
                         dataKey: 'activePowerSetpoint',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePowerSetpoint'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePowerSetpoint'),
+                        },
                     },
                     {
                         width: 200,
@@ -943,6 +1461,12 @@ const NetworkTable = (props) => {
                         dataKey: 'maxP',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('MaxP'),
+                        },
+                        style: {
+                            display: showSelectedColumn('MaxP'),
+                        },
                     },
                 ]}
             />
@@ -962,11 +1486,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -974,6 +1510,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
                     },
                     {
                         width: 200,
@@ -981,6 +1523,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -990,6 +1538,12 @@ const NetworkTable = (props) => {
                         dataKey: 'targetV',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('TargetV'),
+                        },
+                        style: {
+                            display: showSelectedColumn('TargetV'),
+                        },
                     },
                     {
                         width: 200,
@@ -999,6 +1553,12 @@ const NetworkTable = (props) => {
                         dataKey: 'targetDeadband',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('TargetDeadband'),
+                        },
+                        style: {
+                            display: showSelectedColumn('TargetDeadband'),
+                        },
                     },
                 ]}
             />
@@ -1018,11 +1578,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -1030,6 +1602,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
                     },
                     {
                         width: 200,
@@ -1037,6 +1615,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -1044,6 +1628,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -1053,6 +1643,12 @@ const NetworkTable = (props) => {
                         dataKey: 'voltageSetpoint',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageSetpoint'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageSetpoint'),
+                        },
                     },
                     {
                         width: 200,
@@ -1062,6 +1658,16 @@ const NetworkTable = (props) => {
                         dataKey: 'reactivePowerSetpoint',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn(
+                                'ReactivePowerSetpoint'
+                            ),
+                        },
+                        style: {
+                            display: showSelectedColumn(
+                                'ReactivePowerSetpoint'
+                            ),
+                        },
                     },
                 ]}
             />
@@ -1081,11 +1687,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -1093,6 +1711,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
                     },
                     {
                         width: 400,
@@ -1100,6 +1724,12 @@ const NetworkTable = (props) => {
                             id: 'HvdcLineId',
                         }),
                         dataKey: 'hvdcLineId',
+                        headerStyle: {
+                            display: showSelectedColumn('HvdcLineId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('HvdcLineId'),
+                        },
                     },
                     {
                         width: 200,
@@ -1107,6 +1737,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -1114,6 +1750,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -1123,6 +1765,12 @@ const NetworkTable = (props) => {
                         dataKey: 'powerFactor',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('PowerFactor'),
+                        },
+                        style: {
+                            display: showSelectedColumn('PowerFactor'),
+                        },
                     },
                     {
                         width: 200,
@@ -1132,6 +1780,12 @@ const NetworkTable = (props) => {
                         dataKey: 'lossFactor',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('LossFactor'),
+                        },
+                        style: {
+                            display: showSelectedColumn('LossFactor'),
+                        },
                     },
                 ]}
             />
@@ -1151,11 +1805,23 @@ const NetworkTable = (props) => {
                         width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
+                        headerStyle: {
+                            display: showSelectedColumn('ID'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ID'),
+                        },
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
+                        headerStyle: {
+                            display: showSelectedColumn('Name'),
+                        },
+                        style: {
+                            display: showSelectedColumn('Name'),
+                        },
                     },
                     {
                         width: 400,
@@ -1163,6 +1829,12 @@ const NetworkTable = (props) => {
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
+                        headerStyle: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('VoltageLevelId'),
+                        },
                     },
                     {
                         width: 400,
@@ -1170,6 +1842,12 @@ const NetworkTable = (props) => {
                             id: 'HvdcLineId',
                         }),
                         dataKey: 'hvdcLineId',
+                        headerStyle: {
+                            display: showSelectedColumn('HvdcLineId'),
+                        },
+                        style: {
+                            display: showSelectedColumn('HvdcLineId'),
+                        },
                     },
                     {
                         width: 200,
@@ -1177,6 +1855,12 @@ const NetworkTable = (props) => {
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ActivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -1184,6 +1868,12 @@ const NetworkTable = (props) => {
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
+                        style: {
+                            display: showSelectedColumn('ReactivePower'),
+                        },
                     },
                     {
                         width: 200,
@@ -1193,6 +1883,12 @@ const NetworkTable = (props) => {
                         dataKey: 'lossFactor',
                         numeric: true,
                         fractionDigits: 1,
+                        headerStyle: {
+                            display: showSelectedColumn('LossFactor'),
+                        },
+                        style: {
+                            display: showSelectedColumn('LossFactor'),
+                        },
                     },
                 ]}
             />
@@ -1221,76 +1917,418 @@ const NetworkTable = (props) => {
         [rowFilter]
     );
 
+    const handleOpenPopupSelectList = () => {
+        setListColumnsNames(onClickCallFunction(tabIndex));
+        setPopupSelectListName(true);
+    };
+
+    const handleClosePopupSelectList = () => {
+        setPopupSelectListName(false);
+    };
+
+    const handleSaveSelectedList = () => {
+        const showListName = listColumnsNames.filter((item) =>
+            checked.includes(item)
+        );
+        setSelectedListName(showListName);
+        setPopupSelectListName(false);
+    };
+
+    function not(a, b) {
+        return a.filter((value) => b.indexOf(value) === -1);
+    }
+
+    function intersection(a, b) {
+        return a.filter((value) => b.indexOf(value) !== -1);
+    }
+
+    function union(a, b) {
+        return [...a, ...not(b, a)];
+    }
+
+    const handleToggle = (value) => () => {
+        const currentIndex = checked.indexOf(value);
+        const newChecked = [...checked];
+
+        if (currentIndex === -1) {
+            newChecked.push(value);
+        } else {
+            newChecked.splice(currentIndex, 1);
+        }
+
+        setChecked(newChecked);
+    };
+
+    const numberOfChecked = (items) => intersection(checked, items).length;
+
+    const handleToggleAll = (items) => () => {
+        if (numberOfChecked(items) === items.length) {
+            setChecked(not(checked, items));
+        } else {
+            setChecked(union(checked, items));
+        }
+    };
+
+    const checkListColumnsNames = () => {
+        return (
+            <List>
+                <ListItem
+                    className={classes.checkboxSelectAll}
+                    onClick={handleToggleAll(listColumnsNames)}
+                >
+                    <Checkbox
+                        checked={
+                            numberOfChecked(listColumnsNames) ===
+                                listColumnsNames.length &&
+                            listColumnsNames.length !== 0
+                        }
+                        indeterminate={
+                            numberOfChecked(listColumnsNames) !==
+                                listColumnsNames.length &&
+                            numberOfChecked(listColumnsNames) !== 0
+                        }
+                        disabled={listColumnsNames.length === 0}
+                        color="primary"
+                    />
+                    <FormattedMessage id="CheckAll" />
+                </ListItem>
+                {listColumnsNames.map((value, index) => (
+                    <List
+                        className="dragHandle"
+                        key={index}
+                        style={{ padding: '0' }}
+                    >
+                        <ListItem
+                            key={index}
+                            className={classes.checkboxItem}
+                            onClick={handleToggle(value)}
+                            style={{ padding: '0 16px' }}
+                        >
+                            <ListItemIcon>
+                                <Checkbox
+                                    checked={checked.indexOf(value) !== -1}
+                                    color="primary"
+                                />
+                            </ListItemIcon>
+                            <ListItemText primary={`${value}`} />
+                        </ListItem>
+                    </List>
+                ))}
+            </List>
+        );
+    };
+
+    const onClickCallFunction = (index) => {
+        let list = '';
+        if (props.network) {
+            setSelectedListName([]);
+            switch (index) {
+                case 0:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'Country' }),
+                    ];
+                    return list;
+                case 1:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'SubstationId' }),
+                        intl.formatMessage({ id: 'NominalVoltage' }),
+                    ];
+                    return list;
+                case 2:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
+                        intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
+                        intl.formatMessage({ id: 'ActivePowerSide1' }),
+                        intl.formatMessage({ id: 'ActivePowerSide2' }),
+                        intl.formatMessage({ id: 'ReactivePowerSide1' }),
+                        intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                    ];
+                    return list;
+                case 3:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
+                        intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
+                        intl.formatMessage({ id: 'ActivePowerSide1' }),
+                        intl.formatMessage({ id: 'ActivePowerSide2' }),
+                        intl.formatMessage({ id: 'ReactivePowerSide1' }),
+                        intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                        intl.formatMessage({ id: 'RatioTap' }),
+                        intl.formatMessage({ id: 'PhaseTap' }),
+                    ];
+                    return list;
+                case 4:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
+                        intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
+                        intl.formatMessage({ id: 'VoltageLevelIdSide3' }),
+                        intl.formatMessage({ id: 'ActivePowerSide1' }),
+                        intl.formatMessage({ id: 'ActivePowerSide2' }),
+                        intl.formatMessage({ id: 'ActivePowerSide3' }),
+                        intl.formatMessage({ id: 'ReactivePowerSide1' }),
+                        intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                        intl.formatMessage({ id: 'ReactivePowerSide3' }),
+                        intl.formatMessage({ id: 'RatioTap1' }),
+                        intl.formatMessage({ id: 'RatioTap2' }),
+                        intl.formatMessage({ id: 'RatioTap3' }),
+                        intl.formatMessage({ id: 'PhaseTap1' }),
+                        intl.formatMessage({ id: 'PhaseTap2' }),
+                        intl.formatMessage({ id: 'PhaseTap3' }),
+                    ];
+                    return list;
+                case 5:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelId' }),
+                        intl.formatMessage({ id: 'ActivePower' }),
+                        intl.formatMessage({ id: 'ReactivePower' }),
+                        intl.formatMessage({ id: 'TargetP' }),
+                    ];
+                    return list;
+                case 6:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'LoadType' }),
+                        intl.formatMessage({ id: 'VoltageLevelId' }),
+                        intl.formatMessage({ id: 'ActivePower' }),
+                        intl.formatMessage({ id: 'ReactivePower' }),
+                        intl.formatMessage({ id: 'ConstantActivePower' }),
+                        intl.formatMessage({ id: 'ConstantReactivePower' }),
+                    ];
+                    return list;
+                case 7:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelId' }),
+                        intl.formatMessage({ id: 'ReactivePower' }),
+                        intl.formatMessage({ id: 'TargetV' }),
+                        intl.formatMessage({ id: 'TargetDeadband' }),
+                    ];
+                    return list;
+                case 8:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelId' }),
+                        intl.formatMessage({ id: 'ActivePower' }),
+                        intl.formatMessage({ id: 'ReactivePower' }),
+                        intl.formatMessage({ id: 'VoltageSetpoint' }),
+                        intl.formatMessage({ id: 'ReactivePowerSetpoint' }),
+                    ];
+                    return list;
+                case 9:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelId' }),
+                        intl.formatMessage({ id: 'ActivePower' }),
+                        intl.formatMessage({ id: 'ReactivePower' }),
+                        intl.formatMessage({ id: 'ConstantActivePower' }),
+                        intl.formatMessage({ id: 'ConstantReactivePower' }),
+                    ];
+                    return list;
+                case 10:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'ConvertersMode' }),
+                        intl.formatMessage({ id: 'ConverterStationId1' }),
+                        intl.formatMessage({ id: 'ConverterStationId2' }),
+                        intl.formatMessage({ id: 'R' }),
+                        intl.formatMessage({ id: 'NominalV' }),
+                        intl.formatMessage({ id: 'ActivePowerSetpoint' }),
+                        intl.formatMessage({ id: 'MaxP' }),
+                    ];
+                    return list;
+                case 11:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelId' }),
+                        intl.formatMessage({ id: 'HvdcLineId' }),
+                        intl.formatMessage({ id: 'ActivePower' }),
+                        intl.formatMessage({ id: 'ReactivePower' }),
+                        intl.formatMessage({ id: 'PowerFactor' }),
+                        intl.formatMessage({ id: 'LossFactor' }),
+                    ];
+                    return list;
+                case 12:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelId' }),
+                        intl.formatMessage({ id: 'HvdcLineId' }),
+                        intl.formatMessage({ id: 'ActivePower' }),
+                        intl.formatMessage({ id: 'ReactivePower' }),
+                        intl.formatMessage({ id: 'LossFactor' }),
+                    ];
+                    return list;
+                case 13:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'VoltageLevelId' }),
+                        intl.formatMessage({ id: 'UcteXnodeCode' }),
+                        intl.formatMessage({ id: 'ActivePower' }),
+                        intl.formatMessage({ id: 'ReactivePower' }),
+                        intl.formatMessage({ id: 'ConstantActivePower' }),
+                        intl.formatMessage({ id: 'ConstantReactivePower' }),
+                    ];
+                    return list;
+                default:
+                    list = [
+                        intl.formatMessage({ id: 'ID' }),
+                        intl.formatMessage({ id: 'Name' }),
+                        intl.formatMessage({ id: 'Country' }),
+                    ];
+                    return list;
+            }
+        }
+    };
     return (
         props.network && (
             <>
                 <Grid container justify={'space-between'}>
                     <Grid container justify={'space-between'} item>
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            variant="scrollable"
-                            scrollButtons="auto"
-                            onChange={(event, newValue) =>
-                                setTabIndex(newValue)
-                            }
-                            aria-label="tables"
-                        >
-                            {TABLE_NAMES.map((tableName) => (
-                                <Tab
-                                    key={tableName}
-                                    label={intl.formatMessage({
-                                        id: tableName,
-                                    })}
+                        <Grid container justify={'space-between'}>
+                            <Grid container justify={'space-between'} item>
+                                <Tabs
+                                    value={tabIndex}
+                                    indicatorColor="primary"
+                                    variant="scrollable"
+                                    scrollButtons="auto"
+                                    onChange={(event, newValue) =>
+                                        setTabIndex(newValue)
+                                    }
+                                    aria-label="tables"
+                                    onClick={() =>
+                                        onClickCallFunction(tabIndex)
+                                    }
+                                >
+                                    {TABLE_NAMES.map((tableName) => (
+                                        <Tab
+                                            key={tableName}
+                                            label={intl.formatMessage({
+                                                id: tableName,
+                                            })}
+                                        />
+                                    ))}
+                                </Tabs>
+                            </Grid>
+                            <Grid container>
+                                <span style={{ marginTop: '15px' }}>
+                                    <FormattedMessage id="LabelSelectList" />
+                                </span>
+                                <IconButton
+                                    aria-label="dialog"
+                                    onClick={handleOpenPopupSelectList}
+                                >
+                                    <ViewListIcon />
+                                </IconButton>
+                                <SelectColumnsNames
+                                    open={popupSelectListName}
+                                    onClose={handleClosePopupSelectList}
+                                    onClick={handleSaveSelectedList}
+                                    title={
+                                        <FormattedMessage id="ColumnsList" />
+                                    }
+                                    child={checkListColumnsNames()}
                                 />
-                            ))}
-                        </Tabs>
-                    </Grid>
-                    <Grid
-                        item
-                        alignContent={'flex-end'}
-                        className={classes.containerInputSearch}
-                    >
-                        <TextField
-                            className={classes.textField}
-                            size="small"
-                            placeholder={
-                                intl.formatMessage({ id: 'filter' }) + '...'
-                            }
-                            onChange={setFilter}
-                            variant="outlined"
-                            classes={classes.searchSection}
-                            fullWidth
-                            InputProps={{
-                                classes: {
-                                    input: classes.searchSection,
-                                },
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                            </Grid>
+                            <Grid
+                                item
+                                alignContent={'flex-end'}
+                                className={classes.searchSection}
+                            >
+                                <TextField
+                                    className={classes.textField}
+                                    size="medium"
+                                    placeholder={
+                                        intl.formatMessage({ id: 'filter' }) +
+                                        '...'
+                                    }
+                                    onChange={setFilter}
+                                    variant="standard"
+                                    classes={classes.searchSection}
+                                    fullWidth
+                                    InputProps={{
+                                        classes: {
+                                            input: classes.searchSection,
+                                        },
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                                ))}
+                            </Grid>
+                            <Grid
+                                item
+                                alignContent={'flex-end'}
+                                className={classes.containerInputSearch}
+                            >
+                                <TextField
+                                    className={classes.textField}
+                                    size="small"
+                                    placeholder={
+                                        intl.formatMessage({ id: 'filter' }) +
+                                        '...'
+                                    }
+                                    onChange={setFilter}
+                                    variant="outlined"
+                                    classes={classes.searchSection}
+                                    fullWidth
+                                    InputProps={{
+                                        classes: {
+                                            input: classes.searchSection,
+                                        },
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <SearchIcon />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                        <div className={classes.table} style={{ flexGrow: 1 }}>
+                            {/*This render is fast, rerender full dom everytime*/}
+                            {tabIndex === 0 && renderSubstationsTable()}
+                            {tabIndex === 1 && renderVoltageLevelsTable()}
+                            {tabIndex === 2 && renderLinesTable()}
+                            {tabIndex === 3 &&
+                                renderTwoWindingsTransformersTable()}
+                            {tabIndex === 4 &&
+                                renderThreeWindingsTransformersTable()}
+                            {tabIndex === 5 && renderGeneratorsTable()}
+                            {tabIndex === 6 && renderLoadsTable()}
+                            {tabIndex === 7 && renderShuntCompensatorsTable()}
+                            {tabIndex === 8 &&
+                                renderStaticVarCompensatorsTable()}
+                            {tabIndex === 9 && renderBatteriesTable()}
+                            {tabIndex === 10 && renderHvdcLinesTable()}
+                            {tabIndex === 11 &&
+                                renderLccConverterStationsTable()}
+                            {tabIndex === 12 &&
+                                renderVscConverterStationsTable()}
+                            {tabIndex === 13 && renderDanglingLinesTable()}
+                        </div>
                     </Grid>
                 </Grid>
-                <div className={classes.table} style={{ flexGrow: 1 }}>
-                    {/*This render is fast, rerender full dom everytime*/}
-                    {tabIndex === 0 && renderSubstationsTable()}
-                    {tabIndex === 1 && renderVoltageLevelsTable()}
-                    {tabIndex === 2 && renderLinesTable()}
-                    {tabIndex === 3 && renderTwoWindingsTransformersTable()}
-                    {tabIndex === 4 && renderThreeWindingsTransformersTable()}
-                    {tabIndex === 5 && renderGeneratorsTable()}
-                    {tabIndex === 6 && renderLoadsTable()}
-                    {tabIndex === 7 && renderShuntCompensatorsTable()}
-                    {tabIndex === 8 && renderStaticVarCompensatorsTable()}
-                    {tabIndex === 9 && renderBatteriesTable()}
-                    {tabIndex === 10 && renderHvdcLinesTable()}
-                    {tabIndex === 11 && renderLccConverterStationsTable()}
-                    {tabIndex === 12 && renderVscConverterStationsTable()}
-                    {tabIndex === 13 && renderDanglingLinesTable()}
-                </div>
             </>
         )
     );

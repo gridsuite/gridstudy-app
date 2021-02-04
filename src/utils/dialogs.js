@@ -97,6 +97,7 @@ const RenameDialog = ({
     message,
     currentName,
     error,
+    child,
 }) => {
     const [newNameValue, setNewNameValue] = React.useState(currentName);
 
@@ -149,6 +150,7 @@ const RenameDialog = ({
                 <br />
                 <br />
                 {error !== '' && <Alert severity="error">{error}</Alert>}
+                {child}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} variant="text">
@@ -301,4 +303,34 @@ ExportDialog.propTypes = {
     title: PropTypes.string.isRequired,
 };
 
-export { DeleteDialog, RenameDialog, ExportDialog };
+const SelectColumnsNames = ({ open, onClose, onClick, title, child }) => {
+    const handleClose = () => {
+        onClose();
+    };
+
+    return (
+        <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent style={{ padding: '8px 32px 8px 15px' }}>
+                {child}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose} variant="text">
+                    <FormattedMessage id="cancel" />
+                </Button>
+                <Button onClick={onClick} variant="outlined">
+                    <FormattedMessage id="save" />
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+RenameDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+};
+
+export { DeleteDialog, RenameDialog, ExportDialog, SelectColumnsNames };

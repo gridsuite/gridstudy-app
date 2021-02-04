@@ -33,6 +33,7 @@ const CheckboxList = (props) => {
 
     return (
         <List>
+            {props.values}
             {props.values.map((value) => {
                 return (
                     <ListItem
