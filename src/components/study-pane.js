@@ -85,9 +85,13 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 const drawerWidth = 300;
 
 const useStyles = makeStyles((theme) => ({
-    main: {
+    map: {
         display: 'flex',
         flexDirection: 'row',
+    },
+    table: {
+        display: 'flex',
+        flexDirection: 'column',
     },
     error: {
         padding: theme.spacing(2),
@@ -882,7 +886,7 @@ const StudyPane = (props) => {
         }
 
         return (
-            <div className={clsx('relative singlestretch-child', classes.main)}>
+            <div className={clsx('relative singlestretch-child', classes.map)}>
                 <div
                     className={
                         drawerOpen
@@ -1059,7 +1063,7 @@ const StudyPane = (props) => {
 
     function renderTableView() {
         return (
-            <Paper className={clsx('singlestretch-child', classes.main)}>
+            <Paper className={clsx('singlestretch-child', classes.table)}>
                 <NetworkTable
                     network={network}
                     studyName={studyName}
@@ -1071,7 +1075,7 @@ const StudyPane = (props) => {
 
     function renderResultsView() {
         return (
-            <div className="singlestretch-parent singlestretch-child">
+            <div className={clsx('singlestretch-child', classes.table)}>
                 <Tabs
                     value={tabIndex}
                     indicatorColor="primary"
@@ -1096,7 +1100,13 @@ const StudyPane = (props) => {
 
     function renderSecurityAnalysisResult() {
         return (
-            <Paper className={clsx('singlestretch-child', classes.main)}>
+            <Paper
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flexGrow: 1,
+                }}
+            >
                 <SecurityAnalysisResult
                     result={securityAnalysisResult}
                     onClickNmKConstraint={onClickNmKConstraint}
@@ -1107,7 +1117,7 @@ const StudyPane = (props) => {
 
     function renderLoadFlowResult() {
         return (
-            <Paper className={classes.main}>
+            <Paper style={{ flexGrow: 1 }} className={classes.table}>
                 <LoadFlowResult result={loadFlowResult} />
             </Paper>
         );
