@@ -66,12 +66,18 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: maxHeightVoltageLevel,
         overflowX: 'hidden',
         overflowY: 'hidden',
+        '& polyline': {
+            pointerEvents: 'none',
+        },
     },
     divSubstation: {
         maxWidth: maxWidthSubstation,
         maxHeight: maxHeightSubstation,
         overflowX: 'hidden',
         overflowY: 'hidden',
+        '& polyline': {
+            pointerEvents: 'none',
+        },
     },
     diagram: {
         '& .component-label': {
