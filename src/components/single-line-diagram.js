@@ -132,18 +132,6 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '35px',
         zIndex: '3',
     },
-    /*arrow:{
-        zIndex:'30'
-    },
-    arrow_hover:{
-        zIndex:'30'
-    },*/
-    wire: {
-        pointerEvents: 'none',
-    },
-    polyline: {
-        pointerEvents: 'none',
-    },
 }));
 
 const SvgNotFound = (props) => {
