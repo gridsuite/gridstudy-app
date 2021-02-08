@@ -23,7 +23,7 @@ import { requestNetworkChange } from '../../utils/rest-api';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 
-import ViewListIcon from '@material-ui/icons/ViewList';
+import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import { FormattedMessage } from 'react-intl';
 import { SelectColumnsNames } from '../../utils/dialogs';
 import List from '@material-ui/core/List';
@@ -2235,7 +2235,7 @@ const NetworkTable = (props) => {
                                     aria-label="dialog"
                                     onClick={handleOpenPopupSelectList}
                                 >
-                                    <ViewListIcon />
+                                    <ViewColumnIcon />
                                 </IconButton>
                                 <SelectColumnsNames
                                     open={popupSelectListName}
