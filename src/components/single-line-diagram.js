@@ -487,7 +487,18 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
         } else {
         }
-    }, [svgFinalWidth, svgFinalHeight]);
+    }, [
+        svgFinalWidth,
+        svgFinalHeight,
+        //TODO, these are from the previous useLayoutEffect
+        //how to refactor to avoid repeating them here ?
+        svg,
+        onNextVoltageLevelClick,
+        onBreakerClick,
+        isComputationRunning,
+        svgType,
+        theme,
+    ]);
 
     const classes = useStyles();
 
