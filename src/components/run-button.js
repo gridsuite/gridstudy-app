@@ -152,7 +152,6 @@ const RunButton = (props) => {
 
     return (
         <SplitButton
-            fullWidth
             options={getOptions(
                 runningStatus,
                 props.runnables,
