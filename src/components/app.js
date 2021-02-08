@@ -355,8 +355,14 @@ const App = () => {
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <SnackbarProvider hideIconVariant={false}>
-                <React.Fragment>
-                    <CssBaseline />
+                <CssBaseline />
+                <div
+                    className="singlestretch-child"
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     <TopBar
                         appName="Study"
                         appColor="#0CA789"
@@ -417,48 +423,57 @@ const App = () => {
                         showParameters={showParameters}
                         hideParameters={hideParameters}
                     />
-                    {user !== null ? (
-                        <Switch>
-                            <Route exact path="/">
-                                <StudyManager
-                                    onClick={(name, userId) =>
-                                        studyClickHandler(name, userId)
-                                    }
-                                />
-                            </Route>
-                            <Route exact path="/:userId/studies/:studyName">
-                                <StudyPane
-                                    view={STUDY_VIEWS[tabIndex]}
-                                    onChangeTab={onChangeTab}
-                                />
-                            </Route>
-                            <Route exact path="/sign-in-callback">
-                                <Redirect to={getPreLoginPath() || '/'} />
-                            </Route>
-                            <Route exact path="/logout-callback">
-                                <h1>
-                                    Error: logout failed; you are still logged
-                                    in.
-                                </h1>
-                            </Route>
-                            <Route>
-                                <PageNotFound
-                                    message={
-                                        <FormattedMessage id="PageNotFound" />
-                                    }
-                                />
-                            </Route>
-                        </Switch>
-                    ) : (
-                        <AuthenticationRouter
-                            userManager={userManager}
-                            signInCallbackError={signInCallbackError}
-                            dispatch={dispatch}
-                            history={history}
-                            location={location}
-                        />
-                    )}
-                </React.Fragment>
+
+                    <div
+                        className="singlestretch-parent"
+                        style={{
+                            flexGrow: 1,
+                            overflow: 'auto',
+                        }}
+                    >
+                        {user !== null ? (
+                            <Switch>
+                                <Route exact path="/">
+                                    <StudyManager
+                                        onClick={(name, userId) =>
+                                            studyClickHandler(name, userId)
+                                        }
+                                    />
+                                </Route>
+                                <Route exact path="/:userId/studies/:studyName">
+                                    <StudyPane
+                                        view={STUDY_VIEWS[tabIndex]}
+                                        onChangeTab={onChangeTab}
+                                    />
+                                </Route>
+                                <Route exact path="/sign-in-callback">
+                                    <Redirect to={getPreLoginPath() || '/'} />
+                                </Route>
+                                <Route exact path="/logout-callback">
+                                    <h1>
+                                        Error: logout failed; you are still
+                                        logged in.
+                                    </h1>
+                                </Route>
+                                <Route>
+                                    <PageNotFound
+                                        message={
+                                            <FormattedMessage id="PageNotFound" />
+                                        }
+                                    />
+                                </Route>
+                            </Switch>
+                        ) : (
+                            <AuthenticationRouter
+                                userManager={userManager}
+                                signInCallbackError={signInCallbackError}
+                                dispatch={dispatch}
+                                history={history}
+                                location={location}
+                            />
+                        )}
+                    </div>
+                </div>
             </SnackbarProvider>
         </ThemeProvider>
     );
