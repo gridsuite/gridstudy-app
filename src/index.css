@@ -85,442 +85,219 @@ polyline {
 /* topologicalBaseVoltages.css */
 
 .sld-constant-color {
-    stroke: black;
-} /* Default color, used for unknown voltage levels */
+    stroke: lightgrey;
+}
 .sld-disconnected {
     stroke: #808080;
 }
-.sld-vl0-0 {
-    stroke: #808080;
-}
-.sld-vl0-1 {
-    stroke: #404040;
-}
-.sld-vl0-2 {
-    stroke: #d8d8d8;
-}
-.sld-vl0-3 {
-    stroke: #4c4c4c;
-}
-.sld-vl0-4 {
-    stroke: #c2c2c2;
-}
-.sld-vl0-5 {
-    stroke: #595959;
-}
-.sld-vl0-6 {
-    stroke: #acacac;
-}
-.sld-vl0-7 {
-    stroke: #666666;
-}
-.sld-vl0-8 {
-    stroke: #969696;
-}
-.sld-vl0-9 {
-    stroke: #737373;
-}
-
-.sld-vl400-0 {
+.sld-vl300to500-0 {
     stroke: #ff0000;
 }
-.sld-vl400-1 {
+.sld-vl300to500-1 {
     stroke: #7f6c00;
 }
-.sld-vl400-2 {
+.sld-vl300to500-2 {
     stroke: #f6b2ff;
 }
-.sld-vl400-3 {
+.sld-vl300to500-3 {
     stroke: #996700;
 }
-.sld-vl400-4 {
+.sld-vl300to500-4 {
     stroke: #ff85eb;
 }
-.sld-vl400-5 {
+.sld-vl300to500-5 {
     stroke: #b25b00;
 }
-.sld-vl400-6 {
+.sld-vl300to500-6 {
     stroke: #ff59b5;
 }
-.sld-vl400-7 {
+.sld-vl300to500-7 {
     stroke: #cc4400;
 }
-.sld-vl400-8 {
+.sld-vl300to500-8 {
     stroke: #ff2c67;
 }
-.sld-vl400-9 {
+.sld-vl300to500-9 {
     stroke: #e52600;
 }
-
-.sld-vl380-0 {
-    stroke: #ff0000;
-}
-.sld-vl380-1 {
-    stroke: #7f6c00;
-}
-.sld-vl380-2 {
-    stroke: #f6b2ff;
-}
-.sld-vl380-3 {
-    stroke: #996700;
-}
-.sld-vl380-4 {
-    stroke: #ff85eb;
-}
-.sld-vl380-5 {
-    stroke: #b25b00;
-}
-.sld-vl380-6 {
-    stroke: #ff59b5;
-}
-.sld-vl380-7 {
-    stroke: #cc4400;
-}
-.sld-vl380-8 {
-    stroke: #ff2c67;
-}
-.sld-vl380-9 {
-    stroke: #e52600;
-}
-
-.sld-vl225-0 {
+.sld-vl180to300-0 {
     stroke: #218b21;
 }
-.sld-vl225-1 {
+.sld-vl180to300-1 {
     stroke: #0d4940;
 }
-.sld-vl225-2 {
+.sld-vl180to300-2 {
     stroke: #dfdab9;
 }
-.sld-vl225-3 {
+.sld-vl180to300-3 {
     stroke: #105640;
 }
-.sld-vl225-4 {
+.sld-vl180to300-4 {
     stroke: #c2cb92;
 }
-.sld-vl225-5 {
+.sld-vl180to300-5 {
     stroke: #14643c;
 }
-.sld-vl225-6 {
+.sld-vl180to300-6 {
     stroke: #95b66b;
 }
-.sld-vl225-7 {
+.sld-vl180to300-7 {
     stroke: #187036;
 }
-.sld-vl225-8 {
+.sld-vl180to300-8 {
     stroke: #5fa046;
 }
-.sld-vl225-9 {
+.sld-vl180to300-9 {
     stroke: #1c7e2d;
 }
-
-.sld-vl220-0 {
-    stroke: #218b21;
-}
-.sld-vl220-1 {
-    stroke: #0d4940;
-}
-.sld-vl220-2 {
-    stroke: #dfdab9;
-}
-.sld-vl220-3 {
-    stroke: #105640;
-}
-.sld-vl220-4 {
-    stroke: #c2cb92;
-}
-.sld-vl220-5 {
-    stroke: #14643c;
-}
-.sld-vl220-6 {
-    stroke: #95b66b;
-}
-.sld-vl220-7 {
-    stroke: #187036;
-}
-.sld-vl220-8 {
-    stroke: #5fa046;
-}
-.sld-vl220-9 {
-    stroke: #1c7e2d;
-}
-
-.sld-vl150-0 {
+.sld-vl120to180-0 {
     stroke: #00afae;
 }
-.sld-vl150-1 {
+.sld-vl120to180-1 {
     stroke: #000d58;
 }
-.sld-vl150-2 {
+.sld-vl120to180-2 {
     stroke: #b8e7b2;
 }
-.sld-vl150-3 {
+.sld-vl120to180-3 {
     stroke: #002169;
 }
-.sld-vl150-4 {
+.sld-vl120to180-4 {
     stroke: #85d993;
 }
-.sld-vl150-5 {
+.sld-vl120to180-5 {
     stroke: #003c7b;
 }
-.sld-vl150-6 {
+.sld-vl120to180-6 {
     stroke: #59cb8b;
 }
-.sld-vl150-7 {
+.sld-vl120to180-7 {
     stroke: #005c8c;
 }
-.sld-vl150-8 {
+.sld-vl120to180-8 {
     stroke: #2cbd94;
 }
-.sld-vl150-9 {
+.sld-vl120to180-9 {
     stroke: #00839e;
 }
-
-.sld-vl110-0 {
+.sld-vl70to120-0 {
     stroke: #cc5500;
 }
-.sld-vl110-1 {
+.sld-vl70to120-1 {
     stroke: #4a6600;
 }
-.sld-vl110-2 {
+.sld-vl70to120-2 {
     stroke: #efb2dd;
 }
-.sld-vl110-3 {
+.sld-vl70to120-3 {
     stroke: #6e7a00;
 }
-.sld-vl110-4 {
+.sld-vl70to120-4 {
     stroke: #e685ae;
 }
-.sld-vl110-5 {
+.sld-vl70to120-5 {
     stroke: #8e8400;
 }
-.sld-vl110-6 {
+.sld-vl70to120-6 {
     stroke: #dd596b;
 }
-.sld-vl110-7 {
+.sld-vl70to120-7 {
     stroke: #a37b00;
 }
-.sld-vl110-8 {
+.sld-vl70to120-8 {
     stroke: #d4432c;
 }
-.sld-vl110-9 {
+.sld-vl70to120-9 {
     stroke: #b76b00;
 }
-
-.sld-vl90-0 {
-    stroke: #cc5500;
-}
-.sld-vl90-1 {
-    stroke: #4a6600;
-}
-.sld-vl90-2 {
-    stroke: #efb2dd;
-}
-.sld-vl90-3 {
-    stroke: #6e7a00;
-}
-.sld-vl90-4 {
-    stroke: #e685ae;
-}
-.sld-vl90-5 {
-    stroke: #8e8400;
-}
-.sld-vl90-6 {
-    stroke: #dd596b;
-}
-.sld-vl90-7 {
-    stroke: #a37b00;
-}
-.sld-vl90-8 {
-    stroke: #d4432c;
-}
-.sld-vl90-9 {
-    stroke: #b76b00;
-}
-
-.sld-vl63-0 {
+.sld-vl50to70-0 {
     stroke: #a020ef;
 }
-.sld-vl63-1 {
+.sld-vl50to70-1 {
     stroke: #7f0848;
 }
-.sld-vl63-2 {
+.sld-vl50to70-2 {
     stroke: #b7dbfe;
 }
-.sld-vl63-3 {
+.sld-vl50to70-3 {
     stroke: #960c6d;
 }
-.sld-vl63-4 {
+.sld-vl50to70-4 {
     stroke: #8da6fe;
 }
-.sld-vl63-5 {
+.sld-vl50to70-5 {
     stroke: #ad109a;
 }
-.sld-vl63-6 {
+.sld-vl50to70-6 {
     stroke: #6f66fb;
 }
-.sld-vl63-7 {
+.sld-vl50to70-7 {
     stroke: #bc14c4;
 }
-.sld-vl63-8 {
+.sld-vl50to70-8 {
     stroke: #7f42f6;
 }
-.sld-vl63-9 {
+.sld-vl50to70-9 {
     stroke: #b11ad9;
 }
-
-.sld-vl45-0 {
+.sld-vl30to50-0 {
     stroke: #ff8290;
 }
-.sld-vl45-1 {
+.sld-vl30to50-1 {
     stroke: #7f6f41;
 }
-.sld-vl45-2 {
+.sld-vl30to50-2 {
     stroke: #f6d9ff;
 }
-.sld-vl45-3 {
+.sld-vl30to50-3 {
     stroke: #99784e;
 }
-.sld-vl45-4 {
+.sld-vl30to50-4 {
     stroke: #ffc3fb;
 }
-.sld-vl45-5 {
+.sld-vl30to50-5 {
     stroke: #b27d5b;
 }
-.sld-vl45-6 {
+.sld-vl30to50-6 {
     stroke: #ffade3;
 }
-.sld-vl45-7 {
+.sld-vl30to50-7 {
     stroke: #cc7e68;
 }
-.sld-vl45-8 {
+.sld-vl30to50-8 {
     stroke: #ff97bf;
 }
-.sld-vl45-9 {
+.sld-vl30to50-9 {
     stroke: #e57b75;
 }
-
-.sld-vl21-0 {
+.sld-vl0to30-0 {
     stroke: #aaae27;
 }
-.sld-vl21-1 {
+.sld-vl0to30-1 {
     stroke: #195b0f;
 }
-.sld-vl21-2 {
+.sld-vl0to30-2 {
     stroke: #eababe;
 }
-.sld-vl21-3 {
+.sld-vl0to30-3 {
     stroke: #2d6c13;
 }
-.sld-vl21-4 {
+.sld-vl0to30-4 {
     stroke: #dda193;
 }
-.sld-vl21-5 {
+.sld-vl0to30-5 {
     stroke: #477d17;
 }
-.sld-vl21-6 {
+.sld-vl0to30-6 {
     stroke: #ce9a6e;
 }
-.sld-vl21-7 {
+.sld-vl0to30-7 {
     stroke: #648d1c;
 }
-.sld-vl21-8 {
+.sld-vl0to30-8 {
     stroke: #bea04a;
 }
-.sld-vl21-9 {
-    stroke: #869d22;
-}
-
-.sld-vl20-0 {
-    stroke: #aaae27;
-}
-.sld-vl20-1 {
-    stroke: #195b0f;
-}
-.sld-vl20-2 {
-    stroke: #eababe;
-}
-.sld-vl20-3 {
-    stroke: #2d6c13;
-}
-.sld-vl20-4 {
-    stroke: #dda193;
-}
-.sld-vl20-5 {
-    stroke: #477d17;
-}
-.sld-vl20-6 {
-    stroke: #ce9a6e;
-}
-.sld-vl20-7 {
-    stroke: #648d1c;
-}
-.sld-vl20-8 {
-    stroke: #bea04a;
-}
-.sld-vl20-9 {
-    stroke: #869d22;
-}
-
-.sld-vl16-0 {
-    stroke: #aaae27;
-}
-.sld-vl16-1 {
-    stroke: #195b0f;
-}
-.sld-vl16-2 {
-    stroke: #eababe;
-}
-.sld-vl16-3 {
-    stroke: #2d6c13;
-}
-.sld-vl16-4 {
-    stroke: #dda193;
-}
-.sld-vl16-5 {
-    stroke: #477d17;
-}
-.sld-vl16-6 {
-    stroke: #ce9a6e;
-}
-.sld-vl16-7 {
-    stroke: #648d1c;
-}
-.sld-vl16-8 {
-    stroke: #bea04a;
-}
-.sld-vl16-9 {
-    stroke: #869d22;
-}
-
-.sld-vl11-0 {
-    stroke: #aaae27;
-}
-.sld-vl11-1 {
-    stroke: #195b0f;
-}
-.sld-vl11-2 {
-    stroke: #eababe;
-}
-.sld-vl11-3 {
-    stroke: #2d6c13;
-}
-.sld-vl11-4 {
-    stroke: #dda193;
-}
-.sld-vl11-5 {
-    stroke: #477d17;
-}
-.sld-vl11-6 {
-    stroke: #ce9a6e;
-}
-.sld-vl11-7 {
-    stroke: #648d1c;
-}
-.sld-vl11-8 {
-    stroke: #bea04a;
-}
-.sld-vl11-9 {
+.sld-vl0to30-9 {
     stroke: #869d22;
 }
 
