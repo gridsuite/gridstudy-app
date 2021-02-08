@@ -71,6 +71,9 @@ const useStyles = makeStyles((theme) => ({
             // scrollbar appear in fullscreen mode)
             display: 'block',
         },
+        '& polyline': {
+            pointerEvents: 'none',
+        },
         '& .component-label': {
             fill: theme.palette.text.primary,
             'font-size': 12,
