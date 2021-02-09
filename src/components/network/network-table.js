@@ -1317,66 +1317,67 @@ const NetworkTable = (props) => {
                 <div className={classes.table} style={{ flexGrow: 1 }}>
                     {/*This render is fast, rerender full dom everytime*/}
                     {TabHolder(
-                            0,
-                            props.network.substations,
-                            renderSubstationsTable
+                        0,
+                        props.network.substations,
+                        renderSubstationsTable
                     )}
-                        {TabHolder(
-                            1,
-                            props.network.substations,
-                            renderVoltageLevelsTable
-                    )}
-                        {TabHolder(2, props.network.lines, renderLinesTable)}
                     {TabHolder(
-                            3,
-                            props.network.twoWindingsTransformers,
-                            renderTwoWindingsTransformersTable
+                        1,
+                        props.network.substations,
+                        renderVoltageLevelsTable
                     )}
-                        {TabHolder(
-                            4,
-                            props.network.threeWindingsTransformers, renderThreeWindingsTransformersTable
-                    )}
-                        {TabHolder(
-                            5,
-                            props.network.generators,
-                            renderGeneratorsTable
-                    )}
-                        {TabHolder(6, props.network.loads, renderLoadsTable)}
+                    {TabHolder(2, props.network.lines, renderLinesTable)}
                     {TabHolder(
-                            7,
-                            props.network.shuntCompensators,
-                            renderShuntCompensatorsTable
+                        3,
+                        props.network.twoWindingsTransformers,
+                        renderTwoWindingsTransformersTable
                     )}
-                        {TabHolder(
-                            8,
-                            props.network.staticVarCompensators,
-                            renderStaticVarCompensatorsTable
+                    {TabHolder(
+                        4,
+                        props.network.threeWindingsTransformers,
+                        renderThreeWindingsTransformersTable
                     )}
-                        {TabHolder(
-                            9,
-                            props.network.batteries,
-                            renderBatteriesTable
+                    {TabHolder(
+                        5,
+                        props.network.generators,
+                        renderGeneratorsTable
                     )}
-                        {TabHolder(
-                            10,
-                            props.network.hvdcLines,
-                            renderHvdcLinesTable
+                    {TabHolder(6, props.network.loads, renderLoadsTable)}
+                    {TabHolder(
+                        7,
+                        props.network.shuntCompensators,
+                        renderShuntCompensatorsTable
                     )}
-                        {TabHolder(
-                            11,
-                            props.network.lccConverterStations,
-                            renderLccConverterStationsTable
+                    {TabHolder(
+                        8,
+                        props.network.staticVarCompensators,
+                        renderStaticVarCompensatorsTable
                     )}
-                        {TabHolder(
-                            12,
-                            props.network.vscConverterStations,
-                            renderVscConverterStationsTable
+                    {TabHolder(
+                        9,
+                        props.network.batteries,
+                        renderBatteriesTable
                     )}
-                        {TabHolder(
-                            13,
-                            props.network.danglingLines,
-                            renderDanglingLinesTable
-                        )}
+                    {TabHolder(
+                        10,
+                        props.network.hvdcLines,
+                        renderHvdcLinesTable
+                    )}
+                    {TabHolder(
+                        11,
+                        props.network.lccConverterStations,
+                        renderLccConverterStationsTable
+                    )}
+                    {TabHolder(
+                        12,
+                        props.network.vscConverterStations,
+                        renderVscConverterStationsTable
+                    )}
+                    {TabHolder(
+                        13,
+                        props.network.danglingLines,
+                        renderDanglingLinesTable
+                    )}
                 </div>
             </>
         )

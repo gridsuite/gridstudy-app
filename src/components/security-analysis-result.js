@@ -481,15 +481,15 @@ const SecurityAnalysisResult = ({ resultFetcher, onClickNmKConstraint }) => {
                         </div>
                     )}
                 </div>
-                <div style={{ flexGrow: 1 }}>        {tabIndex === 0 &&
-                            renderTableN(
-                                resultFetcher.values.preContingencyResult
-                            )}
-                        {tabIndex === 1 &&
-                            nmkTypeResult ===
-                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
-                            renderTableNmKContingencies(
-                                resultFetcher.values.postContingencyResults
+                <div style={{ flexGrow: 1 }}>
+                    {' '}
+                    {tabIndex === 0 &&
+                        renderTableN(resultFetcher.values.preContingencyResult)}
+                    {tabIndex === 1 &&
+                        nmkTypeResult ===
+                            NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
+                        renderTableNmKContingencies(
+                            resultFetcher.values.postContingencyResults
                         )}
                     {tabIndex === 1 &&
                         nmkTypeResult ===
