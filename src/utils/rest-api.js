@@ -441,7 +441,7 @@ export function renameStudy(studyName, userId, newStudyName) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ newStudyName: newStudyName }),
-    });
+    }).then((response) => response.json());
 }
 
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
