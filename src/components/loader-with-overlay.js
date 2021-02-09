@@ -5,8 +5,10 @@ import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     overlay: {
-        width: '100%',
-        height: '100%',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
         textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
@@ -30,7 +32,6 @@ const LoaderWithOverlay = ({
     return (
         <div
             className={classes.overlay}
-            id={color}
             style={{ position: isFixed ? 'fixed' : 'absolute' }}
         >
             <CircularProgress color={color} size={loaderSize} />

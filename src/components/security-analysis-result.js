@@ -10,7 +10,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import VirtualizedTable from './util/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -442,67 +441,64 @@ const SecurityAnalysisResult = ({ resultFetcher, onClickNmKConstraint }) => {
 
     function renderTabs() {
         return (
-            <AutoSizer>
-                {({ width, height }) => (
-                    <div style={{ width: width, height: height - 48 }}>
-                        <div className={classes.container}>
-                            <div className={classes.tabs}>
-                                <Tabs
-                                    value={tabIndex}
-                                    indicatorColor="primary"
-                                    onChange={(event, newTabIndex) =>
-                                        setTabIndex(newTabIndex)
+            <>
+                <div className={classes.container}>
+                    <div className={classes.tabs}>
+                        <Tabs
+                            value={tabIndex}
+                            indicatorColor="primary"
+                            onChange={(event, newTabIndex) =>
+                                setTabIndex(newTabIndex)
+                            }
+                        >
+                            <Tab label="N" />
+                            <Tab label="N-K" />
+                        </Tabs>
+                    </div>
+
+                    {tabIndex === 1 && (
+                        <div className={classes.nmkResultSelect}>
+                            <Select
+                                labelId="nmk-type-result-label"
+                                value={nmkTypeResult}
+                                onChange={switchNmkTypeResult}
+                            >
+                                <MenuItem
+                                    value={
+                                        NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
                                     }
                                 >
-                                    <Tab label="N" />
-                                    <Tab label="N-K" />
-                                </Tabs>
-                            </div>
-
-                            {tabIndex === 1 && (
-                                <div className={classes.nmkResultSelect}>
-                                    <Select
-                                        labelId="nmk-type-result-label"
-                                        value={nmkTypeResult}
-                                        onChange={switchNmkTypeResult}
-                                    >
-                                        <MenuItem
-                                            value={
-                                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
-                                            }
-                                        >
-                                            <FormattedMessage id="ConstraintsFromContingencies" />
-                                        </MenuItem>
-                                        <MenuItem
-                                            value={
-                                                NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
-                                            }
-                                        >
-                                            <FormattedMessage id="ContingenciesFromConstraints" />
-                                        </MenuItem>
-                                    </Select>
-                                </div>
-                            )}
+                                    <FormattedMessage id="ConstraintsFromContingencies" />
+                                </MenuItem>
+                                <MenuItem
+                                    value={
+                                        NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
+                                    }
+                                >
+                                    <FormattedMessage id="ContingenciesFromConstraints" />
+                                </MenuItem>
+                            </Select>
                         </div>
-                        {tabIndex === 0 &&
-                            renderTableN(
-                                resultFetcher.values.preContingencyResult
-                            )}
-                        {tabIndex === 1 &&
-                            nmkTypeResult ===
-                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
-                            renderTableNmKContingencies(
-                                resultFetcher.values.postContingencyResults
-                            )}
-                        {tabIndex === 1 &&
-                            nmkTypeResult ===
-                                NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
-                            renderTableNmKConstraints(
-                                resultFetcher.values.postContingencyResults
-                            )}
-                    </div>
-                )}
-            </AutoSizer>
+                    )}
+                </div>
+                <div style={{ flexGrow: 1 }}>
+                    {' '}
+                    {tabIndex === 0 &&
+                        renderTableN(resultFetcher.values.preContingencyResult)}
+                    {tabIndex === 1 &&
+                        nmkTypeResult ===
+                            NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
+                        renderTableNmKContingencies(
+                            resultFetcher.values.postContingencyResults
+                        )}
+                    {tabIndex === 1 &&
+                        nmkTypeResult ===
+                            NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
+                        renderTableNmKConstraints(
+                            resultFetcher.values.postContingencyResults
+                        )}
+                </div>
+            </>
         );
     }
 
