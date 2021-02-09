@@ -222,8 +222,8 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
             .then(() => {
                 setOpenRename(false);
             })
-            .catch(() =>
-                setRenameError(intl.formatMessage({ id: 'renameStudyError' }))
+            .catch((e) =>
+                setRenameError(e.message || e)
             );
     };
 
