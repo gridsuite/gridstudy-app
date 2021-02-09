@@ -542,6 +542,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 pointerEvents: 'auto',
                 width: sizeWidth,
                 height: sizeHeight,
+                position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
             }}
         >
             <Box>
