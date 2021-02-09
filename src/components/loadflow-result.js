@@ -18,14 +18,8 @@ import { green, red } from '@material-ui/core/colors';
 
 const LoadFlowResult = ({ result }) => {
     const useStyles = makeStyles((theme) => ({
-        table: {
-            height: '100%',
-        },
         tablePaper: {
-            display: 'inline-block',
-            float: 'right',
-            width: '100%',
-            height: '100%',
+            flexGrow: 1,
         },
         cell: {
             display: 'flex',
@@ -78,7 +72,6 @@ const LoadFlowResult = ({ result }) => {
             <>
                 <Paper className={classes.tablePaper}>
                     <VirtualizedTable
-                        className={classes.table}
                         rowCount={result.componentResults.length}
                         rowGetter={({ index }) =>
                             result.componentResults[index]

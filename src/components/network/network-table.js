@@ -12,7 +12,6 @@ import VirtualizedTable from '../util/virtualized-table';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { useIntl } from 'react-intl';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import TableCell from '@material-ui/core/TableCell';
@@ -254,7 +253,6 @@ const NetworkTable = (props) => {
                     props.network.substations.get()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1265,126 +1263,122 @@ const NetworkTable = (props) => {
 
     return (
         props.network && (
-            <AutoSizer>
-                {({ width, height }) => (
-                    <div style={{ width: width, height: height - 48 }}>
-                        <Grid container justify={'space-between'}>
-                            <Grid container justify={'space-between'} item>
-                                <Tabs
-                                    value={tabIndex}
-                                    indicatorColor="primary"
-                                    variant="scrollable"
-                                    scrollButtons="auto"
-                                    onChange={(event, newValue) =>
-                                        setTabIndex(newValue)
-                                    }
-                                    aria-label="tables"
-                                >
-                                    {TABLE_NAMES.map((tableName) => (
-                                        <Tab
-                                            key={tableName}
-                                            label={intl.formatMessage({
-                                                id: tableName,
-                                            })}
-                                        />
-                                    ))}
-                                </Tabs>
-                            </Grid>
-                            <Grid
-                                item
-                                alignContent={'flex-end'}
-                                className={classes.containerInputSearch}
-                            >
-                                <TextField
-                                    className={classes.textField}
-                                    size="small"
-                                    placeholder={
-                                        intl.formatMessage({ id: 'filter' }) +
-                                        '...'
-                                    }
-                                    onChange={setFilter}
-                                    variant="outlined"
-                                    classes={classes.searchSection}
-                                    fullWidth
-                                    InputProps={{
-                                        classes: {
-                                            input: classes.searchSection,
-                                        },
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
+            <>
+                <Grid container justify={'space-between'}>
+                    <Grid container justify={'space-between'} item>
+                        <Tabs
+                            value={tabIndex}
+                            indicatorColor="primary"
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            onChange={(event, newValue) =>
+                                setTabIndex(newValue)
+                            }
+                            aria-label="tables"
+                        >
+                            {TABLE_NAMES.map((tableName) => (
+                                <Tab
+                                    key={tableName}
+                                    label={intl.formatMessage({
+                                        id: tableName,
+                                    })}
                                 />
-                            </Grid>
-                        </Grid>
-                        {/*This render is fast, rerender full dom everytime*/}
-                        {TabHolder(
+                            ))}
+                        </Tabs>
+                    </Grid>
+                    <Grid
+                        item
+                        alignContent={'flex-end'}
+                        className={classes.containerInputSearch}
+                    >
+                        <TextField
+                            className={classes.textField}
+                            size="small"
+                            placeholder={
+                                intl.formatMessage({ id: 'filter' }) + '...'
+                            }
+                            onChange={setFilter}
+                            variant="outlined"
+                            classes={classes.searchSection}
+                            fullWidth
+                            InputProps={{
+                                classes: {
+                                    input: classes.searchSection,
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+                <div className={classes.table} style={{ flexGrow: 1 }}>
+                    {/*This render is fast, rerender full dom everytime*/}
+                    {TabHolder(
                             0,
                             props.network.substations,
                             renderSubstationsTable
-                        )}
+                    )}
                         {TabHolder(
                             1,
                             props.network.substations,
                             renderVoltageLevelsTable
-                        )}
+                    )}
                         {TabHolder(2, props.network.lines, renderLinesTable)}
-                        {TabHolder(
+                    {TabHolder(
                             3,
                             props.network.twoWindingsTransformers,
                             renderTwoWindingsTransformersTable
-                        )}
+                    )}
                         {TabHolder(
                             4,
-                            props.network.threeWindingsTransformers,
-                            renderThreeWindingsTransformersTable
-                        )}
+                            props.network.threeWindingsTransformers, renderThreeWindingsTransformersTable
+                    )}
                         {TabHolder(
                             5,
                             props.network.generators,
                             renderGeneratorsTable
-                        )}
+                    )}
                         {TabHolder(6, props.network.loads, renderLoadsTable)}
-                        {TabHolder(
+                    {TabHolder(
                             7,
                             props.network.shuntCompensators,
                             renderShuntCompensatorsTable
-                        )}
+                    )}
                         {TabHolder(
                             8,
                             props.network.staticVarCompensators,
                             renderStaticVarCompensatorsTable
-                        )}
+                    )}
                         {TabHolder(
                             9,
                             props.network.batteries,
                             renderBatteriesTable
-                        )}
+                    )}
                         {TabHolder(
                             10,
                             props.network.hvdcLines,
                             renderHvdcLinesTable
-                        )}
+                    )}
                         {TabHolder(
                             11,
                             props.network.lccConverterStations,
                             renderLccConverterStationsTable
-                        )}
+                    )}
                         {TabHolder(
                             12,
                             props.network.vscConverterStations,
                             renderVscConverterStationsTable
-                        )}
+                    )}
                         {TabHolder(
                             13,
                             props.network.danglingLines,
                             renderDanglingLinesTable
                         )}
-                    </div>
-                )}
-            </AutoSizer>
+                </div>
+            </>
         )
     );
 };

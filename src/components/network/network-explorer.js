@@ -346,47 +346,44 @@ const NetworkExplorer = ({
     };
 
     return (
-        <AutoSizer>
-            {({ width, height }) => {
-                return (
-                    <div style={{ width: width, height: height }}>
-                        <Grid container direction="column">
-                            <Grid item>
-                                <TextField
-                                    className={classes.textField}
-                                    size="small"
-                                    placeholder={filterMsg}
-                                    onChange={filter}
-                                    variant="outlined"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                                <IconButton onClick={hideExplorer}>
-                                    <ChevronLeftIcon />
-                                </IconButton>
-                            </Grid>
-                            <Divider />
-                            <Grid item>
-                                <List
-                                    ref={listeRef}
-                                    height={height - 46}
-                                    rowHeight={cache.rowHeight}
-                                    rowRenderer={subStationRow}
-                                    rowCount={filteredVoltageLevels.length}
-                                    width={width}
-                                    subheader={<li />}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
-                );
-            }}
-        </AutoSizer>
+        <Grid container direction="column" style={{ height: '100%' }}>
+            <Grid item>
+                <TextField
+                    className={classes.textField}
+                    size="small"
+                    placeholder={filterMsg}
+                    onChange={filter}
+                    variant="outlined"
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                <IconButton onClick={hideExplorer}>
+                    <ChevronLeftIcon />
+                </IconButton>
+            </Grid>
+            <Divider />
+            <Grid item style={{ flex: '1 1 auto' }}>
+                <AutoSizer>
+                    {({ width, height }) => {
+                        return (
+                            <List
+                                height={height}
+                                rowHeight={cache.rowHeight}
+                                rowRenderer={subStationRow}
+                                rowCount={filteredVoltageLevels.length}
+                                width={width}
+                                subheader={<li />}
+                            />
+                        );
+                    }}
+                </AutoSizer>
+            </Grid>
+        </Grid>
     );
 };
 
