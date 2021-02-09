@@ -211,6 +211,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
      */
     const [openRenameDialog, setOpenRename] = React.useState(false);
     const [renameError, setRenameError] = React.useState('');
+    const dispatch = useDispatch();
 
     const handleOpenRename = () => {
         setAnchorEl(null);
@@ -225,6 +226,9 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                         intl.formatMessage({ id: 'renameStudyError' })
                     );
                 } else {
+                    fetchStudies().then((studies) => {
+                        dispatch(loadStudiesSuccess(studies));
+                    });
                     setOpenRename(false);
                 }
             }
