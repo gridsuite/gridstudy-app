@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -15,8 +15,6 @@ const PREFIX_NOTIFICATION_WS =
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
-
-const APPS_METADATA_SERVER_URL = fetch('env.json');
 
 function getToken() {
     const state = store.getState();
@@ -188,16 +186,12 @@ function getSubstationsIdsListsQueryParams(substationsIds) {
 }
 
 export function fetchSubstations(studyName, userId, substationsIds) {
-    console.info(
-        `Fetching substations of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
-    );
-    const fetchSubstationsUrl =
-        getStudyUrl(studyName, userId) +
-        '/network-map/substations' +
-        getSubstationsIdsListsQueryParams(substationsIds);
-    console.debug(fetchSubstationsUrl);
-    return backendFetch(fetchSubstationsUrl).then((response) =>
-        response.json()
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Substations',
+        'substations'
     );
 }
 
@@ -212,15 +206,7 @@ export function fetchSubstationPositions(studyName, userId) {
 }
 
 export function fetchLines(studyName, userId, substationsIds) {
-    console.info(
-        `Fetching lines of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
-    );
-    const fetchLinesUrl =
-        getStudyUrl(studyName, userId) +
-        '/network-map/lines' +
-        getSubstationsIdsListsQueryParams(substationsIds);
-    console.debug(fetchLinesUrl);
-    return backendFetch(fetchLinesUrl).then((response) => response.json());
+    return fetchEquipments(studyName, userId, substationsIds, 'Lines', 'lines');
 }
 
 export function fetchTwoWindingsTransformers(
@@ -228,16 +214,12 @@ export function fetchTwoWindingsTransformers(
     userId,
     substationsIds
 ) {
-    console.info(
-        `Fetching 2 windings transformers of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
-    );
-    const fetchTwoWindingsTransformersUrl =
-        getStudyUrl(studyName, userId) +
-        '/network-map/2-windings-transformers' +
-        getSubstationsIdsListsQueryParams(substationsIds);
-    console.debug(fetchTwoWindingsTransformersUrl);
-    return backendFetch(fetchTwoWindingsTransformersUrl).then((response) =>
-        response.json()
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Two windings transformers',
+        '2-windings-transformers'
     );
 }
 
@@ -246,43 +228,120 @@ export function fetchThreeWindingsTransformers(
     userId,
     substationsIds
 ) {
-    console.info(
-        `Fetching 3 windings transformers of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
-    );
-    const fetchThreeWindingsTransformersUrl =
-        getStudyUrl(studyName, userId) +
-        '/network-map/3-windings-transformers' +
-        getSubstationsIdsListsQueryParams(substationsIds);
-    console.debug(fetchThreeWindingsTransformersUrl);
-    return backendFetch(fetchThreeWindingsTransformersUrl).then((response) =>
-        response.json()
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Three windings transformers',
+        '3-windings-transformers'
     );
 }
 
 export function fetchGenerators(studyName, userId, substationsIds) {
-    console.info(
-        `Fetching generators of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Generators',
+        'generators'
     );
-    const fetchGeneratorsUrl =
-        getStudyUrl(studyName, userId) +
-        '/network-map/generators' +
-        getSubstationsIdsListsQueryParams(substationsIds);
-    console.debug(fetchGeneratorsUrl);
-    return backendFetch(fetchGeneratorsUrl).then((response) => response.json());
+}
+
+export function fetchLoads(studyName, userId, substationsIds) {
+    return fetchEquipments(studyName, userId, substationsIds, 'Loads', 'loads');
+}
+
+export function fetchDanglingLines(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Dangling lines',
+        'dangling-lines'
+    );
+}
+
+export function fetchBatteries(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Batteries',
+        'batteries'
+    );
+}
+
+export function fetchHvdcLines(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Hvdc lines',
+        'hvdc-lines'
+    );
+}
+
+export function fetchLccConverterStations(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'LCC converter stations',
+        'lcc-converter-stations'
+    );
+}
+
+export function fetchVscConverterStations(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'VSC converter stations',
+        'vsc-converter-stations'
+    );
+}
+
+export function fetchShuntCompensators(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Shunt compensators',
+        'shunt-compensators'
+    );
+}
+
+export function fetchStaticVarCompensators(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Static var compensators',
+        'static-var-compensators'
+    );
 }
 
 export function fetchAllEquipments(studyName, userId, substationsIds) {
+    return fetchEquipments(studyName, userId, substationsIds, 'All', 'all');
+}
+
+function fetchEquipments(
+    studyName,
+    userId,
+    substationsIds,
+    equipmentType,
+    equipmentPath
+) {
     console.info(
-        `Fetching equipments of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+        `Fetching equipments '${equipmentType}' of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
     );
-    const fetchAllEquipmentsUrl =
+    const fetchEquipmentsUrl =
         getStudyUrl(studyName, userId) +
-        '/network-map/all' +
+        '/network-map/' +
+        equipmentPath +
         getSubstationsIdsListsQueryParams(substationsIds);
-    console.debug(fetchAllEquipmentsUrl);
-    return backendFetch(fetchAllEquipmentsUrl).then((response) =>
-        response.json()
-    );
+    console.debug(fetchEquipmentsUrl);
+    return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
 export function fetchLinePositions(studyName, userId) {
@@ -572,13 +631,15 @@ export function getExportUrl(userId, studyName, exportFormat) {
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return APPS_METADATA_SERVER_URL.then((res) => res.json()).then((res) => {
-        return fetch(res.appsMetadataServerUrl + '/apps-metadata.json').then(
-            (response) => {
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return fetch(
+                res.appsMetadataServerUrl + '/apps-metadata.json'
+            ).then((response) => {
                 return response.json();
-            }
-        );
-    });
+            });
+        });
 }
 
 export function requestNetworkChange(userId, studyName, groovyScript) {

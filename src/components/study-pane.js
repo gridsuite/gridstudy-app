@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -32,6 +32,14 @@ import {
     fetchSubstations,
     fetchThreeWindingsTransformers,
     fetchTwoWindingsTransformers,
+    fetchLoads,
+    fetchDanglingLines,
+    fetchBatteries,
+    fetchHvdcLines,
+    fetchLccConverterStations,
+    fetchVscConverterStations,
+    fetchShuntCompensators,
+    fetchStaticVarCompensators,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
@@ -52,7 +60,6 @@ import Network from './network/network';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Paper from '@material-ui/core/Paper';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import PageNotFound from './page-not-found';
@@ -72,22 +79,19 @@ import LoadFlowResult from './loadflow-result';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
+import Divider from '@material-ui/core/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const drawerWidth = 300;
 
 const useStyles = makeStyles((theme) => ({
-    main: {
-        position: 'absolute',
-        width: '100%',
-        height: 'calc(100vh - 56px)',
-        [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
-            height: 'calc(100vh - 48px)',
-        },
-        [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 65px)',
-        },
+    map: {
         display: 'flex',
+        flexDirection: 'row',
+    },
+    table: {
+        display: 'flex',
+        flexDirection: 'column',
     },
     error: {
         padding: theme.spacing(2),
@@ -107,31 +111,38 @@ const useStyles = makeStyles((theme) => ({
     },
     drawer: {
         width: drawerWidth,
-        flexShrink: 0,
-    },
-    drawerPaper: {
-        position: 'relative',
-        overflow: 'hidden',
-        zIndex: 98,
-    },
-    drawerDiv: {
-        height: 'calc(100vh - 56px)',
-        pointerEvents: 'all',
-    },
-    content: {
-        flexGrow: 1,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: 0,
     },
-    contentShift: {
+    drawerPaper: {
+        position: 'static',
+        overflow: 'hidden',
+    },
+    drawerShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: drawerWidth,
+        marginLeft: -drawerWidth,
+    },
+    mapCtrlBottomLeft: {
+        '& .mapboxgl-ctrl-bottom-left': {
+            transition: theme.transitions.create('left', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            }),
+        },
+    },
+    mapCtrlBottomLeftShift: {
+        '& .mapboxgl-ctrl-bottom-left': {
+            transition: theme.transitions.create('left', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+            left: drawerWidth,
+        },
     },
 }));
 
@@ -350,6 +361,7 @@ const StudyPane = (props) => {
         updateLoadFlowResult();
         updateSecurityAnalysisResult();
         updateSecurityAnalysisStatus();
+
         const substations = fetchSubstations(studyName, userId);
         const lines = fetchLines(studyName, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
@@ -361,6 +373,23 @@ const StudyPane = (props) => {
             userId
         );
         const generators = fetchGenerators(studyName, userId);
+        const loads = fetchLoads(studyName, userId);
+        const batteries = fetchBatteries(studyName, userId);
+        const danglingLines = fetchDanglingLines(studyName, userId);
+        const hvdcLines = fetchHvdcLines(studyName, userId);
+        const lccConverterStations = fetchLccConverterStations(
+            studyName,
+            userId
+        );
+        const vscConverterStations = fetchVscConverterStations(
+            studyName,
+            userId
+        );
+        const shuntCompensators = fetchShuntCompensators(studyName, userId);
+        const staticVarCompensators = fetchStaticVarCompensators(
+            studyName,
+            userId
+        );
 
         Promise.all([
             substations,
@@ -368,6 +397,14 @@ const StudyPane = (props) => {
             twoWindingsTransformers,
             threeWindingsTransformers,
             generators,
+            loads,
+            batteries,
+            danglingLines,
+            hvdcLines,
+            lccConverterStations,
+            vscConverterStations,
+            shuntCompensators,
+            staticVarCompensators,
         ])
             .then((values) => {
                 const network = new Network();
@@ -376,6 +413,15 @@ const StudyPane = (props) => {
                 network.setTwoWindingsTransformers(values[2]);
                 network.setThreeWindingsTransformers(values[3]);
                 network.setGenerators(values[4]);
+                network.setLoads(values[5]);
+                network.setBatteries(values[6]);
+                network.setDanglingLines(values[7]);
+                network.setHvdcLines(values[8]);
+                network.setLccConverterStations(values[9]);
+                network.setVscConverterStations(values[10]);
+                network.setShuntCompensators(values[11]);
+                network.setStaticVarCompensators(values[12]);
+
                 dispatch(loadNetworkSuccess(network));
             })
             .catch(function (error) {
@@ -411,6 +457,22 @@ const StudyPane = (props) => {
                         values[0].threeWindingsTransformers
                     );
                     network.updateGenerators(values[0].generators);
+                    network.updateLoads(values[0].loads);
+                    network.updateBatteries(values[0].batteries);
+                    network.updateDanglingLines(values[0].danglingLines);
+                    network.updateLccConverterStations(
+                        values[0].lccConverterStations
+                    );
+                    network.updateVscConverterStations(
+                        values[0].vscConverterStations
+                    );
+                    network.updateHvdcLines(values[0].hvdcLines);
+                    network.updateShuntCompensators(
+                        values[0].shuntCompensators
+                    );
+                    network.updateStaticVarCompensators(
+                        values[0].staticVarCompensators
+                    );
 
                     setUpdatedLines(values[0].lines);
                 })
@@ -792,45 +854,51 @@ const StudyPane = (props) => {
                 substationLayout
             );
         }
+        const sldShowing = displayedVoltageLevelId || displayedSubstationId;
+        let openDrawerComponent = null;
+        if (!drawerOpen) {
+            if (sldShowing) {
+                openDrawerComponent = (
+                    <>
+                        <IconButton
+                            style={{ padding: 0 }}
+                            onClick={toggleDrawer}
+                        >
+                            <ChevronRightIcon />
+                        </IconButton>
+                        <Divider
+                            orientation="vertical"
+                            flexItem
+                            variant="middle"
+                        />
+                    </>
+                );
+            } else {
+                openDrawerComponent = (
+                    <IconButton
+                        style={{ alignSelf: 'flex-start' }}
+                        onClick={toggleDrawer}
+                    >
+                        <ChevronRightIcon />
+                    </IconButton>
+                );
+            }
+        }
 
         return (
-            <div className={classes.main}>
-                <Drawer
-                    variant={'persistent'}
-                    className={classes.drawer}
-                    anchor="left"
-                    style={{
-                        flexShrink: 1,
-                        overflowY: 'hidden',
-                        overflowX: 'hidden',
-                    }}
-                    open={drawerOpen}
-                    classes={{
-                        paper: classes.drawerPaper,
-                    }}
-                >
-                    <div
-                        style={{
-                            overflowY: 'none',
-                            overflowX: 'none',
-                        }}
-                        className={classes.drawerDiv}
-                    >
-                        <NetworkExplorer
-                            network={network}
-                            onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                            onSubstationDisplayClick={showSubstationDiagram}
-                            onSubstationFocus={centerSubstation}
-                            hideExplorer={toggleDrawer}
-                            visibleSubstation={visibleSubstation}
-                        />
-                    </div>
-                </Drawer>
+            <div className={clsx('relative singlestretch-child', classes.map)}>
                 <div
+                    className={
+                        drawerOpen
+                            ? classes.mapCtrlBottomLeftShift
+                            : classes.mapCtrlBottomLeft
+                    }
                     style={{
-                        position: 'relative',
-                        width: '100%',
-                        marginLeft: -drawerWidth,
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
                     }}
                 >
                     <NetworkMap
@@ -855,62 +923,9 @@ const StudyPane = (props) => {
                             chooseVoltageLevelForSubstation
                         }
                     />
-                    {!drawerOpen && (
-                        <div
-                            style={{
-                                position: 'absolute',
-                                left: '0px',
-                                zIndex: 1,
-                                flex: 1,
-                            }}
-                            className={clsx(classes.content, {
-                                [classes.contentShift]: drawerOpen,
-                            })}
-                        >
-                            <IconButton onClick={toggleDrawer}>
-                                <ChevronRightIcon />
-                            </IconButton>
-                        </div>
-                    )}
-                    {/*
-                    Rendering single line diagram only in map view and if
-                    displayed voltage level or substation id has been set
-                    */}
-                    {props.view === StudyView.MAP &&
-                        (displayedVoltageLevelId || displayedSubstationId) && (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: drawerOpen ? 0 : 55,
-                                    zIndex: 0,
-                                }}
-                                className={clsx(classes.content, {
-                                    [classes.contentShift]: drawerOpen,
-                                })}
-                            >
-                                <SingleLineDiagram
-                                    onClose={() => closeVoltageLevelDiagram()}
-                                    onNextVoltageLevelClick={
-                                        showVoltageLevelDiagram
-                                    }
-                                    onBreakerClick={handleUpdateSwitchState}
-                                    diagramTitle={sldTitle}
-                                    svgUrl={svgUrl}
-                                    ref={sldRef}
-                                    updateSwitchMsg={updateSwitchMsg}
-                                    isComputationRunning={isComputationRunning()}
-                                    svgType={
-                                        displayedVoltageLevelId
-                                            ? SvgType.VOLTAGE_LEVEL
-                                            : SvgType.SUBSTATION
-                                    }
-                                />
-                            </div>
-                        )}
                     {network && viewOverloadsTable && (
                         <div
                             style={{
-                                zIndex: 0,
                                 right: 45,
                                 top: 10,
                                 minWidth: '500px',
@@ -942,7 +957,6 @@ const StudyPane = (props) => {
                                 position: 'absolute',
                                 right: 10,
                                 bottom: 30,
-                                zIndex: 1,
                             }}
                         >
                             <NominalVoltageFilter />
@@ -956,7 +970,6 @@ const StudyPane = (props) => {
                             marginLeft: 8,
                             marginRight: 8,
                             marginTop: 8,
-                            zIndex: 0,
                         }}
                     >
                         <RunButton
@@ -968,6 +981,77 @@ const StudyPane = (props) => {
                         />
                     </div>
                 </div>
+                <Drawer
+                    variant={'persistent'}
+                    className={clsx(classes.drawer, {
+                        [classes.drawerShift]: !drawerOpen,
+                    })}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'hidden',
+                        overflowX: 'hidden',
+                    }}
+                    open={drawerOpen}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <NetworkExplorer
+                            network={network}
+                            onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+                            onSubstationDisplayClick={showSubstationDiagram}
+                            onSubstationFocus={centerSubstation}
+                            hideExplorer={toggleDrawer}
+                            visibleSubstation={visibleSubstation}
+                        />
+                    </div>
+                </Drawer>
+                {!sldShowing && openDrawerComponent}
+                {/*
+                Rendering single line diagram only in map view and if
+                displayed voltage level or substation id has been set
+                */}
+                {props.view === StudyView.MAP &&
+                    (displayedVoltageLevelId || displayedSubstationId) && (
+                        <div
+                            style={{
+                                flexGrow: 1,
+                                position: 'relative',
+                                display: 'flex',
+                                pointerEvents: 'none',
+                                flexDirection: 'column',
+                            }}
+                        >
+                            <SingleLineDiagram
+                                onClose={() => closeVoltageLevelDiagram()}
+                                onNextVoltageLevelClick={
+                                    showVoltageLevelDiagram
+                                }
+                                onBreakerClick={handleUpdateSwitchState}
+                                diagramTitle={sldTitle}
+                                diagramAction={openDrawerComponent}
+                                svgUrl={svgUrl}
+                                ref={sldRef}
+                                updateSwitchMsg={updateSwitchMsg}
+                                isComputationRunning={isComputationRunning()}
+                                svgType={
+                                    displayedVoltageLevelId
+                                        ? SvgType.VOLTAGE_LEVEL
+                                        : SvgType.SUBSTATION
+                                }
+                            />
+                        </div>
+                    )}
                 <ContingencyListSelector
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
@@ -979,7 +1063,7 @@ const StudyPane = (props) => {
 
     function renderTableView() {
         return (
-            <Paper className={classes.main}>
+            <Paper className={clsx('singlestretch-child', classes.table)}>
                 <NetworkTable
                     network={network}
                     studyName={studyName}
@@ -991,38 +1075,38 @@ const StudyPane = (props) => {
 
     function renderResultsView() {
         return (
-            <AutoSizer>
-                {({ width, height }) => (
-                    <div style={{ width: width, height: height - 48 }}>
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
-                        >
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'loadFlowResults',
-                                })}
-                            />
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'securityAnalysisResults',
-                                })}
-                            />
-                        </Tabs>
-                        {tabIndex === 0 && renderLoadFlowResult()}
-                        {tabIndex === 1 && renderSecurityAnalysisResult()}
-                    </div>
-                )}
-            </AutoSizer>
+            <div className={clsx('singlestretch-child', classes.table)}>
+                <Tabs
+                    value={tabIndex}
+                    indicatorColor="primary"
+                    onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
+                >
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'loadFlowResults',
+                        })}
+                    />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'securityAnalysisResults',
+                        })}
+                    />
+                </Tabs>
+                {tabIndex === 0 && renderLoadFlowResult()}
+                {tabIndex === 1 && renderSecurityAnalysisResult()}
+            </div>
         );
     }
 
     function renderSecurityAnalysisResult() {
         return (
-            <Paper className={classes.main}>
+            <Paper
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flexGrow: 1,
+                }}
+            >
                 <SecurityAnalysisResult
                     result={securityAnalysisResult}
                     onClickNmKConstraint={onClickNmKConstraint}
@@ -1033,7 +1117,7 @@ const StudyPane = (props) => {
 
     function renderLoadFlowResult() {
         return (
-            <Paper className={classes.main}>
+            <Paper style={{ flexGrow: 1 }} className={classes.table}>
                 <LoadFlowResult result={loadFlowResult} />
             </Paper>
         );
@@ -1052,7 +1136,7 @@ const StudyPane = (props) => {
         );
     } else {
         return (
-            <div>
+            <>
                 {waitingLoadGeoData && (
                     <LoaderWithOverlay
                         color="inherit"
@@ -1063,31 +1147,31 @@ const StudyPane = (props) => {
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
                 <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
-                        display:
-                            props.view === StudyView.MAP ? 'block' : 'none',
-                        pointerEvents: 'all',
+                        display: props.view === StudyView.MAP ? null : 'none',
                     }}
                 >
                     {renderMapView()}
                 </div>
                 <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
-                        display:
-                            props.view === StudyView.TABLE ? 'block' : 'none',
+                        display: props.view === StudyView.TABLE ? null : 'none',
                     }}
                 >
                     {renderTableView()}
                 </div>
                 <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
                         display:
-                            props.view === StudyView.RESULTS ? 'block' : 'none',
+                            props.view === StudyView.RESULTS ? null : 'none',
                     }}
                 >
                     {renderResultsView()}
                 </div>
-            </div>
+            </>
         );
     }
 };

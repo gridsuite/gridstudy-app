@@ -37,6 +37,7 @@ import {
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
     SELECTED_ITEM_NETWORK,
+    FULLSCREEN_SINGLE_LINE_DIAGRAM,
 } from './actions';
 import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
 
@@ -67,6 +68,7 @@ const initialState = {
     filteredNominalVoltages: null,
     substationLayout: 'horizontal',
     selectItemNetwork: null,
+    fullScreen: false,
 };
 
 export const reducer = createReducer(initialState, {
@@ -192,5 +194,9 @@ export const reducer = createReducer(initialState, {
 
     [SELECTED_ITEM_NETWORK]: (state, action) => {
         state.selectItemNetwork = action.selectItemNetwork;
+    },
+
+    [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
+        state.fullScreen = action.fullScreen;
     },
 });
