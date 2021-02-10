@@ -441,7 +441,21 @@ export function renameStudy(studyName, userId, newStudyName) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ newStudyName: newStudyName }),
-    }).then((response) => response.json());
+    }).then((response) => {
+        console.log(response);
+        if (response.status === 200 || response.status === 403) {
+            return response.json();
+        } else {
+            return response
+                .json()
+                .catch(() => {
+                    throw new Error(response.statusText || response.message);
+                })
+                .then((m) => {
+                    throw new Error(response.statusText || response.message);
+                });
+        }
+    });
 }
 
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
