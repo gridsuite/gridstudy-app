@@ -442,7 +442,6 @@ export function renameStudy(studyName, userId, newStudyName) {
         },
         body: JSON.stringify({ newStudyName: newStudyName }),
     }).then((response) => {
-        console.log(response);
         if (response.status === 200 || response.status === 403) {
             return response.json();
         } else {
