@@ -229,7 +229,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 }
             })
             .catch((e) => {
-                setRenameError(e + '');
+                setRenameError(e.message || e);
             });
     };
 

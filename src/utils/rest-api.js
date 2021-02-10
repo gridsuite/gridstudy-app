@@ -447,13 +447,16 @@ export function renameStudy(studyName, userId, newStudyName) {
             return response.json();
         } else {
             return response
-                .json()
-                .catch(() => {
-                    throw new Error(response.statusText || response.message);
+                .text()
+                .then((text) => {
+                    let json;
+                    try {
+                        json = JSON.parse(text);
+                    } catch {
+                        throw new Error(response.status + ' ' + response.statusText + ' : ' + text);
+                    }
+                    throw new Error(json.status + ' ' + json.error + ' : ' + json.message);
                 })
-                .then((m) => {
-                    throw new Error(response.statusText || response.message);
-                });
         }
     });
 }
