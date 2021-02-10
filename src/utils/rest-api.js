@@ -445,17 +445,23 @@ export function renameStudy(studyName, userId, newStudyName) {
         if (response.status === 200 || response.status === 403) {
             return response.json();
         } else {
-            return response
-                .text()
-                .then((text) => {
-                    let json;
-                    try {
-                        json = JSON.parse(text);
-                    } catch {
-                        throw new Error(response.status + ' ' + response.statusText + ' : ' + text);
-                    }
-                    throw new Error(json.status + ' ' + json.error + ' : ' + json.message);
-                })
+            return response.text().then((text) => {
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch {
+                    throw new Error(
+                        response.status +
+                            ' ' +
+                            response.statusText +
+                            ' : ' +
+                            text
+                    );
+                }
+                throw new Error(
+                    json.status + ' ' + json.error + ' : ' + json.message
+                );
+            });
         }
     });
 }
