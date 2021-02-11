@@ -72,13 +72,9 @@ const SplitButton = (props) => {
 
     const handleMenuItemClick = (event, index) => {
         if (!props.isRunning) {
-            if (props.onSelectionChange) {
-                props.onSelectionChange(index);
-            }
+            props.onSelectionChange(index);
         } else {
-            if (props.onStopComputation) {
-                props.onStopComputation();
-            }
+            props.onStopComputation();
         }
         setOpen(false);
     };

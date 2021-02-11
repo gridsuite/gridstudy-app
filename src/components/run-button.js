@@ -120,8 +120,8 @@ const RunButton = (props) => {
         }
     }
 
-    function isRunning(runningStatus) {
-        return runningStatus === RunningStatus.RUNNING;
+    function isRunning() {
+        return getRunningStatus() === RunningStatus.RUNNING;
     }
 
     const handleClick = () => {
@@ -144,27 +144,23 @@ const RunButton = (props) => {
         return props.getStatus(getRunnable());
     }
 
-    const runningStatus = getRunningStatus();
-
     let disabled =
-        (selectedIndex === 0 && runningStatus !== RunningStatus.IDLE) ||
-        (selectedIndex === 1 && runningStatus === RunningStatus.RUNNING);
+        (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
+        (selectedIndex === 1 && isRunning());
 
     return (
         <SplitButton
             options={getOptions(
-                runningStatus,
+                getRunningStatus(),
                 props.runnables,
                 props.stopComputationText
             )}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
-            className={getStyle(runningStatus)}
+            className={getStyle(getRunningStatus())}
             buttonDisabled={disabled}
-            selectionDisabled={
-                selectedIndex === 0 && runningStatus === RunningStatus.RUNNING
-            }
+            selectionDisabled={selectedIndex === 0 && isRunning()}
             startIcon={props.getStartIcon(getRunningStatus())}
             text={
                 props.getText
@@ -172,7 +168,7 @@ const RunButton = (props) => {
                     : ''
             }
             onStopComputation={handleStopComputationClick}
-            isRunning={isRunning(runningStatus)}
+            isRunning={isRunning()}
             computationStopped={props.computationStopped}
         />
     );

@@ -319,7 +319,7 @@ const StudyPane = (props) => {
         setSecurityAnalysisResult(null);
     };
 
-    const start = (runnable) => {
+    const startComputation = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
             startLoadFlow(studyName, userId);
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
@@ -990,7 +990,7 @@ const StudyPane = (props) => {
                                 intl.formatMessage({ id: 'StopComputation' }),
                             ]}
                             getStatus={getRunningStatus}
-                            onStartClick={start}
+                            onStartClick={startComputation}
                             getText={getRunningText}
                             getStartIcon={getRunningIcon}
                             onStopComputationClick={stopComputation}
