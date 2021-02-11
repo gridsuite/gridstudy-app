@@ -107,14 +107,14 @@ const RunButton = (props) => {
         }
     }
 
-    function getOptions(runningStatus, runnables, stopComputation) {
+    function getOptions(runningStatus, runnables, actionsOnRunnable) {
         switch (runningStatus) {
             case RunningStatus.SUCCEED:
             case RunningStatus.FAILED:
             case RunningStatus.IDLE:
                 return runnables;
             case RunningStatus.RUNNING:
-                return stopComputation;
+                return actionsOnRunnable;
             default:
                 return '';
         }
@@ -153,7 +153,7 @@ const RunButton = (props) => {
             options={getOptions(
                 getRunningStatus(),
                 props.runnables,
-                props.stopComputationText
+                props.actionsOnRunnable
             )}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
@@ -180,7 +180,7 @@ RunButton.propTypes = {
     getText: PropTypes.func.isRequired,
     getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
-    stopComputationText: PropTypes.array.isRequired,
+    actionsOnRunnable: PropTypes.array.isRequired,
     computationStopped: PropTypes.bool,
 };
 

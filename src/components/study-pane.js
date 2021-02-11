@@ -986,7 +986,7 @@ const StudyPane = (props) => {
                     >
                         <RunButton
                             runnables={RUNNABLES}
-                            stopComputationText={[
+                            actionsOnRunnable={[
                                 intl.formatMessage({ id: 'StopComputation' }),
                             ]}
                             getStatus={getRunningStatus}
