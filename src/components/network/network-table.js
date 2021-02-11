@@ -276,7 +276,6 @@ const NetworkTable = (props) => {
                 rowCount={voltageLevels.length}
                 rowGetter={({ index }) => voltageLevels[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -311,7 +310,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.lines.length}
                 rowGetter={({ index }) => props.network.lines[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -388,7 +386,6 @@ const NetworkTable = (props) => {
                     props.network.twoWindingsTransformers[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('TwoWindingsTransformer'),
                     {
@@ -480,7 +477,6 @@ const NetworkTable = (props) => {
                     props.network.threeWindingsTransformers[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('ThreeWindingsTransformer'),
                     {
@@ -639,7 +635,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.generators.length}
                 rowGetter={({ index }) => props.network.generators[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('Generator'),
                     {
@@ -696,7 +691,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.loads.length}
                 rowGetter={({ index }) => props.network.loads[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -763,7 +757,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.batteries.length}
                 rowGetter={({ index }) => props.network.batteries[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -825,7 +818,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.danglingLines.length}
                 rowGetter={({ index }) => props.network.danglingLines[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -892,7 +884,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.hvdcLines.length}
                 rowGetter={({ index }) => props.network.hvdcLines[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -966,7 +957,6 @@ const NetworkTable = (props) => {
                     props.network.shuntCompensators[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1023,7 +1013,6 @@ const NetworkTable = (props) => {
                     props.network.staticVarCompensators[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1087,7 +1076,6 @@ const NetworkTable = (props) => {
                     props.network.lccConverterStations[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1158,7 +1146,6 @@ const NetworkTable = (props) => {
                     props.network.vscConverterStations[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
