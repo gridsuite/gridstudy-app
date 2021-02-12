@@ -487,7 +487,18 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
         } else {
         }
-    }, [svgFinalWidth, svgFinalHeight]);
+    }, [
+        svgFinalWidth,
+        svgFinalHeight,
+        //TODO, these are from the previous useLayoutEffect
+        //how to refactor to avoid repeating them here ?
+        svg,
+        onNextVoltageLevelClick,
+        onBreakerClick,
+        isComputationRunning,
+        svgType,
+        theme,
+    ]);
 
     const classes = useStyles();
 
@@ -531,6 +542,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 pointerEvents: 'auto',
                 width: sizeWidth,
                 height: sizeHeight,
+                position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
             }}
         >
             <Box>

@@ -218,17 +218,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, study.userId, newStudyNameValue).then(
-            (response) => {
-                if (!response.ok) {
+        renameStudy(study.studyName, study.userId, newStudyNameValue)
+            .then((response) => {
+                if (response === 'NOT_ALLOWED') {
                     setRenameError(
                         intl.formatMessage({ id: 'renameStudyError' })
                     );
                 } else {
                     setOpenRename(false);
                 }
-            }
-        );
+            })
+            .catch((e) => {
+                setRenameError(e.message || e);
+            });
     };
 
     const handleCloseRename = () => {

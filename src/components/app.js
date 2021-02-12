@@ -256,6 +256,12 @@ const App = () => {
         })
     );
 
+    const isStudyPane =
+        useRouteMatch({
+            path: '/:userId/studies/:studyName',
+            exact: true,
+        }) !== null;
+
     useEffect(() => {
         document.addEventListener('contextmenu', (event) => {
             event.preventDefault();
@@ -428,7 +434,16 @@ const App = () => {
                         className="singlestretch-parent"
                         style={{
                             flexGrow: 1,
-                            overflow: 'auto',
+                            //Study pane needs 'hidden' when displaying a
+                            //fullscreen sld or when displaying the results or
+                            //elements tables for certain screen sizes because
+                            //width/heights are computed programmaticaly and
+                            //resizing the page trigger render loops due to
+                            //appearing and disappearing scrollbars.
+                            //For all other cases, auto is better because it will
+                            //be easier to see that we have a layout problem when
+                            //scrollbars appear when they should not.
+                            overflow: isStudyPane ? 'hidden' : 'auto',
                         }}
                     >
                         {user !== null ? (
