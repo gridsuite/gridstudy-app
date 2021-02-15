@@ -3,8 +3,10 @@
     "addNewStudyDescription": "To add a new study, you should enter the following information:",
     "caseExist": "Does the case already exist?",
     "studyName": "study name",
+    "studyNameProperty": "study name: ",
     "studyDescription": "study description",
-    "owner": "Owner",
+    "studyDescriptionProperty": "study description: ",
+    "owner": "Owner: ",
     "caseName": "case name",
     "uploadCase": "Upload case",
     "public": "public",
@@ -47,7 +49,7 @@
     "studyNameAlreadyUsed": "This study name is already used",
     "nameValidityCheckErrorMsg": "Error while checking name validity : ",
 
-    "useName": "Use the name instead of the identifier",
+    "useName": "Use the name instead of the identifier: ",
     "diagonalLabel": "Display name diagonally",
     "centerLabel": "Center name",
     "topologicalColoring": "Topological coloring",
@@ -80,7 +82,7 @@
     "NominalVoltage": "Nominal voltage",
     "Overloads": "Overloads",
     "Overload": "Overload",
-    "AlertThresholdLabel": "Alert threshold",
+    "AlertThresholdLabel": "Threshold for displaying lines before overload (%)",
     "intensity": "intensity",
     "Intensity": "Intensity",
     "limit": "limit",
@@ -90,7 +92,7 @@
 
     "PageNotFound": "Page not found",
 
-    "Table": "Table",
+    "Table": "Spreadsheet",
     "Results": "Results",
     "Substations": "Substations",
     "VoltageLevels": "Voltage levels",
@@ -124,7 +126,7 @@
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
 
-    "viewOverloadsTable": "View overloads table",
+    "viewOverloadsTable": "View overload table",
 
     "LoadFlow": "LoadFlow",
     "SecurityAnalysis": "Security analysis",
@@ -176,7 +178,7 @@
     "VerticalSubstationLayout": "Vertical",
     "SmartSubstationLayout": "Smart",
     "SmartWithHorizontalCompactionSubstationLayout": "Smart with horizontal compaction",
-    "SmartWithVerticalCompactionSubstationLayout": "Smart avec vertical compaction",
+    "SmartWithVerticalCompactionSubstationLayout": "Smart with vertical compaction",
     "openSubstation": "Open the substation",
 
     "ConstraintsFromContingencies": "Contingencies -> constraints",
