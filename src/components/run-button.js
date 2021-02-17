@@ -181,7 +181,7 @@ RunButton.propTypes = {
     getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
     actionsOnRunnable: PropTypes.array.isRequired,
-    computationStopped: PropTypes.bool,
+    computationStopped: PropTypes.bool.isRequired,
 };
 
 export default RunButton;

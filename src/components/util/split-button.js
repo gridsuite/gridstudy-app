@@ -49,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
+    stop: {
+        color: 'red',
+    },
 }));
 
 const SplitButton = (props) => {
@@ -164,7 +167,10 @@ const SplitButton = (props) => {
                                         >
                                             {props.isRunning && (
                                                 <ListItemIcon>
-                                                    <StopIcon fontSize="small" />
+                                                    <StopIcon
+                                                        fontSize="small"
+                                                        className={classes.stop}
+                                                    />
                                                 </ListItemIcon>
                                             )}
                                             <ListItemText
