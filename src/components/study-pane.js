@@ -44,6 +44,7 @@ import {
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
     startSecurityAnalysis,
+    stopSecurityAnalysis,
     updateSwitchState,
 } from '../utils/rest-api';
 import {
@@ -211,6 +212,8 @@ const StudyPane = (props) => {
 
     const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
 
+    const [computationStopped, setComputationStopped] = useState(false);
+
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
@@ -307,6 +310,8 @@ const StudyPane = (props) => {
         // close the contingency list selection window
         setShowContingencyListSelector(false);
 
+        setComputationStopped(false);
+
         // start server side security analysis
         startSecurityAnalysis(studyName, userId, contingencyListNames);
 
@@ -314,11 +319,18 @@ const StudyPane = (props) => {
         setSecurityAnalysisResult(null);
     };
 
-    const start = (runnable) => {
+    const startComputation = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
             startLoadFlow(studyName, userId);
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
+        }
+    };
+
+    const stopComputation = (runnable) => {
+        if (runnable === Runnable.SECURITY_ANALYSIS) {
+            stopSecurityAnalysis(studyName, userId);
+            setComputationStopped(!computationStopped);
         }
     };
 
@@ -974,10 +986,15 @@ const StudyPane = (props) => {
                     >
                         <RunButton
                             runnables={RUNNABLES}
+                            actionsOnRunnable={[
+                                intl.formatMessage({ id: 'StopComputation' }),
+                            ]}
                             getStatus={getRunningStatus}
-                            onStartClick={start}
+                            onStartClick={startComputation}
                             getText={getRunningText}
                             getStartIcon={getRunningIcon}
+                            onStopComputationClick={stopComputation}
+                            computationStopped={computationStopped}
                         />
                     </div>
                 </div>
