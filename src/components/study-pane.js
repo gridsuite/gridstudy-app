@@ -794,7 +794,7 @@ const StudyPane = (props) => {
     function openVoltageLevel(vlId) {
         if (!network) return;
         setDisplayedVoltageLevelId(vlId);
-        showVoltageLevelDiagram(vlId)
+        showVoltageLevelDiagram(vlId);
         dispatch(selectItemNetwork(vlId));
     }
 
@@ -1058,9 +1058,7 @@ const StudyPane = (props) => {
                         >
                             <SingleLineDiagram
                                 onClose={() => closeVoltageLevelDiagram()}
-                                onNextVoltageLevelClick={
-                                    openVoltageLevel
-                                }
+                                onNextVoltageLevelClick={openVoltageLevel}
                                 onBreakerClick={handleUpdateSwitchState}
                                 diagramTitle={sldTitle}
                                 diagramAction={openDrawerComponent}
