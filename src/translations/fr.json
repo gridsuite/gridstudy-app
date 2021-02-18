@@ -82,7 +82,7 @@
     "NominalVoltage": "Tension nominale",
     "Overload": "Surcharge",
     "Overloads": "Surcharges",
-    "AlertThresholdLabel": "Seuil d'affichage des lignes\n avant surcharge (%) : ",
+    "AlertThresholdLabel": "Seuil d'affichage des lignes avant surcharge (%) : ",
     "intensity": "intensité",
     "Intensity": "Intensité",
     "limit": "limite",
