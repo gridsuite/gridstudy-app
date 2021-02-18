@@ -441,7 +441,29 @@ export function renameStudy(studyName, userId, newStudyName) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ newStudyName: newStudyName }),
-    }).then((response) => response.json());
+    }).then((response) => {
+        if (response.status === 200 || response.status === 403) {
+            return response.json();
+        } else {
+            return response.text().then((text) => {
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch {
+                    throw new Error(
+                        response.status +
+                            ' ' +
+                            response.statusText +
+                            ' : ' +
+                            text
+                    );
+                }
+                throw new Error(
+                    json.status + ' ' + json.error + ' : ' + json.message
+                );
+            });
+        }
+    });
 }
 
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
@@ -469,6 +491,14 @@ export function startLoadFlow(studyName, userId) {
     const startLoadFlowUrl = getStudyUrl(studyName, userId) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
+}
+
+export function stopSecurityAnalysis(studyName, userId) {
+    console.info('Stopping security analysis on ' + studyName + '...');
+    const stopSecurityAnalysisUrl =
+        getStudyUrl(studyName, userId) + '/security-analysis/stop';
+    console.debug(stopSecurityAnalysisUrl);
+    return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
 function getContingencyListsQueryParams(contingencyListNames) {

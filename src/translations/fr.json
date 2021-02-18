@@ -54,7 +54,7 @@
     "General": "Général",
     "SingleLineDiagram": "Schéma unifilaire",
 
-    "studyNotFound": "L'étude ''{studyName}'' n'a pas été trouvée",
+    "studyNotFound": "L'étude \"{studyName}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
 
     "parameters": "Paramètres",
@@ -211,5 +211,7 @@
     "NominalV": "Tension nominale (kV)",
     "HvdcLineId": "ID ligne HVDC",
     "PowerFactor": "Facteur de puissance",
-    "LossFactor": "Facteur de perte"
+    "LossFactor": "Facteur de perte",
+
+    "StopComputation" : "Arr\u00eater le calcul"
 }

@@ -281,7 +281,6 @@ const NetworkTable = (props) => {
                 rowCount={voltageLevels.length}
                 rowGetter={({ index }) => voltageLevels[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -318,7 +317,6 @@ const NetworkTable = (props) => {
                     props.network.lines.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -395,7 +393,6 @@ const NetworkTable = (props) => {
                     props.network.twoWindingsTransformers.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('TwoWindingsTransformer'),
                     {
@@ -487,7 +484,6 @@ const NetworkTable = (props) => {
                     props.network.threeWindingsTransformers.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('ThreeWindingsTransformer'),
                     {
@@ -648,7 +644,6 @@ const NetworkTable = (props) => {
                     props.network.generators.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('Generator'),
                     {
@@ -707,7 +702,6 @@ const NetworkTable = (props) => {
                     props.network.loads.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -776,7 +770,6 @@ const NetworkTable = (props) => {
                     props.network.batteries.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -840,7 +833,6 @@ const NetworkTable = (props) => {
                     props.network.danglingLines.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -909,7 +901,6 @@ const NetworkTable = (props) => {
                     props.network.hvdcLines.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -983,7 +974,6 @@ const NetworkTable = (props) => {
                     props.network.shuntCompensators.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1040,7 +1030,6 @@ const NetworkTable = (props) => {
                     props.network.staticVarCompensators.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1104,7 +1093,6 @@ const NetworkTable = (props) => {
                     props.network.lccConverterStations.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1175,7 +1163,6 @@ const NetworkTable = (props) => {
                     props.network.vscConverterStations.getOrFetch()[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
