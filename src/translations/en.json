@@ -54,7 +54,7 @@
     "General": "General",
     "SingleLineDiagram": "Single line diagram",
 
-    "studyNotFound": "Study '{studyName}' has not been found",
+    "studyNotFound": "Study {studyName} has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
 
     "parameters": "Parameters",
