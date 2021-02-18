@@ -116,7 +116,7 @@ const NetworkExplorer = ({
                 undefined
         )
             setSubstationsLoaded(false);
-    }, [substationsLoaded, network]);
+    }, [network]);
 
     const identifiedElementComparator = useCallback(
         (vl1, vl2) => {
