@@ -80,7 +80,7 @@ const NominalVoltageFilter = (props) => {
     useEffect(() => {
         if (network.substations.values === undefined) {
             if (substationsLoaded) setSubstationsLoaded(false);
-            network.substations.get(() => setSubstationsLoaded(true));
+            network.substations.getOrFetch(() => setSubstationsLoaded(true));
         }
     }, [substationsLoaded, network.substations]);
 

@@ -248,9 +248,9 @@ const NetworkTable = (props) => {
     function renderSubstationsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.substations.length()}
+                rowCount={props.network.substations.lengthOrFetch()}
                 rowGetter={({ index }) =>
-                    props.network.substations.get()[index]
+                    props.network.substations.getOrFetch()[index]
                 }
                 filter={filter}
                 columns={[
@@ -313,8 +313,10 @@ const NetworkTable = (props) => {
     function renderLinesTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.lines.length()}
-                rowGetter={({ index }) => props.network.lines.get()[index]}
+                rowCount={props.network.lines.lengthOrFetch()}
+                rowGetter={({ index }) =>
+                    props.network.lines.getOrFetch()[index]
+                }
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -388,9 +390,9 @@ const NetworkTable = (props) => {
     function renderTwoWindingsTransformersTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.twoWindingsTransformers.length()}
+                rowCount={props.network.twoWindingsTransformers.lengthOrFetch()}
                 rowGetter={({ index }) =>
-                    props.network.twoWindingsTransformers.get()[index]
+                    props.network.twoWindingsTransformers.getOrFetch()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -480,9 +482,9 @@ const NetworkTable = (props) => {
     function renderThreeWindingsTransformersTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.threeWindingsTransformers.length()}
+                rowCount={props.network.threeWindingsTransformers.lengthOrFetch()}
                 rowGetter={({ index }) =>
-                    props.network.threeWindingsTransformers.get()[index]
+                    props.network.threeWindingsTransformers.getOrFetch()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -641,8 +643,10 @@ const NetworkTable = (props) => {
     function renderGeneratorsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.generators.length()}
-                rowGetter={({ index }) => props.network.generators.get()[index]}
+                rowCount={props.network.generators.lengthOrFetch()}
+                rowGetter={({ index }) =>
+                    props.network.generators.getOrFetch()[index]
+                }
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -698,8 +702,10 @@ const NetworkTable = (props) => {
     function renderLoadsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.loads.length()}
-                rowGetter={({ index }) => props.network.loads.get()[index]}
+                rowCount={props.network.loads.lengthOrFetch()}
+                rowGetter={({ index }) =>
+                    props.network.loads.getOrFetch()[index]
+                }
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -765,8 +771,10 @@ const NetworkTable = (props) => {
     function renderBatteriesTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.batteries.length()}
-                rowGetter={({ index }) => props.network.batteries.get()[index]}
+                rowCount={props.network.batteries.lengthOrFetch()}
+                rowGetter={({ index }) =>
+                    props.network.batteries.getOrFetch()[index]
+                }
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -827,9 +835,9 @@ const NetworkTable = (props) => {
     function renderDanglingLinesTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.danglingLines.length()}
+                rowCount={props.network.danglingLines.lengthOrFetch()}
                 rowGetter={({ index }) =>
-                    props.network.danglingLines.get()[index]
+                    props.network.danglingLines.getOrFetch()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -896,8 +904,10 @@ const NetworkTable = (props) => {
     function renderHvdcLinesTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.hvdcLines.length()}
-                rowGetter={({ index }) => props.network.hvdcLines.get()[index]}
+                rowCount={props.network.hvdcLines.lengthOrFetch()}
+                rowGetter={({ index }) =>
+                    props.network.hvdcLines.getOrFetch()[index]
+                }
                 filter={filter}
                 className={classes.table}
                 columns={[
@@ -968,9 +978,9 @@ const NetworkTable = (props) => {
     function renderShuntCompensatorsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.shuntCompensators.length()}
+                rowCount={props.network.shuntCompensators.lengthOrFetch()}
                 rowGetter={({ index }) =>
-                    props.network.shuntCompensators.get()[index]
+                    props.network.shuntCompensators.getOrFetch()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -1025,9 +1035,9 @@ const NetworkTable = (props) => {
     function renderStaticVarCompensatorsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.staticVarCompensators.length()}
+                rowCount={props.network.staticVarCompensators.lengthOrFetch()}
                 rowGetter={({ index }) =>
-                    props.network.staticVarCompensators.get()[index]
+                    props.network.staticVarCompensators.getOrFetch()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -1089,9 +1099,9 @@ const NetworkTable = (props) => {
     function renderLccConverterStationsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.lccConverterStations.length()}
+                rowCount={props.network.lccConverterStations.lengthOrFetch()}
                 rowGetter={({ index }) =>
-                    props.network.lccConverterStations.get()[index]
+                    props.network.lccConverterStations.getOrFetch()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -1160,9 +1170,9 @@ const NetworkTable = (props) => {
     function renderVscConverterStationsTable() {
         return (
             <VirtualizedTable
-                rowCount={props.network.vscConverterStations.length()}
+                rowCount={props.network.vscConverterStations.lengthOrFetch()}
                 rowGetter={({ index }) =>
-                    props.network.vscConverterStations.get()[index]
+                    props.network.vscConverterStations.getOrFetch()[index]
                 }
                 filter={filter}
                 className={classes.table}
@@ -1246,7 +1256,7 @@ const NetworkTable = (props) => {
         if (resource.values === undefined) {
             if (dataFetched[index])
                 setDataFetched({ ...dataFetched, ...{ [index]: false } });
-            resource.get(() =>
+            resource.getOrFetch(() =>
                 setDataFetched({ ...dataFetched, ...{ [index]: true } })
             );
             return (

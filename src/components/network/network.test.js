@@ -36,7 +36,6 @@ const substations = [
 test('network', () => {
     // Data initialisation
     const network = new Network(() => substations);
-    //network.setSubstations(substations);
     network.getSubstation(() => {
         // Substation
         expect(network.substations.values).toHaveLength(2);

@@ -112,7 +112,7 @@ const NetworkExplorer = ({
     useEffect(() => {
         if (
             network &&
-            network.substations.get(() => setSubstationsLoaded(true)) ===
+            network.substations.getOrFetch(() => setSubstationsLoaded(true)) ===
                 undefined
         )
             setSubstationsLoaded(false);
@@ -170,7 +170,7 @@ const NetworkExplorer = ({
     );
 
     useEffect(() => {
-        if (network) {
+        if (network && substationsLoaded) {
             generateFilteredSubstation(currentFilter);
         }
     }, [

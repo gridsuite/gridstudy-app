@@ -84,8 +84,9 @@ const NetworkMap = forwardRef((props, ref) => {
     useEffect(() => {
         if (
             props.network &&
-            props.network.substations.get(() => setSubstationsLoaded(true)) ===
-                undefined
+            props.network.substations.getOrFetch(() =>
+                setSubstationsLoaded(true)
+            ) === undefined
         )
             setSubstationsLoaded(false);
     }, [props.network, substationsLoaded]);
@@ -93,7 +94,8 @@ const NetworkMap = forwardRef((props, ref) => {
     useEffect(() => {
         if (
             props.network &&
-            props.network.lines.get(() => setLinesLoaded(true)) === undefined
+            props.network.lines.getOrFetch(() => setLinesLoaded(true)) ===
+                undefined
         )
             setLinesLoaded(false);
     }, [props.network, linesLoaded]);

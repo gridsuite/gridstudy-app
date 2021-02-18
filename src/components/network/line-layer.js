@@ -172,7 +172,7 @@ function getArrowSpeedFactor(speed) {
 const tsThreshold = 16;
 const PATH_UPDATED = 'lastPathUpdate';
 const LINE_UPDATED = 'lineUpdated';
-const PROXIMITY_UPDATED = 'lastPathUpdate';
+const PROXIMITY_UPDATED = 'proximityUpdated';
 const ARROW_UPDATE = 'lastArrowUpdate';
 const ACTIVE_POWER = 'lastPowerUpdate';
 
@@ -226,7 +226,7 @@ class LineLayer extends CompositeLayer {
         this.props.network.nominalVoltages.forEach((nv) =>
             linesByNominalVoltage.set(nv, new Map())
         );
-        this.workArray(this.props.data.values, (i) => {
+        this.workArray(this.props.data.values.length, (i) => {
             linesByNominalVoltage
                 .get(this.getLineNominalVoltage(this.props.data.values[i]))
                 .set(this.props.data.values[i].id, this.props.data.values[i]);
@@ -235,7 +235,7 @@ class LineLayer extends CompositeLayer {
         let next = (ts) =>
             this.computeLinesMetadata(ts, 0, new Map(), new Map());
 
-        this.scheduleNext(timestamp, next);
+        this.scheduleNext(next);
     }
 
     /*  compute lines connexions state and which ones share pair of substations (origin/end)
@@ -253,7 +253,7 @@ class LineLayer extends CompositeLayer {
         mapOriginDestination
     ) {
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines, (i) => {
+        this.workArray(lines.length, (i) => {
             const line = lines[i];
             linesConnection.set(line.id, {
                 terminal1Connected: line.terminal1Connected,
@@ -283,7 +283,7 @@ class LineLayer extends CompositeLayer {
             });
             onNext = (ts) => this.generateLinesParallelIndex(ts);
         }
-        this.scheduleNext(timestamp, onNext);
+        this.scheduleNext(onNext);
     }
 
     generateLinesParallelIndex(ts) {
@@ -293,7 +293,7 @@ class LineLayer extends CompositeLayer {
         // -1 => distanceBetweenLines on the other side
         // 0.5 => half of distanceBetweenLines
         const listSamePathLines = [...this.state.mapOriginDestination.values()];
-        this.workArray(listSamePathLines, (n) => {
+        this.workArray(listSamePathLines.length, (n) => {
             const samePathLine = listSamePathLines[n];
             let index = -(samePathLine.size - 1) / 2;
             samePathLine.forEach((line) => {
@@ -303,13 +303,13 @@ class LineLayer extends CompositeLayer {
                 index += 1;
             });
         });
-        this.scheduleNext(ts, (ts) => this.generateLineMap(ts, 0));
+        this.scheduleNext((ts) => this.generateLineMap(ts, 0));
     }
 
     generateLineMap(ts, nominalVoltageIndex) {
         const lineMap = this.state.lineMap;
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines, (i) => {
+        this.workArray(lines.length, (i) => {
             const line = lines[i];
             const positions = this.props.geoData.getLinePositions(
                 this.props.network,
@@ -329,7 +329,7 @@ class LineLayer extends CompositeLayer {
             lineMap: lineMap,
             [PATH_UPDATED + nominalVoltageIndex]: ts,
         });
-        this.scheduleNext(ts, (ts) =>
+        this.scheduleNext((ts) =>
             this.computeForkLines(ts, nominalVoltageIndex, new Map())
         );
     }
@@ -344,7 +344,7 @@ class LineLayer extends CompositeLayer {
 
     computeForkLines(ts, nominalVoltageIndex, mapMinProximityFactor) {
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines, (i) => {
+        this.workArray(lines.length, (i) => {
             const line = lines[i];
             const positions = this.state.lineMap.get(line.id).positions;
             //the first and last in positions doesn't depend on lineFullPath
@@ -413,7 +413,7 @@ class LineLayer extends CompositeLayer {
                 [PROXIMITY_UPDATED]: ts,
             });
         }
-        this.scheduleNext(ts, (ts) =>
+        this.scheduleNext((ts) =>
             this.generateParallelPathLayer(
                 ts,
                 nominalVoltageIndex,
@@ -428,7 +428,7 @@ class LineLayer extends CompositeLayer {
         // create one arrow each DISTANCE_BETWEEN_ARROWS
         let arrows = [];
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines, (i) => {
+        this.workArray(lines.length, (i) => {
             const line = lines[i];
             let lineData = lineMap.get(line.id);
             line.cumulativeDistances = lineData.cumulativeDistances;
@@ -477,7 +477,7 @@ class LineLayer extends CompositeLayer {
             }
         });
         this.setState({ [ARROW_UPDATE + nominalVoltageIndex]: ts });
-        this.scheduleNext(ts, (ts) =>
+        this.scheduleNext((ts) =>
             this.generateArrowLayer(
                 ts,
                 nominalVoltageIndex,
@@ -491,7 +491,7 @@ class LineLayer extends CompositeLayer {
     computeLabels(ts, nominalVoltageIndex, doNextNominalVoltage) {
         let activePower = [];
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines, (i) => {
+        this.workArray(lines.length, (i) => {
             const line = lines[i];
             let lineData = this.state.lineMap.get(line.id);
             let arrowDirection = getArrowDirection(line.p1);
@@ -544,7 +544,7 @@ class LineLayer extends CompositeLayer {
             activePower: mapPower,
             [ACTIVE_POWER + nominalVoltageIndex]: ts,
         });
-        this.scheduleNext(ts, (ts) =>
+        this.scheduleNext((ts) =>
             this.generateLabelLayer(
                 ts,
                 nominalVoltageIndex,
@@ -556,9 +556,8 @@ class LineLayer extends CompositeLayer {
     updateLines(ts, updatedLines) {
         const linesByNominalVoltage = this.state.linesByNominalVoltage;
         const nominalVoltageUpdated = new Set();
-        this.workArray(updatedLines, (i) => {
+        this.workArray(updatedLines.length, (i) => {
             const line = updatedLines[i];
-            //nominalVoltageIndex ti plop
             const nominalVoltage = this.getLineNominalVoltage(line);
             let oldLine = linesByNominalVoltage
                 .get(nominalVoltage)
@@ -570,7 +569,7 @@ class LineLayer extends CompositeLayer {
             nominalVoltageUpdated.add(nominalVoltage);
         });
         this.setState({ linesByNominalVoltage: linesByNominalVoltage });
-        this.scheduleNext(ts, (ts) =>
+        this.scheduleNext((ts) =>
             this.computeLinesConnections(
                 ts,
                 updatedLines,
@@ -581,7 +580,7 @@ class LineLayer extends CompositeLayer {
 
     computeLinesConnections(ts, updatedLines, nvUpdated) {
         let linesConnection = this.state.linesConnection;
-        this.workArray(updatedLines, (i) => {
+        this.workArray(updatedLines.length, (i) => {
             const line = updatedLines[i];
             linesConnection.set(line.id, {
                 terminal1Connected: line.terminal1Connected,
@@ -595,10 +594,10 @@ class LineLayer extends CompositeLayer {
         nvUpdated.forEach((nv) =>
             nvIndexes.push(this.props.network.nominalVoltages.indexOf(nv))
         );
-        this.workArray(nvIndexes, (i) =>
-            this.setState({ [LINE_UPDATED + nvIndexes[i]]: performance.now() })
+        this.workArray(nvIndexes.length, (i) =>
+            this.setState({ [LINE_UPDATED + nvIndexes[i]]: ts })
         );
-        this.workArray(nvIndexes, (i) =>
+        this.workArray(nvIndexes.length, (i) =>
             this.computeArrows(ts, nvIndexes[i], true, false)
         );
     }
@@ -606,7 +605,7 @@ class LineLayer extends CompositeLayer {
     updateState({ props, oldProps, changeFlags }) {
         if (!props.data.values) return;
         if (changeFlags.dataChanged) {
-            this.scheduleNext(performance.now(), (timestamp) =>
+            this.scheduleNext((timestamp) =>
                 this.indexLinesByNominalVoltage(timestamp, 0, new Map())
             );
         } else if (changeFlags.propsChanged) {
@@ -615,23 +614,19 @@ class LineLayer extends CompositeLayer {
                 props.lineParallelPath !== oldProps.lineParallelPath
             )
                 /* this update will start with lines, then arrow, then labels*/
-                this.scheduleNext(performance.now(), (ts) =>
-                    this.generateLinesParallelIndex(ts)
-                );
+                this.scheduleNext((ts) => this.generateLinesParallelIndex(ts));
             else if (
                 props.lineFlowMode !== oldProps.lineFlowMode &&
                 (props.lineFlowMode === LineFlowMode.FEEDERS ||
                     oldProps.lineFlowMode === LineFlowMode.FEEDERS)
             ) {
-                this.scheduleNext(performance.now(), (ts) =>
-                    this.computeArrows(ts, 0, true)
-                );
+                this.scheduleNext((ts) => this.computeArrows(ts, 0, true));
             }
             if (
                 props.updatedLines !== oldProps.updatedLines &&
                 props.updatedLines
             ) {
-                this.scheduleNext(performance.now(), (ts) =>
+                this.scheduleNext((ts) =>
                     this.updateLines(ts, [...props.updatedLines])
                 );
             }
@@ -720,7 +715,7 @@ class LineLayer extends CompositeLayer {
         );
         this.setState({ layers: layers });
 
-        this.scheduleNext(timestamp, (ts) =>
+        this.scheduleNext((ts) =>
             this.generateForkLayer(
                 ts,
                 nominalVoltageIndex,
@@ -822,7 +817,7 @@ class LineLayer extends CompositeLayer {
                     })
                 )
         );
-        this.setState({ layers: layers }, () => this.scheduleNext(next));
+        this.setState({ layers: layers });
         let next;
         if (isStart) {
             // this function is short (in time)
@@ -837,7 +832,7 @@ class LineLayer extends CompositeLayer {
                 next = (ts) =>
                     this.generateLineMap(ts, nominalVoltageIndex + 1);
             else next = (ts) => this.computeArrows(ts, 0, true, true);
-            this.scheduleNext(timestamp, next);
+            this.scheduleNext(next);
         }
     }
 
@@ -925,7 +920,7 @@ class LineLayer extends CompositeLayer {
                 )
         );
         this.setState({ layers: layers });
-        let next = undefined;
+        let next;
         if (
             doNextNominalVoltage &&
             this.hasNextNominalVoltage(nominalVoltageIndex)
@@ -939,7 +934,7 @@ class LineLayer extends CompositeLayer {
                 );
         else if (doLabel)
             next = (ts) => this.computeLabels(ts, 0, doNextNominalVoltage);
-        if (next !== undefined) this.scheduleNext(timestamp, next);
+        this.scheduleNext(next);
     }
 
     generateLabelLayer(timestamp, nominalVoltageIndex, doNextNominalVoltage) {
@@ -985,21 +980,19 @@ class LineLayer extends CompositeLayer {
                     })
                 )
         );
-        this.setState({ layers: layers }, () => this.scheduleNext(next));
+        this.setState({ layers: layers });
 
-        let next = undefined;
-        if (
+        let next =
             doNextNominalVoltage &&
-            this.hasNextNominalVoltage(nominalVoltageIndex)
-        )
-            next = (ts) =>
+            this.hasNextNominalVoltage(nominalVoltageIndex) &&
+            ((ts) =>
                 this.computeLabels(
                     ts,
                     nominalVoltageIndex + 1,
                     doNextNominalVoltage
-                );
+                ));
 
-        this.scheduleNext(timestamp, next);
+        this.scheduleNext(next);
     }
 
     renderLayers() {
@@ -1040,23 +1033,24 @@ class LineLayer extends CompositeLayer {
     }
 
     /*
-     *  function used to call onNext in the same 'frame' on the next one if we're short on time
+     *  function used to call onNext in the same 'frame' or the next one if we're short on time
      *   timestamp : when the 'frame' started
      *   onNext : callback to call, if undefined does nothing
      * */
-    scheduleNext(timestamp, onNext) {
-        if (onNext !== undefined)
-            window.setTimeout(() => onNext(performance.now()), 0);
+    scheduleNext(onNext) {
+        if (onNext)
+            window.requestAnimationFrame(() => onNext(performance.now()));
     }
 
-    workArray(array, cb, currentIndex) {
+    workArray(arrayLength, cb, currentIndex) {
         let start = performance.now();
         let i = currentIndex || 0;
-        while (i < array.length && performance.now() - start < tsThreshold) {
+        while (i < arrayLength && performance.now() - start < tsThreshold) {
             cb(i);
             ++i;
         }
-        if (i < array.length) this.workArray(array, cb, i);
+        if (i < arrayLength)
+            this.scheduleNext(() => this.workArray(arrayLength, cb, i));
     }
 }
 

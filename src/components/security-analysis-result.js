@@ -482,7 +482,6 @@ const SecurityAnalysisResult = ({ resultFetcher, onClickNmKConstraint }) => {
                     )}
                 </div>
                 <div style={{ flexGrow: 1 }}>
-                    {' '}
                     {tabIndex === 0 &&
                         renderTableN(resultFetcher.values.preContingencyResult)}
                     {tabIndex === 1 &&

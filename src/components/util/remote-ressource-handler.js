@@ -21,14 +21,14 @@ export class RemoteRessourceHandler {
 
     cbUpdateDone = new Set();
 
-    get(cbUpdateDone) {
+    getOrFetch(cbUpdateDone) {
         if (this.values === undefined) {
             if (cbUpdateDone) this.cbUpdateDone.add(cbUpdateDone);
             if (!this.updating) {
                 this.updating = true;
-                Promise.all([this.fetcher()])
+                this.fetcher()
                     .then((val) => {
-                        this.values = val[0];
+                        this.values = val;
                         if (this.postUpdate) this.postUpdate(this.values);
                         this.updating = false;
                         this.cbUpdateDone.forEach((cb) => cb());
@@ -45,10 +45,10 @@ export class RemoteRessourceHandler {
         return this.values;
     }
 
-    length(cbUpdateDone) {
+    lengthOrFetch(cbUpdateDone) {
         return (
             (this.values !== undefined && this.values.length) ||
-            this.get(cbUpdateDone)
+            this.getOrFetch(cbUpdateDone)
         );
     }
 }

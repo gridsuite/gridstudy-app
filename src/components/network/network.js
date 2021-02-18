@@ -15,29 +15,29 @@ const elementIdIndexer = (map, element) => {
 export default class Network {
     substations;
 
-    lines = undefined;
+    lines;
 
-    twoWindingsTransformers = undefined;
+    twoWindingsTransformers;
 
-    threeWindingsTransformers = undefined;
+    threeWindingsTransformers;
 
-    generators = undefined;
+    generators;
 
-    loads = undefined;
+    loads;
 
-    batteries = undefined;
+    batteries;
 
-    danglingLines = undefined;
+    danglingLines;
 
-    hvdcLines = undefined;
+    hvdcLines;
 
-    lccConverterStations = undefined;
+    lccConverterStations;
 
-    vscConverterStations = undefined;
+    vscConverterStations;
 
-    shuntCompensators = undefined;
+    shuntCompensators;
 
-    staticVarCompensators = undefined;
+    staticVarCompensators;
 
     voltageLevelsByNominalVoltage = new Map();
 
@@ -75,9 +75,9 @@ export default class Network {
             });
         });
 
-        this.voltageLevels = this.substations
-            .get()
-            .flatMap((substation) => substation.voltageLevels);
+        this.voltageLevels = this.substations.values.flatMap(
+            (substation) => substation.voltageLevels
+        );
 
         this.voltageLevelsById = this.voltageLevels.reduce(
             elementIdIndexer,
@@ -235,7 +235,7 @@ export default class Network {
         );
     }
 
-    makeEqHandler(cb, errHandler, postUpdateCB) {
+    makeEquipmentHandler(cb, errHandler, postUpdateCB) {
         return new RemoteRessourceHandler(cb, errHandler, postUpdateCB);
     }
     constructor(
@@ -254,49 +254,52 @@ export default class Network {
         staticVarCompensators,
         errHandler
     ) {
-        this.substations = this.makeEqHandler(
+        this.substations = this.makeEquipmentHandler(
             substations,
             errHandler,
             this.completeSubstationsInfos
         );
 
-        this.lines = this.makeEqHandler(
+        this.lines = this.makeEquipmentHandler(
             lines,
             errHandler,
             this.completeLinesInfos
         );
-        this.twoWindingsTransformers = this.makeEqHandler(
+        this.twoWindingsTransformers = this.makeEquipmentHandler(
             twoWindingsTransformers,
             errHandler,
             this.completeTwoWindingsTransformersInfos
         );
-        this.threeWindingsTransformers = this.makeEqHandler(
+        this.threeWindingsTransformers = this.makeEquipmentHandler(
             threeWindingsTransformers,
             errHandler,
             this.completeThreeWindingsTransformersInfos
         );
-        this.generators = this.makeEqHandler(
+        this.generators = this.makeEquipmentHandler(
             generators,
             errHandler,
             this.completeGeneratorsInfos
         );
-        this.loads = this.makeEqHandler(loads, errHandler);
-        this.batteries = this.makeEqHandler(batteries, errHandler);
-        this.danglingLines = this.makeEqHandler(danglingLines, errHandler);
-        this.hvdcLines = this.makeEqHandler(hvdcLines, errHandler);
-        this.lccConverterStations = this.makeEqHandler(
+        this.loads = this.makeEquipmentHandler(loads, errHandler);
+        this.batteries = this.makeEquipmentHandler(batteries, errHandler);
+        this.danglingLines = this.makeEquipmentHandler(
+            danglingLines,
+            errHandler
+        );
+        this.hvdcLines = this.makeEquipmentHandler(hvdcLines, errHandler);
+        this.lccConverterStations = this.makeEquipmentHandler(
             lccConverterStations,
             errHandler
         );
-        this.vscConverterStations = this.makeEqHandler(
+        this.vscConverterStations = this.makeEquipmentHandler(
             vscConverterStations,
             errHandler
         );
-        this.shuntCompensators = this.makeEqHandler(
+        this.shuntCompensators = this.makeEquipmentHandler(
             shuntCompensators,
             errHandler
         );
-        this.staticVarCompensators = this.makeEqHandler(
+        this.staticVarCompensators = this.makeEquipmentHandler(
             staticVarCompensators,
             errHandler
         );
