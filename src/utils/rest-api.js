@@ -16,8 +16,6 @@ const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 
-const APPS_METADATA_SERVER_URL = fetch('env.json');
-
 function getToken() {
     const state = store.getState();
     return state.user.id_token;
@@ -443,7 +441,29 @@ export function renameStudy(studyName, userId, newStudyName) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ newStudyName: newStudyName }),
-    }).then((response) => response.json());
+    }).then((response) => {
+        if (response.status === 200 || response.status === 403) {
+            return response.json();
+        } else {
+            return response.text().then((text) => {
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch {
+                    throw new Error(
+                        response.status +
+                            ' ' +
+                            response.statusText +
+                            ' : ' +
+                            text
+                    );
+                }
+                throw new Error(
+                    json.status + ' ' + json.error + ' : ' + json.message
+                );
+            });
+        }
+    });
 }
 
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
@@ -471,6 +491,14 @@ export function startLoadFlow(studyName, userId) {
     const startLoadFlowUrl = getStudyUrl(studyName, userId) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
+}
+
+export function stopSecurityAnalysis(studyName, userId) {
+    console.info('Stopping security analysis on ' + studyName + '...');
+    const stopSecurityAnalysisUrl =
+        getStudyUrl(studyName, userId) + '/security-analysis/stop';
+    console.debug(stopSecurityAnalysisUrl);
+    return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
 function getContingencyListsQueryParams(contingencyListNames) {
@@ -633,13 +661,15 @@ export function getExportUrl(userId, studyName, exportFormat) {
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return APPS_METADATA_SERVER_URL.then((res) => res.json()).then((res) => {
-        return fetch(res.appsMetadataServerUrl + '/apps-metadata.json').then(
-            (response) => {
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return fetch(
+                res.appsMetadataServerUrl + '/apps-metadata.json'
+            ).then((response) => {
                 return response.json();
-            }
-        );
-    });
+            });
+        });
 }
 
 export function requestNetworkChange(userId, studyName, groovyScript) {

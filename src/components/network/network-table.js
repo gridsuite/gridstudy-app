@@ -12,7 +12,6 @@ import VirtualizedTable from '../util/virtualized-table';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { useIntl } from 'react-intl';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import TableCell from '@material-ui/core/TableCell';
@@ -249,7 +248,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.substations.length}
                 rowGetter={({ index }) => props.network.substations[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -278,7 +276,6 @@ const NetworkTable = (props) => {
                 rowCount={voltageLevels.length}
                 rowGetter={({ index }) => voltageLevels[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -313,7 +310,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.lines.length}
                 rowGetter={({ index }) => props.network.lines[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -390,7 +386,6 @@ const NetworkTable = (props) => {
                     props.network.twoWindingsTransformers[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('TwoWindingsTransformer'),
                     {
@@ -482,7 +477,6 @@ const NetworkTable = (props) => {
                     props.network.threeWindingsTransformers[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('ThreeWindingsTransformer'),
                     {
@@ -641,7 +635,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.generators.length}
                 rowGetter={({ index }) => props.network.generators[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     makeHeaderCell('Generator'),
                     {
@@ -698,7 +691,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.loads.length}
                 rowGetter={({ index }) => props.network.loads[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -765,7 +757,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.batteries.length}
                 rowGetter={({ index }) => props.network.batteries[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -827,7 +818,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.danglingLines.length}
                 rowGetter={({ index }) => props.network.danglingLines[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -894,7 +884,6 @@ const NetworkTable = (props) => {
                 rowCount={props.network.hvdcLines.length}
                 rowGetter={({ index }) => props.network.hvdcLines[index]}
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -968,7 +957,6 @@ const NetworkTable = (props) => {
                     props.network.shuntCompensators[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1025,7 +1013,6 @@ const NetworkTable = (props) => {
                     props.network.staticVarCompensators[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1089,7 +1076,6 @@ const NetworkTable = (props) => {
                     props.network.lccConverterStations[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1160,7 +1146,6 @@ const NetworkTable = (props) => {
                     props.network.vscConverterStations[index]
                 }
                 filter={filter}
-                className={classes.table}
                 columns={[
                     {
                         width: 400,
@@ -1238,79 +1223,75 @@ const NetworkTable = (props) => {
 
     return (
         props.network && (
-            <AutoSizer>
-                {({ width, height }) => (
-                    <div style={{ width: width, height: height - 48 }}>
-                        <Grid container justify={'space-between'}>
-                            <Grid container justify={'space-between'} item>
-                                <Tabs
-                                    value={tabIndex}
-                                    indicatorColor="primary"
-                                    variant="scrollable"
-                                    scrollButtons="auto"
-                                    onChange={(event, newValue) =>
-                                        setTabIndex(newValue)
-                                    }
-                                    aria-label="tables"
-                                >
-                                    {TABLE_NAMES.map((tableName) => (
-                                        <Tab
-                                            key={tableName}
-                                            label={intl.formatMessage({
-                                                id: tableName,
-                                            })}
-                                        />
-                                    ))}
-                                </Tabs>
-                            </Grid>
-                            <Grid
-                                item
-                                alignContent={'flex-end'}
-                                className={classes.containerInputSearch}
-                            >
-                                <TextField
-                                    className={classes.textField}
-                                    size="small"
-                                    placeholder={
-                                        intl.formatMessage({ id: 'filter' }) +
-                                        '...'
-                                    }
-                                    onChange={setFilter}
-                                    variant="outlined"
-                                    classes={classes.searchSection}
-                                    fullWidth
-                                    InputProps={{
-                                        classes: {
-                                            input: classes.searchSection,
-                                        },
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
+            <>
+                <Grid container justify={'space-between'}>
+                    <Grid container justify={'space-between'} item>
+                        <Tabs
+                            value={tabIndex}
+                            indicatorColor="primary"
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            onChange={(event, newValue) =>
+                                setTabIndex(newValue)
+                            }
+                            aria-label="tables"
+                        >
+                            {TABLE_NAMES.map((tableName) => (
+                                <Tab
+                                    key={tableName}
+                                    label={intl.formatMessage({
+                                        id: tableName,
+                                    })}
                                 />
-                            </Grid>
-                        </Grid>
-                        {/*This render is fast, rerender full dom everytime*/}
-                        {tabIndex === 0 && renderSubstationsTable()}
-                        {tabIndex === 1 && renderVoltageLevelsTable()}
-                        {tabIndex === 2 && renderLinesTable()}
-                        {tabIndex === 3 && renderTwoWindingsTransformersTable()}
-                        {tabIndex === 4 &&
-                            renderThreeWindingsTransformersTable()}
-                        {tabIndex === 5 && renderGeneratorsTable()}
-                        {tabIndex === 6 && renderLoadsTable()}
-                        {tabIndex === 7 && renderShuntCompensatorsTable()}
-                        {tabIndex === 8 && renderStaticVarCompensatorsTable()}
-                        {tabIndex === 9 && renderBatteriesTable()}
-                        {tabIndex === 10 && renderHvdcLinesTable()}
-                        {tabIndex === 11 && renderLccConverterStationsTable()}
-                        {tabIndex === 12 && renderVscConverterStationsTable()}
-                        {tabIndex === 13 && renderDanglingLinesTable()}
-                    </div>
-                )}
-            </AutoSizer>
+                            ))}
+                        </Tabs>
+                    </Grid>
+                    <Grid
+                        item
+                        alignContent={'flex-end'}
+                        className={classes.containerInputSearch}
+                    >
+                        <TextField
+                            className={classes.textField}
+                            size="small"
+                            placeholder={
+                                intl.formatMessage({ id: 'filter' }) + '...'
+                            }
+                            onChange={setFilter}
+                            variant="outlined"
+                            classes={classes.searchSection}
+                            fullWidth
+                            InputProps={{
+                                classes: {
+                                    input: classes.searchSection,
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Grid>
+                </Grid>
+                <div className={classes.table} style={{ flexGrow: 1 }}>
+                    {/*This render is fast, rerender full dom everytime*/}
+                    {tabIndex === 0 && renderSubstationsTable()}
+                    {tabIndex === 1 && renderVoltageLevelsTable()}
+                    {tabIndex === 2 && renderLinesTable()}
+                    {tabIndex === 3 && renderTwoWindingsTransformersTable()}
+                    {tabIndex === 4 && renderThreeWindingsTransformersTable()}
+                    {tabIndex === 5 && renderGeneratorsTable()}
+                    {tabIndex === 6 && renderLoadsTable()}
+                    {tabIndex === 7 && renderShuntCompensatorsTable()}
+                    {tabIndex === 8 && renderStaticVarCompensatorsTable()}
+                    {tabIndex === 9 && renderBatteriesTable()}
+                    {tabIndex === 10 && renderHvdcLinesTable()}
+                    {tabIndex === 11 && renderLccConverterStationsTable()}
+                    {tabIndex === 12 && renderVscConverterStationsTable()}
+                    {tabIndex === 13 && renderDanglingLinesTable()}
+                </div>
+            </>
         )
     );
 };
