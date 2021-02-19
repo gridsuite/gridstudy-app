@@ -75,7 +75,7 @@ const SplitButton = (props) => {
 
     const handleMenuItemClick = (event, index) => {
         if (props.isRunning) {
-            props.onStopComputation();
+            props.actionOnRunnable();
         } else {
             props.onSelectionChange(index);
         }
@@ -206,7 +206,7 @@ SplitButton.propTypes = {
     className: PropTypes.string,
     startIcon: PropTypes.element,
     text: PropTypes.string,
-    onStopComputation: PropTypes.func,
+    actionOnRunnable: PropTypes.func.isRequired,
     isRunning: PropTypes.bool,
     computationStopped: PropTypes.bool,
 };
