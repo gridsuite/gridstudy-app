@@ -171,14 +171,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeSwitch(prop, label, callback) {
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Switch
                         checked={prop}
                         onChange={callback}
@@ -194,14 +194,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeDropDown(prop, label, values, callback) {
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select labelId={label} value={prop} onChange={callback}>
                         {Object.keys(values).map((key) => (
                             <MenuItem key={key} value={key}>
@@ -238,14 +238,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     ) {
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={7}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={5} className={classes.controlItem}>
                     <Slider
                         min={0}
                         max={100}
@@ -276,14 +276,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 })}
 
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="theme" />:
+                            <FormattedMessage id="theme" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <RadioGroup row value={theme} onChange={handleChangeTheme}>
                         <FormControlLabel
                             value={DARK_THEME}
@@ -318,14 +318,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     );
                 })}
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="SubstationLayout" />:
+                            <FormattedMessage id="SubstationLayout" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="substation-layout-select-label"
                         value={substationLayout}
@@ -373,14 +373,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     );
                 })}
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="LineFlowMode" />:
+                            <FormattedMessage id="LineFlowMode" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-mode-select-label"
                         value={lineFlowMode}
@@ -398,14 +398,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     </Select>
                 </Grid>
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="LineFlowColorMode" />:
+                            <FormattedMessage id="LineFlowColorMode" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-color-mode-select-label"
                         value={lineFlowColorMode}
