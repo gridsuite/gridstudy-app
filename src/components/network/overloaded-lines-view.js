@@ -84,27 +84,22 @@ const OverloadedLinesView = (props) => {
                         load: loads[i],
                         limit: limits[i],
                         // conversion [r,g,b] => #XXXXXX ; concat '0' to (color value) in hexadecimal keep last 2 characters
-                        //eslint-disable-next-line
                         color:
                             '#' +
                             color
-                                .map((c) =>
-                                    ('0' + Math.max(c, 0).toString(16)).slice(
-                                        -2
-                                    )
-                                )
+                                .map((c) => ('0' + c.toString(16)).slice(-2))
                                 .join(''),
                     };
                 }
             }
             return fields;
         };
-        if (props.lines.get(() => setLinesLoaded(true)) === undefined)
+        if (props.lines.getOrFetch(() => setLinesLoaded(true)) === undefined)
             setLinesLoaded(false);
         else
             setLines(
                 props.lines
-                    .get(() => setLinesLoaded(true))
+                    .getOrFetch(() => setLinesLoaded(true))
                     .map((line) => makeData(line))
                     .sort((a, b) => b.overload - a.overload)
             );
