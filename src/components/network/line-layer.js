@@ -587,11 +587,13 @@ class LineLayer extends CompositeLayer {
                 terminal2Connected: line.terminal2Connected,
             });
         });
-        this.scheduleNext( () => this.setState({ linesConnection: linesConnection }));
+        this.scheduleNext(() =>
+            this.setState({ linesConnection: linesConnection })
+        );
 
         const nvIndexes = [];
         nvUpdated.forEach((nv) =>
-          nvIndexes.push(this.props.network.nominalVoltages.indexOf(nv))
+            nvIndexes.push(this.props.network.nominalVoltages.indexOf(nv))
         );
         this.workArray(nvIndexes.length, (i) =>
             this.setState({ [LINE_UPDATED + nvIndexes[i]]: ts })
