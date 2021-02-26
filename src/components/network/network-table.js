@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Network from './network';
 import VirtualizedTable from '../util/virtualized-table';
@@ -265,7 +265,9 @@ const NetworkTable = (props) => {
     }
 
     const showSelectedColumn = (key) => {
-        return selectedListName.includes(intl.formatMessage({ id: key }))
+        return selectedListName[tabIndex].includes(
+            intl.formatMessage({ id: key })
+        )
             ? ''
             : 'none';
     };
@@ -492,7 +494,7 @@ const NetworkTable = (props) => {
             label: '',
             dataKey: '',
             style: {
-                display: selectedListName.length > 0 ? '' : 'none',
+                display: selectedListName[tabIndex].length > 0 ? '' : 'none',
             },
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
@@ -1918,7 +1920,11 @@ const NetworkTable = (props) => {
     );
 
     const handleOpenPopupSelectList = () => {
-        setListColumnsNames(onClickCallFunction(tabIndex));
+        setListColumnsNames(
+            listColumnsNames.map((arr, index) =>
+                tabIndex === index ? getListAvailableColumns(tabIndex) : arr
+            )
+        );
         setPopupSelectListName(true);
     };
 
@@ -1927,10 +1933,15 @@ const NetworkTable = (props) => {
     };
 
     const handleSaveSelectedList = () => {
-        const showListName = listColumnsNames.filter((item) =>
-            checked.includes(item)
+        const showListName = listColumnsNames[tabIndex].filter((item) =>
+            checked[tabIndex].includes(item)
         );
-        setSelectedListName(showListName);
+        setSelectedListName(
+            selectedListName.map((arr, index) =>
+                tabIndex === index ? showListName : arr
+            )
+        );
+
         setPopupSelectListName(false);
     };
 
@@ -1947,8 +1958,8 @@ const NetworkTable = (props) => {
     }
 
     const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
+        const currentIndex = checked[tabIndex].indexOf(value);
+        const newChecked = [...checked[tabIndex]];
 
         if (currentIndex === -1) {
             newChecked.push(value);
@@ -1956,17 +1967,24 @@ const NetworkTable = (props) => {
             newChecked.splice(currentIndex, 1);
         }
 
-        setChecked(newChecked);
+        setChecked(
+            checked.map((arr, index) => (tabIndex === index ? newChecked : arr))
+        );
     };
 
-    const numberOfChecked = (items) => intersection(checked, items).length;
+    const numberOfChecked = (items) =>
+        intersection(checked[tabIndex], items).length;
 
     const handleToggleAll = (items) => () => {
+        let newChecked;
         if (numberOfChecked(items) === items.length) {
-            setChecked(not(checked, items));
+            newChecked = not(checked[tabIndex], items);
         } else {
-            setChecked(union(checked, items));
+            newChecked = union(checked[tabIndex], items);
         }
+        setChecked(
+            checked.map((arr, index) => (tabIndex === index ? newChecked : arr))
+        );
     };
 
     const checkListColumnsNames = () => {
@@ -1974,27 +1992,26 @@ const NetworkTable = (props) => {
             <List>
                 <ListItem
                     className={classes.checkboxSelectAll}
-                    onClick={handleToggleAll(listColumnsNames)}
+                    onClick={handleToggleAll(listColumnsNames[tabIndex])}
                 >
                     <Checkbox
                         checked={
-                            numberOfChecked(listColumnsNames) ===
-                                listColumnsNames.length &&
-                            listColumnsNames.length !== 0
+                            numberOfChecked(listColumnsNames[tabIndex]) ===
+                                listColumnsNames[tabIndex].length &&
+                            listColumnsNames[tabIndex].length !== 0
                         }
                         indeterminate={
-                            numberOfChecked(listColumnsNames) !==
-                                listColumnsNames.length &&
-                            numberOfChecked(listColumnsNames) !== 0
+                            numberOfChecked(listColumnsNames[tabIndex]) !==
+                                listColumnsNames[tabIndex].length &&
+                            numberOfChecked(listColumnsNames[tabIndex]) !== 0
                         }
-                        disabled={listColumnsNames.length === 0}
+                        disabled={listColumnsNames[tabIndex].length === 0}
                         color="primary"
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
-                {listColumnsNames.map((value, index) => (
+                {listColumnsNames[tabIndex].map((value, index) => (
                     <List
-                        className="dragHandle"
                         key={index}
                         style={{ padding: '0' }}
                     >
@@ -2006,7 +2023,9 @@ const NetworkTable = (props) => {
                         >
                             <ListItemIcon>
                                 <Checkbox
-                                    checked={checked.indexOf(value) !== -1}
+                                    checked={
+                                        checked[tabIndex].indexOf(value) !== -1
+                                    }
                                     color="primary"
                                 />
                             </ListItemIcon>
@@ -2018,185 +2037,205 @@ const NetworkTable = (props) => {
         );
     };
 
-    const onClickCallFunction = (index) => {
-        let list = '';
-        if (props.network) {
-            setSelectedListName([]);
-            switch (index) {
-                case 0:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'Country' }),
-                    ];
-                    return list;
-                case 1:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'SubstationId' }),
-                        intl.formatMessage({ id: 'NominalVoltage' }),
-                    ];
-                    return list;
-                case 2:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
-                        intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
-                        intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                    ];
-                    return list;
-                case 3:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
-                        intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
-                        intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                        intl.formatMessage({ id: 'RatioTap' }),
-                        intl.formatMessage({ id: 'PhaseTap' }),
-                    ];
-                    return list;
-                case 4:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
-                        intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
-                        intl.formatMessage({ id: 'VoltageLevelIdSide3' }),
-                        intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        intl.formatMessage({ id: 'ActivePowerSide3' }),
-                        intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                        intl.formatMessage({ id: 'ReactivePowerSide3' }),
-                        intl.formatMessage({ id: 'RatioTap1' }),
-                        intl.formatMessage({ id: 'RatioTap2' }),
-                        intl.formatMessage({ id: 'RatioTap3' }),
-                        intl.formatMessage({ id: 'PhaseTap1' }),
-                        intl.formatMessage({ id: 'PhaseTap2' }),
-                        intl.formatMessage({ id: 'PhaseTap3' }),
-                    ];
-                    return list;
-                case 5:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelId' }),
-                        intl.formatMessage({ id: 'ActivePower' }),
-                        intl.formatMessage({ id: 'ReactivePower' }),
-                        intl.formatMessage({ id: 'TargetP' }),
-                    ];
-                    return list;
-                case 6:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'LoadType' }),
-                        intl.formatMessage({ id: 'VoltageLevelId' }),
-                        intl.formatMessage({ id: 'ActivePower' }),
-                        intl.formatMessage({ id: 'ReactivePower' }),
-                        intl.formatMessage({ id: 'ConstantActivePower' }),
-                        intl.formatMessage({ id: 'ConstantReactivePower' }),
-                    ];
-                    return list;
-                case 7:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelId' }),
-                        intl.formatMessage({ id: 'ReactivePower' }),
-                        intl.formatMessage({ id: 'TargetV' }),
-                        intl.formatMessage({ id: 'TargetDeadband' }),
-                    ];
-                    return list;
-                case 8:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelId' }),
-                        intl.formatMessage({ id: 'ActivePower' }),
-                        intl.formatMessage({ id: 'ReactivePower' }),
-                        intl.formatMessage({ id: 'VoltageSetpoint' }),
-                        intl.formatMessage({ id: 'ReactivePowerSetpoint' }),
-                    ];
-                    return list;
-                case 9:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelId' }),
-                        intl.formatMessage({ id: 'ActivePower' }),
-                        intl.formatMessage({ id: 'ReactivePower' }),
-                        intl.formatMessage({ id: 'ConstantActivePower' }),
-                        intl.formatMessage({ id: 'ConstantReactivePower' }),
-                    ];
-                    return list;
-                case 10:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'ConvertersMode' }),
-                        intl.formatMessage({ id: 'ConverterStationId1' }),
-                        intl.formatMessage({ id: 'ConverterStationId2' }),
-                        intl.formatMessage({ id: 'R' }),
-                        intl.formatMessage({ id: 'NominalV' }),
-                        intl.formatMessage({ id: 'ActivePowerSetpoint' }),
-                        intl.formatMessage({ id: 'MaxP' }),
-                    ];
-                    return list;
-                case 11:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelId' }),
-                        intl.formatMessage({ id: 'HvdcLineId' }),
-                        intl.formatMessage({ id: 'ActivePower' }),
-                        intl.formatMessage({ id: 'ReactivePower' }),
-                        intl.formatMessage({ id: 'PowerFactor' }),
-                        intl.formatMessage({ id: 'LossFactor' }),
-                    ];
-                    return list;
-                case 12:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelId' }),
-                        intl.formatMessage({ id: 'HvdcLineId' }),
-                        intl.formatMessage({ id: 'ActivePower' }),
-                        intl.formatMessage({ id: 'ReactivePower' }),
-                        intl.formatMessage({ id: 'LossFactor' }),
-                    ];
-                    return list;
-                case 13:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'VoltageLevelId' }),
-                        intl.formatMessage({ id: 'UcteXnodeCode' }),
-                        intl.formatMessage({ id: 'ActivePower' }),
-                        intl.formatMessage({ id: 'ReactivePower' }),
-                        intl.formatMessage({ id: 'ConstantActivePower' }),
-                        intl.formatMessage({ id: 'ConstantReactivePower' }),
-                    ];
-                    return list;
-                default:
-                    list = [
-                        intl.formatMessage({ id: 'ID' }),
-                        intl.formatMessage({ id: 'Name' }),
-                        intl.formatMessage({ id: 'Country' }),
-                    ];
-                    return list;
-            }
-        }
-    };
+    const getListAvailableColumns = useCallback(
+        (index) => {
+            let list = [];
+            if (props.network) {
+                switch (index) {
+                    case 0:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'Country' }),
+                        ];
+                        return list;
+                    case 1:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'SubstationId' }),
+                            intl.formatMessage({ id: 'NominalVoltage' }),
+                        ];
+                        return list;
+                    case 2:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
+                            intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
+                            intl.formatMessage({ id: 'ActivePowerSide1' }),
+                            intl.formatMessage({ id: 'ActivePowerSide2' }),
+                            intl.formatMessage({ id: 'ReactivePowerSide1' }),
+                            intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                        ];
+                        return list;
+                    case 3:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
+                            intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
+                            intl.formatMessage({ id: 'ActivePowerSide1' }),
+                            intl.formatMessage({ id: 'ActivePowerSide2' }),
+                            intl.formatMessage({ id: 'ReactivePowerSide1' }),
+                            intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                            intl.formatMessage({ id: 'RatioTap' }),
+                            intl.formatMessage({ id: 'PhaseTap' }),
+                        ];
+                        return list;
+                    case 4:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
+                            intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
+                            intl.formatMessage({ id: 'VoltageLevelIdSide3' }),
+                            intl.formatMessage({ id: 'ActivePowerSide1' }),
+                            intl.formatMessage({ id: 'ActivePowerSide2' }),
+                            intl.formatMessage({ id: 'ActivePowerSide3' }),
+                            intl.formatMessage({ id: 'ReactivePowerSide1' }),
+                            intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                            intl.formatMessage({ id: 'ReactivePowerSide3' }),
+                            intl.formatMessage({ id: 'RatioTap1' }),
+                            intl.formatMessage({ id: 'RatioTap2' }),
+                            intl.formatMessage({ id: 'RatioTap3' }),
+                            intl.formatMessage({ id: 'PhaseTap1' }),
+                            intl.formatMessage({ id: 'PhaseTap2' }),
+                            intl.formatMessage({ id: 'PhaseTap3' }),
+                        ];
+                        return list;
+                    case 5:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelId' }),
+                            intl.formatMessage({ id: 'ActivePower' }),
+                            intl.formatMessage({ id: 'ReactivePower' }),
+                            intl.formatMessage({ id: 'TargetP' }),
+                        ];
+                        return list;
+                    case 6:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'LoadType' }),
+                            intl.formatMessage({ id: 'VoltageLevelId' }),
+                            intl.formatMessage({ id: 'ActivePower' }),
+                            intl.formatMessage({ id: 'ReactivePower' }),
+                            intl.formatMessage({ id: 'ConstantActivePower' }),
+                            intl.formatMessage({ id: 'ConstantReactivePower' }),
+                        ];
+                        return list;
+                    case 7:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelId' }),
+                            intl.formatMessage({ id: 'ReactivePower' }),
+                            intl.formatMessage({ id: 'TargetV' }),
+                            intl.formatMessage({ id: 'TargetDeadband' }),
+                        ];
+                        return list;
+                    case 8:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelId' }),
+                            intl.formatMessage({ id: 'ActivePower' }),
+                            intl.formatMessage({ id: 'ReactivePower' }),
+                            intl.formatMessage({ id: 'VoltageSetpoint' }),
+                            intl.formatMessage({ id: 'ReactivePowerSetpoint' }),
+                        ];
+                        return list;
+                    case 9:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelId' }),
+                            intl.formatMessage({ id: 'ActivePower' }),
+                            intl.formatMessage({ id: 'ReactivePower' }),
+                            intl.formatMessage({ id: 'ConstantActivePower' }),
+                            intl.formatMessage({ id: 'ConstantReactivePower' }),
+                        ];
+                        return list;
+                    case 10:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'ConvertersMode' }),
+                            intl.formatMessage({ id: 'ConverterStationId1' }),
+                            intl.formatMessage({ id: 'ConverterStationId2' }),
+                            intl.formatMessage({ id: 'R' }),
+                            intl.formatMessage({ id: 'NominalV' }),
+                            intl.formatMessage({ id: 'ActivePowerSetpoint' }),
+                            intl.formatMessage({ id: 'MaxP' }),
+                        ];
+                        return list;
+                    case 11:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelId' }),
+                            intl.formatMessage({ id: 'HvdcLineId' }),
+                            intl.formatMessage({ id: 'ActivePower' }),
+                            intl.formatMessage({ id: 'ReactivePower' }),
+                            intl.formatMessage({ id: 'PowerFactor' }),
+                            intl.formatMessage({ id: 'LossFactor' }),
+                        ];
+                        return list;
+                    case 12:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelId' }),
+                            intl.formatMessage({ id: 'HvdcLineId' }),
+                            intl.formatMessage({ id: 'ActivePower' }),
+                            intl.formatMessage({ id: 'ReactivePower' }),
+                            intl.formatMessage({ id: 'LossFactor' }),
+                        ];
+                        return list;
+                    case 13:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'VoltageLevelId' }),
+                            intl.formatMessage({ id: 'UcteXnodeCode' }),
+                            intl.formatMessage({ id: 'ActivePower' }),
+                            intl.formatMessage({ id: 'ReactivePower' }),
+                            intl.formatMessage({ id: 'ConstantActivePower' }),
+                            intl.formatMessage({ id: 'ConstantReactivePower' }),
+                        ];
+                        return list;
+                    default:
+                        list = [
+                            intl.formatMessage({ id: 'ID' }),
+                            intl.formatMessage({ id: 'Name' }),
+                            intl.formatMessage({ id: 'Country' }),
+                        ];
+                        return list;
+                }
+            } else return list;
+        },
+        [props.network, intl]
+    );
+
+    useEffect(() => {
+        // by default, all available columns are selected
+        let cols = [];
+        let selCols = [];
+        let checkCols = [];
+        TABLE_NAMES.forEach((name, index) => {
+            let availableCols = getListAvailableColumns(index);
+            cols.push(availableCols);
+            selCols.push(availableCols);
+            checkCols.push(availableCols);
+        });
+
+        setListColumnsNames(cols);
+        setSelectedListName(selCols);
+        setChecked(checkCols);
+    }, [props.network, getListAvailableColumns]);
+
     return (
         props.network && (
             <>
@@ -2213,9 +2252,6 @@ const NetworkTable = (props) => {
                                         setTabIndex(newValue)
                                     }
                                     aria-label="tables"
-                                    onClick={() =>
-                                        onClickCallFunction(tabIndex)
-                                    }
                                 >
                                     {TABLE_NAMES.map((tableName) => (
                                         <Tab
