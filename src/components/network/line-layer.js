@@ -226,16 +226,25 @@ class LineLayer extends CompositeLayer {
         this.props.network.nominalVoltages.forEach((nv) =>
             linesByNominalVoltage.set(nv, new Map())
         );
-        this.workArray(this.props.data.values.length, (i) => {
-            linesByNominalVoltage
-                .get(this.getLineNominalVoltage(this.props.data.values[i]))
-                .set(this.props.data.values[i].id, this.props.data.values[i]);
-        });
-        this.setState({ linesByNominalVoltage: linesByNominalVoltage });
-        let next = (ts) =>
-            this.computeLinesMetadata(ts, 0, new Map(), new Map());
+        this.workArray(
+            this.props.data.values.length,
+            (i) => {
+                linesByNominalVoltage
+                    .get(this.getLineNominalVoltage(this.props.data.values[i]))
+                    .set(
+                        this.props.data.values[i].id,
+                        this.props.data.values[i]
+                    );
+            },
+            0,
+            () => {
+                this.setState({ linesByNominalVoltage: linesByNominalVoltage });
+                let next = (ts) =>
+                    this.computeLinesMetadata(ts, 0, new Map(), new Map());
 
-        this.scheduleNext(next);
+                this.scheduleNext(next);
+            }
+        );
     }
 
     /*  compute lines connexions state and which ones share pair of substations (origin/end)
@@ -253,37 +262,43 @@ class LineLayer extends CompositeLayer {
         mapOriginDestination
     ) {
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines.length, (i) => {
-            const line = lines[i];
-            linesConnection.set(line.id, {
-                terminal1Connected: line.terminal1Connected,
-                terminal2Connected: line.terminal2Connected,
-            });
-            line.geo = {};
-            const key = this.genLineKey(line);
-            let val = mapOriginDestination.get(key);
-            if (val == null) mapOriginDestination.set(key, new Set([line]));
-            else {
-                mapOriginDestination.set(key, val.add(line));
+        this.workArray(
+            lines.length,
+            (i) => {
+                const line = lines[i];
+                linesConnection.set(line.id, {
+                    terminal1Connected: line.terminal1Connected,
+                    terminal2Connected: line.terminal2Connected,
+                });
+                line.geo = {};
+                const key = this.genLineKey(line);
+                let val = mapOriginDestination.get(key);
+                if (val == null) mapOriginDestination.set(key, new Set([line]));
+                else {
+                    mapOriginDestination.set(key, val.add(line));
+                }
+            },
+            0,
+            () => {
+                let onNext;
+                if (this.hasNextNominalVoltage(nominalVoltageIndex))
+                    onNext = (ts) =>
+                        this.computeLinesMetadata(
+                            ts,
+                            nominalVoltageIndex + 1,
+                            linesConnection,
+                            mapOriginDestination
+                        );
+                else {
+                    this.setState({
+                        linesConnection: linesConnection,
+                        mapOriginDestination: mapOriginDestination,
+                    });
+                    onNext = (ts) => this.generateLinesParallelIndex(ts);
+                }
+                this.scheduleNext(onNext);
             }
-        });
-        let onNext;
-        if (this.hasNextNominalVoltage(nominalVoltageIndex))
-            onNext = (ts) =>
-                this.computeLinesMetadata(
-                    ts,
-                    nominalVoltageIndex + 1,
-                    linesConnection,
-                    mapOriginDestination
-                );
-        else {
-            this.setState({
-                linesConnection: linesConnection,
-                mapOriginDestination: mapOriginDestination,
-            });
-            onNext = (ts) => this.generateLinesParallelIndex(ts);
-        }
-        this.scheduleNext(onNext);
+        );
     }
 
     generateLinesParallelIndex(ts) {
@@ -293,44 +308,52 @@ class LineLayer extends CompositeLayer {
         // -1 => distanceBetweenLines on the other side
         // 0.5 => half of distanceBetweenLines
         const listSamePathLines = [...this.state.mapOriginDestination.values()];
-        this.workArray(listSamePathLines.length, (n) => {
-            const samePathLine = listSamePathLines[n];
-            let index = -(samePathLine.size - 1) / 2;
-            samePathLine.forEach((line) => {
-                line.geo.parallelIndex = this.props.lineParallelPath
-                    ? index
-                    : 0;
-                index += 1;
-            });
-        });
-        this.scheduleNext((ts) => this.generateLineMap(ts, 0));
+        this.workArray(
+            listSamePathLines.length,
+            (n) => {
+                const samePathLine = listSamePathLines[n];
+                let index = -(samePathLine.size - 1) / 2;
+                samePathLine.forEach((line) => {
+                    line.geo.parallelIndex = this.props.lineParallelPath
+                        ? index
+                        : 0;
+                    index += 1;
+                });
+            },
+            0,
+            () => this.generateLineMap(ts, 0)
+        );
     }
 
     generateLineMap(ts, nominalVoltageIndex) {
         const lineMap = this.state.lineMap;
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines.length, (i) => {
-            const line = lines[i];
-            const positions = this.props.geoData.getLinePositions(
-                this.props.network,
-                line,
-                this.props.lineFullPath
-            );
-            const cumulativeDistances = this.props.geoData.getLineDistances(
-                positions
-            );
-            lineMap.set(line.id, {
-                positions: positions,
-                cumulativeDistances: cumulativeDistances,
-                line: line,
-            });
-        });
-        this.setState({
-            lineMap: lineMap,
-            [PATH_UPDATED + nominalVoltageIndex]: ts,
-        });
-        this.scheduleNext((ts) =>
-            this.computeForkLines(ts, nominalVoltageIndex, new Map())
+        this.workArray(
+            lines.length,
+            (i) => {
+                const line = lines[i];
+                const positions = this.props.geoData.getLinePositions(
+                    this.props.network,
+                    line,
+                    this.props.lineFullPath
+                );
+                const cumulativeDistances = this.props.geoData.getLineDistances(
+                    positions
+                );
+                lineMap.set(line.id, {
+                    positions: positions,
+                    cumulativeDistances: cumulativeDistances,
+                    line: line,
+                });
+            },
+            0,
+            () => {
+                this.setState({
+                    lineMap: lineMap,
+                    [PATH_UPDATED + nominalVoltageIndex]: ts,
+                });
+                this.computeForkLines(ts, nominalVoltageIndex, new Map());
+            }
         );
     }
 
@@ -344,81 +367,87 @@ class LineLayer extends CompositeLayer {
 
     computeForkLines(ts, nominalVoltageIndex, mapMinProximityFactor) {
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines.length, (i) => {
-            const line = lines[i];
-            const positions = this.state.lineMap.get(line.id).positions;
-            //the first and last in positions doesn't depend on lineFullPath
-            line.geo.origin = positions[0];
-            line.geo.end = positions[positions.length - 1];
+        this.workArray(
+            lines.length,
+            (i) => {
+                const line = lines[i];
+                const positions = this.state.lineMap.get(line.id).positions;
+                //the first and last in positions doesn't depend on lineFullPath
+                line.geo.origin = positions[0];
+                line.geo.end = positions[positions.length - 1];
 
-            line.geo.substationIndexStart = this.getVoltageLevelIndex(
-                line.voltageLevelId1
-            );
-            line.geo.substationIndexEnd = this.getVoltageLevelIndex(
-                line.voltageLevelId2
-            );
+                line.geo.substationIndexStart = this.getVoltageLevelIndex(
+                    line.voltageLevelId1
+                );
+                line.geo.substationIndexEnd = this.getVoltageLevelIndex(
+                    line.voltageLevelId2
+                );
 
-            if (!line.geo.angle)
-                line.geo.angle = this.computeAngle(
+                if (!line.geo.angle)
+                    line.geo.angle = this.computeAngle(
+                        this.props,
+                        positions[0],
+                        positions[positions.length - 1]
+                    );
+                line.geo.angleStart = this.computeAngle(
                     this.props,
                     positions[0],
+                    positions[1]
+                );
+                line.geo.angleEnd = this.computeAngle(
+                    this.props,
+                    positions[positions.length - 2],
                     positions[positions.length - 1]
                 );
-            line.geo.angleStart = this.computeAngle(
-                this.props,
-                positions[0],
-                positions[1]
-            );
-            line.geo.angleEnd = this.computeAngle(
-                this.props,
-                positions[positions.length - 2],
-                positions[positions.length - 1]
-            );
-            line.geo.proximityFactorStart = this.getProximityFactor(
-                positions[0],
-                positions[1]
-            );
-            line.geo.proximityFactorEnd = this.getProximityFactor(
-                positions[positions.length - 2],
-                positions[positions.length - 1]
-            );
+                line.geo.proximityFactorStart = this.getProximityFactor(
+                    positions[0],
+                    positions[1]
+                );
+                line.geo.proximityFactorEnd = this.getProximityFactor(
+                    positions[positions.length - 2],
+                    positions[positions.length - 1]
+                );
 
-            let key = this.genLineKey(line);
-            let val = mapMinProximityFactor.get(key);
-            if (val == null)
-                mapMinProximityFactor.set(key, {
-                    lines: [line],
-                    start: line.geo.proximityFactorStart,
-                    end: line.geo.proximityFactorEnd,
-                });
-            else {
-                val.lines.push(line);
-                val.start = Math.min(val.start, line.geo.proximityFactorStart);
-                val.end = Math.min(val.end, line.geo.proximityFactorEnd);
-                mapMinProximityFactor.set(key, val);
+                let key = this.genLineKey(line);
+                let val = mapMinProximityFactor.get(key);
+                if (val == null)
+                    mapMinProximityFactor.set(key, {
+                        lines: [line],
+                        start: line.geo.proximityFactorStart,
+                        end: line.geo.proximityFactorEnd,
+                    });
+                else {
+                    val.lines.push(line);
+                    val.start = Math.min(
+                        val.start,
+                        line.geo.proximityFactorStart
+                    );
+                    val.end = Math.min(val.end, line.geo.proximityFactorEnd);
+                    mapMinProximityFactor.set(key, val);
+                }
+            },
+            0,
+            () => {
+                if (
+                    nominalVoltageIndex ===
+                    this.props.network.nominalVoltages.length - 1
+                ) {
+                    mapMinProximityFactor.forEach((samePathLine) =>
+                        samePathLine.lines.forEach((line) => {
+                            line.geo.proximityFactorStart = samePathLine.start;
+                            line.geo.proximityFactorEnd = samePathLine.end;
+                        })
+                    );
+                    this.setState({
+                        [PROXIMITY_UPDATED]: ts,
+                    });
+                }
+                this.generateParallelPathLayer(
+                    ts,
+                    nominalVoltageIndex,
+                    mapMinProximityFactor
+                );
             }
-        });
-
-        if (
-            nominalVoltageIndex ===
-            this.props.network.nominalVoltages.length - 1
-        ) {
-            mapMinProximityFactor.forEach((samePathLine) =>
-                samePathLine.lines.forEach((line) => {
-                    line.geo.proximityFactorStart = samePathLine.start;
-                    line.geo.proximityFactorEnd = samePathLine.end;
-                })
-            );
-            this.setState({
-                [PROXIMITY_UPDATED]: ts,
-            });
-        }
-        this.scheduleNext((ts) =>
-            this.generateParallelPathLayer(
-                ts,
-                nominalVoltageIndex,
-                mapMinProximityFactor
-            )
         );
     }
 
@@ -428,177 +457,194 @@ class LineLayer extends CompositeLayer {
         // create one arrow each DISTANCE_BETWEEN_ARROWS
         let arrows = [];
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines.length, (i) => {
-            const line = lines[i];
-            let lineData = lineMap.get(line.id);
-            line.cumulativeDistances = lineData.cumulativeDistances;
-            line.positions = lineData.positions;
+        this.workArray(
+            lines.length,
+            (i) => {
+                const line = lines[i];
+                let lineData = lineMap.get(line.id);
+                line.cumulativeDistances = lineData.cumulativeDistances;
+                line.positions = lineData.positions;
 
-            if (this.props.lineFlowMode === LineFlowMode.FEEDERS) {
-                //If we use Feeders Mode, we build only two arrows
-                arrows.push(
-                    {
-                        distance: START_ARROW_POSITION,
-                        line: line,
-                    },
-                    {
-                        distance: END_ARROW_POSITION,
-                        line: line,
-                    }
+                if (this.props.lineFlowMode === LineFlowMode.FEEDERS) {
+                    //If we use Feeders Mode, we build only two arrows
+                    arrows.push(
+                        {
+                            distance: START_ARROW_POSITION,
+                            line: line,
+                        },
+                        {
+                            distance: END_ARROW_POSITION,
+                            line: line,
+                        }
+                    );
+                } else {
+                    // calculate distance between 2 substations as a raw estimate of line size
+                    const directLinePositions = [
+                        lineData.positions[0],
+                        lineData.positions[lineData.positions.length - 1],
+                    ];
+                    //TODO this doesn't need to be an approximation anymore, we have the value anyway
+                    const directLineDistance = getDistance(
+                        {
+                            latitude: directLinePositions[0][1],
+                            longitude: directLinePositions[0][0],
+                        },
+                        {
+                            latitude: directLinePositions[1][1],
+                            longitude: directLinePositions[1][0],
+                        }
+                    );
+                    const arrowCount = Math.ceil(
+                        directLineDistance / DISTANCE_BETWEEN_ARROWS
+                    );
+                    for (let index = 0; index < arrowCount; ++index)
+                        arrows.push({
+                            distance: index / arrowCount,
+                            line: line,
+                        });
+                }
+            },
+            0,
+            () => {
+                this.setState({ [ARROW_UPDATE + nominalVoltageIndex]: ts });
+                this.generateArrowLayer(
+                    ts,
+                    nominalVoltageIndex,
+                    arrows,
+                    doLabel,
+                    doNextNominalVoltage
                 );
-            } else {
-                // calculate distance between 2 substations as a raw estimate of line size
-                const directLinePositions = [
-                    lineData.positions[0],
-                    lineData.positions[lineData.positions.length - 1],
-                ];
-                //TODO this doesn't need to be an approximation anymore, we have the value anyway
-                const directLineDistance = getDistance(
-                    {
-                        latitude: directLinePositions[0][1],
-                        longitude: directLinePositions[0][0],
-                    },
-                    {
-                        latitude: directLinePositions[1][1],
-                        longitude: directLinePositions[1][0],
-                    }
-                );
-                const arrowCount = Math.ceil(
-                    directLineDistance / DISTANCE_BETWEEN_ARROWS
-                );
-                for (let index = 0; index < arrowCount; ++index)
-                    arrows.push({
-                        distance: index / arrowCount,
-                        line: line,
-                    });
             }
-        });
-
-        this.scheduleNext((ts) => {
-            console.info(arrows);
-            this.setState({ [ARROW_UPDATE + nominalVoltageIndex]: ts });
-            this.generateArrowLayer(
-                ts,
-                nominalVoltageIndex,
-                arrows,
-                doLabel,
-                doNextNominalVoltage
-            );
-        });
+        );
     }
 
     computeLabels(ts, nominalVoltageIndex, doNextNominalVoltage) {
         let activePower = [];
         const lines = this.getLinesByNominalVoltageIndex(nominalVoltageIndex);
-        this.workArray(lines.length, (i) => {
-            const line = lines[i];
-            let lineData = this.state.lineMap.get(line.id);
-            let arrowDirection = getArrowDirection(line.p1);
-            let coordinates1 = this.props.geoData.labelDisplayPosition(
-                lineData.positions,
-                lineData.cumulativeDistances,
-                START_ARROW_POSITION,
-                arrowDirection,
-                line.geo.parallelIndex,
-                (line.geo.angle * 180) / Math.PI,
-                (line.geo.angleStart * 180) / Math.PI,
-                this.props.distanceBetweenLines,
-                line.geo.proximityFactorStart
-            );
-            let coordinates2 = this.props.geoData.labelDisplayPosition(
-                lineData.positions,
-                lineData.cumulativeDistances,
-                END_ARROW_POSITION,
-                arrowDirection,
-                line.geo.parallelIndex,
-                (line.geo.angle * 180) / Math.PI,
-                (line.geo.angleEnd * 180) / Math.PI,
-                this.props.distanceBetweenLines,
-                line.geo.proximityFactorEnd
-            );
-            if (coordinates1 !== null && coordinates2 !== null) {
-                activePower.push({
-                    line: line,
-                    p: line.p1,
-                    printPosition: [
-                        coordinates1.position.longitude,
-                        coordinates1.position.latitude,
-                    ],
-                    offset: coordinates1.offset,
+        this.workArray(
+            lines.length,
+            (i) => {
+                const line = lines[i];
+                let lineData = this.state.lineMap.get(line.id);
+                let arrowDirection = getArrowDirection(line.p1);
+                let coordinates1 = this.props.geoData.labelDisplayPosition(
+                    lineData.positions,
+                    lineData.cumulativeDistances,
+                    START_ARROW_POSITION,
+                    arrowDirection,
+                    line.geo.parallelIndex,
+                    (line.geo.angle * 180) / Math.PI,
+                    (line.geo.angleStart * 180) / Math.PI,
+                    this.props.distanceBetweenLines,
+                    line.geo.proximityFactorStart
+                );
+                let coordinates2 = this.props.geoData.labelDisplayPosition(
+                    lineData.positions,
+                    lineData.cumulativeDistances,
+                    END_ARROW_POSITION,
+                    arrowDirection,
+                    line.geo.parallelIndex,
+                    (line.geo.angle * 180) / Math.PI,
+                    (line.geo.angleEnd * 180) / Math.PI,
+                    this.props.distanceBetweenLines,
+                    line.geo.proximityFactorEnd
+                );
+                if (coordinates1 !== null && coordinates2 !== null) {
+                    activePower.push({
+                        line: line,
+                        p: line.p1,
+                        printPosition: [
+                            coordinates1.position.longitude,
+                            coordinates1.position.latitude,
+                        ],
+                        offset: coordinates1.offset,
+                    });
+                    activePower.push({
+                        line: line,
+                        p: line.p2,
+                        printPosition: [
+                            coordinates2.position.longitude,
+                            coordinates2.position.latitude,
+                        ],
+                        offset: coordinates2.offset,
+                    });
+                }
+            },
+            0,
+            () => {
+                let mapPower = this.state.activePower;
+                mapPower.set(nominalVoltageIndex, activePower);
+                this.setState({
+                    activePower: mapPower,
+                    [ACTIVE_POWER + nominalVoltageIndex]: ts,
                 });
-                activePower.push({
-                    line: line,
-                    p: line.p2,
-                    printPosition: [
-                        coordinates2.position.longitude,
-                        coordinates2.position.latitude,
-                    ],
-                    offset: coordinates2.offset,
-                });
+                this.generateLabelLayer(
+                    ts,
+                    nominalVoltageIndex,
+                    doNextNominalVoltage
+                );
             }
-        });
-        let mapPower = this.state.activePower;
-        mapPower.set(nominalVoltageIndex, activePower);
-        this.setState({
-            activePower: mapPower,
-            [ACTIVE_POWER + nominalVoltageIndex]: ts,
-        });
-        this.scheduleNext((ts) =>
-            this.generateLabelLayer(
-                ts,
-                nominalVoltageIndex,
-                doNextNominalVoltage
-            )
         );
     }
 
     updateLines(ts, updatedLines) {
         const linesByNominalVoltage = this.state.linesByNominalVoltage;
         const nominalVoltageUpdated = new Set();
-        this.workArray(updatedLines.length, (i) => {
-            const line = updatedLines[i];
-            const nominalVoltage = this.getLineNominalVoltage(line);
-            let oldLine = linesByNominalVoltage
-                .get(nominalVoltage)
-                .get(line.id);
-            if (oldLine) {
-                line.geo = oldLine.geo;
-                linesByNominalVoltage.get(nominalVoltage).set(line.id, line);
+        this.workArray(
+            updatedLines.length,
+            (i) => {
+                const line = updatedLines[i];
+                const nominalVoltage = this.getLineNominalVoltage(line);
+                let oldLine = linesByNominalVoltage
+                    .get(nominalVoltage)
+                    .get(line.id);
+                if (oldLine) {
+                    line.geo = oldLine.geo;
+                    linesByNominalVoltage
+                        .get(nominalVoltage)
+                        .set(line.id, line);
+                }
+                nominalVoltageUpdated.add(nominalVoltage);
+            },
+            0,
+            () => {
+                this.setState({ linesByNominalVoltage: linesByNominalVoltage });
+                this.computeLinesConnections(
+                    ts,
+                    updatedLines,
+                    nominalVoltageUpdated
+                );
             }
-            nominalVoltageUpdated.add(nominalVoltage);
-        });
-        this.scheduleNext(() => {
-            this.setState({ linesByNominalVoltage: linesByNominalVoltage });
-            this.computeLinesConnections(
-                ts,
-                updatedLines,
-                nominalVoltageUpdated
-            );
-        });
+        );
     }
 
     computeLinesConnections(ts, updatedLines, nvUpdated) {
         let linesConnection = this.state.linesConnection;
-        this.workArray(updatedLines.length, (i) => {
-            const line = updatedLines[i];
-            linesConnection.set(line.id, {
-                terminal1Connected: line.terminal1Connected,
-                terminal2Connected: line.terminal2Connected,
-            });
-        });
-        this.scheduleNext(() =>
-            this.setState({ linesConnection: linesConnection })
-        );
-
-        const nvIndexes = [];
-        nvUpdated.forEach((nv) =>
-            nvIndexes.push(this.props.network.nominalVoltages.indexOf(nv))
-        );
-        this.workArray(nvIndexes.length, (i) =>
-            this.setState({ [LINE_UPDATED + nvIndexes[i]]: ts })
-        );
-        this.workArray(nvIndexes.length, (i) =>
-            this.computeArrows(ts, nvIndexes[i], true, false)
+        this.workArray(
+            updatedLines.length,
+            (i) => {
+                const line = updatedLines[i];
+                linesConnection.set(line.id, {
+                    terminal1Connected: line.terminal1Connected,
+                    terminal2Connected: line.terminal2Connected,
+                });
+            },
+            0,
+            () => {
+                this.setState({ linesConnection: linesConnection });
+                const nvIndexes = [];
+                nvUpdated.forEach((nv) =>
+                    nvIndexes.push(
+                        this.props.network.nominalVoltages.indexOf(nv)
+                    )
+                );
+                this.workArray(nvIndexes.length, (i) =>
+                    this.setState({ [LINE_UPDATED + nvIndexes[i]]: ts })
+                );
+                this.workArray(nvIndexes.length, (i) =>
+                    this.computeArrows(ts, nvIndexes[i], true, false)
+                );
+            }
         );
     }
 
@@ -997,9 +1043,9 @@ class LineLayer extends CompositeLayer {
 
     renderLayers() {
         const layers = [];
-        this.state.layers.forEach((layer) =>
-            layers.push(layer(this.state, this.props))
-        );
+        this.state.layers.forEach((layer) => {
+            layers.push(layer(this.state, this.props));
+        });
         return layers;
     }
 
@@ -1042,7 +1088,7 @@ class LineLayer extends CompositeLayer {
             window.requestAnimationFrame(() => onNext(performance.now()));
     }
 
-    workArray(arrayLength, cb, currentIndex) {
+    workArray(arrayLength, cb, currentIndex, onNext) {
         let start = performance.now();
         let i = currentIndex || 0;
         while (i < arrayLength && performance.now() - start < tsThreshold) {
@@ -1050,7 +1096,8 @@ class LineLayer extends CompositeLayer {
             ++i;
         }
         if (i < arrayLength)
-            this.scheduleNext(() => this.workArray(arrayLength, cb, i));
+            this.scheduleNext(() => this.workArray(arrayLength, cb, i, onNext));
+        else if (onNext) this.scheduleNext(onNext);
     }
 }
 
