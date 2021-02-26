@@ -2250,35 +2250,6 @@ const NetworkTable = (props) => {
                             <Grid
                                 item
                                 alignContent={'flex-end'}
-                                className={classes.searchSection}
-                            >
-                                <TextField
-                                    className={classes.textField}
-                                    size="medium"
-                                    placeholder={
-                                        intl.formatMessage({ id: 'filter' }) +
-                                        '...'
-                                    }
-                                    onChange={setFilter}
-                                    variant="standard"
-                                    classes={classes.searchSection}
-                                    fullWidth
-                                    InputProps={{
-                                        classes: {
-                                            input: classes.searchSection,
-                                        },
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                                ))}
-                            </Grid>
-                            <Grid
-                                item
-                                alignContent={'flex-end'}
                                 className={classes.containerInputSearch}
                             >
                                 <TextField
@@ -2305,30 +2276,25 @@ const NetworkTable = (props) => {
                                 />
                             </Grid>
                         </Grid>
-                        <div className={classes.table} style={{ flexGrow: 1 }}>
-                            {/*This render is fast, rerender full dom everytime*/}
-                            {tabIndex === 0 && renderSubstationsTable()}
-                            {tabIndex === 1 && renderVoltageLevelsTable()}
-                            {tabIndex === 2 && renderLinesTable()}
-                            {tabIndex === 3 &&
-                                renderTwoWindingsTransformersTable()}
-                            {tabIndex === 4 &&
-                                renderThreeWindingsTransformersTable()}
-                            {tabIndex === 5 && renderGeneratorsTable()}
-                            {tabIndex === 6 && renderLoadsTable()}
-                            {tabIndex === 7 && renderShuntCompensatorsTable()}
-                            {tabIndex === 8 &&
-                                renderStaticVarCompensatorsTable()}
-                            {tabIndex === 9 && renderBatteriesTable()}
-                            {tabIndex === 10 && renderHvdcLinesTable()}
-                            {tabIndex === 11 &&
-                                renderLccConverterStationsTable()}
-                            {tabIndex === 12 &&
-                                renderVscConverterStationsTable()}
-                            {tabIndex === 13 && renderDanglingLinesTable()}
-                        </div>
                     </Grid>
                 </Grid>
+                <div className={classes.table} style={{ flexGrow: 1 }}>
+                    {/*This render is fast, rerender full dom everytime*/}
+                    {tabIndex === 0 && renderSubstationsTable()}
+                    {tabIndex === 1 && renderVoltageLevelsTable()}
+                    {tabIndex === 2 && renderLinesTable()}
+                    {tabIndex === 3 && renderTwoWindingsTransformersTable()}
+                    {tabIndex === 4 && renderThreeWindingsTransformersTable()}
+                    {tabIndex === 5 && renderGeneratorsTable()}
+                    {tabIndex === 6 && renderLoadsTable()}
+                    {tabIndex === 7 && renderShuntCompensatorsTable()}
+                    {tabIndex === 8 && renderStaticVarCompensatorsTable()}
+                    {tabIndex === 9 && renderBatteriesTable()}
+                    {tabIndex === 10 && renderHvdcLinesTable()}
+                    {tabIndex === 11 && renderLccConverterStationsTable()}
+                    {tabIndex === 12 && renderVscConverterStationsTable()}
+                    {tabIndex === 13 && renderDanglingLinesTable()}
+                </div>
             </>
         )
     );
