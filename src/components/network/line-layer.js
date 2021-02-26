@@ -466,26 +466,25 @@ class LineLayer extends CompositeLayer {
                 const arrowCount = Math.ceil(
                     directLineDistance / DISTANCE_BETWEEN_ARROWS
                 );
-                arrows.push(
-                    ...new Array(arrowCount).keys().map((index) => {
-                        return {
-                            distance: index / arrowCount,
-                            line: line,
-                        };
-                    })
-                );
+                for (let index = 0; index < arrowCount; ++index)
+                    arrows.push({
+                        distance: index / arrowCount,
+                        line: line,
+                    });
             }
         });
-        this.setState({ [ARROW_UPDATE + nominalVoltageIndex]: ts });
-        this.scheduleNext((ts) =>
+
+        this.scheduleNext((ts) => {
+            console.info(arrows);
+            this.setState({ [ARROW_UPDATE + nominalVoltageIndex]: ts });
             this.generateArrowLayer(
                 ts,
                 nominalVoltageIndex,
                 arrows,
                 doLabel,
                 doNextNominalVoltage
-            )
-        );
+            );
+        });
     }
 
     computeLabels(ts, nominalVoltageIndex, doNextNominalVoltage) {
