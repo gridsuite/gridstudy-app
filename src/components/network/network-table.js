@@ -88,6 +88,7 @@ const NetworkTable = (props) => {
     const [lineEdit, setLineEdit] = React.useState({});
     const [rowFilter, setRowFilter] = React.useState(undefined);
     const [popupSelectListName, setPopupSelectListName] = React.useState(false);
+
     const [listColumnsNames, setListColumnsNames] = useState([]);
     const [checked, setChecked] = React.useState([]);
     const [selectedListName, setSelectedListName] = useState([]);
@@ -96,9 +97,14 @@ const NetworkTable = (props) => {
 
     const rowHeight = 48;
 
-    function isLineOnEditMode(row) {
-        return (lineEdit[tabIndex] && lineEdit[tabIndex].line === row) || false;
-    }
+    const isLineOnEditMode = useCallback(
+        (row) => {
+            return (
+                (lineEdit[tabIndex] && lineEdit[tabIndex].line === row) || false
+            );
+        },
+        [lineEdit, tabIndex]
+    );
 
     function setLineEditAt(index, value) {
         setLineEdit({
@@ -213,63 +219,92 @@ const NetworkTable = (props) => {
             : cellData.rowData[cellData.dataKey];
     }
 
-    function defaultCellRender(cellData, numeric, fractionDigit) {
-        return (
-            <TableCell
-                component="div"
-                variant="body"
-                style={{ height: rowHeight, width: cellData.width }}
-                className={classes.cell}
-                align="right"
-            >
-                <Grid container direction="column">
-                    <Grid item xs={1} />
-                    <Grid item xs={1}>
-                        {formatCellData(cellData, numeric, fractionDigit)}
+    const defaultCellRender = useCallback(
+        (cellData, numeric, fractionDigit) => {
+            return (
+                <TableCell
+                    component="div"
+                    variant="body"
+                    style={{ height: rowHeight, width: cellData.width }}
+                    className={classes.cell}
+                    align="right"
+                >
+                    <Grid container direction="column">
+                        <Grid item xs={1} />
+                        <Grid item xs={1}>
+                            {formatCellData(cellData, numeric, fractionDigit)}
+                        </Grid>
                     </Grid>
-                </Grid>
-            </TableCell>
-        );
-    }
+                </TableCell>
+            );
+        },
+        [classes.cell]
+    );
 
-    function registerChangeRequest(data, command, value) {
-        // save original value, dont erase if exists
-        if (!lineEdit[tabIndex].oldValues[data.dataKey])
-            lineEdit[tabIndex].oldValues[data.dataKey] =
-                data.rowData[data.dataKey];
-        lineEdit[tabIndex].newValues[data.dataKey] = {
-            command: command,
-            value: value,
-        };
-        data.rowData[data.dataKey] = value;
-    }
+    const registerChangeRequest = useCallback(
+        (data, command, value) => {
+            // save original value, dont erase if exists
+            if (!lineEdit[tabIndex].oldValues[data.dataKey])
+                lineEdit[tabIndex].oldValues[data.dataKey] =
+                    data.rowData[data.dataKey];
+            lineEdit[tabIndex].newValues[data.dataKey] = {
+                command: command,
+                value: value,
+            };
+            data.rowData[data.dataKey] = value;
+        },
+        [lineEdit, tabIndex]
+    );
 
-    function EditableCellRender(cellData, numeric, command, fractionDigit) {
-        return !isLineOnEditMode(cellData.rowIndex) ||
-            cellData.rowData[cellData.dataKey] === undefined ? (
-            defaultCellRender(cellData, numeric, fractionDigit)
-        ) : (
-            <TextField
-                id={cellData.dataKey}
-                type="Number"
-                className={classes.cell}
-                size={'medium'}
-                margin={'normal'}
-                inputProps={{ style: { textAlign: 'center' } }}
-                onChange={(obj) =>
-                    registerChangeRequest(cellData, command, obj.target.value)
-                }
-                defaultValue={formatCellData(cellData, numeric, fractionDigit)}
-            />
-        );
-    }
+    const EditableCellRender = useCallback(
+        (cellData, numeric, command, fractionDigit) => {
+            return !isLineOnEditMode(cellData.rowIndex) ||
+                cellData.rowData[cellData.dataKey] === undefined ? (
+                defaultCellRender(cellData, numeric, fractionDigit)
+            ) : (
+                <TextField
+                    id={cellData.dataKey}
+                    type="Number"
+                    className={classes.cell}
+                    size={'medium'}
+                    margin={'normal'}
+                    inputProps={{ style: { textAlign: 'center' } }}
+                    onChange={(obj) =>
+                        registerChangeRequest(
+                            cellData,
+                            command,
+                            obj.target.value
+                        )
+                    }
+                    defaultValue={formatCellData(
+                        cellData,
+                        numeric,
+                        fractionDigit
+                    )}
+                />
+            );
+        },
+        [
+            classes.cell,
+            defaultCellRender,
+            isLineOnEditMode,
+            registerChangeRequest,
+        ]
+    );
 
     const showSelectedColumn = (key) => {
-        return selectedListName[tabIndex].includes(
-            intl.formatMessage({ id: key })
-        )
-            ? ''
-            : 'none';
+        return selectedListName[tabIndex].includes(key) ? '' : 'none';
+    };
+
+    const generateTableColumns = (index) => {
+        return getListAvailableColumns(index).map((c) => {
+            return {
+                label: intl.formatMessage({ id: c.id }),
+                headerStyle: { display: showSelectedColumn(c.id) },
+                style: { display: showSelectedColumn(c.id) },
+                ...c,
+            };
+        });
     };
 
     const renderSubstationsTable = () => {
@@ -278,41 +313,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.substations.length}
                 rowGetter={({ index }) => props.network.substations[index]}
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Country' }),
-                        dataKey: 'countryName',
-                        headerStyle: {
-                            display: showSelectedColumn('Country'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Country'),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(0)}
             />
         );
     };
@@ -324,54 +325,7 @@ const NetworkTable = (props) => {
                 rowCount={voltageLevels.length}
                 rowGetter={({ index }) => voltageLevels[index]}
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'SubstationId' }),
-                        dataKey: 'substationId',
-                        headerStyle: {
-                            display: showSelectedColumn('SubstationId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('SubstationId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'NominalVoltage' }),
-                        dataKey: 'nominalVoltage',
-                        numeric: true,
-                        fractionDigits: 0,
-                        headerStyle: {
-                            display: showSelectedColumn('NominalVoltage'),
-                        },
-                        style: {
-                            display: showSelectedColumn('NominalVoltage'),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(1)}
             />
         );
     }
@@ -382,108 +336,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.lines.length}
                 rowGetter={({ index }) => props.network.lines[index]}
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide1',
-                        }),
-                        dataKey: 'voltageLevelId1',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelIdSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelIdSide1'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide2',
-                        }),
-                        dataKey: 'voltageLevelId2',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelIdSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelIdSide2'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        dataKey: 'p1',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePowerSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePowerSide1'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        dataKey: 'p2',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePowerSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePowerSide2'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        dataKey: 'q1',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePowerSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePowerSide1'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                        dataKey: 'q2',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePowerSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePowerSide2'),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(2)}
             />
         );
     }
@@ -511,142 +364,7 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('TwoWindingsTransformer'),
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide1',
-                        }),
-                        dataKey: 'voltageLevelId1',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelIdSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelIdSide1'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide2',
-                        }),
-                        dataKey: 'voltageLevelId2',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelIdSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelIdSide2'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        dataKey: 'p1',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePowerSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePowerSide1'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        dataKey: 'p2',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePowerSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePowerSide2'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        dataKey: 'q1',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePowerSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePowerSide1'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                        dataKey: 'q2',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePowerSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePowerSide2'),
-                        },
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'RatioTap' }),
-                        dataKey: 'ratioTapChangerPosition',
-                        headerStyle: {
-                            display: showSelectedColumn('RatioTap'),
-                        },
-                        style: {
-                            display: showSelectedColumn('RatioTap'),
-                        },
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Ratio'),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'PhaseTap' }),
-                        dataKey: 'phaseTapChangerPosition',
-                        headerStyle: {
-                            display: showSelectedColumn('PhaseTap'),
-                        },
-                        style: {
-                            display: showSelectedColumn('PhaseTap'),
-                        },
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Phase'),
-                                0
-                            ),
-                    },
+                    ...generateTableColumns(3),
                 ]}
             />
         );
@@ -662,254 +380,7 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('ThreeWindingsTransformer'),
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide1',
-                        }),
-                        dataKey: 'voltageLevelId1',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelIdSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelIdSide1'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide2',
-                        }),
-                        dataKey: 'voltageLevelId2',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelIdSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelIdSide2'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide3',
-                        }),
-                        dataKey: 'voltageLevelId3',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelIdSide3'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelIdSide3'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        dataKey: 'p1',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePowerSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePowerSide1'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        dataKey: 'p2',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePowerSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePowerSide2'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide3' }),
-                        dataKey: 'p3',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePowerSide3'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePowerSide3'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        dataKey: 'q1',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePowerSide1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePowerSide1'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                        dataKey: 'q2',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePowerSide2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePowerSide2'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide3' }),
-                        dataKey: 'q3',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePowerSide3'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePowerSide3'),
-                        },
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'RatioTap1' }),
-                        dataKey: 'ratioTapChanger1Position',
-                        headerStyle: {
-                            display: showSelectedColumn('RatioTap1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('RatioTap1'),
-                        },
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Ratio', 1),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'RatioTap2' }),
-                        dataKey: 'ratioTapChanger2Position',
-                        headerStyle: {
-                            display: showSelectedColumn('RatioTap2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('RatioTap2'),
-                        },
-
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Ratio', 2),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'RatioTap3' }),
-                        dataKey: 'ratioTapChanger3Position',
-                        headerStyle: {
-                            display: showSelectedColumn('RatioTap3'),
-                        },
-                        style: {
-                            display: showSelectedColumn('RatioTap3'),
-                        },
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Ratio', 3),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'PhaseTap1' }),
-                        dataKey: 'phaseTapChanger1Position',
-                        headerStyle: {
-                            display: showSelectedColumn('PhaseTap1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('PhaseTap1'),
-                        },
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Phase', 1),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'PhaseTap2' }),
-                        dataKey: 'phaseTapChanger2Position',
-                        headerStyle: {
-                            display: showSelectedColumn('PhaseTap2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('PhaseTap2'),
-                        },
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Phase', 2),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'PhaseTap3' }),
-                        numeric: true,
-                        headerStyle: {
-                            display: showSelectedColumn('PhaseTap3'),
-                        },
-                        style: {
-                            display: showSelectedColumn('PhaseTap3'),
-                        },
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Phase', 3),
-                                0
-                            ),
-                    },
+                    ...generateTableColumns(4),
                 ]}
             />
         );
@@ -923,85 +394,7 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('Generator'),
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePower' }),
-                        dataKey: 'p',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'TargetP' }),
-                        dataKey: 'targetP',
-                        headerStyle: {
-                            display: showSelectedColumn('TargetP'),
-                        },
-                        style: {
-                            display: showSelectedColumn('TargetP'),
-                        },
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                'equipment.setTargetP({})',
-                                1
-                            ),
-                    },
+                    ...generateTableColumns(5),
                 ]}
             />
         );
@@ -1013,114 +406,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.loads.length}
                 rowGetter={({ index }) => props.network.loads[index]}
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'LoadType' }),
-                        dataKey: 'type',
-                        headerStyle: {
-                            display: showSelectedColumn('LoadType'),
-                        },
-                        style: {
-                            display: showSelectedColumn('LoadType'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePower' }),
-                        dataKey: 'p',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'ConstantActivePower',
-                        }),
-                        dataKey: 'p0',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ConstantActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ConstantActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'ConstantReactivePower',
-                        }),
-                        dataKey: 'q0',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn(
-                                'ConstantReactivePower'
-                            ),
-                        },
-                        style: {
-                            display: showSelectedColumn(
-                                'ConstantReactivePower'
-                            ),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(6)}
             />
         );
     }
@@ -1131,103 +417,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.batteries.length}
                 rowGetter={({ index }) => props.network.batteries[index]}
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePower' }),
-                        dataKey: 'p',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'ConstantActivePower',
-                        }),
-                        dataKey: 'p0',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ConstantActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ConstantActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'ConstantReactivePower',
-                        }),
-                        dataKey: 'q0',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn(
-                                'ConstantReactivePower'
-                            ),
-                        },
-                        style: {
-                            display: showSelectedColumn(
-                                'ConstantReactivePower'
-                            ),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(9)}
             />
         );
     }
@@ -1238,114 +428,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.danglingLines.length}
                 rowGetter={({ index }) => props.network.danglingLines[index]}
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'UcteXnodeCode' }),
-                        dataKey: 'ucteXnodeCode',
-                        headerStyle: {
-                            display: showSelectedColumn('UcteXnodeCode'),
-                        },
-                        style: {
-                            display: showSelectedColumn('UcteXnodeCode'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePower' }),
-                        dataKey: 'p',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'ConstantActivePower',
-                        }),
-                        dataKey: 'p0',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ConstantActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ConstantActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'ConstantReactivePower',
-                        }),
-                        dataKey: 'q0',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn(
-                                'ConstantReactivePower'
-                            ),
-                        },
-                        style: {
-                            display: showSelectedColumn(
-                                'ConstantReactivePower'
-                            ),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(13)}
             />
         );
     }
@@ -1356,121 +439,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.hvdcLines.length}
                 rowGetter={({ index }) => props.network.hvdcLines[index]}
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ConvertersMode' }),
-                        dataKey: 'convertersMode',
-                        headerStyle: {
-                            display: showSelectedColumn('ConvertersMode'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ConvertersMode'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'ConverterStationId1',
-                        }),
-                        dataKey: 'converterStationId1',
-                        headerStyle: {
-                            display: showSelectedColumn('ConverterStationId1'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ConverterStationId1'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'ConverterStationId2',
-                        }),
-                        dataKey: 'converterStationId2',
-                        headerStyle: {
-                            display: showSelectedColumn('ConverterStationId2'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ConverterStationId2'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'R' }),
-                        dataKey: 'r',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('R'),
-                        },
-                        style: {
-                            display: showSelectedColumn('R'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'NominalV' }),
-                        dataKey: 'nominalV',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('NominalV'),
-                        },
-                        style: {
-                            display: showSelectedColumn('NominalV'),
-                        },
-                    },
-                    {
-                        width: 300,
-                        label: intl.formatMessage({
-                            id: 'ActivePowerSetpoint',
-                        }),
-                        dataKey: 'activePowerSetpoint',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePowerSetpoint'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePowerSetpoint'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'MaxP' }),
-                        dataKey: 'maxP',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('MaxP'),
-                        },
-                        style: {
-                            display: showSelectedColumn('MaxP'),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(10)}
             />
         );
     }
@@ -1483,86 +452,7 @@ const NetworkTable = (props) => {
                     props.network.shuntCompensators[index]
                 }
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'TargetV',
-                        }),
-                        dataKey: 'targetV',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('TargetV'),
-                        },
-                        style: {
-                            display: showSelectedColumn('TargetV'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'TargetDeadband',
-                        }),
-                        dataKey: 'targetDeadband',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('TargetDeadband'),
-                        },
-                        style: {
-                            display: showSelectedColumn('TargetDeadband'),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(7)}
             />
         );
     }
@@ -1575,103 +465,7 @@ const NetworkTable = (props) => {
                     props.network.staticVarCompensators[index]
                 }
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePower' }),
-                        dataKey: 'p',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'VoltageSetpoint',
-                        }),
-                        dataKey: 'voltageSetpoint',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageSetpoint'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageSetpoint'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'ReactivePowerSetpoint',
-                        }),
-                        dataKey: 'reactivePowerSetpoint',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn(
-                                'ReactivePowerSetpoint'
-                            ),
-                        },
-                        style: {
-                            display: showSelectedColumn(
-                                'ReactivePowerSetpoint'
-                            ),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(8)}
             />
         );
     }
@@ -1684,112 +478,7 @@ const NetworkTable = (props) => {
                     props.network.lccConverterStations[index]
                 }
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'HvdcLineId',
-                        }),
-                        dataKey: 'hvdcLineId',
-                        headerStyle: {
-                            display: showSelectedColumn('HvdcLineId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('HvdcLineId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePower' }),
-                        dataKey: 'p',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'PowerFactor',
-                        }),
-                        dataKey: 'powerFactor',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('PowerFactor'),
-                        },
-                        style: {
-                            display: showSelectedColumn('PowerFactor'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'LossFactor',
-                        }),
-                        dataKey: 'lossFactor',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('LossFactor'),
-                        },
-                        style: {
-                            display: showSelectedColumn('LossFactor'),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(11)}
             />
         );
     }
@@ -1802,97 +491,7 @@ const NetworkTable = (props) => {
                     props.network.vscConverterStations[index]
                 }
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                        headerStyle: {
-                            display: showSelectedColumn('ID'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ID'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                        headerStyle: {
-                            display: showSelectedColumn('Name'),
-                        },
-                        style: {
-                            display: showSelectedColumn('Name'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                        headerStyle: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('VoltageLevelId'),
-                        },
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'HvdcLineId',
-                        }),
-                        dataKey: 'hvdcLineId',
-                        headerStyle: {
-                            display: showSelectedColumn('HvdcLineId'),
-                        },
-                        style: {
-                            display: showSelectedColumn('HvdcLineId'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePower' }),
-                        dataKey: 'p',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ActivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                        style: {
-                            display: showSelectedColumn('ReactivePower'),
-                        },
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({
-                            id: 'LossFactor',
-                        }),
-                        dataKey: 'lossFactor',
-                        numeric: true,
-                        fractionDigits: 1,
-                        headerStyle: {
-                            display: showSelectedColumn('LossFactor'),
-                        },
-                        style: {
-                            display: showSelectedColumn('LossFactor'),
-                        },
-                    },
-                ]}
+                columns={generateTableColumns(12)}
             />
         );
     }
@@ -1922,7 +521,11 @@ const NetworkTable = (props) => {
     const handleOpenPopupSelectList = () => {
         setListColumnsNames(
             listColumnsNames.map((arr, index) =>
-                tabIndex === index ? getListAvailableColumns(tabIndex) : arr
+                tabIndex === index
+                    ? getListAvailableColumns(tabIndex).map((c) => {
+                          return c.id;
+                      })
+                    : arr
             )
         );
         setPopupSelectListName(true);
@@ -2026,7 +629,9 @@ const NetworkTable = (props) => {
                                     color="primary"
                                 />
                             </ListItemIcon>
-                            <ListItemText primary={`${value}`} />
+                            <ListItemText
+                                primary={intl.formatMessage({ id: `${value}` })}
+                            />
                         </ListItem>
                     </List>
                 ))}
@@ -2039,181 +644,779 @@ const NetworkTable = (props) => {
             let list = [];
             if (props.network) {
                 switch (index) {
-                    case 0:
+                    case 0: // substations
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'Country' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 200,
+                                id: 'Country',
+                                dataKey: 'countryName',
+                            },
                         ];
                         return list;
-                    case 1:
+
+                    case 1: // voltage levels
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'SubstationId' }),
-                            intl.formatMessage({ id: 'NominalVoltage' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'SubstationId',
+                                dataKey: 'substationId',
+                            },
+                            {
+                                width: 200,
+                                id: 'NominalVoltage',
+                                dataKey: 'nominalVoltage',
+                                numeric: true,
+                                fractionDigits: 0,
+                            },
                         ];
                         return list;
-                    case 2:
+
+                    case 2: // lines
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
-                            intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
-                            intl.formatMessage({ id: 'ActivePowerSide1' }),
-                            intl.formatMessage({ id: 'ActivePowerSide2' }),
-                            intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                            intl.formatMessage({ id: 'ReactivePowerSide2' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelIdSide1',
+                                dataKey: 'voltageLevelId1',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelIdSide2',
+                                dataKey: 'voltageLevelId2',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePowerSide1',
+                                dataKey: 'p1',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePowerSide2',
+                                dataKey: 'p2',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePowerSide1',
+                                dataKey: 'q1',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePowerSide2',
+                                dataKey: 'q2',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
-                    case 3:
+
+                    case 3: // two windings transformers
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
-                            intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
-                            intl.formatMessage({ id: 'ActivePowerSide1' }),
-                            intl.formatMessage({ id: 'ActivePowerSide2' }),
-                            intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                            intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                            intl.formatMessage({ id: 'RatioTap' }),
-                            intl.formatMessage({ id: 'PhaseTap' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelIdSide1',
+                                dataKey: 'voltageLevelId1',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelIdSide2',
+                                dataKey: 'voltageLevelId2',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePowerSide1',
+                                dataKey: 'p1',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePowerSide2',
+                                dataKey: 'p2',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePowerSide1',
+                                dataKey: 'q1',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePowerSide2',
+                                dataKey: 'q2',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 150,
+                                id: 'RatioTap',
+                                dataKey: 'ratioTapChangerPosition',
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        generateTapRequest('Ratio'),
+                                        0
+                                    ),
+                            },
+                            {
+                                width: 150,
+                                id: 'PhaseTap',
+                                dataKey: 'phaseTapChangerPosition',
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        generateTapRequest('Phase'),
+                                        0
+                                    ),
+                            },
                         ];
                         return list;
-                    case 4:
+
+                    case 4: // three windings transformers
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelIdSide1' }),
-                            intl.formatMessage({ id: 'VoltageLevelIdSide2' }),
-                            intl.formatMessage({ id: 'VoltageLevelIdSide3' }),
-                            intl.formatMessage({ id: 'ActivePowerSide1' }),
-                            intl.formatMessage({ id: 'ActivePowerSide2' }),
-                            intl.formatMessage({ id: 'ActivePowerSide3' }),
-                            intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                            intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                            intl.formatMessage({ id: 'ReactivePowerSide3' }),
-                            intl.formatMessage({ id: 'RatioTap1' }),
-                            intl.formatMessage({ id: 'RatioTap2' }),
-                            intl.formatMessage({ id: 'RatioTap3' }),
-                            intl.formatMessage({ id: 'PhaseTap1' }),
-                            intl.formatMessage({ id: 'PhaseTap2' }),
-                            intl.formatMessage({ id: 'PhaseTap3' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelIdSide1',
+                                dataKey: 'voltageLevelId1',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelIdSide2',
+                                dataKey: 'voltageLevelId2',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelIdSide3',
+                                dataKey: 'voltageLevelId3',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePowerSide1',
+                                dataKey: 'p1',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePowerSide2',
+                                dataKey: 'p2',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePowerSide3',
+                                dataKey: 'p3',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePowerSide1',
+                                dataKey: 'q1',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePowerSide2',
+                                dataKey: 'q2',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePowerSide3',
+                                dataKey: 'q3',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 150,
+                                id: 'RatioTap1',
+                                dataKey: 'ratioTapChanger1Position',
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        generateTapRequest('Ratio', 1),
+                                        0
+                                    ),
+                            },
+                            {
+                                width: 150,
+                                id: 'RatioTap2',
+                                dataKey: 'ratioTapChanger2Position',
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        generateTapRequest('Ratio', 2),
+                                        0
+                                    ),
+                            },
+                            {
+                                width: 150,
+                                id: 'RatioTap3',
+                                dataKey: 'ratioTapChanger3Position',
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        generateTapRequest('Ratio', 3),
+                                        0
+                                    ),
+                            },
+                            {
+                                width: 150,
+                                id: 'PhaseTap1',
+                                dataKey: 'phaseTapChanger1Position',
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        generateTapRequest('Phase', 1),
+                                        0
+                                    ),
+                            },
+                            {
+                                width: 150,
+                                id: 'PhaseTap2',
+                                dataKey: 'phaseTapChanger2Position',
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        generateTapRequest('Phase', 2),
+                                        0
+                                    ),
+                            },
+                            {
+                                width: 150,
+                                id: 'PhaseTap3',
+                                numeric: true,
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        generateTapRequest('Phase', 3),
+                                        0
+                                    ),
+                            },
                         ];
                         return list;
-                    case 5:
+
+                    case 5: // generators
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelId' }),
-                            intl.formatMessage({ id: 'ActivePower' }),
-                            intl.formatMessage({ id: 'ReactivePower' }),
-                            intl.formatMessage({ id: 'TargetP' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelId',
+                                dataKey: 'voltageLevelId',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePower',
+                                dataKey: 'p',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePower',
+                                dataKey: 'q',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'TargetP',
+                                dataKey: 'targetP',
+                                cellRenderer: (cell) =>
+                                    EditableCellRender(
+                                        cell,
+                                        true,
+                                        'equipment.setTargetP({})',
+                                        1
+                                    ),
+                            },
                         ];
                         return list;
-                    case 6:
+
+                    case 6: // loads
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'LoadType' }),
-                            intl.formatMessage({ id: 'VoltageLevelId' }),
-                            intl.formatMessage({ id: 'ActivePower' }),
-                            intl.formatMessage({ id: 'ReactivePower' }),
-                            intl.formatMessage({ id: 'ConstantActivePower' }),
-                            intl.formatMessage({ id: 'ConstantReactivePower' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 200,
+                                id: 'LoadType',
+                                dataKey: 'type',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelId',
+                                dataKey: 'voltageLevelId',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePower',
+                                dataKey: 'p',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePower',
+                                dataKey: 'q',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ConstantActivePower',
+                                dataKey: 'p0',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ConstantReactivePower',
+                                dataKey: 'q0',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
-                    case 7:
+
+                    case 7: // shunt compensators
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelId' }),
-                            intl.formatMessage({ id: 'ReactivePower' }),
-                            intl.formatMessage({ id: 'TargetV' }),
-                            intl.formatMessage({ id: 'TargetDeadband' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelId',
+                                dataKey: 'voltageLevelId',
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePower',
+                                dataKey: 'q',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'TargetV',
+                                dataKey: 'targetV',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'TargetDeadband',
+                                dataKey: 'targetDeadband',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
-                    case 8:
+
+                    case 8: // static var compensators
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelId' }),
-                            intl.formatMessage({ id: 'ActivePower' }),
-                            intl.formatMessage({ id: 'ReactivePower' }),
-                            intl.formatMessage({ id: 'VoltageSetpoint' }),
-                            intl.formatMessage({ id: 'ReactivePowerSetpoint' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelId',
+                                dataKey: 'voltageLevelId',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePower',
+                                dataKey: 'p',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePower',
+                                dataKey: 'q',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'VoltageSetpoint',
+                                dataKey: 'voltageSetpoint',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePowerSetpoint',
+                                dataKey: 'reactivePowerSetpoint',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
-                    case 9:
+
+                    case 9: // batteries
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelId' }),
-                            intl.formatMessage({ id: 'ActivePower' }),
-                            intl.formatMessage({ id: 'ReactivePower' }),
-                            intl.formatMessage({ id: 'ConstantActivePower' }),
-                            intl.formatMessage({ id: 'ConstantReactivePower' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelId',
+                                dataKey: 'voltageLevelId',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePower',
+                                dataKey: 'p',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePower',
+                                dataKey: 'q',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ConstantActivePower',
+                                dataKey: 'p0',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ConstantReactivePower',
+                                dataKey: 'q0',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
-                    case 10:
+
+                    case 10: // hvdc lines
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'ConvertersMode' }),
-                            intl.formatMessage({ id: 'ConverterStationId1' }),
-                            intl.formatMessage({ id: 'ConverterStationId2' }),
-                            intl.formatMessage({ id: 'R' }),
-                            intl.formatMessage({ id: 'NominalV' }),
-                            intl.formatMessage({ id: 'ActivePowerSetpoint' }),
-                            intl.formatMessage({ id: 'MaxP' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'ConvertersMode',
+                                dataKey: 'convertersMode',
+                            },
+                            {
+                                width: 400,
+                                id: 'ConverterStationId1',
+                                dataKey: 'converterStationId1',
+                            },
+                            {
+                                width: 400,
+                                id: 'ConverterStationId2',
+                                dataKey: 'converterStationId2',
+                            },
+                            {
+                                width: 200,
+                                id: 'R',
+                                dataKey: 'r',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'NominalV',
+                                dataKey: 'nominalV',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 300,
+                                id: 'ActivePowerSetpoint',
+                                dataKey: 'activePowerSetpoint',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'MaxP',
+                                dataKey: 'maxP',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
-                    case 11:
+
+                    case 11: // lcc converter stations
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelId' }),
-                            intl.formatMessage({ id: 'HvdcLineId' }),
-                            intl.formatMessage({ id: 'ActivePower' }),
-                            intl.formatMessage({ id: 'ReactivePower' }),
-                            intl.formatMessage({ id: 'PowerFactor' }),
-                            intl.formatMessage({ id: 'LossFactor' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelId',
+                                dataKey: 'voltageLevelId',
+                            },
+                            {
+                                width: 400,
+                                id: 'HvdcLineId',
+                                dataKey: 'hvdcLineId',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePower',
+                                dataKey: 'p',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePower',
+                                dataKey: 'q',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'PowerFactor',
+                                dataKey: 'powerFactor',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'LossFactor',
+                                dataKey: 'lossFactor',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
-                    case 12:
+
+                    case 12: // vsc converter stations
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelId' }),
-                            intl.formatMessage({ id: 'HvdcLineId' }),
-                            intl.formatMessage({ id: 'ActivePower' }),
-                            intl.formatMessage({ id: 'ReactivePower' }),
-                            intl.formatMessage({ id: 'LossFactor' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelId',
+                                dataKey: 'voltageLevelId',
+                            },
+                            {
+                                width: 400,
+                                id: 'HvdcLineId',
+                                dataKey: 'hvdcLineId',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePower',
+                                dataKey: 'p',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePower',
+                                dataKey: 'q',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'LossFactor',
+                                dataKey: 'lossFactor',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
-                    case 13:
+
+                    case 13: // dangling lines
                         list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'VoltageLevelId' }),
-                            intl.formatMessage({ id: 'UcteXnodeCode' }),
-                            intl.formatMessage({ id: 'ActivePower' }),
-                            intl.formatMessage({ id: 'ReactivePower' }),
-                            intl.formatMessage({ id: 'ConstantActivePower' }),
-                            intl.formatMessage({ id: 'ConstantReactivePower' }),
+                            {
+                                width: 400,
+                                id: 'ID',
+                                dataKey: 'id',
+                            },
+                            {
+                                width: 200,
+                                id: 'Name',
+                                dataKey: 'name',
+                            },
+                            {
+                                width: 400,
+                                id: 'VoltageLevelId',
+                                dataKey: 'voltageLevelId',
+                            },
+                            {
+                                width: 200,
+                                id: 'UcteXnodeCode',
+                                dataKey: 'ucteXnodeCode',
+                            },
+                            {
+                                width: 200,
+                                id: 'ActivePower',
+                                dataKey: 'p',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ReactivePower',
+                                dataKey: 'q',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ConstantActivePower',
+                                dataKey: 'p0',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
+                            {
+                                width: 200,
+                                id: 'ConstantReactivePower',
+                                dataKey: 'q0',
+                                numeric: true,
+                                fractionDigits: 1,
+                            },
                         ];
                         return list;
+
                     default:
-                        list = [
-                            intl.formatMessage({ id: 'ID' }),
-                            intl.formatMessage({ id: 'Name' }),
-                            intl.formatMessage({ id: 'Country' }),
-                        ];
-                        return list;
+                        return [];
                 }
             } else return list;
         },
-        [props.network, intl]
+        [props.network, EditableCellRender]
     );
 
     useEffect(() => {
@@ -2222,7 +1425,9 @@ const NetworkTable = (props) => {
         let selCols = [];
         let checkCols = [];
         TABLE_NAMES.forEach((name, index) => {
-            let availableCols = getListAvailableColumns(index);
+            let availableCols = getListAvailableColumns(index).map((c) => {
+                return c.id;
+            });
             cols.push(availableCols);
             selCols.push(availableCols);
             checkCols.push(availableCols);
@@ -2231,7 +1436,7 @@ const NetworkTable = (props) => {
         setListColumnsNames(cols);
         setSelectedListName(selCols);
         setChecked(checkCols);
-    }, [props.network, getListAvailableColumns]);
+    }, [props.network]);
 
     return (
         props.network && (
