@@ -2011,10 +2011,7 @@ const NetworkTable = (props) => {
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
                 {listColumnsNames[tabIndex].map((value, index) => (
-                    <List
-                        key={index}
-                        style={{ padding: '0' }}
-                    >
+                    <List key={index} style={{ padding: '0' }}>
                         <ListItem
                             key={index}
                             className={classes.checkboxItem}
