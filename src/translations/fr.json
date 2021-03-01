@@ -92,7 +92,7 @@
 
     "PageNotFound": "Page introuvable",
 
-    "Table": "Tableur",
+    "Spreadsheet": "Tableur",
     "Results": "Résultats",
     "Substations": "Sites",
     "VoltageLevels": "Postes",
@@ -126,7 +126,7 @@
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
 
-    "viewOverloadsTable": "Afficher la table des surcharges : ",
+    "displayOverloadTable": "Afficher la table des surcharges : ",
 
     "LoadFlow": "Calcul de répartition",
     "SecurityAnalysis": "Analyse de sécurité",
