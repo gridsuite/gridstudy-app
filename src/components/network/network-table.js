@@ -94,6 +94,10 @@ const useStyles = makeStyles((theme) => ({
     checkboxItem: {
         cursor: 'pointer',
     },
+    selectColumns: {
+        marginTop: '12px',
+        marginLeft: '50px',
+    },
 }));
 
 const NetworkTable = (props) => {
@@ -1479,49 +1483,51 @@ const NetworkTable = (props) => {
                         </Tabs>
                     </Grid>
                     <Grid container>
-                        <span style={{ marginTop: '15px' }}>
-                            <FormattedMessage id="LabelSelectList" />
-                        </span>
-                        <IconButton
-                            aria-label="dialog"
-                            onClick={handleOpenPopupSelectList}
+                        <Grid
+                            item
+                            alignContent={'flex-end'}
+                            className={classes.containerInputSearch}
                         >
-                            <ViewColumnIcon />
-                        </IconButton>
-                        <SelectColumnsNames
-                            open={popupSelectListName}
-                            onClose={handleClosePopupSelectList}
-                            onClick={handleSaveSelectedList}
-                            title={<FormattedMessage id="ColumnsList" />}
-                            child={checkListColumnsNames()}
-                        />
-                    </Grid>
-                    <Grid
-                        item
-                        alignContent={'flex-end'}
-                        className={classes.containerInputSearch}
-                    >
-                        <TextField
-                            className={classes.textField}
-                            size="small"
-                            placeholder={
-                                intl.formatMessage({ id: 'filter' }) + '...'
-                            }
-                            onChange={setFilter}
-                            variant="outlined"
-                            classes={classes.searchSection}
-                            fullWidth
-                            InputProps={{
-                                classes: {
-                                    input: classes.searchSection,
-                                },
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+                            <TextField
+                                className={classes.textField}
+                                size="small"
+                                placeholder={
+                                    intl.formatMessage({ id: 'filter' }) + '...'
+                                }
+                                onChange={setFilter}
+                                variant="outlined"
+                                classes={classes.searchSection}
+                                fullWidth
+                                InputProps={{
+                                    classes: {
+                                        input: classes.searchSection,
+                                    },
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                        </Grid>
+                        <Grid item className={classes.selectColumns}>
+                            <span>
+                                <FormattedMessage id="LabelSelectList" />
+                            </span>
+                            <IconButton
+                                aria-label="dialog"
+                                onClick={handleOpenPopupSelectList}
+                            >
+                                <ViewColumnIcon />
+                            </IconButton>
+                            <SelectColumnsNames
+                                open={popupSelectListName}
+                                onClose={handleClosePopupSelectList}
+                                onClick={handleSaveSelectedList}
+                                title={<FormattedMessage id="ColumnsList" />}
+                                child={checkListColumnsNames()}
+                            />
+                        </Grid>
                     </Grid>
                 </Grid>
                 <div className={classes.table} style={{ flexGrow: 1 }}>
