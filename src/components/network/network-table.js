@@ -32,6 +32,21 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 
+const SUBSTATIONS = 0;
+const VOLTAGE_LEVELS = 1;
+const LINES = 2;
+const TWO_WINDINGS_TRANSFORMERS = 3;
+const THREE_WINDINGS_TRANSFORMERS = 4;
+const GENERATORS = 5;
+const LOADS = 6;
+const SHUNT_COMPENSATORS = 7;
+const STATIC_VAR_COMPENSATORS = 8;
+const BATTERIES = 9;
+const HVDC_LINES = 10;
+const LCC_CONVERTER_STATIONS = 11;
+const VSC_CONVERTER_STATIONS = 12;
+const DANGLING_LINES = 13;
+
 const TABLE_NAMES = [
     'Substations',
     'VoltageLevels',
@@ -313,7 +328,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.substations.length}
                 rowGetter={({ index }) => props.network.substations[index]}
                 filter={filter}
-                columns={generateTableColumns(0)}
+                columns={generateTableColumns(SUBSTATIONS)}
             />
         );
     };
@@ -325,7 +340,7 @@ const NetworkTable = (props) => {
                 rowCount={voltageLevels.length}
                 rowGetter={({ index }) => voltageLevels[index]}
                 filter={filter}
-                columns={generateTableColumns(1)}
+                columns={generateTableColumns(VOLTAGE_LEVELS)}
             />
         );
     }
@@ -336,7 +351,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.lines.length}
                 rowGetter={({ index }) => props.network.lines[index]}
                 filter={filter}
-                columns={generateTableColumns(2)}
+                columns={generateTableColumns(LINES)}
             />
         );
     }
@@ -364,7 +379,7 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('TwoWindingsTransformer'),
-                    ...generateTableColumns(3),
+                    ...generateTableColumns(TWO_WINDINGS_TRANSFORMERS),
                 ]}
             />
         );
@@ -380,7 +395,7 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('ThreeWindingsTransformer'),
-                    ...generateTableColumns(4),
+                    ...generateTableColumns(THREE_WINDINGS_TRANSFORMERS),
                 ]}
             />
         );
@@ -394,7 +409,7 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('Generator'),
-                    ...generateTableColumns(5),
+                    ...generateTableColumns(GENERATORS),
                 ]}
             />
         );
@@ -406,7 +421,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.loads.length}
                 rowGetter={({ index }) => props.network.loads[index]}
                 filter={filter}
-                columns={generateTableColumns(6)}
+                columns={generateTableColumns(LOADS)}
             />
         );
     }
@@ -417,7 +432,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.batteries.length}
                 rowGetter={({ index }) => props.network.batteries[index]}
                 filter={filter}
-                columns={generateTableColumns(9)}
+                columns={generateTableColumns(BATTERIES)}
             />
         );
     }
@@ -428,7 +443,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.danglingLines.length}
                 rowGetter={({ index }) => props.network.danglingLines[index]}
                 filter={filter}
-                columns={generateTableColumns(13)}
+                columns={generateTableColumns(DANGLING_LINES)}
             />
         );
     }
@@ -439,7 +454,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.hvdcLines.length}
                 rowGetter={({ index }) => props.network.hvdcLines[index]}
                 filter={filter}
-                columns={generateTableColumns(10)}
+                columns={generateTableColumns(HVDC_LINES)}
             />
         );
     }
@@ -452,7 +467,7 @@ const NetworkTable = (props) => {
                     props.network.shuntCompensators[index]
                 }
                 filter={filter}
-                columns={generateTableColumns(7)}
+                columns={generateTableColumns(SHUNT_COMPENSATORS)}
             />
         );
     }
@@ -465,7 +480,7 @@ const NetworkTable = (props) => {
                     props.network.staticVarCompensators[index]
                 }
                 filter={filter}
-                columns={generateTableColumns(8)}
+                columns={generateTableColumns(STATIC_VAR_COMPENSATORS)}
             />
         );
     }
@@ -478,7 +493,7 @@ const NetworkTable = (props) => {
                     props.network.lccConverterStations[index]
                 }
                 filter={filter}
-                columns={generateTableColumns(11)}
+                columns={generateTableColumns(LCC_CONVERTER_STATIONS)}
             />
         );
     }
@@ -491,7 +506,7 @@ const NetworkTable = (props) => {
                     props.network.vscConverterStations[index]
                 }
                 filter={filter}
-                columns={generateTableColumns(12)}
+                columns={generateTableColumns(VSC_CONVERTER_STATIONS)}
             />
         );
     }
@@ -643,7 +658,7 @@ const NetworkTable = (props) => {
         (index) => {
             let list = [];
             switch (index) {
-                case 0: // substations
+                case SUBSTATIONS:
                     list = [
                         {
                             width: 400,
@@ -663,7 +678,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 1: // voltage levels
+                case VOLTAGE_LEVELS:
                     list = [
                         {
                             width: 400,
@@ -690,7 +705,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 2: // lines
+                case LINES:
                     list = [
                         {
                             width: 400,
@@ -743,7 +758,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 3: // two windings transformers
+                case TWO_WINDINGS_TRANSFORMERS:
                     list = [
                         {
                             width: 400,
@@ -820,7 +835,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 4: // three windings transformers
+                case THREE_WINDINGS_TRANSFORMERS:
                     list = [
                         {
                             width: 400,
@@ -964,7 +979,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 5: // generators
+                case GENERATORS:
                     list = [
                         {
                             width: 400,
@@ -1010,7 +1025,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 6: // loads
+                case LOADS:
                     list = [
                         {
                             width: 400,
@@ -1063,7 +1078,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 7: // shunt compensators
+                case SHUNT_COMPENSATORS:
                     list = [
                         {
                             width: 400,
@@ -1104,7 +1119,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 8: // static var compensators
+                case STATIC_VAR_COMPENSATORS:
                     list = [
                         {
                             width: 400,
@@ -1152,7 +1167,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 9: // batteries
+                case BATTERIES:
                     list = [
                         {
                             width: 400,
@@ -1200,7 +1215,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 10: // hvdc lines
+                case HVDC_LINES:
                     list = [
                         {
                             width: 400,
@@ -1258,7 +1273,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 11: // lcc converter stations
+                case LCC_CONVERTER_STATIONS:
                     list = [
                         {
                             width: 400,
@@ -1311,7 +1326,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 12: // vsc converter stations
+                case VSC_CONVERTER_STATIONS:
                     list = [
                         {
                             width: 400,
@@ -1357,7 +1372,7 @@ const NetworkTable = (props) => {
                     ];
                     return list;
 
-                case 13: // dangling lines
+                case DANGLING_LINES:
                     list = [
                         {
                             width: 400,
@@ -1443,95 +1458,94 @@ const NetworkTable = (props) => {
             <>
                 <Grid container justify={'space-between'}>
                     <Grid container justify={'space-between'} item>
-                        <Grid container justify={'space-between'}>
-                            <Grid container justify={'space-between'} item>
-                                <Tabs
-                                    value={tabIndex}
-                                    indicatorColor="primary"
-                                    variant="scrollable"
-                                    scrollButtons="auto"
-                                    onChange={(event, newValue) =>
-                                        setTabIndex(newValue)
-                                    }
-                                    aria-label="tables"
-                                >
-                                    {TABLE_NAMES.map((tableName) => (
-                                        <Tab
-                                            key={tableName}
-                                            label={intl.formatMessage({
-                                                id: tableName,
-                                            })}
-                                        />
-                                    ))}
-                                </Tabs>
-                            </Grid>
-                            <Grid container>
-                                <span style={{ marginTop: '15px' }}>
-                                    <FormattedMessage id="LabelSelectList" />
-                                </span>
-                                <IconButton
-                                    aria-label="dialog"
-                                    onClick={handleOpenPopupSelectList}
-                                >
-                                    <ViewColumnIcon />
-                                </IconButton>
-                                <SelectColumnsNames
-                                    open={popupSelectListName}
-                                    onClose={handleClosePopupSelectList}
-                                    onClick={handleSaveSelectedList}
-                                    title={
-                                        <FormattedMessage id="ColumnsList" />
-                                    }
-                                    child={checkListColumnsNames()}
+                        <Tabs
+                            value={tabIndex}
+                            indicatorColor="primary"
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            onChange={(event, newValue) =>
+                                setTabIndex(newValue)
+                            }
+                            aria-label="tables"
+                        >
+                            {TABLE_NAMES.map((tableName) => (
+                                <Tab
+                                    key={tableName}
+                                    label={intl.formatMessage({
+                                        id: tableName,
+                                    })}
                                 />
-                            </Grid>
-                            <Grid
-                                item
-                                alignContent={'flex-end'}
-                                className={classes.containerInputSearch}
-                            >
-                                <TextField
-                                    className={classes.textField}
-                                    size="small"
-                                    placeholder={
-                                        intl.formatMessage({ id: 'filter' }) +
-                                        '...'
-                                    }
-                                    onChange={setFilter}
-                                    variant="outlined"
-                                    classes={classes.searchSection}
-                                    fullWidth
-                                    InputProps={{
-                                        classes: {
-                                            input: classes.searchSection,
-                                        },
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Grid>
-                        </Grid>
+                            ))}
+                        </Tabs>
+                    </Grid>
+                    <Grid container>
+                        <span style={{ marginTop: '15px' }}>
+                            <FormattedMessage id="LabelSelectList" />
+                        </span>
+                        <IconButton
+                            aria-label="dialog"
+                            onClick={handleOpenPopupSelectList}
+                        >
+                            <ViewColumnIcon />
+                        </IconButton>
+                        <SelectColumnsNames
+                            open={popupSelectListName}
+                            onClose={handleClosePopupSelectList}
+                            onClick={handleSaveSelectedList}
+                            title={<FormattedMessage id="ColumnsList" />}
+                            child={checkListColumnsNames()}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        alignContent={'flex-end'}
+                        className={classes.containerInputSearch}
+                    >
+                        <TextField
+                            className={classes.textField}
+                            size="small"
+                            placeholder={
+                                intl.formatMessage({ id: 'filter' }) + '...'
+                            }
+                            onChange={setFilter}
+                            variant="outlined"
+                            classes={classes.searchSection}
+                            fullWidth
+                            InputProps={{
+                                classes: {
+                                    input: classes.searchSection,
+                                },
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
                     </Grid>
                 </Grid>
                 <div className={classes.table} style={{ flexGrow: 1 }}>
                     {/*This render is fast, rerender full dom everytime*/}
-                    {tabIndex === 0 && renderSubstationsTable()}
-                    {tabIndex === 1 && renderVoltageLevelsTable()}
-                    {tabIndex === 2 && renderLinesTable()}
-                    {tabIndex === 3 && renderTwoWindingsTransformersTable()}
-                    {tabIndex === 4 && renderThreeWindingsTransformersTable()}
-                    {tabIndex === 5 && renderGeneratorsTable()}
-                    {tabIndex === 6 && renderLoadsTable()}
-                    {tabIndex === 7 && renderShuntCompensatorsTable()}
-                    {tabIndex === 8 && renderStaticVarCompensatorsTable()}
-                    {tabIndex === 9 && renderBatteriesTable()}
-                    {tabIndex === 10 && renderHvdcLinesTable()}
-                    {tabIndex === 11 && renderLccConverterStationsTable()}
-                    {tabIndex === 12 && renderVscConverterStationsTable()}
-                    {tabIndex === 13 && renderDanglingLinesTable()}
+                    {tabIndex === SUBSTATIONS && renderSubstationsTable()}
+                    {tabIndex === VOLTAGE_LEVELS && renderVoltageLevelsTable()}
+                    {tabIndex === LINES && renderLinesTable()}
+                    {tabIndex === TWO_WINDINGS_TRANSFORMERS &&
+                        renderTwoWindingsTransformersTable()}
+                    {tabIndex === THREE_WINDINGS_TRANSFORMERS &&
+                        renderThreeWindingsTransformersTable()}
+                    {tabIndex === GENERATORS && renderGeneratorsTable()}
+                    {tabIndex === LOADS && renderLoadsTable()}
+                    {tabIndex === SHUNT_COMPENSATORS &&
+                        renderShuntCompensatorsTable()}
+                    {tabIndex === STATIC_VAR_COMPENSATORS &&
+                        renderStaticVarCompensatorsTable()}
+                    {tabIndex === BATTERIES && renderBatteriesTable()}
+                    {tabIndex === HVDC_LINES && renderHvdcLinesTable()}
+                    {tabIndex === LCC_CONVERTER_STATIONS &&
+                        renderLccConverterStationsTable()}
+                    {tabIndex === VSC_CONVERTER_STATIONS &&
+                        renderVscConverterStationsTable()}
+                    {tabIndex === DANGLING_LINES && renderDanglingLinesTable()}
                 </div>
             </>
         )
