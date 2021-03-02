@@ -87,7 +87,9 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const lineFlowAlertThreshold = useSelector(
         (state) => state.lineFlowAlertThreshold
     );
-    const displayOverloadTable = useSelector((state) => state.displayOverloadTable);
+    const displayOverloadTable = useSelector(
+        (state) => state.displayOverloadTable
+    );
 
     const [
         disabledFlowAlertThreshold,
@@ -428,16 +430,20 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     alertThresholdMarks
                 )}
                 <MakeLineSeparator />
-                {MakeSwitch(displayOverloadTable, 'displayOverloadTable', () => {
-                    setDisabledFlowAlertThreshold(
-                        lineFlowColorMode === 'nominalVoltage' &&
-                            displayOverloadTable
-                    );
-                    updateConfigParameters(
-                        PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
-                        !displayOverloadTable
-                    );
-                })}
+                {MakeSwitch(
+                    displayOverloadTable,
+                    'displayOverloadTable',
+                    () => {
+                        setDisabledFlowAlertThreshold(
+                            lineFlowColorMode === 'nominalVoltage' &&
+                                displayOverloadTable
+                        );
+                        updateConfigParameters(
+                            PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+                            !displayOverloadTable
+                        );
+                    }
+                )}
             </Grid>
         );
     };

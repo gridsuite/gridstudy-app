@@ -186,7 +186,9 @@ const StudyPane = (props) => {
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const displayOverloadTable = useSelector((state) => state.displayOverloadTable);
+    const displayOverloadTable = useSelector(
+        (state) => state.displayOverloadTable
+    );
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
@@ -1174,7 +1176,10 @@ const StudyPane = (props) => {
                 <div
                     className="singlestretch-parent singlestretch-child"
                     style={{
-                        display: props.view === StudyView.SPREADSHEET ? null : 'none',
+                        display:
+                            props.view === StudyView.SPREADSHEET
+                                ? null
+                                : 'none',
                     }}
                 >
                     {renderTableView()}
