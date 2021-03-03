@@ -31,7 +31,7 @@ import {
     USER,
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
-    VIEW_OVERLOADS_TABLE,
+    DISPLAY_OVERLOAD_TABLE,
     INCREASE_RESULT_COUNT,
     RESET_RESULT_COUNT,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
@@ -63,7 +63,7 @@ const initialState = {
     lineFlowAlertThreshold: 100,
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
-    viewOverloadsTable: false,
+    displayOverloadTable: false,
     resultCount: 0,
     filteredNominalVoltages: null,
     substationLayout: 'horizontal',
@@ -172,8 +172,8 @@ export const reducer = createReducer(initialState, {
         state.signInCallbackError = action.signInCallbackError;
     },
 
-    [VIEW_OVERLOADS_TABLE]: (state, action) => {
-        state.viewOverloadsTable = action.viewOverloadsTable;
+    [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
+        state.displayOverloadTable = action.displayOverloadTable;
     },
 
     [INCREASE_RESULT_COUNT]: (state) => {

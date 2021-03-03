@@ -92,7 +92,7 @@
 
     "PageNotFound": "Page not found",
 
-    "Table": "Spreadsheet",
+    "Spreadsheet": "Spreadsheet",
     "Results": "Results",
     "Substations": "Substations",
     "VoltageLevels": "Voltage levels",
@@ -126,7 +126,7 @@
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
 
-    "viewOverloadsTable": "View overload table: ",
+    "displayOverloadTable": "Display the overload table: ",
 
     "LoadFlow": "LoadFlow",
     "SecurityAnalysis": "Security analysis",

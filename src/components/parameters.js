@@ -51,7 +51,7 @@ import {
     PARAMS_SUBSTATION_LAYOUT_KEY,
     PARAMS_THEME_KEY,
     PARAMS_USE_NAME_KEY,
-    PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+    PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
 } from '../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
@@ -87,13 +87,15 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const lineFlowAlertThreshold = useSelector(
         (state) => state.lineFlowAlertThreshold
     );
-    const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
+    const displayOverloadTable = useSelector(
+        (state) => state.displayOverloadTable
+    );
 
     const [
         disabledFlowAlertThreshold,
         setDisabledFlowAlertThreshold,
     ] = React.useState(
-        lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
+        lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
     );
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -134,7 +136,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const handleLineFlowColorModeChange = (event) => {
         const lineFlowColorMode = event.target.value;
         setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
+            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
         );
         updateConfigParameters(
             PARAMS_LINE_FLOW_COLOR_MODE_KEY,
@@ -428,16 +430,20 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     alertThresholdMarks
                 )}
                 <MakeLineSeparator />
-                {MakeSwitch(viewOverloadsTable, 'viewOverloadsTable', () => {
-                    setDisabledFlowAlertThreshold(
-                        lineFlowColorMode === 'nominalVoltage' &&
-                            viewOverloadsTable
-                    );
-                    updateConfigParameters(
-                        PARAMS_VIEW_OVERLOADS_TABLE_KEY,
-                        !viewOverloadsTable
-                    );
-                })}
+                {MakeSwitch(
+                    displayOverloadTable,
+                    'displayOverloadTable',
+                    () => {
+                        setDisabledFlowAlertThreshold(
+                            lineFlowColorMode === 'nominalVoltage' &&
+                                displayOverloadTable
+                        );
+                        updateConfigParameters(
+                            PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+                            !displayOverloadTable
+                        );
+                    }
+                )}
             </Grid>
         );
     };

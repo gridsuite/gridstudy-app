@@ -41,7 +41,7 @@ import {
     selectSubstationLayout,
     selectTheme,
     selectUseName,
-    selectViewOverloadsTableState,
+    selectDisplayOverloadTableState,
 } from '../redux/actions';
 import Parameters from './parameters';
 
@@ -76,7 +76,7 @@ import {
     PARAMS_SUBSTATION_LAYOUT_KEY,
     PARAMS_THEME_KEY,
     PARAMS_USE_NAME_KEY,
-    PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+    PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
 } from '../utils/config-params';
 
 const lightTheme = createMuiTheme({
@@ -147,7 +147,7 @@ const useStyles = makeStyles(() => ({
 
 const noUserManager = { instance: null, error: null };
 
-const STUDY_VIEWS = [StudyView.MAP, StudyView.TABLE, StudyView.RESULTS];
+const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
 const App = () => {
     const theme = useSelector((state) => state.theme);
@@ -217,9 +217,9 @@ const App = () => {
                     case PARAMS_SUBSTATION_LAYOUT_KEY:
                         dispatch(selectSubstationLayout(param.value));
                         break;
-                    case PARAMS_VIEW_OVERLOADS_TABLE_KEY:
+                    case PARAMS_DISPLAY_OVERLOAD_TABLE_KEY:
                         dispatch(
-                            selectViewOverloadsTableState(
+                            selectDisplayOverloadTableState(
                                 param.value === 'true'
                             )
                         );
