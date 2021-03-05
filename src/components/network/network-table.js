@@ -25,44 +25,12 @@ import ClearIcon from '@material-ui/icons/Clear';
 
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import { FormattedMessage } from 'react-intl';
-import { SelectColumnsNames } from '../../utils/dialogs';
+import { SelectOptionsDialog } from '../../utils/dialogs';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
-
-const SUBSTATIONS = 0;
-const VOLTAGE_LEVELS = 1;
-const LINES = 2;
-const TWO_WINDINGS_TRANSFORMERS = 3;
-const THREE_WINDINGS_TRANSFORMERS = 4;
-const GENERATORS = 5;
-const LOADS = 6;
-const SHUNT_COMPENSATORS = 7;
-const STATIC_VAR_COMPENSATORS = 8;
-const BATTERIES = 9;
-const HVDC_LINES = 10;
-const LCC_CONVERTER_STATIONS = 11;
-const VSC_CONVERTER_STATIONS = 12;
-const DANGLING_LINES = 13;
-
-const TABLE_NAMES = [
-    'Substations',
-    'VoltageLevels',
-    'Lines',
-    'TwoWindingsTransformers',
-    'ThreeWindingsTransformers',
-    'Generators',
-    'Loads',
-    'ShuntCompensators',
-    'StaticVarCompensators',
-    'Batteries',
-    'HvdcLines',
-    'LccConverterStations',
-    'VscConverterStations',
-    'DanglingLines',
-];
 
 const useStyles = makeStyles((theme) => ({
     cell: {
@@ -106,13 +74,812 @@ const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = React.useState(0);
     const [lineEdit, setLineEdit] = React.useState({});
     const [rowFilter, setRowFilter] = React.useState(undefined);
-    const [popupSelectListName, setPopupSelectListName] = React.useState(false);
+    const [popupSelectColumnNames, setPopupSelectColumnNames] = React.useState(
+        false
+    );
 
     const [listColumnsNames, setListColumnsNames] = useState([]);
     const [checked, setChecked] = React.useState([]);
     const [selectedListName, setSelectedListName] = useState([]);
 
     const intl = useIntl();
+
+    const TABLES_DEFINITIONS = {
+        SUBSTATIONS: {
+            index: 0,
+            name: 'Substations',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 200,
+                    id: 'Country',
+                    dataKey: 'countryName',
+                },
+            ],
+        },
+
+        VOLTAGE_LEVELS: {
+            index: 1,
+            name: 'VoltageLevels',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'SubstationId',
+                    dataKey: 'substationId',
+                },
+                {
+                    width: 200,
+                    id: 'NominalVoltage',
+                    dataKey: 'nominalVoltage',
+                    numeric: true,
+                    fractionDigits: 0,
+                },
+            ],
+        },
+
+        LINES: {
+            index: 2,
+            name: 'Lines',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelIdSide1',
+                    dataKey: 'voltageLevelId1',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelIdSide2',
+                    dataKey: 'voltageLevelId2',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePowerSide1',
+                    dataKey: 'p1',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ActivePowerSide2',
+                    dataKey: 'p2',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePowerSide1',
+                    dataKey: 'q1',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePowerSide2',
+                    dataKey: 'q2',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+
+        TWO_WINDINGS_TRANSFORMERS: {
+            index: 3,
+            name: 'TwoWindingsTransformers',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelIdSide1',
+                    dataKey: 'voltageLevelId1',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelIdSide2',
+                    dataKey: 'voltageLevelId2',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePowerSide1',
+                    dataKey: 'p1',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ActivePowerSide2',
+                    dataKey: 'p2',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePowerSide1',
+                    dataKey: 'q1',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePowerSide2',
+                    dataKey: 'q2',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 150,
+                    id: 'RatioTap',
+                    dataKey: 'ratioTapChangerPosition',
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            generateTapRequest('Ratio'),
+                            0
+                        ),
+                },
+                {
+                    width: 150,
+                    id: 'PhaseTap',
+                    dataKey: 'phaseTapChangerPosition',
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            generateTapRequest('Phase'),
+                            0
+                        ),
+                },
+            ],
+        },
+
+        THREE_WINDINGS_TRANSFORMERS: {
+            index: 4,
+            name: 'ThreeWindingsTransformers',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelIdSide1',
+                    dataKey: 'voltageLevelId1',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelIdSide2',
+                    dataKey: 'voltageLevelId2',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelIdSide3',
+                    dataKey: 'voltageLevelId3',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePowerSide1',
+                    dataKey: 'p1',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ActivePowerSide2',
+                    dataKey: 'p2',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ActivePowerSide3',
+                    dataKey: 'p3',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePowerSide1',
+                    dataKey: 'q1',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePowerSide2',
+                    dataKey: 'q2',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePowerSide3',
+                    dataKey: 'q3',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 150,
+                    id: 'RatioTap1',
+                    dataKey: 'ratioTapChanger1Position',
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            generateTapRequest('Ratio', 1),
+                            0
+                        ),
+                },
+                {
+                    width: 150,
+                    id: 'RatioTap2',
+                    dataKey: 'ratioTapChanger2Position',
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            generateTapRequest('Ratio', 2),
+                            0
+                        ),
+                },
+                {
+                    width: 150,
+                    id: 'RatioTap3',
+                    dataKey: 'ratioTapChanger3Position',
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            generateTapRequest('Ratio', 3),
+                            0
+                        ),
+                },
+                {
+                    width: 150,
+                    id: 'PhaseTap1',
+                    dataKey: 'phaseTapChanger1Position',
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            generateTapRequest('Phase', 1),
+                            0
+                        ),
+                },
+                {
+                    width: 150,
+                    id: 'PhaseTap2',
+                    dataKey: 'phaseTapChanger2Position',
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            generateTapRequest('Phase', 2),
+                            0
+                        ),
+                },
+                {
+                    width: 150,
+                    id: 'PhaseTap3',
+                    numeric: true,
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            generateTapRequest('Phase', 3),
+                            0
+                        ),
+                },
+            ],
+        },
+
+        GENERATORS: {
+            index: 5,
+            name: 'Generators',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelId',
+                    dataKey: 'voltageLevelId',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePower',
+                    dataKey: 'p',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePower',
+                    dataKey: 'q',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'TargetP',
+                    dataKey: 'targetP',
+                    cellRenderer: (cell) =>
+                        EditableCellRender(
+                            cell,
+                            true,
+                            'equipment.setTargetP({})',
+                            1
+                        ),
+                },
+            ],
+        },
+
+        LOADS: {
+            index: 6,
+            name: 'Loads',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 200,
+                    id: 'LoadType',
+                    dataKey: 'type',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelId',
+                    dataKey: 'voltageLevelId',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePower',
+                    dataKey: 'p',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePower',
+                    dataKey: 'q',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ConstantActivePower',
+                    dataKey: 'p0',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ConstantReactivePower',
+                    dataKey: 'q0',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+
+        SHUNT_COMPENSATORS: {
+            index: 7,
+            name: 'ShuntCompensators',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelId',
+                    dataKey: 'voltageLevelId',
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePower',
+                    dataKey: 'q',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'TargetV',
+                    dataKey: 'targetV',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'TargetDeadband',
+                    dataKey: 'targetDeadband',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+
+        STATIC_VAR_COMPENSATORS: {
+            index: 8,
+            name: 'StaticVarCompensators',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelId',
+                    dataKey: 'voltageLevelId',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePower',
+                    dataKey: 'p',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePower',
+                    dataKey: 'q',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'VoltageSetpoint',
+                    dataKey: 'voltageSetpoint',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePowerSetpoint',
+                    dataKey: 'reactivePowerSetpoint',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+
+        BATTERIES: {
+            index: 9,
+            name: 'Batteries',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelId',
+                    dataKey: 'voltageLevelId',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePower',
+                    dataKey: 'p',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePower',
+                    dataKey: 'q',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ConstantActivePower',
+                    dataKey: 'p0',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ConstantReactivePower',
+                    dataKey: 'q0',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+
+        HVDC_LINES: {
+            index: 10,
+            name: 'HvdcLines',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'ConvertersMode',
+                    dataKey: 'convertersMode',
+                },
+                {
+                    width: 400,
+                    id: 'ConverterStationId1',
+                    dataKey: 'converterStationId1',
+                },
+                {
+                    width: 400,
+                    id: 'ConverterStationId2',
+                    dataKey: 'converterStationId2',
+                },
+                {
+                    width: 200,
+                    id: 'R',
+                    dataKey: 'r',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'NominalV',
+                    dataKey: 'nominalV',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 300,
+                    id: 'ActivePowerSetpoint',
+                    dataKey: 'activePowerSetpoint',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'MaxP',
+                    dataKey: 'maxP',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+
+        LCC_CONVERTER_STATIONS: {
+            index: 11,
+            name: 'LccConverterStations',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelId',
+                    dataKey: 'voltageLevelId',
+                },
+                {
+                    width: 400,
+                    id: 'HvdcLineId',
+                    dataKey: 'hvdcLineId',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePower',
+                    dataKey: 'p',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePower',
+                    dataKey: 'q',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'PowerFactor',
+                    dataKey: 'powerFactor',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'LossFactor',
+                    dataKey: 'lossFactor',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+
+        VSC_CONVERTER_STATIONS: {
+            index: 12,
+            name: 'VscConverterStations',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelId',
+                    dataKey: 'voltageLevelId',
+                },
+                {
+                    width: 400,
+                    id: 'HvdcLineId',
+                    dataKey: 'hvdcLineId',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePower',
+                    dataKey: 'p',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePower',
+                    dataKey: 'q',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'LossFactor',
+                    dataKey: 'lossFactor',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+
+        DANGLING_LINES: {
+            index: 13,
+            name: 'DanglingLines',
+            columns: [
+                {
+                    width: 400,
+                    id: 'ID',
+                    dataKey: 'id',
+                },
+                {
+                    width: 200,
+                    id: 'Name',
+                    dataKey: 'name',
+                },
+                {
+                    width: 400,
+                    id: 'VoltageLevelId',
+                    dataKey: 'voltageLevelId',
+                },
+                {
+                    width: 200,
+                    id: 'UcteXnodeCode',
+                    dataKey: 'ucteXnodeCode',
+                },
+                {
+                    width: 200,
+                    id: 'ActivePower',
+                    dataKey: 'p',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ReactivePower',
+                    dataKey: 'q',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ConstantActivePower',
+                    dataKey: 'p0',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+                {
+                    width: 200,
+                    id: 'ConstantReactivePower',
+                    dataKey: 'q0',
+                    numeric: true,
+                    fractionDigits: 1,
+                },
+            ],
+        },
+    };
 
     const rowHeight = 48;
 
@@ -315,8 +1082,8 @@ const NetworkTable = (props) => {
         return selectedListName[tabIndex].includes(key) ? '' : 'none';
     };
 
-    const generateTableColumns = (index) => {
-        return getListAvailableColumns(index).map((c) => {
+    const generateTableColumns = (table) => {
+        return table.columns.map((c) => {
             return {
                 label: intl.formatMessage({ id: c.id }),
                 headerStyle: { display: showSelectedColumn(c.id) },
@@ -332,7 +1099,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.substations.length}
                 rowGetter={({ index }) => props.network.substations[index]}
                 filter={filter}
-                columns={generateTableColumns(SUBSTATIONS)}
+                columns={generateTableColumns(TABLES_DEFINITIONS.SUBSTATIONS)}
             />
         );
     };
@@ -344,7 +1111,9 @@ const NetworkTable = (props) => {
                 rowCount={voltageLevels.length}
                 rowGetter={({ index }) => voltageLevels[index]}
                 filter={filter}
-                columns={generateTableColumns(VOLTAGE_LEVELS)}
+                columns={generateTableColumns(
+                    TABLES_DEFINITIONS.VOLTAGE_LEVELS
+                )}
             />
         );
     }
@@ -355,7 +1124,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.lines.length}
                 rowGetter={({ index }) => props.network.lines[index]}
                 filter={filter}
-                columns={generateTableColumns(LINES)}
+                columns={generateTableColumns(TABLES_DEFINITIONS.LINES)}
             />
         );
     }
@@ -383,7 +1152,9 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('TwoWindingsTransformer'),
-                    ...generateTableColumns(TWO_WINDINGS_TRANSFORMERS),
+                    ...generateTableColumns(
+                        TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS
+                    ),
                 ]}
             />
         );
@@ -399,7 +1170,9 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('ThreeWindingsTransformer'),
-                    ...generateTableColumns(THREE_WINDINGS_TRANSFORMERS),
+                    ...generateTableColumns(
+                        TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
+                    ),
                 ]}
             />
         );
@@ -413,7 +1186,7 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     makeHeaderCell('Generator'),
-                    ...generateTableColumns(GENERATORS),
+                    ...generateTableColumns(TABLES_DEFINITIONS.GENERATORS),
                 ]}
             />
         );
@@ -425,7 +1198,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.loads.length}
                 rowGetter={({ index }) => props.network.loads[index]}
                 filter={filter}
-                columns={generateTableColumns(LOADS)}
+                columns={generateTableColumns(TABLES_DEFINITIONS.LOADS)}
             />
         );
     }
@@ -436,7 +1209,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.batteries.length}
                 rowGetter={({ index }) => props.network.batteries[index]}
                 filter={filter}
-                columns={generateTableColumns(BATTERIES)}
+                columns={generateTableColumns(TABLES_DEFINITIONS.BATTERIES)}
             />
         );
     }
@@ -447,7 +1220,9 @@ const NetworkTable = (props) => {
                 rowCount={props.network.danglingLines.length}
                 rowGetter={({ index }) => props.network.danglingLines[index]}
                 filter={filter}
-                columns={generateTableColumns(DANGLING_LINES)}
+                columns={generateTableColumns(
+                    TABLES_DEFINITIONS.DANGLING_LINES
+                )}
             />
         );
     }
@@ -458,7 +1233,7 @@ const NetworkTable = (props) => {
                 rowCount={props.network.hvdcLines.length}
                 rowGetter={({ index }) => props.network.hvdcLines[index]}
                 filter={filter}
-                columns={generateTableColumns(HVDC_LINES)}
+                columns={generateTableColumns(TABLES_DEFINITIONS.HVDC_LINES)}
             />
         );
     }
@@ -471,7 +1246,9 @@ const NetworkTable = (props) => {
                     props.network.shuntCompensators[index]
                 }
                 filter={filter}
-                columns={generateTableColumns(SHUNT_COMPENSATORS)}
+                columns={generateTableColumns(
+                    TABLES_DEFINITIONS.SHUNT_COMPENSATORS
+                )}
             />
         );
     }
@@ -484,7 +1261,9 @@ const NetworkTable = (props) => {
                     props.network.staticVarCompensators[index]
                 }
                 filter={filter}
-                columns={generateTableColumns(STATIC_VAR_COMPENSATORS)}
+                columns={generateTableColumns(
+                    TABLES_DEFINITIONS.STATIC_VAR_COMPENSATORS
+                )}
             />
         );
     }
@@ -497,7 +1276,9 @@ const NetworkTable = (props) => {
                     props.network.lccConverterStations[index]
                 }
                 filter={filter}
-                columns={generateTableColumns(LCC_CONVERTER_STATIONS)}
+                columns={generateTableColumns(
+                    TABLES_DEFINITIONS.LCC_CONVERTER_STATIONS
+                )}
             />
         );
     }
@@ -510,7 +1291,9 @@ const NetworkTable = (props) => {
                     props.network.vscConverterStations[index]
                 }
                 filter={filter}
-                columns={generateTableColumns(VSC_CONVERTER_STATIONS)}
+                columns={generateTableColumns(
+                    TABLES_DEFINITIONS.VSC_CONVERTER_STATIONS
+                )}
             />
         );
     }
@@ -537,24 +1320,26 @@ const NetworkTable = (props) => {
         [rowFilter]
     );
 
-    const handleOpenPopupSelectList = () => {
+    const handleOpenPopupSelectColumnNames = () => {
         setListColumnsNames(
             listColumnsNames.map((arr, index) =>
                 tabIndex === index
-                    ? getListAvailableColumns(tabIndex).map((c) => {
-                          return c.id;
-                      })
+                    ? Object.values(TABLES_DEFINITIONS)
+                          .filter((table) => tabIndex === table.index)[0]
+                          .columns.map((c) => {
+                              return c.id;
+                          })
                     : arr
             )
         );
-        setPopupSelectListName(true);
+        setPopupSelectColumnNames(true);
     };
 
-    const handleClosePopupSelectList = () => {
-        setPopupSelectListName(false);
+    const handleClosePopupSelectColumnNames = () => {
+        setPopupSelectColumnNames(false);
     };
 
-    const handleSaveSelectedList = () => {
+    const handleSaveSelectedColumnNames = () => {
         const showListName = listColumnsNames[tabIndex].filter((item) =>
             checked[tabIndex].includes(item)
         );
@@ -564,7 +1349,7 @@ const NetworkTable = (props) => {
             )
         );
 
-        setPopupSelectListName(false);
+        setPopupSelectColumnNames(false);
     };
 
     function not(a, b) {
@@ -658,793 +1443,16 @@ const NetworkTable = (props) => {
         );
     };
 
-    const getListAvailableColumns = useCallback(
-        (index) => {
-            let list = [];
-            switch (index) {
-                case SUBSTATIONS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 200,
-                            id: 'Country',
-                            dataKey: 'countryName',
-                        },
-                    ];
-                    return list;
-
-                case VOLTAGE_LEVELS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'SubstationId',
-                            dataKey: 'substationId',
-                        },
-                        {
-                            width: 200,
-                            id: 'NominalVoltage',
-                            dataKey: 'nominalVoltage',
-                            numeric: true,
-                            fractionDigits: 0,
-                        },
-                    ];
-                    return list;
-
-                case LINES:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelIdSide1',
-                            dataKey: 'voltageLevelId1',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelIdSide2',
-                            dataKey: 'voltageLevelId2',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePowerSide1',
-                            dataKey: 'p1',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePowerSide2',
-                            dataKey: 'p2',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePowerSide1',
-                            dataKey: 'q1',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePowerSide2',
-                            dataKey: 'q2',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                case TWO_WINDINGS_TRANSFORMERS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelIdSide1',
-                            dataKey: 'voltageLevelId1',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelIdSide2',
-                            dataKey: 'voltageLevelId2',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePowerSide1',
-                            dataKey: 'p1',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePowerSide2',
-                            dataKey: 'p2',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePowerSide1',
-                            dataKey: 'q1',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePowerSide2',
-                            dataKey: 'q2',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 150,
-                            id: 'RatioTap',
-                            dataKey: 'ratioTapChangerPosition',
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    generateTapRequest('Ratio'),
-                                    0
-                                ),
-                        },
-                        {
-                            width: 150,
-                            id: 'PhaseTap',
-                            dataKey: 'phaseTapChangerPosition',
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    generateTapRequest('Phase'),
-                                    0
-                                ),
-                        },
-                    ];
-                    return list;
-
-                case THREE_WINDINGS_TRANSFORMERS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelIdSide1',
-                            dataKey: 'voltageLevelId1',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelIdSide2',
-                            dataKey: 'voltageLevelId2',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelIdSide3',
-                            dataKey: 'voltageLevelId3',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePowerSide1',
-                            dataKey: 'p1',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePowerSide2',
-                            dataKey: 'p2',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePowerSide3',
-                            dataKey: 'p3',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePowerSide1',
-                            dataKey: 'q1',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePowerSide2',
-                            dataKey: 'q2',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePowerSide3',
-                            dataKey: 'q3',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 150,
-                            id: 'RatioTap1',
-                            dataKey: 'ratioTapChanger1Position',
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    generateTapRequest('Ratio', 1),
-                                    0
-                                ),
-                        },
-                        {
-                            width: 150,
-                            id: 'RatioTap2',
-                            dataKey: 'ratioTapChanger2Position',
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    generateTapRequest('Ratio', 2),
-                                    0
-                                ),
-                        },
-                        {
-                            width: 150,
-                            id: 'RatioTap3',
-                            dataKey: 'ratioTapChanger3Position',
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    generateTapRequest('Ratio', 3),
-                                    0
-                                ),
-                        },
-                        {
-                            width: 150,
-                            id: 'PhaseTap1',
-                            dataKey: 'phaseTapChanger1Position',
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    generateTapRequest('Phase', 1),
-                                    0
-                                ),
-                        },
-                        {
-                            width: 150,
-                            id: 'PhaseTap2',
-                            dataKey: 'phaseTapChanger2Position',
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    generateTapRequest('Phase', 2),
-                                    0
-                                ),
-                        },
-                        {
-                            width: 150,
-                            id: 'PhaseTap3',
-                            numeric: true,
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    generateTapRequest('Phase', 3),
-                                    0
-                                ),
-                        },
-                    ];
-                    return list;
-
-                case GENERATORS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelId',
-                            dataKey: 'voltageLevelId',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePower',
-                            dataKey: 'p',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePower',
-                            dataKey: 'q',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'TargetP',
-                            dataKey: 'targetP',
-                            cellRenderer: (cell) =>
-                                EditableCellRender(
-                                    cell,
-                                    true,
-                                    'equipment.setTargetP({})',
-                                    1
-                                ),
-                        },
-                    ];
-                    return list;
-
-                case LOADS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 200,
-                            id: 'LoadType',
-                            dataKey: 'type',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelId',
-                            dataKey: 'voltageLevelId',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePower',
-                            dataKey: 'p',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePower',
-                            dataKey: 'q',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ConstantActivePower',
-                            dataKey: 'p0',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ConstantReactivePower',
-                            dataKey: 'q0',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                case SHUNT_COMPENSATORS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelId',
-                            dataKey: 'voltageLevelId',
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePower',
-                            dataKey: 'q',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'TargetV',
-                            dataKey: 'targetV',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'TargetDeadband',
-                            dataKey: 'targetDeadband',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                case STATIC_VAR_COMPENSATORS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelId',
-                            dataKey: 'voltageLevelId',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePower',
-                            dataKey: 'p',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePower',
-                            dataKey: 'q',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'VoltageSetpoint',
-                            dataKey: 'voltageSetpoint',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePowerSetpoint',
-                            dataKey: 'reactivePowerSetpoint',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                case BATTERIES:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelId',
-                            dataKey: 'voltageLevelId',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePower',
-                            dataKey: 'p',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePower',
-                            dataKey: 'q',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ConstantActivePower',
-                            dataKey: 'p0',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ConstantReactivePower',
-                            dataKey: 'q0',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                case HVDC_LINES:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'ConvertersMode',
-                            dataKey: 'convertersMode',
-                        },
-                        {
-                            width: 400,
-                            id: 'ConverterStationId1',
-                            dataKey: 'converterStationId1',
-                        },
-                        {
-                            width: 400,
-                            id: 'ConverterStationId2',
-                            dataKey: 'converterStationId2',
-                        },
-                        {
-                            width: 200,
-                            id: 'R',
-                            dataKey: 'r',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'NominalV',
-                            dataKey: 'nominalV',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 300,
-                            id: 'ActivePowerSetpoint',
-                            dataKey: 'activePowerSetpoint',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'MaxP',
-                            dataKey: 'maxP',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                case LCC_CONVERTER_STATIONS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelId',
-                            dataKey: 'voltageLevelId',
-                        },
-                        {
-                            width: 400,
-                            id: 'HvdcLineId',
-                            dataKey: 'hvdcLineId',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePower',
-                            dataKey: 'p',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePower',
-                            dataKey: 'q',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'PowerFactor',
-                            dataKey: 'powerFactor',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'LossFactor',
-                            dataKey: 'lossFactor',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                case VSC_CONVERTER_STATIONS:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelId',
-                            dataKey: 'voltageLevelId',
-                        },
-                        {
-                            width: 400,
-                            id: 'HvdcLineId',
-                            dataKey: 'hvdcLineId',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePower',
-                            dataKey: 'p',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePower',
-                            dataKey: 'q',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'LossFactor',
-                            dataKey: 'lossFactor',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                case DANGLING_LINES:
-                    list = [
-                        {
-                            width: 400,
-                            id: 'ID',
-                            dataKey: 'id',
-                        },
-                        {
-                            width: 200,
-                            id: 'Name',
-                            dataKey: 'name',
-                        },
-                        {
-                            width: 400,
-                            id: 'VoltageLevelId',
-                            dataKey: 'voltageLevelId',
-                        },
-                        {
-                            width: 200,
-                            id: 'UcteXnodeCode',
-                            dataKey: 'ucteXnodeCode',
-                        },
-                        {
-                            width: 200,
-                            id: 'ActivePower',
-                            dataKey: 'p',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ReactivePower',
-                            dataKey: 'q',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ConstantActivePower',
-                            dataKey: 'p0',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                        {
-                            width: 200,
-                            id: 'ConstantReactivePower',
-                            dataKey: 'q0',
-                            numeric: true,
-                            fractionDigits: 1,
-                        },
-                    ];
-                    return list;
-
-                default:
-                    return [];
-            }
-        },
-        [EditableCellRender]
-    );
-
     useEffect(() => {
         // by default, all available columns are selected
         let cols = [];
         let selCols = [];
         let checkCols = [];
-        TABLE_NAMES.forEach((name, index) => {
-            let availableCols = getListAvailableColumns(index).map((c) => {
+        Object.values(TABLES_DEFINITIONS).forEach((table) => {
+            let availableCols = table.columns.map((c) => {
                 return c.id;
             });
+
             cols.push(availableCols);
             selCols.push(availableCols);
             checkCols.push(availableCols);
@@ -1453,7 +1461,7 @@ const NetworkTable = (props) => {
         setListColumnsNames(cols);
         setSelectedListName(selCols);
         setChecked(checkCols);
-        // Do not add getListAvailableColumns as dependency, because this effect must be called just once
+        // Do not add TABLES_DEFINITIONS as dependency, because this effect must be called just once
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -1472,11 +1480,11 @@ const NetworkTable = (props) => {
                             }
                             aria-label="tables"
                         >
-                            {TABLE_NAMES.map((tableName) => (
+                            {Object.values(TABLES_DEFINITIONS).map((table) => (
                                 <Tab
-                                    key={tableName}
+                                    key={table.name}
                                     label={intl.formatMessage({
-                                        id: tableName,
+                                        id: table.name,
                                     })}
                                 />
                             ))}
@@ -1516,14 +1524,14 @@ const NetworkTable = (props) => {
                             </span>
                             <IconButton
                                 aria-label="dialog"
-                                onClick={handleOpenPopupSelectList}
+                                onClick={handleOpenPopupSelectColumnNames}
                             >
                                 <ViewColumnIcon />
                             </IconButton>
-                            <SelectColumnsNames
-                                open={popupSelectListName}
-                                onClose={handleClosePopupSelectList}
-                                onClick={handleSaveSelectedList}
+                            <SelectOptionsDialog
+                                open={popupSelectColumnNames}
+                                onClose={handleClosePopupSelectColumnNames}
+                                onClick={handleSaveSelectedColumnNames}
                                 title={<FormattedMessage id="ColumnsList" />}
                                 child={checkListColumnsNames()}
                             />
@@ -1532,26 +1540,39 @@ const NetworkTable = (props) => {
                 </Grid>
                 <div className={classes.table} style={{ flexGrow: 1 }}>
                     {/*This render is fast, rerender full dom everytime*/}
-                    {tabIndex === SUBSTATIONS && renderSubstationsTable()}
-                    {tabIndex === VOLTAGE_LEVELS && renderVoltageLevelsTable()}
-                    {tabIndex === LINES && renderLinesTable()}
-                    {tabIndex === TWO_WINDINGS_TRANSFORMERS &&
+                    {tabIndex === TABLES_DEFINITIONS.SUBSTATIONS.index &&
+                        renderSubstationsTable()}
+                    {tabIndex === TABLES_DEFINITIONS.VOLTAGE_LEVELS.index &&
+                        renderVoltageLevelsTable()}
+                    {tabIndex === TABLES_DEFINITIONS.LINES.index &&
+                        renderLinesTable()}
+                    {tabIndex ===
+                        TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS.index &&
                         renderTwoWindingsTransformersTable()}
-                    {tabIndex === THREE_WINDINGS_TRANSFORMERS &&
+                    {tabIndex ===
+                        TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS.index &&
                         renderThreeWindingsTransformersTable()}
-                    {tabIndex === GENERATORS && renderGeneratorsTable()}
-                    {tabIndex === LOADS && renderLoadsTable()}
-                    {tabIndex === SHUNT_COMPENSATORS &&
+                    {tabIndex === TABLES_DEFINITIONS.GENERATORS.index &&
+                        renderGeneratorsTable()}
+                    {tabIndex === TABLES_DEFINITIONS.LOADS.index &&
+                        renderLoadsTable()}
+                    {tabIndex === TABLES_DEFINITIONS.SHUNT_COMPENSATORS.index &&
                         renderShuntCompensatorsTable()}
-                    {tabIndex === STATIC_VAR_COMPENSATORS &&
+                    {tabIndex ===
+                        TABLES_DEFINITIONS.STATIC_VAR_COMPENSATORS.index &&
                         renderStaticVarCompensatorsTable()}
-                    {tabIndex === BATTERIES && renderBatteriesTable()}
-                    {tabIndex === HVDC_LINES && renderHvdcLinesTable()}
-                    {tabIndex === LCC_CONVERTER_STATIONS &&
+                    {tabIndex === TABLES_DEFINITIONS.BATTERIES.index &&
+                        renderBatteriesTable()}
+                    {tabIndex === TABLES_DEFINITIONS.HVDC_LINES.index &&
+                        renderHvdcLinesTable()}
+                    {tabIndex ===
+                        TABLES_DEFINITIONS.LCC_CONVERTER_STATIONS.index &&
                         renderLccConverterStationsTable()}
-                    {tabIndex === VSC_CONVERTER_STATIONS &&
+                    {tabIndex ===
+                        TABLES_DEFINITIONS.VSC_CONVERTER_STATIONS.index &&
                         renderVscConverterStationsTable()}
-                    {tabIndex === DANGLING_LINES && renderDanglingLinesTable()}
+                    {tabIndex === TABLES_DEFINITIONS.DANGLING_LINES.index &&
+                        renderDanglingLinesTable()}
                 </div>
             </>
         )

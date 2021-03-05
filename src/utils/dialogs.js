@@ -301,7 +301,7 @@ ExportDialog.propTypes = {
     title: PropTypes.string.isRequired,
 };
 
-const SelectColumnsNames = ({ open, onClose, onClick, title, child }) => {
+const SelectOptionsDialog = ({ open, onClose, onClick, title, child }) => {
     const handleClose = () => {
         onClose();
     };
@@ -324,11 +324,12 @@ const SelectColumnsNames = ({ open, onClose, onClick, title, child }) => {
     );
 };
 
-RenameDialog.propTypes = {
+SelectOptionsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
+    child: PropTypes.element.isRequired,
 };
 
-export { DeleteDialog, RenameDialog, ExportDialog, SelectColumnsNames };
+export { DeleteDialog, RenameDialog, ExportDialog, SelectOptionsDialog };
