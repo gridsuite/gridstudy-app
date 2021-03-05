@@ -47,6 +47,7 @@ import {
     initializeAuthenticationProd,
     logout,
     TopBar,
+    SnackbarProvider,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -124,7 +125,7 @@ const noUserManager = { instance: null, error: null };
 const STUDY_VIEWS = [StudyView.MAP, StudyView.TABLE, StudyView.RESULTS];
 
 const App = () => {
-    const theme = useSelector((state) => state.theme);
+    // const theme = useSelector((state) => state.theme);
 
     const useName = useSelector((state) => state.useName);
 
@@ -141,6 +142,8 @@ const App = () => {
     const [userManager, setUserManager] = useState(noUserManager);
 
     const [showParameters, setShowParameters] = useState(false);
+
+    const [theme, setTheme] = useState(selectTheme);
 
     const history = useHistory();
 
@@ -173,13 +176,13 @@ const App = () => {
         dispatch(toggleUseNameState());
     };
 
-    const handleDisplayMode = () => {
-        if (theme === LIGHT_THEME) {
-            dispatch(selectTheme(DARK_THEME));
-        } else {
-            dispatch(selectTheme(LIGHT_THEME));
-        }
+    const handleDisplayMode = (mode) => {
+        setTheme(mode);
     };
+
+    function switchTheme(theme) {
+        return theme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
+    }
 
     useEffect(() => {
         document.addEventListener('contextmenu', (event) => {
@@ -274,13 +277,17 @@ const App = () => {
                         )
                     }
                     onParametersClick={() => showParametersClicked()}
-                    onLogoutClick={() => logout(dispatch, userManager.instance)}
+                    onLogoutClick={() =>
+                        logout(dispatch, userManager.instance)
+                    }
                     onLogoClick={() => onLogoClicked()}
                     user={user}
                     appsAndUrls={appsAndUrls}
-                    onDisplayModeClick={() => handleDisplayMode()}
+                    onDisplayModeClick={() =>
+                        handleDisplayMode(switchTheme(theme))
+                    }
                     onAboutClick={() => console.log('about')}
-                    selectedTheme={theme}
+                    selectedTheme={'Light'}
                     equipmentDisplay={
                         <EquipmentDisplay
                             handleDisplay={handleClickToggle}
@@ -312,11 +319,15 @@ const App = () => {
                                             badgeContent={resultCount}
                                             color="secondary"
                                         >
-                                            <FormattedMessage id={tabName} />
+                                            <FormattedMessage
+                                                id={tabName}
+                                            />
                                         </Badge>
                                     );
                                 } else {
-                                    label = <FormattedMessage id={tabName} />;
+                                    label = (
+                                        <FormattedMessage id={tabName} />
+                                    );
                                 }
                                 return <Tab key={tabName} label={label} />;
                             })}
@@ -344,12 +355,15 @@ const App = () => {
                         </Route>
                         <Route exact path="/logout-callback">
                             <h1>
-                                Error: logout failed; you are still logged in.
+                                Error: logout failed; you are still logged
+                                in.
                             </h1>
                         </Route>
                         <Route>
                             <PageNotFound
-                                message={<FormattedMessage id="PageNotFound" />}
+                                message={
+                                    <FormattedMessage id="PageNotFound" />
+                                }
                             />
                         </Route>
                     </Switch>
