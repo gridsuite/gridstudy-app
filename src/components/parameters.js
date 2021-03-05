@@ -238,7 +238,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
         onCommitCallback,
         thresholdMarks
     ) {
-
         const [sliderValue, setSliderValue] = React.useState(threshold);
 
         const handleValueChanged = (event, newValue) => {
