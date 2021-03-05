@@ -234,10 +234,17 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeSlider(
         threshold,
         label,
-        disabledFlowAlertThreshold,
-        callback,
+        disabled,
+        onCommitCallback,
         thresholdMarks
     ) {
+
+        const [sliderValue, setSliderValue] = React.useState(threshold);
+
+        const handleValueChanged = (event, newValue) => {
+            setSliderValue(newValue);
+        };
+
         return (
             <>
                 <Grid item xs={7}>
@@ -252,9 +259,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         min={0}
                         max={100}
                         valueLabelDisplay="auto"
-                        onChangeCommitted={callback}
-                        value={threshold}
-                        disabled={disabledFlowAlertThreshold}
+                        onChange={handleValueChanged}
+                        onChangeCommitted={onCommitCallback}
+                        value={sliderValue}
+                        disabled={disabled}
                         marks={thresholdMarks}
                     />
                 </Grid>
