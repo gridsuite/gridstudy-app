@@ -10,7 +10,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import VirtualizedTable from './util/virtualized-table';
 import { FormattedMessage, useIntl } from 'react-intl';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -36,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({ result }) => {
+const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -84,7 +83,7 @@ const SecurityAnalysisResult = ({ result }) => {
                 columns={[
                     {
                         width: 200,
-                        label: intl.formatMessage({ id: 'ID' }),
+                        label: intl.formatMessage({ id: 'Equipment' }),
                         dataKey: 'subjectId',
                     },
                     {
@@ -123,7 +122,8 @@ const SecurityAnalysisResult = ({ result }) => {
         postContingencyResults.forEach((postContingencyResult, index) => {
             if (
                 postContingencyResult.limitViolationsResult.limitViolations
-                    .length > 0
+                    .length > 0 ||
+                !postContingencyResult.limitViolationsResult.computationOk
             ) {
                 rows.push({
                     contingencyIndex: index,
@@ -135,6 +135,8 @@ const SecurityAnalysisResult = ({ result }) => {
                     violationCount:
                         postContingencyResult.limitViolationsResult
                             .limitViolations.length,
+                    _group: index,
+                    _root: true,
                 });
                 postContingencyResult.limitViolationsResult.limitViolations.forEach(
                     (limitViolation) => {
@@ -147,6 +149,8 @@ const SecurityAnalysisResult = ({ result }) => {
                             limit: limitViolation.limit,
                             value: limitViolation.value,
                             loading: computeLoading(limitViolation),
+                            side: limitViolation.side,
+                            _group: index,
                         });
                     }
                 );
@@ -155,12 +159,89 @@ const SecurityAnalysisResult = ({ result }) => {
         return rows;
     }
 
+    /**
+     * sortResult : generate an array of index representing the rows sorted by key
+     * rows are grouped by their attribute _group, the first one is root, the other children, we assume that the rows
+     * are already grouped (next to each other)
+     *
+     * rows : rows to sort
+     * rootSet : Set of keys of the root row (if key is in root, we sort root lines, not the children inside
+     *           else we sort children for each root (and do not change order of root)
+     * key : sort key
+     * reverse : ascending or descending sort
+     * isNumeric : is the associated column numeric
+     * */
+    function sortResult(rows, rootSet, key, reverse, isNumeric) {
+        /* utility functions */
+        function sortAndAddResults(result, array) {
+            const compareValue = (a, b) => {
+                const mult = reverse ? 1 : -1;
+                if (a === undefined && b === undefined) return 0;
+                else if (b === undefined) return -mult;
+                else if (a === undefined) return mult;
+                return isNumeric
+                    ? (Number(a) < Number(b) ? 1 : -1) * mult
+                    : ('' + a).localeCompare(b) * mult;
+            };
+
+            const getIndexes = (k) => [k.index].concat(k.indexes);
+            array
+                .sort((a, b) => compareValue(a.key, b.key))
+                .flatMap((k) => getIndexes(k))
+                .map((i) => result.push(i));
+        }
+
+        let currentSorting = [];
+        const addRowToSort = (key, index) => {
+            currentSorting.push({
+                key: key,
+                index: index,
+                indexes: [],
+            });
+        };
+
+        const rootSorting = rootSet.has(key);
+        let group = undefined;
+        let result = [];
+        /* now we sort */
+        rows.forEach((row, index) => {
+            if (group !== row._group) {
+                /* new set of lines */
+                if (!rootSorting) {
+                    sortAndAddResults(result, currentSorting); // add previous batch
+                    currentSorting = [];
+                    result.push(index); // add current row (we do not sort root)
+                } else {
+                    addRowToSort(row[key], index); // we sort root
+                }
+                group = row._group;
+            } else if (rootSorting) {
+                currentSorting[currentSorting.length - 1].indexes.push(index); // we don't want to loose children
+            } else {
+                addRowToSort(row[key], index); // children need sorting
+            }
+        });
+        /* add last group (if any) or all if root sorting */
+        sortAndAddResults(result, currentSorting);
+        return result;
+    }
+
     function renderTableNmKContingencies(postContingencyResults) {
         const rows = flattenNmKresultsContingencies(postContingencyResults);
         return (
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
+                onCellClick={onClickNmKConstraint}
+                sort={(dataKey, reverse, isNumeric) =>
+                    sortResult(
+                        rows,
+                        new Set(['contingencyId', 'computationOk']),
+                        dataKey,
+                        reverse,
+                        isNumeric
+                    )
+                }
                 columns={[
                     {
                         width: 200,
@@ -174,8 +255,9 @@ const SecurityAnalysisResult = ({ result }) => {
                     },
                     {
                         width: 200,
-                        label: intl.formatMessage({ id: 'ID' }),
+                        label: intl.formatMessage({ id: 'Constraint' }),
                         dataKey: 'subjectId',
+                        clickable: true,
                     },
                     {
                         width: 200,
@@ -213,6 +295,16 @@ const SecurityAnalysisResult = ({ result }) => {
         let mapConstraints = new Map();
 
         postContingencyResults.forEach((postContingencyResult, index) => {
+            if (!postContingencyResult.limitViolationsResult.computationOk) {
+                rows.push({
+                    contingencyId: postContingencyResult.contingency.id,
+                    computationOk: postContingencyResult.limitViolationsResult
+                        .computationOk
+                        ? intl.formatMessage({ id: 'true' })
+                        : intl.formatMessage({ id: 'false' }),
+                });
+            }
+
             if (
                 postContingencyResult.limitViolationsResult.limitViolations
                     .length > 0
@@ -234,32 +326,46 @@ const SecurityAnalysisResult = ({ result }) => {
 
                         contingencies.push({
                             contingencyId: postContingencyResult.contingency.id,
+                            computationOk: postContingencyResult
+                                .limitViolationsResult.computationOk
+                                ? intl.formatMessage({ id: 'true' })
+                                : intl.formatMessage({ id: 'false' }),
+                            constraintId: limitViolation.subjectId,
                             limitType: intl.formatMessage({
                                 id: limitViolation.limitType,
                             }),
                             limit: limitViolation.limit,
                             value: limitViolation.value,
                             loading: limitViolation.loading,
+                            side: limitViolation.side,
                         });
                     }
                 );
             }
         });
 
+        let group = 0;
         mapConstraints.forEach((contingencies, subjectId) => {
             rows.push({
                 subjectId: subjectId,
+                _group: group,
+                _root: true,
             });
 
             contingencies.forEach((contingency) => {
                 rows.push({
                     contingencyId: contingency.contingencyId,
+                    computationOk: contingency.computationOk,
+                    constraintId: contingency.constraintId,
                     limitType: contingency.limitType,
                     limit: contingency.limit,
                     value: contingency.value,
                     loading: contingency.loading,
+                    side: contingency.side,
+                    _group: group,
                 });
             });
+            group++;
         });
 
         return rows;
@@ -272,16 +378,32 @@ const SecurityAnalysisResult = ({ result }) => {
             <VirtualizedTable
                 rowCount={rows.length}
                 rowGetter={({ index }) => rows[index]}
+                onCellClick={onClickNmKConstraint}
+                sort={(dataKey, reverse, isNumeric) =>
+                    sortResult(
+                        rows,
+                        new Set(['subjectId']),
+                        dataKey,
+                        reverse,
+                        isNumeric
+                    )
+                }
                 columns={[
                     {
                         width: 200,
-                        label: intl.formatMessage({ id: 'ID' }),
+                        label: intl.formatMessage({ id: 'Constraint' }),
                         dataKey: 'subjectId',
+                        clickable: true,
                     },
                     {
                         width: 200,
                         label: intl.formatMessage({ id: 'ContingencyId' }),
                         dataKey: 'contingencyId',
+                    },
+                    {
+                        width: 200,
+                        label: intl.formatMessage({ id: 'ComputationOk' }),
+                        dataKey: 'computationOk',
                     },
                     {
                         width: 200,
@@ -316,65 +438,63 @@ const SecurityAnalysisResult = ({ result }) => {
 
     function renderTabs() {
         return (
-            <AutoSizer>
-                {({ width, height }) => (
-                    <div style={{ width: width, height: height - 48 }}>
-                        <div className={classes.container}>
-                            <div className={classes.tabs}>
-                                <Tabs
-                                    value={tabIndex}
-                                    indicatorColor="primary"
-                                    onChange={(event, newTabIndex) =>
-                                        setTabIndex(newTabIndex)
+            <>
+                <div className={classes.container}>
+                    <div className={classes.tabs}>
+                        <Tabs
+                            value={tabIndex}
+                            indicatorColor="primary"
+                            onChange={(event, newTabIndex) =>
+                                setTabIndex(newTabIndex)
+                            }
+                        >
+                            <Tab label="N" />
+                            <Tab label="N-K" />
+                        </Tabs>
+                    </div>
+
+                    {tabIndex === 1 && (
+                        <div className={classes.nmkResultSelect}>
+                            <Select
+                                labelId="nmk-type-result-label"
+                                value={nmkTypeResult}
+                                onChange={switchNmkTypeResult}
+                            >
+                                <MenuItem
+                                    value={
+                                        NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
                                     }
                                 >
-                                    <Tab label="N" />
-                                    <Tab label="N-K" />
-                                </Tabs>
-                            </div>
-
-                            {tabIndex === 1 && (
-                                <div className={classes.nmkResultSelect}>
-                                    <Select
-                                        labelId="nmk-type-result-label"
-                                        value={nmkTypeResult}
-                                        onChange={switchNmkTypeResult}
-                                    >
-                                        <MenuItem
-                                            value={
-                                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
-                                            }
-                                        >
-                                            <FormattedMessage id="ConstraintsFromContingencies" />
-                                        </MenuItem>
-                                        <MenuItem
-                                            value={
-                                                NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
-                                            }
-                                        >
-                                            <FormattedMessage id="ContingenciesFromConstraints" />
-                                        </MenuItem>
-                                    </Select>
-                                </div>
-                            )}
+                                    <FormattedMessage id="ConstraintsFromContingencies" />
+                                </MenuItem>
+                                <MenuItem
+                                    value={
+                                        NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS
+                                    }
+                                >
+                                    <FormattedMessage id="ContingenciesFromConstraints" />
+                                </MenuItem>
+                            </Select>
                         </div>
-                        {tabIndex === 0 &&
-                            renderTableN(result.preContingencyResult)}
-                        {tabIndex === 1 &&
-                            nmkTypeResult ===
-                                NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
-                            renderTableNmKContingencies(
-                                result.postContingencyResults
-                            )}
-                        {tabIndex === 1 &&
-                            nmkTypeResult ===
-                                NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
-                            renderTableNmKConstraints(
-                                result.postContingencyResults
-                            )}
-                    </div>
-                )}
-            </AutoSizer>
+                    )}
+                </div>
+                <div style={{ flexGrow: 1 }}>
+                    {tabIndex === 0 &&
+                        renderTableN(result.preContingencyResult)}
+                    {tabIndex === 1 &&
+                        nmkTypeResult ===
+                            NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
+                        renderTableNmKContingencies(
+                            result.postContingencyResults
+                        )}
+                    {tabIndex === 1 &&
+                        nmkTypeResult ===
+                            NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
+                        renderTableNmKConstraints(
+                            result.postContingencyResults
+                        )}
+                </div>
+            </>
         );
     }
 
@@ -387,6 +507,7 @@ SecurityAnalysisResult.defaultProps = {
 
 SecurityAnalysisResult.propTypes = {
     result: PropTypes.object,
+    onClickNmKConstraint: PropTypes.func,
 };
 
 export default SecurityAnalysisResult;

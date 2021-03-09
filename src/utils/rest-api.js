@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -12,8 +12,9 @@ const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
-
-const APPS_METADATA_SERVER_URL = fetch('env.json');
+const PREFIX_CONFIG_NOTIFICATION_WS =
+    process.env.REACT_APP_WS_GATEWAY + '/config-notification';
+const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 
 function getToken() {
     const state = store.getState();
@@ -31,6 +32,32 @@ function backendFetch(url, init) {
     initCopy.headers.append('Authorization', 'Bearer ' + getToken());
 
     return fetch(url, initCopy);
+}
+
+export function fetchConfigParameters() {
+    console.info('Fetching UI configuration params ...');
+    const fetchParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
+    return backendFetch(fetchParams).then((res) => {
+        return res.json();
+    });
+}
+
+export function     updateConfigParameters(name, value) {
+    console.info('updating parameters : ' + name + ' : ' + value);
+    const updateParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
+    backendFetch(updateParams, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify([
+            {
+                name: name,
+                value: value,
+            },
+        ]),
+    }).then();
 }
 
 export function fetchStudies() {
@@ -71,7 +98,7 @@ function getStudyUrl(studyName, userId) {
 }
 
 export function fetchStudy(studyName, userId) {
-    console.info('Fetching studies...');
+    console.info(`Fetching study '${studyName}' for user id '${userId}' ...`);
     const fetchStudiesUrl = getStudyUrl(studyName, userId);
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
@@ -147,15 +174,24 @@ export function fetchSvg(svgUrl) {
     );
 }
 
-export function fetchSubstations(studyName, userId) {
-    console.info(
-        `Fetching substations of study '${studyName}' of user '${userId}'...`
-    );
-    const fetchSubstationsUrl =
-        getStudyUrl(studyName, userId) + '/network-map/substations';
-    console.debug(fetchSubstationsUrl);
-    return backendFetch(fetchSubstationsUrl).then((response) =>
-        response.json()
+function getSubstationsIdsListsQueryParams(substationsIds) {
+    if (substationsIds !== undefined && substationsIds.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        substationsIds.forEach((substationId) =>
+            urlSearchParams.append('substationId', substationId)
+        );
+        return '?' + urlSearchParams.toString();
+    }
+    return '';
+}
+
+export function fetchSubstations(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Substations',
+        'substations'
     );
 }
 
@@ -169,39 +205,143 @@ export function fetchSubstationPositions(studyName, userId) {
     );
 }
 
-export function fetchLines(studyName, userId) {
-    console.info(`Fetching lines of study '${studyName}'...`);
-    const fetchLinesUrl = getStudyUrl(studyName, userId) + '/network-map/lines';
-    console.debug(fetchLinesUrl);
-    return backendFetch(fetchLinesUrl).then((response) => response.json());
+export function fetchLines(studyName, userId, substationsIds) {
+    return fetchEquipments(studyName, userId, substationsIds, 'Lines', 'lines');
 }
 
-export function fetchTwoWindingsTransformers(studyName, userId) {
-    console.info(`Fetching 2 windings transformers of study '${studyName}'...`);
-    const fetchTwoWindingsTransformersUrl =
-        getStudyUrl(studyName, userId) + '/network-map/2-windings-transformers';
-    console.debug(fetchTwoWindingsTransformersUrl);
-    return backendFetch(fetchTwoWindingsTransformersUrl).then((response) =>
-        response.json()
+export function fetchTwoWindingsTransformers(
+    studyName,
+    userId,
+    substationsIds
+) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Two windings transformers',
+        '2-windings-transformers'
     );
 }
 
-export function fetchThreeWindingsTransformers(studyName, userId) {
-    console.info(`Fetching 3 windings transformers of study '${studyName}'...`);
-    const fetchThreeWindingsTransformersUrl =
-        getStudyUrl(studyName, userId) + '/network-map/3-windings-transformers';
-    console.debug(fetchThreeWindingsTransformersUrl);
-    return backendFetch(fetchThreeWindingsTransformersUrl).then((response) =>
-        response.json()
+export function fetchThreeWindingsTransformers(
+    studyName,
+    userId,
+    substationsIds
+) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Three windings transformers',
+        '3-windings-transformers'
     );
 }
 
-export function fetchGenerators(studyName, userId) {
-    console.info(`Fetching generators of study '${studyName}'...`);
-    const fetchGeneratorsUrl =
-        getStudyUrl(studyName, userId) + '/network-map/generators';
-    console.debug(fetchGeneratorsUrl);
-    return backendFetch(fetchGeneratorsUrl).then((response) => response.json());
+export function fetchGenerators(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Generators',
+        'generators'
+    );
+}
+
+export function fetchLoads(studyName, userId, substationsIds) {
+    return fetchEquipments(studyName, userId, substationsIds, 'Loads', 'loads');
+}
+
+export function fetchDanglingLines(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Dangling lines',
+        'dangling-lines'
+    );
+}
+
+export function fetchBatteries(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Batteries',
+        'batteries'
+    );
+}
+
+export function fetchHvdcLines(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Hvdc lines',
+        'hvdc-lines'
+    );
+}
+
+export function fetchLccConverterStations(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'LCC converter stations',
+        'lcc-converter-stations'
+    );
+}
+
+export function fetchVscConverterStations(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'VSC converter stations',
+        'vsc-converter-stations'
+    );
+}
+
+export function fetchShuntCompensators(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Shunt compensators',
+        'shunt-compensators'
+    );
+}
+
+export function fetchStaticVarCompensators(studyName, userId, substationsIds) {
+    return fetchEquipments(
+        studyName,
+        userId,
+        substationsIds,
+        'Static var compensators',
+        'static-var-compensators'
+    );
+}
+
+export function fetchAllEquipments(studyName, userId, substationsIds) {
+    return fetchEquipments(studyName, userId, substationsIds, 'All', 'all');
+}
+
+function fetchEquipments(
+    studyName,
+    userId,
+    substationsIds,
+    equipmentType,
+    equipmentPath
+) {
+    console.info(
+        `Fetching equipments '${equipmentType}' of study '${studyName}' of user '${userId}' with substations ids '${substationsIds}'...`
+    );
+    const fetchEquipmentsUrl =
+        getStudyUrl(studyName, userId) +
+        '/network-map/' +
+        equipmentPath +
+        getSubstationsIdsListsQueryParams(substationsIds);
+    console.debug(fetchEquipmentsUrl);
+    return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
 export function fetchLinePositions(studyName, userId) {
@@ -301,7 +441,29 @@ export function renameStudy(studyName, userId, newStudyName) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ newStudyName: newStudyName }),
-    }).then((response) => response.json());
+    }).then((response) => {
+        if (response.status === 200 || response.status === 403) {
+            return response.json();
+        } else {
+            return response.text().then((text) => {
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch {
+                    throw new Error(
+                        response.status +
+                            ' ' +
+                            response.statusText +
+                            ' : ' +
+                            text
+                    );
+                }
+                throw new Error(
+                    json.status + ' ' + json.error + ' : ' + json.message
+                );
+            });
+        }
+    });
 }
 
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
@@ -329,6 +491,14 @@ export function startLoadFlow(studyName, userId) {
     const startLoadFlowUrl = getStudyUrl(studyName, userId) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
+}
+
+export function stopSecurityAnalysis(studyName, userId) {
+    console.info('Stopping security analysis on ' + studyName + '...');
+    const stopSecurityAnalysisUrl =
+        getStudyUrl(studyName, userId) + '/security-analysis/stop';
+    console.debug(stopSecurityAnalysisUrl);
+    return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
 function getContingencyListsQueryParams(contingencyListNames) {
@@ -367,7 +537,6 @@ export function fetchSecurityAnalysisStatus(studyName, userId) {
         if (response.ok) {
             return response.text();
         } else {
-            console.error(response);
             return Promise.resolve(0);
         }
     });
@@ -449,6 +618,27 @@ export function connectNotificationsWsUpdateStudies() {
     return reconnectingWebSocket;
 }
 
+export function connectNotificationsWsUpdateConfig() {
+    const webSocketBaseUrl = document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://');
+    const webSocketUrl =
+        webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/notify';
+
+    let webSocketUrlWithToken;
+    webSocketUrlWithToken = webSocketUrl + '?access_token=' + getToken();
+
+    const reconnectingWebSocket = new ReconnectingWebSocket(
+        webSocketUrlWithToken
+    );
+    reconnectingWebSocket.onopen = function (event) {
+        console.info(
+            'Connected Websocket update config ui ' + webSocketUrl + ' ...'
+        );
+    };
+    return reconnectingWebSocket;
+}
+
 export function getAvailableExportFormats() {
     console.info('get export formats');
     const getExportFormatsUrl =
@@ -471,13 +661,15 @@ export function getExportUrl(userId, studyName, exportFormat) {
 
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
-    return APPS_METADATA_SERVER_URL.then((res) => res.json()).then((res) => {
-        return fetch(res.appsMetadataServerUrl + '/apps-metadata.json').then(
-            (response) => {
+    return fetch('env.json')
+        .then((res) => res.json())
+        .then((res) => {
+            return fetch(
+                res.appsMetadataServerUrl + '/apps-metadata.json'
+            ).then((response) => {
                 return response.json();
-            }
-        );
-    });
+            });
+        });
 }
 
 export function requestNetworkChange(userId, studyName, groovyScript) {

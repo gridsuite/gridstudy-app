@@ -33,8 +33,6 @@ const useStyles = makeStyles(() => ({
 
 export const USE_ID = 'Id';
 export const USE_NAME = 'Name';
-export const DARK_THEME = 'Dark';
-export const LIGHT_THEME = 'Light';
 
 const StyledMenuItem = withStyles((theme) => ({
     root: {

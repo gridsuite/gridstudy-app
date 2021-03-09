@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -31,16 +31,25 @@ import StudyManager from './study-manager';
 import {
     LIGHT_THEME,
     DARK_THEME,
+    resetResultCount,
+    selectCenterLabelState,
+    selectDiagonalLabelState,
+    selectLineFlowAlertThreshold,
+    selectLineFlowColorMode,
+    selectLineFlowMode,
+    selectLineFullPathState,
+    selectLineParallelPathState,
+    selectSubstationLayout,
+    selectTheme,
+    selectUseName,
+    selectDisplayOverloadTableState,
+} from '../redux/actions';
+import Parameters from './parameters';
+import {
     USE_NAME,
     USE_ID,
 } from './util/toggle-equipment-display';
-import {
-    resetResultCount,
-    selectTheme,
-    toggleUseNameState,
-} from '../redux/actions';
-import Parameters from './parameters';
-
+import EquipmentDisplay from './util/toggle-equipment-display';
 import {
     AuthenticationRouter,
     getPreLoginPath,
@@ -56,9 +65,25 @@ import { FormattedMessage } from 'react-intl';
 
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
-import { fetchAppsAndUrls } from '../utils/rest-api';
-
-import EquipmentDisplay from './util/toggle-equipment-display';
+import {
+    connectNotificationsWsUpdateConfig,
+    fetchAppsAndUrls,
+    fetchConfigParameters,
+    updateConfigParameters,
+} from '../utils/rest-api';
+import {
+    PARAMS_CENTER_LABEL_KEY,
+    PARAMS_DIAGONAL_LABEL_KEY,
+    PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
+    PARAMS_LINE_FLOW_COLOR_MODE_KEY,
+    PARAMS_LINE_FLOW_MODE_KEY,
+    PARAMS_LINE_FULL_PATH_KEY,
+    PARAMS_LINE_PARALLEL_PATH_KEY,
+    PARAMS_SUBSTATION_LAYOUT_KEY,
+    PARAMS_THEME_KEY,
+    PARAMS_USE_NAME_KEY,
+    PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+} from '../utils/config-params';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -79,6 +104,9 @@ const lightTheme = createMuiTheme({
     circle_hover: {
         stroke: '#212121',
         fill: '#212121',
+    },
+    link: {
+        color: 'blue',
     },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
@@ -103,6 +131,9 @@ const darkTheme = createMuiTheme({
         stroke: 'white',
         fill: 'white',
     },
+    link: {
+        color: 'green',
+    },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
 
@@ -122,14 +153,14 @@ const useStyles = makeStyles(() => ({
 
 const noUserManager = { instance: null, error: null };
 
-const STUDY_VIEWS = [StudyView.MAP, StudyView.TABLE, StudyView.RESULTS];
+const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
 const App = () => {
-    // const theme = useSelector((state) => state.theme);
-
-    const useName = useSelector((state) => state.useName);
+    const theme = useSelector((state) => state.theme);
 
     const user = useSelector((state) => state.user);
+
+    const useName = useSelector((state) => state.useName);
 
     const studyName = useSelector((state) => state.studyName);
 
@@ -142,8 +173,6 @@ const App = () => {
     const [userManager, setUserManager] = useState(noUserManager);
 
     const [showParameters, setShowParameters] = useState(false);
-
-    const [theme, setTheme] = useState(selectTheme);
 
     const history = useHistory();
 
@@ -159,6 +188,76 @@ const App = () => {
 
     const [toggleState, setToggleState] = useState(USE_NAME);
 
+    const updateParams = useCallback(
+        (params) => {
+            params.forEach((param) => {
+                switch (param.name) {
+                    case PARAMS_THEME_KEY:
+                        dispatch(selectTheme(param.value));
+                        break;
+                    case PARAMS_CENTER_LABEL_KEY:
+                        dispatch(
+                            selectCenterLabelState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_DIAGONAL_LABEL_KEY:
+                        dispatch(
+                            selectDiagonalLabelState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY:
+                        dispatch(selectLineFlowAlertThreshold(param.value));
+                        break;
+                    case PARAMS_LINE_FLOW_COLOR_MODE_KEY:
+                        dispatch(selectLineFlowColorMode(param.value));
+                        break;
+                    case PARAMS_LINE_FLOW_MODE_KEY:
+                        dispatch(selectLineFlowMode(param.value));
+                        break;
+                    case PARAMS_LINE_FULL_PATH_KEY:
+                        dispatch(
+                            selectLineFullPathState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_LINE_PARALLEL_PATH_KEY:
+                        dispatch(
+                            selectLineParallelPathState(param.value === 'true')
+                        );
+                        break;
+                    case PARAMS_SUBSTATION_LAYOUT_KEY:
+                        dispatch(selectSubstationLayout(param.value));
+                        break;
+                    case PARAMS_DISPLAY_OVERLOAD_TABLE_KEY:
+                        dispatch(
+                            selectDisplayOverloadTableState(
+                                param.value === 'true'
+                            )
+                        );
+                        break;
+                    case PARAMS_USE_NAME_KEY:
+                        dispatch(selectUseName(param.value === 'true'));
+                        break;
+                    default:
+                }
+            });
+        },
+        [dispatch]
+    );
+
+    const connectNotificationsUpdateConfig = useCallback(() => {
+        const ws = connectNotificationsWsUpdateConfig();
+
+        ws.onmessage = function (event) {
+            fetchConfigParameters().then((params) => {
+                updateParams(params);
+            });
+        };
+        ws.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        return ws;
+    }, [updateParams]);
+
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
         useRouteMatch({
@@ -167,22 +266,11 @@ const App = () => {
         })
     );
 
-    const handleClickToggle = () => {
-        if (useName) {
-            setToggleState(USE_ID);
-        } else {
-            setToggleState(USE_NAME);
-        }
-        dispatch(toggleUseNameState());
-    };
-
-    const handleDisplayMode = (mode) => {
-        setTheme(mode);
-    };
-
-    function switchTheme(theme) {
-        return theme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
-    }
+    const isStudyPane =
+        useRouteMatch({
+            path: '/:userId/studies/:studyName',
+            exact: true,
+        }) !== null;
 
     useEffect(() => {
         document.addEventListener('contextmenu', (event) => {
@@ -236,6 +324,20 @@ const App = () => {
         }
     }, [user]);
 
+    useEffect(() => {
+        if (user !== null) {
+            fetchConfigParameters().then((params) => {
+                console.debug('received UI parameters :');
+                console.debug(params);
+                updateParams(params);
+            });
+            const ws = connectNotificationsUpdateConfig();
+            return function () {
+                ws.close();
+            };
+        }
+    }, [user, dispatch, updateParams, connectNotificationsUpdateConfig]);
+
     function studyClickHandler(studyName, userId) {
         history.push(
             '/' +
@@ -257,6 +359,36 @@ const App = () => {
         history.replace('/');
     }
 
+    function onChangeTab(newTabIndex) {
+        setTabIndex(newTabIndex);
+    }
+
+    function switchTheme(theme) {
+        return theme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
+    }
+
+    const handleDisplayMode = (mode) => {
+        console.log('handleDisplayMode = ' + mode);
+        updateConfigParameters(PARAMS_THEME_KEY, switchTheme(mode));
+    };
+
+    const handleClickToggle = () => {
+        console.log('handleClickToggle2222 = ' + useName);
+        // if (useName) {
+        //     setToggleState(USE_ID);
+        // } else {
+        //     setToggleState(USE_NAME);
+        // }
+        // if (useName) {
+            //setToggleState(USE_ID);
+            //updateConfigParameters(PARAMS_USE_NAME_KEY, USE_NAME);
+        // } else {
+            //setToggleState(USE_NAME);
+            //updateConfigParameters(PARAMS_USE_NAME_KEY, USE_ID);
+        // }
+        //updateConfigParameters(PARAMS_USE_NAME_KEY, !useName);
+    };
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -264,121 +396,146 @@ const App = () => {
 
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
-            <React.Fragment>
+            <SnackbarProvider hideIconVariant={false}>
                 <CssBaseline />
-                <TopBar
-                    appName="Study"
-                    appColor="#0CA789"
-                    appLogo={
-                        theme === LIGHT_THEME ? (
-                            <GridStudyLogoLight />
-                        ) : (
-                            <GridStudyLogoDark />
-                        )
-                    }
-                    onParametersClick={() => showParametersClicked()}
-                    onLogoutClick={() =>
-                        logout(dispatch, userManager.instance)
-                    }
-                    onLogoClick={() => onLogoClicked()}
-                    user={user}
-                    appsAndUrls={appsAndUrls}
-                    onDisplayModeClick={() =>
-                        handleDisplayMode(switchTheme(theme))
-                    }
-                    onAboutClick={() => console.log('about')}
-                    selectedTheme={'Light'}
-                    equipmentDisplay={
-                        <EquipmentDisplay
-                            handleDisplay={handleClickToggle}
-                            toggleState={toggleState}
-                        />
-                    }
-                    selectedEquipment={toggleState} // You must add this props it is necessary to pass the information to the parent component to close menu after updating toggle
+                <div
+                    className="singlestretch-child"
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
                 >
-                    {studyName && (
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            variant="scrollable"
-                            scrollButtons="auto"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
-                            aria-label="views"
-                            className={classes.tabs}
-                        >
-                            {STUDY_VIEWS.map((tabName) => {
-                                let label;
-                                if (
-                                    tabName === StudyView.RESULTS &&
-                                    resultCount > 0
-                                ) {
-                                    label = (
-                                        <Badge
-                                            badgeContent={resultCount}
-                                            color="secondary"
-                                        >
-                                            <FormattedMessage
-                                                id={tabName}
-                                            />
-                                        </Badge>
-                                    );
-                                } else {
-                                    label = (
-                                        <FormattedMessage id={tabName} />
-                                    );
-                                }
-                                return <Tab key={tabName} label={label} />;
-                            })}
-                        </Tabs>
-                    )}
-                </TopBar>
-                <Parameters
-                    showParameters={showParameters}
-                    hideParameters={hideParameters}
-                />
-                {user !== null ? (
-                    <Switch>
-                        <Route exact path="/">
-                            <StudyManager
-                                onClick={(name, userId) =>
-                                    studyClickHandler(name, userId)
-                                }
+                    <TopBar
+                        appName="Study"
+                        appColor="#0CA789"
+                        appLogo={
+                            theme === LIGHT_THEME ? (
+                                <GridStudyLogoLight />
+                            ) : (
+                                <GridStudyLogoDark />
+                            )
+                        }
+                        onParametersClick={() => showParametersClicked()}
+                        onLogoutClick={() =>
+                            logout(dispatch, userManager.instance)
+                        }
+                        onLogoClick={() => onLogoClicked()}
+                        user={user}
+                        appsAndUrls={appsAndUrls}
+                        onDisplayModeClick={() => handleDisplayMode(theme)}
+                        onAboutClick={() => console.log('about')}
+                        selectedTheme={theme}
+                        equipmentDisplay={
+                            <EquipmentDisplay
+                                handleDisplay={handleClickToggle()}
+                                toggleState={toggleState}
                             />
-                        </Route>
-                        <Route exact path="/:userId/studies/:studyName">
-                            <StudyPane view={STUDY_VIEWS[tabIndex]} />
-                        </Route>
-                        <Route exact path="/sign-in-callback">
-                            <Redirect to={getPreLoginPath() || '/'} />
-                        </Route>
-                        <Route exact path="/logout-callback">
-                            <h1>
-                                Error: logout failed; you are still logged
-                                in.
-                            </h1>
-                        </Route>
-                        <Route>
-                            <PageNotFound
-                                message={
-                                    <FormattedMessage id="PageNotFound" />
-                                }
-                            />
-                        </Route>
-                    </Switch>
-                ) : (
-                    <AuthenticationRouter
-                        userManager={userManager}
-                        signInCallbackError={signInCallbackError}
-                        dispatch={dispatch}
-                        history={history}
-                        location={location}
+                        }
+                    >
+                        {studyName && (
+                            <Tabs
+                                value={tabIndex}
+                                indicatorColor="primary"
+                                variant="scrollable"
+                                scrollButtons="auto"
+                                onChange={(event, newTabIndex) => {
+                                    onChangeTab(newTabIndex);
+                                }}
+                                aria-label="views"
+                                className={classes.tabs}
+                            >
+                                {STUDY_VIEWS.map((tabName) => {
+                                    let label;
+                                    if (
+                                        tabName === StudyView.RESULTS &&
+                                        resultCount > 0
+                                    ) {
+                                        label = (
+                                            <Badge
+                                                badgeContent={resultCount}
+                                                color="secondary"
+                                            >
+                                                <FormattedMessage
+                                                    id={tabName}
+                                                />
+                                            </Badge>
+                                        );
+                                    } else {
+                                        label = (
+                                            <FormattedMessage id={tabName} />
+                                        );
+                                    }
+                                    return <Tab key={tabName} label={label} />;
+                                })}
+                            </Tabs>
+                        )}
+                    </TopBar>
+                    <Parameters
+                        showParameters={showParameters}
+                        hideParameters={hideParameters}
                     />
-                )}
-            </React.Fragment>
+
+                    <div
+                        className="singlestretch-parent"
+                        style={{
+                            flexGrow: 1,
+                            //Study pane needs 'hidden' when displaying a
+                            //fullscreen sld or when displaying the results or
+                            //elements tables for certain screen sizes because
+                            //width/heights are computed programmaticaly and
+                            //resizing the page trigger render loops due to
+                            //appearing and disappearing scrollbars.
+                            //For all other cases, auto is better because it will
+                            //be easier to see that we have a layout problem when
+                            //scrollbars appear when they should not.
+                            overflow: isStudyPane ? 'hidden' : 'auto',
+                        }}
+                    >
+                        {user !== null ? (
+                            <Switch>
+                                <Route exact path="/">
+                                    <StudyManager
+                                        onClick={(name, userId) =>
+                                            studyClickHandler(name, userId)
+                                        }
+                                    />
+                                </Route>
+                                <Route exact path="/:userId/studies/:studyName">
+                                    <StudyPane
+                                        view={STUDY_VIEWS[tabIndex]}
+                                        onChangeTab={onChangeTab}
+                                    />
+                                </Route>
+                                <Route exact path="/sign-in-callback">
+                                    <Redirect to={getPreLoginPath() || '/'} />
+                                </Route>
+                                <Route exact path="/logout-callback">
+                                    <h1>
+                                        Error: logout failed; you are still
+                                        logged in.
+                                    </h1>
+                                </Route>
+                                <Route>
+                                    <PageNotFound
+                                        message={
+                                            <FormattedMessage id="PageNotFound" />
+                                        }
+                                    />
+                                </Route>
+                            </Switch>
+                        ) : (
+                            <AuthenticationRouter
+                                userManager={userManager}
+                                signInCallbackError={signInCallbackError}
+                                dispatch={dispatch}
+                                history={history}
+                                location={location}
+                            />
+                        )}
+                    </div>
+                </div>
+            </SnackbarProvider>
         </ThemeProvider>
     );
 };
-
 export default App;

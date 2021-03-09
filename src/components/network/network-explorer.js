@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { useIntl } from 'react-intl';
 
@@ -31,7 +31,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import { DoubleArrow } from '@material-ui/icons';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { selectItemNetwork } from '../../redux/actions';
 
 const itemSize = 48;
 
@@ -65,6 +66,20 @@ const useStyles = makeStyles((theme) => ({
     noCRGrid: {
         flexFlow: 'row',
     },
+    selectedVoltage: {
+        backgroundColor: '#ababab !important',
+        textIndent: 16,
+        '& p': {
+            color: theme.palette.type === 'dark' ? '#000' : '',
+        },
+    },
+    selectedSubstation: {
+        height: (itemSize * 3) / 4,
+        backgroundColor: '#7c7c7c !important',
+        '& p': {
+            color: theme.palette.type === 'dark' ? '#000' : '#FFF',
+        },
+    },
 }));
 
 const NetworkExplorer = ({
@@ -73,14 +88,21 @@ const NetworkExplorer = ({
     onSubstationDisplayClick,
     onSubstationFocus,
     hideExplorer,
+    visibleSubstation,
 }) => {
     const intl = useIntl();
+
+    const dispatch = useDispatch();
+
+    const selectItem = useSelector((state) => state.selectItemNetwork);
 
     const useName = useSelector((state) => state.useName);
 
     const filterMsg = intl.formatMessage({ id: 'filter' }) + '...';
 
     const classes = useStyles();
+
+    const [currentFilter, setCurrentFilter] = React.useState('');
 
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
@@ -102,6 +124,8 @@ const NetworkExplorer = ({
             minHeight: itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
         })
     );
+
+    const listeRef = useRef(null);
 
     const generateFilteredSubstation = useCallback(
         (entry) => {
@@ -137,13 +161,38 @@ const NetworkExplorer = ({
 
     useEffect(() => {
         if (network) {
-            generateFilteredSubstation();
+            generateFilteredSubstation(currentFilter);
         }
-    }, [network, identifiedElementComparator, generateFilteredSubstation]);
+    }, [
+        network,
+        identifiedElementComparator,
+        generateFilteredSubstation,
+        currentFilter,
+    ]);
+
+    useEffect(() => {
+        if (visibleSubstation && listeRef.current) {
+            // calculate row index to scroll
+            let index = 0;
+            for (let i = 0; i < filteredVoltageLevels.length; i++) {
+                if (filteredVoltageLevels[i][0].id === visibleSubstation) {
+                    break;
+                } else {
+                    index++;
+                }
+            }
+            listeRef.current.scrollToRow(index);
+            // Workaround, remove when https://github.com/bvaughn/react-virtualized/issues/995 is resolved
+            setTimeout(() => {
+                listeRef.current.scrollToRow(index);
+            }, 0);
+        }
+    }, [visibleSubstation, filteredVoltageLevels]);
 
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
             onVoltageLevelDisplayClick(vl.id);
+            dispatch(selectItemNetwork(vl.id));
         }
     }
 
@@ -167,7 +216,11 @@ const NetworkExplorer = ({
         <ListItem
             button
             key={vl.id}
-            className={classes.listItem}
+            className={
+                selectItem === vl.id
+                    ? classes.selectedVoltage
+                    : classes.listItem
+            }
             onClick={() => onDisplayClickHandler(vl)}
         >
             <ListItemText
@@ -205,7 +258,11 @@ const NetworkExplorer = ({
                             component={'li'}
                             button
                             key={substation.id}
-                            className={classes.listSubHeaderRoot}
+                            className={
+                                selectItem === substation.id
+                                    ? classes.selectedSubstation
+                                    : classes.listSubHeaderRoot
+                            }
                             onClick={() =>
                                 onSubstationDisplayClick &&
                                 onSubstationDisplayClick(substation.id)
@@ -271,56 +328,57 @@ const NetworkExplorer = ({
     };
 
     const filter = (event) => {
-        generateFilteredSubstation(event.target.value.toLowerCase());
+        const filterText = event.target.value.toLowerCase();
+        generateFilteredSubstation(filterText);
         cache.clearAll();
+        setCurrentFilter(filterText);
     };
 
     return (
-        <AutoSizer>
-            {({ width, height }) => {
-                return (
-                    <div style={{ width: width, height: height }}>
-                        <Grid container direction="column">
-                            <Grid item>
-                                <TextField
-                                    className={classes.textField}
-                                    size="small"
-                                    placeholder={filterMsg}
-                                    onChange={filter}
-                                    variant="outlined"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                                <IconButton onClick={hideExplorer}>
-                                    <DoubleArrow transform={'rotate(180)'} />
-                                </IconButton>
-                            </Grid>
-                            <Divider />
-                            <Grid item>
-                                <List
-                                    height={height - 46}
-                                    rowHeight={cache.rowHeight}
-                                    rowRenderer={subStationRow}
-                                    rowCount={filteredVoltageLevels.length}
-                                    width={width}
-                                    subheader={<li />}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
-                );
-            }}
-        </AutoSizer>
+        <Grid container direction="column" style={{ height: '100%' }}>
+            <Grid item>
+                <TextField
+                    className={classes.textField}
+                    size="small"
+                    placeholder={filterMsg}
+                    onChange={filter}
+                    variant="outlined"
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                <IconButton onClick={hideExplorer}>
+                    <ChevronLeftIcon />
+                </IconButton>
+            </Grid>
+            <Divider />
+            <Grid item style={{ flex: '1 1 auto' }}>
+                <AutoSizer>
+                    {({ width, height }) => {
+                        return (
+                            <List
+                                height={height}
+                                rowHeight={cache.rowHeight}
+                                rowRenderer={subStationRow}
+                                rowCount={filteredVoltageLevels.length}
+                                width={width}
+                                subheader={<li />}
+                            />
+                        );
+                    }}
+                </AutoSizer>
+            </Grid>
+        </Grid>
     );
 };
 
 NetworkExplorer.defaultProps = {
     network: null,
+    visibleSubstation: null,
 };
 
 NetworkExplorer.propTypes = {
@@ -328,6 +386,7 @@ NetworkExplorer.propTypes = {
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,
+    visibleSubstation: PropTypes.string,
 };
 
 export default React.memo(NetworkExplorer);

@@ -18,6 +18,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
+import { useSnackbar } from 'notistack';
 
 import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg';
 import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
@@ -217,17 +218,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, study.userId, newStudyNameValue).then(
-            (response) => {
-                if (!response.ok) {
+        renameStudy(study.studyName, study.userId, newStudyNameValue)
+            .then((response) => {
+                if (response === 'NOT_ALLOWED') {
                     setRenameError(
                         intl.formatMessage({ id: 'renameStudyError' })
                     );
                 } else {
                     setOpenRename(false);
                 }
-            }
-        );
+            })
+            .catch((e) => {
+                setRenameError(e.message || e);
+            });
     };
 
     const handleCloseRename = () => {
@@ -397,19 +400,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
                         <CustomTypography>
-                            <FormattedMessage id="studyName" />:{' '}
+                            <FormattedMessage id="studyNameProperty" />
                             <span className={classes.contentStyle}>
                                 {study.studyName}
                             </span>
                         </CustomTypography>
                         <CustomTypography>
-                            <FormattedMessage id="studyDescription" />:{' '}
+                            <FormattedMessage id="studyDescriptionProperty" />
                             <span className={classes.contentStyle}>
                                 {study.description ? study.description : '—'}
                             </span>
                         </CustomTypography>
                         <CustomTypography>
-                            <FormattedMessage id="owner" />:{' '}
+                            <FormattedMessage id="owner" />
                             <span className={classes.contentStyle}>
                                 {study.userId}
                             </span>
@@ -470,6 +473,8 @@ StudyCard.propTypes = {
  * @param {EventListener} onClick Action to open the study
  */
 const StudyManager = ({ onClick }) => {
+    const intl = useIntl();
+
     const dispatch = useDispatch();
     const websocketExpectedCloseRef = useRef();
 
@@ -479,6 +484,8 @@ const StudyManager = ({ onClick }) => {
     );
 
     const classes = useStyles();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const dispatchStudies = useCallback(() => {
         fetchStudyCreationRequests().then((studies) => {
@@ -490,10 +497,35 @@ const StudyManager = ({ onClick }) => {
         // Note: dispatch doesn't change
     }, [dispatch]);
 
+    const displayErrorIfExist = useCallback(
+        (event) => {
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers) {
+                const error = eventData.headers['error'];
+                if (error && error !== undefined) {
+                    const studyName = eventData.headers['studyName'];
+                    const errorMessage =
+                        intl.formatMessage({ id: 'studyCreatingError' }) +
+                        ' : ' +
+                        studyName +
+                        '\n\n' +
+                        error;
+                    enqueueSnackbar(errorMessage, {
+                        variant: 'error',
+                        persist: true,
+                        style: { whiteSpace: 'pre-line' },
+                    });
+                }
+            }
+        },
+        [enqueueSnackbar, intl]
+    );
+
     const connectNotificationsUpdateStudies = useCallback(() => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
+            displayErrorIfExist(event);
             dispatchStudies();
         };
         ws.onclose = function (event) {
@@ -505,7 +537,7 @@ const StudyManager = ({ onClick }) => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [dispatchStudies]);
+    }, [dispatchStudies, displayErrorIfExist]);
 
     useEffect(() => {
         dispatchStudies();

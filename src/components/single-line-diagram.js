@@ -18,7 +18,9 @@ import PropTypes from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 
-import Container from '@material-ui/core/Container';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectItemNetwork } from '../redux/actions';
+
 import Box from '@material-ui/core/Box';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
@@ -35,6 +37,11 @@ import '@svgdotjs/svg.panzoom.js';
 import useTheme from '@material-ui/core/styles/useTheme';
 import Arrow from '../images/arrow.svg';
 import ArrowHover from '../images/arrow_hover.svg';
+import { fullScreenSingleLineDiagram } from '../redux/actions';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+
+import { AutoSizer } from 'react-virtualized';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -49,25 +56,24 @@ export const SvgType = {
     SUBSTATION: 'substation',
 };
 
+const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
 const maxHeightVoltageLevel = 700;
 const maxWidthSubstation = 1200;
 const maxHeightSubstation = 700;
+const errorWidth = maxWidthVoltageLevel;
 
 const useStyles = makeStyles((theme) => ({
-    divVoltageLevel: {
-        maxWidth: maxWidthVoltageLevel,
-        maxHeight: maxHeightVoltageLevel,
-        overflowX: 'hidden',
-        overflowY: 'hidden',
-    },
-    divSubstation: {
-        maxWidth: maxWidthSubstation,
-        maxHeight: maxHeightSubstation,
-        overflowX: 'hidden',
-        overflowY: 'hidden',
-    },
-    diagram: {
+    divSld: {
+        '& svg': {
+            // necessary because the default (inline-block) adds vertical space
+            // to our otherwise pixel accurate computations (this makes a
+            // scrollbar appear in fullscreen mode)
+            display: 'block',
+        },
+        '& polyline': {
+            pointerEvents: 'none',
+        },
         '& .component-label': {
             fill: theme.palette.text.primary,
             'font-size': 12,
@@ -77,40 +83,19 @@ const useStyles = makeStyles((theme) => ({
     close: {
         padding: 0,
     },
-    error: {
-        maxWidth: maxWidthVoltageLevel,
-        maxHeight: maxHeightVoltageLevel,
-    },
-    errorUpdateSwitch: {
-        position: 'absolute',
-        top: 25,
-        left: 0,
-        right: 0,
-    },
     header: {
         padding: 5,
         display: 'flex',
         flexDirection: 'row',
         backgroundColor: theme.palette.background.default,
     },
+    fullScreenIcon: {
+        bottom: 5,
+        right: 5,
+        position: 'absolute',
+        cursor: 'pointer',
+    },
 }));
-
-const SvgNotFound = (props) => {
-    const classes = useStyles();
-    return (
-        <Container className={classes.error}>
-            <Typography variant="h5">
-                <FormattedMessage
-                    id="svgNotFound"
-                    values={{
-                        svgUrl: props.svgUrl,
-                        error: props.error.message,
-                    }}
-                />
-            </Typography>
-        </Container>
-    );
-};
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
@@ -135,10 +120,64 @@ fetch(ArrowHover)
         arrowHoverSvg = data;
     });
 
-const SingleLineDiagram = forwardRef((props, ref) => {
+// To allow controls that are in the corners of the map to not be hidden in normal mode
+// (but they are still hidden in fullscreen mode)
+const mapRightOffset = 120;
+const mapBottomOffset = 80;
+const borders = 2; // we use content-size: border-box so this needs to be included..
+// Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
+const computePaperAndSvgSizesIfReady = (
+    fullScreen,
+    svgType,
+    totalWidth,
+    totalHeight,
+    svgPreferredWidth,
+    svgPreferredHeight,
+    headerPreferredHeight
+) => {
+    if (
+        typeof svgPreferredWidth != 'undefined' &&
+        typeof headerPreferredHeight != 'undefined'
+    ) {
+        let paperWidth, paperHeight, svgWidth, svgHeight;
+        if (fullScreen) {
+            paperWidth = totalWidth;
+            paperHeight = totalHeight;
+            svgWidth = totalWidth - borders;
+            svgHeight = totalHeight - headerPreferredHeight - borders;
+        } else {
+            let maxWidth, maxHeight;
+            if (svgType === SvgType.VOLTAGE_LEVEL) {
+                maxWidth = maxWidthVoltageLevel;
+                maxHeight = maxHeightVoltageLevel;
+            } else {
+                maxWidth = maxWidthSubstation;
+                maxHeight = maxHeightSubstation;
+            }
+            svgWidth = Math.min(
+                svgPreferredWidth,
+                totalWidth - mapRightOffset,
+                maxWidth
+            );
+            svgHeight = Math.min(
+                svgPreferredHeight,
+                totalHeight - mapBottomOffset - headerPreferredHeight,
+                maxHeight
+            );
+            paperWidth = svgWidth + borders;
+            paperHeight = svgHeight + headerPreferredHeight + borders;
+        }
+        return { paperWidth, paperHeight, svgWidth, svgHeight };
+    }
+};
+
+const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
-    const svgPrevViewbox = useRef();
+    const svgUrl = useRef('');
     const svgDraw = useRef();
+    const dispatch = useDispatch();
+
+    const fullScreen = useSelector((state) => state.fullScreen);
 
     const [forceState, updateState] = useState(false);
 
@@ -147,9 +186,6 @@ const SingleLineDiagram = forwardRef((props, ref) => {
     const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
-        if (svgDraw.current) {
-            svgPrevViewbox.current = svgDraw.current.viewbox();
-        }
         updateState((s) => !s);
     }, []);
 
@@ -161,6 +197,44 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         // Note: forceUpdate doesn't change
         [forceUpdate]
     );
+
+    // using many useState() calls with literal values only to
+    // easily avoid recomputing stuff when updating with the same values
+    const [svgPreferredWidth, setSvgPreferredWidth] = useState();
+    const [svgPreferredHeight, setSvgPreferredHeight] = useState();
+    const [headerPreferredHeight, setHeaderPreferredHeight] = useState();
+    const [finalPaperWidth, setFinalPaperWidth] = useState();
+    const [finalPaperHeight, setFinalPaperHeight] = useState();
+    const [svgFinalWidth, setSvgFinalWidth] = useState();
+    const [svgFinalHeight, setSvgFinalHeight] = useState();
+
+    const { totalWidth, totalHeight, svgType } = props;
+
+    useLayoutEffect(() => {
+        const sizes = computePaperAndSvgSizesIfReady(
+            fullScreen,
+            svgType,
+            totalWidth,
+            totalHeight,
+            svgPreferredWidth,
+            svgPreferredHeight,
+            headerPreferredHeight
+        );
+        if (typeof sizes != 'undefined') {
+            setSvgFinalWidth(sizes.svgWidth);
+            setSvgFinalHeight(sizes.svgHeight);
+            setFinalPaperWidth(sizes.paperWidth);
+            setFinalPaperHeight(sizes.paperHeight);
+        }
+    }, [
+        fullScreen,
+        totalWidth,
+        totalHeight,
+        svgType,
+        svgPreferredWidth,
+        svgPreferredHeight,
+        headerPreferredHeight,
+    ]);
 
     useEffect(() => {
         if (props.svgUrl) {
@@ -194,17 +268,7 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
-        svgType,
     } = props;
-
-    const calcMargins = (svgType, width, height) => {
-        return {
-            top: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            left: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-            bottom: svgType === SvgType.VOLTAGE_LEVEL ? height / 4 : -Infinity,
-            right: svgType === SvgType.VOLTAGE_LEVEL ? width / 4 : -Infinity,
-        };
-    };
 
     useLayoutEffect(() => {
         function createSvgArrow(element, position, x, highestY, lowestY) {
@@ -286,8 +350,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                 return vlList.indexOf(element.nextVId) === -1;
             });
 
-            let highestY;
-            let lowestY;
+            let highestY = new Map();
+            let lowestY = new Map();
             let y;
 
             navigable.forEach((element) => {
@@ -297,11 +361,17 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     .split(',');
 
                 y = parseInt(transform[1].match(/\d+/));
-                if (highestY === undefined || y > highestY) {
-                    highestY = y;
+                if (
+                    highestY.get(element.vid) === undefined ||
+                    y > highestY.get(element.vid)
+                ) {
+                    highestY.set(element.vid, y);
                 }
-                if (lowestY === undefined || y < lowestY) {
-                    lowestY = y;
+                if (
+                    lowestY.get(element.vid) === undefined ||
+                    y < lowestY.get(element.vid)
+                ) {
+                    lowestY.set(element.vid, y);
                 }
             });
 
@@ -315,8 +385,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                     element,
                     element.direction,
                     x,
-                    highestY,
-                    lowestY
+                    highestY.get(element.vid),
+                    lowestY.get(element.vid)
                 );
             });
         }
@@ -333,37 +403,35 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             const svgWidth = bbox.width + 40;
             const svgHeight = bbox.height + 40;
 
-            let sizeWidth = svgWidth;
-            let sizeHeight = svgHeight;
-            if (svgType === 'substation') {
-                // fit substation diagram to content
-                sizeWidth =
-                    svgWidth > maxWidthSubstation
-                        ? maxWidthSubstation
-                        : svgWidth;
-                sizeHeight =
-                    svgHeight > maxHeightSubstation
-                        ? maxHeightSubstation
-                        : svgHeight;
-            }
+            setSvgPreferredWidth(svgWidth);
+            setSvgPreferredHeight(svgHeight);
+
+            let viewboxWidth = Math.min(
+                svgWidth,
+                svgType === SvgType.VOLTAGE_LEVEL
+                    ? maxWidthVoltageLevel
+                    : maxWidthSubstation
+            );
+            let viewboxHeight = Math.min(
+                svgHeight,
+                svgType === SvgType.VOLTAGE_LEVEL
+                    ? maxHeightVoltageLevel
+                    : maxHeightSubstation
+            );
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .size(sizeWidth, sizeHeight)
-                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
+                .size(svgWidth, svgHeight)
+                .viewbox(xOrigin, yOrigin, viewboxWidth, viewboxHeight)
                 .panZoom({
                     panning: true,
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: calcMargins(svgType, sizeWidth, sizeHeight),
+                    margins: { top: 100, left: 100, right: 100, bottom: 200 },
                 });
-            if (svgPrevViewbox.current) {
-                draw.viewbox(svgPrevViewbox.current);
-                svgPrevViewbox.current = null;
-            }
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
@@ -388,11 +456,16 @@ const SingleLineDiagram = forwardRef((props, ref) => {
                         );
                         const switchId = switchMetadata.equipmentId;
                         const open = switchMetadata.open;
-                        svgPrevViewbox.current = draw.viewbox();
                         onBreakerClick(switchId, !open, event.currentTarget);
                     });
                 });
             }
+
+            if (svgDraw.current && svgUrl.current === svg.svgUrl) {
+                draw.viewbox(svgDraw.current.viewbox());
+            }
+            svgUrl.current = svg.svgUrl;
+
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
@@ -405,55 +478,65 @@ const SingleLineDiagram = forwardRef((props, ref) => {
         theme,
     ]);
 
-    useEffect(() => {
-        svgPrevViewbox.current = null;
-    }, [props.updateSwitchMsg]);
+    useLayoutEffect(() => {
+        if (
+            typeof svgFinalWidth != 'undefined' &&
+            typeof svgFinalHeight != 'undefined'
+        ) {
+            const divElt = document.getElementById('sld-svg');
+            if (divElt != null) {
+                const svgEl = divElt.getElementsByTagName('svg')[0];
+                if (svgEl != null) {
+                    svgEl.setAttribute('width', svgFinalWidth);
+                    svgEl.setAttribute('height', svgFinalHeight);
+                }
+            }
+        } else {
+        }
+    }, [
+        svgFinalWidth,
+        svgFinalHeight,
+        //TODO, these are from the previous useLayoutEffect
+        //how to refactor to avoid repeating them here ?
+        svg,
+        onNextVoltageLevelClick,
+        onBreakerClick,
+        isComputationRunning,
+        svgType,
+        theme,
+    ]);
 
     const classes = useStyles();
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
+            dispatch(selectItemNetwork(null));
+            dispatch(fullScreenSingleLineDiagram(false));
             props.onClose();
         }
     };
 
-    let inner;
-    let finalClasses;
+    const showFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(true));
+    };
+
+    const hideFullScreen = () => {
+        dispatch(fullScreenSingleLineDiagram(false));
+    };
+
+    let sizeWidth, sizeHeight;
     if (svg.error) {
-        finalClasses = classes.error;
-        inner = <SvgNotFound svgUrl={svg.svgUrl} error={svg.error} />;
+        sizeWidth = errorWidth; // height is not set so height is auto;
+    } else if (
+        typeof finalPaperWidth != 'undefined' &&
+        typeof finalPaperHeight != 'undefined'
+    ) {
+        sizeWidth = finalPaperWidth;
+        sizeHeight = finalPaperHeight;
+    } else if (loadingState) {
+        sizeWidth = loadingWidth; // height is not set so height is auto; used for the first load
     } else {
-        finalClasses = classes.diagram;
-        inner = (
-            <div
-                id="sld-svg"
-                style={{ height: '100%' }}
-                className={
-                    svgType === SvgType.VOLTAGE_LEVEL
-                        ? classes.divVoltageLevel
-                        : classes.divSubstation
-                }
-                dangerouslySetInnerHTML={{ __html: svg.svg }}
-            />
-        );
-    }
-
-    let msgUpdateSwitch;
-    if (props.updateSwitchMsg !== '') {
-        msgUpdateSwitch = (
-            <Alert className={classes.errorUpdateSwitch} severity="error">
-                {props.updateSwitchMsg}
-            </Alert>
-        );
-    } else {
-        msgUpdateSwitch = '';
-    }
-
-    let displayProgress;
-    if (loadingState) {
-        displayProgress = <LinearProgress />;
-    } else {
-        displayProgress = '';
+        sizeWidth = totalWidth; // happens during initalization
     }
 
     return (
@@ -461,20 +544,93 @@ const SingleLineDiagram = forwardRef((props, ref) => {
             elevation={1}
             variant="outlined"
             square="true"
-            className={finalClasses}
+            style={{
+                pointerEvents: 'auto',
+                width: sizeWidth,
+                height: sizeHeight,
+                position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
+            }}
         >
-            <Box className={classes.header}>
-                <Box flexGrow={1}>
-                    <Typography>{props.diagramTitle}</Typography>
+            <Box>
+                <AutoSizer
+                    onResize={({ height }) => {
+                        setHeaderPreferredHeight(height);
+                    }}
+                >
+                    {() => /* just for measuring the header */ {}}
+                </AutoSizer>
+
+                <Box className={classes.header}>
+                    {props.diagramAction}
+                    <Box flexGrow={1}>
+                        <Typography>{props.diagramTitle}</Typography>
+                    </Box>
+                    <IconButton
+                        className={classes.close}
+                        onClick={onCloseHandler}
+                    >
+                        <CloseIcon />
+                    </IconButton>
                 </Box>
-                <IconButton className={classes.close} onClick={onCloseHandler}>
-                    <CloseIcon />
-                </IconButton>
             </Box>
-            <Box height={2}>{displayProgress}</Box>
-            {msgUpdateSwitch}
-            {inner}
+            <Box position="relative">
+                <Box position="absolute" left={0} right={0} top={0}>
+                    {loadingState && (
+                        <Box height={2}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    {props.updateSwitchMsg && (
+                        <Alert severity="error">{props.updateSwitchMsg}</Alert>
+                    )}
+                </Box>
+                {svg.error ? (
+                    <Typography variant="h5">
+                        <FormattedMessage
+                            id="svgNotFound"
+                            values={{
+                                svgUrl: svg.svgUrl,
+                                error: svg.error.message,
+                            }}
+                        />
+                    </Typography>
+                ) : (
+                    <div
+                        id="sld-svg"
+                        className={classes.divSld}
+                        dangerouslySetInnerHTML={{ __html: svg.svg }}
+                    />
+                )}
+                {!loadingState &&
+                    !svg.error &&
+                    (fullScreen ? (
+                        <FullscreenExitIcon
+                            onClick={hideFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ) : (
+                        <FullscreenIcon
+                            onClick={showFullScreen}
+                            className={classes.fullScreenIcon}
+                        />
+                    ))}
+            </Box>
         </Paper>
+    );
+});
+
+const SingleLineDiagram = forwardRef((props, ref) => {
+    return (
+        <AutoSizer>
+            {({ width, height }) => (
+                <SizedSingleLineDiagram
+                    ref={ref}
+                    totalWidth={width}
+                    totalHeight={height}
+                    {...props}
+                />
+            )}
+        </AutoSizer>
     );
 });
 
@@ -485,6 +641,9 @@ SingleLineDiagram.propTypes = {
     updateSwitchMsg: PropTypes.string.isRequired,
     isComputationRunning: PropTypes.bool.isRequired,
     svgType: PropTypes.string.isRequired,
+    onNextVoltageLevelClick: PropTypes.func,
+    onBreakerClick: PropTypes.func,
+    diagramAction: PropTypes.node,
 };
 
 export default SingleLineDiagram;
