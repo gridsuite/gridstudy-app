@@ -80,7 +80,9 @@ const NetworkTable = (props) => {
 
     const [listColumnsNames, setListColumnsNames] = useState([]);
     const [checked, setChecked] = React.useState([]);
-    const [selectedListName, setSelectedListName] = useState([]);
+    const [listSelectedColumnsNames, setListSelectedColumnsNames] = useState(
+        []
+    );
 
     const intl = useIntl();
 
@@ -1079,7 +1081,7 @@ const NetworkTable = (props) => {
     );
 
     const showSelectedColumn = (key) => {
-        return selectedListName[tabIndex].includes(key) ? '' : 'none';
+        return listSelectedColumnsNames[tabIndex].includes(key) ? '' : 'none';
     };
 
     const generateTableColumns = (table) => {
@@ -1135,7 +1137,8 @@ const NetworkTable = (props) => {
             label: '',
             dataKey: '',
             style: {
-                display: selectedListName[tabIndex].length > 0 ? '' : 'none',
+                display:
+                    listSelectedColumnsNames[tabIndex].length > 0 ? '' : 'none',
             },
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
@@ -1343,8 +1346,8 @@ const NetworkTable = (props) => {
         const showListName = listColumnsNames[tabIndex].filter((item) =>
             checked[tabIndex].includes(item)
         );
-        setSelectedListName(
-            selectedListName.map((arr, index) =>
+        setListSelectedColumnsNames(
+            listSelectedColumnsNames.map((arr, index) =>
                 tabIndex === index ? showListName : arr
             )
         );
@@ -1459,7 +1462,7 @@ const NetworkTable = (props) => {
         });
 
         setListColumnsNames(cols);
-        setSelectedListName(selCols);
+        setListSelectedColumnsNames(selCols);
         setChecked(checkCols);
         // Do not add TABLES_DEFINITIONS as dependency, because this effect must be called just once
         // eslint-disable-next-line react-hooks/exhaustive-deps
