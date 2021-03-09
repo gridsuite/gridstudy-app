@@ -218,17 +218,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, study.userId, newStudyNameValue).then(
-            (response) => {
-                if (!response.ok) {
+        renameStudy(study.studyName, study.userId, newStudyNameValue)
+            .then((response) => {
+                if (response === 'NOT_ALLOWED') {
                     setRenameError(
                         intl.formatMessage({ id: 'renameStudyError' })
                     );
                 } else {
                     setOpenRename(false);
                 }
-            }
-        );
+            })
+            .catch((e) => {
+                setRenameError(e.message || e);
+            });
     };
 
     const handleCloseRename = () => {
@@ -398,19 +400,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
                         <CustomTypography>
-                            <FormattedMessage id="studyName" />:{' '}
+                            <FormattedMessage id="studyNameProperty" />
                             <span className={classes.contentStyle}>
                                 {study.studyName}
                             </span>
                         </CustomTypography>
                         <CustomTypography>
-                            <FormattedMessage id="studyDescription" />:{' '}
+                            <FormattedMessage id="studyDescriptionProperty" />
                             <span className={classes.contentStyle}>
                                 {study.description ? study.description : '—'}
                             </span>
                         </CustomTypography>
                         <CustomTypography>
-                            <FormattedMessage id="owner" />:{' '}
+                            <FormattedMessage id="owner" />
                             <span className={classes.contentStyle}>
                                 {study.userId}
                             </span>
