@@ -45,11 +45,8 @@ import {
     selectDisplayOverloadTableState,
 } from '../redux/actions';
 import Parameters from './parameters';
-import {
-    USE_NAME,
-    USE_ID,
-} from './util/toggle-equipment-display';
-import EquipmentDisplay from './util/toggle-equipment-display';
+import EquipmentLabelingToggle from './util/equipment-labeling-toggle';
+import { USE_NAME, USE_ID } from './util/equipment-labeling-toggle';
 import {
     AuthenticationRouter,
     getPreLoginPath,
@@ -185,8 +182,6 @@ const App = () => {
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const resultCount = useSelector((state) => state.resultCount);
-
-    const [toggleState, setToggleState] = useState(USE_NAME);
 
     const updateParams = useCallback(
         (params) => {
@@ -367,26 +362,12 @@ const App = () => {
         return theme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
     }
 
-    const handleDisplayMode = (mode) => {
-        console.log('handleDisplayMode = ' + mode);
+    const handleDisplayModeClick = (mode) => {
         updateConfigParameters(PARAMS_THEME_KEY, switchTheme(mode));
     };
 
     const handleClickToggle = () => {
-        console.log('handleClickToggle2222 = ' + useName);
-        // if (useName) {
-        //     setToggleState(USE_ID);
-        // } else {
-        //     setToggleState(USE_NAME);
-        // }
-        // if (useName) {
-            //setToggleState(USE_ID);
-            //updateConfigParameters(PARAMS_USE_NAME_KEY, USE_NAME);
-        // } else {
-            //setToggleState(USE_NAME);
-            //updateConfigParameters(PARAMS_USE_NAME_KEY, USE_ID);
-        // }
-        //updateConfigParameters(PARAMS_USE_NAME_KEY, !useName);
+        updateConfigParameters(PARAMS_USE_NAME_KEY, !useName);
     };
 
     // if result tab is displayed, clean badge
@@ -422,13 +403,13 @@ const App = () => {
                         onLogoClick={() => onLogoClicked()}
                         user={user}
                         appsAndUrls={appsAndUrls}
-                        onDisplayModeClick={() => handleDisplayMode(theme)}
+                        onDisplayModeClick={() => handleDisplayModeClick(theme)}
                         onAboutClick={() => console.log('about')}
                         selectedTheme={theme}
                         equipmentDisplay={
-                            <EquipmentDisplay
-                                handleDisplay={handleClickToggle()}
-                                toggleState={toggleState}
+                            <EquipmentLabelingToggle
+                                handleClick={handleClickToggle}
+                                toggleState={useName ? USE_NAME : USE_ID}
                             />
                         }
                     >
@@ -538,4 +519,5 @@ const App = () => {
         </ThemeProvider>
     );
 };
+
 export default App;

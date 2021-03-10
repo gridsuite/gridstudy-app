@@ -45,7 +45,7 @@ const StyledMenuItem = withStyles((theme) => ({
     },
 }))(MenuItem);
 
-const EquipmentDisplay = ({ handleDisplay, toggleState }) => {
+const EquipmentLabelingToggle = ({ handleClick, toggleState }) => {
     const classes = useStyles();
 
     return (
@@ -55,13 +55,12 @@ const EquipmentDisplay = ({ handleDisplay, toggleState }) => {
                     opacity: '1',
                     padding: '0',
                 }}
-                disabled={true}
             >
                 <ListItemText>
                     <Typography className={classes.sizeLabel}>
                         <FormattedMessage
-                            id="top-bar/equipmentDisplay"
-                            defaultMessage={'Equipment display'}
+                            id="top-bar/equipmentLabelingToggle"
+                            defaultMessage={'Equipment labeling toggle'}
                         />
                     </Typography>
                 </ListItemText>
@@ -69,7 +68,7 @@ const EquipmentDisplay = ({ handleDisplay, toggleState }) => {
                     exclusive
                     value={toggleState}
                     className={classes.toggleDisplay}
-                    onChange={handleDisplay}
+                    onChange={handleClick}
                 >
                     <ToggleButton
                         value={USE_ID}
@@ -97,4 +96,4 @@ const EquipmentDisplay = ({ handleDisplay, toggleState }) => {
     );
 };
 
-export default EquipmentDisplay;
+export default EquipmentLabelingToggle;
