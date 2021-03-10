@@ -14,5 +14,5 @@ export const PARAMS_LINE_PARALLEL_PATH_KEY = 'lineParallelPath';
 export const PARAMS_LINE_FLOW_MODE_KEY = 'lineFlowMode';
 export const PARAMS_LINE_FLOW_COLOR_MODE_KEY = 'lineFlowColorMode';
 export const PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY = 'lineFlowAlertThreshold';
-export const PARAMS_VIEW_OVERLOADS_TABLE_KEY = 'viewOverloadsTable';
+export const PARAMS_DISPLAY_OVERLOAD_TABLE_KEY = 'displayOverloadTable';
 export const PARAMS_SUBSTATION_LAYOUT_KEY = 'substationLayout';
