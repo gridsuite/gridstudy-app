@@ -404,7 +404,7 @@ const App = () => {
                         user={user}
                         appsAndUrls={appsAndUrls}
                         onDisplayModeClick={() => handleDisplayModeClick(theme)}
-                        onAboutClick={() => console.log('about')}
+                        onAboutClick={() => console.debug('about')}
                         selectedTheme={theme}
                         equipmentDisplay={
                             <EquipmentLabelingToggle
