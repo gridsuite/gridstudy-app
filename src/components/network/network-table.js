@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import Network from './network';
 import VirtualizedTable from '../util/virtualized-table';
@@ -76,12 +76,6 @@ const NetworkTable = (props) => {
     const [rowFilter, setRowFilter] = React.useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = React.useState(
         false
-    );
-
-    const [listColumnsNames, setListColumnsNames] = useState([]);
-    const [checked, setChecked] = React.useState([]);
-    const [listSelectedColumnsNames, setListSelectedColumnsNames] = useState(
-        []
     );
 
     const intl = useIntl();
@@ -883,6 +877,20 @@ const NetworkTable = (props) => {
         },
     };
 
+    let cols = [];
+    Object.values(TABLES_DEFINITIONS).forEach((table) => {
+        let availableCols = table.columns.map((c) => {
+            return c.id;
+        });
+        cols.push(availableCols);
+    });
+
+    const [listColumnsNames, setListColumnsNames] = useState(cols);
+    const [checked, setChecked] = React.useState(cols);
+    const [listSelectedColumnsNames, setListSelectedColumnsNames] = useState(
+        cols
+    );
+
     const rowHeight = 48;
 
     const isLineOnEditMode = useCallback(
@@ -1445,28 +1453,6 @@ const NetworkTable = (props) => {
             </List>
         );
     };
-
-    useEffect(() => {
-        // by default, all available columns are selected
-        let cols = [];
-        let selCols = [];
-        let checkCols = [];
-        Object.values(TABLES_DEFINITIONS).forEach((table) => {
-            let availableCols = table.columns.map((c) => {
-                return c.id;
-            });
-
-            cols.push(availableCols);
-            selCols.push(availableCols);
-            checkCols.push(availableCols);
-        });
-
-        setListColumnsNames(cols);
-        setListSelectedColumnsNames(selCols);
-        setChecked(checkCols);
-        // Do not add TABLES_DEFINITIONS as dependency, because this effect must be called just once
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     return (
         props.network && (
