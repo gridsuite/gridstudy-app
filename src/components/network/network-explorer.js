@@ -181,12 +181,10 @@ const NetworkExplorer = ({
                     index++;
                 }
             }
+            listeRef.current.scrollToRow(index);
+            // Workaround, remove when https://github.com/bvaughn/react-virtualized/issues/995 is resolved
             setTimeout(() => {
                 listeRef.current.scrollToRow(index);
-                // Workaround, remove when https://github.com/bvaughn/react-virtualized/issues/995 is resolved
-                setTimeout(() => {
-                    listeRef.current.scrollToRow(index);
-                }, 0);
             }, 0);
         }
     }, [visibleSubstation, filteredVoltageLevels]);

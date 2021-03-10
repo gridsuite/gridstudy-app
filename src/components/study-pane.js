@@ -793,7 +793,6 @@ const StudyPane = (props) => {
 
     function openVoltageLevel(vlId) {
         if (!network) return;
-        setDisplayedVoltageLevelId(vlId);
         showVoltageLevelDiagram(vlId);
         dispatch(selectItemNetwork(vlId));
     }
