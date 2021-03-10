@@ -151,12 +151,12 @@ export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
 }
 
-export const VIEW_OVERLOADS_TABLE = 'VIEW_OVERLOADS_TABLE';
+export const DISPLAY_OVERLOAD_TABLE = 'DISPLAY_OVERLOAD_TABLE';
 
-export function selectViewOverloadsTableState(viewOverloadsTable) {
+export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
-        type: VIEW_OVERLOADS_TABLE,
-        viewOverloadsTable: viewOverloadsTable,
+        type: DISPLAY_OVERLOAD_TABLE,
+        displayOverloadTable: displayOverloadTable,
     };
 }
 
