@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -118,6 +118,10 @@ const CustomTypography = withStyles({
         fontSize: '16px',
     },
 })(Typography);
+
+function makeKey({ userId, studyName }) {
+    return userId + '/' + studyName;
+}
 
 const DonwnloadIframe = 'downloadIframe';
 /**
@@ -485,6 +489,8 @@ const StudyManager = ({ onClick }) => {
 
     const classes = useStyles();
 
+    const [localCreationRequest, setLocalCreationRequest] = useState({});
+
     const { enqueueSnackbar } = useSnackbar();
 
     const dispatchStudies = useCallback(() => {
@@ -551,16 +557,72 @@ const StudyManager = ({ onClick }) => {
         };
     }, [connectNotificationsUpdateStudies, dispatchStudies]);
 
+    function addCreationRequest({ studyName, userId, date, isPrivate }) {
+        setLocalCreationRequest({
+            ...localCreationRequest,
+            ...{
+                [makeKey({ userId: userId, studyName: studyName })]: {
+                    studyName: studyName,
+                    userId: userId,
+                    date: date,
+                    private: isPrivate,
+                },
+            },
+        });
+    }
+
+    const cleanLocalCreationRequest = useCallback(
+        (remote) => {
+            if (localCreationRequest) {
+                let didDelete = false;
+                remote.forEach((study) => {
+                    if (localCreationRequest.hasOwnProperty(makeKey(study))) {
+                        didDelete = true;
+                        delete localCreationRequest[makeKey(study)];
+                    }
+                });
+                if (didDelete) setLocalCreationRequest(localCreationRequest);
+            }
+        },
+        [localCreationRequest]
+    );
+
+    useEffect(() => {
+        cleanLocalCreationRequest(studyCreationRequests);
+    }, [studyCreationRequests, cleanLocalCreationRequest]);
+
+    useEffect(() => {
+        cleanLocalCreationRequest(studies);
+    }, [studies, cleanLocalCreationRequest]);
+
+    function mergeCreationRequest(remote, local) {
+        let merged = {};
+        if (local)
+            Object.values(local).forEach((study) => {
+                merged[makeKey(study)] = study;
+            });
+        if (remote)
+            remote.forEach((study) => {
+                merged[makeKey(study)] = study;
+            });
+        return Object.values(merged);
+    }
+
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
             <Grid container spacing={2} className={classes.grid}>
                 <Grid item xs={12} sm={6} md={3} align="center">
                     <Box className={classes.addButtonBox}>
-                        <CreateStudyForm />
+                        <CreateStudyForm
+                            addCreationRequest={addCreationRequest}
+                        />
                     </Box>
                 </Grid>
-                {studyCreationRequests &&
-                    studyCreationRequests.map((study) => (
+                {(studyCreationRequests || localCreationRequest) &&
+                    mergeCreationRequest(
+                        studyCreationRequests,
+                        localCreationRequest
+                    ).map((study) => (
                         <Grid
                             item
                             xs={12}

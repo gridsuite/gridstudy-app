@@ -151,7 +151,7 @@ const UploadCase = () => {
     );
 };
 
-export const CreateStudyForm = () => {
+export const CreateStudyForm = (props) => {
     const [open, setOpen] = React.useState(false);
     const [caseExist, setCaseExist] = React.useState(false);
 
@@ -268,12 +268,14 @@ export const CreateStudyForm = () => {
             return;
         }
 
-        let isPrivateStudy = false;
-        if (studyPrivacy === 'private') {
-            isPrivateStudy = true;
-        }
+        let isPrivateStudy = studyPrivacy === 'private';
 
         setOpen(false);
+        props.addCreationRequest({
+            studyName: studyName,
+            userId: userId,
+            isPrivate: isPrivateStudy,
+        });
         createStudy(
             caseExist,
             studyName,
