@@ -71,12 +71,10 @@ const useStyles = makeStyles((theme) => ({
 const NetworkTable = (props) => {
     const classes = useStyles();
 
-    const [tabIndex, setTabIndex] = React.useState(0);
-    const [lineEdit, setLineEdit] = React.useState({});
-    const [rowFilter, setRowFilter] = React.useState(undefined);
-    const [popupSelectColumnNames, setPopupSelectColumnNames] = React.useState(
-        false
-    );
+    const [tabIndex, setTabIndex] = useState(0);
+    const [lineEdit, setLineEdit] = useState({});
+    const [rowFilter, setRowFilter] = useState(undefined);
+    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
 
     const intl = useIntl();
 
@@ -886,7 +884,7 @@ const NetworkTable = (props) => {
     });
 
     const [listColumnsNames, setListColumnsNames] = useState(cols);
-    const [checked, setChecked] = React.useState(cols);
+    const [checked, setChecked] = useState(cols);
     const [listSelectedColumnsNames, setListSelectedColumnsNames] = useState(
         cols
     );
