@@ -14,7 +14,7 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles(() => ({
     sizeLabel: {
@@ -59,8 +59,8 @@ const EquipmentLabelingToggle = ({ handleClick, toggleState }) => {
                 <ListItemText>
                     <Typography className={classes.sizeLabel}>
                         <FormattedMessage
-                          id="equipmentDisplay"
-                          defaultMessage={'Equipment display'}
+                            id="equipmentLabel"
+                            defaultMessage={'Equipment label'}
                         />
                     </Typography>
                 </ListItemText>
@@ -75,20 +75,14 @@ const EquipmentLabelingToggle = ({ handleClick, toggleState }) => {
                         aria-label={USE_ID}
                         className={classes.toggleButton}
                     >
-                        <FormattedMessage
-                            id="Id"
-                            defaultMessage={'Id'}
-                        />
+                        <FormattedMessage id="Id" defaultMessage={'Id'} />
                     </ToggleButton>
                     <ToggleButton
                         value={USE_NAME}
                         aria-label={USE_NAME}
                         className={classes.toggleButton}
                     >
-                        <FormattedMessage
-                            id="Name"
-                            defaultMessage={'Name'}
-                        />
+                        <FormattedMessage id="Name" defaultMessage={'Name'} />
                     </ToggleButton>
                 </ToggleButtonGroup>
             </StyledMenuItem>

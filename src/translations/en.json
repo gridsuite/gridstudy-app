@@ -62,7 +62,7 @@
     "parameters": "Parameters",
     "theme": "Theme: ",
     "close": "Close",
-    "equipmentDisplay": "Equipment display",
+    "equipmentLabel": "Equipment label",
     "Id": "Id",
 
     "loadingGeoData": "Loading...",
