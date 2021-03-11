@@ -62,6 +62,9 @@
     "parameters": "Paramètres",
     "theme": "Thème : ",
     "close": "Fermer",
+    "equipmentDisplay": "Affichage des équipements",
+    "Id": "Id",
+
 
     "loadingGeoData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",

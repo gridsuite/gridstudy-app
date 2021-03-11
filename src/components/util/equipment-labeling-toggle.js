@@ -14,13 +14,13 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const useStyles = makeStyles(() => ({
     sizeLabel: {
         fontSize: '16px',
     },
-    toggleDisplay: {
+    toggleButtonGroup: {
         marginLeft: '15px',
         pointerEvents: 'auto',
     },
@@ -59,15 +59,15 @@ const EquipmentLabelingToggle = ({ handleClick, toggleState }) => {
                 <ListItemText>
                     <Typography className={classes.sizeLabel}>
                         <FormattedMessage
-                            id="top-bar/equipmentLabelingToggle"
-                            defaultMessage={'Equipment labeling toggle'}
+                          id="equipmentDisplay"
+                          defaultMessage={'Equipment display'}
                         />
                     </Typography>
                 </ListItemText>
                 <ToggleButtonGroup
                     exclusive
                     value={toggleState}
-                    className={classes.toggleDisplay}
+                    className={classes.toggleButtonGroup}
                     onChange={handleClick}
                 >
                     <ToggleButton
@@ -76,7 +76,7 @@ const EquipmentLabelingToggle = ({ handleClick, toggleState }) => {
                         className={classes.toggleButton}
                     >
                         <FormattedMessage
-                            id="top-bar/id"
+                            id="Id"
                             defaultMessage={'Id'}
                         />
                     </ToggleButton>
@@ -86,7 +86,7 @@ const EquipmentLabelingToggle = ({ handleClick, toggleState }) => {
                         className={classes.toggleButton}
                     >
                         <FormattedMessage
-                            id="top-bar/name"
+                            id="Name"
                             defaultMessage={'Name'}
                         />
                     </ToggleButton>
