@@ -108,6 +108,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
         }
     }, [studyName, userId]);
 
+    useEffect(() => {
+        setDisabledFlowAlertThreshold(
+            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
+        );
+    }, [lineFlowColorMode, displayOverloadTable]);
+
     const theme = useSelector((state) => state.theme);
 
     const substationLayout = useSelector((state) => state.substationLayout);
@@ -135,9 +141,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const handleLineFlowColorModeChange = (event) => {
         const lineFlowColorMode = event.target.value;
-        setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
-        );
         updateConfigParameters(
             PARAMS_LINE_FLOW_COLOR_MODE_KEY,
             lineFlowColorMode
@@ -441,10 +444,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     displayOverloadTable,
                     'displayOverloadTable',
                     () => {
-                        setDisabledFlowAlertThreshold(
-                            lineFlowColorMode === 'nominalVoltage' &&
-                                displayOverloadTable
-                        );
                         updateConfigParameters(
                             PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
                             !displayOverloadTable
