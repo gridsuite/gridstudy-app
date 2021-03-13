@@ -770,11 +770,9 @@ export const TABLES_DEFINITIONS = {
     },
 };
 
-export function TABLES_COLUMNS_NAMES() {
-    return Object.values(TABLES_DEFINITIONS)
-        .map((value) => value.columns)
-        .map((cols) => cols.map((c) => c.id));
-}
+export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
+    .map((value) => value.columns)
+    .map((cols) => cols.map((c) => c.id));
 
 function generateTapRequest(type, leg) {
     const getLeg = leg !== undefined ? '.getLeg' + leg + '()' : '';

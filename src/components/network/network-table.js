@@ -79,13 +79,8 @@ const NetworkTable = (props) => {
 
     const intl = useIntl();
 
-    const [listColumnsNames, setListColumnsNames] = useState(
-        TABLES_COLUMNS_NAMES()
-    );
-    const [checked, setChecked] = useState(TABLES_COLUMNS_NAMES());
-    const [listSelectedColumnsNames, setListSelectedColumnsNames] = useState(
-        TABLES_COLUMNS_NAMES()
-    );
+    const [checked, setChecked] = useState(TABLES_COLUMNS_NAMES);
+    const [listSelectedColumnsNames, setListSelectedColumnsNames] = useState(TABLES_COLUMNS_NAMES);
 
     const rowHeight = 48;
 
@@ -520,17 +515,6 @@ const NetworkTable = (props) => {
     );
 
     const handleOpenPopupSelectColumnNames = () => {
-        setListColumnsNames(
-            listColumnsNames.map((arr, index) =>
-                tabIndex === index
-                    ? Object.values(TABLES_DEFINITIONS)
-                          .filter((table) => tabIndex === table.index)[0]
-                          .columns.map((c) => {
-                              return c.id;
-                          })
-                    : arr
-            )
-        );
         setPopupSelectColumnNames(true);
     };
 
@@ -539,7 +523,7 @@ const NetworkTable = (props) => {
     };
 
     const handleSaveSelectedColumnNames = () => {
-        const showListName = listColumnsNames[tabIndex].filter((item) =>
+        const showListName = TABLES_COLUMNS_NAMES[tabIndex].filter((item) =>
             checked[tabIndex].includes(item)
         );
         setListSelectedColumnsNames(
@@ -578,15 +562,15 @@ const NetworkTable = (props) => {
         );
     };
 
-    const numberOfChecked = (items) =>
-        intersection(checked[tabIndex], items).length;
+    const numberOfChecked = () =>
+        intersection(checked[tabIndex], TABLES_COLUMNS_NAMES[tabIndex]).length;
 
-    const handleToggleAll = (items) => () => {
+    const handleToggleAll = () => () => {
         let newChecked;
-        if (numberOfChecked(items) === items.length) {
-            newChecked = not(checked[tabIndex], items);
+        if (numberOfChecked() === TABLES_COLUMNS_NAMES[tabIndex].length) {
+            newChecked = not(checked[tabIndex], TABLES_COLUMNS_NAMES[tabIndex]);
         } else {
-            newChecked = union(checked[tabIndex], items);
+            newChecked = union(checked[tabIndex], TABLES_COLUMNS_NAMES[tabIndex]);
         }
         setChecked(
             checked.map((arr, index) => (tabIndex === index ? newChecked : arr))
@@ -598,25 +582,25 @@ const NetworkTable = (props) => {
             <List>
                 <ListItem
                     className={classes.checkboxSelectAll}
-                    onClick={handleToggleAll(listColumnsNames[tabIndex])}
+                    onClick={handleToggleAll()}
                 >
                     <Checkbox
                         checked={
-                            numberOfChecked(listColumnsNames[tabIndex]) ===
-                                listColumnsNames[tabIndex].length &&
-                            listColumnsNames[tabIndex].length !== 0
+                            numberOfChecked() ===
+                            TABLES_COLUMNS_NAMES[tabIndex].length &&
+                            TABLES_COLUMNS_NAMES[tabIndex].length !== 0
                         }
                         indeterminate={
-                            numberOfChecked(listColumnsNames[tabIndex]) !==
-                                listColumnsNames[tabIndex].length &&
-                            numberOfChecked(listColumnsNames[tabIndex]) !== 0
+                            numberOfChecked() !==
+                            TABLES_COLUMNS_NAMES[tabIndex].length &&
+                            numberOfChecked() !== 0
                         }
-                        disabled={listColumnsNames[tabIndex].length === 0}
+                        disabled={TABLES_COLUMNS_NAMES[tabIndex].length === 0}
                         color="primary"
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
-                {listColumnsNames[tabIndex].map((value, index) => (
+                {TABLES_COLUMNS_NAMES[tabIndex].map((value, index) => (
                     <List key={index} style={{ padding: '0' }}>
                         <ListItem
                             key={index}
