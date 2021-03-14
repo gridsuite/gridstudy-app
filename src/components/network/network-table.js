@@ -79,8 +79,9 @@ const NetworkTable = (props) => {
 
     const intl = useIntl();
 
-    const [checked, setChecked] = useState(TABLES_COLUMNS_NAMES);
-    const [listSelectedColumnsNames, setListSelectedColumnsNames] = useState(TABLES_COLUMNS_NAMES);
+    const [checkedColumnsNames, setCheckedColumnsNames] = useState(
+        TABLES_COLUMNS_NAMES
+    );
 
     const rowHeight = 48;
 
@@ -261,16 +262,16 @@ const NetworkTable = (props) => {
         ]
     );
 
-    const showSelectedColumn = (key) => {
-        return listSelectedColumnsNames[tabIndex].includes(key) ? '' : 'none';
+    const columnDisplayStyle = (key) => {
+        return checkedColumnsNames[tabIndex].has(key) ? '' : 'none';
     };
 
     const generateTableColumns = (table) => {
         return table.columns.map((c) => {
             let column = {
                 label: intl.formatMessage({ id: c.id }),
-                headerStyle: { display: showSelectedColumn(c.id) },
-                style: { display: showSelectedColumn(c.id) },
+                headerStyle: { display: columnDisplayStyle(c.id) },
+                style: { display: columnDisplayStyle(c.id) },
                 ...c,
             };
             c.changeCmd !== undefined &&
@@ -328,8 +329,7 @@ const NetworkTable = (props) => {
             label: '',
             dataKey: '',
             style: {
-                display:
-                    listSelectedColumnsNames[tabIndex].length > 0 ? '' : 'none',
+                display: checkedColumnsNames[tabIndex].size > 0 ? '' : 'none',
             },
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
@@ -523,84 +523,58 @@ const NetworkTable = (props) => {
     };
 
     const handleSaveSelectedColumnNames = () => {
-        const showListName = TABLES_COLUMNS_NAMES[tabIndex].filter((item) =>
-            checked[tabIndex].includes(item)
-        );
-        setListSelectedColumnsNames(
-            listSelectedColumnsNames.map((arr, index) =>
-                tabIndex === index ? showListName : arr
-            )
-        );
-
         setPopupSelectColumnNames(false);
     };
 
-    function not(a, b) {
-        return a.filter((value) => b.indexOf(value) === -1);
-    }
-
-    function intersection(a, b) {
-        return a.filter((value) => b.indexOf(value) !== -1);
-    }
-
-    function union(a, b) {
-        return [...a, ...not(b, a)];
-    }
-
     const handleToggle = (value) => () => {
-        const currentIndex = checked[tabIndex].indexOf(value);
-        const newChecked = [...checked[tabIndex]];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
+        const newChecked = new Set(checkedColumnsNames[tabIndex]);
+        if (checkedColumnsNames[tabIndex].has(value)) {
+            newChecked.delete(value);
         } else {
-            newChecked.splice(currentIndex, 1);
+            newChecked.add(value);
         }
 
-        setChecked(
-            checked.map((arr, index) => (tabIndex === index ? newChecked : arr))
+        setCheckedColumnsNames(
+            checkedColumnsNames.map((set, index) =>
+                tabIndex === index ? new Set(newChecked) : set
+            )
         );
     };
 
-    const numberOfChecked = () =>
-        intersection(checked[tabIndex], TABLES_COLUMNS_NAMES[tabIndex]).length;
-
-    const handleToggleAll = () => () => {
-        let newChecked;
-        if (numberOfChecked() === TABLES_COLUMNS_NAMES[tabIndex].length) {
-            newChecked = not(checked[tabIndex], TABLES_COLUMNS_NAMES[tabIndex]);
-        } else {
-            newChecked = union(checked[tabIndex], TABLES_COLUMNS_NAMES[tabIndex]);
-        }
-        setChecked(
-            checked.map((arr, index) => (tabIndex === index ? newChecked : arr))
+    const handleToggleAll = () => {
+        let isAllChecked =
+            checkedColumnsNames[tabIndex].size ===
+            TABLES_COLUMNS_NAMES[tabIndex].size;
+        let newChecked = isAllChecked
+            ? new Set()
+            : TABLES_COLUMNS_NAMES[tabIndex];
+        setCheckedColumnsNames(
+            checkedColumnsNames.map((set, index) =>
+                tabIndex === index ? newChecked : set
+            )
         );
     };
 
     const checkListColumnsNames = () => {
+        let isAllChecked =
+            checkedColumnsNames[tabIndex].size ===
+            TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isSomeChecked =
+            checkedColumnsNames[tabIndex].size !== 0 && !isAllChecked;
         return (
             <List>
                 <ListItem
                     className={classes.checkboxSelectAll}
-                    onClick={handleToggleAll()}
+                    onClick={handleToggleAll}
                 >
                     <Checkbox
-                        checked={
-                            numberOfChecked() ===
-                            TABLES_COLUMNS_NAMES[tabIndex].length &&
-                            TABLES_COLUMNS_NAMES[tabIndex].length !== 0
-                        }
-                        indeterminate={
-                            numberOfChecked() !==
-                            TABLES_COLUMNS_NAMES[tabIndex].length &&
-                            numberOfChecked() !== 0
-                        }
-                        disabled={TABLES_COLUMNS_NAMES[tabIndex].length === 0}
+                        checked={isAllChecked}
+                        indeterminate={isSomeChecked}
                         color="primary"
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
-                {TABLES_COLUMNS_NAMES[tabIndex].map((value, index) => (
+                {[...TABLES_COLUMNS_NAMES[tabIndex]].map((value, index) => (
                     <List key={index} style={{ padding: '0' }}>
                         <ListItem
                             key={index}
@@ -610,9 +584,9 @@ const NetworkTable = (props) => {
                         >
                             <ListItemIcon>
                                 <Checkbox
-                                    checked={
-                                        checked[tabIndex].indexOf(value) !== -1
-                                    }
+                                    checked={checkedColumnsNames[tabIndex].has(
+                                        value
+                                    )}
                                     color="primary"
                                 />
                             </ListItemIcon>

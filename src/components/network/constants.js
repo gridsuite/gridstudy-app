@@ -771,8 +771,8 @@ export const TABLES_DEFINITIONS = {
 };
 
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
-    .map((value) => value.columns)
-    .map((cols) => cols.map((c) => c.id));
+    .map((table) => table.columns)
+    .map((cols) => new Set(cols.map((c) => c.id)));
 
 function generateTapRequest(type, leg) {
     const getLeg = leg !== undefined ? '.getLeg' + leg + '()' : '';
