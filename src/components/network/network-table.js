@@ -22,7 +22,7 @@ import Grid from '@material-ui/core/Grid';
 import {
     fetchConfigParameter,
     requestNetworkChange,
-    updateConfigParameters,
+    updateConfigParameter,
 } from '../../utils/rest-api';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -542,7 +542,7 @@ const NetworkTable = (props) => {
     };
 
     const handleSaveSelectedColumnNames = () => {
-        updateConfigParameters(
+        updateConfigParameter(
             TABLES_NAMES[tabIndex],
             JSON.stringify([...checkedColumnsNames])
         );
