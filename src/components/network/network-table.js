@@ -77,6 +77,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
+
+const ROW_HEIGHT = 48;
+
 const NetworkTable = (props) => {
     const classes = useStyles();
 
@@ -84,12 +88,13 @@ const NetworkTable = (props) => {
     const [lineEdit, setLineEdit] = useState({});
     const [rowFilter, setRowFilter] = useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
+    const [selectedColumnsNames, setSelectedColumnsNames] = useState(undefined);
+    const [
+        backupSelectedColumnsNames,
+        setBackupSelectedColumnsNames,
+    ] = useState(undefined); // Optimization to reduce database access
 
     const intl = useIntl();
-
-    const [checkedColumnsNames, setCheckedColumnsNames] = useState(undefined);
-
-    const rowHeight = 48;
 
     const isLineOnEditMode = useCallback(
         (row) => {
@@ -101,16 +106,16 @@ const NetworkTable = (props) => {
     );
 
     useEffect(() => {
-        if (tabIndex >= 0) {
-            fetchConfigParameter(TABLES_NAMES[tabIndex]).then((val) => {
-                console.debug('received UI parameter : ', val);
-                if (!val) {
-                    setCheckedColumnsNames(TABLES_COLUMNS_NAMES[tabIndex]);
-                } else {
-                    setCheckedColumnsNames(new Set(JSON.parse(val.value)));
-                }
-            });
-        }
+        fetchConfigParameter(
+            COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex]
+        ).then((val) => {
+            console.debug('received UI parameter : ', val);
+            if (!val) {
+                setSelectedColumnsNames(TABLES_COLUMNS_NAMES[tabIndex]);
+            } else {
+                setSelectedColumnsNames(new Set(JSON.parse(val.value)));
+            }
+        });
     }, [tabIndex]);
 
     function setLineEditAt(index, value) {
@@ -214,7 +219,7 @@ const NetworkTable = (props) => {
                 <TableCell
                     component="div"
                     variant="body"
-                    style={{ height: rowHeight, width: cellData.width }}
+                    style={{ height: ROW_HEIGHT, width: cellData.width }}
                     className={classes.cell}
                     align="right"
                 >
@@ -282,7 +287,7 @@ const NetworkTable = (props) => {
     );
 
     const columnDisplayStyle = (key) => {
-        return checkedColumnsNames.has(key) ? '' : 'none';
+        return selectedColumnsNames.has(key) ? '' : 'none';
     };
 
     const generateTableColumns = (table) => {
@@ -348,7 +353,7 @@ const NetworkTable = (props) => {
             label: '',
             dataKey: '',
             style: {
-                display: checkedColumnsNames.size > 0 ? '' : 'none',
+                display: selectedColumnsNames.size > 0 ? '' : 'none',
             },
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
@@ -533,45 +538,46 @@ const NetworkTable = (props) => {
         [rowFilter]
     );
 
-    const handleOpenPopupSelectColumnNames = () => {
+    const handleOpenPopupSelectColumnNames = useCallback(() => {
+        setBackupSelectedColumnsNames(selectedColumnsNames);
         setPopupSelectColumnNames(true);
-    };
+    }, [selectedColumnsNames]);
 
-    const handleClosePopupSelectColumnNames = () => {
+    const handleCancelPopupSelectColumnNames = useCallback(() => {
+        setSelectedColumnsNames(backupSelectedColumnsNames);
         setPopupSelectColumnNames(false);
-    };
+    }, [backupSelectedColumnsNames]);
 
-    const handleSaveSelectedColumnNames = () => {
+    const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
-            TABLES_NAMES[tabIndex],
-            JSON.stringify([...checkedColumnsNames])
+            COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            JSON.stringify([...selectedColumnsNames])
         );
         setPopupSelectColumnNames(false);
-    };
+    }, [tabIndex, selectedColumnsNames]);
 
     const handleToggle = (value) => () => {
-        const newChecked = new Set([...checkedColumnsNames]); // copy
-        if (checkedColumnsNames.has(value)) {
+        const newChecked = new Set([...selectedColumnsNames]); // copy
+        if (selectedColumnsNames.has(value)) {
             newChecked.delete(value);
         } else {
             newChecked.add(value);
         }
-
-        setCheckedColumnsNames(newChecked);
+        setSelectedColumnsNames(newChecked);
     };
 
     const handleToggleAll = () => {
         let isAllChecked =
-            checkedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
-        setCheckedColumnsNames(
+            selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        setSelectedColumnsNames(
             isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]
         );
     };
 
     const checkListColumnsNames = () => {
         let isAllChecked =
-            checkedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
-        let isSomeChecked = checkedColumnsNames.size !== 0 && !isAllChecked;
+            selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
         return (
             <List>
                 <ListItem
@@ -594,7 +600,7 @@ const NetworkTable = (props) => {
                     >
                         <ListItemIcon>
                             <Checkbox
-                                checked={checkedColumnsNames[tabIndex].has(
+                                checked={selectedColumnsNames[tabIndex].has(
                                     value
                                 )}
                                 color="primary"
@@ -674,7 +680,7 @@ const NetworkTable = (props) => {
                             </IconButton>
                             <SelectOptionsDialog
                                 open={popupSelectColumnNames}
-                                onClose={handleClosePopupSelectColumnNames}
+                                onClose={handleCancelPopupSelectColumnNames}
                                 onClick={handleSaveSelectedColumnNames}
                                 title={<FormattedMessage id="ColumnsList" />}
                                 child={checkListColumnsNames()}
@@ -735,4 +741,4 @@ NetworkTable.propTypes = {
     studyName: PropTypes.string,
 };
 
-export default NetworkTable;
+export default React.memo(NetworkTable);
