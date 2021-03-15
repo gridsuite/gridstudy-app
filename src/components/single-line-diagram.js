@@ -350,8 +350,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 return vlList.indexOf(element.nextVId) === -1;
             });
 
-            let highestY;
-            let lowestY;
+            let highestY = new Map();
+            let lowestY = new Map();
             let y;
 
             navigable.forEach((element) => {
@@ -361,11 +361,17 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     .split(',');
 
                 y = parseInt(transform[1].match(/\d+/));
-                if (highestY === undefined || y > highestY) {
-                    highestY = y;
+                if (
+                    highestY.get(element.vid) === undefined ||
+                    y > highestY.get(element.vid)
+                ) {
+                    highestY.set(element.vid, y);
                 }
-                if (lowestY === undefined || y < lowestY) {
-                    lowestY = y;
+                if (
+                    lowestY.get(element.vid) === undefined ||
+                    y < lowestY.get(element.vid)
+                ) {
+                    lowestY.set(element.vid, y);
                 }
             });
 
@@ -379,8 +385,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     element,
                     element.direction,
                     x,
-                    highestY,
-                    lowestY
+                    highestY.get(element.vid),
+                    lowestY.get(element.vid)
                 );
             });
         }

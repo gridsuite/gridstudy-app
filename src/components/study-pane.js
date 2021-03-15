@@ -152,7 +152,7 @@ const INITIAL_POSITION = [0, 0];
 
 export const StudyView = {
     MAP: 'Map',
-    TABLE: 'Table',
+    SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
 };
 
@@ -188,7 +188,9 @@ const StudyPane = (props) => {
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
+    const displayOverloadTable = useSelector(
+        (state) => state.displayOverloadTable
+    );
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
@@ -707,7 +709,7 @@ const StudyPane = (props) => {
     }
 
     function choiceVoltageLevel(voltageLevelId) {
-        showVoltageLevelDiagram(voltageLevelId);
+        openVoltageLevel(voltageLevelId);
         closeChoiceVoltageLevelMenu();
     }
 
@@ -750,6 +752,12 @@ const StudyPane = (props) => {
                 }
             }
         }
+    }
+
+    function openVoltageLevel(vlId) {
+        if (!network) return;
+        showVoltageLevelDiagram(vlId);
+        dispatch(selectItemNetwork(vlId));
     }
 
     function renderMapView() {
@@ -890,13 +898,13 @@ const StudyPane = (props) => {
                         lineFlowColorMode={lineFlowColorMode}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
                         ref={mapRef}
-                        onSubstationClick={showVoltageLevelDiagram}
+                        onSubstationClick={openVoltageLevel}
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
                         }
                     />
-                    {network && viewOverloadsTable && (
+                    {network && displayOverloadTable && (
                         <div
                             style={{
                                 right: 45,
@@ -1012,9 +1020,7 @@ const StudyPane = (props) => {
                         >
                             <SingleLineDiagram
                                 onClose={() => closeVoltageLevelDiagram()}
-                                onNextVoltageLevelClick={
-                                    showVoltageLevelDiagram
-                                }
+                                onNextVoltageLevelClick={openVoltageLevel}
                                 onBreakerClick={handleUpdateSwitchState}
                                 diagramTitle={sldTitle}
                                 diagramAction={openDrawerComponent}
@@ -1135,7 +1141,10 @@ const StudyPane = (props) => {
                 <div
                     className="singlestretch-parent singlestretch-child"
                     style={{
-                        display: props.view === StudyView.TABLE ? null : 'none',
+                        display:
+                            props.view === StudyView.SPREADSHEET
+                                ? null
+                                : 'none',
                     }}
                 >
                     {renderTableView()}
