@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Network from './network';
 import VirtualizedTable from '../util/virtualized-table';
@@ -19,7 +19,11 @@ import { IconButton, TextField } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import { requestNetworkChange } from '../../utils/rest-api';
+import {
+    fetchConfigParameter,
+    requestNetworkChange,
+    updateConfigParameters,
+} from '../../utils/rest-api';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 
@@ -31,7 +35,11 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { TABLES_COLUMNS_NAMES, TABLES_DEFINITIONS } from './constants';
+import {
+    TABLES_COLUMNS_NAMES,
+    TABLES_DEFINITIONS,
+    TABLES_NAMES,
+} from './constants';
 
 const useStyles = makeStyles((theme) => ({
     cell: {
@@ -79,9 +87,7 @@ const NetworkTable = (props) => {
 
     const intl = useIntl();
 
-    const [checkedColumnsNames, setCheckedColumnsNames] = useState(
-        TABLES_COLUMNS_NAMES
-    );
+    const [checkedColumnsNames, setCheckedColumnsNames] = useState(undefined);
 
     const rowHeight = 48;
 
@@ -93,6 +99,19 @@ const NetworkTable = (props) => {
         },
         [lineEdit, tabIndex]
     );
+
+    useEffect(() => {
+        if (tabIndex >= 0) {
+            fetchConfigParameter(TABLES_NAMES[tabIndex]).then((val) => {
+                console.debug('received UI parameter : ', val);
+                if (!val) {
+                    setCheckedColumnsNames(TABLES_COLUMNS_NAMES[tabIndex]);
+                } else {
+                    setCheckedColumnsNames(new Set(JSON.parse(val.value)));
+                }
+            });
+        }
+    }, [tabIndex]);
 
     function setLineEditAt(index, value) {
         setLineEdit({
@@ -263,7 +282,7 @@ const NetworkTable = (props) => {
     );
 
     const columnDisplayStyle = (key) => {
-        return checkedColumnsNames[tabIndex].has(key) ? '' : 'none';
+        return checkedColumnsNames.has(key) ? '' : 'none';
     };
 
     const generateTableColumns = (table) => {
@@ -329,7 +348,7 @@ const NetworkTable = (props) => {
             label: '',
             dataKey: '',
             style: {
-                display: checkedColumnsNames[tabIndex].size > 0 ? '' : 'none',
+                display: checkedColumnsNames.size > 0 ? '' : 'none',
             },
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
@@ -523,44 +542,36 @@ const NetworkTable = (props) => {
     };
 
     const handleSaveSelectedColumnNames = () => {
+        updateConfigParameters(
+            TABLES_NAMES[tabIndex],
+            JSON.stringify([...checkedColumnsNames])
+        );
         setPopupSelectColumnNames(false);
     };
 
     const handleToggle = (value) => () => {
-        const newChecked = new Set(checkedColumnsNames[tabIndex]);
-        if (checkedColumnsNames[tabIndex].has(value)) {
+        const newChecked = new Set([...checkedColumnsNames]); // copy
+        if (checkedColumnsNames.has(value)) {
             newChecked.delete(value);
         } else {
             newChecked.add(value);
         }
 
-        setCheckedColumnsNames(
-            checkedColumnsNames.map((set, index) =>
-                tabIndex === index ? new Set(newChecked) : set
-            )
-        );
+        setCheckedColumnsNames(newChecked);
     };
 
     const handleToggleAll = () => {
         let isAllChecked =
-            checkedColumnsNames[tabIndex].size ===
-            TABLES_COLUMNS_NAMES[tabIndex].size;
-        let newChecked = isAllChecked
-            ? new Set()
-            : TABLES_COLUMNS_NAMES[tabIndex];
+            checkedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         setCheckedColumnsNames(
-            checkedColumnsNames.map((set, index) =>
-                tabIndex === index ? newChecked : set
-            )
+            isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]
         );
     };
 
     const checkListColumnsNames = () => {
         let isAllChecked =
-            checkedColumnsNames[tabIndex].size ===
-            TABLES_COLUMNS_NAMES[tabIndex].size;
-        let isSomeChecked =
-            checkedColumnsNames[tabIndex].size !== 0 && !isAllChecked;
+            checkedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isSomeChecked = checkedColumnsNames.size !== 0 && !isAllChecked;
         return (
             <List>
                 <ListItem
