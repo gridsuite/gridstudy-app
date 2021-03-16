@@ -557,15 +557,14 @@ const StudyManager = ({ onClick }) => {
         };
     }, [connectNotificationsUpdateStudies, dispatchStudies]);
 
-    function addCreationRequest({ studyName, userId, date, isPrivate }) {
+    function addCreationRequest({ studyName, userId, ...rest }) {
         setLocalCreationRequest({
             ...localCreationRequest,
             ...{
                 [makeKey({ userId: userId, studyName: studyName })]: {
                     studyName: studyName,
                     userId: userId,
-                    date: date,
-                    private: isPrivate,
+                    ...rest
                 },
             },
         });

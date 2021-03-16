@@ -275,6 +275,7 @@ export const CreateStudyForm = (props) => {
             studyName: studyName,
             userId: userId,
             isPrivate: isPrivateStudy,
+            creationDate: Date.now(),
         });
         createStudy(
             caseExist,
