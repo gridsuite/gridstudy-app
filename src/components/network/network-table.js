@@ -645,43 +645,36 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'LoadType' }),
                         dataKey: 'type',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePower' }),
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'ConstantActivePower',
                         }),
@@ -690,7 +683,6 @@ const NetworkTable = (props) => {
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'ConstantReactivePower',
                         }),
@@ -711,38 +703,32 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePower' }),
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'ConstantActivePower',
                         }),
@@ -751,7 +737,6 @@ const NetworkTable = (props) => {
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'ConstantReactivePower',
                         }),
@@ -772,43 +757,36 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'UcteXnodeCode' }),
                         dataKey: 'ucteXnodeCode',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePower' }),
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'ConstantActivePower',
                         }),
@@ -817,7 +795,6 @@ const NetworkTable = (props) => {
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'ConstantReactivePower',
                         }),
@@ -838,50 +815,42 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ConvertersMode' }),
                         dataKey: 'convertersMode',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'ConverterStationId1',
                         }),
                         dataKey: 'converterStationId1',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'ConverterStationId2',
                         }),
                         dataKey: 'converterStationId2',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'R' }),
                         dataKey: 'r',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'NominalV' }),
                         dataKey: 'nominalV',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 300,
                         label: intl.formatMessage({
                             id: 'ActivePowerSetpoint',
                         }),
@@ -890,7 +859,6 @@ const NetworkTable = (props) => {
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'MaxP' }),
                         dataKey: 'maxP',
                         numeric: true,
@@ -911,31 +879,26 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'TargetV',
                         }),
@@ -944,7 +907,6 @@ const NetworkTable = (props) => {
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'TargetDeadband',
                         }),
@@ -967,38 +929,32 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePower' }),
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'VoltageSetpoint',
                         }),
@@ -1007,7 +963,6 @@ const NetworkTable = (props) => {
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'ReactivePowerSetpoint',
                         }),
@@ -1030,45 +985,38 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'HvdcLineId',
                         }),
                         dataKey: 'hvdcLineId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePower' }),
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'PowerFactor',
                         }),
@@ -1077,7 +1025,6 @@ const NetworkTable = (props) => {
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'LossFactor',
                         }),
@@ -1100,45 +1047,38 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'HvdcLineId',
                         }),
                         dataKey: 'hvdcLineId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePower' }),
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({
                             id: 'LossFactor',
                         }),
