@@ -564,7 +564,7 @@ const StudyManager = ({ onClick }) => {
                 [makeKey({ userId: userId, studyName: studyName })]: {
                     studyName: studyName,
                     userId: userId,
-                    ...rest
+                    ...rest,
                 },
             },
         });
