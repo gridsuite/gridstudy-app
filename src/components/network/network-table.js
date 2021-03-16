@@ -250,17 +250,14 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Country' }),
                         dataKey: 'countryName',
                     },
@@ -278,22 +275,18 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'SubstationId' }),
                         dataKey: 'substationId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'NominalVoltage' }),
                         dataKey: 'nominalVoltage',
                         numeric: true,
@@ -312,52 +305,44 @@ const NetworkTable = (props) => {
                 filter={filter}
                 columns={[
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelIdSide1',
                         }),
                         dataKey: 'voltageLevelId1',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelIdSide2',
                         }),
                         dataKey: 'voltageLevelId2',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide1' }),
                         dataKey: 'p1',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide2' }),
                         dataKey: 'p2',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
                         dataKey: 'q1',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
                         dataKey: 'q2',
                         numeric: true,
@@ -370,7 +355,7 @@ const NetworkTable = (props) => {
 
     function makeHeaderCell(equipmentType) {
         return {
-            width: 80,
+            width: 60,
             label: '',
             dataKey: '',
             cellRenderer: (cellData) =>
@@ -389,59 +374,50 @@ const NetworkTable = (props) => {
                 columns={[
                     makeHeaderCell('TwoWindingsTransformer'),
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelIdSide1',
                         }),
                         dataKey: 'voltageLevelId1',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelIdSide2',
                         }),
                         dataKey: 'voltageLevelId2',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide1' }),
                         dataKey: 'p1',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide2' }),
                         dataKey: 'p2',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
                         dataKey: 'q1',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
                         dataKey: 'q2',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 150,
                         label: intl.formatMessage({ id: 'RatioTap' }),
                         dataKey: 'ratioTapChangerPosition',
                         cellRenderer: (cell) =>
@@ -453,7 +429,6 @@ const NetworkTable = (props) => {
                             ),
                     },
                     {
-                        width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap' }),
                         dataKey: 'phaseTapChangerPosition',
                         cellRenderer: (cell) =>
@@ -480,80 +455,68 @@ const NetworkTable = (props) => {
                 columns={[
                     makeHeaderCell('ThreeWindingsTransformer'),
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelIdSide1',
                         }),
                         dataKey: 'voltageLevelId1',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelIdSide2',
                         }),
                         dataKey: 'voltageLevelId2',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelIdSide3',
                         }),
                         dataKey: 'voltageLevelId3',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide1' }),
                         dataKey: 'p1',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide2' }),
                         dataKey: 'p2',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePowerSide3' }),
                         dataKey: 'p3',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
                         dataKey: 'q1',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
                         dataKey: 'q2',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePowerSide3' }),
                         dataKey: 'q3',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 150,
                         label: intl.formatMessage({ id: 'RatioTap1' }),
                         dataKey: 'ratioTapChanger1Position',
                         cellRenderer: (cell) =>
@@ -565,7 +528,6 @@ const NetworkTable = (props) => {
                             ),
                     },
                     {
-                        width: 150,
                         label: intl.formatMessage({ id: 'RatioTap2' }),
                         dataKey: 'ratioTapChanger2Position',
                         cellRenderer: (cell) =>
@@ -577,7 +539,6 @@ const NetworkTable = (props) => {
                             ),
                     },
                     {
-                        width: 150,
                         label: intl.formatMessage({ id: 'RatioTap3' }),
                         dataKey: 'ratioTapChanger3Position',
                         cellRenderer: (cell) =>
@@ -589,7 +550,6 @@ const NetworkTable = (props) => {
                             ),
                     },
                     {
-                        width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap1' }),
                         dataKey: 'phaseTapChanger1Position',
                         cellRenderer: (cell) =>
@@ -601,7 +561,6 @@ const NetworkTable = (props) => {
                             ),
                     },
                     {
-                        width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap2' }),
                         dataKey: 'phaseTapChanger2Position',
                         cellRenderer: (cell) =>
@@ -613,7 +572,6 @@ const NetworkTable = (props) => {
                             ),
                     },
                     {
-                        width: 150,
                         label: intl.formatMessage({ id: 'PhaseTap3' }),
                         numeric: true,
                         cellRenderer: (cell) =>
@@ -638,38 +596,32 @@ const NetworkTable = (props) => {
                 columns={[
                     makeHeaderCell('Generator'),
                     {
-                        width: 400,
                         label: intl.formatMessage({ id: 'ID' }),
                         dataKey: 'id',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'Name' }),
                         dataKey: 'name',
                     },
                     {
-                        width: 400,
                         label: intl.formatMessage({
                             id: 'VoltageLevelId',
                         }),
                         dataKey: 'voltageLevelId',
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ActivePower' }),
                         dataKey: 'p',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'ReactivePower' }),
                         dataKey: 'q',
                         numeric: true,
                         fractionDigits: 1,
                     },
                     {
-                        width: 200,
                         label: intl.formatMessage({ id: 'TargetP' }),
                         dataKey: 'targetP',
                         cellRenderer: (cell) =>
@@ -1274,7 +1226,13 @@ const NetworkTable = (props) => {
                         />
                     </Grid>
                 </Grid>
-                <div className={classes.table} style={{ flexGrow: 1 }}>
+                <div
+                    className={classes.table}
+                    style={{
+                        flexGrow: 1,
+                        overflow: 'auto',
+                    }}
+                >
                     {/*This render is fast, rerender full dom everytime*/}
                     {tabIndex === 0 && renderSubstationsTable()}
                     {tabIndex === 1 && renderVoltageLevelsTable()}

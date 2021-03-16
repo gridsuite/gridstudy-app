@@ -82,14 +82,12 @@ const LoadFlowResult = ({ result }) => {
                         }
                         columns={[
                             {
-                                width: 200,
                                 label: intl.formatMessage({
                                     id: 'componentNum',
                                 }),
                                 dataKey: 'componentNum',
                             },
                             {
-                                width: 200,
                                 label: intl.formatMessage({
                                     id: 'status',
                                 }),
@@ -97,21 +95,18 @@ const LoadFlowResult = ({ result }) => {
                                 cellRenderer: StatusCellRender,
                             },
                             {
-                                width: 200,
                                 label: intl.formatMessage({
                                     id: 'iterationCount',
                                 }),
                                 dataKey: 'iterationCount',
                             },
                             {
-                                width: 200,
                                 label: intl.formatMessage({
                                     id: 'slackBusId',
                                 }),
                                 dataKey: 'slackBusId',
                             },
                             {
-                                width: 400,
                                 label: intl.formatMessage({
                                     id: 'slackBusActivePowerMismatch',
                                 }),
