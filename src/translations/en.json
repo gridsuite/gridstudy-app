@@ -62,8 +62,6 @@
     "parameters": "Parameters",
     "theme": "Theme: ",
     "close": "Close",
-    "equipmentLabel": "Equipment label",
-    "Id": "Id",
 
     "loadingGeoData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",

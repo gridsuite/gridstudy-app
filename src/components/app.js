@@ -29,8 +29,6 @@ import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import {
-    LIGHT_THEME,
-    DARK_THEME,
     resetResultCount,
     selectCenterLabelState,
     selectDiagonalLabelState,
@@ -45,9 +43,8 @@ import {
     selectDisplayOverloadTableState,
 } from '../redux/actions';
 import Parameters from './parameters';
-import EquipmentLabelingToggle from './util/equipment-labeling-toggle';
-import { USE_NAME, USE_ID } from './util/equipment-labeling-toggle';
 import {
+    LIGHT_THEME,
     AuthenticationRouter,
     getPreLoginPath,
     initializeAuthenticationProd,
@@ -358,16 +355,12 @@ const App = () => {
         setTabIndex(newTabIndex);
     }
 
-    function switchTheme(theme) {
-        return theme === DARK_THEME ? LIGHT_THEME : DARK_THEME;
-    }
-
-    const handleDisplayModeClick = (mode) => {
-        updateConfigParameters(PARAMS_THEME_KEY, switchTheme(mode));
+    const handleThemeClick = (theme) => {
+        updateConfigParameters(PARAMS_THEME_KEY, theme);
     };
 
-    const handleClickToggle = () => {
-        updateConfigParameters(PARAMS_USE_NAME_KEY, !useName);
+    const handleEquipmentLabellingClick = (useName) => {
+        updateConfigParameters(PARAMS_USE_NAME_KEY, useName);
     };
 
     // if result tab is displayed, clean badge
@@ -403,15 +396,13 @@ const App = () => {
                         onLogoClick={() => onLogoClicked()}
                         user={user}
                         appsAndUrls={appsAndUrls}
-                        onDisplayModeClick={() => handleDisplayModeClick(theme)}
+                        onThemeClick={handleThemeClick}
                         onAboutClick={() => console.debug('about')}
-                        selectedTheme={theme}
-                        equipmentDisplay={
-                            <EquipmentLabelingToggle
-                                handleClick={handleClickToggle}
-                                toggleState={useName ? USE_NAME : USE_ID}
-                            />
+                        theme={theme}
+                        onEquipmentLabellingClick={
+                            handleEquipmentLabellingClick
                         }
+                        equipmentLabelling={useName}
                     >
                         {studyName && (
                             <Tabs
