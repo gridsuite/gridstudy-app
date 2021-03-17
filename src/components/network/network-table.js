@@ -6,6 +6,8 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectDisplayedColumns } from '../../redux/actions';
 import PropTypes from 'prop-types';
 import Network from './network';
 import VirtualizedTable from '../util/virtualized-table';
@@ -41,7 +43,6 @@ import {
     TABLES_DEFINITIONS,
     TABLES_NAMES,
 } from './constants';
-import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     cell: {
@@ -84,17 +85,21 @@ const ROW_HEIGHT = 48;
 const NetworkTable = (props) => {
     const classes = useStyles();
 
-    const displayedColumns = useSelector((state) => state.displayedColumns);
+    const notifiedDisplayedColumns = useSelector(
+        (state) => state.displayedColumns
+    );
 
     const [tabIndex, setTabIndex] = useState(0);
     const [lineEdit, setLineEdit] = useState({});
     const [rowFilter, setRowFilter] = useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
-    const [selectedColumnsNames, setSelectedColumnsNames] = useState(undefined);
+    const [selectedColumnsNames, setSelectedColumnsNames] = useState(null);
     const [
         backupSelectedColumnsNames,
         setBackupSelectedColumnsNames,
-    ] = useState(undefined); // Optimization to reduce database access
+    ] = useState(null); // Optimization to reduce database access
+
+    const dispatch = useDispatch();
 
     const intl = useIntl();
 
@@ -121,21 +126,22 @@ const NetworkTable = (props) => {
     }, [tabIndex]);
 
     useEffect(() => {
-        if (displayedColumns) {
-            let notifTableName = displayedColumns.name.slice(
+        if (selectedColumnsNames && notifiedDisplayedColumns) {
+            let notifiedTableName = notifiedDisplayedColumns.name.slice(
                 COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
             );
             if (
-                TABLES_NAMES.indexOf(notifTableName) === tabIndex &&
+                TABLES_NAMES.indexOf(notifiedTableName) === tabIndex &&
                 JSON.stringify([...selectedColumnsNames]) !==
-                    displayedColumns.value
+                    notifiedDisplayedColumns.value
             ) {
                 setSelectedColumnsNames(
-                    new Set(JSON.parse(displayedColumns.value))
+                    new Set(JSON.parse(notifiedDisplayedColumns.value))
                 );
             }
+            dispatch(selectDisplayedColumns(null));
         }
-    }, [tabIndex, displayedColumns, selectedColumnsNames]);
+    }, [dispatch, tabIndex, selectedColumnsNames, notifiedDisplayedColumns]);
 
     function setLineEditAt(index, value) {
         setLineEdit({
@@ -564,16 +570,21 @@ const NetworkTable = (props) => {
 
     const handleCancelPopupSelectColumnNames = useCallback(() => {
         setSelectedColumnsNames(backupSelectedColumnsNames);
+        setBackupSelectedColumnsNames(null);
         setPopupSelectColumnNames(false);
     }, [backupSelectedColumnsNames]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        updateConfigParameter(
-            COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-            JSON.stringify([...selectedColumnsNames])
-        );
+        // Optimization to reduce database access
+        if (selectedColumnsNames !== backupSelectedColumnsNames) {
+            updateConfigParameter(
+                COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+                JSON.stringify([...selectedColumnsNames])
+            );
+        }
+        setBackupSelectedColumnsNames(null);
         setPopupSelectColumnNames(false);
-    }, [tabIndex, selectedColumnsNames]);
+    }, [tabIndex, selectedColumnsNames, backupSelectedColumnsNames]);
 
     const handleToggle = (value) => () => {
         const newChecked = new Set([...selectedColumnsNames]); // copy
@@ -619,9 +630,7 @@ const NetworkTable = (props) => {
                     >
                         <ListItemIcon>
                             <Checkbox
-                                checked={selectedColumnsNames[tabIndex].has(
-                                    value
-                                )}
+                                checked={selectedColumnsNames.has(value)}
                                 color="primary"
                             />
                         </ListItemIcon>
