@@ -574,10 +574,10 @@ const NetworkTable = (props) => {
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
-                {[...TABLES_COLUMNS_NAMES[tabIndex]].map((value, index) => (
-                    <List key={index} style={{ padding: '0' }}>
+                <List style={{ padding: '0' }}>
+                    {[...TABLES_COLUMNS_NAMES[tabIndex]].map((value, index) => (
                         <ListItem
-                            key={index}
+                            key={tabIndex + '-' + index}
                             className={classes.checkboxItem}
                             onClick={handleToggle(value)}
                             style={{ padding: '0 16px' }}
@@ -594,8 +594,8 @@ const NetworkTable = (props) => {
                                 primary={intl.formatMessage({ id: `${value}` })}
                             />
                         </ListItem>
-                    </List>
-                ))}
+                    ))}
+                </List>
             </List>
         );
     };
