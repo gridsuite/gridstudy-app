@@ -770,6 +770,8 @@ export const TABLES_DEFINITIONS = {
     },
 };
 
+export const COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
+
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
     .map((table) => table.columns)
     .map((cols) => new Set(cols.map((c) => c.id)));

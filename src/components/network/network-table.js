@@ -36,10 +36,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import {
+    COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
 } from './constants';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     cell: {
@@ -77,12 +79,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
-
 const ROW_HEIGHT = 48;
 
 const NetworkTable = (props) => {
     const classes = useStyles();
+
+    const displayedColumns = useSelector((state) => state.displayedColumns);
 
     const [tabIndex, setTabIndex] = useState(0);
     const [lineEdit, setLineEdit] = useState({});
@@ -117,6 +119,23 @@ const NetworkTable = (props) => {
             }
         });
     }, [tabIndex]);
+
+    useEffect(() => {
+        if (displayedColumns) {
+            let notifTableName = displayedColumns.name.slice(
+                COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+            );
+            if (
+                TABLES_NAMES.indexOf(notifTableName) === tabIndex &&
+                JSON.stringify([...selectedColumnsNames]) !==
+                    displayedColumns.value
+            ) {
+                setSelectedColumnsNames(
+                    new Set(JSON.parse(displayedColumns.value))
+                );
+            }
+        }
+    }, [tabIndex, displayedColumns, selectedColumnsNames]);
 
     function setLineEditAt(index, value) {
         setLineEdit({
