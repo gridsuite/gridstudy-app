@@ -574,28 +574,26 @@ const NetworkTable = (props) => {
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
-                <List style={{ padding: '0' }}>
-                    {[...TABLES_COLUMNS_NAMES[tabIndex]].map((value, index) => (
-                        <ListItem
-                            key={tabIndex + '-' + index}
-                            className={classes.checkboxItem}
-                            onClick={handleToggle(value)}
-                            style={{ padding: '0 16px' }}
-                        >
-                            <ListItemIcon>
-                                <Checkbox
-                                    checked={checkedColumnsNames[tabIndex].has(
-                                        value
-                                    )}
-                                    color="primary"
-                                />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary={intl.formatMessage({ id: `${value}` })}
+                {[...TABLES_COLUMNS_NAMES[tabIndex]].map((value, index) => (
+                    <ListItem
+                        key={tabIndex + '-' + index}
+                        className={classes.checkboxItem}
+                        onClick={handleToggle(value)}
+                        style={{ padding: '0 16px' }}
+                    >
+                        <ListItemIcon>
+                            <Checkbox
+                                checked={checkedColumnsNames[tabIndex].has(
+                                    value
+                                )}
+                                color="primary"
                             />
-                        </ListItem>
-                    ))}
-                </List>
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={intl.formatMessage({ id: `${value}` })}
+                        />
+                    </ListItem>
+                ))}
             </List>
         );
     };
