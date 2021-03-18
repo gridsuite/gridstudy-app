@@ -108,6 +108,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
         }
     }, [studyName, userId]);
 
+    useEffect(() => {
+        setDisabledFlowAlertThreshold(
+            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
+        );
+    }, [lineFlowColorMode, displayOverloadTable]);
+
     const theme = useSelector((state) => state.theme);
 
     const substationLayout = useSelector((state) => state.substationLayout);
@@ -135,9 +141,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const handleLineFlowColorModeChange = (event) => {
         const lineFlowColorMode = event.target.value;
-        setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
-        );
         updateConfigParameters(
             PARAMS_LINE_FLOW_COLOR_MODE_KEY,
             lineFlowColorMode
@@ -234,10 +237,16 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeSlider(
         threshold,
         label,
-        disabledFlowAlertThreshold,
-        callback,
+        disabled,
+        onCommitCallback,
         thresholdMarks
     ) {
+        const [sliderValue, setSliderValue] = React.useState(threshold);
+
+        const handleValueChanged = (event, newValue) => {
+            setSliderValue(newValue);
+        };
+
         return (
             <>
                 <Grid item xs={7}>
@@ -252,9 +261,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         min={0}
                         max={100}
                         valueLabelDisplay="auto"
-                        onChangeCommitted={callback}
-                        value={threshold}
-                        disabled={disabledFlowAlertThreshold}
+                        onChange={handleValueChanged}
+                        onChangeCommitted={onCommitCallback}
+                        value={sliderValue}
+                        disabled={disabled}
                         marks={thresholdMarks}
                     />
                 </Grid>
@@ -434,10 +444,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     displayOverloadTable,
                     'displayOverloadTable',
                     () => {
-                        setDisabledFlowAlertThreshold(
-                            lineFlowColorMode === 'nominalVoltage' &&
-                                displayOverloadTable
-                        );
                         updateConfigParameters(
                             PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
                             !displayOverloadTable
