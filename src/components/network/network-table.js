@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectDisplayedColumns } from '../../redux/actions';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from './network';
 import VirtualizedTable from '../util/virtualized-table';
@@ -22,7 +21,6 @@ import CreateIcon from '@material-ui/icons/Create';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import {
-    fetchConfigParameter,
     requestNetworkChange,
     updateConfigParameter,
 } from '../../utils/rest-api';
@@ -85,8 +83,8 @@ const ROW_HEIGHT = 48;
 const NetworkTable = (props) => {
     const classes = useStyles();
 
-    const notifiedDisplayedColumns = useSelector(
-        (state) => state.displayedColumns
+    const allDisplayedColumnsNames = useSelector(
+        (state) => state.allDisplayedColumnsNames
     );
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -94,12 +92,8 @@ const NetworkTable = (props) => {
     const [rowFilter, setRowFilter] = useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(null);
-    const [
-        backupSelectedColumnsNames,
-        setBackupSelectedColumnsNames,
-    ] = useState(null); // Optimization to reduce database access
 
-    const dispatch = useDispatch();
+    const backupSelectedColumnsNames = useRef(null); // Optimization to reduce database access
 
     const intl = useIntl();
 
@@ -113,35 +107,10 @@ const NetworkTable = (props) => {
     );
 
     useEffect(() => {
-        fetchConfigParameter(
-            COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex]
-        ).then((val) => {
-            console.debug('received UI parameter : ', val);
-            if (!val) {
-                setSelectedColumnsNames(TABLES_COLUMNS_NAMES[tabIndex]);
-            } else {
-                setSelectedColumnsNames(new Set(JSON.parse(val.value)));
-            }
-        });
-    }, [tabIndex]);
-
-    useEffect(() => {
-        if (selectedColumnsNames && notifiedDisplayedColumns) {
-            let notifiedTableName = notifiedDisplayedColumns.name.slice(
-                COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
-            );
-            if (
-                TABLES_NAMES.indexOf(notifiedTableName) === tabIndex &&
-                JSON.stringify([...selectedColumnsNames]) !==
-                    notifiedDisplayedColumns.value
-            ) {
-                setSelectedColumnsNames(
-                    new Set(JSON.parse(notifiedDisplayedColumns.value))
-                );
-            }
-            dispatch(selectDisplayedColumns(null));
-        }
-    }, [dispatch, tabIndex, selectedColumnsNames, notifiedDisplayedColumns]);
+        setSelectedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
+    }, [tabIndex, allDisplayedColumnsNames]);
 
     function setLineEditAt(index, value) {
         setLineEdit({
@@ -564,30 +533,30 @@ const NetworkTable = (props) => {
     );
 
     const handleOpenPopupSelectColumnNames = useCallback(() => {
-        setBackupSelectedColumnsNames(selectedColumnsNames);
+        backupSelectedColumnsNames.current = selectedColumnsNames;
         setPopupSelectColumnNames(true);
     }, [selectedColumnsNames]);
 
-    const handleCancelPopupSelectColumnNames = useCallback(() => {
-        setSelectedColumnsNames(backupSelectedColumnsNames);
-        setBackupSelectedColumnsNames(null);
+    const handleCancelPopupSelectColumnNames = () => {
+        setSelectedColumnsNames(backupSelectedColumnsNames.current);
+        backupSelectedColumnsNames.current = null;
         setPopupSelectColumnNames(false);
-    }, [backupSelectedColumnsNames]);
+    };
 
     const handleSaveSelectedColumnNames = useCallback(() => {
         // Optimization to reduce database access
-        if (selectedColumnsNames !== backupSelectedColumnsNames) {
+        if (selectedColumnsNames !== backupSelectedColumnsNames.current) {
             updateConfigParameter(
                 COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
                 JSON.stringify([...selectedColumnsNames])
             );
         }
-        setBackupSelectedColumnsNames(null);
+        backupSelectedColumnsNames.current = null;
         setPopupSelectColumnNames(false);
-    }, [tabIndex, selectedColumnsNames, backupSelectedColumnsNames]);
+    }, [tabIndex, selectedColumnsNames]);
 
     const handleToggle = (value) => () => {
-        const newChecked = new Set([...selectedColumnsNames]); // copy
+        const newChecked = new Set(selectedColumnsNames.values());
         if (selectedColumnsNames.has(value)) {
             newChecked.delete(value);
         } else {
@@ -769,4 +738,4 @@ NetworkTable.propTypes = {
     studyName: PropTypes.string,
 };
 
-export default React.memo(NetworkTable);
+export default NetworkTable;

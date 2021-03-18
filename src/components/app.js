@@ -42,7 +42,7 @@ import {
     selectTheme,
     selectUseName,
     selectDisplayOverloadTableState,
-    selectDisplayedColumns,
+    changeDisplayedColumns,
 } from '../redux/actions';
 import Parameters from './parameters';
 
@@ -79,7 +79,10 @@ import {
     PARAMS_USE_NAME_KEY,
     PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
 } from '../utils/config-params';
-import { COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './network/constants';
+import {
+    COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_NAMES_INDEXES,
+} from './network/constants';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -182,6 +185,7 @@ const App = () => {
 
     const updateParams = useCallback(
         (params) => {
+            let displayedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAMS_THEME_KEY:
@@ -235,10 +239,19 @@ const App = () => {
                                 COLUMNS_PARAMETER_PREFIX_IN_DATABASE
                             )
                         ) {
-                            dispatch(selectDisplayedColumns(param));
+                            let index = TABLES_NAMES_INDEXES.get(
+                                param.name.slice(
+                                    COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                )
+                            );
+                            displayedColumnsParams[index] = {
+                                index: index,
+                                value: param.value,
+                            };
                         }
                 }
             });
+            dispatch(changeDisplayedColumns(displayedColumnsParams));
         },
         [dispatch]
     );

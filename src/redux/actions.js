@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from '../components/network/constants';
-
 export const LOAD_NETWORK_SUCCESS = 'LOAD_NETWORK_SUCCESS';
 
 export function loadNetworkSuccess(network) {
@@ -205,9 +203,11 @@ export function fullScreenSingleLineDiagram(fullScreen) {
     return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
 }
 
-export function selectDisplayedColumns(displayedColumns) {
+export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
+
+export function changeDisplayedColumns(displayedColumnsParams) {
     return {
-        type: COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-        displayedColumns: displayedColumns,
+        type: CHANGE_DISPLAYED_COLUMNS_NAMES,
+        displayedColumnsNamesParams: displayedColumnsParams,
     };
 }
