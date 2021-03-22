@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from './network';
@@ -92,8 +92,6 @@ const NetworkTable = (props) => {
     const [rowFilter, setRowFilter] = useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(null);
-
-    const backupSelectedColumnsNames = useRef(null); // Optimization to reduce database access
 
     const intl = useIntl();
 
@@ -532,23 +530,22 @@ const NetworkTable = (props) => {
         [rowFilter]
     );
 
-    const handleOpenPopupSelectColumnNames = useCallback(() => {
-        backupSelectedColumnsNames.current = selectedColumnsNames;
+    const handleOpenPopupSelectColumnNames = () => {
         setPopupSelectColumnNames(true);
-    }, [selectedColumnsNames]);
-
-    const handleCancelPopupSelectColumnNames = () => {
-        setSelectedColumnsNames(backupSelectedColumnsNames.current);
-        backupSelectedColumnsNames.current = null;
-        setPopupSelectColumnNames(false);
     };
+
+    const handleCancelPopupSelectColumnNames = useCallback(() => {
+        setSelectedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
+        setPopupSelectColumnNames(false);
+    }, [tabIndex, allDisplayedColumnsNames]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
             COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
         );
-        backupSelectedColumnsNames.current = null;
         setPopupSelectColumnNames(false);
     }, [tabIndex, selectedColumnsNames]);
 
