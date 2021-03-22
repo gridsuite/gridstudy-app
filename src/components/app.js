@@ -64,7 +64,7 @@ import {
     connectNotificationsWsUpdateConfig,
     fetchAppsAndUrls,
     fetchConfigParameters,
-    updateConfigParameters,
+    updateConfigParameter,
 } from '../utils/rest-api';
 import {
     PARAMS_CENTER_LABEL_KEY,
@@ -377,11 +377,11 @@ const App = () => {
     }
 
     const handleThemeClick = (theme) => {
-        updateConfigParameters(PARAMS_THEME_KEY, theme);
+        updateConfigParameter(PARAMS_THEME_KEY, theme);
     };
 
     const handleEquipmentLabellingClick = (useName) => {
-        updateConfigParameters(PARAMS_USE_NAME_KEY, useName);
+        updateConfigParameter(PARAMS_USE_NAME_KEY, useName);
     };
 
     // if result tab is displayed, clean badge
