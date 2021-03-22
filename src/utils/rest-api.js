@@ -42,23 +42,6 @@ export function fetchConfigParameters() {
     });
 }
 
-export function fetchConfigParameter(name) {
-    console.info('Fetching UI configuration param : ', name);
-    const fetchParam =
-        PREFIX_CONFIG_QUERIES + '/v1/parameters/' + encodeURIComponent(name);
-    return backendFetch(fetchParam).then((res) => {
-        if (res.ok) {
-            return res
-                .clone()
-                .json()
-                .catch(() => res.text());
-        } else {
-            console.error(res);
-            return Promise.resolve(undefined);
-        }
-    });
-}
-
 export function updateConfigParameter(name, value) {
     console.info('updating parameter : ' + name + ' : ' + value);
     const updateParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';

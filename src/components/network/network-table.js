@@ -544,13 +544,10 @@ const NetworkTable = (props) => {
     };
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        // Optimization to reduce database access
-        if (selectedColumnsNames !== backupSelectedColumnsNames.current) {
-            updateConfigParameter(
-                COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-                JSON.stringify([...selectedColumnsNames])
-            );
-        }
+        updateConfigParameter(
+            COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            JSON.stringify([...selectedColumnsNames])
+        );
         backupSelectedColumnsNames.current = null;
         setPopupSelectColumnNames(false);
     }, [tabIndex, selectedColumnsNames]);
