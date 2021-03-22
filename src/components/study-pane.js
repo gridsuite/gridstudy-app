@@ -329,11 +329,14 @@ const StudyPane = (props) => {
         }
     };
 
-    const stopComputation = (runnable) => {
-        if (runnable === Runnable.SECURITY_ANALYSIS) {
-            stopSecurityAnalysis(studyName, userId);
-            setComputationStopped(!computationStopped);
-        }
+    const ACTION_ON_RUNNABLES = {
+        text: intl.formatMessage({ id: 'StopComputation' }),
+        action: (runnable) => {
+            if (runnable === Runnable.SECURITY_ANALYSIS) {
+                stopSecurityAnalysis(studyName, userId);
+                setComputationStopped(!computationStopped);
+            }
+        },
     };
 
     const getRunningStatus = (runnable) => {
@@ -994,14 +997,11 @@ const StudyPane = (props) => {
                     >
                         <RunButton
                             runnables={RUNNABLES}
-                            actionsOnRunnable={[
-                                intl.formatMessage({ id: 'StopComputation' }),
-                            ]}
+                            actionOnRunnable={ACTION_ON_RUNNABLES}
                             getStatus={getRunningStatus}
                             onStartClick={startComputation}
                             getText={getRunningText}
                             getStartIcon={getRunningIcon}
-                            onStopComputationClick={stopComputation}
                             computationStopped={computationStopped}
                         />
                     </div>
