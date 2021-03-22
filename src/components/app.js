@@ -29,7 +29,6 @@ import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import {
-    LIGHT_THEME,
     resetResultCount,
     selectCenterLabelState,
     selectDiagonalLabelState,
@@ -45,8 +44,8 @@ import {
     changeDisplayedColumns,
 } from '../redux/actions';
 import Parameters from './parameters';
-
 import {
+    LIGHT_THEME,
     AuthenticationRouter,
     getPreLoginPath,
     initializeAuthenticationProd,
@@ -65,6 +64,7 @@ import {
     connectNotificationsWsUpdateConfig,
     fetchAppsAndUrls,
     fetchConfigParameters,
+    updateConfigParameter,
 } from '../utils/rest-api';
 import {
     PARAMS_CENTER_LABEL_KEY,
@@ -158,6 +158,8 @@ const App = () => {
     const theme = useSelector((state) => state.theme);
 
     const user = useSelector((state) => state.user);
+
+    const useName = useSelector((state) => state.useName);
 
     const studyName = useSelector((state) => state.studyName);
 
@@ -374,6 +376,14 @@ const App = () => {
         setTabIndex(newTabIndex);
     }
 
+    const handleThemeClick = (theme) => {
+        updateConfigParameter(PARAMS_THEME_KEY, theme);
+    };
+
+    const handleEquipmentLabellingClick = (useName) => {
+        updateConfigParameter(PARAMS_USE_NAME_KEY, useName);
+    };
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -407,6 +417,13 @@ const App = () => {
                         onLogoClick={() => onLogoClicked()}
                         user={user}
                         appsAndUrls={appsAndUrls}
+                        onThemeClick={handleThemeClick}
+                        onAboutClick={() => console.debug('about')}
+                        theme={theme}
+                        onEquipmentLabellingClick={
+                            handleEquipmentLabellingClick
+                        }
+                        equipmentLabelling={useName}
                     >
                         {studyName && (
                             <Tabs

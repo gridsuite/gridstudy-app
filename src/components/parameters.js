@@ -31,7 +31,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 
-import { DARK_THEME, LIGHT_THEME } from '../redux/actions';
+import { DARK_THEME, LIGHT_THEME } from '@gridsuite/commons-ui';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
 import {
