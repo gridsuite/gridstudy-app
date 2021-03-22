@@ -202,3 +202,12 @@ export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
 export function fullScreenSingleLineDiagram(fullScreen) {
     return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
 }
+
+export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
+
+export function changeDisplayedColumns(displayedColumnsParams) {
+    return {
+        type: CHANGE_DISPLAYED_COLUMNS_NAMES,
+        displayedColumnsNamesParams: displayedColumnsParams,
+    };
+}

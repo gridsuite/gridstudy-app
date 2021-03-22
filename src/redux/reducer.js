@@ -38,8 +38,10 @@ import {
     SUBSTATION_LAYOUT,
     SELECTED_ITEM_NETWORK,
     FULLSCREEN_SINGLE_LINE_DIAGRAM,
+    CHANGE_DISPLAYED_COLUMNS_NAMES,
 } from './actions';
 import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
+import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/constants';
 
 const initialState = {
     studies: [],
@@ -69,6 +71,7 @@ const initialState = {
     substationLayout: 'horizontal',
     selectItemNetwork: null,
     fullScreen: false,
+    allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
 };
 
 export const reducer = createReducer(initialState, {
@@ -198,5 +201,15 @@ export const reducer = createReducer(initialState, {
 
     [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
         state.fullScreen = action.fullScreen;
+    },
+
+    [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {
+        let newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
+        action.displayedColumnsNamesParams.forEach((param) => {
+            if (param) {
+                newDisplayedColumnsNames[param.index] = param.value;
+            }
+        });
+        state.allDisplayedColumnsNames = newDisplayedColumnsNames;
     },
 });

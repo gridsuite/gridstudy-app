@@ -37,7 +37,7 @@ import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
     setLoadFlowParameters,
-    updateConfigParameters,
+    updateConfigParameter,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
@@ -131,29 +131,29 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
-        updateConfigParameters(PARAMS_THEME_KEY, theme);
+        updateConfigParameter(PARAMS_THEME_KEY, theme);
     };
 
     const handleLineFlowModeChange = (event) => {
         const lineFlowMode = event.target.value;
-        updateConfigParameters(PARAMS_LINE_FLOW_MODE_KEY, lineFlowMode);
+        updateConfigParameter(PARAMS_LINE_FLOW_MODE_KEY, lineFlowMode);
     };
 
     const handleLineFlowColorModeChange = (event) => {
         const lineFlowColorMode = event.target.value;
-        updateConfigParameters(
+        updateConfigParameter(
             PARAMS_LINE_FLOW_COLOR_MODE_KEY,
             lineFlowColorMode
         );
     };
 
     const handleLineFlowAlertThresholdChange = (event, value) => {
-        updateConfigParameters(PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY, value);
+        updateConfigParameter(PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY, value);
     };
 
     const handleSubstationLayoutChange = (event) => {
         const substationLayout = event.target.value;
-        updateConfigParameters(PARAMS_SUBSTATION_LAYOUT_KEY, substationLayout);
+        updateConfigParameter(PARAMS_SUBSTATION_LAYOUT_KEY, substationLayout);
     };
 
     function TabPanel(props) {
@@ -284,7 +284,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(useName, 'useName', () => {
-                    updateConfigParameters(PARAMS_USE_NAME_KEY, !useName);
+                    updateConfigParameter(PARAMS_USE_NAME_KEY, !useName);
                 })}
 
                 <MakeLineSeparator />
@@ -317,14 +317,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(diagonalLabel, 'diagonalLabel', () => {
-                    updateConfigParameters(
+                    updateConfigParameter(
                         PARAMS_DIAGONAL_LABEL_KEY,
                         !diagonalLabel
                     );
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(centerLabel, 'centerLabel', () => {
-                    updateConfigParameters(
+                    updateConfigParameter(
                         PARAMS_CENTER_LABEL_KEY,
                         !centerLabel
                     );
@@ -372,14 +372,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(lineFullPath, 'lineFullPath', () => {
-                    updateConfigParameters(
+                    updateConfigParameter(
                         PARAMS_LINE_FULL_PATH_KEY,
                         !lineFullPath
                     );
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {
-                    updateConfigParameters(
+                    updateConfigParameter(
                         PARAMS_LINE_PARALLEL_PATH_KEY,
                         !lineParallelPath
                     );
@@ -444,7 +444,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     displayOverloadTable,
                     'displayOverloadTable',
                     () => {
-                        updateConfigParameters(
+                        updateConfigParameter(
                             PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
                             !displayOverloadTable
                         );
