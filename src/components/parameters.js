@@ -432,7 +432,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         <MenuItem value={LineFlowColorMode.FLASHING_OVERLOADS}>
                             <FormattedMessage id="Flashing_Overloads" />
                         </MenuItem>
-
                     </Select>
                 </Grid>
                 <MakeLineSeparator />
