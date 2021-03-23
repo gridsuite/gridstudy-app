@@ -82,6 +82,7 @@
     "NominalVoltage": "Nominal voltage",
     "Overloads": "Overloads",
     "Overload": "Overload",
+    "Flashing_Overloads": "Flashing overload",
     "AlertThresholdLabel": "Threshold for displaying lines before overload (%): ",
     "intensity": "intensity",
     "Intensity": "Intensity",

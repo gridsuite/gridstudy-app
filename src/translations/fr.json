@@ -81,6 +81,7 @@
     "LineFlowColorMode": "Mode de coloration des lignes : ",
     "NominalVoltage": "Tension nominale",
     "Overload": "Surcharge",
+    "Flashing_Overloads": "Surcharge 2",
     "Overloads": "Surcharges",
     "AlertThresholdLabel": "Seuil d'affichage des lignes avant surcharge (%) : ",
     "intensity": "intensité",

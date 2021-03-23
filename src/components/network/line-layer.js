@@ -31,6 +31,7 @@ export const LineFlowMode = {
 export const LineFlowColorMode = {
     NOMINAL_VOLTAGE: 'nominalVoltage',
     OVERLOADS: 'overloads',
+    FLASHING_OVERLOADS: 'flashing_overloads',
 };
 
 const noDashArray = [0, 0];
@@ -88,7 +89,7 @@ function getLineLoadingZone(line, lineFlowAlertThreshold) {
     return Math.max(zone1, zone2);
 }
 
-function getLineLoadingZoneColor(zone) {
+function getLineLoadingZoneColor(zone, overload) {
     if (zone === LineLoadingZone.UNKNOWN) {
         return [128, 128, 128]; // grey
     } else if (zone === LineLoadingZone.SAFE) {
@@ -96,13 +97,19 @@ function getLineLoadingZoneColor(zone) {
     } else if (zone === LineLoadingZone.WARNING) {
         return [210, 179, 63]; // yellow
     } else if (zone === LineLoadingZone.OVERLOAD) {
-        return [255, 0, 0]; // red
+        return [255, overload, overload]; // red
     } else {
         throw new Error('Unsupported line loading zone: ' + zone);
     }
 }
 
-function getLineColor(line, nominalVoltageColor, props, lineConnection) {
+function getLineColor(
+    line,
+    nominalVoltageColor,
+    props,
+    lineConnection,
+    overload
+) {
     if (props.lineFlowColorMode === LineFlowColorMode.NOMINAL_VOLTAGE) {
         if (
             !lineConnection.terminal1Connected &&
@@ -114,7 +121,12 @@ function getLineColor(line, nominalVoltageColor, props, lineConnection) {
         }
     } else if (props.lineFlowColorMode === LineFlowColorMode.OVERLOADS) {
         const zone = getLineLoadingZone(line, props.lineFlowAlertThreshold);
-        return getLineLoadingZoneColor(zone);
+        return getLineLoadingZoneColor(zone, 0);
+    } else if (
+        props.lineFlowColorMode === LineFlowColorMode.FLASHING_OVERLOADS
+    ) {
+        const zone = getLineLoadingZone(line, props.lineFlowAlertThreshold);
+        return getLineLoadingZoneColor(zone, overload || 0);
     } else {
         return nominalVoltageColor;
     }
@@ -437,6 +449,9 @@ class LineLayer extends CompositeLayer {
             compositeData: compositeData,
             linesConnection: linesConnection,
         });
+
+        if (oldProps.lineFlowColorMode !== props.lineFlowColorMode)
+            this.startAnimation();
     }
 
     genLineKey(line) {
@@ -570,7 +585,8 @@ class LineLayer extends CompositeLayer {
                             line,
                             nominalVoltageColor,
                             this.props,
-                            this.state.linesConnection.get(line.id)
+                            this.state.linesConnection.get(line.id),
+                            this.state.overloadColor
                         ),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
@@ -601,6 +617,7 @@ class LineLayer extends CompositeLayer {
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
                             this.props.updatedLines,
+                            this.state.overloadColor,
                         ],
                         getDashArray: [this.props.updatedLines],
                     },
@@ -632,7 +649,8 @@ class LineLayer extends CompositeLayer {
                             arrow.line,
                             nominalVoltageColor,
                             this.props,
-                            this.state.linesConnection.get(arrow.line.id)
+                            this.state.linesConnection.get(arrow.line.id),
+                            this.state.overloadColor
                         ),
                     getSize: 700,
                     getSpeedFactor: (arrow) =>
@@ -670,6 +688,7 @@ class LineLayer extends CompositeLayer {
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
                             this.props.updatedLines,
+                            this.state.overloadColor,
                         ],
                     },
                 })
@@ -691,7 +710,8 @@ class LineLayer extends CompositeLayer {
                             line,
                             nominalVoltageColor,
                             this.props,
-                            this.state.linesConnection.get(line.id)
+                            this.state.linesConnection.get(line.id),
+                            this.state.overloadColor
                         ),
                     getWidth: 2,
                     getProximityFactor: (line) => line.proximityFactorStart,
@@ -718,6 +738,7 @@ class LineLayer extends CompositeLayer {
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
                             this.props.updatedLines,
+                            this.state.overloadColor,
                         ],
                     },
                 })
@@ -739,7 +760,8 @@ class LineLayer extends CompositeLayer {
                             line,
                             nominalVoltageColor,
                             this.props,
-                            this.state.linesConnection.get(line.id)
+                            this.state.linesConnection.get(line.id),
+                            this.state.overloadColor
                         ),
                     getWidth: 2,
                     getProximityFactor: (line) => line.proximityFactorEnd,
@@ -766,6 +788,7 @@ class LineLayer extends CompositeLayer {
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
                             this.props.updatedLines,
+                            this.state.overloadColor,
                         ],
                     },
                 })
@@ -805,6 +828,23 @@ class LineLayer extends CompositeLayer {
         });
 
         return layers;
+    }
+
+    animate(timestamp) {
+        if (
+            this.props.lineFlowColorMode !==
+            LineFlowColorMode.FLASHING_OVERLOADS
+        ) {
+            return;
+        }
+        this.setState({
+            overloadColor: Math.abs(((timestamp / 10) % 255) - 127),
+        });
+        this.startAnimation();
+    }
+
+    startAnimation() {
+        window.requestAnimationFrame((timestamp) => this.animate(timestamp));
     }
 }
 

@@ -341,7 +341,7 @@ const NetworkTable = (props) => {
 
     function makeHeaderCell(equipmentType) {
         return {
-            width: 80,
+            width: 60,
             label: '',
             dataKey: '',
             style: {
@@ -679,7 +679,10 @@ const NetworkTable = (props) => {
                         </Grid>
                     </Grid>
                 </Grid>
-                <div className={classes.table} style={{ flexGrow: 1 }}>
+                <div
+                    className={classes.table}
+                    style={{ flexGrow: 1, overflow: 'auto' }}
+                >
                     {/*This render is fast, rerender full dom everytime*/}
                     {tabIndex === TABLES_DEFINITIONS.SUBSTATIONS.index &&
                         renderSubstationsTable()}

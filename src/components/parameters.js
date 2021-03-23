@@ -429,6 +429,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         <MenuItem value={LineFlowColorMode.OVERLOADS}>
                             <FormattedMessage id="Overloads" />
                         </MenuItem>
+                        <MenuItem value={LineFlowColorMode.FLASHING_OVERLOADS}>
+                            <FormattedMessage id="Flashing_Overloads" />
+                        </MenuItem>
+
                     </Select>
                 </Grid>
                 <MakeLineSeparator />
