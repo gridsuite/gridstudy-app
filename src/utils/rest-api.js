@@ -723,3 +723,14 @@ export function getLoadFlowParameters(studyUuid) {
             : response.text().then((text) => Promise.reject(text))
     );
 }
+
+export function lockoutLine(studyUuid, lineId) {
+    console.info('locking out line ' + lineId + ' ...');
+    const lockOutLineUrl =
+        getStudyUrl(studyUuid) +
+        '/network-modification/lines/' +
+        encodeURIComponent(lineId) +
+        '/lockout';
+    console.debug(lockOutLineUrl);
+    return backendFetch(lockOutLineUrl, { method: 'put' });
+}

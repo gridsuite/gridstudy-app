@@ -217,5 +217,8 @@
     "StopComputation": "Stop computation",
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
-    "CheckAll": "Select all / none"
+    "CheckAll": "Select all / none",
+
+    "LockoutLine": "Lock out the line",
+    "SwitchOnLine": "Switch on the line"
 }
