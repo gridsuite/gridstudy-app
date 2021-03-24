@@ -214,6 +214,8 @@
     "HvdcLineId": "ID ligne HVDC",
     "PowerFactor": "Facteur de puissance",
     "LossFactor": "Facteur de perte",
-
-    "StopComputation" : "Arr\u00eater le calcul"
+    "StopComputation" : "Arrêter le calcul",
+    "ColumnsList": "Liste des colonnes",
+    "LabelSelectList": "Configurer colonnes",
+    "CheckAll": "Sélectionner tout / aucun"
 }
