@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
     },
     table: {
+        position: 'relative',
         marginTop: '20px',
     },
     containerInputSearch: {
@@ -558,7 +559,7 @@ const NetworkTable = (props) => {
                 <LoaderWithOverlay
                     color="inherit"
                     loaderSize={70}
-                    isFixed={true}
+                    isFixed={false}
                     loadingMessageText={'Loading'}
                 />
             );
