@@ -727,7 +727,11 @@ const NetworkTable = (props) => {
                         props.network.substations,
                         renderVoltageLevelsTable
                     )}
-                    {TabHolder(TABLES_DEFINITIONS.LINES.index, props.network.lines, renderLinesTable)}
+                    {TabHolder(
+                        TABLES_DEFINITIONS.LINES.index,
+                        props.network.lines,
+                        renderLinesTable
+                    )}
                     {TabHolder(
                         TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS.index,
                         props.network.twoWindingsTransformers,
@@ -743,7 +747,11 @@ const NetworkTable = (props) => {
                         props.network.generators,
                         renderGeneratorsTable
                     )}
-                    {TabHolder(TABLES_DEFINITIONS.LOADS.index, props.network.loads, renderLoadsTable)}
+                    {TabHolder(
+                        TABLES_DEFINITIONS.LOADS.index,
+                        props.network.loads,
+                        renderLoadsTable
+                    )}
                     {TabHolder(
                         TABLES_DEFINITIONS.SHUNT_COMPENSATORS.index,
                         props.network.shuntCompensators,
