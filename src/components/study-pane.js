@@ -33,6 +33,7 @@ import {
     startSecurityAnalysis,
     stopSecurityAnalysis,
     updateSwitchState,
+    lockoutLine,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -65,6 +66,7 @@ import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
+import LockoutLine from './lockout-line-menu';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
@@ -206,6 +208,14 @@ const StudyPane = (props) => {
     const filteredNominalVoltages = useSelector(
         (state) => state.filteredNominalVoltages
     );
+
+    const [displayLockout, setDisplayLockout] = useState(null);
+
+    const [lockoutMenuMessage, setLockoutMenuMessage] = useState('');
+
+    const [lockoutMenuPosition, setLockoutMenuPosition] = useState([-1, -1]);
+
+    const [lineToLockout, setLineToLockout] = useState(null);
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
 
@@ -771,6 +781,31 @@ const StudyPane = (props) => {
         network.useEquipment(equipments.lines);
     }, [network]);
 
+    function showLockout(line, x, y) {
+        let message;
+        if (
+            line.branchStatus !== undefined &&
+            line.branchStatus === 'PLANNED_OUTAGE'
+        ) {
+            message = intl.formatMessage({ id: 'SwitchOnLine' });
+            setLockoutMenuMessage(message);
+        } else {
+            message = intl.formatMessage({ id: 'LockoutLine' });
+            setLockoutMenuMessage(message);
+        }
+        setLockoutMenuPosition([x, y]);
+        setLineToLockout(line);
+        setDisplayLockout(true);
+    }
+
+    function closeLockoutMenu() {
+        setDisplayLockout(null);
+    }
+
+    function handleLockout(lineId) {
+        lockoutLine(studyUuid, lineId).then(closeLockoutMenu);
+    }
+
     function renderMapView() {
         let displayedVoltageLevel;
         if (network) {
@@ -910,6 +945,7 @@ const StudyPane = (props) => {
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
                         ref={mapRef}
                         onSubstationClick={openVoltageLevel}
+                        onLineClick={showLockout}
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
@@ -974,6 +1010,18 @@ const StudyPane = (props) => {
                             computationStopped={computationStopped}
                         />
                     </div>
+                    {displayLockout && (
+                        <LockoutLine
+                            line={lineToLockout}
+                            position={[
+                                lockoutMenuPosition[0],
+                                lockoutMenuPosition[1],
+                            ]}
+                            message={lockoutMenuMessage}
+                            handleClose={closeLockoutMenu}
+                            handleClick={handleLockout}
+                        />
+                    )}
                 </div>
                 <Drawer
                     variant={'persistent'}

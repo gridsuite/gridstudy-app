@@ -249,6 +249,16 @@ const NetworkMap = forwardRef((props, ref) => {
                 );
             }
         }
+        if (
+            info.layer &&
+            info.layer.id.startsWith(LINE_LAYER_PREFIX) &&
+            info.object &&
+            info.object.id &&
+            info.object.voltageLevelId1 &&
+            info.object.voltageLevelId2
+        ) {
+            props.onLineClick(info.object, info.x + 200, info.y);
+        }
     }
 
     function cursorHandler({ isDragging }) {
@@ -399,6 +409,7 @@ NetworkMap.propTypes = {
     initialZoom: PropTypes.number.isRequired,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
+    onLineClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,

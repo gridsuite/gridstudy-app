@@ -861,7 +861,6 @@ class LineLayer extends CompositeLayer {
                 })
             );
             layers.push(lineStatusLabelsLayer);
-
         });
 
         return layers;
