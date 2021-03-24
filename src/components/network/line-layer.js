@@ -325,6 +325,7 @@ class LineLayer extends CompositeLayer {
             //add labels
             compositeData.forEach((compositeData) => {
                 compositeData.activePower = [];
+                compositeData.branchStatus = [];
                 compositeData.lines.forEach((line) => {
                     let lineData = compositeData.lineMap.get(line.id);
                     let arrowDirection = getArrowDirection(line.p1);
@@ -369,6 +370,30 @@ class LineLayer extends CompositeLayer {
                             ],
                             offset: coordinates2.offset,
                         });
+                    }
+                    if (line.branchStatus !== undefined) {
+                        let coordinatesIcon = props.geoData.labelDisplayPosition(
+                            lineData.positions,
+                            lineData.cumulativeDistances,
+                            0.5,
+                            ArrowDirection.NONE,
+                            line.parallelIndex,
+                            (line.angle * 180) / Math.PI,
+                            (line.angleEnd * 180) / Math.PI,
+                            props.distanceBetweenLines,
+                            line.proximityFactorEnd
+                        );
+                        if (coordinatesIcon !== null) {
+                            compositeData.branchStatus.push({
+                                line: line,
+                                b: line.branchStatus,
+                                printPosition: [
+                                    coordinatesIcon.position.longitude,
+                                    coordinatesIcon.position.latitude,
+                                ],
+                                offset: coordinatesIcon.offset,
+                            });
+                        }
                     }
                 });
             });
@@ -807,6 +832,36 @@ class LineLayer extends CompositeLayer {
                 })
             );
             layers.push(lineActivePowerLabelsLayer);
+
+            // line status
+            const lineStatusLabelsLayer = new TextLayer(
+                this.getSubLayerProps({
+                    id: 'BranchStatus' + compositeData.nominalVoltage,
+                    data: compositeData.branchStatus,
+                    getText: (branchStatus) =>
+                        branchStatus.b !== undefined ? branchStatus.b : 'NULL',
+                    getPosition: (branchStatus) => branchStatus.printPosition,
+                    getColor: this.props.labelColor,
+                    fontFamily: 'Roboto',
+                    getSize: this.props.labelSize,
+                    getAngle: 0,
+                    getPixelOffset: (branchStatus) => branchStatus.offset,
+                    getTextAnchor: 'middle',
+                    visible:
+                        this.props.filteredNominalVoltages.includes(
+                            compositeData.nominalVoltage
+                        ) && this.props.labelsVisible,
+                    updateTriggers: {
+                        getPosition: [
+                            this.props.lineFullPath,
+                            this.props.lineParallelPath,
+                        ],
+                        getPixelOffset: [this.props.lineFullPath],
+                    },
+                })
+            );
+            layers.push(lineStatusLabelsLayer);
+
         });
 
         return layers;
