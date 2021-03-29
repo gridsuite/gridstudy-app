@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from './network';
 import VirtualizedTable from '../util/virtualized-table';
@@ -19,7 +20,10 @@ import { IconButton, TextField } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import { requestNetworkChange } from '../../utils/rest-api';
+import {
+    requestNetworkChange,
+    updateConfigParameter,
+} from '../../utils/rest-api';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 
@@ -31,7 +35,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { TABLES_COLUMNS_NAMES, TABLES_DEFINITIONS } from './constants';
+import {
+    COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_COLUMNS_NAMES,
+    TABLES_DEFINITIONS,
+    TABLES_NAMES,
+} from './constants';
 
 const useStyles = makeStyles((theme) => ({
     cell: {
@@ -69,21 +78,22 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const ROW_HEIGHT = 48;
+
 const NetworkTable = (props) => {
     const classes = useStyles();
+
+    const allDisplayedColumnsNames = useSelector(
+        (state) => state.allDisplayedColumnsNames
+    );
 
     const [tabIndex, setTabIndex] = useState(0);
     const [lineEdit, setLineEdit] = useState({});
     const [rowFilter, setRowFilter] = useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
+    const [selectedColumnsNames, setSelectedColumnsNames] = useState(null);
 
     const intl = useIntl();
-
-    const [checkedColumnsNames, setCheckedColumnsNames] = useState(
-        TABLES_COLUMNS_NAMES
-    );
-
-    const rowHeight = 48;
 
     const isLineOnEditMode = useCallback(
         (row) => {
@@ -93,6 +103,12 @@ const NetworkTable = (props) => {
         },
         [lineEdit, tabIndex]
     );
+
+    useEffect(() => {
+        setSelectedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
+    }, [tabIndex, allDisplayedColumnsNames]);
 
     function setLineEditAt(index, value) {
         setLineEdit({
@@ -195,7 +211,7 @@ const NetworkTable = (props) => {
                 <TableCell
                     component="div"
                     variant="body"
-                    style={{ height: rowHeight, width: cellData.width }}
+                    style={{ height: ROW_HEIGHT, width: cellData.width }}
                     className={classes.cell}
                     align="right"
                 >
@@ -263,7 +279,7 @@ const NetworkTable = (props) => {
     );
 
     const columnDisplayStyle = (key) => {
-        return checkedColumnsNames[tabIndex].has(key) ? '' : 'none';
+        return selectedColumnsNames.has(key) ? '' : 'none';
     };
 
     const generateTableColumns = (table) => {
@@ -329,7 +345,7 @@ const NetworkTable = (props) => {
             label: '',
             dataKey: '',
             style: {
-                display: checkedColumnsNames[tabIndex].size > 0 ? '' : 'none',
+                display: selectedColumnsNames.size > 0 ? '' : 'none',
             },
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
@@ -518,49 +534,43 @@ const NetworkTable = (props) => {
         setPopupSelectColumnNames(true);
     };
 
-    const handleClosePopupSelectColumnNames = () => {
+    const handleCancelPopupSelectColumnNames = useCallback(() => {
+        setSelectedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
         setPopupSelectColumnNames(false);
-    };
+    }, [tabIndex, allDisplayedColumnsNames]);
 
-    const handleSaveSelectedColumnNames = () => {
+    const handleSaveSelectedColumnNames = useCallback(() => {
+        updateConfigParameter(
+            COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            JSON.stringify([...selectedColumnsNames])
+        );
         setPopupSelectColumnNames(false);
-    };
+    }, [tabIndex, selectedColumnsNames]);
 
     const handleToggle = (value) => () => {
-        const newChecked = new Set(checkedColumnsNames[tabIndex]);
-        if (checkedColumnsNames[tabIndex].has(value)) {
+        const newChecked = new Set(selectedColumnsNames.values());
+        if (selectedColumnsNames.has(value)) {
             newChecked.delete(value);
         } else {
             newChecked.add(value);
         }
-
-        setCheckedColumnsNames(
-            checkedColumnsNames.map((set, index) =>
-                tabIndex === index ? new Set(newChecked) : set
-            )
-        );
+        setSelectedColumnsNames(newChecked);
     };
 
     const handleToggleAll = () => {
         let isAllChecked =
-            checkedColumnsNames[tabIndex].size ===
-            TABLES_COLUMNS_NAMES[tabIndex].size;
-        let newChecked = isAllChecked
-            ? new Set()
-            : TABLES_COLUMNS_NAMES[tabIndex];
-        setCheckedColumnsNames(
-            checkedColumnsNames.map((set, index) =>
-                tabIndex === index ? newChecked : set
-            )
+            selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        setSelectedColumnsNames(
+            isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]
         );
     };
 
     const checkListColumnsNames = () => {
         let isAllChecked =
-            checkedColumnsNames[tabIndex].size ===
-            TABLES_COLUMNS_NAMES[tabIndex].size;
-        let isSomeChecked =
-            checkedColumnsNames[tabIndex].size !== 0 && !isAllChecked;
+            selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
         return (
             <List>
                 <ListItem
@@ -583,9 +593,7 @@ const NetworkTable = (props) => {
                     >
                         <ListItemIcon>
                             <Checkbox
-                                checked={checkedColumnsNames[tabIndex].has(
-                                    value
-                                )}
+                                checked={selectedColumnsNames.has(value)}
                                 color="primary"
                             />
                         </ListItemIcon>
@@ -663,7 +671,7 @@ const NetworkTable = (props) => {
                             </IconButton>
                             <SelectOptionsDialog
                                 open={popupSelectColumnNames}
-                                onClose={handleClosePopupSelectColumnNames}
+                                onClose={handleCancelPopupSelectColumnNames}
                                 onClick={handleSaveSelectedColumnNames}
                                 title={<FormattedMessage id="ColumnsList" />}
                                 child={checkListColumnsNames()}

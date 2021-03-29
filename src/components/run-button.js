@@ -107,14 +107,14 @@ const RunButton = (props) => {
         }
     }
 
-    function getOptions(runningStatus, runnables, actionsOnRunnable) {
+    function getOptions(runningStatus, runnables, actionOnRunnable) {
         switch (runningStatus) {
             case RunningStatus.SUCCEED:
             case RunningStatus.FAILED:
             case RunningStatus.IDLE:
                 return runnables;
             case RunningStatus.RUNNING:
-                return actionsOnRunnable;
+                return Array.of(actionOnRunnable.text);
             default:
                 return '';
         }
@@ -130,12 +130,6 @@ const RunButton = (props) => {
         }
     };
 
-    const handleStopComputationClick = () => {
-        if (props.onStopComputationClick) {
-            props.onStopComputationClick(getRunnable());
-        }
-    };
-
     function getRunnable() {
         return props.runnables[selectedIndex];
     }
@@ -148,12 +142,16 @@ const RunButton = (props) => {
         (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
         (selectedIndex === 1 && isRunning());
 
+    function handleActionOnRunnable() {
+        props.actionOnRunnable.action(getRunnable());
+    }
+
     return (
         <SplitButton
             options={getOptions(
                 getRunningStatus(),
                 props.runnables,
-                props.actionsOnRunnable
+                props.actionOnRunnable
             )}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
@@ -167,7 +165,7 @@ const RunButton = (props) => {
                     ? props.getText(getRunnable(), getRunningStatus())
                     : ''
             }
-            onStopComputation={handleStopComputationClick}
+            actionOnRunnable={handleActionOnRunnable}
             isRunning={isRunning()}
             computationStopped={props.computationStopped}
         />
@@ -180,7 +178,7 @@ RunButton.propTypes = {
     getText: PropTypes.func.isRequired,
     getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
-    actionsOnRunnable: PropTypes.array.isRequired,
+    actionOnRunnable: PropTypes.object.isRequired,
     computationStopped: PropTypes.bool.isRequired,
 };
 

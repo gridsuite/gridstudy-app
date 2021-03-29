@@ -662,9 +662,23 @@ export const TABLES_DEFINITIONS = {
     },
 };
 
+export const COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
+
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
     .map((table) => table.columns)
     .map((cols) => new Set(cols.map((c) => c.id)));
+
+export const TABLES_COLUMNS_NAMES_JSON = TABLES_COLUMNS_NAMES.map((cols) =>
+    JSON.stringify([...cols])
+);
+
+export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map(
+    (table) => table.name
+);
+
+export const TABLES_NAMES_INDEXES = new Map(
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.name, table.index])
+);
 
 function generateTapRequest(type, leg) {
     const getLeg = leg !== undefined ? '.getLeg' + leg + '()' : '';

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DARK_THEME } from './actions';
+import { DARK_THEME } from '@gridsuite/commons-ui';
 
 const LOCAL_STORAGE_THEME_KEY = process.env.REACT_APP_NAME + '_THEME';
 
