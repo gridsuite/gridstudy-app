@@ -31,15 +31,17 @@ import {
     USER,
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
-    VIEW_OVERLOADS_TABLE,
+    DISPLAY_OVERLOAD_TABLE,
     INCREASE_RESULT_COUNT,
     RESET_RESULT_COUNT,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
     SELECTED_ITEM_NETWORK,
     FULLSCREEN_SINGLE_LINE_DIAGRAM,
+    CHANGE_DISPLAYED_COLUMNS_NAMES,
 } from './actions';
 import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
+import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/constants';
 
 const initialState = {
     studies: [],
@@ -63,12 +65,13 @@ const initialState = {
     lineFlowAlertThreshold: 100,
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
-    viewOverloadsTable: false,
+    displayOverloadTable: false,
     resultCount: 0,
     filteredNominalVoltages: null,
     substationLayout: 'horizontal',
     selectItemNetwork: null,
     fullScreen: false,
+    allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
 };
 
 export const reducer = createReducer(initialState, {
@@ -172,8 +175,8 @@ export const reducer = createReducer(initialState, {
         state.signInCallbackError = action.signInCallbackError;
     },
 
-    [VIEW_OVERLOADS_TABLE]: (state, action) => {
-        state.viewOverloadsTable = action.viewOverloadsTable;
+    [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
+        state.displayOverloadTable = action.displayOverloadTable;
     },
 
     [INCREASE_RESULT_COUNT]: (state) => {
@@ -198,5 +201,15 @@ export const reducer = createReducer(initialState, {
 
     [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
         state.fullScreen = action.fullScreen;
+    },
+
+    [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {
+        let newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
+        action.displayedColumnsNamesParams.forEach((param) => {
+            if (param) {
+                newDisplayedColumnsNames[param.index] = param.value;
+            }
+        });
+        state.allDisplayedColumnsNames = newDisplayedColumnsNames;
     },
 });
