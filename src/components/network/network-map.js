@@ -7,7 +7,6 @@
 
 import React, {
     forwardRef,
-    useEffect,
     useImperativeHandle,
     useMemo,
     useRef,
@@ -55,10 +54,6 @@ const NetworkMap = forwardRef((props, ref) => {
     const [tooltip, setTooltip] = useState({});
 
     const theme = useTheme();
-
-    const [substationsLoaded, setSubstationsLoaded] = useState(false);
-    const [linesLoaded, setLinesLoaded] = useState(false);
-
     const foregroundNeutralColor = useMemo(() => {
         const labelColor = decomposeColor(theme.palette.text.primary).values;
         labelColor[3] *= 255;
@@ -80,23 +75,6 @@ const NetworkMap = forwardRef((props, ref) => {
         }),
         [setCentered]
     );
-
-    useEffect(() => {
-        if (
-            props.network &&
-            props.network.substations.get(() => setSubstationsLoaded(true)) ===
-                undefined
-        )
-            setSubstationsLoaded(false);
-    }, [props.network, substationsLoaded]);
-
-    useEffect(() => {
-        if (
-            props.network &&
-            props.network.lines.get(() => setLinesLoaded(true)) === undefined
-        )
-            setLinesLoaded(false);
-    }, [props.network, linesLoaded]);
 
     // Do this in onAfterRender because when doing it in useEffect (triggered by calling setDeck()),
     // it doesn't work in the case of using the browser backward/forward buttons (because in this particular case,
@@ -282,14 +260,12 @@ const NetworkMap = forwardRef((props, ref) => {
     if (
         props.network !== null &&
         props.geoData !== null &&
-        props.filteredNominalVoltages !== null &&
-        substationsLoaded &&
-        linesLoaded
+        props.filteredNominalVoltages !== null
     ) {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
-                data: props.network.substations.values || [],
+                data: props.substations,
                 network: props.network,
                 geoData: props.geoData,
                 useName: props.useName,
@@ -308,7 +284,7 @@ const NetworkMap = forwardRef((props, ref) => {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
-                data: props.network.lines,
+                data: props.lines,
                 network: props.network,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
@@ -393,6 +369,8 @@ const NetworkMap = forwardRef((props, ref) => {
 
 NetworkMap.defaultProps = {
     network: null,
+    substations: [],
+    lines: [],
     geoData: null,
     useName: null,
     filteredNominalVoltages: null,
@@ -411,6 +389,8 @@ NetworkMap.defaultProps = {
 
 NetworkMap.propTypes = {
     network: PropTypes.instanceOf(Network).isRequired,
+    substations: PropTypes.array,
+    lines: PropTypes.array,
     geoData: PropTypes.instanceOf(GeoData).isRequired,
     useName: PropTypes.bool.isRequired,
     filteredNominalVoltages: PropTypes.array.isRequired,

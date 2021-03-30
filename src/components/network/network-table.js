@@ -39,6 +39,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
+    TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
 } from './constants';
@@ -88,11 +89,12 @@ const NetworkTable = (props) => {
         (state) => state.allDisplayedColumnsNames
     );
 
+    const [fetching, setFetching] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
     const [lineEdit, setLineEdit] = useState({});
     const [rowFilter, setRowFilter] = useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
-    const [selectedColumnsNames, setSelectedColumnsNames] = useState(null);
+    const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Map());
 
     const intl = useIntl();
 
@@ -304,18 +306,44 @@ const NetworkTable = (props) => {
         });
     };
 
-    const renderSubstationsTable = () => {
-        return (
+    useEffect(() => {
+        if (!props.network) return;
+        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
+        setFetching(true);
+        props.network.fetchEquipement(resource, () => {
+            setFetching(false);
+        });
+    }, [tabIndex, props.network]);
+
+    function renderTable() {
+        const definition = TABLES_DEFINITION_INDEXES.get(tabIndex);
+        const table = props.network[definition.resource];
+        return fetching ? (
+            <LoaderWithOverlay
+                color="inherit"
+                loaderSize={70}
+                isFixed={true}
+                loadingMessageText={'Loading'}
+            />
+        ) : (
             <VirtualizedTable
-                rowCount={props.network.substations.length()}
+                rowCount={table.length}
                 rowGetter={({ index }) =>
-                    props.network.substations.get()[index]
+                    index < table.length ? table[index] : {}
                 }
+                id={'table ' + tabIndex}
                 filter={filter}
-                columns={generateTableColumns(TABLES_DEFINITIONS.SUBSTATIONS)}
+                columns={
+                    definition.header
+                        ? [
+                              makeHeaderCell(definition.header),
+                              ...generateTableColumns(definition),
+                          ]
+                        : generateTableColumns(definition)
+                }
             />
         );
-    };
+    }
 
     function renderVoltageLevelsTable() {
         const voltageLevels = props.network.getVoltageLevels();
@@ -331,17 +359,6 @@ const NetworkTable = (props) => {
         );
     }
 
-    function renderLinesTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.lines.length()}
-                rowGetter={({ index }) => props.network.lines.get()[index]}
-                filter={filter}
-                columns={generateTableColumns(TABLES_DEFINITIONS.LINES)}
-            />
-        );
-    }
-
     function makeHeaderCell(equipmentType) {
         return {
             width: 80,
@@ -353,164 +370,6 @@ const NetworkTable = (props) => {
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
         };
-    }
-
-    function renderTwoWindingsTransformersTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.twoWindingsTransformers.length()}
-                rowGetter={({ index }) =>
-                    props.network.twoWindingsTransformers.get()[index]
-                }
-                filter={filter}
-                columns={[
-                    makeHeaderCell('TwoWindingsTransformer'),
-                    ...generateTableColumns(
-                        TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS
-                    ),
-                ]}
-            />
-        );
-    }
-
-    function renderThreeWindingsTransformersTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.threeWindingsTransformers.length()}
-                rowGetter={({ index }) =>
-                    props.network.threeWindingsTransformers.get()[index]
-                }
-                filter={filter}
-                columns={[
-                    makeHeaderCell('ThreeWindingsTransformer'),
-                    ...generateTableColumns(
-                        TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS
-                    ),
-                ]}
-            />
-        );
-    }
-
-    function renderGeneratorsTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.generators.length()}
-                rowGetter={({ index }) => props.network.generators.get()[index]}
-                filter={filter}
-                columns={[
-                    makeHeaderCell('Generator'),
-                    ...generateTableColumns(TABLES_DEFINITIONS.GENERATORS),
-                ]}
-            />
-        );
-    }
-
-    function renderLoadsTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.loads.length()}
-                rowGetter={({ index }) => props.network.loads.get()[index]}
-                filter={filter}
-                columns={generateTableColumns(TABLES_DEFINITIONS.LOADS)}
-            />
-        );
-    }
-
-    function renderBatteriesTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.batteries.length()}
-                rowGetter={({ index }) => props.network.batteries.get()[index]}
-                filter={filter}
-                columns={generateTableColumns(TABLES_DEFINITIONS.BATTERIES)}
-            />
-        );
-    }
-
-    function renderDanglingLinesTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.danglingLines.length()}
-                rowGetter={({ index }) =>
-                    props.network.danglingLines.get()[index]
-                }
-                filter={filter}
-                columns={generateTableColumns(
-                    TABLES_DEFINITIONS.DANGLING_LINES
-                )}
-            />
-        );
-    }
-
-    function renderHvdcLinesTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.hvdcLines.length()}
-                rowGetter={({ index }) => props.network.hvdcLines.get()[index]}
-                filter={filter}
-                columns={generateTableColumns(TABLES_DEFINITIONS.HVDC_LINES)}
-            />
-        );
-    }
-
-    function renderShuntCompensatorsTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.shuntCompensators.length()}
-                rowGetter={({ index }) =>
-                    props.network.shuntCompensators.get()[index]
-                }
-                filter={filter}
-                columns={generateTableColumns(
-                    TABLES_DEFINITIONS.SHUNT_COMPENSATORS
-                )}
-            />
-        );
-    }
-
-    function renderStaticVarCompensatorsTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.staticVarCompensators.length()}
-                rowGetter={({ index }) =>
-                    props.network.staticVarCompensators.get()[index]
-                }
-                filter={filter}
-                columns={generateTableColumns(
-                    TABLES_DEFINITIONS.STATIC_VAR_COMPENSATORS
-                )}
-            />
-        );
-    }
-
-    function renderLccConverterStationsTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.lccConverterStations.length()}
-                rowGetter={({ index }) =>
-                    props.network.lccConverterStations.get()[index]
-                }
-                filter={filter}
-                columns={generateTableColumns(
-                    TABLES_DEFINITIONS.LCC_CONVERTER_STATIONS
-                )}
-            />
-        );
-    }
-
-    function renderVscConverterStationsTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.vscConverterStations.length()}
-                rowGetter={({ index }) =>
-                    props.network.vscConverterStations.get()[index]
-                }
-                filter={filter}
-                columns={generateTableColumns(
-                    TABLES_DEFINITIONS.VSC_CONVERTER_STATIONS
-                )}
-            />
-        );
     }
 
     function setFilter(event) {
@@ -686,39 +545,10 @@ const NetworkTable = (props) => {
                 </Grid>
                 <div className={classes.table} style={{ flexGrow: 1 }}>
                     {/*This render is fast, rerender full dom everytime*/}
-                    {tabIndex === TABLES_DEFINITIONS.SUBSTATIONS.index &&
-                        renderSubstationsTable()}
+                    {tabIndex !== TABLES_DEFINITIONS.VOLTAGE_LEVELS.index &&
+                        renderTable(tabIndex)}
                     {tabIndex === TABLES_DEFINITIONS.VOLTAGE_LEVELS.index &&
                         renderVoltageLevelsTable()}
-                    {tabIndex === TABLES_DEFINITIONS.LINES.index &&
-                        renderLinesTable()}
-                    {tabIndex ===
-                        TABLES_DEFINITIONS.TWO_WINDINGS_TRANSFORMERS.index &&
-                        renderTwoWindingsTransformersTable()}
-                    {tabIndex ===
-                        TABLES_DEFINITIONS.THREE_WINDINGS_TRANSFORMERS.index &&
-                        renderThreeWindingsTransformersTable()}
-                    {tabIndex === TABLES_DEFINITIONS.GENERATORS.index &&
-                        renderGeneratorsTable()}
-                    {tabIndex === TABLES_DEFINITIONS.LOADS.index &&
-                        renderLoadsTable()}
-                    {tabIndex === TABLES_DEFINITIONS.SHUNT_COMPENSATORS.index &&
-                        renderShuntCompensatorsTable()}
-                    {tabIndex ===
-                        TABLES_DEFINITIONS.STATIC_VAR_COMPENSATORS.index &&
-                        renderStaticVarCompensatorsTable()}
-                    {tabIndex === TABLES_DEFINITIONS.BATTERIES.index &&
-                        renderBatteriesTable()}
-                    {tabIndex === TABLES_DEFINITIONS.HVDC_LINES.index &&
-                        renderHvdcLinesTable()}
-                    {tabIndex ===
-                        TABLES_DEFINITIONS.LCC_CONVERTER_STATIONS.index &&
-                        renderLccConverterStationsTable()}
-                    {tabIndex ===
-                        TABLES_DEFINITIONS.VSC_CONVERTER_STATIONS.index &&
-                        renderVscConverterStationsTable()}
-                    {tabIndex === TABLES_DEFINITIONS.DANGLING_LINES.index &&
-                        renderDanglingLinesTable()}
                 </div>
             </>
         )

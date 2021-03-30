@@ -83,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NetworkExplorer = ({
-    network,
+    substations,
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
     onSubstationFocus,
@@ -107,16 +107,6 @@ const NetworkExplorer = ({
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
     );
-    const [substationsLoaded, setSubstationsLoaded] = React.useState(false);
-
-    useEffect(() => {
-        if (
-            network &&
-            network.substations.get(() => setSubstationsLoaded(true)) ===
-                undefined
-        )
-            setSubstationsLoaded(false);
-    }, [substationsLoaded, network]);
 
     const identifiedElementComparator = useCallback(
         (vl1, vl2) => {
@@ -147,7 +137,7 @@ const NetworkExplorer = ({
                 return lc.includes(entry);
             };
 
-            network.getSubstations().forEach((item) => {
+            substations.forEach((item) => {
                 let subVoltagesLevel = entry
                     ? item.voltageLevels.filter(match)
                     : item.voltageLevels;
@@ -166,18 +156,17 @@ const NetworkExplorer = ({
             subs.sort((a, b) => identifiedElementComparator(a[0], b[0]));
             setFilteredVoltageLevels(subs);
         },
-        [identifiedElementComparator, network, useName]
+        [identifiedElementComparator, substations, useName]
     );
 
     useEffect(() => {
-        if (network) {
+        if (substations.length > 0) {
             generateFilteredSubstation(currentFilter);
         }
     }, [
-        network,
+        substations,
         identifiedElementComparator,
         generateFilteredSubstation,
-        substationsLoaded,
         currentFilter,
     ]);
 
@@ -198,7 +187,7 @@ const NetworkExplorer = ({
                 listeRef.current.scrollToRow(index);
             }, 0);
         }
-    }, [visibleSubstation, filteredVoltageLevels, substationsLoaded]);
+    }, [visibleSubstation, filteredVoltageLevels]);
 
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
@@ -388,12 +377,12 @@ const NetworkExplorer = ({
 };
 
 NetworkExplorer.defaultProps = {
-    network: null,
+    substations: [],
     visibleSubstation: null,
 };
 
 NetworkExplorer.propTypes = {
-    network: PropTypes.instanceOf(Network),
+    substations: PropTypes.array,
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,

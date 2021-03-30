@@ -57,7 +57,7 @@ import {
     selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
-import Network from './network/network';
+import Network, { equipements } from "./network/network";
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Paper from '@material-ui/core/Paper';
@@ -178,7 +178,6 @@ const StudyPane = (props) => {
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
 
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
-    const [substationsLoaded, setSubstationsLoaded] = useState(false);
 
     const lineFlowAlertThreshold = useSelector((state) =>
         Number(state.lineFlowAlertThreshold)
@@ -539,17 +538,12 @@ const StudyPane = (props) => {
     }, [location.search]);
 
     useEffect(() => {
-        if (network && !substationsLoaded)
-            network.substations.get(() => setSubstationsLoaded(true));
-    }, [substationsLoaded, network]);
-
-    useEffect(() => {
-        if (network && substationsLoaded && !filteredNominalVoltages) {
+        if (network && !filteredNominalVoltages) {
             dispatch(
                 filteredNominalVoltagesUpdated(network.getNominalVoltages())
             );
         }
-    }, [network, filteredNominalVoltages, dispatch, substationsLoaded]);
+    }, [network, filteredNominalVoltages, dispatch]);
 
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
@@ -764,6 +758,12 @@ const StudyPane = (props) => {
         [network, showVoltageLevelDiagram, dispatch]
     );
 
+    useEffect( () => {
+        if (!network) return;
+        network.fetchEquipement(equipements.substations);
+        network.fetchEquipement(equipements.lines);
+    }, [network]);
+
     function renderMapView() {
         let displayedVoltageLevel;
         if (network) {
@@ -888,6 +888,8 @@ const StudyPane = (props) => {
                 >
                     <NetworkMap
                         network={network}
+                        substations={network?network.substations:[]}
+                        lines={network?network.lines:[]}
                         updatedLines={updatedLines}
                         geoData={geoData}
                         useName={useName}
@@ -936,7 +938,7 @@ const StudyPane = (props) => {
                             position={[position[0] + 200, position[1]]}
                         />
                     )}
-                    {network && (
+                    {network && network.substations.length > 0 && (
                         <div
                             style={{
                                 position: 'absolute',
@@ -994,7 +996,7 @@ const StudyPane = (props) => {
                         className={classes.drawerDiv}
                     >
                         <NetworkExplorer
-                            network={network}
+                            substations={network?network.substations:[]}
                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
@@ -1048,13 +1050,15 @@ const StudyPane = (props) => {
 
     function renderTableView() {
         return (
-            <Paper className={clsx('singlestretch-child', classes.table)}>
-                <NetworkTable
-                    network={network}
-                    studyName={studyName}
-                    userId={userId}
-                />
-            </Paper>
+            network && (
+                <Paper className={clsx('singlestretch-child', classes.table)}>
+                    <NetworkTable
+                        network={network}
+                        studyName={studyName}
+                        userId={userId}
+                    />
+                </Paper>
+            )
         );
     }
 

@@ -207,8 +207,8 @@ class LineLayer extends CompositeLayer {
 
             if (
                 props.network != null &&
-                props.network.substations.values &&
-                props.data.values &&
+                props.network.substations &&
+                props.data.length !== 0 &&
                 props.geoData != null
             ) {
                 // group lines by nominal voltage
@@ -227,7 +227,7 @@ class LineLayer extends CompositeLayer {
                     }
                     return map;
                 };
-                const linesByNominalVoltage = props.data.values.reduce(
+                const linesByNominalVoltage = props.data.reduce(
                     lineNominalVoltageIndexer,
                     new Map()
                 );

@@ -51,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
 
 const OverloadedLinesView = (props) => {
     const [lines, setLines] = useState(null);
-    const [linesLoaded, setLinesLoaded] = useState(false);
     const classes = useStyles();
 
     const intl = useIntl();
@@ -99,16 +98,13 @@ const OverloadedLinesView = (props) => {
             }
             return fields;
         };
-        if (props.lines.get(() => setLinesLoaded(true)) === undefined)
-            setLinesLoaded(false);
-        else
-            setLines(
-                props.lines
-                    .get(() => setLinesLoaded(true))
-                    .map((line) => makeData(line))
-                    .sort((a, b) => b.overload - a.overload)
-            );
-    }, [props.lines, props.network, props.lineFlowAlertThreshold, linesLoaded]);
+
+        setLines(
+            props.lines
+                .map((line) => makeData(line))
+                .sort((a, b) => b.overload - a.overload)
+        );
+    }, [props.lines, props.network, props.lineFlowAlertThreshold]);
 
     const filter = useCallback(
         (line) => line.overload > props.lineFlowAlertThreshold,
@@ -201,7 +197,7 @@ OverloadedLinesView.defaultProps = {
 };
 
 OverloadedLinesView.propTypes = {
-    lines: PropTypes.object,
+    lines: PropTypes.array,
     lineFlowAlertThreshold: PropTypes.number,
     network: PropTypes.object,
 };

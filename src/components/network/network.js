@@ -12,32 +12,50 @@ const elementIdIndexer = (map, element) => {
     return map;
 };
 
+export const equipements = {
+    substations: 'substations',
+    lines: 'lines',
+    twoWindingsTransformers: 'twoWindingsTransformers',
+    threeWindingsTransformers: 'threeWindingsTransformers',
+    generators: 'generators',
+    loads: 'loads',
+    batteries: 'batteries',
+    danglingLines: 'danglingLines',
+    hvdcLines: 'hvdcLines',
+    lccConverterStations: 'lccConverterStations',
+    vscConverterStations: 'vscConverterStations',
+    shuntCompensators: 'shuntCompensators',
+    staticVarCompensators: 'staticVarCompensators',
+};
+
 export default class Network {
-    substations;
+    substations = [];
 
-    lines = undefined;
+    lines = [];
 
-    twoWindingsTransformers = undefined;
+    twoWindingsTransformers = [];
 
-    threeWindingsTransformers = undefined;
+    threeWindingsTransformers = [];
 
-    generators = undefined;
+    generators = [];
 
-    loads = undefined;
+    loads = [];
 
-    batteries = undefined;
+    batteries = [];
 
-    danglingLines = undefined;
+    danglingLines = [];
 
-    hvdcLines = undefined;
+    hvdcLines = [];
 
-    lccConverterStations = undefined;
+    lccConverterStations = [];
 
-    vscConverterStations = undefined;
+    vscConverterStations = [];
 
-    shuntCompensators = undefined;
+    shuntCompensators = [];
 
-    staticVarCompensators = undefined;
+    staticVarCompensators = [];
+
+    lazyLoaders = new Map();
 
     voltageLevelsByNominalVoltage = new Map();
 
@@ -57,7 +75,7 @@ export default class Network {
 
     completeSubstationsInfos = () => {
         const nominalVoltagesSet = new Set();
-        this.substations.values.forEach((substation) => {
+        this.substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
                 (voltageLevel1, voltageLevel2) =>
@@ -75,9 +93,9 @@ export default class Network {
             });
         });
 
-        this.voltageLevels = this.substations
-            .get()
-            .flatMap((substation) => substation.voltageLevels);
+        this.voltageLevels = this.substations.flatMap(
+            (substation) => substation.voltageLevels
+        );
 
         this.voltageLevelsById = this.voltageLevels.reduce(
             elementIdIndexer,
@@ -90,13 +108,11 @@ export default class Network {
     };
 
     updateEquipments(currentEquipments, newEquipements) {
-        if (currentEquipments.values === undefined) return;
-        currentEquipments.values.forEach((equipment1, index) => {
+        currentEquipments.forEach((equipment1, index) => {
             const found = newEquipements.filter(
                 (equipment2) => equipment2.id === equipment1.id
             );
-            currentEquipments.values[index] =
-                found.length > 0 ? found[0] : equipment1;
+            currentEquipments[index] = found.length > 0 ? found[0] : equipment1;
         });
         console.info('updatedEquipements');
         console.info(newEquipements);
@@ -232,9 +248,30 @@ export default class Network {
         );
     }
 
-    makeEqHandler(cb, errHandler, postUpdateCB) {
-        return new RemoteRessourceHandler(cb, errHandler, postUpdateCB);
+    generateEquipementHandler({ errHandler, postUpdate, ...equipment }) {
+        for (const [key, value] of Object.entries(equipment)) {
+            console.log(key, value, postUpdate);
+            this.lazyLoaders.set(
+                key,
+                new RemoteRessourceHandler(
+                    value,
+                    (value) => (this[key] = value),
+                    (key) => errHandler(key),
+                    postUpdate
+                )
+            );
+        }
     }
+
+    fetchEquipement(equipement, cb) {
+        const fetcher = this.lazyLoaders.get(equipement);
+        if (fetcher) fetcher.fetch(cb);
+        else {
+            console.info('not found ' + equipement);
+            console.info(this);
+        }
+    }
+
     constructor(
         substations,
         lines,
@@ -251,51 +288,47 @@ export default class Network {
         staticVarCompensators,
         errHandler
     ) {
-        this.substations = this.makeEqHandler(
+        this.generateEquipementHandler({
             substations,
             errHandler,
-            this.completeSubstationsInfos
-        );
-
-        this.lines = this.makeEqHandler(
+            postUpdate: this.completeSubstationsInfos,
+        });
+        this.lazyLoaders.set(equipements.vol);
+        this.generateEquipementHandler({
             lines,
             errHandler,
-            this.completeLinesInfos
-        );
-        this.twoWindingsTransformers = this.makeEqHandler(
+            postUpdate: this.completeLinesInfos,
+        });
+
+        this.generateEquipementHandler({
             twoWindingsTransformers,
             errHandler,
-            this.completeTwoWindingsTransformersInfos
-        );
-        this.threeWindingsTransformers = this.makeEqHandler(
+            postUpdate: this.completeTwoWindingsTransformersInfos,
+        });
+
+        this.generateEquipementHandler({
             threeWindingsTransformers,
             errHandler,
-            this.completeThreeWindingsTransformersInfos
-        );
-        this.generators = this.makeEqHandler(
+            postUpdate: this.completeThreeWindingsTransformersInfos,
+        });
+
+        this.generateEquipementHandler({
             generators,
             errHandler,
-            this.completeGeneratorsInfos
-        );
-        this.loads = this.makeEqHandler(loads, errHandler);
-        this.batteries = this.makeEqHandler(batteries, errHandler);
-        this.danglingLines = this.makeEqHandler(danglingLines, errHandler);
-        this.hvdcLines = this.makeEqHandler(hvdcLines, errHandler);
-        this.lccConverterStations = this.makeEqHandler(
+            postUpdate: this.completeGeneratorsInfos,
+        });
+
+        this.generateEquipementHandler({
+            loads,
+            batteries,
+            danglingLines,
+            hvdcLines,
             lccConverterStations,
-            errHandler
-        );
-        this.vscConverterStations = this.makeEqHandler(
             vscConverterStations,
-            errHandler
-        );
-        this.shuntCompensators = this.makeEqHandler(
             shuntCompensators,
-            errHandler
-        );
-        this.staticVarCompensators = this.makeEqHandler(
             staticVarCompensators,
-            errHandler
-        );
+            errHandler,
+            postUpdate: undefined,
+        });
     }
 }

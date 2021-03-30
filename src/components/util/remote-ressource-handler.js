@@ -9,46 +9,32 @@ export class RemoteRessourceHandler {
     fetcher = undefined;
     errorHandler = undefined;
     postUpdate = undefined;
+    cbUpdateDone = new Set();
 
-    constructor(fetcher, errorHandler, postUpdate) {
+    constructor(fetcher, setter, errorHandler, postUpdate) {
         this.fetcher = fetcher;
+        this.setter = setter;
         this.errorHandler = errorHandler;
         this.postUpdate = postUpdate;
     }
 
-    values = undefined;
-    updating = undefined;
+    fetched = undefined;
 
-    cbUpdateDone = new Set();
-
-    get(cbUpdateDone) {
-        if (this.values === undefined) {
+    fetch(cbUpdateDone, forceUpdate) {
+        if (this.fetched === undefined || forceUpdate) {
+            this.fetched = false;
             if (cbUpdateDone) this.cbUpdateDone.add(cbUpdateDone);
-            if (!this.updating) {
-                this.updating = true;
-                Promise.all([this.fetcher()])
-                    .then((val) => {
-                        this.values = val[0];
-                        if (this.postUpdate) this.postUpdate(this.values);
-                        this.updating = false;
-                        this.cbUpdateDone.forEach((cb) => cb());
-                        this.cbUpdateDone.clear();
-                    })
-                    .catch((error) => {
-                        if (this.errorHandler) this.errorHandler(error);
-                        this.values = {};
-                    });
-            }
-            return undefined;
-        }
-        if (cbUpdateDone) cbUpdateDone();
-        return this.values;
-    }
-
-    length(cbUpdateDone) {
-        return (
-            (this.values !== undefined && this.values.length) ||
-            this.get(cbUpdateDone)
-        );
+            Promise.all([this.fetcher()])
+                .then((val) => {
+                    this.setter(val[0]);
+                    if (this.postUpdate) this.postUpdate(val[0]);
+                    this.fetched = true;
+                    this.cbUpdateDone.forEach((cb) => cb());
+                    this.cbUpdateDone.clear();
+                })
+                .catch((error) => {
+                    if (this.errorHandler) this.errorHandler(error);
+                });
+        } else if (this.fetched && cbUpdateDone) cbUpdateDone();
     }
 }

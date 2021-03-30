@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -48,7 +48,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NominalVoltageFilter = (props) => {
-    const [substationsLoaded, setSubstationsLoaded] = useState(false);
     const network = useSelector((state) => state.network);
 
     const filteredNominalVoltages = useSelector(
@@ -77,67 +76,61 @@ const NominalVoltageFilter = (props) => {
         dispatch(filteredNominalVoltagesUpdated(newFiltered));
     };
 
-    if (!substationsLoaded)
-        network.substations.get(() => setSubstationsLoaded(true));
-
     return (
-        substationsLoaded && (
-            <Paper>
-                <List className={classes.nominalVoltageZone}>
-                    <ListItem className={classes.nominalVoltageItem}>
-                        <Button
-                            size={'small'}
-                            variant={'text'}
-                            className={classes.nominalVoltageSelectionControl}
-                            onClick={handleToggle(
-                                network.getNominalVoltages(),
-                                false
-                            )}
+        <Paper>
+            <List className={classes.nominalVoltageZone}>
+                <ListItem className={classes.nominalVoltageItem}>
+                    <Button
+                        size={'small'}
+                        variant={'text'}
+                        className={classes.nominalVoltageSelectionControl}
+                        onClick={handleToggle(
+                            network.getNominalVoltages(),
+                            false
+                        )}
+                    >
+                        <FormattedMessage id="CBAll" />
+                    </Button>
+                    <ListItemText
+                        className={classes.nominalVoltageText}
+                        secondary={'/'}
+                    />
+                    <Button
+                        size={'small'}
+                        variant={'text'}
+                        className={classes.nominalVoltageSelectionControl}
+                        onClick={handleToggle([], false)}
+                    >
+                        <FormattedMessage id="CBNone" />
+                    </Button>
+                </ListItem>
+                {network.getNominalVoltages().map((value) => {
+                    return (
+                        <ListItem
+                            className={classes.nominalVoltageItem}
+                            key={value}
+                            button
+                            onClick={handleToggle([value], true)}
                         >
-                            <FormattedMessage id="CBAll" />
-                        </Button>
-                        <ListItemText
-                            className={classes.nominalVoltageText}
-                            secondary={'/'}
-                        />
-                        <Button
-                            size={'small'}
-                            variant={'text'}
-                            className={classes.nominalVoltageSelectionControl}
-                            onClick={handleToggle([], false)}
-                        >
-                            <FormattedMessage id="CBNone" />
-                        </Button>
-                    </ListItem>
-                    {network.getNominalVoltages().map((value) => {
-                        return (
-                            <ListItem
-                                className={classes.nominalVoltageItem}
-                                key={value}
-                                button
-                                onClick={handleToggle([value], true)}
-                            >
-                                <Checkbox
-                                    color="default"
-                                    className={classes.nominalVoltageCheck}
-                                    checked={
-                                        !filteredNominalVoltages ||
-                                        filteredNominalVoltages.indexOf(
-                                            value
-                                        ) !== -1
-                                    }
-                                />
-                                <ListItemText
-                                    className={classes.nominalVoltageText}
-                                    disableTypography
-                                    primary={`${value} kV`}
-                                />
-                            </ListItem>
-                        );
-                    })}
-                </List>
-            </Paper>
-        )
+                            <Checkbox
+                                color="default"
+                                className={classes.nominalVoltageCheck}
+                                checked={
+                                    !filteredNominalVoltages ||
+                                    filteredNominalVoltages.indexOf(value) !==
+                                        -1
+                                }
+                            />
+                            <ListItemText
+                                className={classes.nominalVoltageText}
+                                disableTypography
+                                primary={`${value} kV`}
+                            />
+                        </ListItem>
+                    );
+                })}
+            </List>
+        </Paper>
     );
 };
 

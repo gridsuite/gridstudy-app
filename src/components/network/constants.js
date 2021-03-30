@@ -1,3 +1,5 @@
+import { equipements } from './network';
+
 /**
  * Copyright (c) 2020, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -13,6 +15,7 @@ export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
         name: 'Substations',
+        resource: equipements.substations,
         columns: [
             {
                 width: 400,
@@ -35,6 +38,7 @@ export const TABLES_DEFINITIONS = {
     VOLTAGE_LEVELS: {
         index: 1,
         name: 'VoltageLevels',
+        resource: equipements.substations,
         columns: [
             {
                 width: 400,
@@ -64,6 +68,7 @@ export const TABLES_DEFINITIONS = {
     LINES: {
         index: 2,
         name: 'Lines',
+        resource: equipements.lines,
         columns: [
             {
                 width: 400,
@@ -119,6 +124,8 @@ export const TABLES_DEFINITIONS = {
     TWO_WINDINGS_TRANSFORMERS: {
         index: 3,
         name: 'TwoWindingsTransformers',
+        resource: equipements.twoWindingsTransformers,
+        header: 'TwoWindingsTransformer',
         columns: [
             {
                 width: 400,
@@ -190,6 +197,8 @@ export const TABLES_DEFINITIONS = {
     THREE_WINDINGS_TRANSFORMERS: {
         index: 4,
         name: 'ThreeWindingsTransformers',
+        resource: equipements.threeWindingsTransformers,
+        header: 'ThreeWindingsTransformer',
         columns: [
             {
                 width: 400,
@@ -312,6 +321,8 @@ export const TABLES_DEFINITIONS = {
     GENERATORS: {
         index: 5,
         name: 'Generators',
+        resource: equipements.generators,
+        header: 'Generator',
         columns: [
             {
                 width: 400,
@@ -356,6 +367,7 @@ export const TABLES_DEFINITIONS = {
     LOADS: {
         index: 6,
         name: 'Loads',
+        resource: equipements.loads,
         columns: [
             {
                 width: 400,
@@ -411,6 +423,7 @@ export const TABLES_DEFINITIONS = {
     SHUNT_COMPENSATORS: {
         index: 7,
         name: 'ShuntCompensators',
+        resource: equipements.shuntCompensators,
         columns: [
             {
                 width: 400,
@@ -454,6 +467,7 @@ export const TABLES_DEFINITIONS = {
     STATIC_VAR_COMPENSATORS: {
         index: 8,
         name: 'StaticVarCompensators',
+        resource: equipements.staticVarCompensators,
         columns: [
             {
                 width: 400,
@@ -504,6 +518,7 @@ export const TABLES_DEFINITIONS = {
     BATTERIES: {
         index: 9,
         name: 'Batteries',
+        resource: equipements.batteries,
         columns: [
             {
                 width: 400,
@@ -554,6 +569,7 @@ export const TABLES_DEFINITIONS = {
     HVDC_LINES: {
         index: 10,
         name: 'HvdcLines',
+        resource: equipements.hvdcLines,
         columns: [
             {
                 width: 400,
@@ -614,6 +630,7 @@ export const TABLES_DEFINITIONS = {
     LCC_CONVERTER_STATIONS: {
         index: 11,
         name: 'LccConverterStations',
+        resource: equipements.lccConverterStations,
         columns: [
             {
                 width: 400,
@@ -669,6 +686,7 @@ export const TABLES_DEFINITIONS = {
     VSC_CONVERTER_STATIONS: {
         index: 12,
         name: 'VscConverterStations',
+        resource: equipements.vscConverterStations,
         columns: [
             {
                 width: 400,
@@ -717,6 +735,7 @@ export const TABLES_DEFINITIONS = {
     DANGLING_LINES: {
         index: 13,
         name: 'DanglingLines',
+        resource: equipements.danglingLines,
         columns: [
             {
                 width: 400,
@@ -786,6 +805,10 @@ export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map(
 
 export const TABLES_NAMES_INDEXES = new Map(
     Object.values(TABLES_DEFINITIONS).map((table) => [table.name, table.index])
+);
+
+export const TABLES_DEFINITION_INDEXES = new Map(
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.index, table])
 );
 
 function generateTapRequest(type, leg) {
