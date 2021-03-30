@@ -489,7 +489,7 @@ const StudyManager = ({ onClick }) => {
 
     const classes = useStyles();
 
-    const [localCreationRequest, setLocalCreationRequest] = useState({});
+    const [localCreationRequests, setlocalCreationRequests] = useState({});
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -558,8 +558,8 @@ const StudyManager = ({ onClick }) => {
     }, [connectNotificationsUpdateStudies, dispatchStudies]);
 
     function addCreationRequest({ studyName, userId, ...rest }) {
-        setLocalCreationRequest({
-            ...localCreationRequest,
+        setlocalCreationRequests({
+            ...localCreationRequests,
             ...{
                 [makeKey({ userId: userId, studyName: studyName })]: {
                     studyName: studyName,
@@ -570,31 +570,31 @@ const StudyManager = ({ onClick }) => {
         });
     }
 
-    const cleanLocalCreationRequest = useCallback(
+    const cleanlocalCreationRequests = useCallback(
         (remote) => {
-            if (localCreationRequest) {
+            if (localCreationRequests) {
                 let didDelete = false;
                 remote.forEach((study) => {
-                    if (localCreationRequest.hasOwnProperty(makeKey(study))) {
+                    if (localCreationRequests.hasOwnProperty(makeKey(study))) {
                         didDelete = true;
-                        delete localCreationRequest[makeKey(study)];
+                        delete localCreationRequests[makeKey(study)];
                     }
                 });
-                if (didDelete) setLocalCreationRequest(localCreationRequest);
+                if (didDelete) setlocalCreationRequests(localCreationRequests);
             }
         },
-        [localCreationRequest]
+        [localCreationRequests]
     );
 
     useEffect(() => {
-        cleanLocalCreationRequest(studyCreationRequests);
-    }, [studyCreationRequests, cleanLocalCreationRequest]);
+        cleanlocalCreationRequests(studyCreationRequests);
+    }, [studyCreationRequests, cleanlocalCreationRequests]);
 
     useEffect(() => {
-        cleanLocalCreationRequest(studies);
-    }, [studies, cleanLocalCreationRequest]);
+        cleanlocalCreationRequests(studies);
+    }, [studies, cleanlocalCreationRequests]);
 
-    function mergeCreationRequest(remote, local) {
+    function mergeCreationRequests(remote, local) {
         let merged = {};
         if (local)
             Object.values(local).forEach((study) => {
@@ -617,10 +617,10 @@ const StudyManager = ({ onClick }) => {
                         />
                     </Box>
                 </Grid>
-                {(studyCreationRequests || localCreationRequest) &&
-                    mergeCreationRequest(
+                {(studyCreationRequests || localCreationRequests) &&
+                    mergeCreationRequests(
                         studyCreationRequests,
-                        localCreationRequest
+                        localCreationRequests
                     ).map((study) => (
                         <Grid
                             item
