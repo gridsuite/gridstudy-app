@@ -16,6 +16,7 @@ function getTextWidth(text, style) {
         getTextWidth.canvas ||
         (getTextWidth.canvas = document.createElement('canvas'));
     let context = canvas.getContext('2d');
+    // context.fontSize is undefined, even when specified in styles
     context.font = '12px ' + style.fontFamily;
     let metrics = context.measureText(text);
     return metrics.width;
@@ -62,7 +63,6 @@ const styles = (theme) => ({
     canvas: {
         'font-family': theme.typography.fontFamily,
     },
-
 });
 
 class MuiVirtualizedTable extends React.PureComponent {
@@ -129,7 +129,10 @@ class MuiVirtualizedTable extends React.PureComponent {
                         col,
                         this.props.rowGetter({ index: i })[col.dataKey]
                     );
-                    size = Math.max(size, this.computeDataWidth(text, classes.canvas));
+                    size = Math.max(
+                        size,
+                        this.computeDataWidth(text, classes.canvas)
+                    );
                 }
                 if (col.maxWidth) size = Math.min(col.maxWidth, size);
                 sizes[col.dataKey] = Math.ceil(size);
