@@ -307,10 +307,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                 {({ height, width }) => (
                     <Table
                         height={height}
-                        width={Math.max(
-                            width,
-                            Object.values(sizes).reduce((a, b) => a + b, 0)
-                        )}
+                        width={width}
                         rowHeight={rowHeight}
                         gridStyle={{
                             direction: 'inherit',
