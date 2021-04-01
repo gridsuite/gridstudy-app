@@ -19,6 +19,7 @@ import {
     LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
     LOAD_NETWORK_SUCCESS,
+    UPDATE_NETWORK,
     LOAD_STUDIES_SUCCESS,
     LOAD_TEMPORARY_STUDIES,
     OPEN_STUDY,
@@ -101,6 +102,16 @@ export const reducer = createReducer(initialState, {
 
     [LOAD_NETWORK_SUCCESS]: (state, action) => {
         state.network = action.network;
+    },
+
+    [UPDATE_NETWORK]: (state, action) => {
+        let newNetwork = Object.assign(
+            Object.create(Object.getPrototypeOf(state.network)),
+            state.network
+        );
+        newNetwork[action.equipmentsName] = action.values;
+        if (action.postUpdate) action.postUpdate(newNetwork);
+        state.network = newNetwork;
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {

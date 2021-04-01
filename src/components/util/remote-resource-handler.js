@@ -5,36 +5,31 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export class RemoteRessourceHandler {
+export class RemoteResourceHandler {
     fetcher = undefined;
     errorHandler = undefined;
     postUpdate = undefined;
-    cbUpdateDone = new Set();
 
-    constructor(fetcher, setter, errorHandler, postUpdate) {
+    constructor(fetcher, setter, errorHandler) {
         this.fetcher = fetcher;
         this.setter = setter;
         this.errorHandler = errorHandler;
-        this.postUpdate = postUpdate;
     }
 
     fetched = undefined;
 
-    fetch(cbUpdateDone, forceUpdate) {
+    fetch(forceUpdate) {
         if (this.fetched === undefined || forceUpdate) {
             this.fetched = false;
-            if (cbUpdateDone) this.cbUpdateDone.add(cbUpdateDone);
-            Promise.all([this.fetcher()])
+            this.fetcher()
                 .then((val) => {
-                    this.setter(val[0]);
-                    if (this.postUpdate) this.postUpdate(val[0]);
                     this.fetched = true;
-                    this.cbUpdateDone.forEach((cb) => cb());
-                    this.cbUpdateDone.clear();
+                    this.setter(val);
                 })
                 .catch((error) => {
                     if (this.errorHandler) this.errorHandler(error);
                 });
-        } else if (this.fetched && cbUpdateDone) cbUpdateDone();
+        }
+        return this.fetched;
     }
 }

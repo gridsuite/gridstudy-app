@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -14,7 +14,6 @@ import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import LoaderWithOverlay from './loader-with-overlay';
-import { useCallback } from 'react';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -37,11 +36,15 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({ resultFetcher, onClickNmKConstraint }) => {
+const SecurityAnalysisResult = ({
+    resultFetcher,
+    onClickNmKConstraint,
+    result,
+}) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
-    const [resultFetched, setResultFetched] = React.useState(false);
+    const [fetched, setFetched] = React.useState(false);
 
     const [nmkTypeResult, setNmkTypeResult] = React.useState(
         NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
@@ -81,8 +84,7 @@ const SecurityAnalysisResult = ({ resultFetcher, onClickNmKConstraint }) => {
 
         return (
             <VirtualizedTable
-                rowCount={rows.length}
-                rowGetter={({ index }) => rows[index]}
+                rows={rows}
                 columns={[
                     {
                         width: 200,
@@ -233,8 +235,7 @@ const SecurityAnalysisResult = ({ resultFetcher, onClickNmKConstraint }) => {
         const rows = flattenNmKresultsContingencies(postContingencyResults);
         return (
             <VirtualizedTable
-                rowCount={rows.length}
-                rowGetter={({ index }) => rows[index]}
+                rows={rows}
                 onCellClick={onClickNmKConstraint}
                 sort={(dataKey, reverse, isNumeric) =>
                     sortResult(
@@ -379,8 +380,7 @@ const SecurityAnalysisResult = ({ resultFetcher, onClickNmKConstraint }) => {
 
         return (
             <VirtualizedTable
-                rowCount={rows.length}
-                rowGetter={({ index }) => rows[index]}
+                rows={rows}
                 onCellClick={onClickNmKConstraint}
                 sort={(dataKey, reverse, isNumeric) =>
                     sortResult(
@@ -483,47 +483,42 @@ const SecurityAnalysisResult = ({ resultFetcher, onClickNmKConstraint }) => {
                 </div>
                 <div style={{ flexGrow: 1 }}>
                     {' '}
-                    {tabIndex === 0 &&
-                        renderTableN(resultFetcher.values.preContingencyResult)}
-                    {tabIndex === 1 &&
+                    {result &&
+                        tabIndex === 0 &&
+                        renderTableN(result.preContingencyResult)}
+                    {result &&
+                        tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
                         renderTableNmKContingencies(
-                            resultFetcher.values.postContingencyResults
+                            result.postContingencyResults
                         )}
-                    {tabIndex === 1 &&
+                    {result &&
+                        tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
                         renderTableNmKConstraints(
-                            resultFetcher.values.postContingencyResults
+                            result.postContingencyResults
                         )}
                 </div>
             </>
         );
     }
 
-    const waiter = useCallback(
-        (renderer) => {
-            if (resultFetcher.values === undefined) {
-                if (resultFetched) {
-                    setResultFetched(false);
-                }
-                resultFetcher.get(() => setResultFetched(true));
-                return (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        isFixed={true}
-                        loadingMessageText={'Loading'}
-                    />
-                );
-            }
-            return renderer();
-        },
-        [resultFetcher, resultFetched]
-    );
+    useEffect(() => {
+        setFetched(resultFetcher.fetch());
+    }, [resultFetcher, setFetched, result]);
 
-    return waiter(() => renderTabs());
+    return !fetched ? (
+        <LoaderWithOverlay
+            color="inherit"
+            loaderSize={70}
+            isFixed={true}
+            loadingMessageText={'Loading'}
+        />
+    ) : (
+        renderTabs()
+    );
 };
 
 SecurityAnalysisResult.defaultProps = {

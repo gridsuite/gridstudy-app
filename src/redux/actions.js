@@ -11,6 +11,17 @@ export function loadNetworkSuccess(network) {
     return { type: LOAD_NETWORK_SUCCESS, network: network };
 }
 
+export const UPDATE_NETWORK = 'UPDATE_NETWORK';
+
+export function updateNetwork(equipmentsName, values, postUpdate) {
+    return {
+        type: UPDATE_NETWORK,
+        equipmentsName: equipmentsName,
+        values: values,
+        postUpdate: postUpdate,
+    };
+}
+
 export const LOAD_GEO_DATA_SUCCESS = 'LOAD_GEO_DATA_SUCCESS';
 
 export function loadGeoDataSuccess(geoData) {

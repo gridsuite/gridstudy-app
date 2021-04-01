@@ -82,93 +82,73 @@ const useStyles = makeStyles((theme) => ({
 
 const ROW_HEIGHT = 48;
 
-const NetworkTable = (props) => {
+const EquipmentTable = ({
+    props,
+    rows,
+    selectedColumnsNames,
+    tableDefinition,
+    filter,
+}) => {
+    const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
-
-    const allDisplayedColumnsNames = useSelector(
-        (state) => state.allDisplayedColumnsNames
-    );
-
-    const [fetching, setFetching] = useState(false);
-    const [tabIndex, setTabIndex] = useState(0);
-    const [lineEdit, setLineEdit] = useState({});
-    const [rowFilter, setRowFilter] = useState(undefined);
-    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
-    const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Map());
-
     const intl = useIntl();
+    const [fetching, setFetching] = useState(false);
+
+    useEffect(() => {
+        const resource = tableDefinition.resource;
+        if (!props.network) return;
+        setFetching(!props.network.fetchEquipment(resource));
+    }, [props.network, tableDefinition]);
 
     const isLineOnEditMode = useCallback(
         (row) => {
-            return (
-                (lineEdit[tabIndex] && lineEdit[tabIndex].line === row) || false
-            );
+            return (lineEdit && lineEdit.line === row) || false;
         },
-        [lineEdit, tabIndex]
+        [lineEdit]
     );
 
-    useEffect(() => {
-        setSelectedColumnsNames(
-            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
-        );
-    }, [tabIndex, allDisplayedColumnsNames]);
-
-    function setLineEditAt(index, value) {
-        setLineEdit({
-            ...lineEdit,
-            ...{ [index]: value },
-        });
-    }
-
     function commitChanges(rowData) {
-        const tab = tabIndex;
         let groovyCr =
             'equipment = network.get' +
-            lineEdit[tab].equipmentType +
+            lineEdit.equipmentType +
             "('" +
-            lineEdit[tabIndex].id.replace(/'/g, "\\'") +
+            lineEdit.id.replace(/'/g, "\\'") +
             "')\n";
-        Object.values(lineEdit[tabIndex].newValues).forEach((cr) => {
+        Object.values(lineEdit.newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
         requestNetworkChange(props.userId, props.studyName, groovyCr).then(
             (response) => {
                 if (response.ok) {
-                    Object.entries(lineEdit[tab].newValues).forEach(
-                        ([key, cr]) => {
-                            rowData[key] = cr.value;
-                        }
-                    );
+                    Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
+                        rowData[key] = cr.value;
+                    });
                 } else {
-                    Object.entries(lineEdit[tab].oldValues).forEach(
+                    Object.entries(lineEdit.oldValues).forEach(
                         ([key, oldValue]) => {
                             rowData[key] = oldValue;
                         }
                     );
                 }
-                setLineEditAt(tab, {});
+                setLineEdit({});
             }
         );
     }
 
     function resetChanges(rowData) {
-        Object.entries(lineEdit[tabIndex].oldValues).forEach(
-            ([key, oldValue]) => {
-                rowData[key] = oldValue;
-            }
-        );
-        setLineEditAt(tabIndex, {});
+        Object.entries(lineEdit.oldValues).forEach(([key, oldValue]) => {
+            rowData[key] = oldValue;
+        });
+        setLineEdit({});
     }
 
     function createEditableRow(cellData, equipmentType) {
         return (
             (!isLineOnEditMode(cellData.rowIndex) && (
                 <IconButton
-                    disabled={
-                        lineEdit[tabIndex] && lineEdit[tabIndex].id && true
-                    }
+                    disabled={lineEdit && lineEdit.id && true}
                     onClick={() =>
-                        setLineEditAt(tabIndex, {
+                        setLineEdit({
                             line: cellData.rowIndex,
                             oldValues: {},
                             newValues: {},
@@ -233,16 +213,15 @@ const NetworkTable = (props) => {
     const registerChangeRequest = useCallback(
         (data, changeCmd, value) => {
             // save original value, dont erase if exists
-            if (!lineEdit[tabIndex].oldValues[data.dataKey])
-                lineEdit[tabIndex].oldValues[data.dataKey] =
-                    data.rowData[data.dataKey];
-            lineEdit[tabIndex].newValues[data.dataKey] = {
+            if (!lineEdit.oldValues[data.dataKey])
+                lineEdit.oldValues[data.dataKey] = data.rowData[data.dataKey];
+            lineEdit.newValues[data.dataKey] = {
                 changeCmd: changeCmd,
                 value: value,
             };
             data.rowData[data.dataKey] = value;
         },
-        [lineEdit, tabIndex]
+        [lineEdit]
     );
 
     const EditableCellRender = useCallback(
@@ -306,59 +285,6 @@ const NetworkTable = (props) => {
         });
     };
 
-    useEffect(() => {
-        if (!props.network) return;
-        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        setFetching(true);
-        props.network.fetchEquipement(resource, () => {
-            setFetching(false);
-        });
-    }, [tabIndex, props.network]);
-
-    function renderTable() {
-        const definition = TABLES_DEFINITION_INDEXES.get(tabIndex);
-        const table = props.network[definition.resource];
-        return fetching ? (
-            <LoaderWithOverlay
-                color="inherit"
-                loaderSize={70}
-                isFixed={true}
-                loadingMessageText={'Loading'}
-            />
-        ) : (
-            <VirtualizedTable
-                rowCount={table.length}
-                rowGetter={({ index }) =>
-                    index < table.length ? table[index] : {}
-                }
-                id={'table ' + tabIndex}
-                filter={filter}
-                columns={
-                    definition.header
-                        ? [
-                              makeHeaderCell(definition.header),
-                              ...generateTableColumns(definition),
-                          ]
-                        : generateTableColumns(definition)
-                }
-            />
-        );
-    }
-
-    function renderVoltageLevelsTable() {
-        const voltageLevels = props.network.getVoltageLevels();
-        return (
-            <VirtualizedTable
-                rowCount={voltageLevels.length}
-                rowGetter={({ index }) => voltageLevels[index]}
-                filter={filter}
-                columns={generateTableColumns(
-                    TABLES_DEFINITIONS.VOLTAGE_LEVELS
-                )}
-            />
-        );
-    }
-
     function makeHeaderCell(equipmentType) {
         return {
             width: 80,
@@ -370,6 +296,80 @@ const NetworkTable = (props) => {
             cellRenderer: (cellData) =>
                 createEditableRow(cellData, equipmentType),
         };
+    }
+
+    return fetching ? (
+        <LoaderWithOverlay
+            color="inherit"
+            loaderSize={70}
+            isFixed={true}
+            loadingMessageText={'Loading'}
+        />
+    ) : (
+        <VirtualizedTable
+            rows={rows}
+            filter={filter}
+            columns={
+                tableDefinition.header
+                    ? [
+                          makeHeaderCell(tableDefinition.header),
+                          ...generateTableColumns(tableDefinition),
+                      ]
+                    : generateTableColumns(tableDefinition)
+            }
+        />
+    );
+};
+
+const NetworkTable = (props) => {
+    const classes = useStyles();
+
+    const allDisplayedColumnsNames = useSelector(
+        (state) => state.allDisplayedColumnsNames
+    );
+    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
+    const [rowFilter, setRowFilter] = useState(undefined);
+    const [tabIndex, setTabIndex] = useState(0);
+    const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
+
+    const intl = useIntl();
+
+    useEffect(() => {
+        setSelectedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
+    }, [tabIndex, allDisplayedColumnsNames]);
+
+    /*
+        function renderVoltageLevelsTable() {
+            const voltageLevels = props.network.getVoltageLevels();
+            return (
+                <VirtualizedTable
+                    rowCount={voltageLevels.length}
+                    rowGetter={({ index }) => voltageLevels[index]}
+                    filter={filter}
+                    columns={generateTableColumns(
+                        TABLES_DEFINITIONS.VOLTAGE_LEVELS
+                    )}
+                />
+            );
+        }
+    */
+
+    function renderTable() {
+        const tableDefinition = TABLES_DEFINITION_INDEXES.get(tabIndex);
+        const rows = tableDefinition.getter
+            ? tableDefinition.getter(props.network)
+            : props.network[TABLES_DEFINITION_INDEXES.get(tabIndex).resource];
+        return (
+            <EquipmentTable
+                props={props}
+                rows={rows}
+                selectedColumnsNames={selectedColumnsNames}
+                tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
+                filter={filter}
+            />
+        );
     }
 
     function setFilter(event) {
@@ -545,10 +545,7 @@ const NetworkTable = (props) => {
                 </Grid>
                 <div className={classes.table} style={{ flexGrow: 1 }}>
                     {/*This render is fast, rerender full dom everytime*/}
-                    {tabIndex !== TABLES_DEFINITIONS.VOLTAGE_LEVELS.index &&
-                        renderTable(tabIndex)}
-                    {tabIndex === TABLES_DEFINITIONS.VOLTAGE_LEVELS.index &&
-                        renderVoltageLevelsTable()}
+                    {renderTable()}
                 </div>
             </>
         )

@@ -19,7 +19,6 @@ import ListItem from '@material-ui/core/ListItem';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 
-import Network from './network';
 import Divider from '@material-ui/core/Divider';
 import {
     AutoSizer,

@@ -38,7 +38,8 @@ export const TABLES_DEFINITIONS = {
     VOLTAGE_LEVELS: {
         index: 1,
         name: 'VoltageLevels',
-        resource: equipements.substations,
+        resource: equipements.voltageLevels,
+        getter: (network) => network.getVoltageLevels(),
         columns: [
             {
                 width: 400,

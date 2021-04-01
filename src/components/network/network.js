@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { RemoteRessourceHandler } from '../util/remote-ressource-handler';
+import { RemoteResourceHandler } from '../util/remote-resource-handler';
+import { updateNetwork } from '../../redux/actions';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
@@ -73,7 +74,7 @@ export default class Network {
 
     nominalVoltages = [];
 
-    completeSubstationsInfos = () => {
+    completeSubstationsInfos() {
         const nominalVoltagesSet = new Set();
         this.substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
@@ -105,7 +106,7 @@ export default class Network {
         this.nominalVoltages = Array.from(nominalVoltagesSet).sort(
             (a, b) => b - a
         );
-    };
+    }
 
     updateEquipments(currentEquipments, newEquipements) {
         currentEquipments.forEach((equipment1, index) => {
@@ -125,16 +126,16 @@ export default class Network {
         this.completeSubstationsInfos();
     }
 
-    completeLinesInfos(lines) {
-        this.linesById = lines.reduce(elementIdIndexer, new Map());
+    completeLinesInfos() {
+        this.linesById = this.lines.reduce(elementIdIndexer, new Map());
     }
 
     updateLines(lines) {
         this.updateEquipments(this.lines, lines);
     }
 
-    completeTwoWindingsTransformersInfos(twoWindingsTransformers) {
-        this.twoWindingsTransformersById = twoWindingsTransformers.reduce(
+    completeTwoWindingsTransformersInfos() {
+        this.twoWindingsTransformersById = this.twoWindingsTransformers.reduce(
             elementIdIndexer,
             new Map()
         );
@@ -147,8 +148,8 @@ export default class Network {
         );
     }
 
-    completeThreeWindingsTransformersInfos(threeWindingsTransformers) {
-        this.threeWindingsTransformersById = threeWindingsTransformers.reduce(
+    completeThreeWindingsTransformersInfos() {
+        this.threeWindingsTransformersById = this.threeWindingsTransformers.reduce(
             elementIdIndexer,
             new Map()
         );
@@ -161,8 +162,11 @@ export default class Network {
         );
     }
 
-    completeGeneratorsInfos(generators) {
-        this.generatorsById = generators.reduce(elementIdIndexer, new Map());
+    completeGeneratorsInfos() {
+        this.generatorsById = this.generators.reduce(
+            elementIdIndexer,
+            new Map()
+        );
     }
 
     updateGenerators(generators) {
@@ -253,22 +257,21 @@ export default class Network {
             console.log(key, value, postUpdate);
             this.lazyLoaders.set(
                 key,
-                new RemoteRessourceHandler(
+                new RemoteResourceHandler(
                     value,
-                    (value) => (this[key] = value),
-                    (key) => errHandler(key),
-                    postUpdate
+                    (value) =>
+                        this.dispatch(updateNetwork(key, value, postUpdate)),
+                    (key) => errHandler(key)
                 )
             );
         }
     }
 
-    fetchEquipement(equipement, cb) {
+    fetchEquipment(equipement, cb) {
         const fetcher = this.lazyLoaders.get(equipement);
-        if (fetcher) fetcher.fetch(cb);
+        if (fetcher) return fetcher.fetch(cb);
         else {
-            console.info('not found ' + equipement);
-            console.info(this);
+            console.error('not found ' + equipement);
         }
     }
 
@@ -286,36 +289,40 @@ export default class Network {
         vscConverterStations,
         shuntCompensators,
         staticVarCompensators,
-        errHandler
+        errHandler,
+        dispatch
     ) {
         this.generateEquipementHandler({
             substations,
             errHandler,
-            postUpdate: this.completeSubstationsInfos,
+            postUpdate: (net) => net.completeSubstationsInfos(),
         });
-        this.lazyLoaders.set(equipements.vol);
+        this.lazyLoaders.set(
+            equipements.vol,
+            this.lazyLoaders.get(equipements.substations)
+        );
         this.generateEquipementHandler({
             lines,
             errHandler,
-            postUpdate: this.completeLinesInfos,
+            postUpdate: (net) => net.completeLinesInfos(),
         });
 
         this.generateEquipementHandler({
             twoWindingsTransformers,
             errHandler,
-            postUpdate: this.completeTwoWindingsTransformersInfos,
+            postUpdate: (net) => net.completeTwoWindingsTransformersInfos(),
         });
 
         this.generateEquipementHandler({
             threeWindingsTransformers,
             errHandler,
-            postUpdate: this.completeThreeWindingsTransformersInfos,
+            postUpdate: (net) => net.completeThreeWindingsTransformersInfos(),
         });
 
         this.generateEquipementHandler({
             generators,
             errHandler,
-            postUpdate: this.completeGeneratorsInfos,
+            postUpdate: (net) => net.completeGeneratorsInfos(),
         });
 
         this.generateEquipementHandler({
@@ -330,5 +337,7 @@ export default class Network {
             errHandler,
             postUpdate: undefined,
         });
+
+        this.dispatch = dispatch;
     }
 }

@@ -57,7 +57,7 @@ import {
     selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
-import Network, { equipements } from "./network/network";
+import Network, { equipements } from './network/network';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Paper from '@material-ui/core/Paper';
@@ -82,7 +82,7 @@ import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { RemoteRessourceHandler } from './util/remote-ressource-handler';
+import { RemoteResourceHandler } from './util/remote-resource-handler';
 
 const drawerWidth = 300;
 
@@ -213,6 +213,10 @@ const StudyPane = (props) => {
         RunningStatus.IDLE
     );
 
+    const [
+        securityAnalysisResultFetcher,
+        setSecurityAnalysisResultFetcher,
+    ] = useState(null);
     const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
 
     const [computationStopped, setComputationStopped] = useState(false);
@@ -298,9 +302,10 @@ const StudyPane = (props) => {
     }, [studyName, userId]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
-        setSecurityAnalysisResult(
-            new RemoteRessourceHandler(() =>
-                fetchSecurityAnalysisResult(studyName, userId)
+        setSecurityAnalysisResultFetcher(
+            new RemoteResourceHandler(
+                () => fetchSecurityAnalysisResult(studyName, userId),
+                (result) => setSecurityAnalysisResult(result)
             )
         );
     }, [studyName, userId]);
@@ -315,7 +320,7 @@ const StudyPane = (props) => {
         startSecurityAnalysis(studyName, userId, contingencyListNames);
 
         // clean result
-        setSecurityAnalysisResult(null);
+        setSecurityAnalysisResultFetcher(null);
     };
 
     const startComputation = (runnable) => {
@@ -394,7 +399,8 @@ const StudyPane = (props) => {
                     (error) => {
                         console.error(error.message);
                         setStudyNotFound(true);
-                    }
+                    },
+                    dispatch
                 );
                 dispatch(loadNetworkSuccess(network));
             }
@@ -538,7 +544,11 @@ const StudyPane = (props) => {
     }, [location.search]);
 
     useEffect(() => {
-        if (network && !filteredNominalVoltages) {
+        if (
+            network &&
+            network.substations.length > 0 &&
+            !filteredNominalVoltages
+        ) {
             dispatch(
                 filteredNominalVoltagesUpdated(network.getNominalVoltages())
             );
@@ -758,10 +768,10 @@ const StudyPane = (props) => {
         [network, showVoltageLevelDiagram, dispatch]
     );
 
-    useEffect( () => {
+    useEffect(() => {
         if (!network) return;
-        network.fetchEquipement(equipements.substations);
-        network.fetchEquipement(equipements.lines);
+        network.fetchEquipment(equipements.substations);
+        network.fetchEquipment(equipements.lines);
     }, [network]);
 
     function renderMapView() {
@@ -888,8 +898,8 @@ const StudyPane = (props) => {
                 >
                     <NetworkMap
                         network={network}
-                        substations={network?network.substations:[]}
-                        lines={network?network.lines:[]}
+                        substations={network ? network.substations : []}
+                        lines={network ? network.lines : []}
                         updatedLines={updatedLines}
                         geoData={geoData}
                         useName={useName}
@@ -996,7 +1006,7 @@ const StudyPane = (props) => {
                         className={classes.drawerDiv}
                     >
                         <NetworkExplorer
-                            substations={network?network.substations:[]}
+                            substations={network ? network.substations : []}
                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
@@ -1097,7 +1107,8 @@ const StudyPane = (props) => {
                 }}
             >
                 <SecurityAnalysisResult
-                    resultFetcher={securityAnalysisResult}
+                    resultFetcher={securityAnalysisResultFetcher}
+                    result={securityAnalysisResult}
                     onClickNmKConstraint={onClickNmKConstraint}
                 />
             </Paper>
