@@ -10,13 +10,13 @@ import { AutoSizer, Column, Table } from 'react-virtualized';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import memoize from 'memoize-one';
 
-function getTextWidth(text) {
+function getTextWidth(text, style) {
     // re-use canvas object for better performance
     let canvas =
         getTextWidth.canvas ||
         (getTextWidth.canvas = document.createElement('canvas'));
     let context = canvas.getContext('2d');
-    context.font = '14px Roboto Helvetica';
+    context.font = '12px ' + style.fontFamily;
     let metrics = context.measureText(text);
     return metrics.width;
 }
@@ -59,6 +59,10 @@ const styles = (theme) => ({
     header: {
         paddingLeft: 16 + cellPadding,
     },
+    canvas: {
+        'font-family': theme.typography.fontFamily,
+    },
+
 });
 
 class MuiVirtualizedTable extends React.PureComponent {
@@ -104,11 +108,11 @@ class MuiVirtualizedTable extends React.PureComponent {
         return indexedArray.map((k) => k[1]);
     });
 
-    computeDataWidth = (text) => {
-        return getTextWidth(text || '') + 2 * cellPadding;
+    computeDataWidth = (text, style) => {
+        return getTextWidth(text || '', style) + 2 * cellPadding;
     };
 
-    sizes = memoize((columns) => {
+    sizes = memoize((columns, classes) => {
         let sizes = {};
         columns.forEach((col) => {
             if (col.width) {
@@ -117,7 +121,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                 /* calculate the header (and min size if exists) */
                 let size = Math.max(
                     col.minWidth || 0,
-                    this.computeDataWidth(col.label)
+                    this.computeDataWidth(col.label, classes.canvas)
                 );
                 /* calculate for each row the width, and keep the max  */
                 for (let i = 0; i < this.props.rowCount; ++i) {
@@ -125,7 +129,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                         col,
                         this.props.rowGetter({ index: i })[col.dataKey]
                     );
-                    size = Math.max(size, this.computeDataWidth(text));
+                    size = Math.max(size, this.computeDataWidth(text, classes.canvas));
                 }
                 if (col.maxWidth) size = Math.min(col.maxWidth, size);
                 sizes[col.dataKey] = Math.ceil(size);
@@ -301,7 +305,7 @@ class MuiVirtualizedTable extends React.PureComponent {
             return index < reorderedIndex.length ? reorderedIndex[index] : 0;
         };
 
-        const sizes = this.sizes(this.props.columns);
+        const sizes = this.sizes(this.props.columns, classes);
         return (
             <AutoSizer>
                 {({ height, width }) => (
