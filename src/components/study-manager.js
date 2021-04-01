@@ -580,7 +580,10 @@ const StudyManager = ({ onClick }) => {
                         delete localCreationRequests[makeKey(study)];
                     }
                 });
-                if (didDelete) setlocalCreationRequests(localCreationRequests);
+                if (didDelete)
+                    setlocalCreationRequests(
+                        Object.assign({}, localCreationRequests)
+                    );
             }
         },
         [localCreationRequests]
