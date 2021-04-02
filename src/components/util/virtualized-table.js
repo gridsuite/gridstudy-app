@@ -10,14 +10,27 @@ import { AutoSizer, Column, Table } from 'react-virtualized';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import memoize from 'memoize-one';
 
+function getCSS(cssName) {
+    let search = '.' + cssName;
+    for (let i = 0; i < document.styleSheets.length; i++) {
+        let styleSheet = document.styleSheets[i];
+        try {
+            for (let cssRule of styleSheet.cssRules) {
+                if (cssRule.selectorText === search) {
+                    return cssRule;
+                }
+            }
+        } catch (e) {}
+    }
+}
+
 function getTextWidth(text, style) {
     // re-use canvas object for better performance
     let canvas =
         getTextWidth.canvas ||
         (getTextWidth.canvas = document.createElement('canvas'));
     let context = canvas.getContext('2d');
-    // context.fontSize is undefined, even when specified in styles
-    context.font = '12px ' + style.fontFamily;
+    context.font = style.fontSize + ' ' + style.fontFamily;
     let metrics = context.measureText(text);
     return metrics.width;
 }
@@ -61,7 +74,8 @@ const styles = (theme) => ({
         paddingLeft: 16 + cellPadding,
     },
     canvas: {
-        'font-family': theme.typography.fontFamily,
+        fontFamily: theme.typography.fontFamily,
+        fontSize: theme.typography.fontSize,
     },
 });
 
@@ -112,7 +126,7 @@ class MuiVirtualizedTable extends React.PureComponent {
         return getTextWidth(text || '', style) + 2 * cellPadding;
     };
 
-    sizes = memoize((columns, classes) => {
+    sizes = memoize((columns, css) => {
         let sizes = {};
         columns.forEach((col) => {
             if (col.width) {
@@ -121,7 +135,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                 /* calculate the header (and min size if exists) */
                 let size = Math.max(
                     col.minWidth || 0,
-                    this.computeDataWidth(col.label, classes.canvas)
+                    this.computeDataWidth(col.label, css)
                 );
                 /* calculate for each row the width, and keep the max  */
                 for (let i = 0; i < this.props.rowCount; ++i) {
@@ -129,10 +143,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                         col,
                         this.props.rowGetter({ index: i })[col.dataKey]
                     );
-                    size = Math.max(
-                        size,
-                        this.computeDataWidth(text, classes.canvas)
-                    );
+                    size = Math.max(size, this.computeDataWidth(text, css));
                 }
                 if (col.maxWidth) size = Math.min(col.maxWidth, size);
                 sizes[col.dataKey] = Math.ceil(size);
@@ -288,6 +299,8 @@ class MuiVirtualizedTable extends React.PureComponent {
         );
     };
 
+    canvasCss = memoize((cssName) => getCSS(cssName).style);
+
     render() {
         const {
             classes,
@@ -307,8 +320,8 @@ class MuiVirtualizedTable extends React.PureComponent {
         const getIndexFor = (index) => {
             return index < reorderedIndex.length ? reorderedIndex[index] : 0;
         };
-
-        const sizes = this.sizes(this.props.columns, classes);
+        const canvasCss = this.canvasCss(classes.canvas);
+        const sizes = this.sizes(this.props.columns, canvasCss);
         return (
             <AutoSizer>
                 {({ height, width }) => (
