@@ -34,13 +34,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
-
 import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
-} from './constants';
+} from './config-tables';
 
 const useStyles = makeStyles((theme) => ({
     cell: {
