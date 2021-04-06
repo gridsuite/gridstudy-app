@@ -46,7 +46,7 @@ import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/constants';
 const initialState = {
     studies: [],
     temporaryStudies: [],
-    studyName: null,
+    studyUuid: null,
     userId: null,
     network: null,
     geoData: null,
@@ -88,12 +88,12 @@ export const reducer = createReducer(initialState, {
     },
 
     [OPEN_STUDY]: (state, action) => {
-        state.studyName = action.studyRef[0];
+        state.studyUuid = action.studyRef[0];
         state.userId = action.studyRef[1];
     },
 
     [CLOSE_STUDY]: (state) => {
-        state.studyName = null;
+        state.studyUuid = null;
         state.userId = null;
         state.network = null;
         state.geoData = null;

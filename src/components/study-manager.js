@@ -123,7 +123,7 @@ const DonwnloadIframe = 'downloadIframe';
 /**
  * Card displaying a study on the screen, with the ability to open and edit it
  * @param {object} study Study object containing ad hoc information to be displayed on the card
- * @param {String} study.studyName Name of the study
+ * @param {String} study.studyUuid Name of the study
  * @param {String} study.caseFormat Format of the study
  * @param {String} study.description Description of the study
  * @param {Date} study.creationDate Date of the study
@@ -194,7 +194,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickDelete = () => {
-        deleteStudy(study.studyName, study.userId).then((response) => {
+        deleteStudy(study.studyUuid, study.userId).then((response) => {
             if (!response.ok) {
                 setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
             }
@@ -218,7 +218,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, study.userId, newStudyNameValue)
+        renameStudy(study.studyUuid, study.userId, newStudyNameValue)
             .then((response) => {
                 if (response === 'NOT_ALLOWED') {
                     setRenameError(
@@ -441,14 +441,14 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 open={openExportDialog}
                 onClose={handleCloseExport}
                 onClick={handleClickExport}
-                studyName={study.studyName}
+                studyUuid={study.studyUuid}
                 userId={study.userId}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
                 open={openAccessRightsDialog}
                 onClose={handleCloseAccessRights}
-                studyName={study.studyName}
+                studyUuid={study.studyUuid}
                 userId={study.userId}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
                 isPrivate={study.studyPrivate}
@@ -459,7 +459,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
 
 StudyCard.propTypes = {
     study: PropTypes.shape({
-        studyName: PropTypes.string.isRequired,
+        studyUuid: PropTypes.string.isRequired,
         userId: PropTypes.string.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
@@ -489,9 +489,11 @@ const StudyManager = ({ onClick }) => {
 
     const dispatchStudies = useCallback(() => {
         fetchStudyCreationRequests().then((studies) => {
+            console.log('fetchStudyCreationRequests', studies);
             dispatch(loadStudyCreationRequestsSuccess(studies));
         });
         fetchStudies().then((studies) => {
+            console.log('fetchStudies', studies);
             dispatch(loadStudiesSuccess(studies));
         });
         // Note: dispatch doesn't change
@@ -503,11 +505,11 @@ const StudyManager = ({ onClick }) => {
             if (eventData.headers) {
                 const error = eventData.headers['error'];
                 if (error && error !== undefined) {
-                    const studyName = eventData.headers['studyName'];
+                    const studyUuid = eventData.headers['studyUuid'];
                     const errorMessage =
                         intl.formatMessage({ id: 'studyCreatingError' }) +
                         ' : ' +
-                        studyName +
+                        studyUuid +
                         '\n\n' +
                         error;
                     enqueueSnackbar(errorMessage, {
@@ -525,6 +527,7 @@ const StudyManager = ({ onClick }) => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
+            console.log('notification:', event);
             displayErrorIfExist(event);
             dispatchStudies();
         };
@@ -587,7 +590,7 @@ const StudyManager = ({ onClick }) => {
                             studyCreationLoader={false}
                             study={study}
                             onClick={() =>
-                                onClick(study.studyName, study.userId)
+                                onClick(study.studyUuid, study.userId)
                             }
                         />
                     </Grid>

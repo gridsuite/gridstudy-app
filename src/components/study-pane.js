@@ -156,7 +156,7 @@ export const StudyView = {
 };
 
 const StudyPane = (props) => {
-    const studyName = decodeURIComponent(useParams().studyName);
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const userId = decodeURIComponent(useParams().userId);
 
@@ -271,11 +271,11 @@ const StudyPane = (props) => {
     }
 
     const updateLoadFlowResult = useCallback(() => {
-        fetchStudy(studyName, userId).then((study) => {
+        fetchStudy(studyUuid, userId).then((study) => {
             setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowStatus));
             setLoadFlowResult(study.loadFlowResult);
         });
-    }, [studyName, userId]);
+    }, [studyUuid, userId]);
 
     function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
         switch (securityAnalysisStatus) {
@@ -291,13 +291,13 @@ const StudyPane = (props) => {
     }
 
     const updateSecurityAnalysisStatus = useCallback(() => {
-        fetchSecurityAnalysisStatus(studyName, userId).then((status) => {
+        fetchSecurityAnalysisStatus(studyUuid, userId).then((status) => {
             setSecurityAnalysisStatus(getSecurityAnalysisRunningStatus(status));
         });
-    }, [studyName, userId]);
+    }, [studyUuid, userId]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
-        fetchSecurityAnalysisResult(studyName, userId).then(function (
+        fetchSecurityAnalysisResult(studyUuid, userId).then(function (
             response
         ) {
             if (response.ok) {
@@ -306,7 +306,7 @@ const StudyPane = (props) => {
                 });
             }
         });
-    }, [studyName, userId]);
+    }, [studyUuid, userId]);
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         // close the contingency list selection window
@@ -315,7 +315,7 @@ const StudyPane = (props) => {
         setComputationStopped(false);
 
         // start server side security analysis
-        startSecurityAnalysis(studyName, userId, contingencyListNames);
+        startSecurityAnalysis(studyUuid, userId, contingencyListNames);
 
         // clean result
         setSecurityAnalysisResult(null);
@@ -323,7 +323,7 @@ const StudyPane = (props) => {
 
     const startComputation = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
-            startLoadFlow(studyName, userId);
+            startLoadFlow(studyUuid, userId);
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
         }
@@ -333,7 +333,7 @@ const StudyPane = (props) => {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (runnable) => {
             if (runnable === Runnable.SECURITY_ANALYSIS) {
-                stopSecurityAnalysis(studyName, userId);
+                stopSecurityAnalysis(studyUuid, userId);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -374,37 +374,37 @@ const StudyPane = (props) => {
     const [position, setPosition] = useState([-1, -1]);
 
     const loadNetwork = useCallback(() => {
-        console.info(`Loading network of study '${studyName}'...`);
+        console.info(`Loading network of study '${studyUuid}'...`);
         updateLoadFlowResult();
         updateSecurityAnalysisResult();
         updateSecurityAnalysisStatus();
 
-        const substations = fetchSubstations(studyName, userId);
-        const lines = fetchLines(studyName, userId);
+        const substations = fetchSubstations(studyUuid, userId);
+        const lines = fetchLines(studyUuid, userId);
         const twoWindingsTransformers = fetchTwoWindingsTransformers(
-            studyName,
+            studyUuid,
             userId
         );
         const threeWindingsTransformers = fetchThreeWindingsTransformers(
-            studyName,
+            studyUuid,
             userId
         );
-        const generators = fetchGenerators(studyName, userId);
-        const loads = fetchLoads(studyName, userId);
-        const batteries = fetchBatteries(studyName, userId);
-        const danglingLines = fetchDanglingLines(studyName, userId);
-        const hvdcLines = fetchHvdcLines(studyName, userId);
+        const generators = fetchGenerators(studyUuid, userId);
+        const loads = fetchLoads(studyUuid, userId);
+        const batteries = fetchBatteries(studyUuid, userId);
+        const danglingLines = fetchDanglingLines(studyUuid, userId);
+        const hvdcLines = fetchHvdcLines(studyUuid, userId);
         const lccConverterStations = fetchLccConverterStations(
-            studyName,
+            studyUuid,
             userId
         );
         const vscConverterStations = fetchVscConverterStations(
-            studyName,
+            studyUuid,
             userId
         );
-        const shuntCompensators = fetchShuntCompensators(studyName, userId);
+        const shuntCompensators = fetchShuntCompensators(studyUuid, userId);
         const staticVarCompensators = fetchStaticVarCompensators(
-            studyName,
+            studyUuid,
             userId
         );
 
@@ -445,9 +445,9 @@ const StudyPane = (props) => {
                 console.error(error.message);
                 setStudyNotFound(true);
             });
-        // Note: studyName and dispatch don't change
+        // Note: studyUuid and dispatch don't change
     }, [
-        studyName,
+        studyUuid,
         userId,
         dispatch,
         updateLoadFlowResult,
@@ -458,7 +458,7 @@ const StudyPane = (props) => {
     const updateNetwork = useCallback(
         (substationsIds) => {
             const updatedEquipments = fetchAllEquipments(
-                studyName,
+                studyUuid,
                 userId,
                 substationsIds
             );
@@ -497,17 +497,17 @@ const StudyPane = (props) => {
                     console.error(error.message);
                     setStudyNotFound(true);
                 });
-            // Note: studyName don't change
+            // Note: studyUuid don't change
         },
-        [studyName, userId, network]
+        [studyUuid, userId, network]
     );
 
     const loadGeoData = useCallback(() => {
-        console.info(`Loading geo data of study '${studyName}'...`);
+        console.info(`Loading geo data of study '${studyUuid}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyName, userId);
+        const substationPositions = fetchSubstationPositions(studyUuid, userId);
 
-        const linePositions = fetchLinePositions(studyName, userId);
+        const linePositions = fetchLinePositions(studyUuid, userId);
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
@@ -521,14 +521,14 @@ const StudyPane = (props) => {
                 console.error(error.message);
                 setStudyNotFound(true);
             });
-        // Note: studyName and dispatch don't change
-    }, [studyName, userId, dispatch]);
+        // Note: studyUuid and dispatch don't change
+    }, [studyUuid, userId, dispatch]);
 
     const connectNotifications = useCallback(
-        (studyName) => {
-            console.info(`Connecting to notifications '${studyName}'...`);
+        (studyUuid) => {
+            console.info(`Connecting to notifications '${studyUuid}'...`);
 
-            const ws = connectNotificationsWebsocket(studyName);
+            const ws = connectNotificationsWebsocket(studyUuid);
             ws.onmessage = function (event) {
                 dispatch(studyUpdated(JSON.parse(event.data)));
             };
@@ -548,11 +548,11 @@ const StudyPane = (props) => {
 
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
-        dispatch(openStudy(studyName, userId));
+        dispatch(openStudy(studyUuid, userId));
 
         loadNetwork();
         loadGeoData();
-        const ws = connectNotifications(studyName);
+        const ws = connectNotifications(studyUuid);
 
         // study cleanup at unmount event
         return function () {
@@ -565,7 +565,7 @@ const StudyPane = (props) => {
         // connectNotifications don't change
     }, [
         dispatch,
-        studyName,
+        studyUuid,
         userId,
         loadNetwork,
         loadGeoData,
@@ -599,15 +599,15 @@ const StudyPane = (props) => {
                 '/' +
                     encodeURIComponent(userId) +
                     '/studies/' +
-                    encodeURIComponent(studyName) +
+                    encodeURIComponent(studyUuid) +
                     stringify(
                         { voltageLevelId: voltageLevelId },
                         { addQueryPrefix: true }
                     )
             );
         },
-        // Note: studyName and history don't change
-        [studyName, userId, history]
+        // Note: studyUuid and history don't change
+        [studyUuid, userId, history]
     );
 
     const showSubstationDiagram = useCallback(
@@ -618,15 +618,15 @@ const StudyPane = (props) => {
                 '/' +
                     encodeURIComponent(userId) +
                     '/studies/' +
-                    encodeURIComponent(studyName) +
+                    encodeURIComponent(studyUuid) +
                     stringify(
                         { substationId: substationId },
                         { addQueryPrefix: true }
                     )
             );
         },
-        // Note: studyName and history don't change
-        [studyName, userId, history, dispatch]
+        // Note: studyUuid and history don't change
+        [studyUuid, userId, history, dispatch]
     );
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -642,7 +642,7 @@ const StudyPane = (props) => {
             '/' +
                 encodeURIComponent(userId) +
                 '/studies/' +
-                encodeURIComponent(studyName)
+                encodeURIComponent(studyUuid)
         );
     }
 
@@ -659,7 +659,7 @@ const StudyPane = (props) => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(studyName, userId, breakerId, open).then(
+            updateSwitchState(studyUuid, userId, breakerId, open).then(
                 (response) => {
                     if (!response.ok) {
                         console.error(response);
@@ -672,7 +672,7 @@ const StudyPane = (props) => {
                 }
             );
         },
-        [studyName, userId]
+        [studyUuid, userId]
     );
 
     const updateSld = () => {
@@ -710,10 +710,10 @@ const StudyPane = (props) => {
                 dispatch(increaseResultCount());
             }
         }
-        // Note: studyName, and loadNetwork don't change
+        // Note: studyUuid, and loadNetwork don't change
     }, [
         studyUpdatedForce,
-        studyName,
+        studyUuid,
         loadNetwork,
         updateLoadFlowResult,
         updateSecurityAnalysisStatus,
@@ -850,7 +850,7 @@ const StudyPane = (props) => {
             }
 
             svgUrl = getVoltageLevelSingleLineDiagram(
-                studyName,
+                studyUuid,
                 userId,
                 displayedVoltageLevelId,
                 useName,
@@ -871,7 +871,7 @@ const StudyPane = (props) => {
             }
 
             svgUrl = getSubstationSingleLineDiagram(
-                studyName,
+                studyUuid,
                 userId,
                 displayedSubstationId,
                 useName,
@@ -1092,7 +1092,7 @@ const StudyPane = (props) => {
             <Paper className={clsx('singlestretch-child', classes.table)}>
                 <NetworkTable
                     network={network}
-                    studyName={studyName}
+                    studyUuid={studyUuid}
                     userId={userId}
                 />
             </Paper>
@@ -1155,7 +1155,7 @@ const StudyPane = (props) => {
                 message={
                     <FormattedMessage
                         id="studyNotFound"
-                        values={{ studyName: studyName }}
+                        values={{ studyUuid: studyUuid }}
                     />
                 }
             />

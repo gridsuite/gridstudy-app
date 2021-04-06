@@ -25,7 +25,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 
 const ContingencyListSelector = (props) => {
-    const studyName = decodeURIComponent(useParams().studyName);
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const userId = decodeURIComponent(useParams().userId);
 
@@ -69,12 +69,12 @@ const ContingencyListSelector = (props) => {
         setSimulatedContingencyCount(null);
         fetchContingencyCount(
             userId,
-            studyName,
+            studyUuid,
             checkedContingencyListNames
         ).then((contingencyCount) => {
             setSimulatedContingencyCount(contingencyCount);
         });
-    }, [userId, studyName, checkedContingencyListNames]);
+    }, [userId, studyUuid, checkedContingencyListNames]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null
