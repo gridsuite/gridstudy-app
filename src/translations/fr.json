@@ -219,6 +219,7 @@
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
 
-    "LockoutLine": "Consigner la ligne",
+    "LockoutLine": "Mettre sous consigne la ligne",
+    "TripLine": "Déclencher la ligne",
     "SwitchOnLine": "Fermer la ligne"
 }

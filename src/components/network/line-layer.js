@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CompositeLayer, TextLayer } from 'deck.gl';
+import { CompositeLayer, TextLayer, IconLayer } from 'deck.gl';
+import PadlockIcon from '../../images/lock_black_24dp.svg';
+import BoltIcon from '../../images/bolt_black_24dp.svg';
 import { PathStyleExtension } from '@deck.gl/extensions';
 import ArrowLayer, { ArrowDirection } from './layers/arrow-layer';
 import ParallelPathLayer from './layers/parallel-path-layer';
@@ -120,6 +122,20 @@ function getLineColor(line, nominalVoltageColor, props, lineConnection) {
     }
 }
 
+function getLineIcon(lineStatus) {
+    return {
+        url:
+            lineStatus === 'PLANNED_OUTAGE'
+                ? PadlockIcon
+                : lineStatus === 'FORCED_OUTAGE'
+                ? BoltIcon
+                : undefined,
+        height: 24,
+        width: 24,
+        mask: true,
+    };
+}
+
 export const ArrowSpeed = {
     STOPPED: 0,
     SLOW: 1,
@@ -175,6 +191,7 @@ class LineLayer extends CompositeLayer {
         this.state = {
             compositeData: [],
             linesConnection: new Map(),
+            linesStatus: new Map(),
         };
     }
 
@@ -199,11 +216,13 @@ class LineLayer extends CompositeLayer {
     updateState({ props, oldProps, changeFlags }) {
         let compositeData;
         let linesConnection;
+        let linesStatus;
 
         if (changeFlags.dataChanged) {
             compositeData = [];
 
             linesConnection = new Map();
+            linesStatus = new Map();
 
             if (
                 props.network != null &&
@@ -248,6 +267,10 @@ class LineLayer extends CompositeLayer {
                             terminal2Connected: line.terminal2Connected,
                         });
 
+                        linesStatus.set(line.id, {
+                            branchStatus: line.branchStatus,
+                        });
+
                         const key = this.genLineKey(line);
                         let val = mapOriginDestination.get(key);
                         if (val == null)
@@ -261,12 +284,16 @@ class LineLayer extends CompositeLayer {
         } else {
             compositeData = this.state.compositeData;
             linesConnection = this.state.linesConnection;
+            linesStatus = this.state.linesStatus;
 
             if (props.updatedLines !== oldProps.updatedLines) {
                 props.updatedLines.forEach((line1) => {
                     linesConnection.set(line1.id, {
                         terminal1Connected: line1.terminal1Connected,
                         terminal2Connected: line1.terminal2Connected,
+                    });
+                    linesStatus.set(line1.id, {
+                        branchStatus: line1.branchStatus,
                     });
                 });
             }
@@ -325,7 +352,6 @@ class LineLayer extends CompositeLayer {
             //add labels
             compositeData.forEach((compositeData) => {
                 compositeData.activePower = [];
-                compositeData.branchStatus = [];
                 compositeData.lines.forEach((line) => {
                     let lineData = compositeData.lineMap.get(line.id);
                     let arrowDirection = getArrowDirection(line.p1);
@@ -371,7 +397,28 @@ class LineLayer extends CompositeLayer {
                             offset: coordinates2.offset,
                         });
                     }
-                    if (line.branchStatus !== undefined) {
+                });
+            });
+        }
+
+        if (
+            changeFlags.dataChanged ||
+            (changeFlags.propsChanged &&
+                (props.updatedLines !== oldProps.updatedLines ||
+                    oldProps.lineFullPath !== props.lineFullPath ||
+                    props.lineParallelPath !== oldProps.lineParallelPath))
+        ) {
+            //add icons
+            compositeData.forEach((compositeData) => {
+                compositeData.branchStatus = [];
+                compositeData.lines.forEach((line) => {
+                    let lineStatus = linesStatus.get(line.id);
+                    if (
+                        lineStatus !== undefined &&
+                        lineStatus.branchStatus !== undefined &&
+                        lineStatus.branchStatus !== 'IN_OPERATION'
+                    ) {
+                        let lineData = compositeData.lineMap.get(line.id);
                         let coordinatesIcon = props.geoData.labelDisplayPosition(
                             lineData.positions,
                             lineData.cumulativeDistances,
@@ -385,8 +432,7 @@ class LineLayer extends CompositeLayer {
                         );
                         if (coordinatesIcon !== null) {
                             compositeData.branchStatus.push({
-                                line: line,
-                                b: line.branchStatus,
+                                status: lineStatus.branchStatus,
                                 printPosition: [
                                     coordinatesIcon.position.longitude,
                                     coordinatesIcon.position.latitude,
@@ -466,6 +512,7 @@ class LineLayer extends CompositeLayer {
         this.setState({
             compositeData: compositeData,
             linesConnection: linesConnection,
+            linesStatus: linesStatus,
         });
     }
 
@@ -834,19 +881,16 @@ class LineLayer extends CompositeLayer {
             layers.push(lineActivePowerLabelsLayer);
 
             // line status
-            const lineStatusLabelsLayer = new TextLayer(
+            const lineStatusIconLayer = new IconLayer(
                 this.getSubLayerProps({
                     id: 'BranchStatus' + compositeData.nominalVoltage,
                     data: compositeData.branchStatus,
-                    getText: (branchStatus) =>
-                        branchStatus.b !== undefined ? branchStatus.b : 'NULL',
                     getPosition: (branchStatus) => branchStatus.printPosition,
-                    getColor: this.props.labelColor,
-                    fontFamily: 'Roboto',
-                    getSize: this.props.labelSize,
-                    getAngle: 0,
+                    getIcon: (branchStatus) => getLineIcon(branchStatus.status),
+                    sizeScale: 30,
+                    getSize: (branchStatus) => 2,
+                    getColor: (branchStatus) => this.props.labelColor,
                     getPixelOffset: (branchStatus) => branchStatus.offset,
-                    getTextAnchor: 'middle',
                     visible:
                         this.props.filteredNominalVoltages.includes(
                             compositeData.nominalVoltage
@@ -857,10 +901,12 @@ class LineLayer extends CompositeLayer {
                             this.props.lineParallelPath,
                         ],
                         getPixelOffset: [this.props.lineFullPath],
+                        getIcon: [this.state.linesStatus],
+                        getColor: [this.props.labelColor],
                     },
                 })
             );
-            layers.push(lineStatusLabelsLayer);
+            layers.push(lineStatusIconLayer);
         });
 
         return layers;

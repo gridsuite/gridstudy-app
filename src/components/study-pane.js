@@ -34,6 +34,8 @@ import {
     stopSecurityAnalysis,
     updateSwitchState,
     lockoutLine,
+    tripLine,
+    switchOnLine,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -210,8 +212,6 @@ const StudyPane = (props) => {
     );
 
     const [displayLockout, setDisplayLockout] = useState(null);
-
-    const [lockoutMenuMessage, setLockoutMenuMessage] = useState('');
 
     const [lockoutMenuPosition, setLockoutMenuPosition] = useState([-1, -1]);
 
@@ -701,7 +701,7 @@ const StudyPane = (props) => {
                     studyUpdatedForce.eventData.headers['substationsIds'];
                 const tmp = ids.substring(1, ids.length - 1); // removing square brackets
                 if (tmp && tmp.length > 0) {
-                    const substationsIds = tmp.split(',');
+                    const substationsIds = tmp.split(', ');
                     updateNetwork(substationsIds);
                 }
             }
@@ -782,17 +782,6 @@ const StudyPane = (props) => {
     }, [network]);
 
     function showLockout(line, x, y) {
-        let message;
-        if (
-            line.branchStatus !== undefined &&
-            line.branchStatus === 'PLANNED_OUTAGE'
-        ) {
-            message = intl.formatMessage({ id: 'SwitchOnLine' });
-            setLockoutMenuMessage(message);
-        } else {
-            message = intl.formatMessage({ id: 'LockoutLine' });
-            setLockoutMenuMessage(message);
-        }
         setLockoutMenuPosition([x, y]);
         setLineToLockout(line);
         setDisplayLockout(true);
@@ -804,6 +793,14 @@ const StudyPane = (props) => {
 
     function handleLockout(lineId) {
         lockoutLine(studyUuid, lineId).then(closeLockoutMenu);
+    }
+
+    function handleTrip(lineId) {
+        tripLine(studyName, userId, lineId).then(closeLockoutMenu);
+    }
+
+    function handleSwitchOn(lineId) {
+        switchOnLine(studyName, userId, lineId).then(closeLockoutMenu);
     }
 
     function renderMapView() {
@@ -1017,9 +1014,10 @@ const StudyPane = (props) => {
                                 lockoutMenuPosition[0],
                                 lockoutMenuPosition[1],
                             ]}
-                            message={lockoutMenuMessage}
                             handleClose={closeLockoutMenu}
-                            handleClick={handleLockout}
+                            handleLockout={handleLockout}
+                            handleTrip={handleTrip}
+                            handleSwitchOn={handleSwitchOn}
                         />
                     )}
                 </div>
