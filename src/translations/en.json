@@ -220,5 +220,6 @@
     "CheckAll": "Select all / none",
 
     "LockoutLine": "Lock out the line",
+    "TripLine": "Trip the line",
     "SwitchOnLine": "Switch on the line"
 }

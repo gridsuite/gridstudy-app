@@ -734,3 +734,33 @@ export function lockoutLine(studyUuid, lineId) {
     console.debug(lockOutLineUrl);
     return backendFetch(lockOutLineUrl, { method: 'put' });
 }
+
+export function tripLine(studyName, userId, lineId) {
+    console.info('tripping line ' + lineId + ' ...');
+    const tripLineUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/network-modification/lines/' +
+        encodeURIComponent(lineId) +
+        '/trip';
+    console.debug(tripLineUrl);
+    return backendFetch(tripLineUrl, { method: 'put' });
+}
+
+export function switchOnLine(studyName, userId, lineId) {
+    console.info('switching on line ' + lineId + ' ...');
+    const switchOnLineUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/network-modification/lines/' +
+        encodeURIComponent(lineId) +
+        '/switchOn';
+    console.debug(switchOnLineUrl);
+    return backendFetch(switchOnLineUrl, { method: 'put' });
+}
