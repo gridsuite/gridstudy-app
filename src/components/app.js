@@ -63,6 +63,7 @@ import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_da
 import {
     connectNotificationsWsUpdateConfig,
     fetchAppsAndUrls,
+    fetchConfigParameter,
     fetchConfigParameters,
     updateConfigParameter,
 } from '../utils/rest-api';
@@ -78,11 +79,13 @@ import {
     PARAMS_THEME_KEY,
     PARAMS_USE_NAME_KEY,
     PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+    COMMON_APP_NAME,
+    APP_NAME,
 } from '../utils/config-params';
 import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES_INDEXES,
-} from './network/constants';
+} from './network/config-tables';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -187,6 +190,7 @@ const App = () => {
 
     const updateParams = useCallback(
         (params) => {
+            console.debug('received UI parameters : ', params);
             let displayedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
             params.forEach((param) => {
                 switch (param.name) {
@@ -262,9 +266,14 @@ const App = () => {
         const ws = connectNotificationsWsUpdateConfig();
 
         ws.onmessage = function (event) {
-            fetchConfigParameters().then((params) => {
-                updateParams(params);
-            });
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers && eventData.headers['parameterName']) {
+                fetchConfigParameter(eventData.headers['parameterName']).then(
+                    (param) => {
+                        updateParams([param]);
+                    }
+                );
+            }
         };
         ws.onerror = function (event) {
             console.error('Unexpected Notification WebSocket error', event);
@@ -340,8 +349,10 @@ const App = () => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchConfigParameters().then((params) => {
-                console.debug('received UI parameters : ', params);
+            fetchConfigParameters(COMMON_APP_NAME).then((params) => {
+                updateParams(params);
+            });
+            fetchConfigParameters(APP_NAME).then((params) => {
                 updateParams(params);
             });
             const ws = connectNotificationsUpdateConfig();
