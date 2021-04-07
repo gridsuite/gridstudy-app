@@ -571,20 +571,20 @@ const StudyManager = ({ onClick }) => {
         });
     }
 
-    function deleteKey(list, key) {
-        if (list.hasOwnProperty(key)) {
-            delete localCreationRequests[key];
-            return true;
-        }
-        return false;
-    }
-
     function addStudyCreationSubmitted(study) {
         sutdyCreationSubmitted.current.add(makeKey(study));
     }
 
     const cleanLocalCreationRequests = useCallback(
         (remote) => {
+            function deleteKey(list, key) {
+                if (list.hasOwnProperty(key)) {
+                    delete localCreationRequests[key];
+                    return true;
+                }
+                return false;
+            }
+
             if (localCreationRequests) {
                 let didDelete = false;
                 remote.forEach((study) => {
