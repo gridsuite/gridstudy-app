@@ -29,7 +29,6 @@ import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import {
-    LIGHT_THEME,
     resetResultCount,
     selectCenterLabelState,
     selectDiagonalLabelState,
@@ -42,10 +41,11 @@ import {
     selectTheme,
     selectUseName,
     selectDisplayOverloadTableState,
+    changeDisplayedColumns,
 } from '../redux/actions';
 import Parameters from './parameters';
-
 import {
+    LIGHT_THEME,
     AuthenticationRouter,
     getPreLoginPath,
     initializeAuthenticationProd,
@@ -63,7 +63,9 @@ import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_da
 import {
     connectNotificationsWsUpdateConfig,
     fetchAppsAndUrls,
+    fetchConfigParameter,
     fetchConfigParameters,
+    updateConfigParameter,
 } from '../utils/rest-api';
 import {
     PARAMS_CENTER_LABEL_KEY,
@@ -77,7 +79,13 @@ import {
     PARAMS_THEME_KEY,
     PARAMS_USE_NAME_KEY,
     PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+    COMMON_APP_NAME,
+    APP_NAME,
 } from '../utils/config-params';
+import {
+    COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_NAMES_INDEXES,
+} from './network/config-tables';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -154,6 +162,8 @@ const App = () => {
 
     const user = useSelector((state) => state.user);
 
+    const useName = useSelector((state) => state.useName);
+
     const studyName = useSelector((state) => state.studyName);
 
     const [appsAndUrls, setAppsAndUrls] = React.useState([]);
@@ -180,6 +190,8 @@ const App = () => {
 
     const updateParams = useCallback(
         (params) => {
+            console.debug('received UI parameters : ', params);
+            let displayedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAMS_THEME_KEY:
@@ -228,8 +240,24 @@ const App = () => {
                         dispatch(selectUseName(param.value === 'true'));
                         break;
                     default:
+                        if (
+                            param.name.startsWith(
+                                COLUMNS_PARAMETER_PREFIX_IN_DATABASE
+                            )
+                        ) {
+                            let index = TABLES_NAMES_INDEXES.get(
+                                param.name.slice(
+                                    COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                )
+                            );
+                            displayedColumnsParams[index] = {
+                                index: index,
+                                value: param.value,
+                            };
+                        }
                 }
             });
+            dispatch(changeDisplayedColumns(displayedColumnsParams));
         },
         [dispatch]
     );
@@ -238,9 +266,14 @@ const App = () => {
         const ws = connectNotificationsWsUpdateConfig();
 
         ws.onmessage = function (event) {
-            fetchConfigParameters().then((params) => {
-                updateParams(params);
-            });
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers && eventData.headers['parameterName']) {
+                fetchConfigParameter(eventData.headers['parameterName']).then(
+                    (param) => {
+                        updateParams([param]);
+                    }
+                );
+            }
         };
         ws.onerror = function (event) {
             console.error('Unexpected Notification WebSocket error', event);
@@ -316,9 +349,10 @@ const App = () => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchConfigParameters().then((params) => {
-                console.debug('received UI parameters :');
-                console.debug(params);
+            fetchConfigParameters(COMMON_APP_NAME).then((params) => {
+                updateParams(params);
+            });
+            fetchConfigParameters(APP_NAME).then((params) => {
                 updateParams(params);
             });
             const ws = connectNotificationsUpdateConfig();
@@ -353,6 +387,14 @@ const App = () => {
         setTabIndex(newTabIndex);
     }
 
+    const handleThemeClick = (theme) => {
+        updateConfigParameter(PARAMS_THEME_KEY, theme);
+    };
+
+    const handleEquipmentLabellingClick = (useName) => {
+        updateConfigParameter(PARAMS_USE_NAME_KEY, useName);
+    };
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -386,6 +428,13 @@ const App = () => {
                         onLogoClick={() => onLogoClicked()}
                         user={user}
                         appsAndUrls={appsAndUrls}
+                        onThemeClick={handleThemeClick}
+                        onAboutClick={() => console.debug('about')}
+                        theme={theme}
+                        onEquipmentLabellingClick={
+                            handleEquipmentLabellingClick
+                        }
+                        equipmentLabelling={useName}
                     >
                         {studyName && (
                             <Tabs

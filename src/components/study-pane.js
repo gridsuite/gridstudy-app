@@ -329,11 +329,14 @@ const StudyPane = (props) => {
         }
     };
 
-    const stopComputation = (runnable) => {
-        if (runnable === Runnable.SECURITY_ANALYSIS) {
-            stopSecurityAnalysis(studyName, userId);
-            setComputationStopped(!computationStopped);
-        }
+    const ACTION_ON_RUNNABLES = {
+        text: intl.formatMessage({ id: 'StopComputation' }),
+        action: (runnable) => {
+            if (runnable === Runnable.SECURITY_ANALYSIS) {
+                stopSecurityAnalysis(studyName, userId);
+                setComputationStopped(!computationStopped);
+            }
+        },
     };
 
     const getRunningStatus = (runnable) => {
@@ -748,7 +751,7 @@ const StudyPane = (props) => {
     }
 
     function choiceVoltageLevel(voltageLevelId) {
-        showVoltageLevelDiagram(voltageLevelId);
+        openVoltageLevel(voltageLevelId);
         closeChoiceVoltageLevelMenu();
     }
 
@@ -792,6 +795,15 @@ const StudyPane = (props) => {
             }
         }
     }
+
+    const openVoltageLevel = useCallback(
+        (vlId) => {
+            if (!network) return;
+            showVoltageLevelDiagram(vlId);
+            dispatch(selectItemNetwork(vlId));
+        },
+        [network, showVoltageLevelDiagram, dispatch]
+    );
 
     function renderMapView() {
         let displayedVoltageLevel;
@@ -931,7 +943,7 @@ const StudyPane = (props) => {
                         lineFlowColorMode={lineFlowColorMode}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
                         ref={mapRef}
-                        onSubstationClick={showVoltageLevelDiagram}
+                        onSubstationClick={openVoltageLevel}
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
@@ -988,14 +1000,11 @@ const StudyPane = (props) => {
                     >
                         <RunButton
                             runnables={RUNNABLES}
-                            actionsOnRunnable={[
-                                intl.formatMessage({ id: 'StopComputation' }),
-                            ]}
+                            actionOnRunnable={ACTION_ON_RUNNABLES}
                             getStatus={getRunningStatus}
                             onStartClick={startComputation}
                             getText={getRunningText}
                             getStartIcon={getRunningIcon}
-                            onStopComputationClick={stopComputation}
                             computationStopped={computationStopped}
                         />
                     </div>
@@ -1053,9 +1062,7 @@ const StudyPane = (props) => {
                         >
                             <SingleLineDiagram
                                 onClose={() => closeVoltageLevelDiagram()}
-                                onNextVoltageLevelClick={
-                                    showVoltageLevelDiagram
-                                }
+                                onNextVoltageLevelClick={openVoltageLevel}
                                 onBreakerClick={handleUpdateSwitchState}
                                 diagramTitle={sldTitle}
                                 diagramAction={openDrawerComponent}
