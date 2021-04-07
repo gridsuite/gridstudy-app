@@ -152,9 +152,8 @@ class MuiVirtualizedTable extends React.PureComponent {
         return sizes;
     });
 
-    sortableHeader = ({ label, columnIndex, width }) => {
+    sortableHeader = ({ label, columnIndex, width, ...rest }) => {
         const { headerHeight, columns, classes } = this.props;
-
         return (
             <TableSortLabel
                 component="div"
@@ -358,8 +357,9 @@ class MuiVirtualizedTable extends React.PureComponent {
                                     className={classes.flexContainer}
                                     cellRenderer={this.cellRenderer}
                                     dataKey={dataKey}
-                                    {...other}
+                                    flexGrow={1}
                                     width={sizes[dataKey]}
+                                    {...other}
                                 />
                             );
                         })}
