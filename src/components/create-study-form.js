@@ -271,12 +271,13 @@ export const CreateStudyForm = (props) => {
         let isPrivateStudy = studyPrivacy === 'private';
 
         setOpen(false);
-        props.addCreationRequest({
+        const study = {
             studyName: studyName,
             userId: userId,
             isPrivate: isPrivateStudy,
             creationDate: Date.now(),
-        });
+        };
+        props.addCreationRequest(study);
         createStudy(
             caseExist,
             studyName,
@@ -288,6 +289,7 @@ export const CreateStudyForm = (props) => {
             setCreateStudyErr('');
             setStudyName('');
             setStudyDescription('');
+            props.addStudyCreationSubmitted(study);
             dispatch(removeSelectedFile());
 
             if (!res.ok) {

@@ -490,6 +490,7 @@ const StudyManager = ({ onClick }) => {
     const classes = useStyles();
 
     const [localCreationRequests, setlocalCreationRequests] = useState({});
+    const sutdyCreationSubmitted = useRef(new Set());
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -570,16 +571,32 @@ const StudyManager = ({ onClick }) => {
         });
     }
 
-    const cleanlocalCreationRequests = useCallback(
+    function deleteKey(list, key) {
+        if (list.hasOwnProperty(key)) {
+            delete localCreationRequests[key];
+            return true;
+        }
+        return false;
+    }
+
+    function addStudyCreationSubmitted(study) {
+        sutdyCreationSubmitted.current.add(makeKey(study));
+    }
+
+    const cleanLocalCreationRequests = useCallback(
         (remote) => {
             if (localCreationRequests) {
                 let didDelete = false;
                 remote.forEach((study) => {
-                    if (localCreationRequests.hasOwnProperty(makeKey(study))) {
-                        didDelete = true;
-                        delete localCreationRequests[makeKey(study)];
-                    }
+                    didDelete |= deleteKey(
+                        localCreationRequests,
+                        makeKey(study)
+                    );
                 });
+                sutdyCreationSubmitted.current.forEach((key) => {
+                    didDelete |= deleteKey(localCreationRequests, key);
+                });
+                sutdyCreationSubmitted.current.clear();
                 if (didDelete)
                     setlocalCreationRequests(
                         Object.assign({}, localCreationRequests)
@@ -590,12 +607,12 @@ const StudyManager = ({ onClick }) => {
     );
 
     useEffect(() => {
-        cleanlocalCreationRequests(studyCreationRequests);
-    }, [studyCreationRequests, cleanlocalCreationRequests]);
+        cleanLocalCreationRequests(studyCreationRequests);
+    }, [studyCreationRequests, cleanLocalCreationRequests]);
 
     useEffect(() => {
-        cleanlocalCreationRequests(studies);
-    }, [studies, cleanlocalCreationRequests]);
+        cleanLocalCreationRequests(studies);
+    }, [studies, cleanLocalCreationRequests]);
 
     function mergeCreationRequests(remote, local) {
         let merged = {};
@@ -617,6 +634,7 @@ const StudyManager = ({ onClick }) => {
                     <Box className={classes.addButtonBox}>
                         <CreateStudyForm
                             addCreationRequest={addCreationRequest}
+                            addStudyCreationSubmitted={addStudyCreationSubmitted}
                         />
                     </Box>
                 </Grid>
