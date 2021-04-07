@@ -634,7 +634,9 @@ const StudyManager = ({ onClick }) => {
                     <Box className={classes.addButtonBox}>
                         <CreateStudyForm
                             addCreationRequest={addCreationRequest}
-                            addStudyCreationSubmitted={addStudyCreationSubmitted}
+                            addStudyCreationSubmitted={
+                                addStudyCreationSubmitted
+                            }
                         />
                     </Box>
                 </Grid>
