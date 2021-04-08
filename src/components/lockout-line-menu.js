@@ -14,8 +14,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import PlayCircleFilledWhiteOutlinedIcon from '@material-ui/icons/PlayCircleFilledWhiteOutlined';
+import PlayIcon from '@material-ui/icons/PlayArrow';
 import OfflineBoltOutlinedIcon from '@material-ui/icons/OfflineBoltOutlined';
+import EnergiseOneSideIcon from '@material-ui/icons/LastPage';
+import EnergiseOtherSideIcon from '@material-ui/icons/FirstPage';
 import { useIntl } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
@@ -70,6 +72,7 @@ const LockoutLine = ({
     handleClose,
     handleLockout,
     handleTrip,
+    handleEnergise,
     handleSwitchOn,
 }) => {
     const classes = useStyles();
@@ -102,7 +105,25 @@ const LockoutLine = ({
                 />
                 <CommandItem
                     line={line}
-                    icon={<PlayCircleFilledWhiteOutlinedIcon />}
+                    icon={<EnergiseOneSideIcon />}
+                    message={intl.formatMessage(
+                        { id: 'EnergiseOnOneEnd' },
+                        { substation: line.voltageLevelId1 }
+                    )}
+                    handleClick={(lineId) => handleEnergise(lineId, 'ONE')}
+                />
+                <CommandItem
+                    line={line}
+                    icon={<EnergiseOtherSideIcon />}
+                    message={intl.formatMessage(
+                        { id: 'EnergiseOnOneEnd' },
+                        { substation: line.voltageLevelId2 }
+                    )}
+                    handleClick={(lineId) => handleEnergise(lineId, 'TWO')}
+                />
+                <CommandItem
+                    line={line}
+                    icon={<PlayIcon />}
                     message={intl.formatMessage({ id: 'SwitchOnLine' })}
                     handleClick={handleSwitchOn}
                 />

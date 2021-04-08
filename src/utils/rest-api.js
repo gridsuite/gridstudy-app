@@ -750,6 +750,22 @@ export function tripLine(studyName, userId, lineId) {
     return backendFetch(tripLineUrl, { method: 'put' });
 }
 
+export function energiseLineEnd(studyName, userId, lineId, lineEnd) {
+    console.info('enrgising line ' + lineId + ' on side ' + lineEnd + ' ...');
+    const energiseLineEndUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName) +
+        '/network-modification/lines/' +
+        encodeURIComponent(lineId) +
+        '/energiseEnd?' +
+        new URLSearchParams({ side: lineEnd }).toString();
+    console.debug(energiseLineEndUrl);
+    return backendFetch(energiseLineEndUrl, { method: 'put' });
+}
+
 export function switchOnLine(studyName, userId, lineId) {
     console.info('switching on line ' + lineId + ' ...');
     const switchOnLineUrl =
