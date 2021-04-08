@@ -30,20 +30,10 @@ const useStyles = makeStyles((theme) => ({
         padding: '0px',
         margin: '7px',
     },
-    listItemButton: {
-        borderRadius: 25,
-        size: 'small',
-        padding: '0px',
-        margin: '7px',
-        maxWidth: '40px',
-        minWidth: '40px',
-        maxHeight: '40px',
-        minHeight: '40px',
-        color: 'white',
-    },
     listItemText: {
         fontSize: 12,
-        padding: '8px',
+        padding: '0px',
+        margin: '4px',
     },
 }));
 
@@ -59,7 +49,7 @@ const CommandItem = ({ message, icon, line, handleClick }) => {
             <ListItemIcon>{icon}</ListItemIcon>
 
             <ListItemText
-                className={classes.nominalVoltageText}
+                className={classes.listItemText}
                 primary={<Typography noWrap>{message}</Typography>}
             />
         </MenuItem>
