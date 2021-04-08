@@ -23,6 +23,12 @@ export function selectTheme(theme) {
     return { type: SELECT_THEME, theme: theme };
 }
 
+export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
+
+export function selectLanguage(language) {
+    return { type: SELECT_LANGUAGE, language: language };
+}
+
 export const LOAD_STUDIES_SUCCESS = 'LOAD_STUDIES_SUCCESS';
 
 export function loadStudiesSuccess(studies) {

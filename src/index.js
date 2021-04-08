@@ -8,7 +8,7 @@ import 'core-js/es/array/flat-map';
 
 import 'typeface-roboto';
 
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
@@ -33,17 +33,23 @@ const messages = {
     fr: { ...messages_fr, ...login_fr, ...top_bar_fr },
 };
 
-const language = navigator.language.split(/[-_]/)[0]; // language without region code
-
 const basename = new URL(document.querySelector('base').href).pathname;
 
+const ApplicationWrapper = () => {
+    const [language, setLanguage] = useState( navigator.language.split(/[-_]/)[0]);
+    useEffect(() => {setTimeout(() => language == 'fr' ? setLanguage('en') : setLanguage('fr'), 5000)})
+    return (
+        <IntlProvider locale={language} messages={messages[language]}>
+            <Provider store={store}>
+                <BrowserRouter basename={basename}>
+                    <App />
+                </BrowserRouter>
+            </Provider>
+        </IntlProvider>);
+};
+
 ReactDOM.render(
-    <IntlProvider locale={language} messages={messages[language]}>
-        <Provider store={store}>
-            <BrowserRouter basename={basename}>
-                <App />
-            </BrowserRouter>
-        </Provider>
-    </IntlProvider>,
+    <ApplicationWrapper/>,
     document.getElementById('root')
 );
+

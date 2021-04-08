@@ -28,6 +28,7 @@ import {
     SELECT_FILE,
     SELECT_THEME,
     USE_NAME,
+    SELECT_LANGUAGE,
     USER,
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
@@ -55,6 +56,7 @@ const initialState = {
     selectedCase: null,
     selectedFile: null,
     useName: true,
+    language: 'sys',
     user: null,
     centerLabel: false,
     diagonalLabel: false,
@@ -117,6 +119,10 @@ export const reducer = createReducer(initialState, {
     [SELECT_THEME]: (state, action) => {
         state.theme = action.theme;
         saveLocalStorageTheme(state.theme);
+    },
+
+    [SELECT_LANGUAGE]: (state, action) => {
+        state.language = action.language;
     },
 
     [SELECT_CASE]: (state, action) => {
