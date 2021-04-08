@@ -796,11 +796,14 @@ const StudyPane = (props) => {
         }
     }
 
-    function openVoltageLevel(vlId) {
-        if (!network) return;
-        showVoltageLevelDiagram(vlId);
-        dispatch(selectItemNetwork(vlId));
-    }
+    const openVoltageLevel = useCallback(
+        (vlId) => {
+            if (!network) return;
+            showVoltageLevelDiagram(vlId);
+            dispatch(selectItemNetwork(vlId));
+        },
+        [network, showVoltageLevelDiagram, dispatch]
+    );
 
     function renderMapView() {
         let displayedVoltageLevel;

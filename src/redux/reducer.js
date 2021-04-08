@@ -42,7 +42,7 @@ import {
     CHANGE_DISPLAYED_COLUMNS_NAMES,
 } from './actions';
 import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
-import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/constants';
+import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
 
 const initialState = {
     studies: [],
