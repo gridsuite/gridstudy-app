@@ -35,6 +35,7 @@ import {
     updateSwitchState,
     lockoutLine,
     tripLine,
+    energiseLineEnd,
     switchOnLine,
 } from '../utils/rest-api';
 import {
@@ -799,6 +800,10 @@ const StudyPane = (props) => {
         tripLine(studyName, userId, lineId).then(closeLockoutMenu);
     }
 
+    function handleEnergise(lineId, side) {
+        energiseLineEnd(studyName, userId, lineId, side).then(closeLockoutMenu);
+    }
+
     function handleSwitchOn(lineId) {
         switchOnLine(studyName, userId, lineId).then(closeLockoutMenu);
     }
@@ -1017,6 +1022,7 @@ const StudyPane = (props) => {
                             handleClose={closeLockoutMenu}
                             handleLockout={handleLockout}
                             handleTrip={handleTrip}
+                            handleEnergise={handleEnergise}
                             handleSwitchOn={handleSwitchOn}
                         />
                     )}

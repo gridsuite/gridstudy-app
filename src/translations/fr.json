@@ -221,5 +221,6 @@
 
     "LockoutLine": "Mettre sous consigne la ligne",
     "TripLine": "Déclencher la ligne",
-    "SwitchOnLine": "Fermer la ligne"
+    "SwitchOnLine": "Fermer la ligne",
+    "EnergiseOnOneEnd": "Mettre sous tension à vide depuis {substation}"
 }

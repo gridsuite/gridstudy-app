@@ -221,5 +221,6 @@
 
     "LockoutLine": "Lock out the line",
     "TripLine": "Trip the line",
-    "SwitchOnLine": "Switch on the line"
+    "SwitchOnLine": "Switch on the line",
+    "EnergiseOnOneEnd": "Energise on one end ({substation})"
 }
