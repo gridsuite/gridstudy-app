@@ -490,7 +490,7 @@ const StudyManager = ({ onClick }) => {
     const classes = useStyles();
 
     const [localCreationRequests, setlocalCreationRequests] = useState({});
-    const sutdyCreationSubmitted = useRef(new Set());
+    const studyCreationSubmitted = useRef(new Set());
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -572,7 +572,7 @@ const StudyManager = ({ onClick }) => {
     }
 
     function addStudyCreationSubmitted(study) {
-        sutdyCreationSubmitted.current.add(makeKey(study));
+        studyCreationSubmitted.current.add(makeKey(study));
     }
 
     const cleanLocalCreationRequests = useCallback(
@@ -593,10 +593,10 @@ const StudyManager = ({ onClick }) => {
                         makeKey(study)
                     );
                 });
-                sutdyCreationSubmitted.current.forEach((key) => {
+                studyCreationSubmitted.current.forEach((key) => {
                     didDelete |= deleteKey(localCreationRequests, key);
                 });
-                sutdyCreationSubmitted.current.clear();
+                studyCreationSubmitted.current.clear();
                 if (didDelete)
                     setlocalCreationRequests(
                         Object.assign({}, localCreationRequests)
