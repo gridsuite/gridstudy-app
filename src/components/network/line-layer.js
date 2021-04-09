@@ -887,8 +887,7 @@ class LineLayer extends CompositeLayer {
                     data: compositeData.branchStatus,
                     getPosition: (branchStatus) => branchStatus.printPosition,
                     getIcon: (branchStatus) => getLineIcon(branchStatus.status),
-                    sizeScale: 30,
-                    getSize: (branchStatus) => 2,
+                    getSize: this.props.iconSize,
                     getColor: (branchStatus) => this.props.labelColor,
                     getPixelOffset: (branchStatus) => branchStatus.offset,
                     visible:
@@ -928,6 +927,7 @@ LineLayer.defaultProps = {
     lineFullPath: true,
     lineParallelPath: true,
     labelSize: 16,
+    iconSize: 48,
     distanceBetweenLines: 1000,
     maxParallelOffset: 100,
     minParallelOffset: 3,
