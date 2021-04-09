@@ -111,16 +111,6 @@ function getStudyUrl(studyUuid, userId) {
     );
 }
 
-function getStudyUrlByName(studyName, userId) {
-    return (
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName)
-    );
-}
-
 export function fetchStudy(studyUuid, userId) {
     console.info(`Fetching study '${studyUuid}' for user id '${userId}' ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid, userId);
@@ -193,8 +183,8 @@ export function fetchSvg(svgUrl) {
         response.ok
             ? response.json()
             : response
-                .json()
-                .then((error) => Promise.reject(new Error(error.error)))
+                  .json()
+                  .then((error) => Promise.reject(new Error(error.error)))
     );
 }
 
@@ -379,13 +369,13 @@ export function fetchLinePositions(studyUuid, userId) {
 }
 
 export function studyExists(studyName, userId) {
-    // now we permit having two studies with same name ??
-    return Promise.resolve(false);
-    //const studyExistsUrl = getStudyUrlByName(studyName, userId) + '/exists';
-    //console.debug(studyExistsUrl);
-    //return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
-    //return response.json();
-    //});
+    // current implementation prevent having two studies with the same name and the same user
+    // later we will prevent same studyName and userId in the same directory
+    const studyExistsUrl = getStudyUrl(studyName, userId) + '/exists';
+    console.debug(studyExistsUrl);
+    return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
+        return response.json();
+    });
 }
 
 export function createStudy(

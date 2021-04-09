@@ -297,7 +297,7 @@ ExportDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
-    studyUuid: PropTypes.string.isRequired,
+    studyUuid: PropTypes.string,
     title: PropTypes.string.isRequired,
 };
 

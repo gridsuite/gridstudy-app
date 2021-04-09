@@ -130,7 +130,7 @@ const DonwnloadIframe = 'downloadIframe';
  * @param {String} study.studyUuid Name of the study
  * @param {String} study.caseFormat Format of the study
  * @param {String} study.description Description of the study
- * @param {Date} study.creationDate Date of the study
+ * @param {String} study.creationDate Date of the study
  * @param {EventListener} onClick Event to open the study
  * @param inprogressLoader
  */
@@ -463,7 +463,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
 
 StudyCard.propTypes = {
     study: PropTypes.shape({
-        studyUuid: PropTypes.string.isRequired,
+        studyUuid: PropTypes.string,
         userId: PropTypes.string.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
