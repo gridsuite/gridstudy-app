@@ -41,7 +41,7 @@ import {
     TABLES_NAMES,
 } from './config-tables';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     cell: {
         display: 'flex',
         alignItems: 'right',
@@ -630,12 +630,8 @@ const NetworkTable = (props) => {
                             ))}
                         </Tabs>
                     </Grid>
-                    <Grid container>
-                        <Grid
-                            item
-                            alignContent={'flex-end'}
-                            className={classes.containerInputSearch}
-                        >
+                    <Grid container alignContent={'flex-end'}>
+                        <Grid item className={classes.containerInputSearch}>
                             <TextField
                                 className={classes.textField}
                                 size="small"
@@ -644,7 +640,6 @@ const NetworkTable = (props) => {
                                 }
                                 onChange={setFilter}
                                 variant="outlined"
-                                classes={classes.searchSection}
                                 fullWidth
                                 InputProps={{
                                     classes: {
@@ -672,7 +667,9 @@ const NetworkTable = (props) => {
                                 open={popupSelectColumnNames}
                                 onClose={handleCancelPopupSelectColumnNames}
                                 onClick={handleSaveSelectedColumnNames}
-                                title={<FormattedMessage id="ColumnsList" />}
+                                title={intl.formatMessage({
+                                    id: 'ColumnsList',
+                                })}
                                 child={checkListColumnsNames()}
                             />
                         </Grid>

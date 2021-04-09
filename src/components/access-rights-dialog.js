@@ -147,7 +147,7 @@ AccessRightsDialog.propTypes = {
     studyName: PropTypes.string.isRequired,
     userId: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
-    isPrivate: PropTypes.bool.isRequired,
+    isPrivate: PropTypes.bool,
 };
 
 export default AccessRightsDialog;
