@@ -56,7 +56,7 @@ const CommandItem = ({ message, icon, line, handleClick }) => {
     );
 };
 
-const LockoutLine = ({
+const LineMenu = ({
     line,
     position,
     handleClose,
@@ -122,4 +122,4 @@ const LockoutLine = ({
     );
 };
 
-export default LockoutLine;
+export default LineMenu;

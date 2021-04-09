@@ -211,7 +211,7 @@ const NetworkMap = forwardRef((props, ref) => {
         );
     }
 
-    function onClickHandler(info, network) {
+    function onClickHandler(info, event, network) {
         if (
             info.layer &&
             info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX) &&
@@ -250,6 +250,7 @@ const NetworkMap = forwardRef((props, ref) => {
             }
         }
         if (
+            event.rightButton &&
             info.layer &&
             info.layer.id.startsWith(LINE_LAYER_PREFIX) &&
             info.object &&
@@ -343,8 +344,8 @@ const NetworkMap = forwardRef((props, ref) => {
                 // save a reference to the Deck instance to be able to center in onAfterRender
                 setDeck(ref && ref.deck);
             }}
-            onClick={(info) => {
-                onClickHandler(info, props.network);
+            onClick={(info, event) => {
+                onClickHandler(info, event, props.network);
             }}
             onAfterRender={onAfterRender}
             layers={layers}

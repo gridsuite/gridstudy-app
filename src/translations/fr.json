@@ -219,7 +219,7 @@
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
 
-    "LockoutLine": "Mettre sous consigne la ligne",
+    "LockoutLine": "Consigner la ligne",
     "TripLine": "Déclencher la ligne",
     "SwitchOnLine": "Fermer la ligne",
     "EnergiseOnOneEnd": "Mettre sous tension à vide depuis {substation}"
