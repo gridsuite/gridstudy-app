@@ -47,6 +47,9 @@ import {
 import Parameters from './parameters';
 import {
     LIGHT_THEME,
+    SYSTEM,
+    ENGLISH,
+    FRENCH,
     AuthenticationRouter,
     getPreLoginPath,
     initializeAuthenticationProd,
@@ -159,7 +162,16 @@ const noUserManager = { instance: null, error: null };
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
-const App = () => {
+const supportedLanguages = [FRENCH, ENGLISH];
+
+const getSystemLanguage = () => {
+    const systemLanguage = navigator.language.split(/[-_]/)[0];
+    return supportedLanguages.includes(systemLanguage)
+        ? systemLanguage
+        : ENGLISH;
+};
+
+const App = (props) => {
     const theme = useSelector((state) => state.theme);
 
     const user = useSelector((state) => state.user);
@@ -191,6 +203,8 @@ const App = () => {
     const [tabIndex, setTabIndex] = React.useState(0);
 
     const resultCount = useSelector((state) => state.resultCount);
+
+    props.setLanguage(language === SYSTEM ? getSystemLanguage() : language);
 
     const updateParams = useCallback(
         (params) => {
@@ -403,8 +417,8 @@ const App = () => {
     };
 
     const handleLanguageClick = (language) => {
+        props.setLanguage(language === SYSTEM ? getSystemLanguage() : language);
         updateConfigParameter(PARAMS_LANGUAGE_KEY, language);
-
     };
 
     // if result tab is displayed, clean badge
