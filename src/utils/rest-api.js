@@ -735,14 +735,10 @@ export function lockoutLine(studyUuid, lineId) {
     return backendFetch(lockOutLineUrl, { method: 'put' });
 }
 
-export function tripLine(studyName, userId, lineId) {
+export function tripLine(studyUuid, lineId) {
     console.info('tripping line ' + lineId + ' ...');
     const tripLineUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
+        getStudyUrl(studyUuid) +
         '/network-modification/lines/' +
         encodeURIComponent(lineId) +
         '/trip';
@@ -750,14 +746,10 @@ export function tripLine(studyName, userId, lineId) {
     return backendFetch(tripLineUrl, { method: 'put' });
 }
 
-export function energiseLineEnd(studyName, userId, lineId, lineEnd) {
+export function energiseLineEnd(studyUuid, lineId, lineEnd) {
     console.info('enrgising line ' + lineId + ' on side ' + lineEnd + ' ...');
     const energiseLineEndUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
+        getStudyUrl(studyUuid) +
         '/network-modification/lines/' +
         encodeURIComponent(lineId) +
         '/energiseEnd?' +
@@ -766,14 +758,10 @@ export function energiseLineEnd(studyName, userId, lineId, lineEnd) {
     return backendFetch(energiseLineEndUrl, { method: 'put' });
 }
 
-export function switchOnLine(studyName, userId, lineId) {
+export function switchOnLine(studyUuid, lineId) {
     console.info('switching on line ' + lineId + ' ...');
     const switchOnLineUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
-        encodeURIComponent(studyName) +
+        getStudyUrl(studyUuid) +
         '/network-modification/lines/' +
         encodeURIComponent(lineId) +
         '/switchOn';

@@ -212,11 +212,11 @@ const StudyPane = (props) => {
         (state) => state.filteredNominalVoltages
     );
 
-    const [displayLockout, setDisplayLockout] = useState(null);
+    const [displayLineMenu, setDisplayLineMenu] = useState(null);
 
-    const [lockoutMenuPosition, setLockoutMenuPosition] = useState([-1, -1]);
+    const [lineMenuPosition, setLineMenuPosition] = useState([-1, -1]);
 
-    const [lineToLockout, setLineToLockout] = useState(null);
+    const [lineToApply, setLineToApply] = useState(null);
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
 
@@ -782,30 +782,30 @@ const StudyPane = (props) => {
         network.useEquipment(equipments.lines);
     }, [network]);
 
-    function showLockout(line, x, y) {
-        setLockoutMenuPosition([x, y]);
-        setLineToLockout(line);
-        setDisplayLockout(true);
+    function showLineMenu(line, x, y) {
+        setLineMenuPosition([x, y]);
+        setLineToApply(line);
+        setDisplayLineMenu(true);
     }
 
-    function closeLockoutMenu() {
-        setDisplayLockout(null);
+    function closeLineMenu() {
+        setDisplayLineMenu(null);
     }
 
     function handleLockout(lineId) {
-        lockoutLine(studyUuid, lineId).then(closeLockoutMenu);
+        lockoutLine(studyUuid, lineId).then(closeLineMenu);
     }
 
     function handleTrip(lineId) {
-        tripLine(studyName, userId, lineId).then(closeLockoutMenu);
+        tripLine(studyUuid, lineId).then(closeLineMenu);
     }
 
     function handleEnergise(lineId, side) {
-        energiseLineEnd(studyName, userId, lineId, side).then(closeLockoutMenu);
+        energiseLineEnd(studyUuid, lineId, side).then(closeLineMenu);
     }
 
     function handleSwitchOn(lineId) {
-        switchOnLine(studyName, userId, lineId).then(closeLockoutMenu);
+        switchOnLine(studyUuid, lineId).then(closeLineMenu);
     }
 
     function renderMapView() {
@@ -947,7 +947,7 @@ const StudyPane = (props) => {
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
                         ref={mapRef}
                         onSubstationClick={openVoltageLevel}
-                        onLineClick={showLockout}
+                        onLineClick={showLineMenu}
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
@@ -1012,14 +1012,14 @@ const StudyPane = (props) => {
                             computationStopped={computationStopped}
                         />
                     </div>
-                    {displayLockout && (
+                    {displayLineMenu && (
                         <LineMenu
-                            line={lineToLockout}
+                            line={lineToApply}
                             position={[
-                                lockoutMenuPosition[0],
-                                lockoutMenuPosition[1],
+                                lineMenuPosition[0],
+                                lineMenuPosition[1],
                             ]}
-                            handleClose={closeLockoutMenu}
+                            handleClose={closeLineMenu}
                             handleLockout={handleLockout}
                             handleTrip={handleTrip}
                             handleEnergise={handleEnergise}
