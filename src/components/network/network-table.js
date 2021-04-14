@@ -630,7 +630,7 @@ const NetworkTable = (props) => {
                             ))}
                         </Tabs>
                     </Grid>
-                    <Grid container alignContent={'flex-end'}>
+                    <Grid container>
                         <Grid item className={classes.containerInputSearch}>
                             <TextField
                                 className={classes.textField}

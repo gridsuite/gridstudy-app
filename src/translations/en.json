@@ -213,7 +213,7 @@
     "HvdcLineId": "HVDC Line Id",
     "PowerFactor": "Power Factor",
     "LossFactor": "Loss Factor",
-    "StopComputation": "Stop computation",
+    "StopComputation" : "Stop computation",
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none"
