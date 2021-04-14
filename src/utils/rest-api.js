@@ -747,7 +747,6 @@ export function tripLine(studyUuid, lineId) {
 }
 
 export function energiseLineEnd(studyUuid, lineId, lineEnd) {
-    console.info('enrgising line ' + lineId + ' on side ' + lineEnd + ' ...');
     const energiseLineEndUrl =
         getStudyUrl(studyUuid) +
         '/network-modification/lines/' +
