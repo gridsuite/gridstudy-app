@@ -198,7 +198,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickDelete = () => {
-        deleteStudy(study.studyUuid, study.userId).then((response) => {
+        deleteStudy(study.studyUuid).then((response) => {
             if (!response.ok) {
                 setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
             }
@@ -222,7 +222,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyUuid, study.userId, newStudyNameValue)
+        renameStudy(study.studyUuid, newStudyNameValue)
             .then((response) => {
                 if (response === 'NOT_ALLOWED') {
                     setRenameError(
@@ -446,14 +446,12 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 onClose={handleCloseExport}
                 onClick={handleClickExport}
                 studyUuid={study.studyUuid}
-                userId={study.userId}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
                 open={openAccessRightsDialog}
                 onClose={handleCloseAccessRights}
                 studyUuid={study.studyUuid}
-                userId={study.userId}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
                 isPrivate={study.studyPrivate}
             />
@@ -658,7 +656,7 @@ const StudyManager = ({ onClick }) => {
                             <StudyCard
                                 studyCreationLoader={true}
                                 study={study}
-                                onClick={() => onClick(study.studyName)}
+                                onClick={() => onClick(study.studyUuid)}
                             />
                         </Grid>
                     ))}
@@ -674,7 +672,7 @@ const StudyManager = ({ onClick }) => {
                             studyCreationLoader={false}
                             study={study}
                             onClick={() =>
-                                onClick(study.studyUuid, study.userId)
+                                onClick(study.studyUuid)
                             }
                         />
                     </Grid>

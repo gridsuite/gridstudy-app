@@ -101,19 +101,17 @@ export function fetchStudyCreationRequests() {
     });
 }
 
-function getStudyUrl(studyUuid, userId) {
+function getStudyUrl(studyUuid) {
     return (
         PREFIX_STUDY_QUERIES +
-        '/v1/' +
-        encodeURIComponent(userId) +
-        '/studies/' +
+        '/v1/studies/' +
         encodeURIComponent(studyUuid)
     );
 }
 
-export function fetchStudy(studyUuid, userId) {
-    console.info(`Fetching study '${studyUuid}' for user id '${userId}' ...`);
-    const fetchStudiesUrl = getStudyUrl(studyUuid, userId);
+export function fetchStudy(studyUuid) {
+    console.info(`Fetching study '${studyUuid}' ...`);
+    const fetchStudiesUrl = getStudyUrl(studyUuid);
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
@@ -127,17 +125,16 @@ export function fetchCases() {
 
 export function getVoltageLevelSingleLineDiagram(
     studyUuid,
-    userId,
     voltageLevelId,
     useName,
     centerLabel,
     diagonalLabel
 ) {
     console.info(
-        `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' of user '${userId}'...`
+        `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}'...`
     );
     return (
-        getStudyUrl(studyUuid, userId) +
+        getStudyUrl(studyUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/svg-and-metadata?' +
@@ -152,7 +149,6 @@ export function getVoltageLevelSingleLineDiagram(
 
 export function getSubstationSingleLineDiagram(
     studyUuid,
-    userId,
     substationId,
     useName,
     centerLabel,
@@ -160,10 +156,10 @@ export function getSubstationSingleLineDiagram(
     substationLayout
 ) {
     console.info(
-        `Getting url of substation diagram '${substationId}' of study '${studyUuid}' of user '${userId}'...`
+        `Getting url of substation diagram '${substationId}' of study '${studyUuid}'...`
     );
     return (
-        getStudyUrl(studyUuid, userId) +
+        getStudyUrl(studyUuid) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
         '/svg-and-metadata?' +
@@ -199,38 +195,35 @@ function getSubstationsIdsListsQueryParams(substationsIds) {
     return '';
 }
 
-export function fetchSubstations(studyUuid, userId, substationsIds) {
+export function fetchSubstations(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Substations',
         'substations'
     );
 }
 
-export function fetchSubstationPositions(studyUuid, userId) {
+export function fetchSubstationPositions(studyUuid) {
     console.info(`Fetching substation positions of study '${studyUuid}'...`);
     const fetchSubstationPositionsUrl =
-        getStudyUrl(studyUuid, userId) + '/geo-data/substations';
+        getStudyUrl(studyUuid) + '/geo-data/substations';
     console.debug(fetchSubstationPositionsUrl);
     return backendFetch(fetchSubstationPositionsUrl).then((response) =>
         response.json()
     );
 }
 
-export function fetchLines(studyUuid, userId, substationsIds) {
-    return fetchEquipments(studyUuid, userId, substationsIds, 'Lines', 'lines');
+export function fetchLines(studyUuid, substationsIds) {
+    return fetchEquipments(studyUuid, substationsIds, 'Lines', 'lines');
 }
 
 export function fetchTwoWindingsTransformers(
     studyUuid,
-    userId,
     substationsIds
 ) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Two windings transformers',
         '2-windings-transformers'
@@ -239,118 +232,107 @@ export function fetchTwoWindingsTransformers(
 
 export function fetchThreeWindingsTransformers(
     studyUuid,
-    userId,
     substationsIds
 ) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Three windings transformers',
         '3-windings-transformers'
     );
 }
 
-export function fetchGenerators(studyUuid, userId, substationsIds) {
+export function fetchGenerators(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Generators',
         'generators'
     );
 }
 
-export function fetchLoads(studyUuid, userId, substationsIds) {
-    return fetchEquipments(studyUuid, userId, substationsIds, 'Loads', 'loads');
+export function fetchLoads(studyUuid, substationsIds) {
+    return fetchEquipments(studyUuid, substationsIds, 'Loads', 'loads');
 }
 
-export function fetchDanglingLines(studyUuid, userId, substationsIds) {
+export function fetchDanglingLines(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Dangling lines',
         'dangling-lines'
     );
 }
 
-export function fetchBatteries(studyUuid, userId, substationsIds) {
+export function fetchBatteries(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Batteries',
         'batteries'
     );
 }
 
-export function fetchHvdcLines(studyUuid, userId, substationsIds) {
+export function fetchHvdcLines(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Hvdc lines',
         'hvdc-lines'
     );
 }
 
-export function fetchLccConverterStations(studyUuid, userId, substationsIds) {
+export function fetchLccConverterStations(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'LCC converter stations',
         'lcc-converter-stations'
     );
 }
 
-export function fetchVscConverterStations(studyUuid, userId, substationsIds) {
+export function fetchVscConverterStations(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'VSC converter stations',
         'vsc-converter-stations'
     );
 }
 
-export function fetchShuntCompensators(studyUuid, userId, substationsIds) {
+export function fetchShuntCompensators(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Shunt compensators',
         'shunt-compensators'
     );
 }
 
-export function fetchStaticVarCompensators(studyUuid, userId, substationsIds) {
+export function fetchStaticVarCompensators(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
-        userId,
         substationsIds,
         'Static var compensators',
         'static-var-compensators'
     );
 }
 
-export function fetchAllEquipments(studyUuid, userId, substationsIds) {
-    return fetchEquipments(studyUuid, userId, substationsIds, 'All', 'all');
+export function fetchAllEquipments(studyUuid, substationsIds) {
+    return fetchEquipments(studyUuid, substationsIds, 'All', 'all');
 }
 
 function fetchEquipments(
     studyUuid,
-    userId,
     substationsIds,
     equipmentType,
     equipmentPath
 ) {
     console.info(
-        `Fetching equipments '${equipmentType}' of study '${studyUuid}' of user '${userId}' with substations ids '${substationsIds}'...`
+        `Fetching equipments '${equipmentType}' of study '${studyUuid}' with substations ids '${substationsIds}'...`
     );
     const fetchEquipmentsUrl =
-        getStudyUrl(studyUuid, userId) +
+        getStudyUrl(studyUuid) +
         '/network-map/' +
         equipmentPath +
         getSubstationsIdsListsQueryParams(substationsIds);
@@ -358,10 +340,10 @@ function fetchEquipments(
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
-export function fetchLinePositions(studyUuid, userId) {
+export function fetchLinePositions(studyUuid) {
     console.info(`Fetching line positions of study '${studyUuid}'...`);
     const fetchLinePositionsUrl =
-        getStudyUrl(studyUuid, userId) + '/geo-data/lines';
+        getStudyUrl(studyUuid) + '/geo-data/lines';
     console.debug(fetchLinePositionsUrl);
     return backendFetch(fetchLinePositionsUrl).then((response) =>
         response.json()
@@ -422,21 +404,21 @@ export function createStudy(
     }
 }
 
-export function deleteStudy(studyUuid, userId) {
+export function deleteStudy(studyUuid) {
     console.info(
-        'Deleting study ' + studyUuid + 'from user ' + userId + ' ...'
+        'Deleting study ' + studyUuid + '...'
     );
-    const deleteStudyUrl = getStudyUrl(studyUuid, userId);
+    const deleteStudyUrl = getStudyUrl(studyUuid);
     console.debug(deleteStudyUrl);
     return backendFetch(deleteStudyUrl, {
         method: 'delete',
     });
 }
 
-export function updateSwitchState(studyUuid, userId, switchId, open) {
+export function updateSwitchState(studyUuid, switchId, open) {
     console.info('updating switch ' + switchId + ' ...');
     const updateSwitchUrl =
-        getStudyUrl(studyUuid, userId) +
+        getStudyUrl(studyUuid) +
         '/network-modification/switches/' +
         encodeURIComponent(switchId) +
         '?' +
@@ -445,9 +427,9 @@ export function updateSwitchState(studyUuid, userId, switchId, open) {
     return backendFetch(updateSwitchUrl, { method: 'put' });
 }
 
-export function renameStudy(studyUuid, userId, newStudyName) {
+export function renameStudy(studyUuid, newStudyName) {
     console.info('Renaming study ' + studyUuid);
-    const renameStudiesUrl = getStudyUrl(studyUuid, userId) + '/rename';
+    const renameStudiesUrl = getStudyUrl(studyUuid) + '/rename';
 
     console.debug(renameStudiesUrl);
     return backendFetch(renameStudiesUrl, {
@@ -482,14 +464,14 @@ export function renameStudy(studyUuid, userId, newStudyName) {
     });
 }
 
-export function changeStudyAccessRights(studyUuid, userId, toPrivate) {
+export function changeStudyAccessRights(studyUuid, toPrivate) {
     console.info('Change access rights of study ' + studyUuid);
     let changeStudyAccessRightsUrl;
     if (toPrivate === 'true') {
         changeStudyAccessRightsUrl =
-            getStudyUrl(studyUuid, userId) + '/private';
+            getStudyUrl(studyUuid) + '/private';
     } else {
-        changeStudyAccessRightsUrl = getStudyUrl(studyUuid, userId) + '/public';
+        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/public';
     }
 
     console.debug(changeStudyAccessRightsUrl);
@@ -502,17 +484,17 @@ export function changeStudyAccessRights(studyUuid, userId, toPrivate) {
     });
 }
 
-export function startLoadFlow(studyUuid, userId) {
+export function startLoadFlow(studyUuid) {
     console.info('Running loadflow on ' + studyUuid + '...');
-    const startLoadFlowUrl = getStudyUrl(studyUuid, userId) + '/loadflow/run';
+    const startLoadFlowUrl = getStudyUrl(studyUuid) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
-export function stopSecurityAnalysis(studyUuid, userId) {
+export function stopSecurityAnalysis(studyUuid) {
     console.info('Stopping security analysis on ' + studyUuid + '...');
     const stopSecurityAnalysisUrl =
-        getStudyUrl(studyUuid, userId) + '/security-analysis/stop';
+        getStudyUrl(studyUuid) + '/security-analysis/stop';
     console.debug(stopSecurityAnalysisUrl);
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
@@ -528,26 +510,26 @@ function getContingencyListsQueryParams(contingencyListNames) {
     return '';
 }
 
-export function startSecurityAnalysis(studyUuid, userId, contingencyListNames) {
+export function startSecurityAnalysis(studyUuid, contingencyListNames) {
     console.info('Running security analysis on ' + studyUuid + '...');
     const url =
-        getStudyUrl(studyUuid, userId) +
+        getStudyUrl(studyUuid) +
         '/security-analysis/run' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
-export function fetchSecurityAnalysisResult(studyUuid, userId) {
+export function fetchSecurityAnalysisResult(studyUuid) {
     console.info('Fetching security analysis on ' + studyUuid + '...');
-    const url = getStudyUrl(studyUuid, userId) + '/security-analysis/result';
+    const url = getStudyUrl(studyUuid) + '/security-analysis/result';
     console.debug(url);
     return backendFetch(url, { method: 'get' });
 }
 
-export function fetchSecurityAnalysisStatus(studyUuid, userId) {
+export function fetchSecurityAnalysisStatus(studyUuid) {
     console.info('Fetching security analysis status on ' + studyUuid + '...');
-    const url = getStudyUrl(studyUuid, userId) + '/security-analysis/status';
+    const url = getStudyUrl(studyUuid) + '/security-analysis/status';
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then(function (response) {
         if (response.ok) {
@@ -567,12 +549,12 @@ export function fetchContingencyLists() {
     );
 }
 
-export function fetchContingencyCount(userId, studyUuid, contingencyListNames) {
+export function fetchContingencyCount(studyUuid, contingencyListNames) {
     console.info(
         `Fetching contingency count for ${contingencyListNames} on ' + ${studyUuid} + '...'`
     );
     const url =
-        getStudyUrl(studyUuid, userId) +
+        getStudyUrl(studyUuid) +
         '/contingency-count' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
@@ -672,9 +654,9 @@ function getUrlWithToken(baseUrl) {
     return baseUrl + '?access_token=' + getToken();
 }
 
-export function getExportUrl(userId, studyUuid, exportFormat) {
+export function getExportUrl(studyUuid, exportFormat) {
     const url =
-        getStudyUrl(studyUuid, userId) + '/export-network/' + exportFormat;
+        getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
     return getUrlWithToken(url);
 }
 
@@ -691,10 +673,10 @@ export function fetchAppsAndUrls() {
         });
 }
 
-export function requestNetworkChange(userId, studyUuid, groovyScript) {
+export function requestNetworkChange(studyUuid, groovyScript) {
     console.info('request network change');
     const changeUrl =
-        getStudyUrl(studyUuid, userId) + '/network-modification/groovy';
+        getStudyUrl(studyUuid) + '/network-modification/groovy';
     console.debug(changeUrl);
     return backendFetch(changeUrl, {
         method: 'PUT',
@@ -708,10 +690,10 @@ export function requestNetworkChange(userId, studyUuid, groovyScript) {
     });
 }
 
-export function setLoadFlowParameters(studyUuid, userId, newParams) {
+export function setLoadFlowParameters(studyUuid, newParams) {
     console.info('set load flow parameters');
     const setLoadFlowParametersUrl =
-        getStudyUrl(studyUuid, userId) + '/loadflow/parameters';
+        getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(setLoadFlowParametersUrl);
     return backendFetch(setLoadFlowParametersUrl, {
         method: 'POST',
@@ -723,9 +705,9 @@ export function setLoadFlowParameters(studyUuid, userId, newParams) {
     }).then();
 }
 
-export function getLoadFlowParameters(studyUuid, userId) {
+export function getLoadFlowParameters(studyUuid) {
     console.info('get load flow parameters');
-    const getLfParams = getStudyUrl(studyUuid, userId) + '/loadflow/parameters';
+    const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
     return backendFetch(getLfParams, {
         method: 'get',

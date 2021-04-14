@@ -291,7 +291,7 @@ const App = () => {
 
     const isStudyPane =
         useRouteMatch({
-            path: '/:userId/studies/:studyUuid',
+            path: '/studies/:studyUuid',
             exact: true,
         }) !== null;
 
@@ -362,10 +362,8 @@ const App = () => {
         }
     }, [user, dispatch, updateParams, connectNotificationsUpdateConfig]);
 
-    function studyClickHandler(studyUuid, userId) {
+    function studyClickHandler(studyUuid) {
         history.push(
-            '/' +
-                encodeURIComponent(userId) +
                 '/studies/' +
                 encodeURIComponent(studyUuid)
         );
@@ -499,12 +497,12 @@ const App = () => {
                             <Switch>
                                 <Route exact path="/">
                                     <StudyManager
-                                        onClick={(studyUuid, userId) =>
-                                            studyClickHandler(studyUuid, userId)
+                                        onClick={(studyUuid) =>
+                                            studyClickHandler(studyUuid)
                                         }
                                     />
                                 </Route>
-                                <Route exact path="/:userId/studies/:studyUuid">
+                                <Route exact path="/studies/:studyUuid">
                                     <StudyPane
                                         view={STUDY_VIEWS[tabIndex]}
                                         onChangeTab={onChangeTab}

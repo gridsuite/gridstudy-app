@@ -127,7 +127,7 @@ const NetworkTable = (props) => {
         Object.values(lineEdit[tabIndex].newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(props.userId, props.studyUuid, groovyCr).then(
+        requestNetworkChange(props.studyUuid, groovyCr).then(
             (response) => {
                 if (response.ok) {
                     Object.entries(lineEdit[tab].newValues).forEach(
@@ -718,13 +718,11 @@ const NetworkTable = (props) => {
 
 NetworkTable.defaultProps = {
     network: null,
-    userId: '',
     studyUuid: '',
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
-    userId: PropTypes.string,
     studyUuid: PropTypes.string,
 };
 

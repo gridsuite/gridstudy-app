@@ -27,8 +27,6 @@ import Grid from '@material-ui/core/Grid';
 const ContingencyListSelector = (props) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const userId = decodeURIComponent(useParams().userId);
-
     const [contingencyListNames, setContingencyListNames] = useState([]);
 
     const [simulatedContingencyCount, setSimulatedContingencyCount] = useState(
@@ -68,13 +66,12 @@ const ContingencyListSelector = (props) => {
     useEffect(() => {
         setSimulatedContingencyCount(null);
         fetchContingencyCount(
-            userId,
             studyUuid,
             checkedContingencyListNames
         ).then((contingencyCount) => {
             setSimulatedContingencyCount(contingencyCount);
         });
-    }, [userId, studyUuid, checkedContingencyListNames]);
+    }, [studyUuid, checkedContingencyListNames]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null

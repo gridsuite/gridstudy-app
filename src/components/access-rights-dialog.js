@@ -26,7 +26,6 @@ import PropTypes from 'prop-types';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param studyUuid the uuid of the study to export
- * @param userId the name of the logged in user
  * @param {String} title Title of the dialog
  * @param {String} isPrivate tells if the study is private or not
  */
@@ -34,7 +33,6 @@ const AccessRightsDialog = ({
     open,
     onClose,
     studyUuid,
-    userId,
     title,
     isPrivate,
 }) => {
@@ -54,7 +52,7 @@ const AccessRightsDialog = ({
 
     const handleClick = () => {
         setLoading(true);
-        changeStudyAccessRights(studyUuid, userId, selected).then(
+        changeStudyAccessRights(studyUuid, selected).then(
             (response) => {
                 if (!response.ok) {
                     setError(
@@ -145,9 +143,7 @@ AccessRightsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     studyUuid: PropTypes.string,
-    userId: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     isPrivate: PropTypes.bool,
 };
-
 export default AccessRightsDialog;

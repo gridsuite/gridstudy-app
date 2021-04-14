@@ -180,7 +180,7 @@ RenameDialog.propTypes = {
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-const ExportDialog = ({ open, onClose, onClick, studyUuid, userId, title }) => {
+const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
     const [availableFormats, setAvailableFormats] = React.useState('');
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
@@ -229,7 +229,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, userId, title }) => {
     const handleChange = (event) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
-        setDownloadUrl(getExportUrl(userId, studyUuid, selected));
+        setDownloadUrl(getExportUrl(studyUuid, selected));
     };
 
     const classes = useStyles();

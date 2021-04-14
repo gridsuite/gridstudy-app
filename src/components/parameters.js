@@ -80,7 +80,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
     const studyUuid = useSelector((state) => state.studyUuid);
-    const userId = useSelector((state) => state.userId);
 
     const [lfParams, setLfParams] = React.useState(null);
 
@@ -101,12 +100,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const [tabIndex, setTabIndex] = React.useState(0);
 
     useEffect(() => {
-        if (userId) {
-            getLoadFlowParameters(studyUuid, userId).then((params) =>
+        if (studyUuid) {
+            getLoadFlowParameters(studyUuid).then((params) =>
                 setLfParams(params)
             );
         }
-    }, [studyUuid, userId]);
+    }, [studyUuid]);
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
@@ -484,16 +483,16 @@ const Parameters = ({ showParameters, hideParameters }) => {
     }
 
     const resetLfParameters = () => {
-        setLoadFlowParameters(studyUuid, userId, null)
+        setLoadFlowParameters(studyUuid, null)
             .then(() => {
-                return getLoadFlowParameters(studyUuid, userId);
+                return getLoadFlowParameters(studyUuid);
             })
             .then((params) => setLfParams(params));
     };
 
     const commitLFParameter = (newParams) => {
         setLfParams(newParams);
-        setLoadFlowParameters(studyUuid, userId, newParams).then();
+        setLoadFlowParameters(studyUuid, newParams).then();
     };
 
     const LoadFlowParameters = () => {
