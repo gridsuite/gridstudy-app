@@ -275,7 +275,7 @@ export const CreateStudyForm = (props) => {
             studyName: studyName,
             userId: userId,
             isPrivate: isPrivateStudy,
-            creationDate: Date.now(),
+            creationDate: Date.now() + '',
         };
         props.addCreationRequest(study);
         createStudy(
