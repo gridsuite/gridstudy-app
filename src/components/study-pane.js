@@ -16,6 +16,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { parse, stringify } from 'qs';
 import { makeStyles } from '@material-ui/core/styles';
 
+import { useSnackbar } from 'notistack';
+
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
@@ -199,6 +201,8 @@ const StudyPane = (props) => {
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
@@ -793,19 +797,71 @@ const StudyPane = (props) => {
     }
 
     function handleLockout(lineId) {
-        lockoutLine(studyUuid, lineId).then(closeLineMenu);
+        lockoutLine(studyUuid, lineId)
+            .then((response) => {
+                if (response.status === 304) {
+                    enqueueSnackbar(
+                        intl.formatMessage({ id: 'UnableToLockoutLine' }),
+                        {
+                            variant: 'warning',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        }
+                    );
+                }
+            })
+            .then(closeLineMenu);
     }
 
     function handleTrip(lineId) {
-        tripLine(studyUuid, lineId).then(closeLineMenu);
+        tripLine(studyUuid, lineId)
+            .then((response) => {
+                if (response.status === 304) {
+                    enqueueSnackbar(
+                        intl.formatMessage({ id: 'UnableToTripLine' }),
+                        {
+                            variant: 'warning',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        }
+                    );
+                }
+            })
+            .then(closeLineMenu);
     }
 
     function handleEnergise(lineId, side) {
-        energiseLineEnd(studyUuid, lineId, side).then(closeLineMenu);
+        energiseLineEnd(studyUuid, lineId, side)
+            .then((response) => {
+                if (response.status === 304) {
+                    enqueueSnackbar(
+                        intl.formatMessage({ id: 'UnableToEnergiseLineEnd' }),
+                        {
+                            variant: 'warning',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        }
+                    );
+                }
+            })
+            .then(closeLineMenu);
     }
 
     function handleSwitchOn(lineId) {
-        switchOnLine(studyUuid, lineId).then(closeLineMenu);
+        switchOnLine(studyUuid, lineId)
+            .then((response) => {
+                if (response.status === 304) {
+                    enqueueSnackbar(
+                        intl.formatMessage({ id: 'UnableToSwitchOnLine' }),
+                        {
+                            variant: 'warning',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        }
+                    );
+                }
+            })
+            .then(closeLineMenu);
     }
 
     function renderMapView() {
