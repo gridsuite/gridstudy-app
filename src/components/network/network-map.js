@@ -386,10 +386,10 @@ NetworkMap.defaultProps = {
 };
 
 NetworkMap.propTypes = {
-    network: PropTypes.instanceOf(Network).isRequired,
-    geoData: PropTypes.instanceOf(GeoData).isRequired,
+    network: PropTypes.instanceOf(Network),
+    geoData: PropTypes.instanceOf(GeoData),
     useName: PropTypes.bool.isRequired,
-    filteredNominalVoltages: PropTypes.array.isRequired,
+    filteredNominalVoltages: PropTypes.array,
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,
