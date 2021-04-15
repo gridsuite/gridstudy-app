@@ -258,7 +258,15 @@ const NetworkMap = forwardRef((props, ref) => {
             info.object.voltageLevelId1 &&
             info.object.voltageLevelId2
         ) {
-            props.onLineClick(info.object, info.x + 200, info.y);
+            let line = {
+                id: info.object.id,
+                terminal1Connected: info.layer.state.linesConnection.get(info.object.id).terminal1Connected,
+                terminal2Connected: info.layer.state.linesConnection.get(info.object.id).terminal2Connected,
+                status: info.layer.state.linesStatus.get(info.object.id).branchStatus,
+                voltageLevelId1: info.object.voltageLevelId1,
+                voltageLevelId2: info.object.voltageLevelId2,
+            };
+            props.onLineClick(line, info.x + 200, info.y);
         }
     }
 
