@@ -665,9 +665,15 @@ const StudyPane = (props) => {
                         console.error(response);
                         // revert switch position change
                         if (open) {
-                            switchElement.classList.replace('sld-open', 'sld-closed');
+                            switchElement.classList.replace(
+                                'sld-open',
+                                'sld-closed'
+                            );
                         } else {
-                            switchElement.classList.replace('sld-closed', 'sld-open');
+                            switchElement.classList.replace(
+                                'sld-closed',
+                                'sld-open'
+                            );
                         }
                         setUpdateSwitchMsg(
                             response.status + ' : ' + response.statusText
