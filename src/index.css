@@ -1,15 +1,62 @@
+/* a css rule for position: relative coming before singlestretch-* rules
+ * to be ignored if singlestretch is implemented with position: absolute */
+.relative {
+    position: relative;
+}
+
+.singlestretch-parent {
+}
+.singlestretch-child {
+    height: 100%;
+}
+/* alternative implementations */
+/*
+*/
+/*
+.singlestretch-parent {
+    position: relative;
+}
+.singlestretch-child {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+*/
+/*
+.singlestretch-parent {
+    display: flex;
+    flex-direction: column;
+}
+.singlestretch-child {
+    flex-grow: 1;
+}
+*/
+/*
+.singlestretch-parent {
+    display: grid;
+}
+.singlestretch-child {
+}
+*/
+
+html {
+    height: 100%;
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
+        'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+        'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+        monospace;
 }
 
 /* Single line diagram */
