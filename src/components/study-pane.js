@@ -654,9 +654,9 @@ const StudyPane = (props) => {
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
             if (open) {
-                switchElement.classList.replace('closed', 'open');
+                switchElement.classList.replace('sld-closed', 'sld-open');
             } else {
-                switchElement.classList.replace('open', 'closed');
+                switchElement.classList.replace('sld-open', 'sld-closed');
             }
 
             updateSwitchState(studyName, userId, breakerId, open).then(
@@ -665,9 +665,15 @@ const StudyPane = (props) => {
                         console.error(response);
                         // revert switch position change
                         if (open) {
-                            switchElement.classList.replace('open', 'closed');
+                            switchElement.classList.replace(
+                                'sld-open',
+                                'sld-closed'
+                            );
                         } else {
-                            switchElement.classList.replace('closed', 'open');
+                            switchElement.classList.replace(
+                                'sld-closed',
+                                'sld-open'
+                            );
                         }
                         setUpdateSwitchMsg(
                             response.status + ' : ' + response.statusText
