@@ -208,9 +208,9 @@ export const CreateStudyForm = (props) => {
         }, 700);
     };
 
-    const updateStudyFormState = (name, userId) => {
-        if (name !== '') {
-            studyExists(name, userId)
+    const updateStudyFormState = (inputValue, userId) => {
+        if (inputValue !== '') {
+            studyExists(inputValue, userId)
                 .then((data) => {
                     if (data === true) {
                         setStudyFormState(

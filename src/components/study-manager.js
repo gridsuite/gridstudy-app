@@ -461,7 +461,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
 
 StudyCard.propTypes = {
     study: PropTypes.shape({
-        studyUuid: PropTypes.string,
+        studyUuid: PropTypes.string.isRequired,
         userId: PropTypes.string.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
@@ -494,11 +494,9 @@ const StudyManager = ({ onClick }) => {
 
     const dispatchStudies = useCallback(() => {
         fetchStudyCreationRequests().then((studies) => {
-            console.log('fetchStudyCreationRequests', studies);
             dispatch(loadStudyCreationRequestsSuccess(studies));
         });
         fetchStudies().then((studies) => {
-            console.log('fetchStudies', studies);
             dispatch(loadStudiesSuccess(studies));
         });
         // Note: dispatch doesn't change
@@ -532,7 +530,6 @@ const StudyManager = ({ onClick }) => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
-            console.log('notification:', event);
             displayErrorIfExist(event);
             dispatchStudies();
         };

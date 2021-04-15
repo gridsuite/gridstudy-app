@@ -101,6 +101,15 @@ export function fetchStudyCreationRequests() {
     });
 }
 
+function getStudyUrlByStudyNameAndUserId(studyName, userId) {
+    return (
+        PREFIX_STUDY_QUERIES +
+        '/v1/' +
+        encodeURIComponent(userId) +
+        '/studies/' +
+        encodeURIComponent(studyName)
+    );
+}
 function getStudyUrl(studyUuid) {
     return (
         PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid)
@@ -339,7 +348,8 @@ export function fetchLinePositions(studyUuid) {
 export function studyExists(studyName, userId) {
     // current implementation prevent having two studies with the same name and the same user
     // later we will prevent same studyName and userId in the same directory
-    const studyExistsUrl = getStudyUrl(studyName, userId) + '/exists';
+    const studyExistsUrl =
+        getStudyUrlByStudyNameAndUserId(studyName, userId) + '/exists';
     console.debug(studyExistsUrl);
     return backendFetch(studyExistsUrl, { method: 'get' }).then((response) => {
         return response.json();

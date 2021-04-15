@@ -542,7 +542,7 @@ const StudyPane = (props) => {
             dispatch(closeStudy());
             dispatch(filteredNominalVoltagesUpdated(null));
         };
-        // Note: dispach, studyName, loadNetwork, loadGeoData,
+        // Note: dispach, studyUuid, loadNetwork, loadGeoData,
         // connectNotifications don't change
     }, [dispatch, studyUuid, loadNetwork, loadGeoData, connectNotifications]);
 
@@ -623,6 +623,7 @@ const StudyPane = (props) => {
             } else {
                 switchElement.classList.replace('sld-open', 'sld-closed');
             }
+
             updateSwitchState(studyUuid, breakerId, open).then((response) => {
                 if (!response.ok) {
                     console.error(response);
@@ -642,9 +643,6 @@ const StudyPane = (props) => {
                         response.status + ' : ' + response.statusText
                     );
                 }
-                setUpdateSwitchMsg(
-                    response.status + ' : ' + response.statusText
-                );
             });
         },
         [studyUuid]

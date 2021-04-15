@@ -132,8 +132,9 @@ const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
 AccessRightsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    studyUuid: PropTypes.string,
+    studyUuid: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
-    isPrivate: PropTypes.bool,
+    isPrivate: PropTypes.bool.isRequired,
 };
+
 export default AccessRightsDialog;
