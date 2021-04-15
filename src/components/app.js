@@ -43,6 +43,7 @@ import {
     selectDisplayOverloadTableState,
     changeDisplayedColumns,
     selectLanguage,
+    selectComputedLanguage,
 } from '../redux/actions';
 import Parameters from './parameters';
 import {
@@ -204,7 +205,9 @@ const App = (props) => {
 
     const resultCount = useSelector((state) => state.resultCount);
 
-    props.setLanguage(language === SYSTEM ? getSystemLanguage() : language);
+    useEffect(() => {
+        props.setLanguage(getComputedLanguage(language));
+    }, [props, language]);
 
     const updateParams = useCallback(
         (params) => {
@@ -217,6 +220,11 @@ const App = (props) => {
                         break;
                     case PARAMS_LANGUAGE_KEY:
                         dispatch(selectLanguage(param.value));
+                        dispatch(
+                            selectComputedLanguage(
+                                getComputedLanguage(param.value)
+                            )
+                        );
                         break;
                     case PARAMS_CENTER_LABEL_KEY:
                         dispatch(
@@ -416,9 +424,13 @@ const App = (props) => {
         updateConfigParameter(PARAMS_USE_NAME_KEY, useName);
     };
 
+    const getComputedLanguage = (language) => {
+        return language === SYSTEM ? getSystemLanguage() : language;
+    };
+
     const handleLanguageClick = (language) => {
-        props.setLanguage(language === SYSTEM ? getSystemLanguage() : language);
         updateConfigParameter(PARAMS_LANGUAGE_KEY, language);
+        props.setLanguage(getComputedLanguage(language));
     };
 
     // if result tab is displayed, clean badge

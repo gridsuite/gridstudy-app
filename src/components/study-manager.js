@@ -478,6 +478,7 @@ StudyCard.propTypes = {
  */
 const StudyManager = ({ onClick }) => {
     const intl = useIntl();
+    const intlRef = useRef();
 
     const dispatch = useDispatch();
     const websocketExpectedCloseRef = useRef();
@@ -493,6 +494,12 @@ const StudyManager = ({ onClick }) => {
     const studyCreationSubmitted = useRef(new Set());
 
     const { enqueueSnackbar } = useSnackbar();
+
+    //This useEffect must be at the beginning to be executed before other useEffects which use intlRef.
+    //This ref is used to avoid redoing other useEffects when the language (intl) is changed for things that produce temporary messages using the snackbar.
+    useEffect(() => {
+        intlRef.current = intl;
+    }, [intl]);
 
     const dispatchStudies = useCallback(() => {
         fetchStudyCreationRequests().then((studies) => {
@@ -512,7 +519,9 @@ const StudyManager = ({ onClick }) => {
                 if (error && error !== undefined) {
                     const studyName = eventData.headers['studyName'];
                     const errorMessage =
-                        intl.formatMessage({ id: 'studyCreatingError' }) +
+                        intlRef.current.formatMessage({
+                            id: 'studyCreatingError',
+                        }) +
                         ' : ' +
                         studyName +
                         '\n\n' +
@@ -525,7 +534,7 @@ const StudyManager = ({ onClick }) => {
                 }
             }
         },
-        [enqueueSnackbar, intl]
+        [enqueueSnackbar]
     );
 
     const connectNotificationsUpdateStudies = useCallback(() => {
@@ -549,14 +558,17 @@ const StudyManager = ({ onClick }) => {
     useEffect(() => {
         dispatchStudies();
 
-        const ws = connectNotificationsUpdateStudies();
         // Note: dispatch doesn't change
+    }, [dispatchStudies]);
+
+    useEffect(() => {
+        const ws = connectNotificationsUpdateStudies();
 
         // cleanup at unmount event
         return function () {
             ws.close();
         };
-    }, [connectNotificationsUpdateStudies, dispatchStudies]);
+    }, [connectNotificationsUpdateStudies]);
 
     function addCreationRequest({ studyName, userId, ...rest }) {
         setlocalCreationRequests({

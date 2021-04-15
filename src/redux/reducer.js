@@ -29,6 +29,7 @@ import {
     SELECT_THEME,
     USE_NAME,
     SELECT_LANGUAGE,
+    SELECT_COMPUTED_LANGUAGE,
     USER,
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
@@ -57,6 +58,7 @@ const initialState = {
     selectedFile: null,
     useName: true,
     language: 'sys',
+    computedLanguage: 'en',
     user: null,
     centerLabel: false,
     diagonalLabel: false,
@@ -125,6 +127,9 @@ export const reducer = createReducer(initialState, {
         state.language = action.language;
     },
 
+    [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
+        state.computedLanguage = action.computedLanguage;
+    },
     [SELECT_CASE]: (state, action) => {
         state.selectedCase = action.selectedCase;
     },
