@@ -29,7 +29,6 @@ import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import {
-    LIGHT_THEME,
     resetResultCount,
     selectCenterLabelState,
     selectDiagonalLabelState,
@@ -41,11 +40,12 @@ import {
     selectSubstationLayout,
     selectTheme,
     selectUseName,
-    selectViewOverloadsTableState,
+    selectDisplayOverloadTableState,
+    changeDisplayedColumns,
 } from '../redux/actions';
 import Parameters from './parameters';
-
 import {
+    LIGHT_THEME,
     AuthenticationRouter,
     getPreLoginPath,
     initializeAuthenticationProd,
@@ -63,7 +63,9 @@ import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_da
 import {
     connectNotificationsWsUpdateConfig,
     fetchAppsAndUrls,
+    fetchConfigParameter,
     fetchConfigParameters,
+    updateConfigParameter,
 } from '../utils/rest-api';
 import {
     PARAMS_CENTER_LABEL_KEY,
@@ -76,8 +78,14 @@ import {
     PARAMS_SUBSTATION_LAYOUT_KEY,
     PARAMS_THEME_KEY,
     PARAMS_USE_NAME_KEY,
-    PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+    PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+    COMMON_APP_NAME,
+    APP_NAME,
 } from '../utils/config-params';
+import {
+    COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_NAMES_INDEXES,
+} from './network/config-tables';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -147,12 +155,14 @@ const useStyles = makeStyles(() => ({
 
 const noUserManager = { instance: null, error: null };
 
-const STUDY_VIEWS = [StudyView.MAP, StudyView.TABLE, StudyView.RESULTS];
+const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
 const App = () => {
     const theme = useSelector((state) => state.theme);
 
     const user = useSelector((state) => state.user);
+
+    const useName = useSelector((state) => state.useName);
 
     const studyName = useSelector((state) => state.studyName);
 
@@ -180,6 +190,8 @@ const App = () => {
 
     const updateParams = useCallback(
         (params) => {
+            console.debug('received UI parameters : ', params);
+            let displayedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAMS_THEME_KEY:
@@ -217,9 +229,9 @@ const App = () => {
                     case PARAMS_SUBSTATION_LAYOUT_KEY:
                         dispatch(selectSubstationLayout(param.value));
                         break;
-                    case PARAMS_VIEW_OVERLOADS_TABLE_KEY:
+                    case PARAMS_DISPLAY_OVERLOAD_TABLE_KEY:
                         dispatch(
-                            selectViewOverloadsTableState(
+                            selectDisplayOverloadTableState(
                                 param.value === 'true'
                             )
                         );
@@ -228,8 +240,24 @@ const App = () => {
                         dispatch(selectUseName(param.value === 'true'));
                         break;
                     default:
+                        if (
+                            param.name.startsWith(
+                                COLUMNS_PARAMETER_PREFIX_IN_DATABASE
+                            )
+                        ) {
+                            let index = TABLES_NAMES_INDEXES.get(
+                                param.name.slice(
+                                    COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                )
+                            );
+                            displayedColumnsParams[index] = {
+                                index: index,
+                                value: param.value,
+                            };
+                        }
                 }
             });
+            dispatch(changeDisplayedColumns(displayedColumnsParams));
         },
         [dispatch]
     );
@@ -238,9 +266,14 @@ const App = () => {
         const ws = connectNotificationsWsUpdateConfig();
 
         ws.onmessage = function (event) {
-            fetchConfigParameters().then((params) => {
-                updateParams(params);
-            });
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers && eventData.headers['parameterName']) {
+                fetchConfigParameter(eventData.headers['parameterName']).then(
+                    (param) => {
+                        updateParams([param]);
+                    }
+                );
+            }
         };
         ws.onerror = function (event) {
             console.error('Unexpected Notification WebSocket error', event);
@@ -255,6 +288,12 @@ const App = () => {
             exact: true,
         })
     );
+
+    const isStudyPane =
+        useRouteMatch({
+            path: '/:userId/studies/:studyName',
+            exact: true,
+        }) !== null;
 
     useEffect(() => {
         document.addEventListener('contextmenu', (event) => {
@@ -310,9 +349,10 @@ const App = () => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchConfigParameters().then((params) => {
-                console.debug('received UI parameters :');
-                console.debug(params);
+            fetchConfigParameters(COMMON_APP_NAME).then((params) => {
+                updateParams(params);
+            });
+            fetchConfigParameters(APP_NAME).then((params) => {
                 updateParams(params);
             });
             const ws = connectNotificationsUpdateConfig();
@@ -347,6 +387,14 @@ const App = () => {
         setTabIndex(newTabIndex);
     }
 
+    const handleThemeClick = (theme) => {
+        updateConfigParameter(PARAMS_THEME_KEY, theme);
+    };
+
+    const handleEquipmentLabellingClick = (useName) => {
+        updateConfigParameter(PARAMS_USE_NAME_KEY, useName);
+    };
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -355,8 +403,14 @@ const App = () => {
     return (
         <ThemeProvider theme={getMuiTheme(theme)}>
             <SnackbarProvider hideIconVariant={false}>
-                <React.Fragment>
-                    <CssBaseline />
+                <CssBaseline />
+                <div
+                    className="singlestretch-child"
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     <TopBar
                         appName="Study"
                         appColor="#0CA789"
@@ -374,6 +428,13 @@ const App = () => {
                         onLogoClick={() => onLogoClicked()}
                         user={user}
                         appsAndUrls={appsAndUrls}
+                        onThemeClick={handleThemeClick}
+                        onAboutClick={() => console.debug('about')}
+                        theme={theme}
+                        onEquipmentLabellingClick={
+                            handleEquipmentLabellingClick
+                        }
+                        equipmentLabelling={useName}
                     >
                         {studyName && (
                             <Tabs
@@ -417,48 +478,66 @@ const App = () => {
                         showParameters={showParameters}
                         hideParameters={hideParameters}
                     />
-                    {user !== null ? (
-                        <Switch>
-                            <Route exact path="/">
-                                <StudyManager
-                                    onClick={(name, userId) =>
-                                        studyClickHandler(name, userId)
-                                    }
-                                />
-                            </Route>
-                            <Route exact path="/:userId/studies/:studyName">
-                                <StudyPane
-                                    view={STUDY_VIEWS[tabIndex]}
-                                    onChangeTab={onChangeTab}
-                                />
-                            </Route>
-                            <Route exact path="/sign-in-callback">
-                                <Redirect to={getPreLoginPath() || '/'} />
-                            </Route>
-                            <Route exact path="/logout-callback">
-                                <h1>
-                                    Error: logout failed; you are still logged
-                                    in.
-                                </h1>
-                            </Route>
-                            <Route>
-                                <PageNotFound
-                                    message={
-                                        <FormattedMessage id="PageNotFound" />
-                                    }
-                                />
-                            </Route>
-                        </Switch>
-                    ) : (
-                        <AuthenticationRouter
-                            userManager={userManager}
-                            signInCallbackError={signInCallbackError}
-                            dispatch={dispatch}
-                            history={history}
-                            location={location}
-                        />
-                    )}
-                </React.Fragment>
+
+                    <div
+                        className="singlestretch-parent"
+                        style={{
+                            flexGrow: 1,
+                            //Study pane needs 'hidden' when displaying a
+                            //fullscreen sld or when displaying the results or
+                            //elements tables for certain screen sizes because
+                            //width/heights are computed programmaticaly and
+                            //resizing the page trigger render loops due to
+                            //appearing and disappearing scrollbars.
+                            //For all other cases, auto is better because it will
+                            //be easier to see that we have a layout problem when
+                            //scrollbars appear when they should not.
+                            overflow: isStudyPane ? 'hidden' : 'auto',
+                        }}
+                    >
+                        {user !== null ? (
+                            <Switch>
+                                <Route exact path="/">
+                                    <StudyManager
+                                        onClick={(name, userId) =>
+                                            studyClickHandler(name, userId)
+                                        }
+                                    />
+                                </Route>
+                                <Route exact path="/:userId/studies/:studyName">
+                                    <StudyPane
+                                        view={STUDY_VIEWS[tabIndex]}
+                                        onChangeTab={onChangeTab}
+                                    />
+                                </Route>
+                                <Route exact path="/sign-in-callback">
+                                    <Redirect to={getPreLoginPath() || '/'} />
+                                </Route>
+                                <Route exact path="/logout-callback">
+                                    <h1>
+                                        Error: logout failed; you are still
+                                        logged in.
+                                    </h1>
+                                </Route>
+                                <Route>
+                                    <PageNotFound
+                                        message={
+                                            <FormattedMessage id="PageNotFound" />
+                                        }
+                                    />
+                                </Route>
+                            </Switch>
+                        ) : (
+                            <AuthenticationRouter
+                                userManager={userManager}
+                                signInCallbackError={signInCallbackError}
+                                dispatch={dispatch}
+                                history={history}
+                                location={location}
+                            />
+                        )}
+                    </div>
+                </div>
             </SnackbarProvider>
         </ThemeProvider>
     );

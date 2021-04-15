@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -119,6 +119,10 @@ const CustomTypography = withStyles({
     },
 })(Typography);
 
+function makeKey({ userId, studyName }) {
+    return userId + '/' + studyName;
+}
+
 const DonwnloadIframe = 'downloadIframe';
 /**
  * Card displaying a study on the screen, with the ability to open and edit it
@@ -218,17 +222,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, study.userId, newStudyNameValue).then(
-            (response) => {
-                if (!response.ok) {
+        renameStudy(study.studyName, study.userId, newStudyNameValue)
+            .then((response) => {
+                if (response === 'NOT_ALLOWED') {
                     setRenameError(
                         intl.formatMessage({ id: 'renameStudyError' })
                     );
                 } else {
                     setOpenRename(false);
                 }
-            }
-        );
+            })
+            .catch((e) => {
+                setRenameError(e.message || e);
+            });
     };
 
     const handleCloseRename = () => {
@@ -398,19 +404,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
                         <CustomTypography>
-                            <FormattedMessage id="studyName" />:{' '}
+                            <FormattedMessage id="studyNameProperty" />
                             <span className={classes.contentStyle}>
                                 {study.studyName}
                             </span>
                         </CustomTypography>
                         <CustomTypography>
-                            <FormattedMessage id="studyDescription" />:{' '}
+                            <FormattedMessage id="studyDescriptionProperty" />
                             <span className={classes.contentStyle}>
                                 {study.description ? study.description : '—'}
                             </span>
                         </CustomTypography>
                         <CustomTypography>
-                            <FormattedMessage id="owner" />:{' '}
+                            <FormattedMessage id="owner" />
                             <span className={classes.contentStyle}>
                                 {study.userId}
                             </span>
@@ -483,6 +489,9 @@ const StudyManager = ({ onClick }) => {
 
     const classes = useStyles();
 
+    const [localCreationRequests, setlocalCreationRequests] = useState({});
+    const studyCreationSubmitted = useRef(new Set());
+
     const { enqueueSnackbar } = useSnackbar();
 
     const dispatchStudies = useCallback(() => {
@@ -549,16 +558,93 @@ const StudyManager = ({ onClick }) => {
         };
     }, [connectNotificationsUpdateStudies, dispatchStudies]);
 
+    function addCreationRequest({ studyName, userId, ...rest }) {
+        setlocalCreationRequests({
+            ...localCreationRequests,
+            ...{
+                [makeKey({ userId: userId, studyName: studyName })]: {
+                    studyName: studyName,
+                    userId: userId,
+                    ...rest,
+                },
+            },
+        });
+    }
+
+    function addStudyCreationSubmitted(study) {
+        studyCreationSubmitted.current.add(makeKey(study));
+    }
+
+    const cleanLocalCreationRequests = useCallback(
+        (remote) => {
+            function deleteKey(list, key) {
+                if (list.hasOwnProperty(key)) {
+                    delete localCreationRequests[key];
+                    return true;
+                }
+                return false;
+            }
+
+            if (localCreationRequests) {
+                let didDelete = false;
+                remote.forEach((study) => {
+                    didDelete |= deleteKey(
+                        localCreationRequests,
+                        makeKey(study)
+                    );
+                });
+                studyCreationSubmitted.current.forEach((key) => {
+                    didDelete |= deleteKey(localCreationRequests, key);
+                });
+                studyCreationSubmitted.current.clear();
+                if (didDelete)
+                    setlocalCreationRequests(
+                        Object.assign({}, localCreationRequests)
+                    );
+            }
+        },
+        [localCreationRequests]
+    );
+
+    useEffect(() => {
+        cleanLocalCreationRequests(studyCreationRequests);
+    }, [studyCreationRequests, cleanLocalCreationRequests]);
+
+    useEffect(() => {
+        cleanLocalCreationRequests(studies);
+    }, [studies, cleanLocalCreationRequests]);
+
+    function mergeCreationRequests(remote, local) {
+        let merged = {};
+        if (local)
+            Object.values(local).forEach((study) => {
+                merged[makeKey(study)] = study;
+            });
+        if (remote)
+            remote.forEach((study) => {
+                merged[makeKey(study)] = study;
+            });
+        return Object.values(merged);
+    }
+
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
             <Grid container spacing={2} className={classes.grid}>
                 <Grid item xs={12} sm={6} md={3} align="center">
                     <Box className={classes.addButtonBox}>
-                        <CreateStudyForm />
+                        <CreateStudyForm
+                            addCreationRequest={addCreationRequest}
+                            addStudyCreationSubmitted={
+                                addStudyCreationSubmitted
+                            }
+                        />
                     </Box>
                 </Grid>
-                {studyCreationRequests &&
-                    studyCreationRequests.map((study) => (
+                {(studyCreationRequests || localCreationRequests) &&
+                    mergeCreationRequests(
+                        studyCreationRequests,
+                        localCreationRequests
+                    ).map((study) => (
                         <Grid
                             item
                             xs={12}

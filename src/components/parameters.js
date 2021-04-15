@@ -31,13 +31,13 @@ import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 
-import { DARK_THEME, LIGHT_THEME } from '../redux/actions';
+import { DARK_THEME, LIGHT_THEME } from '@gridsuite/commons-ui';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
     setLoadFlowParameters,
-    updateConfigParameters,
+    updateConfigParameter,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
@@ -51,7 +51,7 @@ import {
     PARAMS_SUBSTATION_LAYOUT_KEY,
     PARAMS_THEME_KEY,
     PARAMS_USE_NAME_KEY,
-    PARAMS_VIEW_OVERLOADS_TABLE_KEY,
+    PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
 } from '../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
@@ -87,13 +87,15 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const lineFlowAlertThreshold = useSelector(
         (state) => state.lineFlowAlertThreshold
     );
-    const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
+    const displayOverloadTable = useSelector(
+        (state) => state.displayOverloadTable
+    );
 
     const [
         disabledFlowAlertThreshold,
         setDisabledFlowAlertThreshold,
     ] = React.useState(
-        lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
+        lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
     );
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -105,6 +107,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
             );
         }
     }, [studyName, userId]);
+
+    useEffect(() => {
+        setDisabledFlowAlertThreshold(
+            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
+        );
+    }, [lineFlowColorMode, displayOverloadTable]);
 
     const theme = useSelector((state) => state.theme);
 
@@ -123,32 +131,29 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const handleChangeTheme = (event) => {
         const theme = event.target.value;
-        updateConfigParameters(PARAMS_THEME_KEY, theme);
+        updateConfigParameter(PARAMS_THEME_KEY, theme);
     };
 
     const handleLineFlowModeChange = (event) => {
         const lineFlowMode = event.target.value;
-        updateConfigParameters(PARAMS_LINE_FLOW_MODE_KEY, lineFlowMode);
+        updateConfigParameter(PARAMS_LINE_FLOW_MODE_KEY, lineFlowMode);
     };
 
     const handleLineFlowColorModeChange = (event) => {
         const lineFlowColorMode = event.target.value;
-        setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
-        );
-        updateConfigParameters(
+        updateConfigParameter(
             PARAMS_LINE_FLOW_COLOR_MODE_KEY,
             lineFlowColorMode
         );
     };
 
     const handleLineFlowAlertThresholdChange = (event, value) => {
-        updateConfigParameters(PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY, value);
+        updateConfigParameter(PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY, value);
     };
 
     const handleSubstationLayoutChange = (event) => {
         const substationLayout = event.target.value;
-        updateConfigParameters(PARAMS_SUBSTATION_LAYOUT_KEY, substationLayout);
+        updateConfigParameter(PARAMS_SUBSTATION_LAYOUT_KEY, substationLayout);
     };
 
     function TabPanel(props) {
@@ -171,14 +176,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeSwitch(prop, label, callback) {
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Switch
                         checked={prop}
                         onChange={callback}
@@ -194,14 +199,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeDropDown(prop, label, values, callback) {
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select labelId={label} value={prop} onChange={callback}>
                         {Object.keys(values).map((key) => (
                             <MenuItem key={key} value={key}>
@@ -232,27 +237,34 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeSlider(
         threshold,
         label,
-        disabledFlowAlertThreshold,
-        callback,
+        disabled,
+        onCommitCallback,
         thresholdMarks
     ) {
+        const [sliderValue, setSliderValue] = React.useState(threshold);
+
+        const handleValueChanged = (event, newValue) => {
+            setSliderValue(newValue);
+        };
+
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={7}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={5} className={classes.controlItem}>
                     <Slider
                         min={0}
                         max={100}
                         valueLabelDisplay="auto"
-                        onChangeCommitted={callback}
-                        value={threshold}
-                        disabled={disabledFlowAlertThreshold}
+                        onChange={handleValueChanged}
+                        onChangeCommitted={onCommitCallback}
+                        value={sliderValue}
+                        disabled={disabled}
                         marks={thresholdMarks}
                     />
                 </Grid>
@@ -272,18 +284,18 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(useName, 'useName', () => {
-                    updateConfigParameters(PARAMS_USE_NAME_KEY, !useName);
+                    updateConfigParameter(PARAMS_USE_NAME_KEY, !useName);
                 })}
 
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="theme" />:
+                            <FormattedMessage id="theme" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <RadioGroup row value={theme} onChange={handleChangeTheme}>
                         <FormControlLabel
                             value={DARK_THEME}
@@ -305,27 +317,27 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(diagonalLabel, 'diagonalLabel', () => {
-                    updateConfigParameters(
+                    updateConfigParameter(
                         PARAMS_DIAGONAL_LABEL_KEY,
                         !diagonalLabel
                     );
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(centerLabel, 'centerLabel', () => {
-                    updateConfigParameters(
+                    updateConfigParameter(
                         PARAMS_CENTER_LABEL_KEY,
                         !centerLabel
                     );
                 })}
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="SubstationLayout" />:
+                            <FormattedMessage id="SubstationLayout" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="substation-layout-select-label"
                         value={substationLayout}
@@ -360,27 +372,27 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid container spacing={2} className={classes.grid}>
                 {MakeSwitch(lineFullPath, 'lineFullPath', () => {
-                    updateConfigParameters(
+                    updateConfigParameter(
                         PARAMS_LINE_FULL_PATH_KEY,
                         !lineFullPath
                     );
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {
-                    updateConfigParameters(
+                    updateConfigParameter(
                         PARAMS_LINE_PARALLEL_PATH_KEY,
                         !lineParallelPath
                     );
                 })}
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="LineFlowMode" />:
+                            <FormattedMessage id="LineFlowMode" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-mode-select-label"
                         value={lineFlowMode}
@@ -398,14 +410,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     </Select>
                 </Grid>
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="LineFlowColorMode" />:
+                            <FormattedMessage id="LineFlowColorMode" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-color-mode-select-label"
                         value={lineFlowColorMode}
@@ -428,16 +440,16 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     alertThresholdMarks
                 )}
                 <MakeLineSeparator />
-                {MakeSwitch(viewOverloadsTable, 'viewOverloadsTable', () => {
-                    setDisabledFlowAlertThreshold(
-                        lineFlowColorMode === 'nominalVoltage' &&
-                            viewOverloadsTable
-                    );
-                    updateConfigParameters(
-                        PARAMS_VIEW_OVERLOADS_TABLE_KEY,
-                        !viewOverloadsTable
-                    );
-                })}
+                {MakeSwitch(
+                    displayOverloadTable,
+                    'displayOverloadTable',
+                    () => {
+                        updateConfigParameter(
+                            PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+                            !displayOverloadTable
+                        );
+                    }
+                )}
             </Grid>
         );
     };

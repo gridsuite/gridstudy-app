@@ -18,8 +18,6 @@ export function loadGeoDataSuccess(geoData) {
 }
 
 export const SELECT_THEME = 'SELECT_THEME';
-export const DARK_THEME = 'Dark';
-export const LIGHT_THEME = 'Light';
 
 export function selectTheme(theme) {
     return { type: SELECT_THEME, theme: theme };
@@ -151,12 +149,12 @@ export function studyUpdated(eventData) {
     return { type: STUDY_UPDATED, eventData };
 }
 
-export const VIEW_OVERLOADS_TABLE = 'VIEW_OVERLOADS_TABLE';
+export const DISPLAY_OVERLOAD_TABLE = 'DISPLAY_OVERLOAD_TABLE';
 
-export function selectViewOverloadsTableState(viewOverloadsTable) {
+export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
-        type: VIEW_OVERLOADS_TABLE,
-        viewOverloadsTable: viewOverloadsTable,
+        type: DISPLAY_OVERLOAD_TABLE,
+        displayOverloadTable: displayOverloadTable,
     };
 }
 
@@ -201,4 +199,13 @@ export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
 
 export function fullScreenSingleLineDiagram(fullScreen) {
     return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
+}
+
+export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
+
+export function changeDisplayedColumns(displayedColumnsParams) {
+    return {
+        type: CHANGE_DISPLAYED_COLUMNS_NAMES,
+        displayedColumnsNamesParams: displayedColumnsParams,
+    };
 }
