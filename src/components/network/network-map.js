@@ -32,7 +32,7 @@ import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
 
 const MAPBOX_TOKEN =
-    'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug'; // eslint-disable-line
+    'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
 
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
@@ -386,10 +386,10 @@ NetworkMap.defaultProps = {
 };
 
 NetworkMap.propTypes = {
-    network: PropTypes.instanceOf(Network).isRequired,
-    geoData: PropTypes.instanceOf(GeoData).isRequired,
+    network: PropTypes.instanceOf(Network),
+    geoData: PropTypes.instanceOf(GeoData),
     useName: PropTypes.bool.isRequired,
-    filteredNominalVoltages: PropTypes.array.isRequired,
+    filteredNominalVoltages: PropTypes.array,
     labelsZoomThreshold: PropTypes.number.isRequired,
     arrowsZoomThreshold: PropTypes.number.isRequired,
     initialZoom: PropTypes.number.isRequired,

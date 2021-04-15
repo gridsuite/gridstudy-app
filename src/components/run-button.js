@@ -107,6 +107,23 @@ const RunButton = (props) => {
         }
     }
 
+    function getOptions(runningStatus, runnables, actionOnRunnable) {
+        switch (runningStatus) {
+            case RunningStatus.SUCCEED:
+            case RunningStatus.FAILED:
+            case RunningStatus.IDLE:
+                return runnables;
+            case RunningStatus.RUNNING:
+                return Array.of(actionOnRunnable.text);
+            default:
+                return '';
+        }
+    }
+
+    function isRunning() {
+        return getRunningStatus() === RunningStatus.RUNNING;
+    }
+
     const handleClick = () => {
         if (props.onStartClick) {
             props.onStartClick(getRunnable());
@@ -121,28 +138,36 @@ const RunButton = (props) => {
         return props.getStatus(getRunnable());
     }
 
-    const runningStatus = getRunningStatus();
-
     let disabled =
-        (selectedIndex === 0 && runningStatus !== RunningStatus.IDLE) ||
-        (selectedIndex === 1 && runningStatus === RunningStatus.RUNNING);
+        (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
+        (selectedIndex === 1 && isRunning());
+
+    function handleActionOnRunnable() {
+        props.actionOnRunnable.action(getRunnable());
+    }
 
     return (
         <SplitButton
-            fullWidth
-            options={props.runnables}
+            options={getOptions(
+                getRunningStatus(),
+                props.runnables,
+                props.actionOnRunnable
+            )}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
-            className={getStyle(runningStatus)}
+            className={getStyle(getRunningStatus())}
             buttonDisabled={disabled}
-            selectionDisabled={runningStatus === RunningStatus.RUNNING}
+            selectionDisabled={selectedIndex === 0 && isRunning()}
             startIcon={props.getStartIcon(getRunningStatus())}
             text={
                 props.getText
                     ? props.getText(getRunnable(), getRunningStatus())
                     : ''
             }
+            actionOnRunnable={handleActionOnRunnable}
+            isRunning={isRunning()}
+            computationStopped={props.computationStopped}
         />
     );
 };
@@ -153,6 +178,8 @@ RunButton.propTypes = {
     getText: PropTypes.func.isRequired,
     getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
+    actionOnRunnable: PropTypes.object.isRequired,
+    computationStopped: PropTypes.bool.isRequired,
 };
 
 export default RunButton;

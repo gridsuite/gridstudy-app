@@ -6,6 +6,7 @@
  */
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { APP_NAME, getAppName } from './config-params';
 
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
@@ -34,30 +35,43 @@ function backendFetch(url, init) {
     return fetch(url, initCopy);
 }
 
-export function fetchConfigParameters() {
-    console.info('Fetching UI configuration params ...');
-    const fetchParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
+export function fetchConfigParameters(appName) {
+    console.info('Fetching UI configuration params for app : ' + appName);
+    const fetchParams =
+        PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
     return backendFetch(fetchParams).then((res) => {
         return res.json();
     });
 }
 
-export function updateConfigParameters(name, value) {
-    console.info('updating parameters : ' + name + ' : ' + value);
-    const updateParams = PREFIX_CONFIG_QUERIES + '/v1/parameters';
-    backendFetch(updateParams, {
-        method: 'put',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify([
-            {
-                name: name,
-                value: value,
-            },
-        ]),
-    }).then();
+export function fetchConfigParameter(name) {
+    const appName = getAppName(name);
+    console.info(
+        "Fetching UI config parameter '%s' for app '%s' ",
+        name,
+        appName
+    );
+    const fetchParams =
+        PREFIX_CONFIG_QUERIES +
+        `/v1/applications/${appName}/parameters/${name}`;
+    return backendFetch(fetchParams).then((res) => {
+        return res.json();
+    });
+}
+
+export function updateConfigParameter(name, value) {
+    const appName = getAppName(name);
+    console.info(
+        "Updating config parameter '%s=%s' for app '%s' ",
+        name,
+        value,
+        appName
+    );
+    const updateParams =
+        PREFIX_CONFIG_QUERIES +
+        `/v1/applications/${appName}/parameters/${name}?value=` +
+        encodeURIComponent(value);
+    backendFetch(updateParams, { method: 'put' }).then();
 }
 
 export function fetchStudies() {
@@ -441,7 +455,29 @@ export function renameStudy(studyName, userId, newStudyName) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ newStudyName: newStudyName }),
-    }).then((response) => response.json());
+    }).then((response) => {
+        if (response.status === 200 || response.status === 403) {
+            return response.json();
+        } else {
+            return response.text().then((text) => {
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch {
+                    throw new Error(
+                        response.status +
+                            ' ' +
+                            response.statusText +
+                            ' : ' +
+                            text
+                    );
+                }
+                throw new Error(
+                    json.status + ' ' + json.error + ' : ' + json.message
+                );
+            });
+        }
+    });
 }
 
 export function changeStudyAccessRights(studyName, userId, toPrivate) {
@@ -469,6 +505,14 @@ export function startLoadFlow(studyName, userId) {
     const startLoadFlowUrl = getStudyUrl(studyName, userId) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
+}
+
+export function stopSecurityAnalysis(studyName, userId) {
+    console.info('Stopping security analysis on ' + studyName + '...');
+    const stopSecurityAnalysisUrl =
+        getStudyUrl(studyName, userId) + '/security-analysis/stop';
+    console.debug(stopSecurityAnalysisUrl);
+    return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
 function getContingencyListsQueryParams(contingencyListNames) {
@@ -593,10 +637,13 @@ export function connectNotificationsWsUpdateConfig() {
         .replace(/^http:\/\//, 'ws://')
         .replace(/^https:\/\//, 'wss://');
     const webSocketUrl =
-        webSocketBaseUrl + PREFIX_CONFIG_NOTIFICATION_WS + '/notify';
+        webSocketBaseUrl +
+        PREFIX_CONFIG_NOTIFICATION_WS +
+        '/notify?appName=' +
+        APP_NAME;
 
     let webSocketUrlWithToken;
-    webSocketUrlWithToken = webSocketUrl + '?access_token=' + getToken();
+    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
         webSocketUrlWithToken

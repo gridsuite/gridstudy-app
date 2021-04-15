@@ -301,4 +301,35 @@ ExportDialog.propTypes = {
     title: PropTypes.string.isRequired,
 };
 
-export { DeleteDialog, RenameDialog, ExportDialog };
+const SelectOptionsDialog = ({ open, onClose, onClick, title, child }) => {
+    const handleClose = () => {
+        onClose();
+    };
+
+    return (
+        <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent style={{ padding: '8px 32px 8px 15px' }}>
+                {child}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleClose} variant="text">
+                    <FormattedMessage id="cancel" />
+                </Button>
+                <Button onClick={onClick} variant="outlined">
+                    <FormattedMessage id="save" />
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+SelectOptionsDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    child: PropTypes.element.isRequired,
+};
+
+export { DeleteDialog, RenameDialog, ExportDialog, SelectOptionsDialog };

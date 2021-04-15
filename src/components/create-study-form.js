@@ -151,7 +151,7 @@ const UploadCase = () => {
     );
 };
 
-export const CreateStudyForm = () => {
+export const CreateStudyForm = (props) => {
     const [open, setOpen] = React.useState(false);
     const [caseExist, setCaseExist] = React.useState(false);
 
@@ -268,12 +268,16 @@ export const CreateStudyForm = () => {
             return;
         }
 
-        let isPrivateStudy = false;
-        if (studyPrivacy === 'private') {
-            isPrivateStudy = true;
-        }
+        let isPrivateStudy = studyPrivacy === 'private';
 
         setOpen(false);
+        const study = {
+            studyName: studyName,
+            userId: userId,
+            isPrivate: isPrivateStudy,
+            creationDate: Date.now() + '',
+        };
+        props.addCreationRequest(study);
         createStudy(
             caseExist,
             studyName,
@@ -285,6 +289,7 @@ export const CreateStudyForm = () => {
             setCreateStudyErr('');
             setStudyName('');
             setStudyDescription('');
+            props.addStudyCreationSubmitted(study);
             dispatch(removeSelectedFile());
 
             if (!res.ok) {

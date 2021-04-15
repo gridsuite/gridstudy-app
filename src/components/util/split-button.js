@@ -17,6 +17,9 @@ import MenuList from '@material-ui/core/MenuList';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import StopIcon from '@material-ui/icons/Stop';
+import ListItemText from '@material-ui/core/ListItemText';
 
 const useStyles = makeStyles((theme) => ({
     expand: {
@@ -46,6 +49,9 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
+    stop: {
+        color: 'red',
+    },
 }));
 
 const SplitButton = (props) => {
@@ -68,7 +74,9 @@ const SplitButton = (props) => {
     };
 
     const handleMenuItemClick = (event, index) => {
-        if (props.onSelectionChange) {
+        if (props.isRunning) {
+            props.actionOnRunnable();
+        } else {
             props.onSelectionChange(index);
         }
         setOpen(false);
@@ -85,16 +93,15 @@ const SplitButton = (props) => {
         setOpen(false);
     };
 
-    const width = props.fullWidth ? '100%' : 'auto';
-
     const breakText = (text) => {
         return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
     };
 
+    const disabledOption = props.isRunning && props.computationStopped;
+
     return (
-        <div>
+        <>
             <ButtonGroup
-                style={{ width: width }}
                 className={props.className}
                 variant="outlined"
                 color="primary"
@@ -103,7 +110,6 @@ const SplitButton = (props) => {
                 <Button
                     variant="outlined"
                     startIcon={props.startIcon}
-                    style={{ width: width }}
                     className={props.className}
                     disabled={props.buttonDisabled}
                     onClick={handleClick}
@@ -147,6 +153,7 @@ const SplitButton = (props) => {
                                 <MenuList id="split-button-menu">
                                     {props.options.map((option, index) => (
                                         <MenuItem
+                                            disabled={disabledOption}
                                             key={option}
                                             selected={
                                                 index === props.selectedIndex
@@ -158,7 +165,17 @@ const SplitButton = (props) => {
                                                 )
                                             }
                                         >
-                                            {breakText(option)}
+                                            {props.isRunning && (
+                                                <ListItemIcon>
+                                                    <StopIcon
+                                                        fontSize="small"
+                                                        className={classes.stop}
+                                                    />
+                                                </ListItemIcon>
+                                            )}
+                                            <ListItemText
+                                                primary={breakText(option)}
+                                            />
                                         </MenuItem>
                                     ))}
                                 </MenuList>
@@ -167,7 +184,7 @@ const SplitButton = (props) => {
                     </Grow>
                 )}
             </Popper>
-        </div>
+        </>
     );
 };
 
@@ -175,6 +192,7 @@ SplitButton.defaultProps = {
     fullWidth: false,
     buttonDisabled: false,
     selectionDisabled: false,
+    isRunning: false,
 };
 
 SplitButton.propTypes = {
@@ -188,6 +206,9 @@ SplitButton.propTypes = {
     className: PropTypes.string,
     startIcon: PropTypes.element,
     text: PropTypes.string,
+    actionOnRunnable: PropTypes.func.isRequired,
+    isRunning: PropTypes.bool,
+    computationStopped: PropTypes.bool,
 };
 
 export default SplitButton;
