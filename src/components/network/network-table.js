@@ -340,7 +340,7 @@ const NetworkTable = (props) => {
 
     function makeHeaderCell(equipmentType) {
         return {
-            width: 80,
+            width: 65,
             label: '',
             dataKey: '',
             style: {
