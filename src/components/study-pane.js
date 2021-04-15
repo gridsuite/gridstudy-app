@@ -623,30 +623,28 @@ const StudyPane = (props) => {
             } else {
                 switchElement.classList.replace('sld-open', 'sld-closed');
             }
-            updateSwitchState(studyUuid, breakerId, open).then(
-                (response) => {
-                    if (!response.ok) {
-                        console.error(response);
-                        // revert switch position change
-                        if (open) {
-                            switchElement.classList.replace(
-                                'sld-open',
-                                'sld-closed'
-                            );
-                        } else {
-                            switchElement.classList.replace(
-                                'sld-closed',
-                                'sld-open'
-                            );
-                        }
-                        setUpdateSwitchMsg(
-                            response.status + ' : ' + response.statusText
+            updateSwitchState(studyUuid, breakerId, open).then((response) => {
+                if (!response.ok) {
+                    console.error(response);
+                    // revert switch position change
+                    if (open) {
+                        switchElement.classList.replace(
+                            'sld-open',
+                            'sld-closed'
+                        );
+                    } else {
+                        switchElement.classList.replace(
+                            'sld-closed',
+                            'sld-open'
                         );
                     }
                     setUpdateSwitchMsg(
                         response.status + ' : ' + response.statusText
                     );
                 }
+                setUpdateSwitchMsg(
+                    response.status + ' : ' + response.statusText
+                );
             });
         },
         [studyUuid]
