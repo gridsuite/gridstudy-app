@@ -103,9 +103,7 @@ export function fetchStudyCreationRequests() {
 
 function getStudyUrl(studyUuid) {
     return (
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid)
+        PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid)
     );
 }
 
@@ -218,10 +216,7 @@ export function fetchLines(studyUuid, substationsIds) {
     return fetchEquipments(studyUuid, substationsIds, 'Lines', 'lines');
 }
 
-export function fetchTwoWindingsTransformers(
-    studyUuid,
-    substationsIds
-) {
+export function fetchTwoWindingsTransformers(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
         substationsIds,
@@ -230,10 +225,7 @@ export function fetchTwoWindingsTransformers(
     );
 }
 
-export function fetchThreeWindingsTransformers(
-    studyUuid,
-    substationsIds
-) {
+export function fetchThreeWindingsTransformers(studyUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
         substationsIds,
@@ -265,12 +257,7 @@ export function fetchDanglingLines(studyUuid, substationsIds) {
 }
 
 export function fetchBatteries(studyUuid, substationsIds) {
-    return fetchEquipments(
-        studyUuid,
-        substationsIds,
-        'Batteries',
-        'batteries'
-    );
+    return fetchEquipments(studyUuid, substationsIds, 'Batteries', 'batteries');
 }
 
 export function fetchHvdcLines(studyUuid, substationsIds) {
@@ -342,8 +329,7 @@ function fetchEquipments(
 
 export function fetchLinePositions(studyUuid) {
     console.info(`Fetching line positions of study '${studyUuid}'...`);
-    const fetchLinePositionsUrl =
-        getStudyUrl(studyUuid) + '/geo-data/lines';
+    const fetchLinePositionsUrl = getStudyUrl(studyUuid) + '/geo-data/lines';
     console.debug(fetchLinePositionsUrl);
     return backendFetch(fetchLinePositionsUrl).then((response) =>
         response.json()
@@ -405,9 +391,7 @@ export function createStudy(
 }
 
 export function deleteStudy(studyUuid) {
-    console.info(
-        'Deleting study ' + studyUuid + '...'
-    );
+    console.info('Deleting study ' + studyUuid + '...');
     const deleteStudyUrl = getStudyUrl(studyUuid);
     console.debug(deleteStudyUrl);
     return backendFetch(deleteStudyUrl, {
@@ -468,8 +452,7 @@ export function changeStudyAccessRights(studyUuid, toPrivate) {
     console.info('Change access rights of study ' + studyUuid);
     let changeStudyAccessRightsUrl;
     if (toPrivate === 'true') {
-        changeStudyAccessRightsUrl =
-            getStudyUrl(studyUuid) + '/private';
+        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/private';
     } else {
         changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/public';
     }
@@ -655,8 +638,7 @@ function getUrlWithToken(baseUrl) {
 }
 
 export function getExportUrl(studyUuid, exportFormat) {
-    const url =
-        getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
+    const url = getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
     return getUrlWithToken(url);
 }
 
@@ -675,8 +657,7 @@ export function fetchAppsAndUrls() {
 
 export function requestNetworkChange(studyUuid, groovyScript) {
     console.info('request network change');
-    const changeUrl =
-        getStudyUrl(studyUuid) + '/network-modification/groovy';
+    const changeUrl = getStudyUrl(studyUuid) + '/network-modification/groovy';
     console.debug(changeUrl);
     return backendFetch(changeUrl, {
         method: 'PUT',

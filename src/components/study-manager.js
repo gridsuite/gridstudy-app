@@ -671,9 +671,7 @@ const StudyManager = ({ onClick }) => {
                         <StudyCard
                             studyCreationLoader={false}
                             study={study}
-                            onClick={() =>
-                                onClick(study.studyUuid)
-                            }
+                            onClick={() => onClick(study.studyUuid)}
                         />
                     </Grid>
                 ))}

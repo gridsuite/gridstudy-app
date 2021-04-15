@@ -363,10 +363,7 @@ const App = () => {
     }, [user, dispatch, updateParams, connectNotificationsUpdateConfig]);
 
     function studyClickHandler(studyUuid) {
-        history.push(
-                '/studies/' +
-                encodeURIComponent(studyUuid)
-        );
+        history.push('/studies/' + encodeURIComponent(studyUuid));
     }
 
     function showParametersClicked() {

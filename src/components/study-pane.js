@@ -295,9 +295,7 @@ const StudyPane = (props) => {
     }, [studyUuid]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
-        fetchSecurityAnalysisResult(studyUuid).then(function (
-            response
-        ) {
+        fetchSecurityAnalysisResult(studyUuid).then(function (response) {
             if (response.ok) {
                 response.json().then((result) => {
                     setSecurityAnalysisResult(result);
@@ -379,11 +377,9 @@ const StudyPane = (props) => {
 
         const substations = fetchSubstations(studyUuid);
         const lines = fetchLines(studyUuid);
-        const twoWindingsTransformers = fetchTwoWindingsTransformers(
-            studyUuid,
-        );
+        const twoWindingsTransformers = fetchTwoWindingsTransformers(studyUuid);
         const threeWindingsTransformers = fetchThreeWindingsTransformers(
-            studyUuid,
+            studyUuid
         );
         const generators = fetchGenerators(studyUuid);
         const loads = fetchLoads(studyUuid);
@@ -391,7 +387,7 @@ const StudyPane = (props) => {
         const danglingLines = fetchDanglingLines(studyUuid);
         const hvdcLines = fetchHvdcLines(studyUuid);
         const lccConverterStations = fetchLccConverterStations(studyUuid);
-        const vscConverterStations = fetchVscConverterStations(studyUuid,);
+        const vscConverterStations = fetchVscConverterStations(studyUuid);
         const shuntCompensators = fetchShuntCompensators(studyUuid);
         const staticVarCompensators = fetchStaticVarCompensators(studyUuid);
 
@@ -548,13 +544,7 @@ const StudyPane = (props) => {
         };
         // Note: dispach, studyName, loadNetwork, loadGeoData,
         // connectNotifications don't change
-    }, [
-        dispatch,
-        studyUuid,
-        loadNetwork,
-        loadGeoData,
-        connectNotifications,
-    ]);
+    }, [dispatch, studyUuid, loadNetwork, loadGeoData, connectNotifications]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -581,11 +571,11 @@ const StudyPane = (props) => {
             setUpdateSwitchMsg('');
             history.replace(
                 '/studies/' +
-                encodeURIComponent(studyUuid) +
-                stringify(
-                    { voltageLevelId: voltageLevelId },
-                    { addQueryPrefix: true }
-                )
+                    encodeURIComponent(studyUuid) +
+                    stringify(
+                        { voltageLevelId: voltageLevelId },
+                        { addQueryPrefix: true }
+                    )
             );
         },
         // Note: studyUuid and history don't change
@@ -598,11 +588,11 @@ const StudyPane = (props) => {
             setUpdateSwitchMsg('');
             history.replace(
                 '/studies/' +
-                encodeURIComponent(studyUuid) +
-                stringify(
-                    { substationId: substationId },
-                    { addQueryPrefix: true }
-                )
+                    encodeURIComponent(studyUuid) +
+                    stringify(
+                        { substationId: substationId },
+                        { addQueryPrefix: true }
+                    )
             );
         },
         // Note: studyUuid and history don't change
@@ -618,10 +608,7 @@ const StudyPane = (props) => {
     );
 
     function closeVoltageLevelDiagram() {
-        history.replace(
-            '/studies/' +
-            encodeURIComponent(studyUuid)
-        );
+        history.replace('/studies/' + encodeURIComponent(studyUuid));
     }
 
     const toggleDrawer = () => {
@@ -637,18 +624,16 @@ const StudyPane = (props) => {
             eltOpen.style.visibility = open ? 'visible' : 'hidden';
             eltClose.style.visibility = open ? 'hidden' : 'visible';
 
-            updateSwitchState(studyUuid, breakerId, open).then(
-                (response) => {
-                    if (!response.ok) {
-                        console.error(response);
-                        eltOpen.style.visibility = open ? 'hidden' : 'visible';
-                        eltClose.style.visibility = open ? 'visible' : 'hidden';
-                        setUpdateSwitchMsg(
-                            response.status + ' : ' + response.statusText
-                        );
-                    }
+            updateSwitchState(studyUuid, breakerId, open).then((response) => {
+                if (!response.ok) {
+                    console.error(response);
+                    eltOpen.style.visibility = open ? 'hidden' : 'visible';
+                    eltClose.style.visibility = open ? 'visible' : 'hidden';
+                    setUpdateSwitchMsg(
+                        response.status + ' : ' + response.statusText
+                    );
                 }
-            );
+            });
         },
         [studyUuid]
     );
@@ -1066,10 +1051,7 @@ const StudyPane = (props) => {
     function renderTableView() {
         return (
             <Paper className={clsx('singlestretch-child', classes.table)}>
-                <NetworkTable
-                    network={network}
-                    studyUuid={studyUuid}
-                />
+                <NetworkTable network={network} studyUuid={studyUuid} />
             </Paper>
         );
     }

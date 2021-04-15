@@ -29,13 +29,7 @@ import PropTypes from 'prop-types';
  * @param {String} title Title of the dialog
  * @param {String} isPrivate tells if the study is private or not
  */
-const AccessRightsDialog = ({
-    open,
-    onClose,
-    studyUuid,
-    title,
-    isPrivate,
-}) => {
+const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
     const [loading, setLoading] = React.useState(false);
 
     const [selected, setSelected] = React.useState(
@@ -52,17 +46,13 @@ const AccessRightsDialog = ({
 
     const handleClick = () => {
         setLoading(true);
-        changeStudyAccessRights(studyUuid, selected).then(
-            (response) => {
-                if (!response.ok) {
-                    setError(
-                        intl.formatMessage({ id: 'modifyAccessRightsError' })
-                    );
-                } else {
-                    onClose();
-                }
+        changeStudyAccessRights(studyUuid, selected).then((response) => {
+            if (!response.ok) {
+                setError(intl.formatMessage({ id: 'modifyAccessRightsError' }));
+            } else {
+                onClose();
             }
-        );
+        });
         setLoading(false);
     };
 

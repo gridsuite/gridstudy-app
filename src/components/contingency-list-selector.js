@@ -65,12 +65,11 @@ const ContingencyListSelector = (props) => {
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
-        fetchContingencyCount(
-            studyUuid,
-            checkedContingencyListNames
-        ).then((contingencyCount) => {
-            setSimulatedContingencyCount(contingencyCount);
-        });
+        fetchContingencyCount(studyUuid, checkedContingencyListNames).then(
+            (contingencyCount) => {
+                setSimulatedContingencyCount(contingencyCount);
+            }
+        );
     }, [studyUuid, checkedContingencyListNames]);
 
     function getSimulatedContingencyCountLabel() {
