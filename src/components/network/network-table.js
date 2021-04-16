@@ -127,24 +127,20 @@ const NetworkTable = (props) => {
         Object.values(lineEdit[tabIndex].newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(props.userId, props.studyName, groovyCr).then(
-            (response) => {
-                if (response.ok) {
-                    Object.entries(lineEdit[tab].newValues).forEach(
-                        ([key, cr]) => {
-                            rowData[key] = cr.value;
-                        }
-                    );
-                } else {
-                    Object.entries(lineEdit[tab].oldValues).forEach(
-                        ([key, oldValue]) => {
-                            rowData[key] = oldValue;
-                        }
-                    );
-                }
-                setLineEditAt(tab, {});
+        requestNetworkChange(props.studyUuid, groovyCr).then((response) => {
+            if (response.ok) {
+                Object.entries(lineEdit[tab].newValues).forEach(([key, cr]) => {
+                    rowData[key] = cr.value;
+                });
+            } else {
+                Object.entries(lineEdit[tab].oldValues).forEach(
+                    ([key, oldValue]) => {
+                        rowData[key] = oldValue;
+                    }
+                );
             }
-        );
+            setLineEditAt(tab, {});
+        });
     }
 
     function resetChanges(rowData) {
@@ -718,14 +714,12 @@ const NetworkTable = (props) => {
 
 NetworkTable.defaultProps = {
     network: null,
-    userId: '',
-    studyName: '',
+    studyUuid: '',
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
-    userId: PropTypes.string,
-    studyName: PropTypes.string,
+    studyUuid: PropTypes.string,
 };
 
 export default NetworkTable;

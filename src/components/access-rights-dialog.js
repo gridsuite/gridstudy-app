@@ -25,19 +25,11 @@ import PropTypes from 'prop-types';
  * Dialog to change the access rights of a study #TODO To be moved in the common-ui repository once it has been created
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param studyName the name of the study to export
- * @param userId the name of the logged in user
+ * @param studyUuid the uuid of the study to export
  * @param {String} title Title of the dialog
  * @param {String} isPrivate tells if the study is private or not
  */
-const AccessRightsDialog = ({
-    open,
-    onClose,
-    studyName,
-    userId,
-    title,
-    isPrivate,
-}) => {
+const AccessRightsDialog = ({ open, onClose, studyUuid, title, isPrivate }) => {
     const [loading, setLoading] = React.useState(false);
 
     const [selected, setSelected] = React.useState(
@@ -54,17 +46,13 @@ const AccessRightsDialog = ({
 
     const handleClick = () => {
         setLoading(true);
-        changeStudyAccessRights(studyName, userId, selected).then(
-            (response) => {
-                if (!response.ok) {
-                    setError(
-                        intl.formatMessage({ id: 'modifyAccessRightsError' })
-                    );
-                } else {
-                    onClose();
-                }
+        changeStudyAccessRights(studyUuid, selected).then((response) => {
+            if (!response.ok) {
+                setError(intl.formatMessage({ id: 'modifyAccessRightsError' }));
+            } else {
+                onClose();
             }
-        );
+        });
         setLoading(false);
     };
 
@@ -144,8 +132,7 @@ const AccessRightsDialog = ({
 AccessRightsDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    studyName: PropTypes.string.isRequired,
-    userId: PropTypes.string.isRequired,
+    studyUuid: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     isPrivate: PropTypes.bool.isRequired,
 };
