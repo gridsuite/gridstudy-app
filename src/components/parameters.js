@@ -18,12 +18,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
@@ -31,7 +28,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
 
-import { DARK_THEME, LIGHT_THEME } from '@gridsuite/commons-ui';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
 import {
@@ -49,8 +45,6 @@ import {
     PARAMS_LINE_FULL_PATH_KEY,
     PARAMS_LINE_PARALLEL_PATH_KEY,
     PARAMS_SUBSTATION_LAYOUT_KEY,
-    PARAMS_THEME_KEY,
-    PARAMS_USE_NAME_KEY,
     PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
 } from '../utils/config-params';
 
@@ -72,7 +66,6 @@ const useStyles = makeStyles((theme) => ({
 const Parameters = ({ showParameters, hideParameters }) => {
     const classes = useStyles();
 
-    const useName = useSelector((state) => state.useName);
     const centerLabel = useSelector((state) => state.centerLabel);
     const diagonalLabel = useSelector((state) => state.diagonalLabel);
     const lineFullPath = useSelector((state) => state.lineFullPath);
@@ -113,8 +106,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
         );
     }, [lineFlowColorMode, displayOverloadTable]);
 
-    const theme = useSelector((state) => state.theme);
-
     const substationLayout = useSelector((state) => state.substationLayout);
 
     const alertThresholdMarks = [
@@ -127,11 +118,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
             label: '100',
         },
     ];
-
-    const handleChangeTheme = (event) => {
-        const theme = event.target.value;
-        updateConfigParameter(PARAMS_THEME_KEY, theme);
-    };
 
     const handleLineFlowModeChange = (event) => {
         const lineFlowMode = event.target.value;
@@ -275,39 +261,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
         return (
             <Grid item xs={12}>
                 <Divider />
-            </Grid>
-        );
-    }
-
-    function GeneralTab() {
-        return (
-            <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(useName, 'useName', () => {
-                    updateConfigParameter(PARAMS_USE_NAME_KEY, !useName);
-                })}
-
-                <MakeLineSeparator />
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="theme" />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <RadioGroup row value={theme} onChange={handleChangeTheme}>
-                        <FormControlLabel
-                            value={DARK_THEME}
-                            control={<Radio color="primary" />}
-                            label={DARK_THEME}
-                        />
-                        <FormControlLabel
-                            value={LIGHT_THEME}
-                            control={<Radio color="primary" />}
-                            label={LIGHT_THEME}
-                        />
-                    </RadioGroup>
-                </Grid>
             </Grid>
         );
     }
@@ -578,7 +531,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         onChange={(event, newValue) => setTabIndex(newValue)}
                         aria-label="parameters"
                     >
-                        <Tab label={<FormattedMessage id="General" />} />
                         <Tab
                             label={<FormattedMessage id="SingleLineDiagram" />}
                         />
@@ -590,15 +542,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
-                        <GeneralTab />
-                    </TabPanel>
-                    <TabPanel value={tabIndex} index={1}>
                         <SingleLineDiagramParameters />
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={2}>
+                    <TabPanel value={tabIndex} index={1}>
                         <MapParameters />
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={3}>
+                    <TabPanel value={tabIndex} index={2}>
                         {studyUuid && <LoadFlowParameters />}
                     </TabPanel>
                     <Grid item xs={12}>
