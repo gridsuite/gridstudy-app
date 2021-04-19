@@ -72,8 +72,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const lineParallelPath = useSelector((state) => state.lineParallelPath);
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
-    const studyName = useSelector((state) => state.studyName);
-    const userId = useSelector((state) => state.userId);
+    const studyUuid = useSelector((state) => state.studyUuid);
 
     const [lfParams, setLfParams] = React.useState(null);
 
@@ -94,12 +93,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const [tabIndex, setTabIndex] = React.useState(0);
 
     useEffect(() => {
-        if (userId) {
-            getLoadFlowParameters(studyName, userId).then((params) =>
+        if (studyUuid) {
+            getLoadFlowParameters(studyUuid).then((params) =>
                 setLfParams(params)
             );
         }
-    }, [studyName, userId]);
+    }, [studyUuid]);
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
@@ -437,16 +436,16 @@ const Parameters = ({ showParameters, hideParameters }) => {
     }
 
     const resetLfParameters = () => {
-        setLoadFlowParameters(studyName, userId, null)
+        setLoadFlowParameters(studyUuid, null)
             .then(() => {
-                return getLoadFlowParameters(studyName, userId);
+                return getLoadFlowParameters(studyUuid);
             })
             .then((params) => setLfParams(params));
     };
 
     const commitLFParameter = (newParams) => {
         setLfParams(newParams);
-        setLoadFlowParameters(studyName, userId, newParams).then();
+        setLoadFlowParameters(studyUuid, newParams).then();
     };
 
     const LoadFlowParameters = () => {
@@ -537,7 +536,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         />
                         <Tab label={<FormattedMessage id="Map" />} />
                         <Tab
-                            disabled={!studyName}
+                            disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
                     </Tabs>
@@ -549,7 +548,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         <MapParameters />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={2}>
-                        {studyName && <LoadFlowParameters />}
+                        {studyUuid && <LoadFlowParameters />}
                     </TabPanel>
                     <Grid item xs={12}>
                         <Button

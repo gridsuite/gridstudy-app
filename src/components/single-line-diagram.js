@@ -74,10 +74,12 @@ const useStyles = makeStyles((theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
-        '& .component-label': {
+        '& .sld-label, .sld-graph-label': {
             fill: theme.palette.text.primary,
-            'font-size': 12,
             'font-family': theme.typography.fontFamily,
+        },
+        '& .sld-disconnector.sld-constant-color, :not(.sld-breaker).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected': {
+            stroke: theme.palette.text.primary,
         },
     },
     close: {
@@ -450,12 +452,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     const domEl = document.getElementById(aSwitch.id);
                     domEl.style.cursor = 'pointer';
                     domEl.addEventListener('click', function (event) {
-                        const clickedElementId = event.currentTarget.id;
-                        const switchMetadata = svg.metadata.nodes.find(
-                            (value) => value.id === clickedElementId
-                        );
-                        const switchId = switchMetadata.equipmentId;
-                        const open = switchMetadata.open;
+                        const switchId = aSwitch.equipmentId;
+                        const open = aSwitch.open;
                         onBreakerClick(switchId, !open, event.currentTarget);
                     });
                 });
