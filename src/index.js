@@ -8,9 +8,9 @@ import 'core-js/es/array/flat-map';
 
 import 'typeface-roboto';
 
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { IntlProvider } from 'react-intl';
 
@@ -36,16 +36,25 @@ const messages = {
 const basename = new URL(document.querySelector('base').href).pathname;
 
 const ApplicationWrapper = () => {
-    const [language, setLanguage] = useState();
+    const computedLanguage = useSelector((state) => state.computedLanguage);
     return (
-        <IntlProvider locale={language} messages={messages[language]}>
-            <Provider store={store}>
-                <BrowserRouter basename={basename}>
-                    <App setLanguage={setLanguage} />
-                </BrowserRouter>
-            </Provider>
+        <IntlProvider
+            locale={computedLanguage}
+            messages={messages[computedLanguage]}
+        >
+            <BrowserRouter basename={basename}>
+                <App />
+            </BrowserRouter>
         </IntlProvider>
     );
 };
 
-ReactDOM.render(<ApplicationWrapper />, document.getElementById('root'));
+const ProviderWrapper = () => {
+    return (
+        <Provider store={store}>
+            <ApplicationWrapper />
+        </Provider>
+    );
+};
+
+ReactDOM.render(<ProviderWrapper />, document.getElementById('root'));

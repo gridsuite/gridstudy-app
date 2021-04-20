@@ -48,9 +48,6 @@ import {
 import Parameters from './parameters';
 import {
     LIGHT_THEME,
-    SYSTEM,
-    ENGLISH,
-    FRENCH,
     AuthenticationRouter,
     getPreLoginPath,
     initializeAuthenticationProd,
@@ -92,6 +89,7 @@ import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES_INDEXES,
 } from './network/config-tables';
+import { getComputedLanguage } from '../utils/language';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -163,15 +161,6 @@ const noUserManager = { instance: null, error: null };
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
-const supportedLanguages = [FRENCH, ENGLISH];
-
-const getSystemLanguage = () => {
-    const systemLanguage = navigator.language.split(/[-_]/)[0];
-    return supportedLanguages.includes(systemLanguage)
-        ? systemLanguage
-        : ENGLISH;
-};
-
 const App = (props) => {
     const theme = useSelector((state) => state.theme);
 
@@ -206,7 +195,7 @@ const App = (props) => {
     const resultCount = useSelector((state) => state.resultCount);
 
     useEffect(() => {
-        props.setLanguage(getComputedLanguage(language));
+        selectComputedLanguage(getComputedLanguage(language));
     }, [props, language]);
 
     const updateParams = useCallback(
@@ -424,13 +413,9 @@ const App = (props) => {
         updateConfigParameter(PARAMS_USE_NAME_KEY, useName);
     };
 
-    const getComputedLanguage = (language) => {
-        return language === SYSTEM ? getSystemLanguage() : language;
-    };
-
     const handleLanguageClick = (language) => {
         updateConfigParameter(PARAMS_LANGUAGE_KEY, language);
-        props.setLanguage(getComputedLanguage(language));
+        // selectLanguage(getComputedLanguage(language));
     };
 
     // if result tab is displayed, clean badge

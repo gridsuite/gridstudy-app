@@ -42,7 +42,13 @@ import {
     FULLSCREEN_SINGLE_LINE_DIAGRAM,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
 } from './actions';
-import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
+import {
+    getLocalStorageTheme,
+    saveLocalStorageTheme,
+    getLocalStorageLanguage,
+    saveLocalStorageLanguage,
+    getLocalStorageComputedLanguage,
+} from './local-storage';
 import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
 
 const initialState = {
@@ -57,8 +63,8 @@ const initialState = {
     selectedCase: null,
     selectedFile: null,
     useName: true,
-    language: 'sys',
-    computedLanguage: 'en',
+    language: getLocalStorageLanguage(),
+    computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     centerLabel: false,
     diagonalLabel: false,
@@ -125,6 +131,7 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_LANGUAGE]: (state, action) => {
         state.language = action.language;
+        saveLocalStorageLanguage(state.language);
     },
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
