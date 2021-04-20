@@ -43,7 +43,7 @@ import {
     selectDisplayOverloadTableState,
     changeDisplayedColumns,
 } from '../redux/actions';
-import Parameters from './parameters';
+
 import {
     LIGHT_THEME,
     AuthenticationRouter,
@@ -65,7 +65,6 @@ import {
     fetchAppsAndUrls,
     fetchConfigParameter,
     fetchConfigParameters,
-    updateConfigParameter,
 } from '../utils/rest-api';
 import {
     PARAMS_CENTER_LABEL_KEY,
@@ -73,11 +72,11 @@ import {
     PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
     PARAMS_LINE_FLOW_COLOR_MODE_KEY,
     PARAMS_LINE_FLOW_MODE_KEY,
-    PARAMS_LINE_FULL_PATH_KEY,
+    PARAM_LINE_FULL_PATH,
     PARAMS_LINE_PARALLEL_PATH_KEY,
     PARAMS_SUBSTATION_LAYOUT_KEY,
-    PARAMS_THEME_KEY,
-    PARAMS_USE_NAME_KEY,
+    PARAM_THEME,
+    PARAM_USE_NAME,
     PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
     COMMON_APP_NAME,
     APP_NAME,
@@ -86,6 +85,7 @@ import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES_INDEXES,
 } from './network/config-tables';
+import Parameters, { useParameterState } from './parameters';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -158,11 +158,13 @@ const noUserManager = { instance: null, error: null };
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
 const App = () => {
-    const theme = useSelector((state) => state.theme);
-
     const user = useSelector((state) => state.user);
 
-    const useName = useSelector((state) => state.useName);
+    const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
+
+    const [useNameLocal, handleChangeUseName] = useParameterState(
+        PARAM_USE_NAME
+    );
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -194,7 +196,7 @@ const App = () => {
             let displayedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
             params.forEach((param) => {
                 switch (param.name) {
-                    case PARAMS_THEME_KEY:
+                    case PARAM_THEME:
                         dispatch(selectTheme(param.value));
                         break;
                     case PARAMS_CENTER_LABEL_KEY:
@@ -216,7 +218,7 @@ const App = () => {
                     case PARAMS_LINE_FLOW_MODE_KEY:
                         dispatch(selectLineFlowMode(param.value));
                         break;
-                    case PARAMS_LINE_FULL_PATH_KEY:
+                    case PARAM_LINE_FULL_PATH:
                         dispatch(
                             selectLineFullPathState(param.value === 'true')
                         );
@@ -236,7 +238,7 @@ const App = () => {
                             )
                         );
                         break;
-                    case PARAMS_USE_NAME_KEY:
+                    case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));
                         break;
                     default:
@@ -378,17 +380,9 @@ const App = () => {
         history.replace('/');
     }
 
-    function onChangeTab(newTabIndex) {
+    const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
-    }
-
-    const handleThemeClick = (theme) => {
-        updateConfigParameter(PARAMS_THEME_KEY, theme);
-    };
-
-    const handleEquipmentLabellingClick = (useName) => {
-        updateConfigParameter(PARAMS_USE_NAME_KEY, useName);
-    };
+    }, []);
 
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
@@ -396,7 +390,7 @@ const App = () => {
     }
 
     return (
-        <ThemeProvider theme={getMuiTheme(theme)}>
+        <ThemeProvider theme={getMuiTheme(themeLocal)}>
             <SnackbarProvider hideIconVariant={false}>
                 <CssBaseline />
                 <div
@@ -410,7 +404,7 @@ const App = () => {
                         appName="Study"
                         appColor="#0CA789"
                         appLogo={
-                            theme === LIGHT_THEME ? (
+                            themeLocal === LIGHT_THEME ? (
                                 <GridStudyLogoLight />
                             ) : (
                                 <GridStudyLogoDark />
@@ -423,13 +417,11 @@ const App = () => {
                         onLogoClick={() => onLogoClicked()}
                         user={user}
                         appsAndUrls={appsAndUrls}
-                        onThemeClick={handleThemeClick}
+                        onThemeClick={handleChangeTheme}
                         onAboutClick={() => console.debug('about')}
-                        theme={theme}
-                        onEquipmentLabellingClick={
-                            handleEquipmentLabellingClick
-                        }
-                        equipmentLabelling={useName}
+                        theme={themeLocal}
+                        onEquipmentLabellingClick={handleChangeUseName}
+                        equipmentLabelling={useNameLocal}
                     >
                         {studyUuid && (
                             <Tabs

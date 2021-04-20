@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -42,7 +42,7 @@ import {
     PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
     PARAMS_LINE_FLOW_COLOR_MODE_KEY,
     PARAMS_LINE_FLOW_MODE_KEY,
-    PARAMS_LINE_FULL_PATH_KEY,
+    PARAM_LINE_FULL_PATH,
     PARAMS_LINE_PARALLEL_PATH_KEY,
     PARAMS_SUBSTATION_LAYOUT_KEY,
     PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
@@ -63,18 +63,41 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export function useParameterState(paramName) {
+    const paramGlobalState = useSelector((state) => state[paramName]);
+    const [paramLocalState, setParamLocalState] = useState();
+
+    useEffect(() => {
+        console.log('MISE A JOUR GLOBALE');
+        setParamLocalState(paramGlobalState);
+    }, [paramGlobalState]);
+
+    const handleChangeParamLocalState = useCallback(
+        (value) => {
+            console.log('MISE A JOUR LOCALE');
+            setParamLocalState(value);
+            updateConfigParameter(paramName, value);
+        },
+        [paramName, setParamLocalState]
+    );
+    return [paramLocalState, handleChangeParamLocalState];
+}
+
 const Parameters = ({ showParameters, hideParameters }) => {
     const classes = useStyles();
 
+    const [lineFullPathLocal, handleChangeLineFullPath] = useParameterState(
+        PARAM_LINE_FULL_PATH
+    );
+
     const centerLabel = useSelector((state) => state.centerLabel);
     const diagonalLabel = useSelector((state) => state.diagonalLabel);
-    const lineFullPath = useSelector((state) => state.lineFullPath);
     const lineParallelPath = useSelector((state) => state.lineParallelPath);
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const [lfParams, setLfParams] = React.useState(null);
+    const [lfParams, setLfParams] = useState(null);
 
     const lineFlowAlertThreshold = useSelector(
         (state) => state.lineFlowAlertThreshold
@@ -86,11 +109,11 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const [
         disabledFlowAlertThreshold,
         setDisabledFlowAlertThreshold,
-    ] = React.useState(
+    ] = useState(
         lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
     );
 
-    const [tabIndex, setTabIndex] = React.useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
 
     useEffect(() => {
         if (studyUuid) {
@@ -226,7 +249,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
         onCommitCallback,
         thresholdMarks
     ) {
-        const [sliderValue, setSliderValue] = React.useState(threshold);
+        const [sliderValue, setSliderValue] = useState(threshold);
 
         const handleValueChanged = (event, newValue) => {
             setSliderValue(newValue);
@@ -323,11 +346,8 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const MapParameters = () => {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(lineFullPath, 'lineFullPath', () => {
-                    updateConfigParameter(
-                        PARAMS_LINE_FULL_PATH_KEY,
-                        !lineFullPath
-                    );
+                {MakeSwitch(lineFullPathLocal, 'lineFullPath', () => {
+                    handleChangeLineFullPath(!lineFullPathLocal);
                 })}
                 <MakeLineSeparator />
                 {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {

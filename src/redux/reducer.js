@@ -42,6 +42,17 @@ import {
 } from './actions';
 import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
 import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
+import {
+    PARAM_LINE_FULL_PATH,
+    PARAM_THEME,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
+
+const paramsInitialState = {
+    [PARAM_THEME]: getLocalStorageTheme(),
+    [PARAM_USE_NAME]: true,
+    [PARAM_LINE_FULL_PATH]: true,
+};
 
 const initialState = {
     studies: [],
@@ -49,15 +60,12 @@ const initialState = {
     studyUuid: null,
     network: null,
     geoData: null,
-    theme: getLocalStorageTheme(),
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    useName: true,
     user: null,
     centerLabel: false,
     diagonalLabel: false,
-    lineFullPath: true,
     lineParallelPath: true,
     lineFlowMode: 'feeders',
     lineFlowColorMode: 'nominalVoltage',
@@ -71,6 +79,7 @@ const initialState = {
     selectItemNetwork: null,
     fullScreen: false,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
+    ...paramsInitialState,
 };
 
 export const reducer = createReducer(initialState, {
@@ -112,8 +121,8 @@ export const reducer = createReducer(initialState, {
     },
 
     [SELECT_THEME]: (state, action) => {
-        state.theme = action.theme;
-        saveLocalStorageTheme(state.theme);
+        state[PARAM_THEME] = action[PARAM_THEME];
+        saveLocalStorageTheme(state[PARAM_THEME]);
     },
 
     [SELECT_CASE]: (state, action) => {
@@ -133,7 +142,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [USE_NAME]: (state, action) => {
-        state.useName = action.useName;
+        state[PARAM_USE_NAME] = action[PARAM_USE_NAME];
     },
 
     [USER]: (state, action) => {
@@ -149,7 +158,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [LINE_FULL_PATH]: (state, action) => {
-        state.lineFullPath = action.lineFullPath;
+        state[PARAM_LINE_FULL_PATH] = action[PARAM_LINE_FULL_PATH];
     },
 
     [LINE_PARALLEL_PATH]: (state, action) => {

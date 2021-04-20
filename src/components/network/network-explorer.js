@@ -32,6 +32,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import { PARAM_USE_NAME } from '../../utils/config-params';
 import { selectItemNetwork } from '../../redux/actions';
 
 const itemSize = 48;
@@ -96,7 +97,7 @@ const NetworkExplorer = ({
 
     const selectItem = useSelector((state) => state.selectItemNetwork);
 
-    const useName = useSelector((state) => state.useName);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const filterMsg = intl.formatMessage({ id: 'filter' }) + '...';
 

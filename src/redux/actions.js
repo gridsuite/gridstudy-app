@@ -5,6 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import {
+    PARAM_LINE_FULL_PATH,
+    PARAM_THEME,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
+
 export const LOAD_NETWORK_SUCCESS = 'LOAD_NETWORK_SUCCESS';
 
 export function loadNetworkSuccess(network) {
@@ -20,7 +26,7 @@ export function loadGeoDataSuccess(geoData) {
 export const SELECT_THEME = 'SELECT_THEME';
 
 export function selectTheme(theme) {
-    return { type: SELECT_THEME, theme: theme };
+    return { type: SELECT_THEME, [PARAM_THEME]: theme };
 }
 
 export const LOAD_STUDIES_SUCCESS = 'LOAD_STUDIES_SUCCESS';
@@ -80,7 +86,7 @@ export function removeSelectedFile() {
 export const USE_NAME = 'USE_NAME';
 
 export function selectUseName(useName) {
-    return { type: USE_NAME, useName: useName };
+    return { type: USE_NAME, [PARAM_USE_NAME]: useName };
 }
 
 export const USER = 'USER';
@@ -104,7 +110,7 @@ export function selectDiagonalLabelState(diagonalLabel) {
 export const LINE_FULL_PATH = 'LINE_FULL_PATH';
 
 export function selectLineFullPathState(lineFullPath) {
-    return { type: LINE_FULL_PATH, lineFullPath: lineFullPath };
+    return { type: LINE_FULL_PATH, [PARAM_LINE_FULL_PATH]: lineFullPath };
 }
 
 export const LINE_PARALLEL_PATH = 'LINE_PARALLEL_PATH';

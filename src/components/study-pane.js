@@ -82,6 +82,7 @@ import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { PARAM_LINE_FULL_PATH, PARAM_USE_NAME } from '../utils/config-params';
 
 const drawerWidth = 300;
 
@@ -162,13 +163,13 @@ const StudyPane = (props) => {
 
     const geoData = useSelector((state) => state.geoData);
 
-    const useName = useSelector((state) => state.useName);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const centerName = useSelector((state) => state.centerLabel);
 
     const diagonalName = useSelector((state) => state.diagonalLabel);
 
-    const lineFullPath = useSelector((state) => state.lineFullPath);
+    const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
     const lineParallelPath = useSelector((state) => state.lineParallelPath);
 
