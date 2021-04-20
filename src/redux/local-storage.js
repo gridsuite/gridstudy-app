@@ -6,7 +6,7 @@
  */
 
 import { DARK_THEME, LANG_SYSTEM } from '@gridsuite/commons-ui';
-import { getSystemLanguage, getComputedLanguage } from '../utils/language';
+import { getComputedLanguage } from '../utils/language';
 
 const LOCAL_STORAGE_THEME_KEY = process.env.REACT_APP_NAME + '_THEME';
 const LOCAL_STORAGE_LANGUAGE_KEY = process.env.REACT_APP_NAME + '_LANGUAGE';
@@ -28,7 +28,5 @@ export const saveLocalStorageLanguage = (language) => {
 };
 
 export const getLocalStorageComputedLanguage = () => {
-    return (
-        getComputedLanguage(getLocalStorageLanguage()) || getSystemLanguage()
-    );
+    return getComputedLanguage(getLocalStorageLanguage());
 };
