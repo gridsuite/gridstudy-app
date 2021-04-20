@@ -161,7 +161,7 @@ const noUserManager = { instance: null, error: null };
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
-const App = (props) => {
+const App = () => {
     const theme = useSelector((state) => state.theme);
 
     const user = useSelector((state) => state.user);
