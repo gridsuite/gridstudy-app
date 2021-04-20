@@ -194,10 +194,6 @@ const App = (props) => {
 
     const resultCount = useSelector((state) => state.resultCount);
 
-    useEffect(() => {
-        selectComputedLanguage(getComputedLanguage(language));
-    }, [props, language]);
-
     const updateParams = useCallback(
         (params) => {
             console.debug('received UI parameters : ', params);
