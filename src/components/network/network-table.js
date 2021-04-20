@@ -41,7 +41,7 @@ import {
     TABLES_NAMES,
 } from './config-tables';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     cell: {
         display: 'flex',
         alignItems: 'right',
@@ -127,24 +127,20 @@ const NetworkTable = (props) => {
         Object.values(lineEdit[tabIndex].newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(props.userId, props.studyName, groovyCr).then(
-            (response) => {
-                if (response.ok) {
-                    Object.entries(lineEdit[tab].newValues).forEach(
-                        ([key, cr]) => {
-                            rowData[key] = cr.value;
-                        }
-                    );
-                } else {
-                    Object.entries(lineEdit[tab].oldValues).forEach(
-                        ([key, oldValue]) => {
-                            rowData[key] = oldValue;
-                        }
-                    );
-                }
-                setLineEditAt(tab, {});
+        requestNetworkChange(props.studyUuid, groovyCr).then((response) => {
+            if (response.ok) {
+                Object.entries(lineEdit[tab].newValues).forEach(([key, cr]) => {
+                    rowData[key] = cr.value;
+                });
+            } else {
+                Object.entries(lineEdit[tab].oldValues).forEach(
+                    ([key, oldValue]) => {
+                        rowData[key] = oldValue;
+                    }
+                );
             }
-        );
+            setLineEditAt(tab, {});
+        });
     }
 
     function resetChanges(rowData) {
@@ -340,7 +336,7 @@ const NetworkTable = (props) => {
 
     function makeHeaderCell(equipmentType) {
         return {
-            width: 80,
+            width: 65,
             label: '',
             dataKey: '',
             style: {
@@ -631,11 +627,7 @@ const NetworkTable = (props) => {
                         </Tabs>
                     </Grid>
                     <Grid container>
-                        <Grid
-                            item
-                            alignContent={'flex-end'}
-                            className={classes.containerInputSearch}
-                        >
+                        <Grid item className={classes.containerInputSearch}>
                             <TextField
                                 className={classes.textField}
                                 size="small"
@@ -644,7 +636,6 @@ const NetworkTable = (props) => {
                                 }
                                 onChange={setFilter}
                                 variant="outlined"
-                                classes={classes.searchSection}
                                 fullWidth
                                 InputProps={{
                                     classes: {
@@ -672,7 +663,9 @@ const NetworkTable = (props) => {
                                 open={popupSelectColumnNames}
                                 onClose={handleCancelPopupSelectColumnNames}
                                 onClick={handleSaveSelectedColumnNames}
-                                title={<FormattedMessage id="ColumnsList" />}
+                                title={intl.formatMessage({
+                                    id: 'ColumnsList',
+                                })}
                                 child={checkListColumnsNames()}
                             />
                         </Grid>
@@ -721,14 +714,12 @@ const NetworkTable = (props) => {
 
 NetworkTable.defaultProps = {
     network: null,
-    userId: '',
-    studyName: '',
+    studyUuid: '',
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
-    userId: PropTypes.string,
-    studyName: PropTypes.string,
+    studyUuid: PropTypes.string,
 };
 
 export default NetworkTable;

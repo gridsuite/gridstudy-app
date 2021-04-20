@@ -176,11 +176,11 @@ RenameDialog.propTypes = {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {EventListener} onClick Event to submit the export
- * @param studyName the name of the study to export
+ * @param studyName the uuid of the study to export
  * @param {String} title Title of the dialog
  * @param {String} message Message of the dialog
  */
-const ExportDialog = ({ open, onClose, onClick, studyName, userId, title }) => {
+const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
     const [availableFormats, setAvailableFormats] = React.useState('');
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
@@ -229,7 +229,7 @@ const ExportDialog = ({ open, onClose, onClick, studyName, userId, title }) => {
     const handleChange = (event) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
-        setDownloadUrl(getExportUrl(userId, studyName, selected));
+        setDownloadUrl(getExportUrl(studyUuid, selected));
     };
 
     const classes = useStyles();
@@ -297,7 +297,7 @@ ExportDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
-    studyName: PropTypes.string.isRequired,
+    studyUuid: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
 };
 
