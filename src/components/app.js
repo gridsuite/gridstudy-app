@@ -410,7 +410,6 @@ const App = (props) => {
 
     const handleLanguageClick = (language) => {
         updateConfigParameter(PARAMS_LANGUAGE_KEY, language);
-        // selectLanguage(getComputedLanguage(language));
     };
 
     // if result tab is displayed, clean badge
