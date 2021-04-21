@@ -19,7 +19,7 @@ export const saveLocalStorageTheme = (theme) => {
     localStorage.setItem(LOCAL_STORAGE_THEME_KEY, theme);
 };
 
-export const getLocalStorageLanguage = (theme) => {
+export const getLocalStorageLanguage = () => {
     return localStorage.getItem(LOCAL_STORAGE_LANGUAGE_KEY) || LANG_SYSTEM;
 };
 
