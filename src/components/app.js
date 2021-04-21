@@ -164,7 +164,7 @@ const App = () => {
 
     const useName = useSelector((state) => state.useName);
 
-    const studyName = useSelector((state) => state.studyName);
+    const studyUuid = useSelector((state) => state.studyUuid);
 
     const [appsAndUrls, setAppsAndUrls] = React.useState([]);
 
@@ -291,7 +291,7 @@ const App = () => {
 
     const isStudyPane =
         useRouteMatch({
-            path: '/:userId/studies/:studyName',
+            path: '/studies/:studyUuid',
             exact: true,
         }) !== null;
 
@@ -362,13 +362,8 @@ const App = () => {
         }
     }, [user, dispatch, updateParams, connectNotificationsUpdateConfig]);
 
-    function studyClickHandler(studyName, userId) {
-        history.push(
-            '/' +
-                encodeURIComponent(userId) +
-                '/studies/' +
-                encodeURIComponent(studyName)
-        );
+    function studyClickHandler(studyUuid) {
+        history.push('/studies/' + encodeURIComponent(studyUuid));
     }
 
     function showParametersClicked() {
@@ -436,7 +431,7 @@ const App = () => {
                         }
                         equipmentLabelling={useName}
                     >
-                        {studyName && (
+                        {studyUuid && (
                             <Tabs
                                 value={tabIndex}
                                 indicatorColor="primary"
@@ -499,12 +494,12 @@ const App = () => {
                             <Switch>
                                 <Route exact path="/">
                                     <StudyManager
-                                        onClick={(name, userId) =>
-                                            studyClickHandler(name, userId)
+                                        onClick={(studyUuid) =>
+                                            studyClickHandler(studyUuid)
                                         }
                                     />
                                 </Route>
-                                <Route exact path="/:userId/studies/:studyName">
+                                <Route exact path="/studies/:studyUuid">
                                     <StudyPane
                                         view={STUDY_VIEWS[tabIndex]}
                                         onChangeTab={onChangeTab}

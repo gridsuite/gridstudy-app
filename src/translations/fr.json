@@ -49,18 +49,15 @@
     "studyNameAlreadyUsed": "Ce nom d'étude est déjà utilisé",
     "nameValidityCheckErrorMsg": "Erreur à la vérification du nom d'étude : ",
 
-    "useName": "Utiliser le nom à la place de l'identifiant : ",
     "diagonalLabel": "Afficher les noms d'équipement en diagonal : ",
     "centerLabel": "Centrer les noms d'équipement : ",
     "topologicalColoring": "Coloration topologique",
-    "General": "Général",
     "SingleLineDiagram": "Schéma unifilaire",
 
     "studyNotFound": "L'étude \"{studyName}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
 
     "parameters": "Paramètres",
-    "theme": "Thème : ",
     "close": "Fermer",
 
     "loadingGeoData": "Chargement en cours...",
@@ -214,7 +211,7 @@
     "HvdcLineId": "ID ligne HVDC",
     "PowerFactor": "Facteur de puissance",
     "LossFactor": "Facteur de perte",
-    "StopComputation" : "Arrêter le calcul",
+    "StopComputation": "Arrêter le calcul",
     "ColumnsList": "Liste des colonnes",
     "LabelSelectList": "Configurer colonnes",
     "CheckAll": "Sélectionner tout / aucun"

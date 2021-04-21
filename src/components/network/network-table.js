@@ -35,7 +35,7 @@ import {
 import { EquipmentTable } from './equipment-table';
 import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     searchSection: {
         paddingRight: '10px',
         alignItems: 'center',
@@ -220,11 +220,7 @@ const NetworkTable = (props) => {
                         </Tabs>
                     </Grid>
                     <Grid container>
-                        <Grid
-                            item
-                            alignContent={'flex-end'}
-                            className={classes.containerInputSearch}
-                        >
+                        <Grid item className={classes.containerInputSearch}>
                             <TextField
                                 className={classes.textField}
                                 size="small"
@@ -233,7 +229,6 @@ const NetworkTable = (props) => {
                                 }
                                 onChange={setFilter}
                                 variant="outlined"
-                                classes={classes.searchSection}
                                 fullWidth
                                 InputProps={{
                                     classes: {
@@ -261,7 +256,9 @@ const NetworkTable = (props) => {
                                 open={popupSelectColumnNames}
                                 onClose={handleCancelPopupSelectColumnNames}
                                 onClick={handleSaveSelectedColumnNames}
-                                title={<FormattedMessage id="ColumnsList" />}
+                                title={intl.formatMessage({
+                                    id: 'ColumnsList',
+                                })}
                                 child={checkListColumnsNames()}
                             />
                         </Grid>
@@ -278,14 +275,12 @@ const NetworkTable = (props) => {
 
 NetworkTable.defaultProps = {
     network: null,
-    userId: '',
-    studyName: '',
+    studyUuid: '',
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
-    userId: PropTypes.string,
-    studyName: PropTypes.string,
+    studyUuid: PropTypes.string,
 };
 
 export default NetworkTable;

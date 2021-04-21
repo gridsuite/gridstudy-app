@@ -49,18 +49,15 @@
     "studyNameAlreadyUsed": "This study name is already used",
     "nameValidityCheckErrorMsg": "Error while checking name validity : ",
 
-    "useName": "Use the name instead of the identifier: ",
     "diagonalLabel": "Display name diagonally: ",
     "centerLabel": "Center name: ",
     "topologicalColoring": "Topological coloring",
-    "General": "General",
     "SingleLineDiagram": "Single line diagram",
 
     "studyNotFound": "Study \"{studyName}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
 
     "parameters": "Parameters",
-    "theme": "Theme: ",
     "close": "Close",
 
     "loadingGeoData": "Loading...",
@@ -214,7 +211,7 @@
     "HvdcLineId": "HVDC Line Id",
     "PowerFactor": "Power Factor",
     "LossFactor": "Loss Factor",
-    "StopComputation" : "Stop computation",
+    "StopComputation": "Stop computation",
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
     "CheckAll": "Select all / none"
