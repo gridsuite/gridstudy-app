@@ -482,7 +482,6 @@ const SecurityAnalysisResult = ({
                     )}
                 </div>
                 <div style={{ flexGrow: 1 }}>
-                    {' '}
                     {result &&
                         tabIndex === 0 &&
                         renderTableN(result.preContingencyResult)}
@@ -506,7 +505,6 @@ const SecurityAnalysisResult = ({
     }
 
     useEffect(() => {
-        console.info("fetched");
         setFetched(resultFetcher.fetch());
     }, [resultFetcher, setFetched, result]);
 

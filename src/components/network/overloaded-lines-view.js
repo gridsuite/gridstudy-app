@@ -133,8 +133,6 @@ const OverloadedLinesView = (props) => {
                 <VirtualizedTable
                     height={Math.min(lines.length * rowHeight + 50, 400)}
                     className={classes.table}
-                    /*rowCount={lines.length}
-                    rowGetter={({ index }) => lines[index]}*/
                     rows={lines}
                     rowStyle={{ alignItems: 'stretch' }}
                     rowHeight={rowHeight}

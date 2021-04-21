@@ -15,6 +15,7 @@ const elementIdIndexer = (map, element) => {
 
 export const equipements = {
     substations: 'substations',
+    voltageLevels: 'voltageLevels',
     lines: 'lines',
     twoWindingsTransformers: 'twoWindingsTransformers',
     threeWindingsTransformers: 'threeWindingsTransformers',
@@ -298,7 +299,7 @@ export default class Network {
             postUpdate: (net) => net.completeSubstationsInfos(),
         });
         this.lazyLoaders.set(
-            equipements.vol,
+            equipements.voltageLevels,
             this.lazyLoaders.get(equipements.substations)
         );
         this.generateEquipementHandler({
