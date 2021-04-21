@@ -556,17 +556,14 @@ const StudyManager = ({ onClick }) => {
     useEffect(() => {
         dispatchStudies();
 
-        // Note: dispatch doesn't change
-    }, [dispatchStudies]);
-
-    useEffect(() => {
         const ws = connectNotificationsUpdateStudies();
+        // Note: dispatch doesn't change
 
         // cleanup at unmount event
         return function () {
             ws.close();
         };
-    }, [connectNotificationsUpdateStudies]);
+    }, [connectNotificationsUpdateStudies, dispatchStudies]);
 
     function addCreationRequest({ studyName, userId, ...rest }) {
         setlocalCreationRequests({
