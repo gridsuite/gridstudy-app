@@ -42,6 +42,8 @@ import {
     selectUseName,
     selectDisplayOverloadTableState,
     changeDisplayedColumns,
+    selectLanguage,
+    selectComputedLanguage,
 } from '../redux/actions';
 import Parameters from './parameters';
 import {
@@ -79,6 +81,7 @@ import {
     PARAMS_THEME_KEY,
     PARAMS_USE_NAME_KEY,
     PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+    PARAMS_LANGUAGE_KEY,
     COMMON_APP_NAME,
     APP_NAME,
 } from '../utils/config-params';
@@ -86,6 +89,7 @@ import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES_INDEXES,
 } from './network/config-tables';
+import { getComputedLanguage } from '../utils/language';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -164,6 +168,8 @@ const App = () => {
 
     const useName = useSelector((state) => state.useName);
 
+    const language = useSelector((state) => state.language);
+
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [appsAndUrls, setAppsAndUrls] = React.useState([]);
@@ -196,6 +202,14 @@ const App = () => {
                 switch (param.name) {
                     case PARAMS_THEME_KEY:
                         dispatch(selectTheme(param.value));
+                        break;
+                    case PARAMS_LANGUAGE_KEY:
+                        dispatch(selectLanguage(param.value));
+                        dispatch(
+                            selectComputedLanguage(
+                                getComputedLanguage(param.value)
+                            )
+                        );
                         break;
                     case PARAMS_CENTER_LABEL_KEY:
                         dispatch(
@@ -390,6 +404,10 @@ const App = () => {
         updateConfigParameter(PARAMS_USE_NAME_KEY, useName);
     };
 
+    const handleLanguageClick = (language) => {
+        updateConfigParameter(PARAMS_LANGUAGE_KEY, language);
+    };
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -430,6 +448,8 @@ const App = () => {
                             handleEquipmentLabellingClick
                         }
                         equipmentLabelling={useName}
+                        onLanguageClick={handleLanguageClick}
+                        language={language}
                     >
                         {studyUuid && (
                             <Tabs

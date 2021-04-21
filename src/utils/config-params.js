@@ -19,6 +19,7 @@ export const PARAMS_LINE_FLOW_COLOR_MODE_KEY = 'lineFlowColorMode';
 export const PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY = 'lineFlowAlertThreshold';
 export const PARAMS_DISPLAY_OVERLOAD_TABLE_KEY = 'displayOverloadTable';
 export const PARAMS_SUBSTATION_LAYOUT_KEY = 'substationLayout';
+export const PARAMS_LANGUAGE_KEY = 'language';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAMS_THEME_KEY]);
 
