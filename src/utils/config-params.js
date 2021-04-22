@@ -13,11 +13,11 @@ export const PARAM_USE_NAME = 'useName';
 export const PARAMS_CENTER_LABEL_KEY = 'centerLabel';
 export const PARAMS_DIAGONAL_LABEL_KEY = 'diagonalLabel';
 export const PARAM_LINE_FULL_PATH = 'lineFullPath';
-export const PARAMS_LINE_PARALLEL_PATH_KEY = 'lineParallelPath';
+export const PARAM_LINE_PARALLEL_PATH = 'lineParallelPath';
 export const PARAMS_LINE_FLOW_MODE_KEY = 'lineFlowMode';
 export const PARAMS_LINE_FLOW_COLOR_MODE_KEY = 'lineFlowColorMode';
-export const PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY = 'lineFlowAlertThreshold';
-export const PARAMS_DISPLAY_OVERLOAD_TABLE_KEY = 'displayOverloadTable';
+export const PARAM_LINE_FLOW_ALERT_THRESHOLD = 'lineFlowAlertThreshold';
+export const PARAM_DISPLAY_OVERLOAD_TABLE = 'displayOverloadTable';
 export const PARAMS_SUBSTATION_LAYOUT_KEY = 'substationLayout';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME]);

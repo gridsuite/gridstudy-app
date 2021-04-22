@@ -82,7 +82,13 @@ import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { PARAM_LINE_FULL_PATH, PARAM_USE_NAME } from '../utils/config-params';
+import {
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
 
 const drawerWidth = 300;
 
@@ -171,14 +177,16 @@ const StudyPane = (props) => {
 
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
-    const lineParallelPath = useSelector((state) => state.lineParallelPath);
+    const lineParallelPath = useSelector(
+        (state) => state[PARAM_LINE_PARALLEL_PATH]
+    );
 
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
 
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
 
     const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state.lineFlowAlertThreshold)
+        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
     const substationLayout = useSelector((state) => state.substationLayout);
@@ -186,7 +194,7 @@ const StudyPane = (props) => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const displayOverloadTable = useSelector(
-        (state) => state.displayOverloadTable
+        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
 
     const [studyNotFound, setStudyNotFound] = useState(false);

@@ -6,7 +6,10 @@
  */
 
 import {
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -116,7 +119,10 @@ export function selectLineFullPathState(lineFullPath) {
 export const LINE_PARALLEL_PATH = 'LINE_PARALLEL_PATH';
 
 export function selectLineParallelPathState(lineParallelPath) {
-    return { type: LINE_PARALLEL_PATH, lineParallelPath: lineParallelPath };
+    return {
+        type: LINE_PARALLEL_PATH,
+        [PARAM_LINE_PARALLEL_PATH]: lineParallelPath,
+    };
 }
 
 export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
@@ -136,7 +142,7 @@ export const LINE_FLOW_ALERT_THRESHOLD = 'LINE_FLOW_ALERT_THRESHOLD';
 export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     return {
         type: LINE_FLOW_ALERT_THRESHOLD,
-        lineFlowAlertThreshold: lineFlowAlertThreshold,
+        [PARAM_LINE_FLOW_ALERT_THRESHOLD]: lineFlowAlertThreshold,
     };
 }
 
@@ -160,7 +166,7 @@ export const DISPLAY_OVERLOAD_TABLE = 'DISPLAY_OVERLOAD_TABLE';
 export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
         type: DISPLAY_OVERLOAD_TABLE,
-        displayOverloadTable: displayOverloadTable,
+        [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
     };
 }
 

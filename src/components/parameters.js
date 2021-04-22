@@ -39,13 +39,13 @@ import { SubstationLayout } from './single-line-diagram';
 import {
     PARAMS_CENTER_LABEL_KEY,
     PARAMS_DIAGONAL_LABEL_KEY,
-    PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAMS_LINE_FLOW_COLOR_MODE_KEY,
     PARAMS_LINE_FLOW_MODE_KEY,
     PARAM_LINE_FULL_PATH,
-    PARAMS_LINE_PARALLEL_PATH_KEY,
     PARAMS_SUBSTATION_LAYOUT_KEY,
-    PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
@@ -90,27 +90,34 @@ const Parameters = ({ showParameters, hideParameters }) => {
         PARAM_LINE_FULL_PATH
     );
 
+    const [
+        lineParallelPathLocal,
+        handleChangeLineParallelPath,
+    ] = useParameterState(PARAM_LINE_PARALLEL_PATH);
+
+    const [
+        lineFlowAlertThresholdLocal,
+        handleChangeLineFlowAlertThreshold,
+    ] = useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
+
+    const [
+        displayOverloadTableLocal,
+        handleChangeDisplayOverloadTable,
+    ] = useParameterState(PARAM_DISPLAY_OVERLOAD_TABLE);
+
     const centerLabel = useSelector((state) => state.centerLabel);
     const diagonalLabel = useSelector((state) => state.diagonalLabel);
-    const lineParallelPath = useSelector((state) => state.lineParallelPath);
     const lineFlowMode = useSelector((state) => state.lineFlowMode);
     const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [lfParams, setLfParams] = useState(null);
 
-    const lineFlowAlertThreshold = useSelector(
-        (state) => state.lineFlowAlertThreshold
-    );
-    const displayOverloadTable = useSelector(
-        (state) => state.displayOverloadTable
-    );
-
     const [
         disabledFlowAlertThreshold,
         setDisabledFlowAlertThreshold,
     ] = useState(
-        lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
+        lineFlowColorMode === 'nominalVoltage' && !displayOverloadTableLocal
     );
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -125,9 +132,9 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
+            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTableLocal
         );
-    }, [lineFlowColorMode, displayOverloadTable]);
+    }, [lineFlowColorMode, displayOverloadTableLocal]);
 
     const substationLayout = useSelector((state) => state.substationLayout);
 
@@ -153,10 +160,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
             PARAMS_LINE_FLOW_COLOR_MODE_KEY,
             lineFlowColorMode
         );
-    };
-
-    const handleLineFlowAlertThresholdChange = (event, value) => {
-        updateConfigParameter(PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY, value);
     };
 
     const handleSubstationLayoutChange = (event) => {
@@ -350,11 +353,8 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     handleChangeLineFullPath(!lineFullPathLocal);
                 })}
                 <MakeLineSeparator />
-                {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {
-                    updateConfigParameter(
-                        PARAMS_LINE_PARALLEL_PATH_KEY,
-                        !lineParallelPath
-                    );
+                {MakeSwitch(lineParallelPathLocal, 'lineParallelPath', () => {
+                    handleChangeLineParallelPath(!lineParallelPathLocal);
                 })}
                 <MakeLineSeparator />
                 <Grid item xs={8}>
@@ -405,20 +405,21 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 </Grid>
                 <MakeLineSeparator />
                 {MakeSlider(
-                    Number(lineFlowAlertThreshold),
+                    Number(lineFlowAlertThresholdLocal),
                     'AlertThresholdLabel',
                     disabledFlowAlertThreshold,
-                    handleLineFlowAlertThresholdChange,
+                    (event, value) => {
+                        handleChangeLineFlowAlertThreshold(value);
+                    },
                     alertThresholdMarks
                 )}
                 <MakeLineSeparator />
                 {MakeSwitch(
-                    displayOverloadTable,
+                    displayOverloadTableLocal,
                     'displayOverloadTable',
                     () => {
-                        updateConfigParameter(
-                            PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
-                            !displayOverloadTable
+                        handleChangeDisplayOverloadTable(
+                            !displayOverloadTableLocal
                         );
                     }
                 )}

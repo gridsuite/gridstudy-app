@@ -43,7 +43,10 @@ import {
 import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
 import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
 import {
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -52,6 +55,9 @@ const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_USE_NAME]: true,
     [PARAM_LINE_FULL_PATH]: true,
+    [PARAM_LINE_PARALLEL_PATH]: true,
+    [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
+    [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
 };
 
 const initialState = {
@@ -66,13 +72,10 @@ const initialState = {
     user: null,
     centerLabel: false,
     diagonalLabel: false,
-    lineParallelPath: true,
     lineFlowMode: 'feeders',
     lineFlowColorMode: 'nominalVoltage',
-    lineFlowAlertThreshold: 100,
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
-    displayOverloadTable: false,
     resultCount: 0,
     filteredNominalVoltages: null,
     substationLayout: 'horizontal',
@@ -162,7 +165,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [LINE_PARALLEL_PATH]: (state, action) => {
-        state.lineParallelPath = action.lineParallelPath;
+        state[PARAM_LINE_PARALLEL_PATH] = action[PARAM_LINE_PARALLEL_PATH];
     },
 
     [LINE_FLOW_MODE]: (state, action) => {
@@ -174,7 +177,8 @@ export const reducer = createReducer(initialState, {
     },
 
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
-        state.lineFlowAlertThreshold = action.lineFlowAlertThreshold;
+        state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
+            action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
     },
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
@@ -182,7 +186,8 @@ export const reducer = createReducer(initialState, {
     },
 
     [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
-        state.displayOverloadTable = action.displayOverloadTable;
+        state[PARAM_DISPLAY_OVERLOAD_TABLE] =
+            action[PARAM_DISPLAY_OVERLOAD_TABLE];
     },
 
     [INCREASE_RESULT_COUNT]: (state) => {

@@ -69,15 +69,15 @@ import {
 import {
     PARAMS_CENTER_LABEL_KEY,
     PARAMS_DIAGONAL_LABEL_KEY,
-    PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAMS_LINE_FLOW_COLOR_MODE_KEY,
     PARAMS_LINE_FLOW_MODE_KEY,
     PARAM_LINE_FULL_PATH,
-    PARAMS_LINE_PARALLEL_PATH_KEY,
+    PARAM_LINE_PARALLEL_PATH,
     PARAMS_SUBSTATION_LAYOUT_KEY,
     PARAM_THEME,
     PARAM_USE_NAME,
-    PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
     COMMON_APP_NAME,
     APP_NAME,
 } from '../utils/config-params';
@@ -209,7 +209,7 @@ const App = () => {
                             selectDiagonalLabelState(param.value === 'true')
                         );
                         break;
-                    case PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY:
+                    case PARAM_LINE_FLOW_ALERT_THRESHOLD:
                         dispatch(selectLineFlowAlertThreshold(param.value));
                         break;
                     case PARAMS_LINE_FLOW_COLOR_MODE_KEY:
@@ -223,7 +223,7 @@ const App = () => {
                             selectLineFullPathState(param.value === 'true')
                         );
                         break;
-                    case PARAMS_LINE_PARALLEL_PATH_KEY:
+                    case PARAM_LINE_PARALLEL_PATH:
                         dispatch(
                             selectLineParallelPathState(param.value === 'true')
                         );
@@ -231,7 +231,7 @@ const App = () => {
                     case PARAMS_SUBSTATION_LAYOUT_KEY:
                         dispatch(selectSubstationLayout(param.value));
                         break;
-                    case PARAMS_DISPLAY_OVERLOAD_TABLE_KEY:
+                    case PARAM_DISPLAY_OVERLOAD_TABLE:
                         dispatch(
                             selectDisplayOverloadTableState(
                                 param.value === 'true'
