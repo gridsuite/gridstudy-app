@@ -29,9 +29,13 @@ import { Badge } from '@material-ui/core';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import {
+    changeDisplayedColumns,
     resetResultCount,
     selectCenterLabelState,
+    selectComputedLanguage,
     selectDiagonalLabelState,
+    selectDisplayOverloadTableState,
+    selectLanguage,
     selectLineFlowAlertThreshold,
     selectLineFlowColorMode,
     selectLineFlowMode,
@@ -40,20 +44,16 @@ import {
     selectSubstationLayout,
     selectTheme,
     selectUseName,
-    selectDisplayOverloadTableState,
-    changeDisplayedColumns,
-    selectLanguage,
-    selectComputedLanguage,
 } from '../redux/actions';
 
 import {
-    LIGHT_THEME,
     AuthenticationRouter,
     getPreLoginPath,
     initializeAuthenticationProd,
+    LIGHT_THEME,
     logout,
-    TopBar,
     SnackbarProvider,
+    TopBar,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -67,11 +67,14 @@ import {
     fetchAppsAndUrls,
     fetchConfigParameter,
     fetchConfigParameters,
-    updateConfigParameter,
 } from '../utils/rest-api';
 import {
+    APP_NAME,
+    COMMON_APP_NAME,
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LANGUAGE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -80,10 +83,6 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
-    PARAMS_LANGUAGE_KEY,
-    COMMON_APP_NAME,
-    APP_NAME,
 } from '../utils/config-params';
 import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -167,11 +166,13 @@ const App = () => {
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
+    const [languageLocal, handleChangeLanguage] = useParameterState(
+        PARAM_LANGUAGE
+    );
+
     const [useNameLocal, handleChangeUseName] = useParameterState(
         PARAM_USE_NAME
     );
-
-    const language = useSelector((state) => state.language);
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -206,7 +207,7 @@ const App = () => {
                     case PARAM_THEME:
                         dispatch(selectTheme(param.value));
                         break;
-                    case PARAMS_LANGUAGE_KEY:
+                    case PARAM_LANGUAGE:
                         dispatch(selectLanguage(param.value));
                         dispatch(
                             selectComputedLanguage(
@@ -399,10 +400,6 @@ const App = () => {
         setTabIndex(newTabIndex);
     }, []);
 
-    const handleLanguageClick = (language) => {
-        updateConfigParameter(PARAMS_LANGUAGE_KEY, language);
-    };
-
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -441,8 +438,8 @@ const App = () => {
                         theme={themeLocal}
                         onEquipmentLabellingClick={handleChangeUseName}
                         equipmentLabelling={useNameLocal}
-                        onLanguageClick={handleLanguageClick}
-                        language={language}
+                        onLanguageClick={handleChangeLanguage}
+                        language={languageLocal}
                     >
                         {studyUuid && (
                             <Tabs

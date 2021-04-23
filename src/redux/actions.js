@@ -9,6 +9,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
     PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LANGUAGE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -40,7 +41,7 @@ export function selectTheme(theme) {
 export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
 
 export function selectLanguage(language) {
-    return { type: SELECT_LANGUAGE, language: language };
+    return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
 }
 
 export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';

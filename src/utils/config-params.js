@@ -19,9 +19,9 @@ export const PARAM_LINE_FLOW_COLOR_MODE = 'lineFlowColorMode';
 export const PARAM_LINE_FLOW_ALERT_THRESHOLD = 'lineFlowAlertThreshold';
 export const PARAM_DISPLAY_OVERLOAD_TABLE = 'displayOverloadTable';
 export const PARAM_SUBSTATION_LAYOUT = 'substationLayout';
-export const PARAMS_LANGUAGE_KEY = 'language';
+export const PARAM_LANGUAGE = 'language';
 
-const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME]);
+const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 
 export function getAppName(paramName) {
     return COMMON_CONFIG_PARAMS_NAMES.has(paramName)

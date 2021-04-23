@@ -68,13 +68,11 @@ export function useParameterState(paramName) {
     const [paramLocalState, setParamLocalState] = useState();
 
     useEffect(() => {
-        console.log('MISE A JOUR GLOBALE');
         setParamLocalState(paramGlobalState);
     }, [paramGlobalState]);
 
     const handleChangeParamLocalState = useCallback(
         (value) => {
-            console.log('MISE A JOUR LOCALE');
             setParamLocalState(value);
             updateConfigParameter(paramName, value);
         },

@@ -54,6 +54,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
     PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LANGUAGE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -66,6 +67,7 @@ import {
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
+    [PARAM_LANGUAGE]: getLocalStorageLanguage(),
     [PARAM_USE_NAME]: true,
     [PARAM_LINE_FULL_PATH]: true,
     [PARAM_LINE_PARALLEL_PATH]: true,
@@ -87,7 +89,6 @@ const initialState = {
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    language: getLocalStorageLanguage(),
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
@@ -144,8 +145,8 @@ export const reducer = createReducer(initialState, {
     },
 
     [SELECT_LANGUAGE]: (state, action) => {
-        state.language = action.language;
-        saveLocalStorageLanguage(state.language);
+        state[PARAM_LANGUAGE] = action[PARAM_LANGUAGE];
+        saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
     },
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
