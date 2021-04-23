@@ -83,12 +83,15 @@ import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
 
@@ -173,9 +176,9 @@ const StudyPane = (props) => {
 
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
-    const centerName = useSelector((state) => state.centerLabel);
+    const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
 
-    const diagonalName = useSelector((state) => state.diagonalLabel);
+    const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
 
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
@@ -193,7 +196,9 @@ const StudyPane = (props) => {
         Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
-    const substationLayout = useSelector((state) => state.substationLayout);
+    const substationLayout = useSelector(
+        (state) => state[PARAM_SUBSTATION_LAYOUT]
+    );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 

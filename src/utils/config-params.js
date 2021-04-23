@@ -10,15 +10,15 @@ export const APP_NAME = 'study';
 
 export const PARAM_THEME = 'theme';
 export const PARAM_USE_NAME = 'useName';
-export const PARAMS_CENTER_LABEL_KEY = 'centerLabel';
-export const PARAMS_DIAGONAL_LABEL_KEY = 'diagonalLabel';
+export const PARAM_CENTER_LABEL = 'centerLabel';
+export const PARAM_DIAGONAL_LABEL = 'diagonalLabel';
 export const PARAM_LINE_FULL_PATH = 'lineFullPath';
 export const PARAM_LINE_PARALLEL_PATH = 'lineParallelPath';
 export const PARAM_LINE_FLOW_MODE = 'lineFlowMode';
 export const PARAM_LINE_FLOW_COLOR_MODE = 'lineFlowColorMode';
 export const PARAM_LINE_FLOW_ALERT_THRESHOLD = 'lineFlowAlertThreshold';
 export const PARAM_DISPLAY_OVERLOAD_TABLE = 'displayOverloadTable';
-export const PARAMS_SUBSTATION_LAYOUT_KEY = 'substationLayout';
+export const PARAM_SUBSTATION_LAYOUT = 'substationLayout';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME]);
 

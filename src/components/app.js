@@ -67,14 +67,14 @@ import {
     fetchConfigParameters,
 } from '../utils/rest-api';
 import {
-    PARAMS_CENTER_LABEL_KEY,
-    PARAMS_DIAGONAL_LABEL_KEY,
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
-    PARAMS_SUBSTATION_LAYOUT_KEY,
+    PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_DISPLAY_OVERLOAD_TABLE,
@@ -199,12 +199,12 @@ const App = () => {
                     case PARAM_THEME:
                         dispatch(selectTheme(param.value));
                         break;
-                    case PARAMS_CENTER_LABEL_KEY:
+                    case PARAM_CENTER_LABEL:
                         dispatch(
                             selectCenterLabelState(param.value === 'true')
                         );
                         break;
-                    case PARAMS_DIAGONAL_LABEL_KEY:
+                    case PARAM_DIAGONAL_LABEL:
                         dispatch(
                             selectDiagonalLabelState(param.value === 'true')
                         );
@@ -228,7 +228,7 @@ const App = () => {
                             selectLineParallelPathState(param.value === 'true')
                         );
                         break;
-                    case PARAMS_SUBSTATION_LAYOUT_KEY:
+                    case PARAM_SUBSTATION_LAYOUT:
                         dispatch(selectSubstationLayout(param.value));
                         break;
                     case PARAM_DISPLAY_OVERLOAD_TABLE:

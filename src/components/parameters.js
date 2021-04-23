@@ -37,13 +37,13 @@ import {
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
-    PARAMS_CENTER_LABEL_KEY,
-    PARAMS_DIAGONAL_LABEL_KEY,
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
-    PARAMS_SUBSTATION_LAYOUT_KEY,
+    PARAM_SUBSTATION_LAYOUT,
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
@@ -114,8 +114,19 @@ const Parameters = ({ showParameters, hideParameters }) => {
         handleChangeLineFlowColorMode,
     ] = useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
 
-    const centerLabel = useSelector((state) => state.centerLabel);
-    const diagonalLabel = useSelector((state) => state.diagonalLabel);
+    const [centerLabelLocal, handleChangeCenterLabel] = useParameterState(
+        PARAM_CENTER_LABEL
+    );
+
+    const [diagonalLabelLocal, handleChangeDiagonalLabel] = useParameterState(
+        PARAM_DIAGONAL_LABEL
+    );
+
+    const [
+        substationLayoutLocal,
+        handleChangeSubstationLayout,
+    ] = useParameterState(PARAM_SUBSTATION_LAYOUT);
+
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [lfParams, setLfParams] = useState(null);
@@ -145,8 +156,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
         );
     }, [lineFlowColorModeLocal, displayOverloadTableLocal]);
 
-    const substationLayout = useSelector((state) => state.substationLayout);
-
     const alertThresholdMarks = [
         {
             value: 0,
@@ -157,11 +166,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
             label: '100',
         },
     ];
-
-    const handleSubstationLayoutChange = (event) => {
-        const substationLayout = event.target.value;
-        updateConfigParameter(PARAMS_SUBSTATION_LAYOUT_KEY, substationLayout);
-    };
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -290,18 +294,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function SingleLineDiagramParameters() {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(diagonalLabel, 'diagonalLabel', () => {
-                    updateConfigParameter(
-                        PARAMS_DIAGONAL_LABEL_KEY,
-                        !diagonalLabel
-                    );
+                {MakeSwitch(diagonalLabelLocal, 'diagonalLabel', () => {
+                    handleChangeDiagonalLabel(!diagonalLabelLocal);
                 })}
                 <MakeLineSeparator />
-                {MakeSwitch(centerLabel, 'centerLabel', () => {
-                    updateConfigParameter(
-                        PARAMS_CENTER_LABEL_KEY,
-                        !centerLabel
-                    );
+                {MakeSwitch(centerLabelLocal, 'centerLabel', () => {
+                    handleChangeCenterLabel(!centerLabelLocal);
                 })}
                 <MakeLineSeparator />
                 <Grid item xs={8}>
@@ -314,8 +312,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="substation-layout-select-label"
-                        value={substationLayout}
-                        onChange={handleSubstationLayoutChange}
+                        value={substationLayoutLocal}
+                        onChange={(event) => {
+                            handleChangeSubstationLayout(event.target.value);
+                        }}
                     >
                         <MenuItem value={SubstationLayout.HORIZONTAL}>
                             <FormattedMessage id="HorizontalSubstationLayout" />

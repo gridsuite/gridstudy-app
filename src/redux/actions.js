@@ -6,12 +6,15 @@
  */
 
 import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -103,13 +106,13 @@ export function setLoggedUser(user) {
 export const CENTER_LABEL = 'CENTER_LABEL';
 
 export function selectCenterLabelState(centerLabel) {
-    return { type: CENTER_LABEL, centerLabel: centerLabel };
+    return { type: CENTER_LABEL, [PARAM_CENTER_LABEL]: centerLabel };
 }
 
 export const DIAGONAL_LABEL = 'DIAGONAL_LABEL';
 
 export function selectDiagonalLabelState(diagonalLabel) {
-    return { type: DIAGONAL_LABEL, diagonalLabel: diagonalLabel };
+    return { type: DIAGONAL_LABEL, [PARAM_DIAGONAL_LABEL]: diagonalLabel };
 }
 
 export const LINE_FULL_PATH = 'LINE_FULL_PATH';
@@ -200,7 +203,10 @@ export function filteredNominalVoltagesUpdated(filteredNV) {
 export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 
 export function selectSubstationLayout(substationLayout) {
-    return { type: SUBSTATION_LAYOUT, substationLayout: substationLayout };
+    return {
+        type: SUBSTATION_LAYOUT,
+        [PARAM_SUBSTATION_LAYOUT]: substationLayout,
+    };
 }
 
 export const SELECTED_ITEM_NETWORK = 'SELECTED_ITEM_NETWORK';

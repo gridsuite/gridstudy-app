@@ -43,12 +43,15 @@ import {
 import { getLocalStorageTheme, saveLocalStorageTheme } from './local-storage';
 import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
 import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -62,6 +65,9 @@ const paramsInitialState = {
     [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
     [PARAM_LINE_FLOW_MODE]: 'feeders',
     [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
+    [PARAM_CENTER_LABEL]: false,
+    [PARAM_DIAGONAL_LABEL]: false,
+    [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
 };
 
 const initialState = {
@@ -74,13 +80,10 @@ const initialState = {
     selectedCase: null,
     selectedFile: null,
     user: null,
-    centerLabel: false,
-    diagonalLabel: false,
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
     resultCount: 0,
     filteredNominalVoltages: null,
-    substationLayout: 'horizontal',
     selectItemNetwork: null,
     fullScreen: false,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
@@ -155,11 +158,11 @@ export const reducer = createReducer(initialState, {
     },
 
     [CENTER_LABEL]: (state, action) => {
-        state.centerLabel = action.centerLabel;
+        state[PARAM_CENTER_LABEL] = action[PARAM_CENTER_LABEL];
     },
 
     [DIAGONAL_LABEL]: (state, action) => {
-        state.diagonalLabel = action.diagonalLabel;
+        state[PARAM_DIAGONAL_LABEL] = action[PARAM_DIAGONAL_LABEL];
     },
 
     [LINE_FULL_PATH]: (state, action) => {
@@ -205,7 +208,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [SUBSTATION_LAYOUT]: (state, action) => {
-        state.substationLayout = action.substationLayout;
+        state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
     },
 
     [SELECTED_ITEM_NETWORK]: (state, action) => {
