@@ -33,4 +33,6 @@ export class RemoteResourceHandler {
         }
         return this.fetched;
     }
+
+    isFetched() { return this.fetched === true;}
 }

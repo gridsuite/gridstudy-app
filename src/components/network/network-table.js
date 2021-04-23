@@ -99,7 +99,7 @@ const NetworkTable = (props) => {
                 selectedColumnsNames={selectedColumnsNames}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 filter={filter}
-                fetching={!props.network.useEquipment(resource)}
+                fetching={!props.network.isResourceFetched(resource)}
             />
         );
     }

@@ -267,9 +267,17 @@ export default class Network {
     }
 
     // TODO investigate turn this into a custom hook ?
-    useEquipment(equipement) {
-        const fetcher = this.lazyLoaders.get(equipement);
+    useEquipment(equipment) {
+        const fetcher = this.lazyLoaders.get(equipment);
         if (fetcher) return fetcher.fetch();
+        else {
+            console.error('not found ' + equipment);
+        }
+    }
+
+    isResourceFetched(equipement) {
+        const fetcher = this.lazyLoaders.get(equipement);
+        if (fetcher) return fetcher.isFetched();
         else {
             console.error('not found ' + equipement);
         }
