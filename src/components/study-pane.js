@@ -216,6 +216,10 @@ const StudyPane = (props) => {
         setSecurityAnalysisResultFetcher,
     ] = useState(null);
     const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
+    const [
+        securityAnalysisResultFetched,
+        setSecurityAnalysisResultFetched,
+    ] = useState(false);
 
     const [computationStopped, setComputationStopped] = useState(false);
 
@@ -303,7 +307,13 @@ const StudyPane = (props) => {
         setSecurityAnalysisResultFetcher(
             new RemoteResourceHandler(
                 () => fetchSecurityAnalysisResult(studyUuid),
-                setSecurityAnalysisResult
+                (res) => {
+                    setSecurityAnalysisResult(res);
+                    setSecurityAnalysisResultFetched(true);
+                },
+                (e) => {
+                    setSecurityAnalysisResultFetched(true);
+                }
             )
         );
     }, [studyUuid]);
@@ -1091,6 +1101,7 @@ const StudyPane = (props) => {
                 <SecurityAnalysisResult
                     resultFetcher={securityAnalysisResultFetcher}
                     result={securityAnalysisResult}
+                    fetched={securityAnalysisResultFetched}
                     onClickNmKConstraint={onClickNmKConstraint}
                 />
             </Paper>

@@ -37,14 +37,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SecurityAnalysisResult = ({
-    resultFetcher,
     onClickNmKConstraint,
+    fetched,
     result,
+    resultFetcher,
 }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
-    const [fetched, setFetched] = React.useState(false);
 
     const [nmkTypeResult, setNmkTypeResult] = React.useState(
         NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES
@@ -505,8 +505,8 @@ const SecurityAnalysisResult = ({
     }
 
     useEffect(() => {
-        setFetched(resultFetcher.fetch());
-    }, [resultFetcher, setFetched, result]);
+        resultFetcher.fetch();
+    }, [resultFetcher]);
 
     return (
         <>
