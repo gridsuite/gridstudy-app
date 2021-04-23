@@ -10,7 +10,7 @@ import 'typeface-roboto';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { IntlProvider } from 'react-intl';
 
@@ -33,17 +33,28 @@ const messages = {
     fr: { ...messages_fr, ...login_fr, ...top_bar_fr },
 };
 
-const language = navigator.language.split(/[-_]/)[0]; // language without region code
-
 const basename = new URL(document.querySelector('base').href).pathname;
 
-ReactDOM.render(
-    <IntlProvider locale={language} messages={messages[language]}>
-        <Provider store={store}>
+const ApplicationWrapper = () => {
+    const computedLanguage = useSelector((state) => state.computedLanguage);
+    return (
+        <IntlProvider
+            locale={computedLanguage}
+            messages={messages[computedLanguage]}
+        >
             <BrowserRouter basename={basename}>
                 <App />
             </BrowserRouter>
+        </IntlProvider>
+    );
+};
+
+const ProviderWrapper = () => {
+    return (
+        <Provider store={store}>
+            <ApplicationWrapper />
         </Provider>
-    </IntlProvider>,
-    document.getElementById('root')
-);
+    );
+};
+
+ReactDOM.render(<ProviderWrapper />, document.getElementById('root'));
