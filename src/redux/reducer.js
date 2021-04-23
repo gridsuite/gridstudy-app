@@ -112,6 +112,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [UPDATE_NETWORK]: (state, action) => {
+        /* clone the network fast and usual way too...*/
         let newNetwork = Object.assign(
             Object.create(Object.getPrototypeOf(state.network)),
             state.network

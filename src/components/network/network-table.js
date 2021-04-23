@@ -87,7 +87,8 @@ const NetworkTable = (props) => {
             : props.network[TABLES_DEFINITION_INDEXES.get(tabIndex).resource];
         return (
             <EquipmentTable
-                props={props}
+                network={props.network}
+                studyUuid={props.studyUuid}
                 rows={rows}
                 selectedColumnsNames={selectedColumnsNames}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}

@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme) => ({
 const ROW_HEIGHT = 48;
 
 export const EquipmentTable = ({
-    props,
+    network,
+    studyUuid,
     rows,
     selectedColumnsNames,
     tableDefinition,
@@ -40,9 +41,9 @@ export const EquipmentTable = ({
 
     useEffect(() => {
         const resource = tableDefinition.resource;
-        if (!props.network) return;
-        setFetching(!props.network.fetchEquipment(resource));
-    }, [props.network, tableDefinition]);
+        if (!network) return;
+        setFetching(!network.fetchEquipment(resource));
+    }, [network, tableDefinition]);
 
     const isLineOnEditMode = useCallback(
         (row) => {
@@ -61,22 +62,20 @@ export const EquipmentTable = ({
         Object.values(lineEdit.newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(props.userId, props.studyName, groovyCr).then(
-            (response) => {
-                if (response.ok) {
-                    Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
-                        rowData[key] = cr.value;
-                    });
-                } else {
-                    Object.entries(lineEdit.oldValues).forEach(
-                        ([key, oldValue]) => {
-                            rowData[key] = oldValue;
-                        }
-                    );
-                }
-                setLineEdit({});
+        requestNetworkChange(studyUuid, groovyCr).then((response) => {
+            if (response.ok) {
+                Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
+                    rowData[key] = cr.value;
+                });
+            } else {
+                Object.entries(lineEdit.oldValues).forEach(
+                    ([key, oldValue]) => {
+                        rowData[key] = oldValue;
+                    }
+                );
             }
-        );
+            setLineEdit({});
+        });
     }
 
     function resetChanges(rowData) {
@@ -246,7 +245,6 @@ export const EquipmentTable = ({
         <LoaderWithOverlay
             color="inherit"
             loaderSize={70}
-            isFixed={true}
             loadingMessageText={'Loading'}
         />
     ) : (

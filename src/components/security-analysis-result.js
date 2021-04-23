@@ -512,7 +512,6 @@ const SecurityAnalysisResult = ({
         <LoaderWithOverlay
             color="inherit"
             loaderSize={70}
-            isFixed={true}
             loadingMessageText={'Loading'}
         />
     ) : (

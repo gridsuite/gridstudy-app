@@ -18,8 +18,8 @@ export class RemoteResourceHandler {
 
     fetched = undefined;
 
-    fetch(forceUpdate) {
-        if (this.fetched === undefined || forceUpdate) {
+    fetch() {
+        if (this.fetched === undefined) {
             this.fetched = false;
             this.fetcher()
                 .then((val) => {

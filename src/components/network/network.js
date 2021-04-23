@@ -255,7 +255,6 @@ export default class Network {
 
     generateEquipementHandler({ errHandler, postUpdate, ...equipment }) {
         for (const [key, value] of Object.entries(equipment)) {
-            console.log(key, value, postUpdate);
             this.lazyLoaders.set(
                 key,
                 new RemoteResourceHandler(
@@ -268,9 +267,9 @@ export default class Network {
         }
     }
 
-    fetchEquipment(equipement, cb) {
+    fetchEquipment(equipement) {
         const fetcher = this.lazyLoaders.get(equipement);
-        if (fetcher) return fetcher.fetch(cb);
+        if (fetcher) return fetcher.fetch();
         else {
             console.error('not found ' + equipement);
         }
