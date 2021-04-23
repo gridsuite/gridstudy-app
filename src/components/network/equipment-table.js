@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { requestNetworkChange } from '../../utils/rest-api';
 import { IconButton, TextField } from '@material-ui/core';
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 const ROW_HEIGHT = 48;
 
 export const EquipmentTable = ({
-    network,
+    fetching,
     studyUuid,
     rows,
     selectedColumnsNames,
@@ -37,13 +37,6 @@ export const EquipmentTable = ({
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
     const intl = useIntl();
-    const [fetching, setFetching] = useState(false);
-
-    useEffect(() => {
-        const resource = tableDefinition.resource;
-        if (!network) return;
-        setFetching(!network.fetchEquipment(resource));
-    }, [network, tableDefinition]);
 
     const isLineOnEditMode = useCallback(
         (row) => {
@@ -241,24 +234,27 @@ export const EquipmentTable = ({
         };
     }
 
-    return fetching ? (
-        <LoaderWithOverlay
-            color="inherit"
-            loaderSize={70}
-            loadingMessageText={'Loading'}
-        />
-    ) : (
-        <VirtualizedTable
-            rows={rows}
-            filter={filter}
-            columns={
-                tableDefinition.header
-                    ? [
-                          makeHeaderCell(tableDefinition.header),
-                          ...generateTableColumns(tableDefinition),
-                      ]
-                    : generateTableColumns(tableDefinition)
-            }
-        />
+    return (
+        <>
+            {fetching && (
+                <LoaderWithOverlay
+                    color="inherit"
+                    loaderSize={70}
+                    loadingMessageText={'Loading'}
+                />
+            )}
+            <VirtualizedTable
+                rows={rows}
+                filter={filter}
+                columns={
+                    tableDefinition.header
+                        ? [
+                              makeHeaderCell(tableDefinition.header),
+                              ...generateTableColumns(tableDefinition),
+                          ]
+                        : generateTableColumns(tableDefinition)
+                }
+            />
+        </>
     );
 };

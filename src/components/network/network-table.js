@@ -80,19 +80,26 @@ const NetworkTable = (props) => {
         );
     }, [tabIndex, allDisplayedColumnsNames]);
 
+    useEffect(() => {
+        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
+        if (!props.network) return;
+        props.network.fetchEquipment(resource);
+    }, [props.network, tabIndex]);
+
     function renderTable() {
+        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
         const tableDefinition = TABLES_DEFINITION_INDEXES.get(tabIndex);
         const rows = tableDefinition.getter
             ? tableDefinition.getter(props.network)
             : props.network[TABLES_DEFINITION_INDEXES.get(tabIndex).resource];
         return (
             <EquipmentTable
-                network={props.network}
                 studyUuid={props.studyUuid}
                 rows={rows}
                 selectedColumnsNames={selectedColumnsNames}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 filter={filter}
+                fetching={!props.network.fetchEquipment(resource)}
             />
         );
     }
