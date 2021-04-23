@@ -758,8 +758,8 @@ const StudyPane = (props) => {
 
     useEffect(() => {
         if (!network) return;
-        network.fetchEquipment(equipements.substations);
-        network.fetchEquipment(equipements.lines);
+        network.useEquipment(equipements.substations);
+        network.useEquipment(equipements.lines);
     }, [network]);
 
     function renderMapView() {

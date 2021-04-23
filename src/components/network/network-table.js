@@ -83,7 +83,7 @@ const NetworkTable = (props) => {
     useEffect(() => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
         if (!props.network) return;
-        props.network.fetchEquipment(resource);
+        props.network.useEquipment(resource);
     }, [props.network, tabIndex]);
 
     function renderTable() {
@@ -99,7 +99,7 @@ const NetworkTable = (props) => {
                 selectedColumnsNames={selectedColumnsNames}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 filter={filter}
-                fetching={!props.network.fetchEquipment(resource)}
+                fetching={!props.network.useEquipment(resource)}
             />
         );
     }

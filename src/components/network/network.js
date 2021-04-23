@@ -253,26 +253,53 @@ export default class Network {
         );
     }
 
-    generateEquipementHandler({ errHandler, postUpdate, ...equipment }) {
+    generateEquipementHandler({ errHandler, ...equipment }) {
         for (const [key, value] of Object.entries(equipment)) {
             this.lazyLoaders.set(
                 key,
                 new RemoteResourceHandler(
                     value,
-                    (value) =>
-                        this.dispatch(updateNetwork(key, value, postUpdate)),
+                    (data) => this.dispatch(updateNetwork(key, data)),
                     (key) => errHandler(key)
                 )
             );
         }
     }
 
-    fetchEquipment(equipement) {
+    // TODO investigate turn this into a custom hook ?
+    useEquipment(equipement) {
         const fetcher = this.lazyLoaders.get(equipement);
         if (fetcher) return fetcher.fetch();
         else {
             console.error('not found ' + equipement);
         }
+    }
+
+    newSharedWithEquipment(name, value) {
+        /* shallow clone of the network https://stackoverflow.com/a/44782052 */
+        let newNetwork = Object.assign(
+            Object.create(Object.getPrototypeOf(this)),
+            this
+        );
+        newNetwork[name] = value;
+        switch (name) {
+            case equipements.substations:
+                newNetwork.completeSubstationsInfos();
+                break;
+            case equipements.lines:
+                newNetwork.completeLinesInfos();
+                break;
+            case equipements.generators:
+                newNetwork.completeGeneratorsInfos();
+                break;
+            case equipements.twoWindingsTransformers:
+                newNetwork.completeTwoWindingsTransformersInfos();
+                break;
+            case equipements.threeWindingsTransformers:
+                newNetwork.completeThreeWindingsTransformersInfos();
+                break;
+        }
+        return newNetwork;
     }
 
     constructor(
@@ -295,7 +322,6 @@ export default class Network {
         this.generateEquipementHandler({
             substations,
             errHandler,
-            postUpdate: (net) => net.completeSubstationsInfos(),
         });
         this.lazyLoaders.set(
             equipements.voltageLevels,
@@ -304,25 +330,21 @@ export default class Network {
         this.generateEquipementHandler({
             lines,
             errHandler,
-            postUpdate: (net) => net.completeLinesInfos(),
         });
 
         this.generateEquipementHandler({
             twoWindingsTransformers,
             errHandler,
-            postUpdate: (net) => net.completeTwoWindingsTransformersInfos(),
         });
 
         this.generateEquipementHandler({
             threeWindingsTransformers,
             errHandler,
-            postUpdate: (net) => net.completeThreeWindingsTransformersInfos(),
         });
 
         this.generateEquipementHandler({
             generators,
             errHandler,
-            postUpdate: (net) => net.completeGeneratorsInfos(),
         });
 
         this.generateEquipementHandler({
@@ -335,7 +357,6 @@ export default class Network {
             shuntCompensators,
             staticVarCompensators,
             errHandler,
-            postUpdate: undefined,
         });
 
         this.dispatch = dispatch;

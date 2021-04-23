@@ -112,14 +112,10 @@ export const reducer = createReducer(initialState, {
     },
 
     [UPDATE_NETWORK]: (state, action) => {
-        /* clone the network fast and usual way too...*/
-        let newNetwork = Object.assign(
-            Object.create(Object.getPrototypeOf(state.network)),
-            state.network
+        state.network = state.network.newSharedWithEquipment(
+            action.equipmentsName,
+            action.values
         );
-        newNetwork[action.equipmentsName] = action.values;
-        if (action.postUpdate) action.postUpdate(newNetwork);
-        state.network = newNetwork;
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
