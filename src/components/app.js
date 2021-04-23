@@ -42,6 +42,8 @@ import {
     selectUseName,
     selectDisplayOverloadTableState,
     changeDisplayedColumns,
+    selectLanguage,
+    selectComputedLanguage,
 } from '../redux/actions';
 
 import {
@@ -65,6 +67,7 @@ import {
     fetchAppsAndUrls,
     fetchConfigParameter,
     fetchConfigParameters,
+    updateConfigParameter,
 } from '../utils/rest-api';
 import {
     PARAM_CENTER_LABEL,
@@ -78,6 +81,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAMS_LANGUAGE_KEY,
     COMMON_APP_NAME,
     APP_NAME,
 } from '../utils/config-params';
@@ -86,6 +90,7 @@ import {
     TABLES_NAMES_INDEXES,
 } from './network/config-tables';
 import Parameters, { useParameterState } from './parameters';
+import { getComputedLanguage } from '../utils/language';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -166,6 +171,8 @@ const App = () => {
         PARAM_USE_NAME
     );
 
+    const language = useSelector((state) => state.language);
+
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [appsAndUrls, setAppsAndUrls] = React.useState([]);
@@ -198,6 +205,14 @@ const App = () => {
                 switch (param.name) {
                     case PARAM_THEME:
                         dispatch(selectTheme(param.value));
+                        break;
+                    case PARAMS_LANGUAGE_KEY:
+                        dispatch(selectLanguage(param.value));
+                        dispatch(
+                            selectComputedLanguage(
+                                getComputedLanguage(param.value)
+                            )
+                        );
                         break;
                     case PARAM_CENTER_LABEL:
                         dispatch(
@@ -384,6 +399,10 @@ const App = () => {
         setTabIndex(newTabIndex);
     }, []);
 
+    const handleLanguageClick = (language) => {
+        updateConfigParameter(PARAMS_LANGUAGE_KEY, language);
+    };
+
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
         dispatch(resetResultCount());
@@ -422,6 +441,8 @@ const App = () => {
                         theme={themeLocal}
                         onEquipmentLabellingClick={handleChangeUseName}
                         equipmentLabelling={useNameLocal}
+                        onLanguageClick={handleLanguageClick}
+                        language={language}
                     >
                         {studyUuid && (
                             <Tabs

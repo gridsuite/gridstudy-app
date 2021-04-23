@@ -37,6 +37,21 @@ export function selectTheme(theme) {
     return { type: SELECT_THEME, [PARAM_THEME]: theme };
 }
 
+export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
+
+export function selectLanguage(language) {
+    return { type: SELECT_LANGUAGE, language: language };
+}
+
+export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
+
+export function selectComputedLanguage(computedLanguage) {
+    return {
+        type: SELECT_COMPUTED_LANGUAGE,
+        computedLanguage: computedLanguage,
+    };
+}
+
 export const LOAD_STUDIES_SUCCESS = 'LOAD_STUDIES_SUCCESS';
 
 export function loadStudiesSuccess(studies) {
