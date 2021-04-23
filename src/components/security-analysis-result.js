@@ -508,14 +508,17 @@ const SecurityAnalysisResult = ({
         setFetched(resultFetcher.fetch());
     }, [resultFetcher, setFetched, result]);
 
-    return !fetched ? (
-        <LoaderWithOverlay
-            color="inherit"
-            loaderSize={70}
-            loadingMessageText={'Loading'}
-        />
-    ) : (
-        renderTabs()
+    return (
+        <>
+            {!fetched && (
+                <LoaderWithOverlay
+                    color="inherit"
+                    loaderSize={70}
+                    loadingMessageText={'Loading'}
+                />
+            )}
+            {renderTabs()}
+        </>
     );
 };
 

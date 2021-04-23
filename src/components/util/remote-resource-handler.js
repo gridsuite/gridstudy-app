@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+// TODO to be replaced with a custom hook
 export class RemoteResourceHandler {
     fetcher = undefined;
     errorHandler = undefined;
