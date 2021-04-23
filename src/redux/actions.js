@@ -8,6 +8,8 @@
 import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_THEME,
@@ -128,13 +130,16 @@ export function selectLineParallelPathState(lineParallelPath) {
 export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
 
 export function selectLineFlowMode(lineFlowMode) {
-    return { type: LINE_FLOW_MODE, lineFlowMode: lineFlowMode };
+    return { type: LINE_FLOW_MODE, [PARAM_LINE_FLOW_MODE]: lineFlowMode };
 }
 
 export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
 
 export function selectLineFlowColorMode(lineFlowColorMode) {
-    return { type: LINE_FLOW_COLOR_MODE, lineFlowColorMode: lineFlowColorMode };
+    return {
+        type: LINE_FLOW_COLOR_MODE,
+        [PARAM_LINE_FLOW_COLOR_MODE]: lineFlowColorMode,
+    };
 }
 
 export const LINE_FLOW_ALERT_THRESHOLD = 'LINE_FLOW_ALERT_THRESHOLD';

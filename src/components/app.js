@@ -70,8 +70,8 @@ import {
     PARAMS_CENTER_LABEL_KEY,
     PARAMS_DIAGONAL_LABEL_KEY,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAMS_LINE_FLOW_COLOR_MODE_KEY,
-    PARAMS_LINE_FLOW_MODE_KEY,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAMS_SUBSTATION_LAYOUT_KEY,
@@ -212,10 +212,10 @@ const App = () => {
                     case PARAM_LINE_FLOW_ALERT_THRESHOLD:
                         dispatch(selectLineFlowAlertThreshold(param.value));
                         break;
-                    case PARAMS_LINE_FLOW_COLOR_MODE_KEY:
+                    case PARAM_LINE_FLOW_COLOR_MODE:
                         dispatch(selectLineFlowColorMode(param.value));
                         break;
-                    case PARAMS_LINE_FLOW_MODE_KEY:
+                    case PARAM_LINE_FLOW_MODE:
                         dispatch(selectLineFlowMode(param.value));
                         break;
                     case PARAM_LINE_FULL_PATH:

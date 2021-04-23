@@ -85,6 +85,8 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_USE_NAME,
@@ -181,9 +183,11 @@ const StudyPane = (props) => {
         (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
 
-    const lineFlowMode = useSelector((state) => state.lineFlowMode);
+    const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
 
-    const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
+    const lineFlowColorMode = useSelector(
+        (state) => state[PARAM_LINE_FLOW_COLOR_MODE]
+    );
 
     const lineFlowAlertThreshold = useSelector((state) =>
         Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])

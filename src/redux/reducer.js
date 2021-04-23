@@ -45,6 +45,8 @@ import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
 import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_THEME,
@@ -58,6 +60,8 @@ const paramsInitialState = {
     [PARAM_LINE_PARALLEL_PATH]: true,
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
+    [PARAM_LINE_FLOW_MODE]: 'feeders',
+    [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
 };
 
 const initialState = {
@@ -72,8 +76,6 @@ const initialState = {
     user: null,
     centerLabel: false,
     diagonalLabel: false,
-    lineFlowMode: 'feeders',
-    lineFlowColorMode: 'nominalVoltage',
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
     resultCount: 0,
@@ -169,11 +171,11 @@ export const reducer = createReducer(initialState, {
     },
 
     [LINE_FLOW_MODE]: (state, action) => {
-        state.lineFlowMode = action.lineFlowMode;
+        state[PARAM_LINE_FLOW_MODE] = action[PARAM_LINE_FLOW_MODE];
     },
 
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
-        state.lineFlowColorMode = action.lineFlowColorMode;
+        state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
     },
 
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {

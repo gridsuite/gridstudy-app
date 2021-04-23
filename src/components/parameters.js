@@ -40,8 +40,8 @@ import {
     PARAMS_CENTER_LABEL_KEY,
     PARAMS_DIAGONAL_LABEL_KEY,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAMS_LINE_FLOW_COLOR_MODE_KEY,
-    PARAMS_LINE_FLOW_MODE_KEY,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAMS_SUBSTATION_LAYOUT_KEY,
     PARAM_DISPLAY_OVERLOAD_TABLE,
@@ -105,10 +105,17 @@ const Parameters = ({ showParameters, hideParameters }) => {
         handleChangeDisplayOverloadTable,
     ] = useParameterState(PARAM_DISPLAY_OVERLOAD_TABLE);
 
+    const [lineFlowModeLocal, handleChangeLineFlowMode] = useParameterState(
+        PARAM_LINE_FLOW_MODE
+    );
+
+    const [
+        lineFlowColorModeLocal,
+        handleChangeLineFlowColorMode,
+    ] = useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
+
     const centerLabel = useSelector((state) => state.centerLabel);
     const diagonalLabel = useSelector((state) => state.diagonalLabel);
-    const lineFlowMode = useSelector((state) => state.lineFlowMode);
-    const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [lfParams, setLfParams] = useState(null);
@@ -117,7 +124,8 @@ const Parameters = ({ showParameters, hideParameters }) => {
         disabledFlowAlertThreshold,
         setDisabledFlowAlertThreshold,
     ] = useState(
-        lineFlowColorMode === 'nominalVoltage' && !displayOverloadTableLocal
+        lineFlowColorModeLocal === 'nominalVoltage' &&
+            !displayOverloadTableLocal
     );
 
     const [tabIndex, setTabIndex] = useState(0);
@@ -132,9 +140,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTableLocal
+            lineFlowColorModeLocal === 'nominalVoltage' &&
+                !displayOverloadTableLocal
         );
-    }, [lineFlowColorMode, displayOverloadTableLocal]);
+    }, [lineFlowColorModeLocal, displayOverloadTableLocal]);
 
     const substationLayout = useSelector((state) => state.substationLayout);
 
@@ -148,19 +157,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
             label: '100',
         },
     ];
-
-    const handleLineFlowModeChange = (event) => {
-        const lineFlowMode = event.target.value;
-        updateConfigParameter(PARAMS_LINE_FLOW_MODE_KEY, lineFlowMode);
-    };
-
-    const handleLineFlowColorModeChange = (event) => {
-        const lineFlowColorMode = event.target.value;
-        updateConfigParameter(
-            PARAMS_LINE_FLOW_COLOR_MODE_KEY,
-            lineFlowColorMode
-        );
-    };
 
     const handleSubstationLayoutChange = (event) => {
         const substationLayout = event.target.value;
@@ -367,8 +363,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-mode-select-label"
-                        value={lineFlowMode}
-                        onChange={handleLineFlowModeChange}
+                        value={lineFlowModeLocal}
+                        onChange={(event) => {
+                            handleChangeLineFlowMode(event.target.value);
+                        }}
                     >
                         <MenuItem value={LineFlowMode.STATIC_ARROWS}>
                             <FormattedMessage id="StaticArrows" />
@@ -392,8 +390,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-color-mode-select-label"
-                        value={lineFlowColorMode}
-                        onChange={handleLineFlowColorModeChange}
+                        value={lineFlowColorModeLocal}
+                        onChange={(event) => {
+                            handleChangeLineFlowColorMode(event.target.value);
+                        }}
                     >
                         <MenuItem value={LineFlowColorMode.NOMINAL_VOLTAGE}>
                             <FormattedMessage id="NominalVoltage" />
