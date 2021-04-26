@@ -316,7 +316,11 @@ const StudyPane = (props) => {
                 }
             )
         );
-    }, [studyUuid]);
+    }, [
+        studyUuid,
+        setSecurityAnalysisResult,
+        setSecurityAnalysisResultFetched,
+    ]);
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         // close the contingency list selection window

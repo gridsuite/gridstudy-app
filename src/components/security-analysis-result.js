@@ -505,7 +505,7 @@ const SecurityAnalysisResult = ({
     }
 
     useEffect(() => {
-        resultFetcher.fetch();
+        if (resultFetcher) resultFetcher.fetch();
     }, [resultFetcher]);
 
     return (

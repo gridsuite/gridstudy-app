@@ -306,6 +306,8 @@ export default class Network {
             case equipements.threeWindingsTransformers:
                 newNetwork.completeThreeWindingsTransformersInfos();
                 break;
+            default:
+                break;
         }
         return newNetwork;
     }
