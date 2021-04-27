@@ -216,11 +216,11 @@ const StudyPane = (props) => {
         (state) => state.filteredNominalVoltages
     );
 
-    const [displayLineMenu, setDisplayLineMenu] = useState(null);
-
-    const [lineMenuPosition, setLineMenuPosition] = useState([-1, -1]);
-
-    const [lineToApply, setLineToApply] = useState(null);
+    const [lineMenu, setLineMenu] = useState({
+        position: [-1, -1],
+        lineToApply: null,
+        display: null,
+    });
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
 
@@ -787,13 +787,17 @@ const StudyPane = (props) => {
     }, [network]);
 
     function showLineMenu(line, x, y) {
-        setLineMenuPosition([x, y]);
-        setLineToApply(line);
-        setDisplayLineMenu(true);
+        setLineMenu({
+            position: [x, y],
+            lineToApply: line,
+            display: true,
+        });
     }
 
     function closeLineMenu() {
-        setDisplayLineMenu(null);
+        setLineMenu({
+            display: false,
+        });
     }
 
     function handleLockout(lineId) {
@@ -1068,12 +1072,12 @@ const StudyPane = (props) => {
                             computationStopped={computationStopped}
                         />
                     </div>
-                    {displayLineMenu && (
+                    {lineMenu.display && (
                         <LineMenu
-                            line={lineToApply}
+                            line={lineMenu.lineToApply}
                             position={[
-                                lineMenuPosition[0],
-                                lineMenuPosition[1],
+                                lineMenu.position[0],
+                                lineMenu.position[1],
                             ]}
                             handleClose={closeLineMenu}
                             handleLockout={handleLockout}
