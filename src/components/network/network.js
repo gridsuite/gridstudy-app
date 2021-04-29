@@ -281,14 +281,14 @@ export default class Network {
         }
     }
 
-    newSharedWithEquipment(name, value) {
+    newSharedForUpdate(updatedEquipements, newEquipements) {
         /* shallow clone of the network https://stackoverflow.com/a/44782052 */
         let newNetwork = Object.assign(
             Object.create(Object.getPrototypeOf(this)),
             this
         );
-        newNetwork[name] = value;
-        switch (name) {
+        newNetwork[updatedEquipements] = newEquipements;
+        switch (updatedEquipements) {
             case equipements.substations:
                 newNetwork.completeSubstationsInfos();
                 break;

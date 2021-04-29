@@ -1068,6 +1068,10 @@ const StudyPane = (props) => {
         );
     }
 
+    useEffect(() => {
+        if (tabIndex === 1) securityAnalysisResultFetcher.fetch();
+    }, [tabIndex, securityAnalysisResultFetcher]);
+
     function renderResultsView() {
         return (
             <div className={clsx('singlestretch-child', classes.table)}>
@@ -1103,7 +1107,6 @@ const StudyPane = (props) => {
                 }}
             >
                 <SecurityAnalysisResult
-                    resultFetcher={securityAnalysisResultFetcher}
                     result={securityAnalysisResult}
                     fetched={securityAnalysisResultFetched}
                     onClickNmKConstraint={onClickNmKConstraint}

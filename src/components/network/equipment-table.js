@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 const ROW_HEIGHT = 48;
 
 export const EquipmentTable = ({
-    fetching,
+    fetched,
     studyUuid,
     rows,
     selectedColumnsNames,
@@ -236,7 +236,7 @@ export const EquipmentTable = ({
 
     return (
         <>
-            {fetching && (
+            {!fetched && (
                 <LoaderWithOverlay
                     color="inherit"
                     loaderSize={70}

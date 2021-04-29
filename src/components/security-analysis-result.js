@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -36,12 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({
-    onClickNmKConstraint,
-    fetched,
-    result,
-    resultFetcher,
-}) => {
+const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -503,10 +498,6 @@ const SecurityAnalysisResult = ({
             </>
         );
     }
-
-    useEffect(() => {
-        if (resultFetcher) resultFetcher.fetch();
-    }, [resultFetcher]);
 
     return (
         <>

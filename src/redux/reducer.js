@@ -112,7 +112,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [UPDATE_NETWORK]: (state, action) => {
-        state.network = state.network.newSharedWithEquipment(
+        state.network = state.network.newSharedForUpdate(
             action.equipmentsName,
             action.values
         );
