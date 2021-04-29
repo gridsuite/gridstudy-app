@@ -116,8 +116,6 @@ export default class Network {
             );
             currentEquipments[index] = found.length > 0 ? found[0] : equipment1;
         });
-        console.info('updatedEquipements');
-        console.info(newEquipements);
     }
 
     updateSubstations(substations) {
