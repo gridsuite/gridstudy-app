@@ -5,20 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const LOAD_NETWORK_SUCCESS = 'LOAD_NETWORK_SUCCESS';
+export const NETWORK_CREATED = 'NETWORK_CREATED';
 
-export function loadNetworkSuccess(network) {
-    return { type: LOAD_NETWORK_SUCCESS, network: network };
+export function networkCreated(network) {
+    return { type: NETWORK_CREATED, network: network };
 }
 
-export const UPDATE_NETWORK = 'UPDATE_NETWORK';
+export const NETWORK_EQUIPMENT_LOADED = 'NETWORK_EQUIPMENT_LOADED';
 
-export function updateNetwork(equipmentsName, values, postUpdate) {
+export function networkEquipmentLoaded(equipmentsName, values) {
     return {
-        type: UPDATE_NETWORK,
+        type: NETWORK_EQUIPMENT_LOADED,
         equipmentsName: equipmentsName,
-        values: values,
-        postUpdate: postUpdate,
+        values: values
     };
 }
 

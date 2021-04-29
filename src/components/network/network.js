@@ -6,28 +6,27 @@
  */
 
 import { RemoteResourceHandler } from '../util/remote-resource-handler';
-import { updateNetwork } from '../../redux/actions';
+import { networkEquipmentLoaded, updateNetwork } from "../../redux/actions";
+import {
+    fetchBatteries,
+    fetchDanglingLines,
+    fetchGenerators,
+    fetchHvdcLines,
+    fetchLccConverterStations,
+    fetchLines,
+    fetchLoads,
+    fetchShuntCompensators,
+    fetchStaticVarCompensators,
+    fetchSubstations,
+    fetchThreeWindingsTransformers,
+    fetchTwoWindingsTransformers,
+    fetchVscConverterStations,
+} from '../../utils/rest-api';
+import { equipments } from './network-equipments';
 
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
     return map;
-};
-
-export const equipements = {
-    substations: 'substations',
-    voltageLevels: 'voltageLevels',
-    lines: 'lines',
-    twoWindingsTransformers: 'twoWindingsTransformers',
-    threeWindingsTransformers: 'threeWindingsTransformers',
-    generators: 'generators',
-    loads: 'loads',
-    batteries: 'batteries',
-    danglingLines: 'danglingLines',
-    hvdcLines: 'hvdcLines',
-    lccConverterStations: 'lccConverterStations',
-    vscConverterStations: 'vscConverterStations',
-    shuntCompensators: 'shuntCompensators',
-    staticVarCompensators: 'staticVarCompensators',
 };
 
 export default class Network {
@@ -257,7 +256,7 @@ export default class Network {
                 key,
                 new RemoteResourceHandler(
                     value,
-                    (data) => this.dispatch(updateNetwork(key, data)),
+                    (data) => this.dispatch(networkEquipmentLoaded(key, data)),
                     (key) => errHandler(key)
                 )
             );
@@ -289,19 +288,19 @@ export default class Network {
         );
         newNetwork[updatedEquipements] = newEquipements;
         switch (updatedEquipements) {
-            case equipements.substations:
+            case equipments.substations:
                 newNetwork.completeSubstationsInfos();
                 break;
-            case equipements.lines:
+            case equipments.lines:
                 newNetwork.completeLinesInfos();
                 break;
-            case equipements.generators:
+            case equipments.generators:
                 newNetwork.completeGeneratorsInfos();
                 break;
-            case equipements.twoWindingsTransformers:
+            case equipments.twoWindingsTransformers:
                 newNetwork.completeTwoWindingsTransformersInfos();
                 break;
-            case equipements.threeWindingsTransformers:
+            case equipments.threeWindingsTransformers:
                 newNetwork.completeThreeWindingsTransformersInfos();
                 break;
             default:
@@ -310,62 +309,29 @@ export default class Network {
         return newNetwork;
     }
 
-    constructor(
-        substations,
-        lines,
-        twoWindingsTransformers,
-        threeWindingsTransformers,
-        generators,
-        loads,
-        batteries,
-        danglingLines,
-        hvdcLines,
-        lccConverterStations,
-        vscConverterStations,
-        shuntCompensators,
-        staticVarCompensators,
-        errHandler,
-        dispatch
-    ) {
+    constructor(studyUuid, errHandler, dispatch) {
         this.generateEquipementHandler({
-            substations,
+            substations: () => fetchSubstations(studyUuid),
+            loads: () => fetchLoads(studyUuid),
+            lines: () => fetchLines(studyUuid),
+            twoWindingsTransformers: () =>
+                fetchTwoWindingsTransformers(studyUuid),
+            threeWindingsTransformers: () =>
+                fetchThreeWindingsTransformers(studyUuid),
+            generators: () => fetchGenerators(studyUuid),
+            batteries: () => fetchBatteries(studyUuid),
+            danglingLines: () => fetchDanglingLines(studyUuid),
+            hvdcLines: () => fetchHvdcLines(studyUuid),
+            lccConverterStations: () => fetchLccConverterStations(studyUuid),
+            vscConverterStations: () => fetchVscConverterStations(studyUuid),
+            shuntCompensators: () => fetchShuntCompensators(studyUuid),
+            staticVarCompensators: () => fetchStaticVarCompensators(studyUuid),
             errHandler,
         });
         this.lazyLoaders.set(
-            equipements.voltageLevels,
-            this.lazyLoaders.get(equipements.substations)
+            equipments.voltageLevels,
+            this.lazyLoaders.get(equipments.substations)
         );
-        this.generateEquipementHandler({
-            lines,
-            errHandler,
-        });
-
-        this.generateEquipementHandler({
-            twoWindingsTransformers,
-            errHandler,
-        });
-
-        this.generateEquipementHandler({
-            threeWindingsTransformers,
-            errHandler,
-        });
-
-        this.generateEquipementHandler({
-            generators,
-            errHandler,
-        });
-
-        this.generateEquipementHandler({
-            loads,
-            batteries,
-            danglingLines,
-            hvdcLines,
-            lccConverterStations,
-            vscConverterStations,
-            shuntCompensators,
-            staticVarCompensators,
-            errHandler,
-        });
 
         this.dispatch = dispatch;
     }

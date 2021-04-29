@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { equipements } from './network';
+import { equipments } from './network-equipments';
 
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
         name: 'Substations',
-        resource: equipements.substations,
+        resource: equipments.substations,
         columns: [
             {
                 id: 'ID',
@@ -31,7 +31,7 @@ export const TABLES_DEFINITIONS = {
     VOLTAGE_LEVELS: {
         index: 1,
         name: 'VoltageLevels',
-        resource: equipements.voltageLevels,
+        resource: equipments.voltageLevels,
         getter: (network) => network.getVoltageLevels(),
         columns: [
             {
@@ -58,7 +58,7 @@ export const TABLES_DEFINITIONS = {
     LINES: {
         index: 2,
         name: 'Lines',
-        resource: equipements.lines,
+        resource: equipments.lines,
         columns: [
             {
                 id: 'ID',
@@ -106,7 +106,7 @@ export const TABLES_DEFINITIONS = {
     TWO_WINDINGS_TRANSFORMERS: {
         index: 3,
         name: 'TwoWindingsTransformers',
-        resource: equipements.twoWindingsTransformers,
+        resource: equipments.twoWindingsTransformers,
         columns: [
             {
                 id: 'ID',
@@ -168,7 +168,7 @@ export const TABLES_DEFINITIONS = {
     THREE_WINDINGS_TRANSFORMERS: {
         index: 4,
         name: 'ThreeWindingsTransformers',
-        resource: equipements.threeWindingsTransformers,
+        resource: equipments.threeWindingsTransformers,
         header: 'ThreeWindingsTransformer',
         columns: [
             {
@@ -275,7 +275,7 @@ export const TABLES_DEFINITIONS = {
     GENERATORS: {
         index: 5,
         name: 'Generators',
-        resource: equipements.generators,
+        resource: equipments.generators,
         header: 'Generator',
         columns: [
             {
@@ -315,7 +315,7 @@ export const TABLES_DEFINITIONS = {
     LOADS: {
         index: 6,
         name: 'Loads',
-        resource: equipements.loads,
+        resource: equipments.loads,
         columns: [
             {
                 id: 'ID',
@@ -363,7 +363,7 @@ export const TABLES_DEFINITIONS = {
     SHUNT_COMPENSATORS: {
         index: 7,
         name: 'ShuntCompensators',
-        resource: equipements.shuntCompensators,
+        resource: equipments.shuntCompensators,
         columns: [
             {
                 id: 'ID',
@@ -401,7 +401,7 @@ export const TABLES_DEFINITIONS = {
     STATIC_VAR_COMPENSATORS: {
         index: 8,
         name: 'StaticVarCompensators',
-        resource: equipements.staticVarCompensators,
+        resource: equipments.staticVarCompensators,
         columns: [
             {
                 id: 'ID',
@@ -445,7 +445,7 @@ export const TABLES_DEFINITIONS = {
     BATTERIES: {
         index: 9,
         name: 'Batteries',
-        resource: equipements.batteries,
+        resource: equipments.batteries,
         columns: [
             {
                 id: 'ID',
@@ -489,7 +489,7 @@ export const TABLES_DEFINITIONS = {
     HVDC_LINES: {
         index: 10,
         name: 'HvdcLines',
-        resource: equipements.hvdcLines,
+        resource: equipments.hvdcLines,
         columns: [
             {
                 id: 'ID',
@@ -541,7 +541,7 @@ export const TABLES_DEFINITIONS = {
     LCC_CONVERTER_STATIONS: {
         index: 11,
         name: 'LccConverterStations',
-        resource: equipements.lccConverterStations,
+        resource: equipments.lccConverterStations,
         columns: [
             {
                 id: 'ID',
@@ -589,7 +589,7 @@ export const TABLES_DEFINITIONS = {
     VSC_CONVERTER_STATIONS: {
         index: 12,
         name: 'VscConverterStations',
-        resource: equipements.vscConverterStations,
+        resource: equipments.vscConverterStations,
         columns: [
             {
                 id: 'ID',
@@ -631,7 +631,7 @@ export const TABLES_DEFINITIONS = {
     DANGLING_LINES: {
         index: 13,
         name: 'DanglingLines',
-        resource: equipements.danglingLines,
+        resource: equipments.danglingLines,
         columns: [
             {
                 id: 'ID',

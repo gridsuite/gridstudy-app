@@ -22,24 +22,11 @@ import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
-    fetchGenerators,
     fetchLinePositions,
-    fetchLines,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
     fetchSubstationPositions,
-    fetchSubstations,
-    fetchThreeWindingsTransformers,
-    fetchTwoWindingsTransformers,
-    fetchLoads,
-    fetchDanglingLines,
-    fetchBatteries,
-    fetchHvdcLines,
-    fetchLccConverterStations,
-    fetchVscConverterStations,
-    fetchShuntCompensators,
-    fetchStaticVarCompensators,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
@@ -52,12 +39,13 @@ import {
     filteredNominalVoltagesUpdated,
     increaseResultCount,
     loadGeoDataSuccess,
-    loadNetworkSuccess,
+    networkCreated,
     openStudy,
     selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
-import Network, { equipements } from './network/network';
+import Network from './network/network';
+import { equipments } from './network/network-equipments';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Paper from '@material-ui/core/Paper';
@@ -395,26 +383,14 @@ const StudyPane = (props) => {
             updateSecurityAnalysisStatus();
             if (!isUpdate) {
                 const network = new Network(
-                    () => fetchSubstations(studyUuid),
-                    () => fetchLines(studyUuid),
-                    () => fetchTwoWindingsTransformers(studyUuid),
-                    () => fetchThreeWindingsTransformers(studyUuid),
-                    () => fetchGenerators(studyUuid),
-                    () => fetchLoads(studyUuid),
-                    () => fetchBatteries(studyUuid),
-                    () => fetchDanglingLines(studyUuid),
-                    () => fetchHvdcLines(studyUuid),
-                    () => fetchLccConverterStations(studyUuid),
-                    () => fetchVscConverterStations(studyUuid),
-                    () => fetchShuntCompensators(studyUuid),
-                    () => fetchStaticVarCompensators(studyUuid),
+                    studyUuid,
                     (error) => {
                         console.error(error.message);
                         setStudyNotFound(true);
                     },
                     dispatch
                 );
-                dispatch(loadNetworkSuccess(network));
+                dispatch(networkCreated(network));
             }
         },
         [
@@ -772,8 +748,8 @@ const StudyPane = (props) => {
 
     useEffect(() => {
         if (!network) return;
-        network.useEquipment(equipements.substations);
-        network.useEquipment(equipements.lines);
+        network.useEquipment(equipments.substations);
+        network.useEquipment(equipments.lines);
     }, [network]);
 
     function renderMapView() {
