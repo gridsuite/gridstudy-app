@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Network, { equipements } from './network';
+import Network from './network';
 import 'core-js/es/array/flat-map';
+import { equipments } from './network-equipments';
 
 const substations = [
     {
@@ -38,7 +39,7 @@ test('network', () => {
     const baseNetwork = new Network();
 
     const network = baseNetwork.newSharedForUpdate(
-        equipements.substations,
+        equipments.substations,
         substations
     );
     // Substation
