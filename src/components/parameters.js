@@ -74,9 +74,15 @@ export function useParameterState(paramName) {
     const handleChangeParamLocalState = useCallback(
         (value) => {
             setParamLocalState(value);
-            updateConfigParameter(paramName, value);
+            updateConfigParameter(paramName, value).then((response) => {
+                if (!response.ok) {
+                    console.error(response);
+                    // revert parameter
+                    setParamLocalState(paramGlobalState);
+                }
+            });
         },
-        [paramName, setParamLocalState]
+        [paramName, setParamLocalState, paramGlobalState]
     );
     return [paramLocalState, handleChangeParamLocalState];
 }

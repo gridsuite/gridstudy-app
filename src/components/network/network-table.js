@@ -540,9 +540,18 @@ const NetworkTable = (props) => {
         updateConfigParameter(
             COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
-        );
+        ).then((response) => {
+            if (!response.ok) {
+                console.error(response);
+                // revert selected columns
+                setSelectedColumnsNames(
+                    new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+                );
+            }
+        });
+
         setPopupSelectColumnNames(false);
-    }, [tabIndex, selectedColumnsNames]);
+    }, [tabIndex, selectedColumnsNames, allDisplayedColumnsNames]);
 
     const handleToggle = (value) => () => {
         const newChecked = new Set(selectedColumnsNames.values());

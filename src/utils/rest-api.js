@@ -71,7 +71,7 @@ export function updateConfigParameter(name, value) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}?value=` +
         encodeURIComponent(value);
-    backendFetch(updateParams, { method: 'put' }).then();
+    return backendFetch(updateParams, { method: 'put' });
 }
 
 export function fetchStudies() {
