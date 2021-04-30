@@ -300,6 +300,7 @@ const StudyPane = (props) => {
                     setSecurityAnalysisResultFetched(true);
                 },
                 (e) => {
+                    // produces 404 error when missing in the normal case, don't crash. TODO deal with other errors
                     setSecurityAnalysisResultFetched(true);
                 }
             )
