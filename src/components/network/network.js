@@ -5,6 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { RemoteResourceHandler } from '../util/remote-resource-handler';
+import { networkEquipmentLoaded } from '../../redux/actions';
+import {
+    fetchBatteries,
+    fetchDanglingLines,
+    fetchGenerators,
+    fetchHvdcLines,
+    fetchLccConverterStations,
+    fetchLines,
+    fetchLoads,
+    fetchShuntCompensators,
+    fetchStaticVarCompensators,
+    fetchSubstations,
+    fetchThreeWindingsTransformers,
+    fetchTwoWindingsTransformers,
+    fetchVscConverterStations,
+} from '../../utils/rest-api';
+import { equipments } from './network-equipments';
+
 const elementIdIndexer = (map, element) => {
     map.set(element.id, element);
     return map;
@@ -37,6 +56,8 @@ export default class Network {
 
     staticVarCompensators = [];
 
+    lazyLoaders = new Map();
+
     voltageLevelsByNominalVoltage = new Map();
 
     voltageLevelsById = new Map();
@@ -53,7 +74,7 @@ export default class Network {
 
     nominalVoltages = [];
 
-    completeSubstationsInfos = () => {
+    completeSubstationsInfos() {
         const nominalVoltagesSet = new Set();
         this.substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
@@ -85,13 +106,6 @@ export default class Network {
         this.nominalVoltages = Array.from(nominalVoltagesSet).sort(
             (a, b) => b - a
         );
-    };
-
-    setSubstations(substations) {
-        this.substations = substations;
-
-        // add more infos
-        this.completeSubstationsInfos();
     }
 
     updateEquipments(currentEquipments, newEquipements) {
@@ -110,8 +124,7 @@ export default class Network {
         this.completeSubstationsInfos();
     }
 
-    setLines(lines) {
-        this.lines = lines;
+    completeLinesInfos() {
         this.linesById = this.lines.reduce(elementIdIndexer, new Map());
     }
 
@@ -119,8 +132,7 @@ export default class Network {
         this.updateEquipments(this.lines, lines);
     }
 
-    setTwoWindingsTransformers(twoWindingsTransformers) {
-        this.twoWindingsTransformers = twoWindingsTransformers;
+    completeTwoWindingsTransformersInfos() {
         this.twoWindingsTransformersById = this.twoWindingsTransformers.reduce(
             elementIdIndexer,
             new Map()
@@ -134,8 +146,7 @@ export default class Network {
         );
     }
 
-    setThreeWindingsTransformers(threeWindingsTransformers) {
-        this.threeWindingsTransformers = threeWindingsTransformers;
+    completeThreeWindingsTransformersInfos() {
         this.threeWindingsTransformersById = this.threeWindingsTransformers.reduce(
             elementIdIndexer,
             new Map()
@@ -149,8 +160,7 @@ export default class Network {
         );
     }
 
-    setGenerators(generators) {
-        this.generators = generators;
+    completeGeneratorsInfos() {
         this.generatorsById = this.generators.reduce(
             elementIdIndexer,
             new Map()
@@ -161,40 +171,20 @@ export default class Network {
         this.updateEquipments(this.generators, generators);
     }
 
-    setBatteries(batteries) {
-        this.batteries = batteries;
-    }
-
     updateBatteries(batteries) {
         this.updateEquipments(this.batteries, batteries);
-    }
-
-    setLoads(loads) {
-        this.loads = loads;
     }
 
     updateLoads(loads) {
         this.updateEquipments(this.loads, loads);
     }
 
-    setDanglingLines(danglingLines) {
-        this.danglingLines = danglingLines;
-    }
-
     updateDanglingLines(danglingLines) {
         this.updateEquipments(this.danglingLines, danglingLines);
     }
 
-    setShuntCompensators(shuntCompensators) {
-        this.shuntCompensators = shuntCompensators;
-    }
-
     updateShuntCompensators(shuntCompensators) {
         this.updateEquipments(this.shuntCompensators, shuntCompensators);
-    }
-
-    setStaticVarCompensators(staticVarCompensators) {
-        this.staticVarCompensators = staticVarCompensators;
     }
 
     updateStaticVarCompensators(staticVarCompensators) {
@@ -204,24 +194,12 @@ export default class Network {
         );
     }
 
-    setHvdcLines(hvdcLines) {
-        this.hvdcLines = hvdcLines;
-    }
-
     updateHvdcLines(hvdcLines) {
         this.updateEquipments(this.hvdcLines, hvdcLines);
     }
 
-    setLccConverterStations(lccConverterStations) {
-        this.lccConverterStations = lccConverterStations;
-    }
-
     updateLccConverterStations(lccConverterStations) {
         this.updateEquipments(this.lccConverterStations, lccConverterStations);
-    }
-
-    setVscConverterStations(vscConverterStations) {
-        this.vscConverterStations = vscConverterStations;
     }
 
     updateVscConverterStations(vscConverterStations) {
@@ -270,5 +248,91 @@ export default class Network {
             this.getTwoWindingsTransformer(id) ||
             this.getThreeWindingsTransformer(id)
         );
+    }
+
+    generateEquipementHandler({ errHandler, ...equipment }) {
+        for (const [key, value] of Object.entries(equipment)) {
+            this.lazyLoaders.set(
+                key,
+                new RemoteResourceHandler(
+                    value,
+                    (data) => this.dispatch(networkEquipmentLoaded(key, data)),
+                    (key) => errHandler(key)
+                )
+            );
+        }
+    }
+
+    // TODO investigate turn this into a custom hook ?
+    useEquipment(equipment) {
+        const fetcher = this.lazyLoaders.get(equipment);
+        if (fetcher) return fetcher.fetch();
+        else {
+            console.error('not found ' + equipment);
+        }
+    }
+
+    isResourceFetched(equipement) {
+        const fetcher = this.lazyLoaders.get(equipement);
+        if (fetcher) return fetcher.isFetched();
+        else {
+            console.error('not found ' + equipement);
+        }
+    }
+
+    newSharedForUpdate(updatedEquipements, newEquipements) {
+        /* shallow clone of the network https://stackoverflow.com/a/44782052 */
+        let newNetwork = Object.assign(
+            Object.create(Object.getPrototypeOf(this)),
+            this
+        );
+        newNetwork[updatedEquipements] = newEquipements;
+        switch (updatedEquipements) {
+            case equipments.substations:
+                newNetwork.completeSubstationsInfos();
+                break;
+            case equipments.lines:
+                newNetwork.completeLinesInfos();
+                break;
+            case equipments.generators:
+                newNetwork.completeGeneratorsInfos();
+                break;
+            case equipments.twoWindingsTransformers:
+                newNetwork.completeTwoWindingsTransformersInfos();
+                break;
+            case equipments.threeWindingsTransformers:
+                newNetwork.completeThreeWindingsTransformersInfos();
+                break;
+            default:
+                break;
+        }
+        return newNetwork;
+    }
+
+    constructor(studyUuid, errHandler, dispatch) {
+        this.generateEquipementHandler({
+            substations: () => fetchSubstations(studyUuid),
+            loads: () => fetchLoads(studyUuid),
+            lines: () => fetchLines(studyUuid),
+            twoWindingsTransformers: () =>
+                fetchTwoWindingsTransformers(studyUuid),
+            threeWindingsTransformers: () =>
+                fetchThreeWindingsTransformers(studyUuid),
+            generators: () => fetchGenerators(studyUuid),
+            batteries: () => fetchBatteries(studyUuid),
+            danglingLines: () => fetchDanglingLines(studyUuid),
+            hvdcLines: () => fetchHvdcLines(studyUuid),
+            lccConverterStations: () => fetchLccConverterStations(studyUuid),
+            vscConverterStations: () => fetchVscConverterStations(studyUuid),
+            shuntCompensators: () => fetchShuntCompensators(studyUuid),
+            staticVarCompensators: () => fetchStaticVarCompensators(studyUuid),
+            errHandler,
+        });
+        this.lazyLoaders.set(
+            equipments.voltageLevels,
+            this.lazyLoaders.get(equipments.substations)
+        );
+
+        this.dispatch = dispatch;
     }
 }

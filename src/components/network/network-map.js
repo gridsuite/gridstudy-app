@@ -265,7 +265,7 @@ const NetworkMap = forwardRef((props, ref) => {
         layers.push(
             new SubstationLayer({
                 id: SUBSTATION_LAYER_PREFIX,
-                data: props.network.substations,
+                data: props.substations,
                 network: props.network,
                 geoData: props.geoData,
                 useName: props.useName,
@@ -284,7 +284,7 @@ const NetworkMap = forwardRef((props, ref) => {
         layers.push(
             new LineLayer({
                 id: LINE_LAYER_PREFIX,
-                data: props.network.lines,
+                data: props.lines,
                 network: props.network,
                 updatedLines: props.updatedLines,
                 geoData: props.geoData,
@@ -369,6 +369,8 @@ const NetworkMap = forwardRef((props, ref) => {
 
 NetworkMap.defaultProps = {
     network: null,
+    substations: [],
+    lines: [],
     geoData: null,
     useName: null,
     filteredNominalVoltages: null,
@@ -387,6 +389,8 @@ NetworkMap.defaultProps = {
 
 NetworkMap.propTypes = {
     network: PropTypes.instanceOf(Network),
+    substations: PropTypes.array,
+    lines: PropTypes.array,
     geoData: PropTypes.instanceOf(GeoData),
     useName: PropTypes.bool.isRequired,
     filteredNominalVoltages: PropTypes.array,
