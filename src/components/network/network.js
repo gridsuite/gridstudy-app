@@ -6,7 +6,7 @@
  */
 
 import { RemoteResourceHandler } from '../util/remote-resource-handler';
-import { networkEquipmentLoaded, updateNetwork } from "../../redux/actions";
+import { networkEquipmentLoaded } from '../../redux/actions';
 import {
     fetchBatteries,
     fetchDanglingLines,

@@ -17,7 +17,7 @@ export function networkEquipmentLoaded(equipmentsName, values) {
     return {
         type: NETWORK_EQUIPMENT_LOADED,
         equipmentsName: equipmentsName,
-        values: values
+        values: values,
     };
 }
 
