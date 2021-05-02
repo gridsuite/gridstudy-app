@@ -27,11 +27,13 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
+import { useSnackbar } from 'notistack';
 
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
+    handleServerError,
     setLoadFlowParameters,
     updateConfigParameter,
 } from '../utils/rest-api';
@@ -65,7 +67,9 @@ const useStyles = makeStyles((theme) => ({
 
 export function useParameterState(paramName) {
     const paramGlobalState = useSelector((state) => state[paramName]);
-    const [paramLocalState, setParamLocalState] = useState();
+    const [paramLocalState, setParamLocalState] = useState(paramGlobalState);
+
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         setParamLocalState(paramGlobalState);
@@ -79,16 +83,20 @@ export function useParameterState(paramName) {
                     console.error(response);
                     // revert parameter
                     setParamLocalState(paramGlobalState);
+                    handleServerError(response, enqueueSnackbar);
                 }
             });
         },
-        [paramName, setParamLocalState, paramGlobalState]
+        [paramName, enqueueSnackbar, setParamLocalState, paramGlobalState]
     );
+
     return [paramLocalState, handleChangeParamLocalState];
 }
 
 const Parameters = ({ showParameters, hideParameters }) => {
     const classes = useStyles();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [lineFullPathLocal, handleChangeLineFullPath] = useParameterState(
         PARAM_LINE_FULL_PATH
@@ -147,11 +155,11 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     useEffect(() => {
         if (studyUuid) {
-            getLoadFlowParameters(studyUuid).then((params) =>
+            getLoadFlowParameters(studyUuid, enqueueSnackbar).then((params) =>
                 setLfParams(params)
             );
         }
-    }, [studyUuid]);
+    }, [studyUuid, enqueueSnackbar]);
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
@@ -461,16 +469,20 @@ const Parameters = ({ showParameters, hideParameters }) => {
     }
 
     const resetLfParameters = () => {
-        setLoadFlowParameters(studyUuid, null)
+        setLoadFlowParameters(studyUuid, null, enqueueSnackbar)
             .then(() => {
-                return getLoadFlowParameters(studyUuid);
+                return getLoadFlowParameters(studyUuid, enqueueSnackbar);
             })
             .then((params) => setLfParams(params));
     };
 
     const commitLFParameter = (newParams) => {
+        let oldParams = { ...lfParams };
         setLfParams(newParams);
-        setLoadFlowParameters(studyUuid, newParams).then();
+        setLoadFlowParameters(studyUuid, newParams, enqueueSnackbar).then(
+            null,
+            () => setLfParams(oldParams)
+        );
     };
 
     const LoadFlowParameters = () => {
@@ -523,7 +535,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     justify="flex-end"
                 >
                     {makeComponentsFor(defParams, lfParams, commitLFParameter)}
-                    {MakeButton(() => resetLfParameters(), 'resetToDefault')}
+                    {MakeButton(resetLfParameters, 'resetToDefault')}
                 </Grid>
             )
         );

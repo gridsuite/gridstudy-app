@@ -684,7 +684,7 @@ export function requestNetworkChange(studyUuid, groovyScript) {
     });
 }
 
-export function setLoadFlowParameters(studyUuid, newParams) {
+export function setLoadFlowParameters(studyUuid, newParams, enqueueSnackbar) {
     console.info('set load flow parameters');
     const setLoadFlowParametersUrl =
         getStudyUrl(studyUuid) + '/loadflow/parameters';
@@ -696,14 +696,31 @@ export function setLoadFlowParameters(studyUuid, newParams) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(newParams),
-    }).then();
+    }).then((response) =>
+        response.ok ? response : handleServerError(response, enqueueSnackbar)
+    );
 }
 
-export function getLoadFlowParameters(studyUuid) {
+export function getLoadFlowParameters(studyUuid, enqueueSnackbar) {
     console.info('get load flow parameters');
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
     return backendFetch(getLfParams, {
         method: 'get',
-    }).then((response) => response.json());
+    }).then((response) =>
+        response.ok
+            ? response.json()
+            : handleServerError(response, enqueueSnackbar)
+    );
+}
+
+export function handleServerError(response, enqueueSnackbar) {
+    return response.text().then((text) => {
+        enqueueSnackbar(text, {
+            variant: 'error',
+            persist: true,
+            style: { whiteSpace: 'pre-line' },
+        });
+        return Promise.reject();
+    });
 }

@@ -16,7 +16,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import { IconButton, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import { updateConfigParameter } from '../../utils/rest-api';
+import { handleServerError, updateConfigParameter } from '../../utils/rest-api';
 
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import { SelectOptionsDialog } from '../../utils/dialogs';
@@ -34,6 +34,7 @@ import {
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(() => ({
     searchSection: {
@@ -63,6 +64,8 @@ const useStyles = makeStyles(() => ({
 
 const NetworkTable = (props) => {
     const classes = useStyles();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
@@ -148,11 +151,17 @@ const NetworkTable = (props) => {
                 setSelectedColumnsNames(
                     new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
                 );
+                handleServerError(response, enqueueSnackbar);
             }
         });
 
         setPopupSelectColumnNames(false);
-    }, [tabIndex, selectedColumnsNames, allDisplayedColumnsNames]);
+    }, [
+        tabIndex,
+        selectedColumnsNames,
+        allDisplayedColumnsNames,
+        enqueueSnackbar,
+    ]);
 
     const handleToggle = (value) => () => {
         const newChecked = new Set(selectedColumnsNames.values());

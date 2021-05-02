@@ -18,14 +18,7 @@ import {
 } from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import {
-    createMuiTheme,
-    makeStyles,
-    ThemeProvider,
-} from '@material-ui/core/styles';
-import { Badge } from '@material-ui/core';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import {
@@ -51,20 +44,14 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     LIGHT_THEME,
-    logout,
-    SnackbarProvider,
-    TopBar,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
 import { FormattedMessage } from 'react-intl';
 
-import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
-import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import {
     connectNotificationsWsUpdateConfig,
-    fetchAppsAndUrls,
     fetchConfigParameter,
     fetchConfigParameters,
 } from '../utils/rest-api';
@@ -88,8 +75,9 @@ import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES_INDEXES,
 } from './network/config-tables';
-import Parameters, { useParameterState } from './parameters';
 import { getComputedLanguage } from '../utils/language';
+import AppTopBar from './app-top-bar';
+import { useParameterState } from './parameters';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -151,12 +139,6 @@ const getMuiTheme = (theme) => {
     }
 };
 
-const useStyles = makeStyles(() => ({
-    tabs: {
-        marginLeft: 18,
-    },
-}));
-
 const noUserManager = { instance: null, error: null };
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
@@ -166,25 +148,11 @@ const App = () => {
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
-    const [languageLocal, handleChangeLanguage] = useParameterState(
-        PARAM_LANGUAGE
-    );
-
-    const [useNameLocal, handleChangeUseName] = useParameterState(
-        PARAM_USE_NAME
-    );
-
-    const studyUuid = useSelector((state) => state.studyUuid);
-
-    const [appsAndUrls, setAppsAndUrls] = React.useState([]);
-
     const signInCallbackError = useSelector(
         (state) => state.signInCallbackError
     );
 
     const [userManager, setUserManager] = useState(noUserManager);
-
-    const [showParameters, setShowParameters] = useState(false);
 
     const history = useHistory();
 
@@ -192,11 +160,7 @@ const App = () => {
 
     const location = useLocation();
 
-    const classes = useStyles();
-
-    const [tabIndex, setTabIndex] = React.useState(0);
-
-    const resultCount = useSelector((state) => state.resultCount);
+    const [tabIndex, setTabIndex] = useState(0);
 
     const updateParams = useCallback(
         (params) => {
@@ -359,14 +323,6 @@ const App = () => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchAppsAndUrls().then((res) => {
-                setAppsAndUrls(res);
-            });
-        }
-    }, [user]);
-
-    useEffect(() => {
-        if (user !== null) {
             fetchConfigParameters(COMMON_APP_NAME).then((params) => {
                 updateParams(params);
             });
@@ -384,18 +340,6 @@ const App = () => {
         history.push('/studies/' + encodeURIComponent(studyUuid));
     }
 
-    function showParametersClicked() {
-        setShowParameters(true);
-    }
-
-    function hideParameters() {
-        setShowParameters(false);
-    }
-
-    function onLogoClicked() {
-        history.replace('/');
-    }
-
     const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
     }, []);
@@ -407,143 +351,83 @@ const App = () => {
 
     return (
         <ThemeProvider theme={getMuiTheme(themeLocal)}>
-            <SnackbarProvider hideIconVariant={false}>
-                <CssBaseline />
+            <CssBaseline />
+            <div
+                className="singlestretch-child"
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                <AppTopBar
+                    user={user}
+                    themeLocal={themeLocal}
+                    tabIndex={tabIndex}
+                    onChangeTab={onChangeTab}
+                    userManager={userManager}
+                    handleChangeTheme={handleChangeTheme}
+                    history={history}
+                />
                 <div
-                    className="singlestretch-child"
+                    className="singlestretch-parent"
                     style={{
-                        display: 'flex',
-                        flexDirection: 'column',
+                        flexGrow: 1,
+                        //Study pane needs 'hidden' when displaying a
+                        //fullscreen sld or when displaying the results or
+                        //elements tables for certain screen sizes because
+                        //width/heights are computed programmaticaly and
+                        //resizing the page trigger render loops due to
+                        //appearing and disappearing scrollbars.
+                        //For all other cases, auto is better because it will
+                        //be easier to see that we have a layout problem when
+                        //scrollbars appear when they should not.
+                        overflow: isStudyPane ? 'hidden' : 'auto',
                     }}
                 >
-                    <TopBar
-                        appName="Study"
-                        appColor="#0CA789"
-                        appLogo={
-                            themeLocal === LIGHT_THEME ? (
-                                <GridStudyLogoLight />
-                            ) : (
-                                <GridStudyLogoDark />
-                            )
-                        }
-                        onParametersClick={() => showParametersClicked()}
-                        onLogoutClick={() =>
-                            logout(dispatch, userManager.instance)
-                        }
-                        onLogoClick={() => onLogoClicked()}
-                        user={user}
-                        appsAndUrls={appsAndUrls}
-                        onThemeClick={handleChangeTheme}
-                        onAboutClick={() => console.debug('about')}
-                        theme={themeLocal}
-                        onEquipmentLabellingClick={handleChangeUseName}
-                        equipmentLabelling={useNameLocal}
-                        onLanguageClick={handleChangeLanguage}
-                        language={languageLocal}
-                    >
-                        {studyUuid && (
-                            <Tabs
-                                value={tabIndex}
-                                indicatorColor="primary"
-                                variant="scrollable"
-                                scrollButtons="auto"
-                                onChange={(event, newTabIndex) => {
-                                    onChangeTab(newTabIndex);
-                                }}
-                                aria-label="views"
-                                className={classes.tabs}
-                            >
-                                {STUDY_VIEWS.map((tabName) => {
-                                    let label;
-                                    if (
-                                        tabName === StudyView.RESULTS &&
-                                        resultCount > 0
-                                    ) {
-                                        label = (
-                                            <Badge
-                                                badgeContent={resultCount}
-                                                color="secondary"
-                                            >
-                                                <FormattedMessage
-                                                    id={tabName}
-                                                />
-                                            </Badge>
-                                        );
-                                    } else {
-                                        label = (
-                                            <FormattedMessage id={tabName} />
-                                        );
+                    {user !== null ? (
+                        <Switch>
+                            <Route exact path="/">
+                                <StudyManager
+                                    onClick={(studyUuid) =>
+                                        studyClickHandler(studyUuid)
                                     }
-                                    return <Tab key={tabName} label={label} />;
-                                })}
-                            </Tabs>
-                        )}
-                    </TopBar>
-                    <Parameters
-                        showParameters={showParameters}
-                        hideParameters={hideParameters}
-                    />
-
-                    <div
-                        className="singlestretch-parent"
-                        style={{
-                            flexGrow: 1,
-                            //Study pane needs 'hidden' when displaying a
-                            //fullscreen sld or when displaying the results or
-                            //elements tables for certain screen sizes because
-                            //width/heights are computed programmaticaly and
-                            //resizing the page trigger render loops due to
-                            //appearing and disappearing scrollbars.
-                            //For all other cases, auto is better because it will
-                            //be easier to see that we have a layout problem when
-                            //scrollbars appear when they should not.
-                            overflow: isStudyPane ? 'hidden' : 'auto',
-                        }}
-                    >
-                        {user !== null ? (
-                            <Switch>
-                                <Route exact path="/">
-                                    <StudyManager
-                                        onClick={(studyUuid) =>
-                                            studyClickHandler(studyUuid)
-                                        }
-                                    />
-                                </Route>
-                                <Route exact path="/studies/:studyUuid">
-                                    <StudyPane
-                                        view={STUDY_VIEWS[tabIndex]}
-                                        onChangeTab={onChangeTab}
-                                    />
-                                </Route>
-                                <Route exact path="/sign-in-callback">
-                                    <Redirect to={getPreLoginPath() || '/'} />
-                                </Route>
-                                <Route exact path="/logout-callback">
-                                    <h1>
-                                        Error: logout failed; you are still
-                                        logged in.
-                                    </h1>
-                                </Route>
-                                <Route>
-                                    <PageNotFound
-                                        message={
-                                            <FormattedMessage id="PageNotFound" />
-                                        }
-                                    />
-                                </Route>
-                            </Switch>
-                        ) : (
-                            <AuthenticationRouter
-                                userManager={userManager}
-                                signInCallbackError={signInCallbackError}
-                                dispatch={dispatch}
-                                history={history}
-                                location={location}
-                            />
-                        )}
-                    </div>
+                                />
+                            </Route>
+                            <Route exact path="/studies/:studyUuid">
+                                <StudyPane
+                                    view={STUDY_VIEWS[tabIndex]}
+                                    onChangeTab={onChangeTab}
+                                />
+                            </Route>
+                            <Route exact path="/sign-in-callback">
+                                <Redirect to={getPreLoginPath() || '/'} />
+                            </Route>
+                            <Route exact path="/logout-callback">
+                                <h1>
+                                    Error: logout failed; you are still logged
+                                    in.
+                                </h1>
+                            </Route>
+                            <Route>
+                                <PageNotFound
+                                    message={
+                                        <FormattedMessage id="PageNotFound" />
+                                    }
+                                />
+                            </Route>
+                        </Switch>
+                    ) : (
+                        <AuthenticationRouter
+                            userManager={userManager}
+                            signInCallbackError={signInCallbackError}
+                            dispatch={dispatch}
+                            history={history}
+                            location={location}
+                        />
+                    )}
                 </div>
-            </SnackbarProvider>
+            </div>
+            )) }
         </ThemeProvider>
     );
 };
