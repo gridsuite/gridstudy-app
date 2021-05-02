@@ -18,7 +18,8 @@ import {
     LINE_PARALLEL_PATH,
     LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
-    LOAD_NETWORK_SUCCESS,
+    NETWORK_CREATED,
+    NETWORK_EQUIPMENT_LOADED,
     LOAD_STUDIES_SUCCESS,
     LOAD_TEMPORARY_STUDIES,
     OPEN_STUDY,
@@ -124,8 +125,15 @@ export const reducer = createReducer(initialState, {
         state.geoData = null;
     },
 
-    [LOAD_NETWORK_SUCCESS]: (state, action) => {
+    [NETWORK_CREATED]: (state, action) => {
         state.network = action.network;
+    },
+
+    [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
+        state.network = state.network.newSharedForUpdate(
+            action.equipmentsName,
+            action.values
+        );
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {

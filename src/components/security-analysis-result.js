@@ -13,6 +13,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
+import LoaderWithOverlay from './loader-with-overlay';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -35,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
+const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -78,8 +79,7 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
 
         return (
             <VirtualizedTable
-                rowCount={rows.length}
-                rowGetter={({ index }) => rows[index]}
+                rows={rows}
                 columns={[
                     {
                         width: 200,
@@ -230,8 +230,7 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
         const rows = flattenNmKresultsContingencies(postContingencyResults);
         return (
             <VirtualizedTable
-                rowCount={rows.length}
-                rowGetter={({ index }) => rows[index]}
+                rows={rows}
                 onCellClick={onClickNmKConstraint}
                 sort={(dataKey, reverse, isNumeric) =>
                     sortResult(
@@ -376,8 +375,7 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
 
         return (
             <VirtualizedTable
-                rowCount={rows.length}
-                rowGetter={({ index }) => rows[index]}
+                rows={rows}
                 onCellClick={onClickNmKConstraint}
                 sort={(dataKey, reverse, isNumeric) =>
                     sortResult(
@@ -479,15 +477,18 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
                     )}
                 </div>
                 <div style={{ flexGrow: 1 }}>
-                    {tabIndex === 0 &&
+                    {result &&
+                        tabIndex === 0 &&
                         renderTableN(result.preContingencyResult)}
-                    {tabIndex === 1 &&
+                    {result &&
+                        tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONSTRAINTS_FROM_CONTINGENCIES &&
                         renderTableNmKContingencies(
                             result.postContingencyResults
                         )}
-                    {tabIndex === 1 &&
+                    {result &&
+                        tabIndex === 1 &&
                         nmkTypeResult ===
                             NMK_TYPE_RESULT.CONTINGENCIES_FROM_CONSTRAINTS &&
                         renderTableNmKConstraints(
@@ -498,15 +499,26 @@ const SecurityAnalysisResult = ({ result, onClickNmKConstraint }) => {
         );
     }
 
-    return result && renderTabs();
+    return (
+        <>
+            {!fetched && (
+                <LoaderWithOverlay
+                    color="inherit"
+                    loaderSize={70}
+                    loadingMessageText={'Loading'}
+                />
+            )}
+            {renderTabs()}
+        </>
+    );
 };
 
 SecurityAnalysisResult.defaultProps = {
-    result: null,
+    resultFetcher: null,
 };
 
 SecurityAnalysisResult.propTypes = {
-    result: PropTypes.object,
+    resultFetcher: PropTypes.object,
     onClickNmKConstraint: PropTypes.func,
 };
 

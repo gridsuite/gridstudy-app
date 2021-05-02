@@ -5,10 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { equipments } from './network-equipments';
+
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
         name: 'Substations',
+        resource: equipments.substations,
         columns: [
             {
                 id: 'ID',
@@ -28,6 +31,8 @@ export const TABLES_DEFINITIONS = {
     VOLTAGE_LEVELS: {
         index: 1,
         name: 'VoltageLevels',
+        resource: equipments.voltageLevels,
+        getter: (network) => network.getVoltageLevels(),
         columns: [
             {
                 id: 'ID',
@@ -53,6 +58,7 @@ export const TABLES_DEFINITIONS = {
     LINES: {
         index: 2,
         name: 'Lines',
+        resource: equipments.lines,
         columns: [
             {
                 id: 'ID',
@@ -100,6 +106,7 @@ export const TABLES_DEFINITIONS = {
     TWO_WINDINGS_TRANSFORMERS: {
         index: 3,
         name: 'TwoWindingsTransformers',
+        resource: equipments.twoWindingsTransformers,
         columns: [
             {
                 id: 'ID',
@@ -161,6 +168,8 @@ export const TABLES_DEFINITIONS = {
     THREE_WINDINGS_TRANSFORMERS: {
         index: 4,
         name: 'ThreeWindingsTransformers',
+        resource: equipments.threeWindingsTransformers,
+        header: 'ThreeWindingsTransformer',
         columns: [
             {
                 id: 'ID',
@@ -266,6 +275,8 @@ export const TABLES_DEFINITIONS = {
     GENERATORS: {
         index: 5,
         name: 'Generators',
+        resource: equipments.generators,
+        header: 'Generator',
         columns: [
             {
                 id: 'ID',
@@ -304,6 +315,7 @@ export const TABLES_DEFINITIONS = {
     LOADS: {
         index: 6,
         name: 'Loads',
+        resource: equipments.loads,
         columns: [
             {
                 id: 'ID',
@@ -351,6 +363,7 @@ export const TABLES_DEFINITIONS = {
     SHUNT_COMPENSATORS: {
         index: 7,
         name: 'ShuntCompensators',
+        resource: equipments.shuntCompensators,
         columns: [
             {
                 id: 'ID',
@@ -388,6 +401,7 @@ export const TABLES_DEFINITIONS = {
     STATIC_VAR_COMPENSATORS: {
         index: 8,
         name: 'StaticVarCompensators',
+        resource: equipments.staticVarCompensators,
         columns: [
             {
                 id: 'ID',
@@ -431,6 +445,7 @@ export const TABLES_DEFINITIONS = {
     BATTERIES: {
         index: 9,
         name: 'Batteries',
+        resource: equipments.batteries,
         columns: [
             {
                 id: 'ID',
@@ -474,6 +489,7 @@ export const TABLES_DEFINITIONS = {
     HVDC_LINES: {
         index: 10,
         name: 'HvdcLines',
+        resource: equipments.hvdcLines,
         columns: [
             {
                 id: 'ID',
@@ -525,6 +541,7 @@ export const TABLES_DEFINITIONS = {
     LCC_CONVERTER_STATIONS: {
         index: 11,
         name: 'LccConverterStations',
+        resource: equipments.lccConverterStations,
         columns: [
             {
                 id: 'ID',
@@ -572,6 +589,7 @@ export const TABLES_DEFINITIONS = {
     VSC_CONVERTER_STATIONS: {
         index: 12,
         name: 'VscConverterStations',
+        resource: equipments.vscConverterStations,
         columns: [
             {
                 id: 'ID',
@@ -613,6 +631,7 @@ export const TABLES_DEFINITIONS = {
     DANGLING_LINES: {
         index: 13,
         name: 'DanglingLines',
+        resource: equipments.danglingLines,
         columns: [
             {
                 id: 'ID',
@@ -674,6 +693,10 @@ export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map(
 
 export const TABLES_NAMES_INDEXES = new Map(
     Object.values(TABLES_DEFINITIONS).map((table) => [table.name, table.index])
+);
+
+export const TABLES_DEFINITION_INDEXES = new Map(
+    Object.values(TABLES_DEFINITIONS).map((table) => [table.index, table])
 );
 
 export const TABLES_CONFIG_PARAMS_NAMES = Object.values(TABLES_DEFINITIONS).map(

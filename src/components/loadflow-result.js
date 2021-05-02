@@ -72,14 +72,7 @@ const LoadFlowResult = ({ result }) => {
             <>
                 <Paper className={classes.tablePaper}>
                     <VirtualizedTable
-                        rowCount={
-                            result.componentResults
-                                ? result.componentResults.length
-                                : 0
-                        }
-                        rowGetter={({ index }) =>
-                            result.componentResults[index]
-                        }
+                        rows={result.componentResults}
                         columns={[
                             {
                                 label: intl.formatMessage({

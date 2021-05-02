@@ -22,24 +22,11 @@ import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
-    fetchGenerators,
     fetchLinePositions,
-    fetchLines,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
     fetchSubstationPositions,
-    fetchSubstations,
-    fetchThreeWindingsTransformers,
-    fetchTwoWindingsTransformers,
-    fetchLoads,
-    fetchDanglingLines,
-    fetchBatteries,
-    fetchHvdcLines,
-    fetchLccConverterStations,
-    fetchVscConverterStations,
-    fetchShuntCompensators,
-    fetchStaticVarCompensators,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
@@ -52,12 +39,13 @@ import {
     filteredNominalVoltagesUpdated,
     increaseResultCount,
     loadGeoDataSuccess,
-    loadNetworkSuccess,
+    networkCreated,
     openStudy,
     selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
 import Network from './network/network';
+import { equipments } from './network/network-equipments';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Paper from '@material-ui/core/Paper';
@@ -82,6 +70,7 @@ import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { RemoteResourceHandler } from './util/remote-resource-handler';
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
@@ -228,7 +217,15 @@ const StudyPane = (props) => {
         RunningStatus.IDLE
     );
 
+    const [
+        securityAnalysisResultFetcher,
+        setSecurityAnalysisResultFetcher,
+    ] = useState(null);
     const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
+    const [
+        securityAnalysisResultFetched,
+        setSecurityAnalysisResultFetched,
+    ] = useState(false);
 
     const [computationStopped, setComputationStopped] = useState(false);
 
@@ -313,14 +310,24 @@ const StudyPane = (props) => {
     }, [studyUuid]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
-        fetchSecurityAnalysisResult(studyUuid).then(function (response) {
-            if (response.ok) {
-                response.json().then((result) => {
-                    setSecurityAnalysisResult(result);
-                });
-            }
-        });
-    }, [studyUuid]);
+        setSecurityAnalysisResultFetcher(
+            new RemoteResourceHandler(
+                () => fetchSecurityAnalysisResult(studyUuid),
+                (res) => {
+                    setSecurityAnalysisResult(res);
+                    setSecurityAnalysisResultFetched(true);
+                },
+                (e) => {
+                    // produces 404 error when missing in the normal case, don't crash. TODO deal with other errors
+                    setSecurityAnalysisResultFetched(true);
+                }
+            )
+        );
+    }, [
+        studyUuid,
+        setSecurityAnalysisResult,
+        setSecurityAnalysisResultFetched,
+    ]);
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         // close the contingency list selection window
@@ -332,7 +339,7 @@ const StudyPane = (props) => {
         startSecurityAnalysis(studyUuid, contingencyListNames);
 
         // clean result
-        setSecurityAnalysisResult(null);
+        setSecurityAnalysisResultFetcher(null);
     };
 
     const startComputation = (runnable) => {
@@ -387,73 +394,32 @@ const StudyPane = (props) => {
 
     const [position, setPosition] = useState([-1, -1]);
 
-    const loadNetwork = useCallback(() => {
-        console.info(`Loading network of study '${studyUuid}'...`);
-        updateLoadFlowResult();
-        updateSecurityAnalysisResult();
-        updateSecurityAnalysisStatus();
-
-        const substations = fetchSubstations(studyUuid);
-        const lines = fetchLines(studyUuid);
-        const twoWindingsTransformers = fetchTwoWindingsTransformers(studyUuid);
-        const threeWindingsTransformers = fetchThreeWindingsTransformers(
-            studyUuid
-        );
-        const generators = fetchGenerators(studyUuid);
-        const loads = fetchLoads(studyUuid);
-        const batteries = fetchBatteries(studyUuid);
-        const danglingLines = fetchDanglingLines(studyUuid);
-        const hvdcLines = fetchHvdcLines(studyUuid);
-        const lccConverterStations = fetchLccConverterStations(studyUuid);
-        const vscConverterStations = fetchVscConverterStations(studyUuid);
-        const shuntCompensators = fetchShuntCompensators(studyUuid);
-        const staticVarCompensators = fetchStaticVarCompensators(studyUuid);
-
-        Promise.all([
-            substations,
-            lines,
-            twoWindingsTransformers,
-            threeWindingsTransformers,
-            generators,
-            loads,
-            batteries,
-            danglingLines,
-            hvdcLines,
-            lccConverterStations,
-            vscConverterStations,
-            shuntCompensators,
-            staticVarCompensators,
-        ])
-            .then((values) => {
-                const network = new Network();
-                network.setSubstations(values[0]);
-                network.setLines(values[1]);
-                network.setTwoWindingsTransformers(values[2]);
-                network.setThreeWindingsTransformers(values[3]);
-                network.setGenerators(values[4]);
-                network.setLoads(values[5]);
-                network.setBatteries(values[6]);
-                network.setDanglingLines(values[7]);
-                network.setHvdcLines(values[8]);
-                network.setLccConverterStations(values[9]);
-                network.setVscConverterStations(values[10]);
-                network.setShuntCompensators(values[11]);
-                network.setStaticVarCompensators(values[12]);
-
-                dispatch(loadNetworkSuccess(network));
-            })
-            .catch(function (error) {
-                console.error(error.message);
-                setStudyNotFound(true);
-            });
-        // Note: studyUuid and dispatch don't change
-    }, [
-        studyUuid,
-        dispatch,
-        updateLoadFlowResult,
-        updateSecurityAnalysisResult,
-        updateSecurityAnalysisStatus,
-    ]);
+    const loadNetwork = useCallback(
+        (isUpdate) => {
+            console.info(`Loading network of study '${studyUuid}'...`);
+            updateLoadFlowResult();
+            updateSecurityAnalysisResult();
+            updateSecurityAnalysisStatus();
+            if (!isUpdate) {
+                const network = new Network(
+                    studyUuid,
+                    (error) => {
+                        console.error(error.message);
+                        setStudyNotFound(true);
+                    },
+                    dispatch
+                );
+                dispatch(networkCreated(network));
+            }
+        },
+        [
+            studyUuid,
+            dispatch,
+            updateLoadFlowResult,
+            updateSecurityAnalysisResult,
+            updateSecurityAnalysisStatus,
+        ]
+    );
 
     const updateNetwork = useCallback(
         (substationsIds) => {
@@ -461,7 +427,7 @@ const StudyPane = (props) => {
                 studyUuid,
                 substationsIds
             );
-
+            console.info('network update');
             Promise.all([updatedEquipments])
                 .then((values) => {
                     network.updateSubstations(values[0].substations);
@@ -548,7 +514,6 @@ const StudyPane = (props) => {
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
         dispatch(openStudy(studyUuid));
-
         loadNetwork();
         loadGeoData();
         const ws = connectNotifications(studyUuid);
@@ -577,7 +542,11 @@ const StudyPane = (props) => {
     }, [location.search]);
 
     useEffect(() => {
-        if (network && !filteredNominalVoltages) {
+        if (
+            network &&
+            network.substations.length > 0 &&
+            !filteredNominalVoltages
+        ) {
             dispatch(
                 filteredNominalVoltagesUpdated(network.getNominalVoltages())
             );
@@ -680,7 +649,7 @@ const StudyPane = (props) => {
             ) {
                 //TODO reload data more intelligently
                 updateSld();
-                loadNetwork();
+                loadNetwork(true);
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'loadflow_status'
@@ -795,6 +764,12 @@ const StudyPane = (props) => {
         },
         [network, showVoltageLevelDiagram, dispatch]
     );
+
+    useEffect(() => {
+        if (!network) return;
+        network.useEquipment(equipments.substations);
+        network.useEquipment(equipments.lines);
+    }, [network]);
 
     function renderMapView() {
         let displayedVoltageLevel;
@@ -918,6 +893,8 @@ const StudyPane = (props) => {
                 >
                     <NetworkMap
                         network={network}
+                        substations={network ? network.substations : []}
+                        lines={network ? network.lines : []}
                         updatedLines={updatedLines}
                         geoData={geoData}
                         useName={useName}
@@ -966,7 +943,7 @@ const StudyPane = (props) => {
                             position={[position[0] + 200, position[1]]}
                         />
                     )}
-                    {network && (
+                    {network && network.substations.length > 0 && (
                         <div
                             style={{
                                 position: 'absolute',
@@ -1024,7 +1001,7 @@ const StudyPane = (props) => {
                         className={classes.drawerDiv}
                     >
                         <NetworkExplorer
-                            network={network}
+                            substations={network ? network.substations : []}
                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
@@ -1078,11 +1055,17 @@ const StudyPane = (props) => {
 
     function renderTableView() {
         return (
-            <Paper className={clsx('singlestretch-child', classes.table)}>
-                <NetworkTable network={network} studyUuid={studyUuid} />
-            </Paper>
+            network && (
+                <Paper className={clsx('singlestretch-child', classes.table)}>
+                    <NetworkTable network={network} studyUuid={studyUuid} />
+                </Paper>
+            )
         );
     }
+
+    useEffect(() => {
+        if (tabIndex === 1) securityAnalysisResultFetcher.fetch();
+    }, [tabIndex, securityAnalysisResultFetcher]);
 
     function renderResultsView() {
         return (
@@ -1120,6 +1103,7 @@ const StudyPane = (props) => {
             >
                 <SecurityAnalysisResult
                     result={securityAnalysisResult}
+                    fetched={securityAnalysisResultFetched}
                     onClickNmKConstraint={onClickNmKConstraint}
                 />
             </Paper>

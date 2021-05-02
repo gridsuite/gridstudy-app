@@ -73,10 +73,11 @@ class MuiVirtualizedTable extends React.PureComponent {
         direction: 'asc',
     };
 
-    reorderIndex = memoize((key, direction, filter) => {
+    reorderIndex = memoize((key, direction, filter, rows) => {
+        if (!rows) return [];
         let indexedArray = [];
-        for (let i = 0; i < this.props.rowCount; i++) {
-            const row = this.props.rowGetter({ index: i });
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
             if (!filter || filter(row)) indexedArray.push([row, i]);
         }
 
@@ -182,13 +183,7 @@ class MuiVirtualizedTable extends React.PureComponent {
     };
 
     cellRenderer = ({ cellData, columnIndex, rowIndex, width }) => {
-        const {
-            columns,
-            classes,
-            rowHeight,
-            onCellClick,
-            rowGetter,
-        } = this.props;
+        const { columns, classes, rowHeight, onCellClick, rows } = this.props;
 
         let displayedValue = this.getDisplayValue(
             columns[columnIndex],
@@ -220,10 +215,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                 }
                 onClick={(e) => {
                     if (onCellClick) {
-                        onCellClick(
-                            rowGetter({ index: rowIndex }),
-                            columns[columnIndex]
-                        );
+                        onCellClick(rows[rowIndex], columns[columnIndex]);
                     }
                 }}
                 width={width}
@@ -294,7 +286,8 @@ class MuiVirtualizedTable extends React.PureComponent {
         const reorderedIndex = this.reorderIndex(
             this.state.key,
             this.state.direction,
-            this.props.filter
+            this.props.filter,
+            this.props.rows
         );
 
         const getIndexFor = (index) => {
@@ -317,9 +310,7 @@ class MuiVirtualizedTable extends React.PureComponent {
                         rowCount={reorderedIndex.length}
                         rowClassName={this.getRowClassName}
                         rowGetter={({ index }) =>
-                            this.props.rowGetter({
-                                index: getIndexFor(index),
-                            })
+                            this.props.rows[getIndexFor(index)]
                         }
                     >
                         {columns.map(({ dataKey, ...other }, index) => {
@@ -352,8 +343,7 @@ class MuiVirtualizedTable extends React.PureComponent {
 
 MuiVirtualizedTable.propTypes = {
     classes: PropTypes.object.isRequired,
-    rowGetter: PropTypes.func.isRequired,
-    rowCount: PropTypes.number.isRequired,
+    rows: PropTypes.array,
     columns: PropTypes.arrayOf(
         PropTypes.shape({
             dataKey: PropTypes.string.isRequired,

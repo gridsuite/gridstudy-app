@@ -19,7 +19,6 @@ import ListItem from '@material-ui/core/ListItem';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 
-import Network from './network';
 import Divider from '@material-ui/core/Divider';
 import {
     AutoSizer,
@@ -84,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NetworkExplorer = ({
-    network,
+    substations,
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
     onSubstationFocus,
@@ -138,7 +137,7 @@ const NetworkExplorer = ({
                 return lc.includes(entry);
             };
 
-            network.getSubstations().forEach((item) => {
+            substations.forEach((item) => {
                 let subVoltagesLevel = entry
                     ? item.voltageLevels.filter(match)
                     : item.voltageLevels;
@@ -157,15 +156,15 @@ const NetworkExplorer = ({
             subs.sort((a, b) => identifiedElementComparator(a[0], b[0]));
             setFilteredVoltageLevels(subs);
         },
-        [identifiedElementComparator, network, useName]
+        [identifiedElementComparator, substations, useName]
     );
 
     useEffect(() => {
-        if (network) {
+        if (substations.length > 0) {
             generateFilteredSubstation(currentFilter);
         }
     }, [
-        network,
+        substations,
         identifiedElementComparator,
         generateFilteredSubstation,
         currentFilter,
@@ -378,12 +377,12 @@ const NetworkExplorer = ({
 };
 
 NetworkExplorer.defaultProps = {
-    network: null,
+    substations: [],
     visibleSubstation: null,
 };
 
 NetworkExplorer.propTypes = {
-    network: PropTypes.instanceOf(Network),
+    substations: PropTypes.array,
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,

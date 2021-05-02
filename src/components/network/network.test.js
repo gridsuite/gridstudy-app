@@ -7,6 +7,7 @@
 
 import Network from './network';
 import 'core-js/es/array/flat-map';
+import { equipments } from './network-equipments';
 
 const substations = [
     {
@@ -35,9 +36,12 @@ const substations = [
 
 test('network', () => {
     // Data initialisation
-    const network = new Network();
-    network.setSubstations(substations);
+    const baseNetwork = new Network();
 
+    const network = baseNetwork.newSharedForUpdate(
+        equipments.substations,
+        substations
+    );
     // Substation
     expect(network.substations).toHaveLength(2);
     expect(network.substations[0].id).toEqual('S1');
