@@ -35,16 +35,18 @@ function backendFetch(url, init) {
     return fetch(url, initCopy);
 }
 
-export function fetchConfigParameters(appName) {
+export function fetchConfigParameters(appName, enqueueSnackbar, messageHeader) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams =
         PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
-    return backendFetch(fetchParams).then((res) => {
-        return res.json();
-    });
+    return backendFetch(fetchParams).then((response) =>
+        response.ok
+            ? response.json()
+            : handleServerError(response, enqueueSnackbar, messageHeader)
+    );
 }
 
-export function fetchConfigParameter(name) {
+export function fetchConfigParameter(name, enqueueSnackbar, messageHeader) {
     const appName = getAppName(name);
     console.info(
         "Fetching UI config parameter '%s' for app '%s' ",
@@ -54,12 +56,19 @@ export function fetchConfigParameter(name) {
     const fetchParams =
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}`;
-    return backendFetch(fetchParams).then((res) => {
-        return res.json();
-    });
+    return backendFetch(fetchParams).then((response) =>
+        response.ok
+            ? response.json()
+            : handleServerError(response, enqueueSnackbar, messageHeader)
+    );
 }
 
-export function updateConfigParameter(name, value) {
+export function updateConfigParameter(
+    name,
+    value,
+    enqueueSnackbar,
+    messageHeader
+) {
     const appName = getAppName(name);
     console.info(
         "Updating config parameter '%s=%s' for app '%s' ",
@@ -71,7 +80,11 @@ export function updateConfigParameter(name, value) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}?value=` +
         encodeURIComponent(value);
-    return backendFetch(updateParams, { method: 'put' });
+    return backendFetch(updateParams, { method: 'put' }).then((response) =>
+        response.ok
+            ? response
+            : handleServerError(response, enqueueSnackbar, messageHeader)
+    );
 }
 
 export function fetchStudies() {
@@ -684,7 +697,12 @@ export function requestNetworkChange(studyUuid, groovyScript) {
     });
 }
 
-export function setLoadFlowParameters(studyUuid, newParams, enqueueSnackbar) {
+export function setLoadFlowParameters(
+    studyUuid,
+    newParams,
+    enqueueSnackbar,
+    messageHeader
+) {
     console.info('set load flow parameters');
     const setLoadFlowParametersUrl =
         getStudyUrl(studyUuid) + '/loadflow/parameters';
@@ -697,11 +715,17 @@ export function setLoadFlowParameters(studyUuid, newParams, enqueueSnackbar) {
         },
         body: JSON.stringify(newParams),
     }).then((response) =>
-        response.ok ? response : handleServerError(response, enqueueSnackbar)
+        response.ok
+            ? response
+            : handleServerError(response, enqueueSnackbar, messageHeader)
     );
 }
 
-export function getLoadFlowParameters(studyUuid, enqueueSnackbar) {
+export function getLoadFlowParameters(
+    studyUuid,
+    enqueueSnackbar,
+    messageHeader
+) {
     console.info('get load flow parameters');
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
@@ -710,13 +734,13 @@ export function getLoadFlowParameters(studyUuid, enqueueSnackbar) {
     }).then((response) =>
         response.ok
             ? response.json()
-            : handleServerError(response, enqueueSnackbar)
+            : handleServerError(response, enqueueSnackbar, messageHeader)
     );
 }
 
-export function handleServerError(response, enqueueSnackbar) {
+export function handleServerError(response, enqueueSnackbar, messageHeader) {
     return response.text().then((text) => {
-        enqueueSnackbar(text, {
+        enqueueSnackbar(messageHeader + '\n\n' + text, {
             variant: 'error',
             persist: true,
             style: { whiteSpace: 'pre-line' },

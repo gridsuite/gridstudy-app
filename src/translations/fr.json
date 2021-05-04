@@ -58,6 +58,9 @@
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
 
     "parameters": "Paramètres",
+    "paramsChangingError": "Une erreur est survenue lors de la modification des paramètres",
+    "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
+
     "close": "Fermer",
 
     "loadingGeoData": "Chargement en cours...",

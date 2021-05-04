@@ -16,7 +16,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import { IconButton, TextField } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import { handleServerError, updateConfigParameter } from '../../utils/rest-api';
+import { updateConfigParameter } from '../../utils/rest-api';
 
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import { SelectOptionsDialog } from '../../utils/dialogs';
@@ -143,17 +143,16 @@ const NetworkTable = (props) => {
     const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
             COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-            JSON.stringify([...selectedColumnsNames])
-        ).then((response) => {
-            if (!response.ok) {
-                console.error(response);
-                // revert selected columns
-                setSelectedColumnsNames(
-                    new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
-                );
-                handleServerError(response, enqueueSnackbar);
-            }
-        });
+            JSON.stringify([...selectedColumnsNames]),
+            enqueueSnackbar,
+            intl.formatMessage({
+                id: 'paramsChangingError',
+            })
+        ).then(null, () =>
+            setSelectedColumnsNames(
+                new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+            )
+        );
 
         setPopupSelectColumnNames(false);
     }, [
@@ -161,6 +160,7 @@ const NetworkTable = (props) => {
         selectedColumnsNames,
         allDisplayedColumnsNames,
         enqueueSnackbar,
+        intl,
     ]);
 
     const handleToggle = (value) => () => {

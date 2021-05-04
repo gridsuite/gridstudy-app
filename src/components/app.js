@@ -17,8 +17,6 @@ import {
     useLocation,
 } from 'react-router-dom';
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import {
@@ -43,12 +41,11 @@ import {
     AuthenticationRouter,
     getPreLoginPath,
     initializeAuthenticationProd,
-    LIGHT_THEME,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import {
     connectNotificationsWsUpdateConfig,
@@ -78,75 +75,24 @@ import {
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { useParameterState } from './parameters';
-
-const lightTheme = createMuiTheme({
-    palette: {
-        type: 'light',
-    },
-    arrow: {
-        fill: '#212121',
-        stroke: '#212121',
-    },
-    arrow_hover: {
-        fill: 'white',
-        stroke: 'white',
-    },
-    circle: {
-        stroke: 'white',
-        fill: 'white',
-    },
-    circle_hover: {
-        stroke: '#212121',
-        fill: '#212121',
-    },
-    link: {
-        color: 'blue',
-    },
-    mapboxStyle: 'mapbox://styles/mapbox/light-v9',
-});
-
-const darkTheme = createMuiTheme({
-    palette: {
-        type: 'dark',
-    },
-    arrow: {
-        fill: 'white',
-        stroke: 'white',
-    },
-    arrow_hover: {
-        fill: '#424242',
-        stroke: '#424242',
-    },
-    circle: {
-        stroke: '#424242',
-        fill: '#424242',
-    },
-    circle_hover: {
-        stroke: 'white',
-        fill: 'white',
-    },
-    link: {
-        color: 'green',
-    },
-    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
-});
-
-const getMuiTheme = (theme) => {
-    if (theme === LIGHT_THEME) {
-        return lightTheme;
-    } else {
-        return darkTheme;
-    }
-};
+import { useSnackbar } from 'notistack';
 
 const noUserManager = { instance: null, error: null };
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
-const App = () => {
+const App = ({ onChangeTheme }) => {
+    const intl = useIntl();
+
+    const { enqueueSnackbar } = useSnackbar();
+
     const user = useSelector((state) => state.user);
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
+
+    useEffect(() => {
+        onChangeTheme(themeLocal);
+    }, [onChangeTheme, themeLocal]);
 
     const signInCallbackError = useSelector(
         (state) => state.signInCallbackError
@@ -250,18 +196,22 @@ const App = () => {
         ws.onmessage = function (event) {
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
-                fetchConfigParameter(eventData.headers['parameterName']).then(
-                    (param) => {
-                        updateParams([param]);
-                    }
-                );
+                fetchConfigParameter(
+                    eventData.headers['parameterName'],
+                    enqueueSnackbar,
+                    intl.formatMessage({
+                        id: 'paramsRetrievingError',
+                    })
+                ).then((param) => {
+                    updateParams([param]);
+                });
             }
         };
         ws.onerror = function (event) {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [updateParams]);
+    }, [updateParams, enqueueSnackbar, intl]);
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
@@ -323,18 +273,39 @@ const App = () => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchConfigParameters(COMMON_APP_NAME).then((params) => {
+            fetchConfigParameters(
+                COMMON_APP_NAME,
+                enqueueSnackbar,
+                intl.formatMessage({
+                    id: 'paramsRetrievingError',
+                })
+            ).then((params) => {
                 updateParams(params);
             });
-            fetchConfigParameters(APP_NAME).then((params) => {
+
+            fetchConfigParameters(
+                APP_NAME,
+                enqueueSnackbar,
+                intl.formatMessage({
+                    id: 'paramsRetrievingError',
+                })
+            ).then((params) => {
                 updateParams(params);
             });
+
             const ws = connectNotificationsUpdateConfig();
             return function () {
                 ws.close();
             };
         }
-    }, [user, dispatch, updateParams, connectNotificationsUpdateConfig]);
+    }, [
+        user,
+        dispatch,
+        updateParams,
+        enqueueSnackbar,
+        intl,
+        connectNotificationsUpdateConfig,
+    ]);
 
     function studyClickHandler(studyUuid) {
         history.push('/studies/' + encodeURIComponent(studyUuid));
@@ -350,85 +321,78 @@ const App = () => {
     }
 
     return (
-        <ThemeProvider theme={getMuiTheme(themeLocal)}>
-            <CssBaseline />
+        <div
+            className="singlestretch-child"
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+            }}
+        >
+            <AppTopBar
+                user={user}
+                themeLocal={themeLocal}
+                tabIndex={tabIndex}
+                onChangeTab={onChangeTab}
+                userManager={userManager}
+                handleChangeTheme={handleChangeTheme}
+                history={history}
+            />
             <div
-                className="singlestretch-child"
+                className="singlestretch-parent"
                 style={{
-                    display: 'flex',
-                    flexDirection: 'column',
+                    flexGrow: 1,
+                    //Study pane needs 'hidden' when displaying a
+                    //fullscreen sld or when displaying the results or
+                    //elements tables for certain screen sizes because
+                    //width/heights are computed programmaticaly and
+                    //resizing the page trigger render loops due to
+                    //appearing and disappearing scrollbars.
+                    //For all other cases, auto is better because it will
+                    //be easier to see that we have a layout problem when
+                    //scrollbars appear when they should not.
+                    overflow: isStudyPane ? 'hidden' : 'auto',
                 }}
             >
-                <AppTopBar
-                    user={user}
-                    themeLocal={themeLocal}
-                    tabIndex={tabIndex}
-                    onChangeTab={onChangeTab}
-                    userManager={userManager}
-                    handleChangeTheme={handleChangeTheme}
-                    history={history}
-                />
-                <div
-                    className="singlestretch-parent"
-                    style={{
-                        flexGrow: 1,
-                        //Study pane needs 'hidden' when displaying a
-                        //fullscreen sld or when displaying the results or
-                        //elements tables for certain screen sizes because
-                        //width/heights are computed programmaticaly and
-                        //resizing the page trigger render loops due to
-                        //appearing and disappearing scrollbars.
-                        //For all other cases, auto is better because it will
-                        //be easier to see that we have a layout problem when
-                        //scrollbars appear when they should not.
-                        overflow: isStudyPane ? 'hidden' : 'auto',
-                    }}
-                >
-                    {user !== null ? (
-                        <Switch>
-                            <Route exact path="/">
-                                <StudyManager
-                                    onClick={(studyUuid) =>
-                                        studyClickHandler(studyUuid)
-                                    }
-                                />
-                            </Route>
-                            <Route exact path="/studies/:studyUuid">
-                                <StudyPane
-                                    view={STUDY_VIEWS[tabIndex]}
-                                    onChangeTab={onChangeTab}
-                                />
-                            </Route>
-                            <Route exact path="/sign-in-callback">
-                                <Redirect to={getPreLoginPath() || '/'} />
-                            </Route>
-                            <Route exact path="/logout-callback">
-                                <h1>
-                                    Error: logout failed; you are still logged
-                                    in.
-                                </h1>
-                            </Route>
-                            <Route>
-                                <PageNotFound
-                                    message={
-                                        <FormattedMessage id="PageNotFound" />
-                                    }
-                                />
-                            </Route>
-                        </Switch>
-                    ) : (
-                        <AuthenticationRouter
-                            userManager={userManager}
-                            signInCallbackError={signInCallbackError}
-                            dispatch={dispatch}
-                            history={history}
-                            location={location}
-                        />
-                    )}
-                </div>
+                {user !== null ? (
+                    <Switch>
+                        <Route exact path="/">
+                            <StudyManager
+                                onClick={(studyUuid) =>
+                                    studyClickHandler(studyUuid)
+                                }
+                            />
+                        </Route>
+                        <Route exact path="/studies/:studyUuid">
+                            <StudyPane
+                                view={STUDY_VIEWS[tabIndex]}
+                                onChangeTab={onChangeTab}
+                            />
+                        </Route>
+                        <Route exact path="/sign-in-callback">
+                            <Redirect to={getPreLoginPath() || '/'} />
+                        </Route>
+                        <Route exact path="/logout-callback">
+                            <h1>
+                                Error: logout failed; you are still logged in.
+                            </h1>
+                        </Route>
+                        <Route>
+                            <PageNotFound
+                                message={<FormattedMessage id="PageNotFound" />}
+                            />
+                        </Route>
+                    </Switch>
+                ) : (
+                    <AuthenticationRouter
+                        userManager={userManager}
+                        signInCallbackError={signInCallbackError}
+                        dispatch={dispatch}
+                        history={history}
+                        location={location}
+                    />
+                )}
             </div>
-            )) }
-        </ThemeProvider>
+        </div>
     );
 };
 
