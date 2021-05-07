@@ -74,25 +74,19 @@ import {
 } from './network/config-tables';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
-import { useParameterState } from './parameters';
 import { useSnackbar } from 'notistack';
+import { displayErrorMessageWithSnackbar } from '../utils/messages';
 
 const noUserManager = { instance: null, error: null };
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
-const App = ({ onChangeTheme }) => {
+const App = () => {
     const intl = useIntl();
 
     const { enqueueSnackbar } = useSnackbar();
 
     const user = useSelector((state) => state.user);
-
-    const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
-
-    useEffect(() => {
-        onChangeTheme(themeLocal);
-    }, [onChangeTheme, themeLocal]);
 
     const signInCallbackError = useSelector(
         (state) => state.signInCallbackError
@@ -196,15 +190,16 @@ const App = ({ onChangeTheme }) => {
         ws.onmessage = function (event) {
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
-                fetchConfigParameter(
-                    eventData.headers['parameterName'],
-                    enqueueSnackbar,
-                    intl.formatMessage({
-                        id: 'paramsRetrievingError',
-                    })
-                ).then((param) => {
-                    updateParams([param]);
-                });
+                fetchConfigParameter(eventData.headers['parameterName'])
+                    .then((param) => updateParams([param]))
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar(
+                            errorMessage,
+                            'paramsChangingError',
+                            enqueueSnackbar,
+                            intl
+                        )
+                    );
             }
         };
         ws.onerror = function (event) {
@@ -273,25 +268,27 @@ const App = ({ onChangeTheme }) => {
 
     useEffect(() => {
         if (user !== null) {
-            fetchConfigParameters(
-                COMMON_APP_NAME,
-                enqueueSnackbar,
-                intl.formatMessage({
-                    id: 'paramsRetrievingError',
-                })
-            ).then((params) => {
-                updateParams(params);
-            });
+            fetchConfigParameters(COMMON_APP_NAME)
+                .then((params) => updateParams(params))
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar(
+                        errorMessage,
+                        'paramsChangingError',
+                        enqueueSnackbar,
+                        intl
+                    )
+                );
 
-            fetchConfigParameters(
-                APP_NAME,
-                enqueueSnackbar,
-                intl.formatMessage({
-                    id: 'paramsRetrievingError',
-                })
-            ).then((params) => {
-                updateParams(params);
-            });
+            fetchConfigParameters(APP_NAME)
+                .then((params) => updateParams(params))
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar(
+                        errorMessage,
+                        'paramsChangingError',
+                        enqueueSnackbar,
+                        intl
+                    )
+                );
 
             const ws = connectNotificationsUpdateConfig();
             return function () {
@@ -330,12 +327,9 @@ const App = ({ onChangeTheme }) => {
         >
             <AppTopBar
                 user={user}
-                themeLocal={themeLocal}
                 tabIndex={tabIndex}
                 onChangeTab={onChangeTab}
                 userManager={userManager}
-                handleChangeTheme={handleChangeTheme}
-                history={history}
             />
             <div
                 className="singlestretch-parent"

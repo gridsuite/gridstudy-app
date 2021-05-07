@@ -6,7 +6,7 @@
  */
 
 import App from './app';
-import React, { useState } from 'react';
+import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import {
     LIGHT_THEME,
@@ -23,6 +23,7 @@ import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import { store } from '../redux/store';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { PARAM_THEME } from '../utils/config-params';
 
 const lightTheme = createMuiTheme({
     palette: {
@@ -94,7 +95,7 @@ const basename = new URL(document.querySelector('base').href).pathname;
 const AppWrapperWithRedux = () => {
     const computedLanguage = useSelector((state) => state.computedLanguage);
 
-    const [themeCopy, setThemeCopy] = useState();
+    const theme = useSelector((state) => state[PARAM_THEME]);
 
     return (
         <IntlProvider
@@ -102,10 +103,10 @@ const AppWrapperWithRedux = () => {
             messages={messages[computedLanguage]}
         >
             <BrowserRouter basename={basename}>
-                <ThemeProvider theme={getMuiTheme(themeCopy)}>
+                <ThemeProvider theme={getMuiTheme(theme)}>
                     <SnackbarProvider hideIconVariant={false}>
                         <CssBaseline />
-                        <App onChangeTheme={setThemeCopy} />
+                        <App />
                     </SnackbarProvider>
                 </ThemeProvider>
             </BrowserRouter>

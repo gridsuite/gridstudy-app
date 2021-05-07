@@ -35,18 +35,18 @@ function backendFetch(url, init) {
     return fetch(url, initCopy);
 }
 
-export function fetchConfigParameters(appName, enqueueSnackbar, messageHeader) {
+export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams =
         PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
     return backendFetch(fetchParams).then((response) =>
         response.ok
             ? response.json()
-            : handleServerError(response, enqueueSnackbar, messageHeader)
+            : response.text().then((text) => Promise.reject(text))
     );
 }
 
-export function fetchConfigParameter(name, enqueueSnackbar, messageHeader) {
+export function fetchConfigParameter(name) {
     const appName = getAppName(name);
     console.info(
         "Fetching UI config parameter '%s' for app '%s' ",
@@ -59,16 +59,11 @@ export function fetchConfigParameter(name, enqueueSnackbar, messageHeader) {
     return backendFetch(fetchParams).then((response) =>
         response.ok
             ? response.json()
-            : handleServerError(response, enqueueSnackbar, messageHeader)
+            : response.text().then((text) => Promise.reject(text))
     );
 }
 
-export function updateConfigParameter(
-    name,
-    value,
-    enqueueSnackbar,
-    messageHeader
-) {
+export function updateConfigParameter(name, value) {
     const appName = getAppName(name);
     console.info(
         "Updating config parameter '%s=%s' for app '%s' ",
@@ -83,7 +78,7 @@ export function updateConfigParameter(
     return backendFetch(updateParams, { method: 'put' }).then((response) =>
         response.ok
             ? response
-            : handleServerError(response, enqueueSnackbar, messageHeader)
+            : response.text().then((text) => Promise.reject(text))
     );
 }
 
@@ -697,12 +692,7 @@ export function requestNetworkChange(studyUuid, groovyScript) {
     });
 }
 
-export function setLoadFlowParameters(
-    studyUuid,
-    newParams,
-    enqueueSnackbar,
-    messageHeader
-) {
+export function setLoadFlowParameters(studyUuid, newParams) {
     console.info('set load flow parameters');
     const setLoadFlowParametersUrl =
         getStudyUrl(studyUuid) + '/loadflow/parameters';
@@ -717,15 +707,11 @@ export function setLoadFlowParameters(
     }).then((response) =>
         response.ok
             ? response
-            : handleServerError(response, enqueueSnackbar, messageHeader)
+            : response.text().then((text) => Promise.reject(text))
     );
 }
 
-export function getLoadFlowParameters(
-    studyUuid,
-    enqueueSnackbar,
-    messageHeader
-) {
+export function getLoadFlowParameters(studyUuid) {
     console.info('get load flow parameters');
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
@@ -734,17 +720,6 @@ export function getLoadFlowParameters(
     }).then((response) =>
         response.ok
             ? response.json()
-            : handleServerError(response, enqueueSnackbar, messageHeader)
+            : response.text().then((text) => Promise.reject(text))
     );
-}
-
-export function handleServerError(response, enqueueSnackbar, messageHeader) {
-    return response.text().then((text) => {
-        enqueueSnackbar(messageHeader + '\n\n' + text, {
-            variant: 'error',
-            persist: true,
-            style: { whiteSpace: 'pre-line' },
-        });
-        return Promise.reject();
-    });
 }

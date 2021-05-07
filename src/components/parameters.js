@@ -48,6 +48,7 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
+import { displayErrorMessageWithSnackbar } from '../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -67,10 +68,11 @@ const useStyles = makeStyles((theme) => ({
 export function useParameterState(paramName) {
     const intl = useIntl();
 
-    const paramGlobalState = useSelector((state) => state[paramName]);
-    const [paramLocalState, setParamLocalState] = useState(paramGlobalState);
-
     const { enqueueSnackbar } = useSnackbar();
+
+    const paramGlobalState = useSelector((state) => state[paramName]);
+
+    const [paramLocalState, setParamLocalState] = useState(paramGlobalState);
 
     useEffect(() => {
         setParamLocalState(paramGlobalState);
@@ -79,14 +81,15 @@ export function useParameterState(paramName) {
     const handleChangeParamLocalState = useCallback(
         (value) => {
             setParamLocalState(value);
-            updateConfigParameter(
-                paramName,
-                value,
-                enqueueSnackbar,
-                intl.formatMessage({
-                    id: 'paramsChangingError',
-                })
-            ).then(null, () => setParamLocalState(paramGlobalState));
+            updateConfigParameter(paramName, value).catch((errorMessage) => {
+                setParamLocalState(paramGlobalState);
+                displayErrorMessageWithSnackbar(
+                    errorMessage,
+                    'paramsChangingError',
+                    enqueueSnackbar,
+                    intl
+                );
+            });
         },
         [paramName, enqueueSnackbar, intl, setParamLocalState, paramGlobalState]
     );

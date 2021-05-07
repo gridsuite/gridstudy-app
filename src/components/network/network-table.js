@@ -35,6 +35,7 @@ import {
 import { EquipmentTable } from './equipment-table';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
+import { displayErrorMessageWithSnackbar } from '../../utils/messages';
 
 const useStyles = makeStyles(() => ({
     searchSection: {
@@ -143,16 +144,18 @@ const NetworkTable = (props) => {
     const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
             COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-            JSON.stringify([...selectedColumnsNames]),
-            enqueueSnackbar,
-            intl.formatMessage({
-                id: 'paramsChangingError',
-            })
-        ).then(null, () =>
+            JSON.stringify([...selectedColumnsNames])
+        ).catch((errorMessage) => {
             setSelectedColumnsNames(
                 new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
-            )
-        );
+            );
+            displayErrorMessageWithSnackbar(
+                errorMessage,
+                'paramsChangingError',
+                enqueueSnackbar,
+                intl
+            );
+        });
 
         setPopupSelectColumnNames(false);
     }, [

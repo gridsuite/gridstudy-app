@@ -14,11 +14,16 @@ import { Badge } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import Tab from '@material-ui/core/Tab';
 import Parameters, { useParameterState } from './parameters';
-import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../utils/config-params';
+import {
+    PARAM_LANGUAGE,
+    PARAM_THEME,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls } from '../utils/rest-api';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -28,22 +33,20 @@ const useStyles = makeStyles(() => ({
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
-const AppTopBar = ({
-    user,
-    themeLocal,
-    tabIndex,
-    onChangeTab,
-    userManager,
-    handleChangeTheme,
-    history,
-}) => {
+const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
+
+    const history = useHistory();
 
     const dispatch = useDispatch();
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
     const resultCount = useSelector((state) => state.resultCount);
+
+    const theme = useSelector((state) => state[PARAM_THEME]);
+
+    const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
     const [languageLocal, handleChangeLanguage] = useParameterState(
         PARAM_LANGUAGE
@@ -83,7 +86,7 @@ const AppTopBar = ({
                 appName="Study"
                 appColor="#0CA789"
                 appLogo={
-                    themeLocal === LIGHT_THEME ? (
+                    theme === LIGHT_THEME ? (
                         <GridStudyLogoLight />
                     ) : (
                         <GridStudyLogoDark />
@@ -146,12 +149,9 @@ const AppTopBar = ({
 
 AppTopBar.propTypes = {
     user: PropTypes.object,
-    themeLocal: PropTypes.string,
     tabIndex: PropTypes.number.isRequired,
     onChangeTab: PropTypes.func.isRequired,
     userManager: PropTypes.object.isRequired,
-    handleChangeTheme: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
 };
 
 export default AppTopBar;
