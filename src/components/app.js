@@ -45,7 +45,7 @@ import {
 
 import PageNotFound from './page-not-found';
 import { useRouteMatch } from 'react-router';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import {
     connectNotificationsWsUpdateConfig,
@@ -75,14 +75,14 @@ import {
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { useSnackbar } from 'notistack';
-import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const noUserManager = { instance: null, error: null };
 
 const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
 
 const App = () => {
-    const intl = useIntl();
+    const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -197,7 +197,7 @@ const App = () => {
                             errorMessage,
                             'paramsChangingError',
                             enqueueSnackbar,
-                            intl
+                            intlRef
                         )
                     );
             }
@@ -206,7 +206,7 @@ const App = () => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [updateParams, enqueueSnackbar, intl]);
+    }, [updateParams, enqueueSnackbar, intlRef]);
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
@@ -275,7 +275,7 @@ const App = () => {
                         errorMessage,
                         'paramsChangingError',
                         enqueueSnackbar,
-                        intl
+                        intlRef
                     )
                 );
 
@@ -286,7 +286,7 @@ const App = () => {
                         errorMessage,
                         'paramsChangingError',
                         enqueueSnackbar,
-                        intl
+                        intlRef
                     )
                 );
 
@@ -300,7 +300,7 @@ const App = () => {
         dispatch,
         updateParams,
         enqueueSnackbar,
-        intl,
+        intlRef,
         connectNotificationsUpdateConfig,
     ]);
 

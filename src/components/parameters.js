@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import { useSelector } from 'react-redux';
 
@@ -48,7 +48,7 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
-import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function useParameterState(paramName) {
-    const intl = useIntl();
+    const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -87,11 +87,17 @@ export function useParameterState(paramName) {
                     errorMessage,
                     'paramsChangingError',
                     enqueueSnackbar,
-                    intl
+                    intlRef
                 );
             });
         },
-        [paramName, enqueueSnackbar, intl, setParamLocalState, paramGlobalState]
+        [
+            paramName,
+            enqueueSnackbar,
+            intlRef,
+            setParamLocalState,
+            paramGlobalState,
+        ]
     );
 
     return [paramLocalState, handleChangeParamLocalState];
@@ -100,7 +106,7 @@ export function useParameterState(paramName) {
 const Parameters = ({ showParameters, hideParameters }) => {
     const classes = useStyles();
 
-    const intl = useIntl();
+    const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -161,15 +167,18 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     useEffect(() => {
         if (studyUuid) {
-            getLoadFlowParameters(
-                studyUuid,
-                enqueueSnackbar,
-                intl.formatMessage({
-                    id: 'paramsRetrievingError',
-                })
-            ).then((params) => setLfParams(params));
+            getLoadFlowParameters(studyUuid)
+                .then((params) => setLfParams(params))
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar(
+                        errorMessage,
+                        'paramsRetrievingError',
+                        enqueueSnackbar,
+                        intlRef
+                    )
+                );
         }
-    }, [studyUuid, enqueueSnackbar, intl]);
+    }, [studyUuid, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
@@ -479,37 +488,41 @@ const Parameters = ({ showParameters, hideParameters }) => {
     }
 
     const resetLfParameters = () => {
-        setLoadFlowParameters(
-            studyUuid,
-            null,
-            enqueueSnackbar,
-            intl.formatMessage({
-                id: 'paramsChangingError',
-            })
-        )
+        setLoadFlowParameters(studyUuid, null)
             .then(() => {
-                return getLoadFlowParameters(
-                    studyUuid,
-                    enqueueSnackbar,
-                    intl.formatMessage({
-                        id: 'paramsRetrievingError',
-                    })
-                );
+                return getLoadFlowParameters(studyUuid)
+                    .then((params) => setLfParams(params))
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar(
+                            errorMessage,
+                            'paramsRetrievingError',
+                            enqueueSnackbar,
+                            intlRef
+                        )
+                    );
             })
-            .then((params) => setLfParams(params));
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar(
+                    errorMessage,
+                    'paramsChangingError',
+                    enqueueSnackbar,
+                    intlRef
+                )
+            );
     };
 
     const commitLFParameter = (newParams) => {
         let oldParams = { ...lfParams };
         setLfParams(newParams);
-        setLoadFlowParameters(
-            studyUuid,
-            newParams,
-            enqueueSnackbar,
-            intl.formatMessage({
-                id: 'paramsChangingError',
-            })
-        ).then(null, () => setLfParams(oldParams));
+        setLoadFlowParameters(studyUuid, newParams).catch((errorMessage) => {
+            setLfParams(oldParams);
+            displayErrorMessageWithSnackbar(
+                errorMessage,
+                'paramsChangingError',
+                enqueueSnackbar,
+                intlRef
+            );
+        });
     };
 
     const LoadFlowParameters = () => {

@@ -35,7 +35,10 @@ import {
 import { EquipmentTable } from './equipment-table';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
-import { displayErrorMessageWithSnackbar } from '../../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
 
 const useStyles = makeStyles(() => ({
     searchSection: {
@@ -77,6 +80,8 @@ const NetworkTable = (props) => {
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
 
     const intl = useIntl();
+
+    const intlRef = useIntlRef();
 
     useEffect(() => {
         setSelectedColumnsNames(
@@ -153,7 +158,7 @@ const NetworkTable = (props) => {
                 errorMessage,
                 'paramsChangingError',
                 enqueueSnackbar,
-                intl
+                intlRef
             );
         });
 
@@ -163,7 +168,7 @@ const NetworkTable = (props) => {
         selectedColumnsNames,
         allDisplayedColumnsNames,
         enqueueSnackbar,
-        intl,
+        intlRef,
     ]);
 
     const handleToggle = (value) => () => {
