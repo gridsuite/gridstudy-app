@@ -71,6 +71,18 @@ import clsx from 'clsx';
 import Divider from '@material-ui/core/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { RemoteResourceHandler } from './util/remote-resource-handler';
+import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
 
 const drawerWidth = 300;
 
@@ -151,30 +163,36 @@ const StudyPane = (props) => {
 
     const geoData = useSelector((state) => state.geoData);
 
-    const useName = useSelector((state) => state.useName);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
-    const centerName = useSelector((state) => state.centerLabel);
+    const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
 
-    const diagonalName = useSelector((state) => state.diagonalLabel);
+    const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
 
-    const lineFullPath = useSelector((state) => state.lineFullPath);
+    const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
-    const lineParallelPath = useSelector((state) => state.lineParallelPath);
-
-    const lineFlowMode = useSelector((state) => state.lineFlowMode);
-
-    const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
-
-    const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state.lineFlowAlertThreshold)
+    const lineParallelPath = useSelector(
+        (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
 
-    const substationLayout = useSelector((state) => state.substationLayout);
+    const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
+
+    const lineFlowColorMode = useSelector(
+        (state) => state[PARAM_LINE_FLOW_COLOR_MODE]
+    );
+
+    const lineFlowAlertThreshold = useSelector((state) =>
+        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
+    );
+
+    const substationLayout = useSelector(
+        (state) => state[PARAM_SUBSTATION_LAYOUT]
+    );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
     const displayOverloadTable = useSelector(
-        (state) => state.displayOverloadTable
+        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
 
     const [studyNotFound, setStudyNotFound] = useState(false);

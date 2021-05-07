@@ -51,6 +51,35 @@ import {
     getLocalStorageComputedLanguage,
 } from './local-storage';
 import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
+import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LANGUAGE,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_THEME,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
+
+const paramsInitialState = {
+    [PARAM_THEME]: getLocalStorageTheme(),
+    [PARAM_LANGUAGE]: getLocalStorageLanguage(),
+    [PARAM_USE_NAME]: true,
+    [PARAM_LINE_FULL_PATH]: true,
+    [PARAM_LINE_PARALLEL_PATH]: true,
+    [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
+    [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
+    [PARAM_LINE_FLOW_MODE]: 'feeders',
+    [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
+    [PARAM_CENTER_LABEL]: false,
+    [PARAM_DIAGONAL_LABEL]: false,
+    [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
+};
 
 const initialState = {
     studies: [],
@@ -58,30 +87,19 @@ const initialState = {
     studyUuid: null,
     network: null,
     geoData: null,
-    theme: getLocalStorageTheme(),
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    useName: true,
-    language: getLocalStorageLanguage(),
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
-    centerLabel: false,
-    diagonalLabel: false,
-    lineFullPath: true,
-    lineParallelPath: true,
-    lineFlowMode: 'feeders',
-    lineFlowColorMode: 'nominalVoltage',
-    lineFlowAlertThreshold: 100,
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
-    displayOverloadTable: false,
     resultCount: 0,
     filteredNominalVoltages: null,
-    substationLayout: 'horizontal',
     selectItemNetwork: null,
     fullScreen: false,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
+    ...paramsInitialState,
 };
 
 export const reducer = createReducer(initialState, {
@@ -130,13 +148,13 @@ export const reducer = createReducer(initialState, {
     },
 
     [SELECT_THEME]: (state, action) => {
-        state.theme = action.theme;
-        saveLocalStorageTheme(state.theme);
+        state[PARAM_THEME] = action[PARAM_THEME];
+        saveLocalStorageTheme(state[PARAM_THEME]);
     },
 
     [SELECT_LANGUAGE]: (state, action) => {
-        state.language = action.language;
-        saveLocalStorageLanguage(state.language);
+        state[PARAM_LANGUAGE] = action[PARAM_LANGUAGE];
+        saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
     },
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
@@ -159,7 +177,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [USE_NAME]: (state, action) => {
-        state.useName = action.useName;
+        state[PARAM_USE_NAME] = action[PARAM_USE_NAME];
     },
 
     [USER]: (state, action) => {
@@ -167,31 +185,32 @@ export const reducer = createReducer(initialState, {
     },
 
     [CENTER_LABEL]: (state, action) => {
-        state.centerLabel = action.centerLabel;
+        state[PARAM_CENTER_LABEL] = action[PARAM_CENTER_LABEL];
     },
 
     [DIAGONAL_LABEL]: (state, action) => {
-        state.diagonalLabel = action.diagonalLabel;
+        state[PARAM_DIAGONAL_LABEL] = action[PARAM_DIAGONAL_LABEL];
     },
 
     [LINE_FULL_PATH]: (state, action) => {
-        state.lineFullPath = action.lineFullPath;
+        state[PARAM_LINE_FULL_PATH] = action[PARAM_LINE_FULL_PATH];
     },
 
     [LINE_PARALLEL_PATH]: (state, action) => {
-        state.lineParallelPath = action.lineParallelPath;
+        state[PARAM_LINE_PARALLEL_PATH] = action[PARAM_LINE_PARALLEL_PATH];
     },
 
     [LINE_FLOW_MODE]: (state, action) => {
-        state.lineFlowMode = action.lineFlowMode;
+        state[PARAM_LINE_FLOW_MODE] = action[PARAM_LINE_FLOW_MODE];
     },
 
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
-        state.lineFlowColorMode = action.lineFlowColorMode;
+        state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
     },
 
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
-        state.lineFlowAlertThreshold = action.lineFlowAlertThreshold;
+        state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
+            action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
     },
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
@@ -199,7 +218,8 @@ export const reducer = createReducer(initialState, {
     },
 
     [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
-        state.displayOverloadTable = action.displayOverloadTable;
+        state[PARAM_DISPLAY_OVERLOAD_TABLE] =
+            action[PARAM_DISPLAY_OVERLOAD_TABLE];
     },
 
     [INCREASE_RESULT_COUNT]: (state) => {
@@ -215,7 +235,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [SUBSTATION_LAYOUT]: (state, action) => {
-        state.substationLayout = action.substationLayout;
+        state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
     },
 
     [SELECTED_ITEM_NETWORK]: (state, action) => {

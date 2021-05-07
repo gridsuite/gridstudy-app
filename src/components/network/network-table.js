@@ -34,6 +34,11 @@ import {
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
 
 const useStyles = makeStyles(() => ({
     searchSection: {
@@ -64,6 +69,8 @@ const useStyles = makeStyles(() => ({
 const NetworkTable = (props) => {
     const classes = useStyles();
 
+    const { enqueueSnackbar } = useSnackbar();
+
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
     );
@@ -73,6 +80,8 @@ const NetworkTable = (props) => {
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
 
     const intl = useIntl();
+
+    const intlRef = useIntlRef();
 
     useEffect(() => {
         setSelectedColumnsNames(
@@ -141,9 +150,26 @@ const NetworkTable = (props) => {
         updateConfigParameter(
             COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
-        );
+        ).catch((errorMessage) => {
+            setSelectedColumnsNames(
+                new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+            );
+            displayErrorMessageWithSnackbar(
+                errorMessage,
+                'paramsChangingError',
+                enqueueSnackbar,
+                intlRef
+            );
+        });
+
         setPopupSelectColumnNames(false);
-    }, [tabIndex, selectedColumnsNames]);
+    }, [
+        tabIndex,
+        selectedColumnsNames,
+        allDisplayedColumnsNames,
+        enqueueSnackbar,
+        intlRef,
+    ]);
 
     const handleToggle = (value) => () => {
         const newChecked = new Set(selectedColumnsNames.values());

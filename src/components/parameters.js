@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -27,6 +27,7 @@ import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
+import { useSnackbar } from 'notistack';
 
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
@@ -37,16 +38,17 @@ import {
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
-    PARAMS_CENTER_LABEL_KEY,
-    PARAMS_DIAGONAL_LABEL_KEY,
-    PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY,
-    PARAMS_LINE_FLOW_COLOR_MODE_KEY,
-    PARAMS_LINE_FLOW_MODE_KEY,
-    PARAMS_LINE_FULL_PATH_KEY,
-    PARAMS_LINE_PARALLEL_PATH_KEY,
-    PARAMS_SUBSTATION_LAYOUT_KEY,
-    PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -63,50 +65,127 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export function useParameterState(paramName) {
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    const paramGlobalState = useSelector((state) => state[paramName]);
+
+    const [paramLocalState, setParamLocalState] = useState(paramGlobalState);
+
+    useEffect(() => {
+        setParamLocalState(paramGlobalState);
+    }, [paramGlobalState]);
+
+    const handleChangeParamLocalState = useCallback(
+        (value) => {
+            setParamLocalState(value);
+            updateConfigParameter(paramName, value).catch((errorMessage) => {
+                setParamLocalState(paramGlobalState);
+                displayErrorMessageWithSnackbar(
+                    errorMessage,
+                    'paramsChangingError',
+                    enqueueSnackbar,
+                    intlRef
+                );
+            });
+        },
+        [
+            paramName,
+            enqueueSnackbar,
+            intlRef,
+            setParamLocalState,
+            paramGlobalState,
+        ]
+    );
+
+    return [paramLocalState, handleChangeParamLocalState];
+}
+
 const Parameters = ({ showParameters, hideParameters }) => {
     const classes = useStyles();
 
-    const centerLabel = useSelector((state) => state.centerLabel);
-    const diagonalLabel = useSelector((state) => state.diagonalLabel);
-    const lineFullPath = useSelector((state) => state.lineFullPath);
-    const lineParallelPath = useSelector((state) => state.lineParallelPath);
-    const lineFlowMode = useSelector((state) => state.lineFlowMode);
-    const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    const [lineFullPathLocal, handleChangeLineFullPath] = useParameterState(
+        PARAM_LINE_FULL_PATH
+    );
+
+    const [
+        lineParallelPathLocal,
+        handleChangeLineParallelPath,
+    ] = useParameterState(PARAM_LINE_PARALLEL_PATH);
+
+    const [
+        lineFlowAlertThresholdLocal,
+        handleChangeLineFlowAlertThreshold,
+    ] = useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
+
+    const [
+        displayOverloadTableLocal,
+        handleChangeDisplayOverloadTable,
+    ] = useParameterState(PARAM_DISPLAY_OVERLOAD_TABLE);
+
+    const [lineFlowModeLocal, handleChangeLineFlowMode] = useParameterState(
+        PARAM_LINE_FLOW_MODE
+    );
+
+    const [
+        lineFlowColorModeLocal,
+        handleChangeLineFlowColorMode,
+    ] = useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
+
+    const [centerLabelLocal, handleChangeCenterLabel] = useParameterState(
+        PARAM_CENTER_LABEL
+    );
+
+    const [diagonalLabelLocal, handleChangeDiagonalLabel] = useParameterState(
+        PARAM_DIAGONAL_LABEL
+    );
+
+    const [
+        substationLayoutLocal,
+        handleChangeSubstationLayout,
+    ] = useParameterState(PARAM_SUBSTATION_LAYOUT);
+
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const [lfParams, setLfParams] = React.useState(null);
-
-    const lineFlowAlertThreshold = useSelector(
-        (state) => state.lineFlowAlertThreshold
-    );
-    const displayOverloadTable = useSelector(
-        (state) => state.displayOverloadTable
-    );
+    const [lfParams, setLfParams] = useState(null);
 
     const [
         disabledFlowAlertThreshold,
         setDisabledFlowAlertThreshold,
-    ] = React.useState(
-        lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
+    ] = useState(
+        lineFlowColorModeLocal === 'nominalVoltage' &&
+            !displayOverloadTableLocal
     );
 
-    const [tabIndex, setTabIndex] = React.useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
 
     useEffect(() => {
         if (studyUuid) {
-            getLoadFlowParameters(studyUuid).then((params) =>
-                setLfParams(params)
-            );
+            getLoadFlowParameters(studyUuid)
+                .then((params) => setLfParams(params))
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar(
+                        errorMessage,
+                        'paramsRetrievingError',
+                        enqueueSnackbar,
+                        intlRef
+                    )
+                );
         }
-    }, [studyUuid]);
+    }, [studyUuid, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && !displayOverloadTable
+            lineFlowColorModeLocal === 'nominalVoltage' &&
+                !displayOverloadTableLocal
         );
-    }, [lineFlowColorMode, displayOverloadTable]);
-
-    const substationLayout = useSelector((state) => state.substationLayout);
+    }, [lineFlowColorModeLocal, displayOverloadTableLocal]);
 
     const alertThresholdMarks = [
         {
@@ -118,28 +197,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
             label: '100',
         },
     ];
-
-    const handleLineFlowModeChange = (event) => {
-        const lineFlowMode = event.target.value;
-        updateConfigParameter(PARAMS_LINE_FLOW_MODE_KEY, lineFlowMode);
-    };
-
-    const handleLineFlowColorModeChange = (event) => {
-        const lineFlowColorMode = event.target.value;
-        updateConfigParameter(
-            PARAMS_LINE_FLOW_COLOR_MODE_KEY,
-            lineFlowColorMode
-        );
-    };
-
-    const handleLineFlowAlertThresholdChange = (event, value) => {
-        updateConfigParameter(PARAMS_LINE_FLOW_ALERT_THRESHOLD_KEY, value);
-    };
-
-    const handleSubstationLayoutChange = (event) => {
-        const substationLayout = event.target.value;
-        updateConfigParameter(PARAMS_SUBSTATION_LAYOUT_KEY, substationLayout);
-    };
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -226,7 +283,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
         onCommitCallback,
         thresholdMarks
     ) {
-        const [sliderValue, setSliderValue] = React.useState(threshold);
+        const [sliderValue, setSliderValue] = useState(threshold);
 
         const handleValueChanged = (event, newValue) => {
             setSliderValue(newValue);
@@ -268,18 +325,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function SingleLineDiagramParameters() {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(diagonalLabel, 'diagonalLabel', () => {
-                    updateConfigParameter(
-                        PARAMS_DIAGONAL_LABEL_KEY,
-                        !diagonalLabel
-                    );
+                {MakeSwitch(diagonalLabelLocal, 'diagonalLabel', () => {
+                    handleChangeDiagonalLabel(!diagonalLabelLocal);
                 })}
                 <MakeLineSeparator />
-                {MakeSwitch(centerLabel, 'centerLabel', () => {
-                    updateConfigParameter(
-                        PARAMS_CENTER_LABEL_KEY,
-                        !centerLabel
-                    );
+                {MakeSwitch(centerLabelLocal, 'centerLabel', () => {
+                    handleChangeCenterLabel(!centerLabelLocal);
                 })}
                 <MakeLineSeparator />
                 <Grid item xs={8}>
@@ -292,8 +343,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="substation-layout-select-label"
-                        value={substationLayout}
-                        onChange={handleSubstationLayoutChange}
+                        value={substationLayoutLocal}
+                        onChange={(event) => {
+                            handleChangeSubstationLayout(event.target.value);
+                        }}
                     >
                         <MenuItem value={SubstationLayout.HORIZONTAL}>
                             <FormattedMessage id="HorizontalSubstationLayout" />
@@ -323,18 +376,12 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const MapParameters = () => {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(lineFullPath, 'lineFullPath', () => {
-                    updateConfigParameter(
-                        PARAMS_LINE_FULL_PATH_KEY,
-                        !lineFullPath
-                    );
+                {MakeSwitch(lineFullPathLocal, 'lineFullPath', () => {
+                    handleChangeLineFullPath(!lineFullPathLocal);
                 })}
                 <MakeLineSeparator />
-                {MakeSwitch(lineParallelPath, 'lineParallelPath', () => {
-                    updateConfigParameter(
-                        PARAMS_LINE_PARALLEL_PATH_KEY,
-                        !lineParallelPath
-                    );
+                {MakeSwitch(lineParallelPathLocal, 'lineParallelPath', () => {
+                    handleChangeLineParallelPath(!lineParallelPathLocal);
                 })}
                 <MakeLineSeparator />
                 <Grid item xs={8}>
@@ -347,8 +394,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-mode-select-label"
-                        value={lineFlowMode}
-                        onChange={handleLineFlowModeChange}
+                        value={lineFlowModeLocal}
+                        onChange={(event) => {
+                            handleChangeLineFlowMode(event.target.value);
+                        }}
                     >
                         <MenuItem value={LineFlowMode.STATIC_ARROWS}>
                             <FormattedMessage id="StaticArrows" />
@@ -372,8 +421,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-color-mode-select-label"
-                        value={lineFlowColorMode}
-                        onChange={handleLineFlowColorModeChange}
+                        value={lineFlowColorModeLocal}
+                        onChange={(event) => {
+                            handleChangeLineFlowColorMode(event.target.value);
+                        }}
                     >
                         <MenuItem value={LineFlowColorMode.NOMINAL_VOLTAGE}>
                             <FormattedMessage id="NominalVoltage" />
@@ -385,20 +436,21 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 </Grid>
                 <MakeLineSeparator />
                 {MakeSlider(
-                    Number(lineFlowAlertThreshold),
+                    Number(lineFlowAlertThresholdLocal),
                     'AlertThresholdLabel',
                     disabledFlowAlertThreshold,
-                    handleLineFlowAlertThresholdChange,
+                    (event, value) => {
+                        handleChangeLineFlowAlertThreshold(value);
+                    },
                     alertThresholdMarks
                 )}
                 <MakeLineSeparator />
                 {MakeSwitch(
-                    displayOverloadTable,
+                    displayOverloadTableLocal,
                     'displayOverloadTable',
                     () => {
-                        updateConfigParameter(
-                            PARAMS_DISPLAY_OVERLOAD_TABLE_KEY,
-                            !displayOverloadTable
+                        handleChangeDisplayOverloadTable(
+                            !displayOverloadTableLocal
                         );
                     }
                 )}
@@ -438,14 +490,39 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const resetLfParameters = () => {
         setLoadFlowParameters(studyUuid, null)
             .then(() => {
-                return getLoadFlowParameters(studyUuid);
+                return getLoadFlowParameters(studyUuid)
+                    .then((params) => setLfParams(params))
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar(
+                            errorMessage,
+                            'paramsRetrievingError',
+                            enqueueSnackbar,
+                            intlRef
+                        )
+                    );
             })
-            .then((params) => setLfParams(params));
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar(
+                    errorMessage,
+                    'paramsChangingError',
+                    enqueueSnackbar,
+                    intlRef
+                )
+            );
     };
 
     const commitLFParameter = (newParams) => {
+        let oldParams = { ...lfParams };
         setLfParams(newParams);
-        setLoadFlowParameters(studyUuid, newParams).then();
+        setLoadFlowParameters(studyUuid, newParams).catch((errorMessage) => {
+            setLfParams(oldParams);
+            displayErrorMessageWithSnackbar(
+                errorMessage,
+                'paramsChangingError',
+                enqueueSnackbar,
+                intlRef
+            );
+        });
     };
 
     const LoadFlowParameters = () => {
@@ -498,7 +575,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     justify="flex-end"
                 >
                     {makeComponentsFor(defParams, lfParams, commitLFParameter)}
-                    {MakeButton(() => resetLfParameters(), 'resetToDefault')}
+                    {MakeButton(resetLfParameters, 'resetToDefault')}
                 </Grid>
             )
         );

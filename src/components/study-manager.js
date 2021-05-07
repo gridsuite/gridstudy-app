@@ -60,6 +60,7 @@ import Box from '@material-ui/core/Box';
 import CreateStudyForm from './create-study-form';
 import LoaderWithOverlay from './loader-with-overlay';
 import AccessRightsDialog from './access-rights-dialog';
+import { useIntlRef } from '../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -475,8 +476,7 @@ StudyCard.propTypes = {
  * @param {EventListener} onClick Action to open the study
  */
 const StudyManager = ({ onClick }) => {
-    const intl = useIntl();
-    const intlRef = useRef();
+    const intlRef = useIntlRef();
 
     const dispatch = useDispatch();
     const websocketExpectedCloseRef = useRef();
@@ -492,12 +492,6 @@ const StudyManager = ({ onClick }) => {
     const studyCreationSubmitted = useRef(new Set());
 
     const { enqueueSnackbar } = useSnackbar();
-
-    //This useEffect must be at the beginning to be executed before other useEffects which use intlRef.
-    //This ref is used to avoid redoing other useEffects when the language (intl) is changed for things that produce temporary messages using the snackbar.
-    useEffect(() => {
-        intlRef.current = intl;
-    }, [intl]);
 
     const dispatchStudies = useCallback(() => {
         fetchStudyCreationRequests().then((studies) => {
@@ -532,7 +526,7 @@ const StudyManager = ({ onClick }) => {
                 }
             }
         },
-        [enqueueSnackbar]
+        [enqueueSnackbar, intlRef]
     );
 
     const connectNotificationsUpdateStudies = useCallback(() => {

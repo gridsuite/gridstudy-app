@@ -5,6 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LANGUAGE,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_THEME,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
+
 export const NETWORK_CREATED = 'NETWORK_CREATED';
 
 export function networkCreated(network) {
@@ -30,13 +45,13 @@ export function loadGeoDataSuccess(geoData) {
 export const SELECT_THEME = 'SELECT_THEME';
 
 export function selectTheme(theme) {
-    return { type: SELECT_THEME, theme: theme };
+    return { type: SELECT_THEME, [PARAM_THEME]: theme };
 }
 
 export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
 
 export function selectLanguage(language) {
-    return { type: SELECT_LANGUAGE, language: language };
+    return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
 }
 
 export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
@@ -105,7 +120,7 @@ export function removeSelectedFile() {
 export const USE_NAME = 'USE_NAME';
 
 export function selectUseName(useName) {
-    return { type: USE_NAME, useName: useName };
+    return { type: USE_NAME, [PARAM_USE_NAME]: useName };
 }
 
 export const USER = 'USER';
@@ -117,37 +132,43 @@ export function setLoggedUser(user) {
 export const CENTER_LABEL = 'CENTER_LABEL';
 
 export function selectCenterLabelState(centerLabel) {
-    return { type: CENTER_LABEL, centerLabel: centerLabel };
+    return { type: CENTER_LABEL, [PARAM_CENTER_LABEL]: centerLabel };
 }
 
 export const DIAGONAL_LABEL = 'DIAGONAL_LABEL';
 
 export function selectDiagonalLabelState(diagonalLabel) {
-    return { type: DIAGONAL_LABEL, diagonalLabel: diagonalLabel };
+    return { type: DIAGONAL_LABEL, [PARAM_DIAGONAL_LABEL]: diagonalLabel };
 }
 
 export const LINE_FULL_PATH = 'LINE_FULL_PATH';
 
 export function selectLineFullPathState(lineFullPath) {
-    return { type: LINE_FULL_PATH, lineFullPath: lineFullPath };
+    return { type: LINE_FULL_PATH, [PARAM_LINE_FULL_PATH]: lineFullPath };
 }
 
 export const LINE_PARALLEL_PATH = 'LINE_PARALLEL_PATH';
 
 export function selectLineParallelPathState(lineParallelPath) {
-    return { type: LINE_PARALLEL_PATH, lineParallelPath: lineParallelPath };
+    return {
+        type: LINE_PARALLEL_PATH,
+        [PARAM_LINE_PARALLEL_PATH]: lineParallelPath,
+    };
 }
 
 export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
 
 export function selectLineFlowMode(lineFlowMode) {
-    return { type: LINE_FLOW_MODE, lineFlowMode: lineFlowMode };
+    return { type: LINE_FLOW_MODE, [PARAM_LINE_FLOW_MODE]: lineFlowMode };
 }
 
 export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
 
 export function selectLineFlowColorMode(lineFlowColorMode) {
-    return { type: LINE_FLOW_COLOR_MODE, lineFlowColorMode: lineFlowColorMode };
+    return {
+        type: LINE_FLOW_COLOR_MODE,
+        [PARAM_LINE_FLOW_COLOR_MODE]: lineFlowColorMode,
+    };
 }
 
 export const LINE_FLOW_ALERT_THRESHOLD = 'LINE_FLOW_ALERT_THRESHOLD';
@@ -155,7 +176,7 @@ export const LINE_FLOW_ALERT_THRESHOLD = 'LINE_FLOW_ALERT_THRESHOLD';
 export function selectLineFlowAlertThreshold(lineFlowAlertThreshold) {
     return {
         type: LINE_FLOW_ALERT_THRESHOLD,
-        lineFlowAlertThreshold: lineFlowAlertThreshold,
+        [PARAM_LINE_FLOW_ALERT_THRESHOLD]: lineFlowAlertThreshold,
     };
 }
 
@@ -179,7 +200,7 @@ export const DISPLAY_OVERLOAD_TABLE = 'DISPLAY_OVERLOAD_TABLE';
 export function selectDisplayOverloadTableState(displayOverloadTable) {
     return {
         type: DISPLAY_OVERLOAD_TABLE,
-        displayOverloadTable: displayOverloadTable,
+        [PARAM_DISPLAY_OVERLOAD_TABLE]: displayOverloadTable,
     };
 }
 
@@ -208,7 +229,10 @@ export function filteredNominalVoltagesUpdated(filteredNV) {
 export const SUBSTATION_LAYOUT = 'SUBSTATION_LAYOUT';
 
 export function selectSubstationLayout(substationLayout) {
-    return { type: SUBSTATION_LAYOUT, substationLayout: substationLayout };
+    return {
+        type: SUBSTATION_LAYOUT,
+        [PARAM_SUBSTATION_LAYOUT]: substationLayout,
+    };
 }
 
 export const SELECTED_ITEM_NETWORK = 'SELECTED_ITEM_NETWORK';

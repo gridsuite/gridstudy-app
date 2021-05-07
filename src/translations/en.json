@@ -58,6 +58,9 @@
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
 
     "parameters": "Parameters",
+    "paramsChangingError": "An error occured when changing the parameters",
+    "paramsRetrievingError": "An error occurred while retrieving the parameters",
+
     "close": "Close",
 
     "loadingGeoData": "Loading...",

@@ -16,6 +16,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { useSelector } from 'react-redux';
 import { getNominalVoltageColor } from '../utils/colors';
+import { PARAM_USE_NAME } from '../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -55,7 +56,7 @@ const VoltageLevelChoice = ({
     position,
 }) => {
     const classes = useStyles();
-    const useName = useSelector((state) => state.useName);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     return (
         <div className={classes.menu}>
