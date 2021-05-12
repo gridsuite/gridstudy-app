@@ -509,13 +509,13 @@ const StudyManager = ({ onClick }) => {
             if (eventData.headers) {
                 const error = eventData.headers['error'];
                 if (error && error !== undefined) {
-                    const studyUuid = eventData.headers['studyUuid'];
+                    const studyName = eventData.headers['studyName'];
                     const errorMessage =
                         intlRef.current.formatMessage({
                             id: 'studyCreatingError',
                         }) +
                         ' : ' +
-                        studyUuid +
+                        studyName +
                         '\n\n' +
                         error;
                     enqueueSnackbar(errorMessage, {
