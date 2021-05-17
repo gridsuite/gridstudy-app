@@ -19,6 +19,15 @@ import OfflineBoltOutlinedIcon from '@material-ui/icons/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@material-ui/icons/LastPage';
 import EnergiseOtherSideIcon from '@material-ui/icons/FirstPage';
 import { useIntl } from 'react-intl';
+import { useSnackbar } from 'notistack';
+import {
+    energiseLineEnd,
+    lockoutLine,
+    switchOnLine,
+    tripLine,
+} from '../utils/rest-api';
+import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -37,17 +46,83 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LineMenu = ({
-    line,
-    position,
-    handleClose,
-    handleLockout,
-    handleTrip,
-    handleEnergise,
-    handleSwitchOn,
-}) => {
+const LineMenu = ({ line, position, handleClose }) => {
     const classes = useStyles();
     const intl = useIntl();
+
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    function handleLockout(lineId) {
+        lockoutLine(studyUuid, lineId)
+            .then((response) => {
+                if (response.status === 304) {
+                    enqueueSnackbar(
+                        intl.formatMessage({ id: 'UnableToLockoutLine' }),
+                        {
+                            variant: 'warning',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        }
+                    );
+                }
+            })
+            .then(handleClose);
+    }
+
+    function handleTrip(lineId) {
+        tripLine(studyUuid, lineId)
+            .then((response) => {
+                if (response.status === 304) {
+                    enqueueSnackbar(
+                        intl.formatMessage({ id: 'UnableToTripLine' }),
+                        {
+                            variant: 'warning',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        }
+                    );
+                }
+            })
+            .then(handleClose);
+    }
+
+    function handleEnergise(lineId, side) {
+        energiseLineEnd(studyUuid, lineId, side)
+            .then((response) => {
+                if (response.status === 304) {
+                    enqueueSnackbar(
+                        intl.formatMessage({
+                            id: 'UnableToEnergiseLineEnd',
+                        }),
+                        {
+                            variant: 'warning',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        }
+                    );
+                }
+            })
+            .then(handleClose);
+    }
+
+    function handleSwitchOn(lineId) {
+        switchOnLine(studyUuid, lineId)
+            .then((response) => {
+                if (response.status === 304) {
+                    enqueueSnackbar(
+                        intl.formatMessage({ id: 'UnableToSwitchOnLine' }),
+                        {
+                            variant: 'warning',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        }
+                    );
+                }
+            })
+            .then(handleClose);
+    }
 
     return (
         <div className={classes.menu}>
@@ -65,7 +140,7 @@ const LineMenu = ({
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleLockout(line.id)}
-                    selected={line.status === 'PLANNED_OUTAGE'}
+                    selected={line.branchStatus === 'PLANNED_OUTAGE'}
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -84,7 +159,7 @@ const LineMenu = ({
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleTrip(line.id)}
-                    selected={line.status === 'FORCED_OUTAGE'}
+                    selected={line.branchStatus === 'FORCED_OUTAGE'}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -171,6 +246,12 @@ const LineMenu = ({
             </Menu>
         </div>
     );
+};
+
+LineMenu.propTypes = {
+    line: PropTypes.object.isRequired,
+    position: PropTypes.arrayOf(PropTypes.number).isRequired,
+    handleClose: PropTypes.func.isRequired,
 };
 
 export default LineMenu;
