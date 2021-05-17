@@ -64,7 +64,7 @@
     "close": "Fermer",
 
     "loadingGeoData": "Chargement en cours...",
-    "Loading": "Chargement en cours...",
+    "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
 
     "centerOnMap": "Centrer sur la carte",

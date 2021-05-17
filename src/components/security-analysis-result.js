@@ -505,7 +505,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
                 <LoaderWithOverlay
                     color="inherit"
                     loaderSize={70}
-                    loadingMessageText={'Loading'}
+                    loadingMessageText={'LoadingRemoteData'}
                 />
             )}
             {renderTabs()}
