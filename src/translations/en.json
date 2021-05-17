@@ -64,7 +64,7 @@
     "close": "Close",
 
     "loadingGeoData": "Loading...",
-    "Loading": "Loading...",
+    "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
 
     "centerOnMap": "Center on the map",
