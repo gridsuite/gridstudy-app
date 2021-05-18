@@ -240,7 +240,7 @@ export const EquipmentTable = ({
                 <LoaderWithOverlay
                     color="inherit"
                     loaderSize={70}
-                    loadingMessageText={'Loading'}
+                    loadingMessageText={'LoadingRemoteData'}
                 />
             )}
             <VirtualizedTable
