@@ -141,7 +141,8 @@ export default class Network {
     }
 
     updateTwoWindingsTransformers(twoWindingsTransformers) {
-        this.updateEquipments('twoWindingsTransformers',
+        this.updateEquipments(
+            'twoWindingsTransformers',
             this.twoWindingsTransformers,
             twoWindingsTransformers
         );
@@ -155,7 +156,8 @@ export default class Network {
     }
 
     updateThreeWindingsTransformers(threeWindingsTransformers) {
-        this.updateEquipments('threeWindingsTransformers',
+        this.updateEquipments(
+            'threeWindingsTransformers',
             this.threeWindingsTransformers,
             threeWindingsTransformers
         );
@@ -181,15 +183,24 @@ export default class Network {
     }
 
     updateDanglingLines(danglingLines) {
-        this.updateEquipments('danglingLines', this.danglingLines, danglingLines);
+        this.updateEquipments(
+            'danglingLines',
+            this.danglingLines,
+            danglingLines
+        );
     }
 
     updateShuntCompensators(shuntCompensators) {
-        this.updateEquipments('shuntCompensators', this.shuntCompensators, shuntCompensators);
+        this.updateEquipments(
+            'shuntCompensators',
+            this.shuntCompensators,
+            shuntCompensators
+        );
     }
 
     updateStaticVarCompensators(staticVarCompensators) {
-        this.updateEquipments('staticVarCompensators',
+        this.updateEquipments(
+            'staticVarCompensators',
             this.staticVarCompensators,
             staticVarCompensators
         );
@@ -200,11 +211,19 @@ export default class Network {
     }
 
     updateLccConverterStations(lccConverterStations) {
-        this.updateEquipments('lccConverterStations', this.lccConverterStations, lccConverterStations);
+        this.updateEquipments(
+            'lccConverterStations',
+            this.lccConverterStations,
+            lccConverterStations
+        );
     }
 
     updateVscConverterStations(vscConverterStations) {
-        this.updateEquipments('vscConverterStations', this.vscConverterStations, vscConverterStations);
+        this.updateEquipments(
+            'vscConverterStations',
+            this.vscConverterStations,
+            vscConverterStations
+        );
     }
 
     getVoltageLevels() {
@@ -287,7 +306,7 @@ export default class Network {
             Object.create(Object.getPrototypeOf(this)),
             this
         );
-        newNetwork[updatedEquipements] = newEquipements ;
+        newNetwork[updatedEquipements] = newEquipements;
         switch (updatedEquipements) {
             case equipments.substations:
                 newNetwork.completeSubstationsInfos();
