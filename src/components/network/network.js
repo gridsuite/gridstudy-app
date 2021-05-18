@@ -108,17 +108,18 @@ export default class Network {
         );
     }
 
-    updateEquipments(currentEquipments, newEquipements) {
+    updateEquipments(equipmentType, currentEquipments, newEquipements) {
         currentEquipments.forEach((equipment1, index) => {
             const found = newEquipements.filter(
                 (equipment2) => equipment2.id === equipment1.id
             );
             currentEquipments[index] = found.length > 0 ? found[0] : equipment1;
         });
+        this.dispatch(networkEquipmentLoaded(equipmentType, currentEquipments));
     }
 
     updateSubstations(substations) {
-        this.updateEquipments(this.substations, substations);
+        this.updateEquipments('substations', this.substations, substations);
 
         // add more infos
         this.completeSubstationsInfos();
@@ -129,7 +130,7 @@ export default class Network {
     }
 
     updateLines(lines) {
-        this.updateEquipments(this.lines, lines);
+        this.updateEquipments('lines', this.lines, lines);
     }
 
     completeTwoWindingsTransformersInfos() {
@@ -140,7 +141,7 @@ export default class Network {
     }
 
     updateTwoWindingsTransformers(twoWindingsTransformers) {
-        this.updateEquipments(
+        this.updateEquipments('twoWindingsTransformers',
             this.twoWindingsTransformers,
             twoWindingsTransformers
         );
@@ -154,7 +155,7 @@ export default class Network {
     }
 
     updateThreeWindingsTransformers(threeWindingsTransformers) {
-        this.updateEquipments(
+        this.updateEquipments('threeWindingsTransformers',
             this.threeWindingsTransformers,
             threeWindingsTransformers
         );
@@ -168,42 +169,42 @@ export default class Network {
     }
 
     updateGenerators(generators) {
-        this.updateEquipments(this.generators, generators);
+        this.updateEquipments('generators', this.generators, generators);
     }
 
     updateBatteries(batteries) {
-        this.updateEquipments(this.batteries, batteries);
+        this.updateEquipments('batteries', this.batteries, batteries);
     }
 
     updateLoads(loads) {
-        this.updateEquipments(this.loads, loads);
+        this.updateEquipments('loads', this.loads, loads);
     }
 
     updateDanglingLines(danglingLines) {
-        this.updateEquipments(this.danglingLines, danglingLines);
+        this.updateEquipments('danglingLines', this.danglingLines, danglingLines);
     }
 
     updateShuntCompensators(shuntCompensators) {
-        this.updateEquipments(this.shuntCompensators, shuntCompensators);
+        this.updateEquipments('shuntCompensators', this.shuntCompensators, shuntCompensators);
     }
 
     updateStaticVarCompensators(staticVarCompensators) {
-        this.updateEquipments(
+        this.updateEquipments('staticVarCompensators',
             this.staticVarCompensators,
             staticVarCompensators
         );
     }
 
     updateHvdcLines(hvdcLines) {
-        this.updateEquipments(this.hvdcLines, hvdcLines);
+        this.updateEquipments('hvdcLines', this.hvdcLines, hvdcLines);
     }
 
     updateLccConverterStations(lccConverterStations) {
-        this.updateEquipments(this.lccConverterStations, lccConverterStations);
+        this.updateEquipments('lccConverterStations', this.lccConverterStations, lccConverterStations);
     }
 
     updateVscConverterStations(vscConverterStations) {
-        this.updateEquipments(this.vscConverterStations, vscConverterStations);
+        this.updateEquipments('vscConverterStations', this.vscConverterStations, vscConverterStations);
     }
 
     getVoltageLevels() {
@@ -286,7 +287,7 @@ export default class Network {
             Object.create(Object.getPrototypeOf(this)),
             this
         );
-        newNetwork[updatedEquipements] = newEquipements;
+        newNetwork[updatedEquipements] = newEquipements ;
         switch (updatedEquipements) {
             case equipments.substations:
                 newNetwork.completeSubstationsInfos();
