@@ -1,12 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { useIntl } from 'react-intl';
-
 /**
  * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
+import { useEffect, useRef } from 'react';
+import { useIntl } from 'react-intl';
 
 //This useEffect must be at the beginning to be executed before other useEffects which use intlRef.
 //This ref is used to avoid redoing other useEffects when the language (intl) is changed for things that produce temporary messages using the snackbar.
@@ -23,16 +23,24 @@ export function useIntlRef() {
     return intlRef;
 }
 
-export function displayErrorMessageWithSnackbar(
+export function displayErrorMessageWithSnackbar({
     errorMessage,
-    headerMessageId,
     enqueueSnackbar,
-    intl
-) {
-    let messageHeader = intl.current.formatMessage({
-        id: headerMessageId,
-    });
-    enqueueSnackbar(messageHeader + '\n\n' + errorMessage, {
+    headerMessage: { headerMessageId, headerMessageValues, intlRef } = {},
+}) {
+    let message;
+    if (headerMessageId) {
+        let messageHeader = intlRef.current.formatMessage(
+            {
+                id: headerMessageId,
+            },
+            headerMessageValues
+        );
+        message = messageHeader + '\n\n' + errorMessage;
+    } else {
+        message = errorMessage;
+    }
+    enqueueSnackbar(message, {
         variant: 'error',
         persist: true,
         style: { whiteSpace: 'pre-line' },

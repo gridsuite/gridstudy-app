@@ -83,12 +83,14 @@ export function useParameterState(paramName) {
             setParamLocalState(value);
             updateConfigParameter(paramName, value).catch((errorMessage) => {
                 setParamLocalState(paramGlobalState);
-                displayErrorMessageWithSnackbar(
-                    errorMessage,
-                    'paramsChangingError',
-                    enqueueSnackbar,
-                    intlRef
-                );
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'paramsChangingError',
+                        intlRef: intlRef,
+                    },
+                });
             });
         },
         [
@@ -170,12 +172,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
             getLoadFlowParameters(studyUuid)
                 .then((params) => setLfParams(params))
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar(
-                        errorMessage,
-                        'paramsRetrievingError',
-                        enqueueSnackbar,
-                        intlRef
-                    )
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'paramsRetrievingError',
+                            intlRef: intlRef,
+                        },
+                    })
                 );
         }
     }, [studyUuid, enqueueSnackbar, intlRef]);
@@ -493,21 +497,25 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 return getLoadFlowParameters(studyUuid)
                     .then((params) => setLfParams(params))
                     .catch((errorMessage) =>
-                        displayErrorMessageWithSnackbar(
-                            errorMessage,
-                            'paramsRetrievingError',
-                            enqueueSnackbar,
-                            intlRef
-                        )
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'paramsRetrievingError',
+                                intlRef: intlRef,
+                            },
+                        })
                     );
             })
             .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar(
-                    errorMessage,
-                    'paramsChangingError',
-                    enqueueSnackbar,
-                    intlRef
-                )
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'paramsChangingError',
+                        intlRef: intlRef,
+                    },
+                })
             );
     };
 
@@ -516,12 +524,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
         setLfParams(newParams);
         setLoadFlowParameters(studyUuid, newParams).catch((errorMessage) => {
             setLfParams(oldParams);
-            displayErrorMessageWithSnackbar(
-                errorMessage,
-                'paramsChangingError',
-                enqueueSnackbar,
-                intlRef
-            );
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'paramsChangingError',
+                    intlRef: intlRef,
+                },
+            });
         });
     };
 

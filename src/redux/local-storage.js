@@ -7,9 +7,10 @@
 
 import { DARK_THEME, LANG_SYSTEM } from '@gridsuite/commons-ui';
 import { getComputedLanguage } from '../utils/language';
+import { APP_NAME } from '../utils/config-params';
 
-const LOCAL_STORAGE_THEME_KEY = process.env.REACT_APP_NAME + '_THEME';
-const LOCAL_STORAGE_LANGUAGE_KEY = process.env.REACT_APP_NAME + '_LANGUAGE';
+const LOCAL_STORAGE_THEME_KEY = (APP_NAME + '_THEME').toUpperCase();
+const LOCAL_STORAGE_LANGUAGE_KEY = (APP_NAME + '_LANGUAGE').toUpperCase();
 
 export const getLocalStorageTheme = () => {
     return localStorage.getItem(LOCAL_STORAGE_THEME_KEY) || DARK_THEME;

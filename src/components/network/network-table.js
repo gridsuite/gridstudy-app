@@ -154,12 +154,14 @@ const NetworkTable = (props) => {
             setSelectedColumnsNames(
                 new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
             );
-            displayErrorMessageWithSnackbar(
-                errorMessage,
-                'paramsChangingError',
-                enqueueSnackbar,
-                intlRef
-            );
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'paramsChangingError',
+                    intlRef: intlRef,
+                },
+            });
         });
 
         setPopupSelectColumnNames(false);
