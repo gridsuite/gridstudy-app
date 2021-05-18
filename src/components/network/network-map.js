@@ -271,7 +271,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 voltageLevelId1: info.object.voltageLevelId1,
                 voltageLevelId2: info.object.voltageLevelId2,
             };
-            props.onLineClick(line, info.x + 200, info.y);
+            props.onLineClick(line, info.x, info.y + 60);
         }
     }
 
