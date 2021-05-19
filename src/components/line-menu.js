@@ -65,7 +65,7 @@ const LineMenu = ({
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleLockout(line.id)}
-                    selected={line.status === 'PLANNED_OUTAGE'}
+                    selected={line.branchStatus === 'PLANNED_OUTAGE'}
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -84,7 +84,7 @@ const LineMenu = ({
                 <MenuItem
                     className={classes.menuItem}
                     onClick={() => handleTrip(line.id)}
-                    selected={line.status === 'FORCED_OUTAGE'}
+                    selected={line.branchStatus === 'FORCED_OUTAGE'}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
