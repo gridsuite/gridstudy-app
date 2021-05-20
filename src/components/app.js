@@ -193,12 +193,14 @@ const App = () => {
                 fetchConfigParameter(eventData.headers['parameterName'])
                     .then((param) => updateParams([param]))
                     .catch((errorMessage) =>
-                        displayErrorMessageWithSnackbar(
-                            errorMessage,
-                            'paramsChangingError',
-                            enqueueSnackbar,
-                            intlRef
-                        )
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'paramsRetrievingError',
+                                intlRef: intlRef,
+                            },
+                        })
                     );
             }
         };
@@ -271,23 +273,27 @@ const App = () => {
             fetchConfigParameters(COMMON_APP_NAME)
                 .then((params) => updateParams(params))
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar(
-                        errorMessage,
-                        'paramsChangingError',
-                        enqueueSnackbar,
-                        intlRef
-                    )
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'paramsRetrievingError',
+                            intlRef: intlRef,
+                        },
+                    })
                 );
 
             fetchConfigParameters(APP_NAME)
                 .then((params) => updateParams(params))
                 .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar(
-                        errorMessage,
-                        'paramsChangingError',
-                        enqueueSnackbar,
-                        intlRef
-                    )
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'paramsRetrievingError',
+                            intlRef: intlRef,
+                        },
+                    })
                 );
 
             const ws = connectNotificationsUpdateConfig();

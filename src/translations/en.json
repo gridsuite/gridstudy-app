@@ -45,7 +45,7 @@
     "caseDataErrorMsg": "An error occured when importing the case",
     "uploadErrorMsg": "Please upload the case file",
     "studyCreated": "Study created",
-    "studyCreatingError": "An error occurred while creating the study",
+    "studyCreatingError": "An error occurred while creating the study : {studyName}",
     "studyNameAlreadyUsed": "This study name is already used",
     "nameValidityCheckErrorMsg": "Error while checking name validity : ",
 

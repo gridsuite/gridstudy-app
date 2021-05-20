@@ -60,7 +60,7 @@ import Box from '@material-ui/core/Box';
 import CreateStudyForm from './create-study-form';
 import LoaderWithOverlay from './loader-with-overlay';
 import AccessRightsDialog from './access-rights-dialog';
-import { useIntlRef } from '../utils/messages';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -508,20 +508,16 @@ const StudyManager = ({ onClick }) => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers) {
                 const error = eventData.headers['error'];
-                if (error && error !== undefined) {
-                    const studyUuid = eventData.headers['studyUuid'];
-                    const errorMessage =
-                        intlRef.current.formatMessage({
-                            id: 'studyCreatingError',
-                        }) +
-                        ' : ' +
-                        studyUuid +
-                        '\n\n' +
-                        error;
-                    enqueueSnackbar(errorMessage, {
-                        variant: 'error',
-                        persist: true,
-                        style: { whiteSpace: 'pre-line' },
+                if (error) {
+                    const studyName = eventData.headers['studyName'];
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: error,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'studyCreatingError',
+                            headerMessageValues: { studyName: studyName },
+                            intlRef: intlRef,
+                        },
                     });
                 }
             }
