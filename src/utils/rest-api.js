@@ -724,46 +724,40 @@ export function getLoadFlowParameters(studyUuid) {
     );
 }
 
-export function lockoutLine(studyUuid, lineId) {
-    console.info('locking out line ' + lineId + ' ...');
-    const lockOutLineUrl =
+function changeLineState(studyUuid, lineId, state) {
+    const changeLineStateUrl =
         getStudyUrl(studyUuid) +
         '/network-modification/lines/' +
         encodeURIComponent(lineId) +
-        '/lockout';
-    console.debug(lockOutLineUrl);
-    return backendFetch(lockOutLineUrl, { method: 'put' });
+        '/state';
+    console.debug('%s with body: %s', changeLineStateUrl, state);
+    return backendFetch(changeLineStateUrl, { method: 'put', body: state });
+}
+
+export function lockoutLine(studyUuid, lineId) {
+    console.info('locking out line ' + lineId + ' ...');
+    return changeLineState(studyUuid, lineId, 'lockout');
 }
 
 export function tripLine(studyUuid, lineId) {
     console.info('tripping line ' + lineId + ' ...');
-    const tripLineUrl =
-        getStudyUrl(studyUuid) +
-        '/network-modification/lines/' +
-        encodeURIComponent(lineId) +
-        '/trip';
-    console.debug(tripLineUrl);
-    return backendFetch(tripLineUrl, { method: 'put' });
+    return changeLineState(studyUuid, lineId, 'trip');
 }
 
 export function energiseLineEnd(studyUuid, lineId, lineEnd) {
-    const energiseLineEndUrl =
-        getStudyUrl(studyUuid) +
-        '/network-modification/lines/' +
-        encodeURIComponent(lineId) +
-        '/energiseEnd?' +
-        new URLSearchParams({ side: lineEnd }).toString();
-    console.debug(energiseLineEndUrl);
-    return backendFetch(energiseLineEndUrl, { method: 'put' });
+    console.info('energise line ' + lineId + ' end ' + lineEnd + ' ...');
+    return changeLineState(
+        studyUuid,
+        lineId,
+        lineEnd === 'ONE'
+            ? 'energiseEndOne'
+            : lineEnd === 'TWO'
+            ? 'energiseEndTwo'
+            : null
+    );
 }
 
 export function switchOnLine(studyUuid, lineId) {
     console.info('switching on line ' + lineId + ' ...');
-    const switchOnLineUrl =
-        getStudyUrl(studyUuid) +
-        '/network-modification/lines/' +
-        encodeURIComponent(lineId) +
-        '/switchOn';
-    console.debug(switchOnLineUrl);
-    return backendFetch(switchOnLineUrl, { method: 'put' });
+    return changeLineState(studyUuid, lineId, 'switchOn');
 }

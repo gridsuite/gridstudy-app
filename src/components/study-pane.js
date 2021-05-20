@@ -807,7 +807,7 @@ const StudyPane = (props) => {
                     enqueueSnackbar(
                         intl.formatMessage({ id: 'UnableToLockoutLine' }),
                         {
-                            variant: 'warning',
+                            variant: 'info',
                             persist: false,
                             style: { whiteSpace: 'pre-line' },
                         }
@@ -824,7 +824,7 @@ const StudyPane = (props) => {
                     enqueueSnackbar(
                         intl.formatMessage({ id: 'UnableToTripLine' }),
                         {
-                            variant: 'warning',
+                            variant: 'info',
                             persist: false,
                             style: { whiteSpace: 'pre-line' },
                         }
@@ -841,7 +841,7 @@ const StudyPane = (props) => {
                     enqueueSnackbar(
                         intl.formatMessage({ id: 'UnableToEnergiseLineEnd' }),
                         {
-                            variant: 'warning',
+                            variant: 'info',
                             persist: false,
                             style: { whiteSpace: 'pre-line' },
                         }
@@ -858,7 +858,7 @@ const StudyPane = (props) => {
                     enqueueSnackbar(
                         intl.formatMessage({ id: 'UnableToSwitchOnLine' }),
                         {
-                            variant: 'warning',
+                            variant: 'info',
                             persist: false,
                             style: { whiteSpace: 'pre-line' },
                         }
