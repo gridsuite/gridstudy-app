@@ -217,5 +217,12 @@
     "StopComputation": "Stop computation",
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
-    "CheckAll": "Select all / none"
+    "CheckAll": "Select all / none",
+
+    "Provider": "Provider: ",
+    "Default": "Default",
+    "OpenLoadFlow": "Open Load Flow",
+    "Hades2": "Hades 2",
+    "setLoadFlowProviderError": "An error occured when updating the provider",
+    "getLoadFlowProviderError": "An error occurred while getting the load flow provider"
 }
