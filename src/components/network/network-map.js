@@ -258,6 +258,8 @@ const NetworkMap = forwardRef((props, ref) => {
             info.object.voltageLevelId1 &&
             info.object.voltageLevelId2
         ) {
+            // picked line properties are retrieved from network data and not from pickable object infos,
+            // because pickable object infos might not be up to date
             let line = network.linesById.get(info.object.id);
             props.onLineClick(line, info.x, info.y + 60);
         }
