@@ -724,29 +724,29 @@ export function getLoadFlowParameters(studyUuid) {
     );
 }
 
-function changeLineState(studyUuid, lineId, state) {
-    const changeLineStateUrl =
+function changeLineStatus(studyUuid, lineId, status) {
+    const changeLineStatusUrl =
         getStudyUrl(studyUuid) +
         '/network-modification/lines/' +
         encodeURIComponent(lineId) +
-        '/state';
-    console.debug('%s with body: %s', changeLineStateUrl, state);
-    return backendFetch(changeLineStateUrl, { method: 'put', body: state });
+        '/status';
+    console.debug('%s with body: %s', changeLineStatusUrl, status);
+    return backendFetch(changeLineStatusUrl, { method: 'put', body: status });
 }
 
 export function lockoutLine(studyUuid, lineId) {
     console.info('locking out line ' + lineId + ' ...');
-    return changeLineState(studyUuid, lineId, 'lockout');
+    return changeLineStatus(studyUuid, lineId, 'lockout');
 }
 
 export function tripLine(studyUuid, lineId) {
     console.info('tripping line ' + lineId + ' ...');
-    return changeLineState(studyUuid, lineId, 'trip');
+    return changeLineStatus(studyUuid, lineId, 'trip');
 }
 
 export function energiseLineEnd(studyUuid, lineId, lineEnd) {
     console.info('energise line ' + lineId + ' end ' + lineEnd + ' ...');
-    return changeLineState(
+    return changeLineStatus(
         studyUuid,
         lineId,
         lineEnd === 'ONE'
@@ -759,5 +759,5 @@ export function energiseLineEnd(studyUuid, lineId, lineEnd) {
 
 export function switchOnLine(studyUuid, lineId) {
     console.info('switching on line ' + lineId + ' ...');
-    return changeLineState(studyUuid, lineId, 'switchOn');
+    return changeLineStatus(studyUuid, lineId, 'switchOn');
 }
