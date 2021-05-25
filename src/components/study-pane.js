@@ -83,8 +83,10 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
+import LateralToolbar from './lateral-toolbar';
 
 const drawerWidth = 300;
+const drawerToolbarWidth = 48;
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -118,6 +120,9 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
     },
+    drawerToolbar: {
+        width: drawerToolbarWidth,
+    },
     drawerPaper: {
         position: 'static',
         overflow: 'hidden',
@@ -127,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: -drawerWidth,
+        marginLeft: -drawerWidth - drawerToolbarWidth,
     },
     mapCtrlBottomLeft: {
         '& .mapboxgl-ctrl-bottom-left': {
@@ -135,6 +140,7 @@ const useStyles = makeStyles((theme) => ({
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
             }),
+            left: drawerToolbarWidth,
         },
     },
     mapCtrlBottomLeftShift: {
@@ -143,7 +149,7 @@ const useStyles = makeStyles((theme) => ({
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            left: drawerWidth,
+            left: drawerWidth + drawerToolbarWidth,
         },
     },
 }));
@@ -844,36 +850,6 @@ const StudyPane = (props) => {
                 substationLayout
             );
         }
-        const sldShowing = displayedVoltageLevelId || displayedSubstationId;
-        let openDrawerComponent = null;
-        if (!drawerOpen) {
-            if (sldShowing) {
-                openDrawerComponent = (
-                    <>
-                        <IconButton
-                            style={{ padding: 0 }}
-                            onClick={toggleDrawer}
-                        >
-                            <ChevronRightIcon />
-                        </IconButton>
-                        <Divider
-                            orientation="vertical"
-                            flexItem
-                            variant="middle"
-                        />
-                    </>
-                );
-            } else {
-                openDrawerComponent = (
-                    <IconButton
-                        style={{ alignSelf: 'flex-start' }}
-                        onClick={toggleDrawer}
-                    >
-                        <ChevronRightIcon />
-                    </IconButton>
-                );
-            }
-        }
 
         return (
             <div className={clsx('relative singlestretch-child', classes.map)}>
@@ -976,6 +952,32 @@ const StudyPane = (props) => {
                     </div>
                 </div>
                 <Drawer
+                    variant={'permanent'}
+                    className={classes.drawerToolbar}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'none',
+                        overflowX: 'none',
+                    }}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <LateralToolbar
+                            handleDisplayVoltageLevel={toggleDrawer}/>
+                    </div>
+                </Drawer>
+                <Drawer
                     variant={'persistent'}
                     className={clsx(classes.drawer, {
                         [classes.drawerShift]: !drawerOpen,
@@ -1005,12 +1007,10 @@ const StudyPane = (props) => {
                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
-                            hideExplorer={toggleDrawer}
                             visibleSubstation={visibleSubstation}
                         />
                     </div>
                 </Drawer>
-                {!sldShowing && openDrawerComponent}
                 {/*
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
@@ -1031,7 +1031,6 @@ const StudyPane = (props) => {
                                 onNextVoltageLevelClick={openVoltageLevel}
                                 onBreakerClick={handleUpdateSwitchState}
                                 diagramTitle={sldTitle}
-                                diagramAction={openDrawerComponent}
                                 svgUrl={svgUrl}
                                 ref={sldRef}
                                 updateSwitchMsg={updateSwitchMsg}

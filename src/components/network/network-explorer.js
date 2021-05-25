@@ -39,7 +39,6 @@ const itemSize = 48;
 const useStyles = makeStyles((theme) => ({
     textField: {
         margin: theme.spacing(1),
-        width: 'calc(100% - 64px)', // to fix an issue with fullWidth of textfield and get << on the same line
     },
     listSubHeaderRoot: {
         backgroundColor: darken(theme.palette.background.default, 0.2),
@@ -87,7 +86,6 @@ const NetworkExplorer = ({
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
     onSubstationFocus,
-    hideExplorer,
     visibleSubstation,
 }) => {
     const intl = useIntl();
@@ -351,9 +349,6 @@ const NetworkExplorer = ({
                         ),
                     }}
                 />
-                <IconButton onClick={hideExplorer}>
-                    <ChevronLeftIcon />
-                </IconButton>
             </Grid>
             <Divider />
             <Grid item style={{ flex: '1 1 auto' }}>
