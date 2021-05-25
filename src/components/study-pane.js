@@ -974,7 +974,9 @@ const StudyPane = (props) => {
                         className={classes.drawerDiv}
                     >
                         <LateralToolbar
-                            handleDisplayVoltageLevel={toggleDrawer}/>
+                            handleDisplayNetworkExplorer={toggleDrawer}
+                            networkExplorerDisplayed={drawerOpen}
+                        />
                     </div>
                 </Drawer>
                 <Drawer
@@ -1024,6 +1026,7 @@ const StudyPane = (props) => {
                                 display: 'flex',
                                 pointerEvents: 'none',
                                 flexDirection: 'column',
+                                marginLeft: drawerOpen ? 0 : drawerToolbarWidth,
                             }}
                         >
                             <SingleLineDiagram
