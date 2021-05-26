@@ -61,7 +61,7 @@ const LineMenu = ({ line, position, handleClose }) => {
                     enqueueSnackbar(
                         intl.formatMessage({ id: 'UnableToLockoutLine' }),
                         {
-                            variant: 'warning',
+                            variant: 'info',
                             persist: false,
                             style: { whiteSpace: 'pre-line' },
                         }
@@ -78,7 +78,7 @@ const LineMenu = ({ line, position, handleClose }) => {
                     enqueueSnackbar(
                         intl.formatMessage({ id: 'UnableToTripLine' }),
                         {
-                            variant: 'warning',
+                            variant: 'info',
                             persist: false,
                             style: { whiteSpace: 'pre-line' },
                         }
@@ -97,7 +97,7 @@ const LineMenu = ({ line, position, handleClose }) => {
                             id: 'UnableToEnergiseLineEnd',
                         }),
                         {
-                            variant: 'warning',
+                            variant: 'info',
                             persist: false,
                             style: { whiteSpace: 'pre-line' },
                         }
@@ -114,7 +114,7 @@ const LineMenu = ({ line, position, handleClose }) => {
                     enqueueSnackbar(
                         intl.formatMessage({ id: 'UnableToSwitchOnLine' }),
                         {
-                            variant: 'warning',
+                            variant: 'info',
                             persist: false,
                             style: { whiteSpace: 'pre-line' },
                         }
@@ -125,126 +125,119 @@ const LineMenu = ({ line, position, handleClose }) => {
     }
 
     return (
-        <div className={classes.menu}>
-            <Menu
-                anchorReference="anchorPosition"
-                anchorPosition={{
-                    position: 'absolute',
-                    top: position[1],
-                    left: position[0],
-                }}
-                id="line-menu"
-                open={true}
-                onClose={handleClose}
+        <Menu
+            className={classes.menu}
+            anchorReference="anchorPosition"
+            anchorPosition={{
+                position: 'absolute',
+                top: position[1],
+                left: position[0],
+            }}
+            id="line-menu"
+            open={true}
+            onClose={handleClose}
+        >
+            <MenuItem
+                className={classes.menuItem}
+                onClick={() => handleLockout(line.id)}
+                selected={line.branchStatus === 'PLANNED_OUTAGE'}
             >
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleLockout(line.id)}
-                    selected={line.branchStatus === 'PLANNED_OUTAGE'}
-                >
-                    <ListItemIcon>
-                        <LockOutlinedIcon />
-                    </ListItemIcon>
+                <ListItemIcon>
+                    <LockOutlinedIcon />
+                </ListItemIcon>
 
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'LockoutLine' })}
-                            </Typography>
-                        }
-                    />
-                </MenuItem>
-
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleTrip(line.id)}
-                    selected={line.branchStatus === 'FORCED_OUTAGE'}
-                >
-                    <ListItemIcon>
-                        <OfflineBoltOutlinedIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'TripLine' })}
-                            </Typography>
-                        }
-                    />
-                </MenuItem>
-
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleEnergise(line.id, 'ONE')}
-                    selected={
-                        line.terminal1Connected && !line.terminal2Connected
+                <ListItemText
+                    className={classes.listItemText}
+                    primary={
+                        <Typography noWrap>
+                            {intl.formatMessage({ id: 'LockoutLine' })}
+                        </Typography>
                     }
-                >
-                    <ListItemIcon>
-                        <EnergiseOneSideIcon />
-                    </ListItemIcon>
+                />
+            </MenuItem>
 
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage(
-                                    { id: 'EnergiseOnOneEnd' },
-                                    { substation: line.voltageLevelId1 }
-                                )}
-                            </Typography>
-                        }
-                    />
-                </MenuItem>
+            <MenuItem
+                className={classes.menuItem}
+                onClick={() => handleTrip(line.id)}
+                selected={line.branchStatus === 'FORCED_OUTAGE'}
+            >
+                <ListItemIcon>
+                    <OfflineBoltOutlinedIcon />
+                </ListItemIcon>
 
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleEnergise(line.id, 'TWO')}
-                    selected={
-                        line.terminal2Connected && !line.terminal1Connected
+                <ListItemText
+                    className={classes.listItemText}
+                    primary={
+                        <Typography noWrap>
+                            {intl.formatMessage({ id: 'TripLine' })}
+                        </Typography>
                     }
-                >
-                    <ListItemIcon>
-                        <EnergiseOtherSideIcon />
-                    </ListItemIcon>
+                />
+            </MenuItem>
 
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage(
-                                    { id: 'EnergiseOnOneEnd' },
-                                    { substation: line.voltageLevelId2 }
-                                )}
-                            </Typography>
-                        }
-                    />
-                </MenuItem>
+            <MenuItem
+                className={classes.menuItem}
+                onClick={() => handleEnergise(line.id, 'ONE')}
+                selected={line.terminal1Connected && !line.terminal2Connected}
+            >
+                <ListItemIcon>
+                    <EnergiseOneSideIcon />
+                </ListItemIcon>
 
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => handleSwitchOn(line.id)}
-                    selected={
-                        line.terminal1Connected && line.terminal2Connected
+                <ListItemText
+                    className={classes.listItemText}
+                    primary={
+                        <Typography noWrap>
+                            {intl.formatMessage(
+                                { id: 'EnergiseOnOneEnd' },
+                                { substation: line.voltageLevelId1 }
+                            )}
+                        </Typography>
                     }
-                >
-                    <ListItemIcon>
-                        <PlayIcon />
-                    </ListItemIcon>
+                />
+            </MenuItem>
 
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'SwitchOnLine' })}
-                            </Typography>
-                        }
-                    />
-                </MenuItem>
-            </Menu>
-        </div>
+            <MenuItem
+                className={classes.menuItem}
+                onClick={() => handleEnergise(line.id, 'TWO')}
+                selected={line.terminal2Connected && !line.terminal1Connected}
+            >
+                <ListItemIcon>
+                    <EnergiseOtherSideIcon />
+                </ListItemIcon>
+
+                <ListItemText
+                    className={classes.listItemText}
+                    primary={
+                        <Typography noWrap>
+                            {intl.formatMessage(
+                                { id: 'EnergiseOnOneEnd' },
+                                { substation: line.voltageLevelId2 }
+                            )}
+                        </Typography>
+                    }
+                />
+            </MenuItem>
+
+            <MenuItem
+                className={classes.menuItem}
+                onClick={() => handleSwitchOn(line.id)}
+                selected={line.terminal1Connected && line.terminal2Connected}
+            >
+                <ListItemIcon>
+                    <PlayIcon />
+                </ListItemIcon>
+
+                <ListItemText
+                    className={classes.listItemText}
+                    primary={
+                        <Typography noWrap>
+                            {intl.formatMessage({ id: 'SwitchOnLine' })}
+                        </Typography>
+                    }
+                />
+            </MenuItem>
+        </Menu>
     );
 };
 
