@@ -217,5 +217,7 @@
     "StopComputation": "Stop computation",
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
-    "CheckAll": "Select all / none"
+    "CheckAll": "Select all / none",
+    "SubstationList": "Substation list",
+    "HypothesisTree": "Hypothesis tree (unavailable)"
 }
