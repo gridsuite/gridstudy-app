@@ -85,7 +85,12 @@ const useStyles = makeStyles((theme) => ({
             stroke: theme.palette.text.primary,
         },
         '& .arrow': {
+            stroke: 'none',
             fill: theme.palette.text.primary,
+        },
+        '& .arrow-hover': {
+            stroke: 'none',
+            fill: 'none',
         },
     },
     close: {
@@ -388,38 +393,48 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, []);
 
     useLayoutEffect(() => {
-        function createSvgArrow(element, position, x, highestY, lowestY) {
-            let svgInsert = document.getElementById(element.id).parentElement;
-            let group = document.createElementNS(SVG_NS, 'g');
+        function createSvgArrow(element, position) {
+            const svgElement = document.getElementById(element.id);
+            const svgLabel = svgElement.querySelector('text');
 
-            let y;
+            const svgGroup = document.createElementNS(SVG_NS, 'g');
+            svgGroup.innerHTML = arrowSvg + arrowHoverSvg;
+            svgElement.appendChild(svgGroup);
+
+            svgLabel.setAttribute(
+                'y',
+                parseInt(svgLabel.getAttribute('y')) +
+                    Math.sign(parseInt(svgLabel.getAttribute('y'))) *
+                        svgGroup.getBBox().height
+            );
+
+            let x = svgGroup.getBBox().width / 2;
+            let offsetX = 10; // 2 * constante dans SLD
+            let y = parseInt(svgLabel.getAttribute('y'));
+            let offsetY =
+                svgGroup.getBBox().height / 2 - svgLabel.getBBox().height / 2;
             if (position === 'TOP') {
-                y = lowestY - 65;
-                x = x - 22;
+                y = y - offsetY;
+                x = -x - offsetX;
             } else {
-                y = highestY + 65;
-                x = x + 22;
+                y = y + offsetY;
+                x = x + offsetX;
             }
-
             if (position === 'BOTTOM') {
-                group.setAttribute(
+                svgGroup.setAttribute(
                     'transform',
                     'translate(' + x + ',' + y + ') rotate(180)'
                 );
             } else {
-                group.setAttribute(
+                svgGroup.setAttribute(
                     'transform',
                     'translate(' + x + ',' + y + ')'
                 );
             }
 
-            group.innerHTML = arrowSvg + arrowHoverSvg;
-
-            svgInsert.appendChild(group);
-
             // handling the navigation between voltage levels
-            group.style.cursor = 'pointer';
-            group.addEventListener('click', function (e) {
+            svgGroup.style.cursor = 'pointer';
+            svgGroup.addEventListener('click', function (e) {
                 const id = document.getElementById(element.id).id;
                 const meta = svg.metadata.nodes.find(
                     (other) => other.id === id
@@ -428,21 +443,20 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             });
 
             //handling the color changes when hovering
-            group.addEventListener('mouseenter', function (e) {
+            svgGroup.addEventListener('mouseenter', function (e) {
                 e.target.querySelector('.arrow').style.fill =
                     theme.palette.background.paper;
                 e.target.querySelector('.arrow-hover').style.fill =
                     'currentColor';
             });
 
-            group.addEventListener('mouseleave', function (e) {
+            svgGroup.addEventListener('mouseleave', function (e) {
                 e.target.querySelector('.arrow').style.fill = 'currentColor';
-                e.target.querySelector('.arrow-hover').style.fill =
-                    theme.palette.background.paper;
+                e.target.querySelector('.arrow-hover').style.fill = 'none';
             });
         }
 
-        function addNavigationArrow(svg) {
+        function addNavigationArrows(svg) {
             let navigable = svg.metadata.nodes.filter(
                 (el) => el.nextVId !== null
             );
@@ -458,50 +472,14 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 return vlList.indexOf(element.nextVId) === -1;
             });
 
-            let highestY = new Map();
-            let lowestY = new Map();
-            let y;
-
             navigable.forEach((element) => {
-                let transform = document
-                    .getElementById(element.id)
-                    .getAttribute('transform')
-                    .split(',');
-
-                y = parseInt(transform[1].match(/\d+/));
-                if (
-                    highestY.get(element.vid) === undefined ||
-                    y > highestY.get(element.vid)
-                ) {
-                    highestY.set(element.vid, y);
-                }
-                if (
-                    lowestY.get(element.vid) === undefined ||
-                    y < lowestY.get(element.vid)
-                ) {
-                    lowestY.set(element.vid, y);
-                }
-            });
-
-            navigable.forEach((element) => {
-                let transform = document
-                    .getElementById(element.id)
-                    .getAttribute('transform')
-                    .split(',');
-                let x = parseInt(transform[0].match(/\d+/));
-                createSvgArrow(
-                    element,
-                    element.direction,
-                    x,
-                    highestY.get(element.vid),
-                    lowestY.get(element.vid)
-                );
+                createSvgArrow(element, element.direction);
             });
         }
 
         if (svg.svg) {
             //need to add it there so the bbox has the right size
-            addNavigationArrow(svg);
+            addNavigationArrows(svg);
             // calculate svg width and height from svg bounding box
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -547,7 +525,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             draw.on('panEnd', function (evt) {
                 divElt.style.cursor = 'default';
             });
-            addNavigationArrow(svg);
+            addNavigationArrows(svg);
 
             // handling the right click on a branch feeder (menu)
             if (!isComputationRunning) {
