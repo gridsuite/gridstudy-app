@@ -313,6 +313,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         const selectionPadding = 4;
         const bounds = svgText.getBBox();
         const selectionRect = document.createElementNS(SVG_NS, 'rect');
+        selectionRect.setAttribute('class', 'sld-label-selection');
         const style = getComputedStyle(svgText);
         const padding_top = parseInt(style['padding-top']);
         const padding_left = parseInt(style['padding-left']);
@@ -366,7 +367,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const showFeederSelection = useCallback(
         (svgText) => {
-            if (!svgText.parentNode.querySelector('rect')) {
+            if (
+                svgText.parentNode.getElementsByClassName('sld-label-selection')
+                    .length === 0
+            ) {
                 addFeederSelectionRect(svgText, theme);
             }
         },
@@ -375,9 +379,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const hideFeederSelection = useCallback((svgText) => {
         svgText.style.removeProperty('fill');
-        const rect = svgText.parentNode.querySelector('rect');
-        if (rect) {
-            svgText.parentNode.removeChild(rect);
+        const selectionRect = svgText.parentNode.getElementsByClassName(
+            'sld-label-selection'
+        );
+        if (selectionRect.length !== 0) {
+            svgText.parentNode.removeChild(selectionRect[0]);
         }
     }, []);
 
@@ -545,14 +551,17 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
             // handling the right click on a branch feeder (menu)
             if (!isComputationRunning) {
-                const lineFeeders = svg.metadata.nodes.filter((element) =>
-                    LINE_COMPONENT_TYPES.has(element.componentType)
+                const lineFeeders = svg.metadata.nodes.filter(
+                    (element) =>
+                        LINE_COMPONENT_TYPES.has(element.componentType) &&
+                        // FIXME : currently ony lines (and not transformers) are taken into account
+                        // This test must be removed
+                        network.getLine(element.equipmentId)
                 );
                 lineFeeders.forEach((feeder) => {
                     const svgText = document
                         .getElementById(feeder.id)
                         .querySelector('text');
-                    const branchId = feeder.equipmentId;
                     svgText.addEventListener('mouseenter', function (event) {
                         showFeederSelection(event.currentTarget);
                     });
@@ -560,7 +569,12 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         hideFeederSelection(event.currentTarget);
                     });
                     svgText.addEventListener('contextmenu', function (event) {
-                        showLineMenu(branchId, feeder.id, event.x, event.y);
+                        showLineMenu(
+                            feeder.equipmentId,
+                            feeder.id,
+                            event.x,
+                            event.y
+                        );
                     });
                 });
 
@@ -598,6 +612,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
     }, [
+        network,
         svg,
         onNextVoltageLevelClick,
         onBreakerClick,
@@ -631,6 +646,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         //TODO, these are from the previous useLayoutEffect
         //how to refactor to avoid repeating them here ?
         svg,
+        lineMenu,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -735,7 +751,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 )}
                 {lineMenu.display && (
                     <LineMenu
-                        line={network.linesById.get(lineMenu.lineId)}
+                        line={network.getLine(lineMenu.lineId)}
                         position={lineMenu.position}
                         handleClose={closeLineMenu}
                     />

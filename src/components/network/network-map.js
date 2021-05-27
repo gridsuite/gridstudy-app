@@ -260,7 +260,7 @@ const NetworkMap = forwardRef((props, ref) => {
         ) {
             // picked line properties are retrieved from network data and not from pickable object infos,
             // because pickable object infos might not be up to date
-            let line = network.linesById.get(info.object.id);
+            let line = network.getLine(info.object.id);
             props.onLineClick(line, info.x, info.y + 60);
         }
     }

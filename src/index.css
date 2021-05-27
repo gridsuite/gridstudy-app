@@ -384,3 +384,11 @@ polyline {
     fill: black;
     stroke: none;
 }
+.sld-flash {
+    stroke: none;
+    fill: black;
+}
+.sld-lock {
+    stroke: none;
+    fill: black;
+}
