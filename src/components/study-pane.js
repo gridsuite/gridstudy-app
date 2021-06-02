@@ -22,7 +22,8 @@ import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
-    fetchLinePositions,
+    fetchLinePositions, fetchLines,
+    fetchSubstations,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
@@ -407,15 +408,29 @@ const StudyPane = (props) => {
             updateLoadFlowResult();
             updateSecurityAnalysisResult();
             updateSecurityAnalysisStatus();
-            if (!isUpdate) {
-                const network = new Network(
-                    studyUuid,
-                    (error) => {
+            const network = new Network(
+                studyUuid,
+                (error) => {
+                    console.error(error.message);
+                    setStudyNotFound(true);
+                },
+                dispatch
+            );
+            if (isUpdate) {
+                const substations = fetchSubstations(studyUuid);
+                const lines = fetchLines(studyUuid);
+                Promise.all([substations, lines])
+                    .then((values) => {
+                        console.log('***** set des values');
+                        network.setSubstations(values[0]);
+                        network.setLines(values[1]);
+                        dispatch(networkCreated(network));
+                    })
+                    .catch(function (error) {
                         console.error(error.message);
                         setStudyNotFound(true);
-                    },
-                    dispatch
-                );
+                });
+            } else {
                 dispatch(networkCreated(network));
             }
         },

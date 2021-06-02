@@ -108,6 +108,13 @@ export default class Network {
         );
     }
 
+    setSubstations(substations) {
+        this.substations = substations;
+
+        // add more infos
+        this.completeSubstationsInfos();
+    }
+
     updateEquipments(currentEquipments, newEquipements) {
         currentEquipments.forEach((equipment1, index) => {
             const found = newEquipements.filter(
@@ -126,6 +133,11 @@ export default class Network {
 
     completeLinesInfos() {
         this.linesById = this.lines.reduce(elementIdIndexer, new Map());
+    }
+
+    setLines(lines) {
+        this.lines = lines;
+        this.completeLinesInfos();
     }
 
     updateLines(lines) {
