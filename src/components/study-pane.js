@@ -422,7 +422,6 @@ const StudyPane = (props) => {
                 const lines = fetchLines(studyUuid);
                 Promise.all([substations, lines])
                     .then((values) => {
-                        console.log('***** set des values');
                         network.setSubstations(values[0]);
                         network.setLines(values[1]);
                         dispatch(networkCreated(network));
