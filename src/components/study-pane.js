@@ -22,7 +22,8 @@ import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
-    fetchLinePositions, fetchLines,
+    fetchLinePositions,
+    fetchLines,
     fetchSubstations,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
@@ -429,7 +430,7 @@ const StudyPane = (props) => {
                     .catch(function (error) {
                         console.error(error.message);
                         setStudyNotFound(true);
-                });
+                    });
             } else {
                 dispatch(networkCreated(network));
             }
