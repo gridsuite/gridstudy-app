@@ -451,7 +451,17 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 switches.forEach((aSwitch) => {
                     const domEl = document.getElementById(aSwitch.id);
                     domEl.style.cursor = 'pointer';
-                    domEl.addEventListener('click', function (event) {
+                    let dragged = false;
+                    domEl.addEventListener('mousedown', function (event) {
+                        dragged = false;
+                    });
+                    domEl.addEventListener('mousemove', function (event) {
+                        dragged = true;
+                    });
+                    domEl.addEventListener('mouseup', function (event) {
+                        if (dragged || event.button !== 0) {
+                            return;
+                        }
                         const switchId = aSwitch.equipmentId;
                         const open = aSwitch.open;
                         onBreakerClick(switchId, !open, event.currentTarget);
