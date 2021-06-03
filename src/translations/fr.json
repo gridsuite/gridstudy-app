@@ -222,7 +222,7 @@
     "LockoutLine": "Consigner la ligne",
     "TripLine": "Déclencher la ligne",
     "EnergiseOnOneEnd": "Mettre sous tension à vide depuis {substation}",
-    "SwitchOnLine": "Fermer la ligne",
+    "SwitchOnLine": "Mettre en service la ligne",
 
     "UnableToLockoutLine": "Impossible de consigner la ligne",
     "UnableToTripLine": "Impossible de déclencher la ligne",

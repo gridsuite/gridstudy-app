@@ -90,6 +90,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
+import { displayInfoMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const drawerWidth = 300;
 
@@ -275,6 +276,8 @@ const StudyPane = (props) => {
     const websocketExpectedCloseRef = useRef();
 
     const intl = useIntl();
+
+    const intlRef = useIntlRef();
 
     const Runnable = {
         LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
@@ -800,18 +803,28 @@ const StudyPane = (props) => {
         });
     }
 
+    function handleLineChangesResponse(response, messsageId) {
+        const utf8Decoder = new TextDecoder('utf-8');
+        response.body
+            .getReader()
+            .read()
+            .then((value) => {
+                displayInfoMessageWithSnackbar({
+                    errorMessage: utf8Decoder.decode(value.value),
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: messsageId,
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }
+
     function handleLockout(lineId) {
         lockoutLine(studyUuid, lineId)
             .then((response) => {
-                if (response.status === 304) {
-                    enqueueSnackbar(
-                        intl.formatMessage({ id: 'UnableToLockoutLine' }),
-                        {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        }
-                    );
+                if (response.status !== 200) {
+                    handleLineChangesResponse(response, 'UnableToLockoutLine');
                 }
             })
             .then(closeLineMenu);
@@ -820,15 +833,8 @@ const StudyPane = (props) => {
     function handleTrip(lineId) {
         tripLine(studyUuid, lineId)
             .then((response) => {
-                if (response.status === 304) {
-                    enqueueSnackbar(
-                        intl.formatMessage({ id: 'UnableToTripLine' }),
-                        {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        }
-                    );
+                if (response.status !== 200) {
+                    handleLineChangesResponse(response, 'UnableToTripLine');
                 }
             })
             .then(closeLineMenu);
@@ -837,14 +843,10 @@ const StudyPane = (props) => {
     function handleEnergise(lineId, side) {
         energiseLineEnd(studyUuid, lineId, side)
             .then((response) => {
-                if (response.status === 304) {
-                    enqueueSnackbar(
-                        intl.formatMessage({ id: 'UnableToEnergiseLineEnd' }),
-                        {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        }
+                if (response.status !== 200) {
+                    handleLineChangesResponse(
+                        response,
+                        'UnableToEnergiseLineEnd'
                     );
                 }
             })
@@ -854,15 +856,8 @@ const StudyPane = (props) => {
     function handleSwitchOn(lineId) {
         switchOnLine(studyUuid, lineId)
             .then((response) => {
-                if (response.status === 304) {
-                    enqueueSnackbar(
-                        intl.formatMessage({ id: 'UnableToSwitchOnLine' }),
-                        {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        }
-                    );
+                if (response.status !== 200) {
+                    handleLineChangesResponse(response, 'UnableToSwitchOnLine');
                 }
             })
             .then(closeLineMenu);
