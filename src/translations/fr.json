@@ -227,5 +227,5 @@
     "UnableToLockoutLine": "Impossible de consigner la ligne",
     "UnableToTripLine": "Impossible de déclencher la ligne",
     "UnableToEnergiseLineEnd": "Impossible de mettre sous tension à vide",
-    "UnableToSwitchOnLine": "Impossible de fermer la ligne"
+    "UnableToSwitchOnLine": "Impossible de mettre la ligne en service"
 }
