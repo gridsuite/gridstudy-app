@@ -313,7 +313,17 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
             // handling the navigation between voltage levels
             group.style.cursor = 'pointer';
-            group.addEventListener('click', function (e) {
+            let dragged = false;
+            group.addEventListener('mousedown', function (event) {
+                dragged = false;
+            });
+            group.addEventListener('mousemove', function (event) {
+                dragged = true;
+            });
+            group.addEventListener('mouseup', function (event) {
+                if (dragged || event.button !== 0) {
+                    return;
+                }
                 const id = document.getElementById(element.id).id;
                 const meta = svg.metadata.nodes.find(
                     (other) => other.id === id
