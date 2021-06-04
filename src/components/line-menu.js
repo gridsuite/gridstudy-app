@@ -68,8 +68,9 @@ const LineMenu = ({ line, position, handleClose }) => {
             });
     }
 
-    function handleLockout(lineId) {
-        lockoutLine(studyUuid, lineId)
+    function handleLockout() {
+        if (line.branchStatus === 'PLANNED_OUTAGE') return;
+        lockoutLine(studyUuid, line.id)
             .then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToLockoutLine');
@@ -78,8 +79,9 @@ const LineMenu = ({ line, position, handleClose }) => {
             .then(handleClose);
     }
 
-    function handleTrip(lineId) {
-        tripLine(studyUuid, lineId)
+    function handleTrip() {
+        if (line.branchStatus === 'FORCED_OUTAGE') return;
+        tripLine(studyUuid, line.id)
             .then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToTripLine');
@@ -88,8 +90,17 @@ const LineMenu = ({ line, position, handleClose }) => {
             .then(handleClose);
     }
 
-    function handleEnergise(lineId, side) {
-        energiseLineEnd(studyUuid, lineId, side)
+    function handleEnergise(side) {
+        if (
+            (side === 'ONE' &&
+                line.terminal1Connected &&
+                !line.terminal2Connected) ||
+            (side === 'TWO' &&
+                line.terminal2Connected &&
+                !line.terminal1Connected)
+        )
+            return;
+        energiseLineEnd(studyUuid, line.id, side)
             .then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(
@@ -101,8 +112,9 @@ const LineMenu = ({ line, position, handleClose }) => {
             .then(handleClose);
     }
 
-    function handleSwitchOn(lineId) {
-        switchOnLine(studyUuid, lineId)
+    function handleSwitchOn() {
+        if (line.terminal1Connected && line.terminal2Connected) return;
+        switchOnLine(studyUuid, line.id)
             .then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToSwitchOnLine');
@@ -116,8 +128,8 @@ const LineMenu = ({ line, position, handleClose }) => {
             anchorReference="anchorPosition"
             anchorPosition={{
                 position: 'absolute',
-                top: position[1],
                 left: position[0],
+                top: position[1],
             }}
             id="line-menu"
             open={true}
@@ -125,7 +137,7 @@ const LineMenu = ({ line, position, handleClose }) => {
         >
             <MenuItem
                 className={classes.menuItem}
-                onClick={() => handleLockout(line.id)}
+                onClick={() => handleLockout()}
                 selected={line.branchStatus === 'PLANNED_OUTAGE'}
             >
                 <ListItemIcon>
@@ -144,7 +156,7 @@ const LineMenu = ({ line, position, handleClose }) => {
 
             <MenuItem
                 className={classes.menuItem}
-                onClick={() => handleTrip(line.id)}
+                onClick={() => handleTrip()}
                 selected={line.branchStatus === 'FORCED_OUTAGE'}
             >
                 <ListItemIcon>
@@ -163,7 +175,7 @@ const LineMenu = ({ line, position, handleClose }) => {
 
             <MenuItem
                 className={classes.menuItem}
-                onClick={() => handleEnergise(line.id, 'ONE')}
+                onClick={() => handleEnergise('ONE')}
                 selected={line.terminal1Connected && !line.terminal2Connected}
             >
                 <ListItemIcon>
@@ -185,7 +197,7 @@ const LineMenu = ({ line, position, handleClose }) => {
 
             <MenuItem
                 className={classes.menuItem}
-                onClick={() => handleEnergise(line.id, 'TWO')}
+                onClick={() => handleEnergise('TWO')}
                 selected={line.terminal2Connected && !line.terminal1Connected}
             >
                 <ListItemIcon>
@@ -207,7 +219,7 @@ const LineMenu = ({ line, position, handleClose }) => {
 
             <MenuItem
                 className={classes.menuItem}
-                onClick={() => handleSwitchOn(line.id)}
+                onClick={() => handleSwitchOn()}
                 selected={line.terminal1Connected && line.terminal2Connected}
             >
                 <ListItemIcon>
