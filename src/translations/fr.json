@@ -217,5 +217,15 @@
     "StopComputation": "Arrêter le calcul",
     "ColumnsList": "Liste des colonnes",
     "LabelSelectList": "Configurer colonnes",
-    "CheckAll": "Sélectionner tout / aucun"
+    "CheckAll": "Sélectionner tout / aucun",
+
+    "LockoutLine": "Consigner la ligne",
+    "TripLine": "Déclencher la ligne",
+    "EnergiseOnOneEnd": "Mettre sous tension à vide depuis {substation}",
+    "SwitchOnLine": "Mettre en service la ligne",
+
+    "UnableToLockoutLine": "Impossible de consigner la ligne",
+    "UnableToTripLine": "Impossible de déclencher la ligne",
+    "UnableToEnergiseLineEnd": "Impossible de mettre sous tension à vide",
+    "UnableToSwitchOnLine": "Impossible de mettre la ligne en service"
 }

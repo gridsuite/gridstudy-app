@@ -130,6 +130,9 @@ export default class Network {
 
     updateLines(lines) {
         this.updateEquipments(this.lines, lines);
+
+        // add more infos
+        this.completeLinesInfos();
     }
 
     completeTwoWindingsTransformersInfos() {
@@ -144,6 +147,9 @@ export default class Network {
             this.twoWindingsTransformers,
             twoWindingsTransformers
         );
+
+        // add more infos
+        this.completeTwoWindingsTransformersInfos();
     }
 
     completeThreeWindingsTransformersInfos() {
@@ -158,6 +164,9 @@ export default class Network {
             this.threeWindingsTransformers,
             threeWindingsTransformers
         );
+
+        // add more infos
+        this.completeThreeWindingsTransformersInfos();
     }
 
     completeGeneratorsInfos() {
@@ -169,6 +178,9 @@ export default class Network {
 
     updateGenerators(generators) {
         this.updateEquipments(this.generators, generators);
+
+        // add more infos
+        this.completeGeneratorsInfos();
     }
 
     updateBatteries(batteries) {

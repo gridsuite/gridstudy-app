@@ -23,10 +23,12 @@ export function useIntlRef() {
     return intlRef;
 }
 
-export function displayErrorMessageWithSnackbar({
+function displayMessageWithSnackbar({
     errorMessage,
     enqueueSnackbar,
     headerMessage: { headerMessageId, headerMessageValues, intlRef } = {},
+    level,
+    persistent,
 }) {
     let message;
     if (headerMessageId) {
@@ -36,13 +38,22 @@ export function displayErrorMessageWithSnackbar({
             },
             headerMessageValues
         );
-        message = messageHeader + '\n\n' + errorMessage;
+        message =
+            messageHeader + (!errorMessage.empty ? '\n\n' + errorMessage : '');
     } else {
         message = errorMessage;
     }
     enqueueSnackbar(message, {
-        variant: 'error',
-        persist: true,
+        variant: level,
+        persist: persistent,
         style: { whiteSpace: 'pre-line' },
     });
+}
+
+export function displayErrorMessageWithSnackbar({ ...args }) {
+    displayMessageWithSnackbar({ ...args, level: 'error', persistent: true });
+}
+
+export function displayInfoMessageWithSnackbar({ ...args }) {
+    displayMessageWithSnackbar({ ...args, level: 'info', persistent: false });
 }

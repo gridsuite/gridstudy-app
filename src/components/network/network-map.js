@@ -211,7 +211,7 @@ const NetworkMap = forwardRef((props, ref) => {
         );
     }
 
-    function onClickHandler(info, network) {
+    function onClickHandler(info, event, network) {
         if (
             info.layer &&
             info.layer.id.startsWith(SUBSTATION_LAYER_PREFIX) &&
@@ -248,6 +248,20 @@ const NetworkMap = forwardRef((props, ref) => {
                     info.y
                 );
             }
+        }
+        if (
+            event.rightButton &&
+            info.layer &&
+            info.layer.id.startsWith(LINE_LAYER_PREFIX) &&
+            info.object &&
+            info.object.id &&
+            info.object.voltageLevelId1 &&
+            info.object.voltageLevelId2
+        ) {
+            // picked line properties are retrieved from network data and not from pickable object infos,
+            // because pickable object infos might not be up to date
+            let line = network.getLine(info.object.id);
+            props.onLineClick(line, info.x, info.y + 60);
         }
     }
 
@@ -303,6 +317,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 labelSize: LABEL_SIZE,
                 pickable: true,
                 onHover: ({ object, x, y }) => {
+                    setCursorType(object ? 'pointer' : 'grab');
                     setTooltip({
                         message: object
                             ? props.useName
@@ -333,8 +348,8 @@ const NetworkMap = forwardRef((props, ref) => {
                 // save a reference to the Deck instance to be able to center in onAfterRender
                 setDeck(ref && ref.deck);
             }}
-            onClick={(info) => {
-                onClickHandler(info, props.network);
+            onClick={(info, event) => {
+                onClickHandler(info, event, props.network);
             }}
             onAfterRender={onAfterRender}
             layers={layers}
@@ -399,6 +414,7 @@ NetworkMap.propTypes = {
     initialZoom: PropTypes.number.isRequired,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
+    onLineClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,

@@ -217,5 +217,15 @@
     "StopComputation": "Stop computation",
     "ColumnsList": "Column list",
     "LabelSelectList": "Edit columns",
-    "CheckAll": "Select all / none"
+    "CheckAll": "Select all / none",
+
+    "LockoutLine": "Lock out the line",
+    "TripLine": "Trip the line",
+    "EnergiseOnOneEnd": "Energise on one end ({substation})",
+    "SwitchOnLine": "Switch on the line",
+
+    "UnableToLockoutLine": "Unable to lockout the line",
+    "UnableToTripLine": "Unable to trip the line",
+    "UnableToEnergiseLineEnd": "Unable to energise the line end",
+    "UnableToSwitchOnLine": "Unable to switch on the line"
 }
