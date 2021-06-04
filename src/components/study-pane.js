@@ -418,6 +418,9 @@ const StudyPane = (props) => {
                 dispatch
             );
             if (isUpdate) {
+                // After a load flow, network has to be recreated.
+                // In order to avoid glitches during sld and map rendering,
+                // lines and substations have to be fetched and set before network creation event is dispatched
                 const substations = fetchSubstations(studyUuid);
                 const lines = fetchLines(studyUuid);
                 Promise.all([substations, lines])
@@ -431,6 +434,8 @@ const StudyPane = (props) => {
                         setStudyNotFound(true);
                     });
             } else {
+                // For initial network loading, no need to initialize lines and substations at first,
+                // lazy loading will do the job (no glitches to avoid)
                 dispatch(networkCreated(network));
             }
         },
