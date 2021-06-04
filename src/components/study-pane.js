@@ -409,31 +409,28 @@ const StudyPane = (props) => {
             updateLoadFlowResult();
             updateSecurityAnalysisResult();
             updateSecurityAnalysisStatus();
-            const network = new Network(
-                studyUuid,
-                (error) => {
-                    console.error(error.message);
-                    setStudyNotFound(true);
-                },
-                dispatch
-            );
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
                 // In order to avoid glitches during sld and map rendering,
                 // lines and substations have to be fetched and set before network creation event is dispatched
-                const substations = fetchSubstations(studyUuid);
-                const lines = fetchLines(studyUuid);
-                Promise.all([substations, lines])
-                    .then((values) => {
-                        network.setSubstations(values[0]);
-                        network.setLines(values[1]);
-                        dispatch(networkCreated(network));
-                    })
-                    .catch(function (error) {
+                const network = new Network(
+                    studyUuid,
+                    (error) => {
                         console.error(error.message);
                         setStudyNotFound(true);
-                    });
+                    },
+                    dispatch,
+                    {equipments: [equipments.lines, equipments.substations]}
+                );
             } else {
+                const network = new Network(
+                    studyUuid,
+                    (error) => {
+                        console.error(error.message);
+                        setStudyNotFound(true);
+                    },
+                    dispatch
+                );
                 // For initial network loading, no need to initialize lines and substations at first,
                 // lazy loading will do the job (no glitches to avoid)
                 dispatch(networkCreated(network));

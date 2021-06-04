@@ -6,7 +6,7 @@
  */
 
 import { RemoteResourceHandler } from '../util/remote-resource-handler';
-import { networkEquipmentLoaded } from '../../redux/actions';
+import { networkCreated, networkEquipmentLoaded } from '../../redux/actions';
 import {
     fetchBatteries,
     fetchDanglingLines,
@@ -333,7 +333,35 @@ export default class Network {
         return newNetwork;
     }
 
-    constructor(studyUuid, errHandler, dispatch) {
+    setEquipment(equipment, values) {
+        switch (equipment) {
+            case equipments.substations:
+                this.setSubstations(values);
+                break;
+            case equipments.lines:
+                this.setLines(values);
+                break;
+            default:
+                break;
+        }
+    }
+
+    prefetch(equipments) {
+        let fetchers = [];
+        equipments.forEach((equipment) => {
+            const fetcher = this.lazyLoaders.get(equipment);
+            if (fetcher) fetchers.push(fetcher.fetcher());
+        });
+        Promise.all(fetchers).then((values) => {
+            values.forEach((value, index) => {
+                this.lazyLoaders.get(equipments[index]).fetched = true;
+                this.setEquipment(equipments[index], value);
+            });
+            this.dispatch(networkCreated(this));
+        });
+    }
+
+    constructor(studyUuid, errHandler, dispatch, prefetch) {
         this.generateEquipementHandler({
             substations: () => fetchSubstations(studyUuid),
             loads: () => fetchLoads(studyUuid),
@@ -358,5 +386,9 @@ export default class Network {
         );
 
         this.dispatch = dispatch;
+
+        if (prefetch !== undefined) {
+            this.prefetch(prefetch.equipments);
+        }
     }
 }
