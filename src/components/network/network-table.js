@@ -78,6 +78,7 @@ const NetworkTable = (props) => {
     const [rowFilter, setRowFilter] = useState(undefined);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
+    const [scrollToIndex, setScrollToIndex] = useState(-1);
 
     const intl = useIntl();
 
@@ -95,12 +96,32 @@ const NetworkTable = (props) => {
         props.network.useEquipment(resource);
     }, [props.network, tabIndex]);
 
+    const getRows = useCallback(
+        (index) => {
+            const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
+            return tableDefinition.getter
+                ? tableDefinition.getter(props.network)
+                : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
+        },
+        [props.network]
+    );
+
+    useEffect(() => {
+        if (props.equipment !== null && props.equipmentType !== null) {
+            let newIndex = Object.keys(TABLES_DEFINITIONS).indexOf(
+                props.equipmentType
+            );
+            setTabIndex(newIndex); // select the right table type
+            // calculate row index to scroll to
+            const rows = getRows(newIndex);
+            let index = rows.findIndex((r) => r.id === props.equipment.id);
+            setScrollToIndex(index !== undefined ? index : 0);
+        }
+    }, [props.network, props.equipment, props.equipmentType, getRows]);
+
     function renderTable() {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        const tableDefinition = TABLES_DEFINITION_INDEXES.get(tabIndex);
-        const rows = tableDefinition.getter
-            ? tableDefinition.getter(props.network)
-            : props.network[TABLES_DEFINITION_INDEXES.get(tabIndex).resource];
+        const rows = getRows(tabIndex);
         return (
             <EquipmentTable
                 studyUuid={props.studyUuid}
@@ -109,6 +130,8 @@ const NetworkTable = (props) => {
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 filter={filter}
                 fetched={props.network.isResourceFetched(resource)}
+                scrollToIndex={scrollToIndex}
+                scrollToAlignment="start"
             />
         );
     }
@@ -312,11 +335,15 @@ const NetworkTable = (props) => {
 NetworkTable.defaultProps = {
     network: null,
     studyUuid: '',
+    equipment: null,
+    equipmentType: null,
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
+    equipment: PropTypes.object,
+    equipmentType: PropTypes.string,
 };
 
 export default NetworkTable;

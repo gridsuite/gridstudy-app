@@ -18,6 +18,7 @@ import PlayIcon from '@material-ui/icons/PlayArrow';
 import OfflineBoltOutlinedIcon from '@material-ui/icons/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@material-ui/icons/LastPage';
 import EnergiseOtherSideIcon from '@material-ui/icons/FirstPage';
+
 import { useIntl } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LineMenu = ({
+const withLineMenu = (BaseMenu) => ({
     line,
     position,
     handleClose,
@@ -45,6 +46,7 @@ const LineMenu = ({
     handleTrip,
     handleEnergise,
     handleSwitchOn,
+    handleViewOnSpreadsheet,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -62,6 +64,11 @@ const LineMenu = ({
             open={true}
             onClose={handleClose}
         >
+            <BaseMenu
+                equipment={line}
+                handleViewOnSpreadsheet={handleViewOnSpreadsheet}
+            />
+
             <MenuItem
                 className={classes.menuItem}
                 onClick={() => handleLockout(line.id)}
@@ -166,4 +173,4 @@ const LineMenu = ({
     );
 };
 
-export default LineMenu;
+export default withLineMenu;

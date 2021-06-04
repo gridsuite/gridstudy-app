@@ -71,7 +71,9 @@ import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
-import LineMenu from './line-menu';
+import withLineMenu from './line-menu';
+import withSubstationMenu from './substation-menu';
+import withVoltageLevelMenu from './voltage-level-menu';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
@@ -91,6 +93,7 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { displayInfoMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import EquipmentMenu from './equipment-menu';
 
 const drawerWidth = 300;
 
@@ -217,9 +220,10 @@ const StudyPane = (props) => {
         (state) => state.filteredNominalVoltages
     );
 
-    const [lineMenu, setLineMenu] = useState({
+    const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
-        lineToApply: null,
+        equipmentToApply: null,
+        equipmentType: null,
         display: null,
     });
 
@@ -264,6 +268,12 @@ const StudyPane = (props) => {
     ] = useState(false);
 
     const [visibleSubstation, setVisibleSubstation] = useState(null);
+
+    const MenuLine = withLineMenu(EquipmentMenu);
+
+    const MenuSubstation = withSubstationMenu(EquipmentMenu);
+
+    const MenuVoltageLevel = withVoltageLevelMenu(EquipmentMenu);
 
     const dispatch = useDispatch();
 
@@ -789,16 +799,17 @@ const StudyPane = (props) => {
         network.useEquipment(equipments.lines);
     }, [network]);
 
-    function showLineMenu(line, x, y) {
-        setLineMenu({
+    function showEquipmentMenu(equipment, x, y, type) {
+        setEquipmentMenu({
             position: [x, y],
-            lineToApply: line,
+            equipmentToApply: equipment,
+            equipmentType: type,
             display: true,
         });
     }
 
-    function closeLineMenu() {
-        setLineMenu({
+    function closeEquipmentMenu() {
+        setEquipmentMenu({
             display: false,
         });
     }
@@ -827,7 +838,7 @@ const StudyPane = (props) => {
                     handleLineChangesResponse(response, 'UnableToLockoutLine');
                 }
             })
-            .then(closeLineMenu);
+            .then(closeEquipmentMenu);
     }
 
     function handleTrip(lineId) {
@@ -837,7 +848,7 @@ const StudyPane = (props) => {
                     handleLineChangesResponse(response, 'UnableToTripLine');
                 }
             })
-            .then(closeLineMenu);
+            .then(closeEquipmentMenu);
     }
 
     function handleEnergise(lineId, side) {
@@ -850,7 +861,7 @@ const StudyPane = (props) => {
                     );
                 }
             })
-            .then(closeLineMenu);
+            .then(closeEquipmentMenu);
     }
 
     function handleSwitchOn(lineId) {
@@ -860,7 +871,12 @@ const StudyPane = (props) => {
                     handleLineChangesResponse(response, 'UnableToSwitchOnLine');
                 }
             })
-            .then(closeLineMenu);
+            .then(closeEquipmentMenu);
+    }
+
+    function handleViewOnSpreadsheet() {
+        props.onChangeTab(1); // switch to spreadsheet view
+        closeEquipmentMenu();
     }
 
     function renderMapView() {
@@ -1002,10 +1018,18 @@ const StudyPane = (props) => {
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
                         ref={mapRef}
                         onSubstationClick={openVoltageLevel}
-                        onLineClick={showLineMenu}
+                        onLineMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(equipment, x, y, 'LINES')
+                        }
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
+                        }
+                        onSubstationMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(equipment, x, y, 'SUBSTATIONS')
+                        }
+                        onVoltageLevelMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(equipment, x, y, 'VOLTAGE_LEVELS')
                         }
                     />
                     {network && displayOverloadTable && (
@@ -1067,20 +1091,55 @@ const StudyPane = (props) => {
                             computationStopped={computationStopped}
                         />
                     </div>
-                    {lineMenu.display && (
-                        <LineMenu
-                            line={lineMenu.lineToApply}
-                            position={[
-                                lineMenu.position[0],
-                                lineMenu.position[1],
-                            ]}
-                            handleClose={closeLineMenu}
-                            handleLockout={handleLockout}
-                            handleTrip={handleTrip}
-                            handleEnergise={handleEnergise}
-                            handleSwitchOn={handleSwitchOn}
-                        />
-                    )}
+                    {equipmentMenu.equipmentToApply !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType === 'LINES' && (
+                            <MenuLine
+                                line={equipmentMenu.equipmentToApply}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleLockout={handleLockout}
+                                handleTrip={handleTrip}
+                                handleEnergise={handleEnergise}
+                                handleSwitchOn={handleSwitchOn}
+                                handleViewOnSpreadsheet={
+                                    handleViewOnSpreadsheet
+                                }
+                            />
+                        )}
+                    {equipmentMenu.equipmentToApply !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType === 'SUBSTATIONS' && (
+                            <MenuSubstation
+                                substation={equipmentMenu.equipmentToApply}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleViewOnSpreadsheet={
+                                    handleViewOnSpreadsheet
+                                }
+                            />
+                        )}
+                    {equipmentMenu.equipmentToApply !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType === 'VOLTAGE_LEVELS' && (
+                            <MenuVoltageLevel
+                                voltageLevel={equipmentMenu.equipmentToApply}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleViewOnSpreadsheet={
+                                    handleViewOnSpreadsheet
+                                }
+                            />
+                        )}
                 </div>
                 <Drawer
                     variant={'persistent'}
@@ -1164,7 +1223,12 @@ const StudyPane = (props) => {
         return (
             network && (
                 <Paper className={clsx('singlestretch-child', classes.table)}>
-                    <NetworkTable network={network} studyUuid={studyUuid} />
+                    <NetworkTable
+                        network={network}
+                        studyUuid={studyUuid}
+                        equipment={equipmentMenu.equipmentToApply}
+                        equipmentType={equipmentMenu.equipmentType}
+                    />
                 </Paper>
             )
         );
