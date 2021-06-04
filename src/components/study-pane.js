@@ -116,9 +116,14 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
+        // zIndex set to be below the loader with overlay
+        zIndex: 50,
     },
     drawerToolbar: {
         width: drawerToolbarWidth,
+        // zIndex set to be below the loader with overlay
+        // and above the network explorer drawer
+        zIndex: 60,
     },
     drawerPaper: {
         position: 'static',
