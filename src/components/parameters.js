@@ -34,6 +34,8 @@ import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
     setLoadFlowParameters,
+    getLoadFlowProvider,
+    setLoadFlowProvider,
     updateConfigParameter,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
@@ -105,6 +107,12 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
+const LF_PROVIDER_VALUES = {
+    Default: 'Default',
+    OpenLoadFlow: 'OpenLoadFlow',
+    Hades2: 'Hades2',
+};
+
 const Parameters = ({ showParameters, hideParameters }) => {
     const classes = useStyles();
 
@@ -155,6 +163,8 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
+    const [lfProvider, setLfProvider] = useState(null);
+
     const [lfParams, setLfParams] = useState(null);
 
     const [
@@ -177,6 +187,20 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         enqueueSnackbar: enqueueSnackbar,
                         headerMessage: {
                             headerMessageId: 'paramsRetrievingError',
+                            intlRef: intlRef,
+                        },
+                    })
+                );
+            getLoadFlowProvider(studyUuid)
+                .then((provider) => {
+                    setLfProvider(provider === '' ? 'Default' : provider);
+                })
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'getLoadFlowProviderError',
                             intlRef: intlRef,
                         },
                     })
@@ -535,6 +559,48 @@ const Parameters = ({ showParameters, hideParameters }) => {
         });
     };
 
+    const updateLfProvider = (evt) => {
+        const newProvider = evt.target.value;
+        const oldProvider = lfProvider;
+        setLfProvider(newProvider);
+        setLoadFlowProvider(
+            studyUuid,
+            newProvider === 'Default' ? '' : newProvider
+        ).catch((errorMessage) => {
+            setLfProvider(oldProvider); // restore old value
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'setLoadFlowProviderError',
+                    intlRef: intlRef,
+                },
+            });
+        });
+    };
+
+    const LoadFlow = () => {
+        return (
+            <Grid
+                container
+                spacing={2}
+                className={classes.grid}
+                justify="flex-end"
+            >
+                <Grid container key="lfProvider">
+                    {MakeDropDown(
+                        lfProvider,
+                        'Provider',
+                        LF_PROVIDER_VALUES,
+                        updateLfProvider
+                    )}
+                </Grid>
+                <MakeLineSeparator />
+                <LoadFlowParameters />
+            </Grid>
+        );
+    };
+
     const LoadFlowParameters = () => {
         const defParams = {
             voltageInitMode: {
@@ -578,15 +644,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
         return (
             lfParams && (
-                <Grid
-                    container
-                    spacing={2}
-                    className={classes.grid}
-                    justify="flex-end"
-                >
+                <>
                     {makeComponentsFor(defParams, lfParams, commitLFParameter)}
                     {MakeButton(resetLfParameters, 'resetToDefault')}
-                </Grid>
+                </>
             )
         );
     };
@@ -635,7 +696,7 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         <MapParameters />
                     </TabPanel>
                     <TabPanel value={tabIndex} index={2}>
-                        {studyUuid && <LoadFlowParameters />}
+                        {studyUuid && <LoadFlow />}
                     </TabPanel>
                     <Grid item xs={12}>
                         <Button
