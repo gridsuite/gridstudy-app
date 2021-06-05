@@ -76,9 +76,15 @@ const LoadFlowResult = ({ result }) => {
                         columns={[
                             {
                                 label: intl.formatMessage({
-                                    id: 'componentNum',
+                                    id: 'connectedComponentNum',
                                 }),
-                                dataKey: 'componentNum',
+                                dataKey: 'connectedComponentNum',
+                            },
+                            {
+                                label: intl.formatMessage({
+                                    id: 'synchronousComponentNum',
+                                }),
+                                dataKey: 'synchronousComponentNum',
                             },
                             {
                                 label: intl.formatMessage({

@@ -164,7 +164,8 @@
     "securityAnalysisResults": "Security analysis results",
     "loadFlowResults": "Loadflow results",
 
-    "componentNum": "Component number",
+    "connectedComponentNum": "Connected component number",
+    "synchronousComponentNum": "Synchronous component number",
     "status": "Status",
     "iterationCount": "Iteration count",
     "slackBusId": "Slack bus id",
