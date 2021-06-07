@@ -108,13 +108,6 @@ export default class Network {
         );
     }
 
-    setSubstations(substations) {
-        this.substations = substations;
-
-        // add more infos
-        this.completeSubstationsInfos();
-    }
-
     updateEquipments(currentEquipments, newEquipements) {
         currentEquipments.forEach((equipment1, index) => {
             const found = newEquipements.filter(
@@ -135,21 +128,11 @@ export default class Network {
         this.linesById = this.lines.reduce(elementIdIndexer, new Map());
     }
 
-    setLines(lines) {
-        this.lines = lines;
-        this.completeLinesInfos();
-    }
-
     updateLines(lines) {
         this.updateEquipments(this.lines, lines);
 
         // add more infos
         this.completeLinesInfos();
-    }
-
-    setTwoWindingsTransformers(twoWindingsTransformers) {
-        this.twoWindingsTransformers = twoWindingsTransformers;
-        this.completeTwoWindingsTransformersInfos();
     }
 
     completeTwoWindingsTransformersInfos() {
@@ -169,11 +152,6 @@ export default class Network {
         this.completeTwoWindingsTransformersInfos();
     }
 
-    setThreeWindingsTransformers(threeWindingsTransformers) {
-        this.threeWindingsTransformers = threeWindingsTransformers;
-        this.completeThreeWindingsTransformersInfos();
-    }
-
     completeThreeWindingsTransformersInfos() {
         this.threeWindingsTransformersById = this.threeWindingsTransformers.reduce(
             elementIdIndexer,
@@ -191,11 +169,6 @@ export default class Network {
         this.completeThreeWindingsTransformersInfos();
     }
 
-    setGenerators(generators) {
-        this.generators = generators;
-        this.completeGeneratorsInfos();
-    }
-
     completeGeneratorsInfos() {
         this.generatorsById = this.generators.reduce(
             elementIdIndexer,
@@ -210,40 +183,20 @@ export default class Network {
         this.completeGeneratorsInfos();
     }
 
-    setBatteries(batteries) {
-        this.batteries = batteries;
-    }
-
     updateBatteries(batteries) {
         this.updateEquipments(this.batteries, batteries);
-    }
-
-    setLoads(loads) {
-        this.loads = loads;
     }
 
     updateLoads(loads) {
         this.updateEquipments(this.loads, loads);
     }
 
-    setDanglingLines(danglingLines) {
-        this.danglingLines = danglingLines;
-    }
-
     updateDanglingLines(danglingLines) {
         this.updateEquipments(this.danglingLines, danglingLines);
     }
 
-    setShuntCompensators(shuntCompensators) {
-        this.shuntCompensators = shuntCompensators;
-    }
-
     updateShuntCompensators(shuntCompensators) {
         this.updateEquipments(this.shuntCompensators, shuntCompensators);
-    }
-
-    setStaticVarCompensators(staticVarCompensators) {
-        this.staticVarCompensators = staticVarCompensators;
     }
 
     updateStaticVarCompensators(staticVarCompensators) {
@@ -253,24 +206,12 @@ export default class Network {
         );
     }
 
-    setHvdcLines(hvdcLines) {
-        this.hvdcLines = hvdcLines;
-    }
-
     updateHvdcLines(hvdcLines) {
         this.updateEquipments(this.hvdcLines, hvdcLines);
     }
 
-    setLccConverterStations(lccConverterStations) {
-        this.lccConverterStations = lccConverterStations;
-    }
-
     updateLccConverterStations(lccConverterStations) {
         this.updateEquipments(this.lccConverterStations, lccConverterStations);
-    }
-
-    setVscConverterStations(vscConverterStations) {
-        this.vscConverterStations = vscConverterStations;
     }
 
     updateVscConverterStations(vscConverterStations) {
@@ -357,74 +298,29 @@ export default class Network {
             Object.create(Object.getPrototypeOf(this)),
             this
         );
-        newNetwork[updatedEquipements] = newEquipements;
-        switch (updatedEquipements) {
-            case equipments.substations:
-                newNetwork.completeSubstationsInfos();
-                break;
-            case equipments.lines:
-                newNetwork.completeLinesInfos();
-                break;
-            case equipments.generators:
-                newNetwork.completeGeneratorsInfos();
-                break;
-            case equipments.twoWindingsTransformers:
-                newNetwork.completeTwoWindingsTransformersInfos();
-                break;
-            case equipments.threeWindingsTransformers:
-                newNetwork.completeThreeWindingsTransformersInfos();
-                break;
-            default:
-                break;
-        }
+        newNetwork.setEquipment(updatedEquipements, newEquipements);
         return newNetwork;
     }
 
     setEquipment(equipment, values) {
+        this[equipment] = values;
         switch (equipment) {
             case equipments.substations:
-                this.setSubstations(values);
+                this.completeSubstationsInfos();
                 break;
             case equipments.lines:
-                this.setLines(values);
-                break;
-            case equipments.twoWindingsTransformers:
-                this.setTwoWindingsTransformers(values);
-                break;
-            case equipments.threeWindingsTransformers:
-                this.setThreeWindingsTransformers(values);
+                this.completeLinesInfos();
                 break;
             case equipments.generators:
-                this.setGenerators(values);
+                this.completeGeneratorsInfos();
                 break;
-            case equipments.batteries:
-                this.setBatteries(values);
+            case equipments.twoWindingsTransformers:
+                this.completeTwoWindingsTransformersInfos();
                 break;
-            case equipments.loads:
-                this.setLoads(values);
-                break;
-            case equipments.danglingLines:
-                this.setDanglingLines(values);
-                break;
-            case equipments.shuntCompensators:
-                this.setShuntCompensators(values);
-                break;
-            case equipments.staticVarCompensators:
-                this.setStaticVarCompensators(values);
-                break;
-            case equipments.hvdcLines:
-                this.setHvdcLines(values);
-                break;
-            case equipments.lccConverterStations:
-                this.setLccConverterStations(values);
-                break;
-            case equipments.vscConverterStations:
-                this.setVscConverterStations(values);
+            case equipments.threeWindingsTransformers:
+                this.completeThreeWindingsTransformersInfos();
                 break;
             default:
-                console.error(
-                    'Equipment type ' + equipment + ' does not exist'
-                );
                 break;
         }
     }
