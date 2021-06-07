@@ -107,6 +107,7 @@ export const TABLES_DEFINITIONS = {
         index: 3,
         name: 'TwoWindingsTransformers',
         resource: equipments.twoWindingsTransformers,
+        header: 'TwoWindingsTransformer',
         columns: [
             {
                 id: 'ID',
