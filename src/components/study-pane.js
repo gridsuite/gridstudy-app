@@ -16,8 +16,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { parse, stringify } from 'qs';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useSnackbar } from 'notistack';
-
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
@@ -35,10 +33,6 @@ import {
     startSecurityAnalysis,
     stopSecurityAnalysis,
     updateSwitchState,
-    lockoutLine,
-    tripLine,
-    energiseLineEnd,
-    switchOnLine,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -90,7 +84,6 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import { displayInfoMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const drawerWidth = 300;
 
@@ -203,8 +196,6 @@ const StudyPane = (props) => {
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
 
-    const { enqueueSnackbar } = useSnackbar();
-
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [updatedLines, setUpdatedLines] = useState([]);
@@ -219,7 +210,7 @@ const StudyPane = (props) => {
 
     const [lineMenu, setLineMenu] = useState({
         position: [-1, -1],
-        lineToApply: null,
+        line: null,
         display: null,
     });
 
@@ -276,8 +267,6 @@ const StudyPane = (props) => {
     const websocketExpectedCloseRef = useRef();
 
     const intl = useIntl();
-
-    const intlRef = useIntlRef();
 
     const Runnable = {
         LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
@@ -792,7 +781,7 @@ const StudyPane = (props) => {
     function showLineMenu(line, x, y) {
         setLineMenu({
             position: [x, y],
-            lineToApply: line,
+            line: line,
             display: true,
         });
     }
@@ -801,66 +790,6 @@ const StudyPane = (props) => {
         setLineMenu({
             display: false,
         });
-    }
-
-    function handleLineChangesResponse(response, messsageId) {
-        const utf8Decoder = new TextDecoder('utf-8');
-        response.body
-            .getReader()
-            .read()
-            .then((value) => {
-                displayInfoMessageWithSnackbar({
-                    errorMessage: utf8Decoder.decode(value.value),
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: messsageId,
-                        intlRef: intlRef,
-                    },
-                });
-            });
-    }
-
-    function handleLockout(lineId) {
-        lockoutLine(studyUuid, lineId)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToLockoutLine');
-                }
-            })
-            .then(closeLineMenu);
-    }
-
-    function handleTrip(lineId) {
-        tripLine(studyUuid, lineId)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToTripLine');
-                }
-            })
-            .then(closeLineMenu);
-    }
-
-    function handleEnergise(lineId, side) {
-        energiseLineEnd(studyUuid, lineId, side)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(
-                        response,
-                        'UnableToEnergiseLineEnd'
-                    );
-                }
-            })
-            .then(closeLineMenu);
-    }
-
-    function handleSwitchOn(lineId) {
-        switchOnLine(studyUuid, lineId)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToSwitchOnLine');
-                }
-            })
-            .then(closeLineMenu);
     }
 
     function renderMapView() {
@@ -1069,16 +998,9 @@ const StudyPane = (props) => {
                     </div>
                     {lineMenu.display && (
                         <LineMenu
-                            line={lineMenu.lineToApply}
-                            position={[
-                                lineMenu.position[0],
-                                lineMenu.position[1],
-                            ]}
+                            line={lineMenu.line}
+                            position={lineMenu.position}
                             handleClose={closeLineMenu}
-                            handleLockout={handleLockout}
-                            handleTrip={handleTrip}
-                            handleEnergise={handleEnergise}
-                            handleSwitchOn={handleSwitchOn}
                         />
                     )}
                 </div>
