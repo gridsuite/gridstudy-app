@@ -89,6 +89,7 @@ const NetworkExplorer = ({
     onSubstationFocus,
     hideExplorer,
     visibleSubstation,
+    visible,
 }) => {
     const intl = useIntl();
 
@@ -336,50 +337,53 @@ const NetworkExplorer = ({
     };
 
     return (
-        <Grid container direction="column" style={{ height: '100%' }}>
-            <Grid item>
-                <TextField
-                    className={classes.textField}
-                    size="small"
-                    placeholder={filterMsg}
-                    onChange={filter}
-                    variant="outlined"
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-                <IconButton onClick={hideExplorer}>
-                    <ChevronLeftIcon />
-                </IconButton>
+        visible && (
+            <Grid container direction="column" style={{ height: '100%' }}>
+                <Grid item>
+                    <TextField
+                        className={classes.textField}
+                        size="small"
+                        placeholder={filterMsg}
+                        onChange={filter}
+                        variant="outlined"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <IconButton onClick={hideExplorer}>
+                        <ChevronLeftIcon />
+                    </IconButton>
+                </Grid>
+                <Divider />
+                <Grid item style={{ flex: '1 1 auto' }}>
+                    <AutoSizer>
+                        {({ width, height }) => {
+                            return (
+                                <List
+                                    height={height}
+                                    rowHeight={cache.rowHeight}
+                                    rowRenderer={subStationRow}
+                                    rowCount={filteredVoltageLevels.length}
+                                    width={width}
+                                    subheader={<li />}
+                                />
+                            );
+                        }}
+                    </AutoSizer>
+                </Grid>
             </Grid>
-            <Divider />
-            <Grid item style={{ flex: '1 1 auto' }}>
-                <AutoSizer>
-                    {({ width, height }) => {
-                        return (
-                            <List
-                                height={height}
-                                rowHeight={cache.rowHeight}
-                                rowRenderer={subStationRow}
-                                rowCount={filteredVoltageLevels.length}
-                                width={width}
-                                subheader={<li />}
-                            />
-                        );
-                    }}
-                </AutoSizer>
-            </Grid>
-        </Grid>
+        )
     );
 };
 
 NetworkExplorer.defaultProps = {
     substations: [],
     visibleSubstation: null,
+    visible: true,
 };
 
 NetworkExplorer.propTypes = {
@@ -388,6 +392,7 @@ NetworkExplorer.propTypes = {
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,
     visibleSubstation: PropTypes.string,
+    visible: PropTypes.bool,
 };
 
 export default React.memo(NetworkExplorer);

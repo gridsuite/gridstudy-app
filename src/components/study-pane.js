@@ -1114,6 +1114,7 @@ const StudyPane = (props) => {
                             onSubstationFocus={centerSubstation}
                             hideExplorer={toggleDrawer}
                             visibleSubstation={visibleSubstation}
+                            visible={props.view === StudyView.MAP}
                         />
                     </div>
                 </Drawer>
