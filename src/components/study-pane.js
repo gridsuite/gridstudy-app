@@ -23,8 +23,6 @@ import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
     fetchLinePositions,
-    fetchLines,
-    fetchSubstations,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
@@ -413,14 +411,14 @@ const StudyPane = (props) => {
                 // After a load flow, network has to be recreated.
                 // In order to avoid glitches during sld and map rendering,
                 // lines and substations have to be fetched and set before network creation event is dispatched
-                const network = new Network(
+                new Network(
                     studyUuid,
                     (error) => {
                         console.error(error.message);
                         setStudyNotFound(true);
                     },
                     dispatch,
-                    {equipments: [equipments.lines, equipments.substations]}
+                    { equipments: [equipments.lines, equipments.substations] }
                 );
             } else {
                 const network = new Network(
