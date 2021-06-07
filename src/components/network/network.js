@@ -6,7 +6,7 @@
  */
 
 import { RemoteResourceHandler } from '../util/remote-resource-handler';
-import { networkEquipmentLoaded } from '../../redux/actions';
+import { networkCreated, networkEquipmentLoaded } from '../../redux/actions';
 import {
     fetchBatteries,
     fetchDanglingLines,
@@ -298,30 +298,57 @@ export default class Network {
             Object.create(Object.getPrototypeOf(this)),
             this
         );
-        newNetwork[updatedEquipements] = newEquipements;
-        switch (updatedEquipements) {
+        newNetwork.setEquipment(updatedEquipements, newEquipements);
+        return newNetwork;
+    }
+
+    setEquipment(equipment, values) {
+        this[equipment] = values;
+        switch (equipment) {
             case equipments.substations:
-                newNetwork.completeSubstationsInfos();
+                this.completeSubstationsInfos();
                 break;
             case equipments.lines:
-                newNetwork.completeLinesInfos();
+                this.completeLinesInfos();
                 break;
             case equipments.generators:
-                newNetwork.completeGeneratorsInfos();
+                this.completeGeneratorsInfos();
                 break;
             case equipments.twoWindingsTransformers:
-                newNetwork.completeTwoWindingsTransformersInfos();
+                this.completeTwoWindingsTransformersInfos();
                 break;
             case equipments.threeWindingsTransformers:
-                newNetwork.completeThreeWindingsTransformersInfos();
+                this.completeThreeWindingsTransformersInfos();
                 break;
             default:
                 break;
         }
-        return newNetwork;
     }
 
-    constructor(studyUuid, errHandler, dispatch) {
+    prefetch(equipments) {
+        let fetchers = [];
+        // TODO: here, instead of calling fetcher() method of the lazy loader (instead of method fetch() which fetches and dispatches equipment update)
+        //  and modifying directly its "fetched" attribute, some refactoring should be done in remote-resource-handler in order to allow
+        //  equipment loading without necessarily dispatch update
+        equipments.forEach((equipment) => {
+            const fetcher = this.lazyLoaders.get(equipment);
+            if (fetcher)
+                fetchers.push(
+                    fetcher.fetcher().then((values) => {
+                        return { values: values, equipment: equipment };
+                    })
+                );
+        });
+        Promise.all(fetchers).then((values) => {
+            values.forEach((value) => {
+                this.lazyLoaders.get(value.equipment).fetched = true;
+                this.setEquipment(value.equipment, value.values);
+            });
+            this.dispatch(networkCreated(this));
+        });
+    }
+
+    constructor(studyUuid, errHandler, dispatch, prefetch) {
         this.generateEquipementHandler({
             substations: () => fetchSubstations(studyUuid),
             loads: () => fetchLoads(studyUuid),
@@ -346,5 +373,9 @@ export default class Network {
         );
 
         this.dispatch = dispatch;
+
+        if (prefetch !== undefined) {
+            this.prefetch(prefetch.equipments);
+        }
     }
 }
