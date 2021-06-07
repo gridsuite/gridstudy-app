@@ -30,7 +30,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { selectItemNetwork } from '../../redux/actions';
 
@@ -39,7 +38,6 @@ const itemSize = 48;
 const useStyles = makeStyles((theme) => ({
     textField: {
         margin: theme.spacing(1),
-        width: 'calc(100% - 64px)', // to fix an issue with fullWidth of textfield and get << on the same line
     },
     listSubHeaderRoot: {
         backgroundColor: darken(theme.palette.background.default, 0.2),
@@ -87,7 +85,6 @@ const NetworkExplorer = ({
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
     onSubstationFocus,
-    hideExplorer,
     visibleSubstation,
 }) => {
     const intl = useIntl();
@@ -352,9 +349,6 @@ const NetworkExplorer = ({
                         ),
                     }}
                 />
-                <IconButton onClick={hideExplorer}>
-                    <ChevronLeftIcon />
-                </IconButton>
             </Grid>
             <Divider />
             <Grid item style={{ flex: '1 1 auto' }}>

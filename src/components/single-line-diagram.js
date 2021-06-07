@@ -733,7 +733,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 </AutoSizer>
 
                 <Box className={classes.header}>
-                    {props.diagramAction}
                     <Box flexGrow={1}>
                         <Typography>{props.diagramTitle}</Typography>
                     </Box>
@@ -822,7 +821,6 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
-    diagramAction: PropTypes.node,
 };
 
 export default SingleLineDiagram;

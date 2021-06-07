@@ -67,10 +67,7 @@ import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
 import LineMenu from './line-menu';
 import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
-import Divider from '@material-ui/core/Divider';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { RemoteResourceHandler } from './util/remote-resource-handler';
 import {
     PARAM_CENTER_LABEL,
@@ -84,8 +81,10 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
+import LateralToolbar from './lateral-toolbar';
 
 const drawerWidth = 300;
+const drawerToolbarWidth = 48;
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -118,6 +117,14 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
+        // zIndex set to be below the loader with overlay
+        zIndex: 50,
+    },
+    drawerToolbar: {
+        width: drawerToolbarWidth,
+        // zIndex set to be below the loader with overlay
+        // and above the network explorer drawer
+        zIndex: 60,
     },
     drawerPaper: {
         position: 'static',
@@ -128,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: -drawerWidth,
+        marginLeft: -drawerWidth - drawerToolbarWidth,
     },
     mapCtrlBottomLeft: {
         '& .mapboxgl-ctrl-bottom-left': {
@@ -136,6 +143,7 @@ const useStyles = makeStyles((theme) => ({
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
             }),
+            left: drawerToolbarWidth,
         },
     },
     mapCtrlBottomLeftShift: {
@@ -144,7 +152,7 @@ const useStyles = makeStyles((theme) => ({
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            left: drawerWidth,
+            left: drawerWidth + drawerToolbarWidth,
         },
     },
 }));
@@ -881,36 +889,6 @@ const StudyPane = (props) => {
                 substationLayout
             );
         }
-        const sldShowing = displayedVoltageLevelId || displayedSubstationId;
-        let openDrawerComponent = null;
-        if (!drawerOpen) {
-            if (sldShowing) {
-                openDrawerComponent = (
-                    <>
-                        <IconButton
-                            style={{ padding: 0 }}
-                            onClick={toggleDrawer}
-                        >
-                            <ChevronRightIcon />
-                        </IconButton>
-                        <Divider
-                            orientation="vertical"
-                            flexItem
-                            variant="middle"
-                        />
-                    </>
-                );
-            } else {
-                openDrawerComponent = (
-                    <IconButton
-                        style={{ alignSelf: 'flex-start' }}
-                        onClick={toggleDrawer}
-                    >
-                        <ChevronRightIcon />
-                    </IconButton>
-                );
-            }
-        }
 
         return (
             <div className={clsx('relative singlestretch-child', classes.map)}>
@@ -1021,6 +999,34 @@ const StudyPane = (props) => {
                     )}
                 </div>
                 <Drawer
+                    variant={'permanent'}
+                    className={classes.drawerToolbar}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'none',
+                        overflowX: 'none',
+                    }}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <LateralToolbar
+                            handleDisplayNetworkExplorer={toggleDrawer}
+                            networkExplorerDisplayed={drawerOpen}
+                        />
+                    </div>
+                </Drawer>
+                <Drawer
                     variant={'persistent'}
                     className={clsx(classes.drawer, {
                         [classes.drawerShift]: !drawerOpen,
@@ -1050,12 +1056,10 @@ const StudyPane = (props) => {
                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
-                            hideExplorer={toggleDrawer}
                             visibleSubstation={visibleSubstation}
                         />
                     </div>
                 </Drawer>
-                {!sldShowing && openDrawerComponent}
                 {/*
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
@@ -1069,6 +1073,7 @@ const StudyPane = (props) => {
                                 display: 'flex',
                                 pointerEvents: 'none',
                                 flexDirection: 'column',
+                                marginLeft: drawerOpen ? 0 : drawerToolbarWidth,
                             }}
                         >
                             <SingleLineDiagram
@@ -1076,7 +1081,6 @@ const StudyPane = (props) => {
                                 onNextVoltageLevelClick={openVoltageLevel}
                                 onBreakerClick={handleUpdateSwitchState}
                                 diagramTitle={sldTitle}
-                                diagramAction={openDrawerComponent}
                                 svgUrl={svgUrl}
                                 ref={sldRef}
                                 updateSwitchMsg={updateSwitchMsg}
