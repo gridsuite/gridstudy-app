@@ -65,6 +65,7 @@ import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
+import LineMenu from './line-menu';
 import Drawer from '@material-ui/core/Drawer';
 import clsx from 'clsx';
 import { RemoteResourceHandler } from './util/remote-resource-handler';
@@ -214,6 +215,12 @@ const StudyPane = (props) => {
     const filteredNominalVoltages = useSelector(
         (state) => state.filteredNominalVoltages
     );
+
+    const [lineMenu, setLineMenu] = useState({
+        position: [-1, -1],
+        line: null,
+        display: null,
+    });
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
 
@@ -408,7 +415,21 @@ const StudyPane = (props) => {
             updateLoadFlowResult();
             updateSecurityAnalysisResult();
             updateSecurityAnalysisStatus();
-            if (!isUpdate) {
+            if (isUpdate) {
+                // After a load flow, network has to be recreated.
+                // In order to avoid glitches during sld and map rendering,
+                // lines and substations have to be prefetched and set before network creation event is dispatched
+                // Network creation event is dispatched directly in the network constructor
+                new Network(
+                    studyUuid,
+                    (error) => {
+                        console.error(error.message);
+                        setStudyNotFound(true);
+                    },
+                    dispatch,
+                    { equipments: [equipments.lines, equipments.substations] }
+                );
+            } else {
                 const network = new Network(
                     studyUuid,
                     (error) => {
@@ -417,6 +438,8 @@ const StudyPane = (props) => {
                     },
                     dispatch
                 );
+                // For initial network loading, no need to initialize lines and substations at first,
+                // lazy loading will do the job (no glitches to avoid)
                 dispatch(networkCreated(network));
             }
         },
@@ -699,7 +722,7 @@ const StudyPane = (props) => {
                     studyUpdatedForce.eventData.headers['substationsIds'];
                 const tmp = ids.substring(1, ids.length - 1); // removing square brackets
                 if (tmp && tmp.length > 0) {
-                    const substationsIds = tmp.split(',');
+                    const substationsIds = tmp.split(', ');
                     updateNetwork(substationsIds);
                 }
             }
@@ -778,6 +801,20 @@ const StudyPane = (props) => {
         network.useEquipment(equipments.substations);
         network.useEquipment(equipments.lines);
     }, [network]);
+
+    function showLineMenu(line, x, y) {
+        setLineMenu({
+            position: [x, y],
+            line: line,
+            display: true,
+        });
+    }
+
+    function closeLineMenu() {
+        setLineMenu({
+            display: false,
+        });
+    }
 
     function renderMapView() {
         let displayedVoltageLevel;
@@ -888,6 +925,7 @@ const StudyPane = (props) => {
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
                         ref={mapRef}
                         onSubstationClick={openVoltageLevel}
+                        onLineClick={showLineMenu}
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
@@ -952,6 +990,13 @@ const StudyPane = (props) => {
                             computationStopped={computationStopped}
                         />
                     </div>
+                    {lineMenu.display && (
+                        <LineMenu
+                            line={lineMenu.line}
+                            position={lineMenu.position}
+                            handleClose={closeLineMenu}
+                        />
+                    )}
                 </div>
                 <Drawer
                     variant={'permanent'}

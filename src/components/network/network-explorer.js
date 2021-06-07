@@ -159,12 +159,14 @@ const NetworkExplorer = ({
     useEffect(() => {
         if (substations.length > 0) {
             generateFilteredSubstation(currentFilter);
+            cache.clearAll();
         }
     }, [
         substations,
         identifiedElementComparator,
         generateFilteredSubstation,
         currentFilter,
+        cache,
     ]);
 
     useEffect(() => {
@@ -327,7 +329,6 @@ const NetworkExplorer = ({
     const filter = (event) => {
         const filterText = event.target.value.toLowerCase();
         generateFilteredSubstation(filterText);
-        cache.clearAll();
         setCurrentFilter(filterText);
     };
 
