@@ -761,3 +761,36 @@ export function switchOnLine(studyUuid, lineId) {
     console.info('switching on line ' + lineId + ' ...');
     return changeLineStatus(studyUuid, lineId, 'switchOn');
 }
+
+export function getLoadFlowProvider(studyUuid) {
+    console.info('get load flow provider');
+    const getLoadFlowProviderUrl =
+        getStudyUrl(studyUuid) + '/loadflow/provider';
+    console.debug(getLoadFlowProviderUrl);
+    return backendFetch(getLoadFlowProviderUrl, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function setLoadFlowProvider(studyUuid, newProvider) {
+    console.info('set load flow provider');
+    const setLoadFlowProviderUrl =
+        getStudyUrl(studyUuid) + '/loadflow/provider';
+    console.debug(setLoadFlowProviderUrl);
+    return backendFetch(setLoadFlowProviderUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: newProvider,
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
