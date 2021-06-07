@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -19,6 +19,9 @@ import OfflineBoltOutlinedIcon from '@material-ui/icons/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@material-ui/icons/LastPage';
 import EnergiseOtherSideIcon from '@material-ui/icons/FirstPage';
 import { useIntl } from 'react-intl';
+import { useParameterState } from './parameters';
+import { PARAM_USE_NAME } from '../utils/config-params';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -48,6 +51,17 @@ const LineMenu = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
+    const [displayUseName] = useParameterState(PARAM_USE_NAME);
+    const network = useSelector((state) => state.network);
+
+    const getLineDescriptor = useCallback(
+        (voltageLevelId) => {
+            return displayUseName
+                ? network.getVoltageLevel(voltageLevelId).name
+                : voltageLevelId;
+        },
+        [displayUseName, network]
+    );
 
     return (
         <Menu
@@ -115,7 +129,11 @@ const LineMenu = ({
                         <Typography noWrap>
                             {intl.formatMessage(
                                 { id: 'EnergiseOnOneEnd' },
-                                { substation: line.voltageLevelId1 }
+                                {
+                                    substation: getLineDescriptor(
+                                        line.voltageLevelId1
+                                    ),
+                                }
                             )}
                         </Typography>
                     }
@@ -137,7 +155,11 @@ const LineMenu = ({
                         <Typography noWrap>
                             {intl.formatMessage(
                                 { id: 'EnergiseOnOneEnd' },
-                                { substation: line.voltageLevelId2 }
+                                {
+                                    substation: getLineDescriptor(
+                                        line.voltageLevelId2
+                                    ),
+                                }
                             )}
                         </Typography>
                     }
