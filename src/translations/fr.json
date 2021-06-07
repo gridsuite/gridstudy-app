@@ -235,5 +235,8 @@
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
     "setLoadFlowProviderError": "Une erreur est survenue lors de la mise à jour du fournisseur de load flow",
-    "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow"
+    "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
+
+    "SubstationList": "Liste des postes",
+    "HypothesisTree": "Arbre des hypothèses (indisponible)"
 }

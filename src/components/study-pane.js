@@ -16,8 +16,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { parse, stringify } from 'qs';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useSnackbar } from 'notistack';
-
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
@@ -35,10 +33,6 @@ import {
     startSecurityAnalysis,
     stopSecurityAnalysis,
     updateSwitchState,
-    lockoutLine,
-    tripLine,
-    energiseLineEnd,
-    switchOnLine,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -73,10 +67,7 @@ import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
 import LineMenu from './line-menu';
 import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
-import Divider from '@material-ui/core/Divider';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { RemoteResourceHandler } from './util/remote-resource-handler';
 import {
     PARAM_CENTER_LABEL,
@@ -90,9 +81,10 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import { displayInfoMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import LateralToolbar from './lateral-toolbar';
 
 const drawerWidth = 300;
+const drawerToolbarWidth = 48;
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -125,6 +117,14 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
+        // zIndex set to be below the loader with overlay
+        zIndex: 50,
+    },
+    drawerToolbar: {
+        width: drawerToolbarWidth,
+        // zIndex set to be below the loader with overlay
+        // and above the network explorer drawer
+        zIndex: 60,
     },
     drawerPaper: {
         position: 'static',
@@ -135,7 +135,7 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: -drawerWidth,
+        marginLeft: -drawerWidth - drawerToolbarWidth,
     },
     mapCtrlBottomLeft: {
         '& .mapboxgl-ctrl-bottom-left': {
@@ -143,6 +143,7 @@ const useStyles = makeStyles((theme) => ({
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
             }),
+            left: drawerToolbarWidth,
         },
     },
     mapCtrlBottomLeftShift: {
@@ -151,7 +152,7 @@ const useStyles = makeStyles((theme) => ({
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            left: drawerWidth,
+            left: drawerWidth + drawerToolbarWidth,
         },
     },
 }));
@@ -203,8 +204,6 @@ const StudyPane = (props) => {
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
 
-    const { enqueueSnackbar } = useSnackbar();
-
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [updatedLines, setUpdatedLines] = useState([]);
@@ -219,7 +218,7 @@ const StudyPane = (props) => {
 
     const [lineMenu, setLineMenu] = useState({
         position: [-1, -1],
-        lineToApply: null,
+        line: null,
         display: null,
     });
 
@@ -276,8 +275,6 @@ const StudyPane = (props) => {
     const websocketExpectedCloseRef = useRef();
 
     const intl = useIntl();
-
-    const intlRef = useIntlRef();
 
     const Runnable = {
         LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
@@ -418,7 +415,21 @@ const StudyPane = (props) => {
             updateLoadFlowResult();
             updateSecurityAnalysisResult();
             updateSecurityAnalysisStatus();
-            if (!isUpdate) {
+            if (isUpdate) {
+                // After a load flow, network has to be recreated.
+                // In order to avoid glitches during sld and map rendering,
+                // lines and substations have to be prefetched and set before network creation event is dispatched
+                // Network creation event is dispatched directly in the network constructor
+                new Network(
+                    studyUuid,
+                    (error) => {
+                        console.error(error.message);
+                        setStudyNotFound(true);
+                    },
+                    dispatch,
+                    { equipments: [equipments.lines, equipments.substations] }
+                );
+            } else {
                 const network = new Network(
                     studyUuid,
                     (error) => {
@@ -427,6 +438,8 @@ const StudyPane = (props) => {
                     },
                     dispatch
                 );
+                // For initial network loading, no need to initialize lines and substations at first,
+                // lazy loading will do the job (no glitches to avoid)
                 dispatch(networkCreated(network));
             }
         },
@@ -792,7 +805,7 @@ const StudyPane = (props) => {
     function showLineMenu(line, x, y) {
         setLineMenu({
             position: [x, y],
-            lineToApply: line,
+            line: line,
             display: true,
         });
     }
@@ -801,66 +814,6 @@ const StudyPane = (props) => {
         setLineMenu({
             display: false,
         });
-    }
-
-    function handleLineChangesResponse(response, messsageId) {
-        const utf8Decoder = new TextDecoder('utf-8');
-        response.body
-            .getReader()
-            .read()
-            .then((value) => {
-                displayInfoMessageWithSnackbar({
-                    errorMessage: utf8Decoder.decode(value.value),
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: messsageId,
-                        intlRef: intlRef,
-                    },
-                });
-            });
-    }
-
-    function handleLockout(lineId) {
-        lockoutLine(studyUuid, lineId)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToLockoutLine');
-                }
-            })
-            .then(closeLineMenu);
-    }
-
-    function handleTrip(lineId) {
-        tripLine(studyUuid, lineId)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToTripLine');
-                }
-            })
-            .then(closeLineMenu);
-    }
-
-    function handleEnergise(lineId, side) {
-        energiseLineEnd(studyUuid, lineId, side)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(
-                        response,
-                        'UnableToEnergiseLineEnd'
-                    );
-                }
-            })
-            .then(closeLineMenu);
-    }
-
-    function handleSwitchOn(lineId) {
-        switchOnLine(studyUuid, lineId)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToSwitchOnLine');
-                }
-            })
-            .then(closeLineMenu);
     }
 
     function renderMapView() {
@@ -935,36 +888,6 @@ const StudyPane = (props) => {
                 diagonalName,
                 substationLayout
             );
-        }
-        const sldShowing = displayedVoltageLevelId || displayedSubstationId;
-        let openDrawerComponent = null;
-        if (!drawerOpen) {
-            if (sldShowing) {
-                openDrawerComponent = (
-                    <>
-                        <IconButton
-                            style={{ padding: 0 }}
-                            onClick={toggleDrawer}
-                        >
-                            <ChevronRightIcon />
-                        </IconButton>
-                        <Divider
-                            orientation="vertical"
-                            flexItem
-                            variant="middle"
-                        />
-                    </>
-                );
-            } else {
-                openDrawerComponent = (
-                    <IconButton
-                        style={{ alignSelf: 'flex-start' }}
-                        onClick={toggleDrawer}
-                    >
-                        <ChevronRightIcon />
-                    </IconButton>
-                );
-            }
         }
 
         return (
@@ -1069,19 +992,40 @@ const StudyPane = (props) => {
                     </div>
                     {lineMenu.display && (
                         <LineMenu
-                            line={lineMenu.lineToApply}
-                            position={[
-                                lineMenu.position[0],
-                                lineMenu.position[1],
-                            ]}
+                            line={lineMenu.line}
+                            position={lineMenu.position}
                             handleClose={closeLineMenu}
-                            handleLockout={handleLockout}
-                            handleTrip={handleTrip}
-                            handleEnergise={handleEnergise}
-                            handleSwitchOn={handleSwitchOn}
                         />
                     )}
                 </div>
+                <Drawer
+                    variant={'permanent'}
+                    className={classes.drawerToolbar}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'none',
+                        overflowX: 'none',
+                    }}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <LateralToolbar
+                            handleDisplayNetworkExplorer={toggleDrawer}
+                            networkExplorerDisplayed={drawerOpen}
+                        />
+                    </div>
+                </Drawer>
                 <Drawer
                     variant={'persistent'}
                     className={clsx(classes.drawer, {
@@ -1112,13 +1056,11 @@ const StudyPane = (props) => {
                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
-                            hideExplorer={toggleDrawer}
                             visibleSubstation={visibleSubstation}
                             visible={props.view === StudyView.MAP}
                         />
                     </div>
                 </Drawer>
-                {!sldShowing && openDrawerComponent}
                 {/*
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
@@ -1132,6 +1074,7 @@ const StudyPane = (props) => {
                                 display: 'flex',
                                 pointerEvents: 'none',
                                 flexDirection: 'column',
+                                marginLeft: drawerOpen ? 0 : drawerToolbarWidth,
                             }}
                         >
                             <SingleLineDiagram
@@ -1139,7 +1082,6 @@ const StudyPane = (props) => {
                                 onNextVoltageLevelClick={openVoltageLevel}
                                 onBreakerClick={handleUpdateSwitchState}
                                 diagramTitle={sldTitle}
-                                diagramAction={openDrawerComponent}
                                 svgUrl={svgUrl}
                                 ref={sldRef}
                                 updateSwitchMsg={updateSwitchMsg}
