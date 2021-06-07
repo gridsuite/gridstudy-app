@@ -147,6 +147,11 @@ export default class Network {
         this.completeLinesInfos();
     }
 
+    setTwoWindingsTransformers(twoWindingsTransformers) {
+        this.twoWindingsTransformers = twoWindingsTransformers;
+        this.completeTwoWindingsTransformersInfos();
+    }
+
     completeTwoWindingsTransformersInfos() {
         this.twoWindingsTransformersById = this.twoWindingsTransformers.reduce(
             elementIdIndexer,
@@ -162,6 +167,11 @@ export default class Network {
 
         // add more infos
         this.completeTwoWindingsTransformersInfos();
+    }
+
+    setThreeWindingsTransformers(threeWindingsTransformers) {
+        this.threeWindingsTransformers = threeWindingsTransformers;
+        this.completeThreeWindingsTransformersInfos();
     }
 
     completeThreeWindingsTransformersInfos() {
@@ -181,6 +191,11 @@ export default class Network {
         this.completeThreeWindingsTransformersInfos();
     }
 
+    setGenerators(generators) {
+        this.generators = generators;
+        this.completeGeneratorsInfos();
+    }
+
     completeGeneratorsInfos() {
         this.generatorsById = this.generators.reduce(
             elementIdIndexer,
@@ -195,20 +210,40 @@ export default class Network {
         this.completeGeneratorsInfos();
     }
 
+    setBatteries(batteries) {
+        this.batteries = batteries;
+    }
+
     updateBatteries(batteries) {
         this.updateEquipments(this.batteries, batteries);
+    }
+
+    setLoads(loads) {
+        this.loads = loads;
     }
 
     updateLoads(loads) {
         this.updateEquipments(this.loads, loads);
     }
 
+    setDanglingLines(danglingLines) {
+        this.danglingLines = danglingLines;
+    }
+
     updateDanglingLines(danglingLines) {
         this.updateEquipments(this.danglingLines, danglingLines);
     }
 
+    setShuntCompensators(shuntCompensators) {
+        this.shuntCompensators = shuntCompensators;
+    }
+
     updateShuntCompensators(shuntCompensators) {
         this.updateEquipments(this.shuntCompensators, shuntCompensators);
+    }
+
+    setStaticVarCompensators(staticVarCompensators) {
+        this.staticVarCompensators = staticVarCompensators;
     }
 
     updateStaticVarCompensators(staticVarCompensators) {
@@ -218,12 +253,24 @@ export default class Network {
         );
     }
 
+    setHvdcLines(hvdcLines) {
+        this.hvdcLines = hvdcLines;
+    }
+
     updateHvdcLines(hvdcLines) {
         this.updateEquipments(this.hvdcLines, hvdcLines);
     }
 
+    setLccConverterStations(lccConverterStations) {
+        this.lccConverterStations = lccConverterStations;
+    }
+
     updateLccConverterStations(lccConverterStations) {
         this.updateEquipments(this.lccConverterStations, lccConverterStations);
+    }
+
+    setVscConverterStations(vscConverterStations) {
+        this.vscConverterStations = vscConverterStations;
     }
 
     updateVscConverterStations(vscConverterStations) {
@@ -340,6 +387,39 @@ export default class Network {
                 break;
             case equipments.lines:
                 this.setLines(values);
+                break;
+            case equipments.twoWindingsTransformers:
+                this.setTwoWindingsTransformers(values);
+                break;
+            case equipments.threeWindingsTransformers:
+                this.setThreeWindingsTransformers(values);
+                break;
+            case equipments.generators:
+                this.setGenerators(values);
+                break;
+            case equipments.batteries:
+                this.setBatteries(values);
+                break;
+            case equipments.loads:
+                this.setLoads(values);
+                break;
+            case equipments.danglingLines:
+                this.setDanglingLines(values);
+                break;
+            case equipments.shuntCompensators:
+                this.setShuntCompensators(values);
+                break;
+            case equipments.staticVarCompensators:
+                this.setStaticVarCompensators(values);
+                break;
+            case equipments.hvdcLines:
+                this.setHvdcLines(values);
+                break;
+            case equipments.lccConverterStations:
+                this.setLccConverterStations(values);
+                break;
+            case equipments.vscConverterStations:
+                this.setVscConverterStations(values);
                 break;
             default:
                 console.error(
