@@ -342,20 +342,31 @@ export default class Network {
                 this.setLines(values);
                 break;
             default:
+                console.error(
+                    'Equipment type ' + equipment + ' does not exist'
+                );
                 break;
         }
     }
 
     prefetch(equipments) {
         let fetchers = [];
+        // TODO: here, instead of calling fetcher() method of the lazy loader (instead of method fetch() which fetches and dispatches equipment update)
+        //  and modifying directly its "fetched" attribute, some refactoring should be done in remote-resource-handler in order to allow
+        //  equipment loading without necessarily dispatch update
         equipments.forEach((equipment) => {
             const fetcher = this.lazyLoaders.get(equipment);
-            if (fetcher) fetchers.push(fetcher.fetcher());
+            if (fetcher)
+                fetchers.push(
+                    fetcher.fetcher().then((values) => {
+                        return { values: values, equipment: equipment };
+                    })
+                );
         });
         Promise.all(fetchers).then((values) => {
-            values.forEach((value, index) => {
-                this.lazyLoaders.get(equipments[index]).fetched = true;
-                this.setEquipment(equipments[index], value);
+            values.forEach((value) => {
+                this.lazyLoaders.get(value.equipment).fetched = true;
+                this.setEquipment(value.equipment, value.values);
             });
             this.dispatch(networkCreated(this));
         });
