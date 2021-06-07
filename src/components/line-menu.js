@@ -70,24 +70,22 @@ const LineMenu = ({ line, position, handleClose }) => {
 
     function handleLockout() {
         if (line.branchStatus === 'PLANNED_OUTAGE') return;
-        lockoutLine(studyUuid, line.id)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToLockoutLine');
-                }
-            })
-            .then(handleClose);
+        handleClose();
+        lockoutLine(studyUuid, line.id).then((response) => {
+            if (response.status !== 200) {
+                handleLineChangesResponse(response, 'UnableToLockoutLine');
+            }
+        });
     }
 
     function handleTrip() {
         if (line.branchStatus === 'FORCED_OUTAGE') return;
-        tripLine(studyUuid, line.id)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToTripLine');
-                }
-            })
-            .then(handleClose);
+        handleClose();
+        tripLine(studyUuid, line.id).then((response) => {
+            if (response.status !== 200) {
+                handleLineChangesResponse(response, 'UnableToTripLine');
+            }
+        });
     }
 
     function handleEnergise(side) {
@@ -100,27 +98,22 @@ const LineMenu = ({ line, position, handleClose }) => {
                 !line.terminal1Connected)
         )
             return;
-        energiseLineEnd(studyUuid, line.id, side)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(
-                        response,
-                        'UnableToEnergiseLineEnd'
-                    );
-                }
-            })
-            .then(handleClose);
+        handleClose();
+        energiseLineEnd(studyUuid, line.id, side).then((response) => {
+            if (response.status !== 200) {
+                handleLineChangesResponse(response, 'UnableToEnergiseLineEnd');
+            }
+        });
     }
 
     function handleSwitchOn() {
         if (line.terminal1Connected && line.terminal2Connected) return;
-        switchOnLine(studyUuid, line.id)
-            .then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToSwitchOnLine');
-                }
-            })
-            .then(handleClose);
+        handleClose();
+        switchOnLine(studyUuid, line.id).then((response) => {
+            if (response.status !== 200) {
+                handleLineChangesResponse(response, 'UnableToSwitchOnLine');
+            }
+        });
     }
 
     return (
