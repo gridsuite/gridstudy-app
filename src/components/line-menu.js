@@ -57,12 +57,12 @@ const LineMenu = ({ line, position, handleClose }) => {
     const network = useSelector((state) => state.network);
 
     const getLineDescriptor = useCallback(
-      (voltageLevelId) => {
-          return displayUseName
-            ? network.getVoltageLevel(voltageLevelId).name
-            : voltageLevelId;
-      },
-      [displayUseName, network]
+        (voltageLevelId) => {
+            return displayUseName
+                ? network.getVoltageLevel(voltageLevelId).name
+                : voltageLevelId;
+        },
+        [displayUseName, network]
     );
 
     function handleLineChangesResponse(response, messsageId) {
