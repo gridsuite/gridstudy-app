@@ -14,12 +14,12 @@ import ParallelPathLayer from './layers/parallel-path-layer';
 import ForkLineLayer from './layers/fork-line-layer';
 import getDistance from 'geolib/es/getDistance';
 import {
-    INVALID_LOADFLOW_OPACITY,
     SUBSTATION_RADIUS,
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
 import { RunningStatus } from '../util/running-status';
+import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode

@@ -44,7 +44,7 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import { AutoSizer } from 'react-virtualized';
 import LineMenu from './line-menu';
 import { RunningStatus } from './util/running-status';
-import { INVALID_LOADFLOW_OPACITY } from './network/constants';
+import { INVALID_LOADFLOW_OPACITY } from '../utils/colors';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
