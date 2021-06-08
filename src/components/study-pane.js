@@ -355,7 +355,7 @@ const StudyPane = (props) => {
         startSecurityAnalysis(studyUuid, contingencyListNames);
 
         // clean result
-        setSecurityAnalysisResultFetcher(null);
+        setSecurityAnalysisResult(null);
     };
 
     const startComputation = (runnable) => {
