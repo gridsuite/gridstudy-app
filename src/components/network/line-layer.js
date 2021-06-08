@@ -14,6 +14,7 @@ import ParallelPathLayer from './layers/parallel-path-layer';
 import ForkLineLayer from './layers/fork-line-layer';
 import getDistance from 'geolib/es/getDistance';
 import {
+    INVALID_LOADFLOW_OPACITY,
     SUBSTATION_RADIUS,
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
@@ -742,7 +743,7 @@ class LineLayer extends CompositeLayer {
                         ),
                     opacity:
                         this.props.loadFlowStatus !== RunningStatus.SUCCEED
-                            ? 0.2
+                            ? INVALID_LOADFLOW_OPACITY
                             : 1,
                     updateTriggers: {
                         getLinePositions: [this.props.lineFullPath],
@@ -877,7 +878,7 @@ class LineLayer extends CompositeLayer {
                         ) && this.props.labelsVisible,
                     opacity:
                         this.props.loadFlowStatus !== RunningStatus.SUCCEED
-                            ? 0.2
+                            ? INVALID_LOADFLOW_OPACITY
                             : 1,
                     updateTriggers: {
                         getPosition: [

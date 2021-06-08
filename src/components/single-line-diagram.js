@@ -44,6 +44,7 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import { AutoSizer } from 'react-virtualized';
 import LineMenu from './line-menu';
 import { RunningStatus } from './util/running-status';
+import { INVALID_LOADFLOW_OPACITY } from './network/constants';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -95,7 +96,7 @@ const useStyles = makeStyles((theme) => ({
     },
     divInvalid: {
         '& .sld-arrow-p, .sld-arrow-q': {
-            opacity: 0.2,
+            opacity: INVALID_LOADFLOW_OPACITY,
         },
     },
     close: {
