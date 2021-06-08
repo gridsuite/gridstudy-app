@@ -82,7 +82,7 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import LateralToolbar from './lateral-toolbar';
-import {RunningStatus} from "./util/running-status";
+import { RunningStatus } from './util/running-status';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;

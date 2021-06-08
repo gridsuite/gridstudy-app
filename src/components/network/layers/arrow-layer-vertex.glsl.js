@@ -29,6 +29,7 @@ uniform float webgl2;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
+uniform float opacity;
 
 varying vec4 vFillColor;
 varying float shouldDiscard;
@@ -190,7 +191,7 @@ void main(void) {
       gl_Position = vertexPosition;
 
       // arrow fill color for fragment shader 
-      vFillColor = instanceColor;
+      vFillColor = vec4(instanceColor.rgb, opacity);
       shouldDiscard = 0.0;
   }
 }

@@ -43,7 +43,7 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
 import LineMenu from './line-menu';
-import {RunningStatus} from "./util/running-status";
+import { RunningStatus } from './util/running-status';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',

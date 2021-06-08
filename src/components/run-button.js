@@ -6,10 +6,10 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import {makeStyles} from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 import SplitButton from './util/split-button';
-import {RunningStatus} from "./util/running-status";
+import { RunningStatus } from './util/running-status';
 
 const useStyles = makeStyles((theme) => ({
     succeed: {
