@@ -164,7 +164,8 @@
     "securityAnalysisResults": "Résultats de l'analyse de sécurité",
     "loadFlowResults": "Résultats du calcul de répartition",
 
-    "componentNum": "Numéro de composante",
+    "connectedComponentNum": "Numéro de composante connexe",
+    "synchronousComponentNum": "Numéro de composante synchrone",
     "status": "Statut",
     "iterationCount": "Nombre d'itérations",
     "slackBusId": "ID du nœud bilan",
@@ -228,5 +229,15 @@
     "UnableToLockoutLine": "Impossible de consigner la ligne",
     "UnableToTripLine": "Impossible de déclencher la ligne",
     "UnableToEnergiseLineEnd": "Impossible de mettre sous tension à vide",
-    "UnableToSwitchOnLine": "Impossible de mettre la ligne en service"
+    "UnableToSwitchOnLine": "Impossible de mettre la ligne en service",
+
+    "Provider": "Fournisseur: ",
+    "Default": "Défaut",
+    "OpenLoadFlow": "Open Load Flow",
+    "Hades2": "Hades 2",
+    "setLoadFlowProviderError": "Une erreur est survenue lors de la mise à jour du fournisseur de load flow",
+    "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
+
+    "SubstationList": "Liste des postes",
+    "HypothesisTree": "Arbre des hypothèses (indisponible)"
 }

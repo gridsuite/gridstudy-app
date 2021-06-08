@@ -164,7 +164,8 @@
     "securityAnalysisResults": "Security analysis results",
     "loadFlowResults": "Loadflow results",
 
-    "componentNum": "Component number",
+    "connectedComponentNum": "Connected component number",
+    "synchronousComponentNum": "Synchronous component number",
     "status": "Status",
     "iterationCount": "Iteration count",
     "slackBusId": "Slack bus id",
@@ -228,5 +229,15 @@
     "UnableToLockoutLine": "Unable to lockout the line",
     "UnableToTripLine": "Unable to trip the line",
     "UnableToEnergiseLineEnd": "Unable to energise the line end",
-    "UnableToSwitchOnLine": "Unable to switch on the line"
+    "UnableToSwitchOnLine": "Unable to switch on the line",
+
+    "Provider": "Provider: ",
+    "Default": "Default",
+    "OpenLoadFlow": "Open Load Flow",
+    "Hades2": "Hades 2",
+    "setLoadFlowProviderError": "An error occured when updating the load flow provider",
+    "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
+
+    "SubstationList": "Substation list",
+    "HypothesisTree": "Hypothesis tree (unavailable)"
 }

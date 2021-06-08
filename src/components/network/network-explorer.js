@@ -30,7 +30,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { selectItemNetwork } from '../../redux/actions';
 
@@ -39,7 +38,6 @@ const itemSize = 48;
 const useStyles = makeStyles((theme) => ({
     textField: {
         margin: theme.spacing(1),
-        width: 'calc(100% - 64px)', // to fix an issue with fullWidth of textfield and get << on the same line
     },
     listSubHeaderRoot: {
         backgroundColor: darken(theme.palette.background.default, 0.2),
@@ -87,8 +85,8 @@ const NetworkExplorer = ({
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
     onSubstationFocus,
-    hideExplorer,
     visibleSubstation,
+    visible,
 }) => {
     const intl = useIntl();
 
@@ -162,12 +160,14 @@ const NetworkExplorer = ({
     useEffect(() => {
         if (substations.length > 0) {
             generateFilteredSubstation(currentFilter);
+            cache.clearAll();
         }
     }, [
         substations,
         identifiedElementComparator,
         generateFilteredSubstation,
         currentFilter,
+        cache,
     ]);
 
     useEffect(() => {
@@ -330,55 +330,54 @@ const NetworkExplorer = ({
     const filter = (event) => {
         const filterText = event.target.value.toLowerCase();
         generateFilteredSubstation(filterText);
-        cache.clearAll();
         setCurrentFilter(filterText);
     };
 
     return (
-        <Grid container direction="column" style={{ height: '100%' }}>
-            <Grid item>
-                <TextField
-                    className={classes.textField}
-                    size="small"
-                    placeholder={filterMsg}
-                    onChange={filter}
-                    variant="outlined"
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-                <IconButton onClick={hideExplorer}>
-                    <ChevronLeftIcon />
-                </IconButton>
+        visible && (
+            <Grid container direction="column" style={{ height: '100%' }}>
+                <Grid item>
+                    <TextField
+                        className={classes.textField}
+                        size="small"
+                        placeholder={filterMsg}
+                        onChange={filter}
+                        variant="outlined"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </Grid>
+                <Divider />
+                <Grid item style={{ flex: '1 1 auto' }}>
+                    <AutoSizer>
+                        {({ width, height }) => {
+                            return (
+                                <List
+                                    height={height}
+                                    rowHeight={cache.rowHeight}
+                                    rowRenderer={subStationRow}
+                                    rowCount={filteredVoltageLevels.length}
+                                    width={width}
+                                    subheader={<li />}
+                                />
+                            );
+                        }}
+                    </AutoSizer>
+                </Grid>
             </Grid>
-            <Divider />
-            <Grid item style={{ flex: '1 1 auto' }}>
-                <AutoSizer>
-                    {({ width, height }) => {
-                        return (
-                            <List
-                                height={height}
-                                rowHeight={cache.rowHeight}
-                                rowRenderer={subStationRow}
-                                rowCount={filteredVoltageLevels.length}
-                                width={width}
-                                subheader={<li />}
-                            />
-                        );
-                    }}
-                </AutoSizer>
-            </Grid>
-        </Grid>
+        )
     );
 };
 
 NetworkExplorer.defaultProps = {
     substations: [],
     visibleSubstation: null,
+    visible: true,
 };
 
 NetworkExplorer.propTypes = {
@@ -387,6 +386,7 @@ NetworkExplorer.propTypes = {
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,
     visibleSubstation: PropTypes.string,
+    visible: PropTypes.bool,
 };
 
 export default React.memo(NetworkExplorer);

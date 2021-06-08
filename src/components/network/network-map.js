@@ -333,6 +333,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 labelSize: LABEL_SIZE,
                 pickable: true,
                 onHover: ({ object, x, y }) => {
+                    setCursorType(object ? 'pointer' : 'grab');
                     setTooltip({
                         message: object
                             ? props.useName
