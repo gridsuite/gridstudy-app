@@ -750,6 +750,7 @@ class LineLayer extends CompositeLayer {
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getLineAngles: [this.props.lineFullPath],
                         getColor: [
+                            this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
                             this.props.updatedLines,
