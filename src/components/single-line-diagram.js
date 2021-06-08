@@ -40,9 +40,10 @@ import ArrowHover from '../images/arrow_hover.svg';
 import { fullScreenSingleLineDiagram } from '../redux/actions';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import EquipmentMenu from './equipment-menu';
 
 import { AutoSizer } from 'react-virtualized';
-import LineMenu from './line-menu';
+import withLineMenu from './line-menu';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -202,33 +203,45 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
+    const MenuLine = withLineMenu(EquipmentMenu);
+
     const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
 
-    const [lineMenu, setLineMenu] = useState({
+    const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
-        lineId: null,
+        equipmentId: null,
+        equipmentType: null,
         svgId: null,
         display: null,
     });
 
-    const showLineMenu = useCallback((branchId, svgId, x, y) => {
-        setLineMenu({
-            position: [x, y],
-            lineId: branchId,
-            svgId: svgId,
-            display: true,
-        });
-    }, []);
+    const showEquipmentMenu = useCallback(
+        (equipmentId, equipmentType, svgId, x, y) => {
+            setEquipmentMenu({
+                position: [x, y],
+                equipmentId: equipmentId,
+                equipmentType: equipmentType,
+                svgId: svgId,
+                display: true,
+            });
+        },
+        []
+    );
 
-    const closeLineMenu = useCallback(() => {
-        setLineMenu({
+    const closeEquipmentMenu = useCallback(() => {
+        setEquipmentMenu({
             display: false,
         });
     }, []);
+
+    function handleViewInSpreadsheet() {
+        props.showInSpreadsheet(equipmentMenu);
+        closeEquipmentMenu();
+    }
 
     useImperativeHandle(
         ref,
@@ -583,8 +596,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         hideFeederSelection(event.currentTarget);
                     });
                     svgText.addEventListener('contextmenu', function (event) {
-                        showLineMenu(
+                        showEquipmentMenu(
                             feeder.equipmentId,
+                            'LINES',
                             feeder.id,
                             event.x,
                             event.y
@@ -592,10 +606,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     });
                 });
 
-                if (lineMenu.display) {
+                if (equipmentMenu.display) {
                     showFeederSelection(
                         document
-                            .getElementById(lineMenu.svgId)
+                            .getElementById(equipmentMenu.svgId)
                             .querySelector('text')
                     );
                 }
@@ -641,8 +655,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
-        lineMenu,
-        showLineMenu,
+        equipmentMenu,
+        showEquipmentMenu,
         showFeederSelection,
         hideFeederSelection,
         svgType,
@@ -670,7 +684,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         //TODO, these are from the previous useLayoutEffect
         //how to refactor to avoid repeating them here ?
         svg,
-        lineMenu,
+        equipmentMenu,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -772,11 +786,12 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 )}
-                {lineMenu.display && (
-                    <LineMenu
-                        line={network.getLine(lineMenu.lineId)}
-                        position={lineMenu.position}
-                        handleClose={closeLineMenu}
+                {equipmentMenu.display && (
+                    <MenuLine
+                        line={network.getLine(equipmentMenu.equipmentId)}
+                        position={equipmentMenu.position}
+                        handleClose={closeEquipmentMenu}
+                        handleViewInSpreadsheet={handleViewInSpreadsheet}
                     />
                 )}
                 {!loadingState &&

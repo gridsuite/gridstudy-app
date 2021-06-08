@@ -49,7 +49,7 @@ const withLineMenu = (BaseMenu) => ({
     line,
     position,
     handleClose,
-    handleViewOnSpreadsheet,
+    handleViewInSpreadsheet,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -62,29 +62,29 @@ const withLineMenu = (BaseMenu) => ({
     const network = useSelector((state) => state.network);
 
     const getLineDescriptor = useCallback(
-      (voltageLevelId) => {
-          return displayUseName
-            ? network.getVoltageLevel(voltageLevelId).name
-            : voltageLevelId;
-      },
-      [displayUseName, network]
+        (voltageLevelId) => {
+            return displayUseName
+                ? network.getVoltageLevel(voltageLevelId).name
+                : voltageLevelId;
+        },
+        [displayUseName, network]
     );
 
     function handleLineChangesResponse(response, messsageId) {
         const utf8Decoder = new TextDecoder('utf-8');
         response.body
-          .getReader()
-          .read()
-          .then((value) => {
-              displayInfoMessageWithSnackbar({
-                  errorMessage: utf8Decoder.decode(value.value),
-                  enqueueSnackbar: enqueueSnackbar,
-                  headerMessage: {
-                      headerMessageId: messsageId,
-                      intlRef: intlRef,
-                  },
-              });
-          });
+            .getReader()
+            .read()
+            .then((value) => {
+                displayInfoMessageWithSnackbar({
+                    errorMessage: utf8Decoder.decode(value.value),
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: messsageId,
+                        intlRef: intlRef,
+                    },
+                });
+            });
     }
 
     function handleLockout() {
@@ -109,12 +109,12 @@ const withLineMenu = (BaseMenu) => ({
 
     function handleEnergise(side) {
         if (
-          (side === 'ONE' &&
-            line.terminal1Connected &&
-            !line.terminal2Connected) ||
-          (side === 'TWO' &&
-            line.terminal2Connected &&
-            !line.terminal1Connected)
+            (side === 'ONE' &&
+                line.terminal1Connected &&
+                !line.terminal2Connected) ||
+            (side === 'TWO' &&
+                line.terminal2Connected &&
+                !line.terminal1Connected)
         )
             return;
         handleClose();
@@ -150,7 +150,7 @@ const withLineMenu = (BaseMenu) => ({
         >
             <BaseMenu
                 equipment={line}
-                handleViewOnSpreadsheet={handleViewOnSpreadsheet}
+                handleViewInSpreadsheet={handleViewInSpreadsheet}
             />
 
             <MenuItem
@@ -269,7 +269,7 @@ withLineMenu.propTypes = {
     line: PropTypes.object.isRequired,
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
-    handleViewOnSpreadsheet: PropTypes.func.isRequired
+    handleViewInSpreadsheet: PropTypes.func.isRequired,
 };
 
 export default withLineMenu;

@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const EquipmentMenu = ({ equipment, handleViewOnSpreadsheet }) => {
+const EquipmentMenu = ({ equipment, handleViewInSpreadsheet }) => {
     const classes = useStyles();
     const intl = useIntl();
 
@@ -36,7 +36,7 @@ const EquipmentMenu = ({ equipment, handleViewOnSpreadsheet }) => {
         <>
             <MenuItem
                 className={classes.menuItem}
-                onClick={() => handleViewOnSpreadsheet(equipment.id)}
+                onClick={() => handleViewInSpreadsheet(equipment.id)}
                 selected={false}
             >
                 <ListItemIcon>

@@ -224,7 +224,7 @@
     "TripLine": "Trip the line",
     "EnergiseOnOneEnd": "Energise on one end ({substation})",
     "SwitchOnLine": "Switch on the line",
-    "ViewOnSpreadsheet": "View on spreadsheet",
+    "ViewOnSpreadsheet": "View in spreadsheet",
 
     "UnableToLockoutLine": "Unable to lockout the line",
     "UnableToTripLine": "Unable to trip the line",

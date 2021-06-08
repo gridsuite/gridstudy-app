@@ -16,8 +16,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { parse, stringify } from 'qs';
 import { makeStyles } from '@material-ui/core/styles';
 
-import { useSnackbar } from 'notistack';
-
 import NetworkExplorer from './network/network-explorer';
 import NetworkMap from './network/network-map';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
@@ -34,7 +32,7 @@ import {
     startLoadFlow,
     startSecurityAnalysis,
     stopSecurityAnalysis,
-    updateSwitchState
+    updateSwitchState,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -224,9 +222,9 @@ const StudyPane = (props) => {
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
-        equipmentToApply: null,
+        equipment: null,
         equipmentType: null,
-        display: null
+        display: null,
     });
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
@@ -270,6 +268,11 @@ const StudyPane = (props) => {
     ] = useState(false);
 
     const [visibleSubstation, setVisibleSubstation] = useState(null);
+
+    const [tableEquipment, setTableEquipment] = useState({
+        id: null,
+        type: null,
+    });
 
     const MenuLine = withLineMenu(EquipmentMenu);
 
@@ -818,10 +821,11 @@ const StudyPane = (props) => {
     function showEquipmentMenu(equipment, x, y, type) {
         setEquipmentMenu({
             position: [x, y],
-            equipmentToApply: equipment,
+            equipment: equipment,
             equipmentType: type,
             display: true,
         });
+        setTableEquipment({ id: equipment.id, type: type });
     }
 
     function closeEquipmentMenu() {
@@ -830,9 +834,17 @@ const StudyPane = (props) => {
         });
     }
 
-    function handleViewOnSpreadsheet() {
+    function handleViewInSpreadsheet() {
         props.onChangeTab(1); // switch to spreadsheet view
         closeEquipmentMenu();
+    }
+
+    function showInSpreadsheet(equipment) {
+        setTableEquipment({
+            id: equipment.equipmentId,
+            type: equipment.equipmentType,
+        });
+        props.onChangeTab(1); // switch to spreadsheet view
     }
 
     function renderMapView() {
@@ -1017,48 +1029,48 @@ const StudyPane = (props) => {
                             computationStopped={computationStopped}
                         />
                     </div>
-                    {equipmentMenu.equipmentToApply !== null &&
+                    {equipmentMenu.equipment !== null &&
                         equipmentMenu.display &&
                         equipmentMenu.equipmentType === 'LINES' && (
                             <MenuLine
-                                line={equipmentMenu.equipmentToApply}
+                                line={equipmentMenu.equipment}
                                 position={[
                                     equipmentMenu.position[0],
                                     equipmentMenu.position[1],
                                 ]}
                                 handleClose={closeEquipmentMenu}
-                                handleViewOnSpreadsheet={
-                                    handleViewOnSpreadsheet
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
                                 }
                             />
                         )}
-                    {equipmentMenu.equipmentToApply !== null &&
+                    {equipmentMenu.equipment !== null &&
                         equipmentMenu.display &&
                         equipmentMenu.equipmentType === 'SUBSTATIONS' && (
                             <MenuSubstation
-                                substation={equipmentMenu.equipmentToApply}
+                                substation={equipmentMenu.equipment}
                                 position={[
                                     equipmentMenu.position[0],
                                     equipmentMenu.position[1],
                                 ]}
                                 handleClose={closeEquipmentMenu}
-                                handleViewOnSpreadsheet={
-                                    handleViewOnSpreadsheet
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
                                 }
                             />
                         )}
-                    {equipmentMenu.equipmentToApply !== null &&
+                    {equipmentMenu.equipment !== null &&
                         equipmentMenu.display &&
                         equipmentMenu.equipmentType === 'VOLTAGE_LEVELS' && (
                             <MenuVoltageLevel
-                                voltageLevel={equipmentMenu.equipmentToApply}
+                                voltageLevel={equipmentMenu.equipment}
                                 position={[
                                     equipmentMenu.position[0],
                                     equipmentMenu.position[1],
                                 ]}
                                 handleClose={closeEquipmentMenu}
-                                handleViewOnSpreadsheet={
-                                    handleViewOnSpreadsheet
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
                                 }
                             />
                         )}
@@ -1156,6 +1168,7 @@ const StudyPane = (props) => {
                                         ? SvgType.VOLTAGE_LEVEL
                                         : SvgType.SUBSTATION
                                 }
+                                showInSpreadsheet={showInSpreadsheet}
                             />
                         </div>
                     )}
@@ -1175,8 +1188,15 @@ const StudyPane = (props) => {
                     <NetworkTable
                         network={network}
                         studyUuid={studyUuid}
-                        equipment={equipmentMenu.equipmentToApply}
-                        equipmentType={equipmentMenu.equipmentType}
+                        // equipmentId={
+                        //     equipmentMenu.equipment !== undefined &&
+                        //     equipmentMenu.equipment !== null
+                        //         ? equipmentMenu.equipment.id
+                        //         : null
+                        // }
+                        // equipmentType={equipmentMenu.equipmentType}
+                        equipmentId={tableEquipment.id}
+                        equipmentType={tableEquipment.type}
                     />
                 </Paper>
             )

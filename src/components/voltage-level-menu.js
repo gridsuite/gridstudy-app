@@ -21,7 +21,7 @@ const withVoltageLevelMenu = (BaseMenu) => ({
     voltageLevel,
     position,
     handleClose,
-    handleViewOnSpreadsheet,
+    handleViewInSpreadsheet,
 }) => {
     const classes = useStyles();
 
@@ -40,7 +40,7 @@ const withVoltageLevelMenu = (BaseMenu) => ({
         >
             <BaseMenu
                 equipment={voltageLevel}
-                handleViewOnSpreadsheet={handleViewOnSpreadsheet}
+                handleViewInSpreadsheet={handleViewInSpreadsheet}
             />
         </Menu>
     );

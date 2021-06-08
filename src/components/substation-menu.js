@@ -21,7 +21,7 @@ const withSubstationMenu = (BaseMenu) => ({
     substation,
     position,
     handleClose,
-    handleViewOnSpreadsheet,
+    handleViewInSpreadsheet,
 }) => {
     const classes = useStyles();
 
@@ -40,7 +40,7 @@ const withSubstationMenu = (BaseMenu) => ({
         >
             <BaseMenu
                 equipment={substation}
-                handleViewOnSpreadsheet={handleViewOnSpreadsheet}
+                handleViewInSpreadsheet={handleViewInSpreadsheet}
             />
         </Menu>
     );

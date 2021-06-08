@@ -107,17 +107,17 @@ const NetworkTable = (props) => {
     );
 
     useEffect(() => {
-        if (props.equipment !== null && props.equipmentType !== null) {
+        if (props.equipmentId !== null && props.equipmentType !== null) {
             let newIndex = Object.keys(TABLES_DEFINITIONS).indexOf(
                 props.equipmentType
             );
             setTabIndex(newIndex); // select the right table type
             // calculate row index to scroll to
             const rows = getRows(newIndex);
-            let index = rows.findIndex((r) => r.id === props.equipment.id);
+            let index = rows.findIndex((r) => r.id === props.equipmentId);
             setScrollToIndex(index !== undefined ? index : 0);
         }
-    }, [props.network, props.equipment, props.equipmentType, getRows]);
+    }, [props.network, props.equipmentId, props.equipmentType, getRows]);
 
     function renderTable() {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
@@ -335,14 +335,14 @@ const NetworkTable = (props) => {
 NetworkTable.defaultProps = {
     network: null,
     studyUuid: '',
-    equipment: null,
+    equipmentId: null,
     equipmentType: null,
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
-    equipment: PropTypes.object,
+    equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
 };
 
