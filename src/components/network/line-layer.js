@@ -18,7 +18,7 @@ import {
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
-import { RunningStatus } from '../run-button';
+import {RunningStatus} from "../util/running-status";
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode

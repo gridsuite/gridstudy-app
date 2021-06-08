@@ -57,7 +57,7 @@ import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage-level-choice';
-import RunButton, { RunningStatus } from './run-button';
+import RunButton from './run-button';
 import ContingencyListSelector from './contingency-list-selector';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DoneIcon from '@material-ui/icons/Done';
@@ -82,6 +82,7 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import LateralToolbar from './lateral-toolbar';
+import {RunningStatus} from "./util/running-status";
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
