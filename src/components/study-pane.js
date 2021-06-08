@@ -1057,6 +1057,7 @@ const StudyPane = (props) => {
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={centerSubstation}
                             visibleSubstation={visibleSubstation}
+                            visible={props.view === StudyView.MAP}
                         />
                     </div>
                 </Drawer>
