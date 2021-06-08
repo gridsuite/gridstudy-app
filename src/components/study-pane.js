@@ -923,6 +923,7 @@ const StudyPane = (props) => {
                         lineFlowMode={lineFlowMode}
                         lineFlowColorMode={lineFlowColorMode}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        loadFlowStatus={loadFlowStatus}
                         ref={mapRef}
                         onSubstationClick={openVoltageLevel}
                         onLineClick={showLineMenu}
@@ -1091,6 +1092,7 @@ const StudyPane = (props) => {
                                         ? SvgType.VOLTAGE_LEVEL
                                         : SvgType.SUBSTATION
                                 }
+                                loadFlowStatus={loadFlowStatus}
                             />
                         </div>
                     )}

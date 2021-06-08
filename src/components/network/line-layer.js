@@ -18,6 +18,7 @@ import {
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
+import { RunningStatus } from '../run-button';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
@@ -739,6 +740,10 @@ class LineLayer extends CompositeLayer {
                         this.props.filteredNominalVoltages.includes(
                             compositeData.nominalVoltage
                         ),
+                    opacity:
+                        this.props.loadFlowStatus !== RunningStatus.SUCCEED
+                            ? 0.1
+                            : 1,
                     updateTriggers: {
                         getLinePositions: [this.props.lineFullPath],
                         getLineParallelIndex: [this.props.lineParallelPath],
@@ -748,6 +753,7 @@ class LineLayer extends CompositeLayer {
                             this.props.lineFlowAlertThreshold,
                             this.props.updatedLines,
                         ],
+                        opacity: [this.props.loadFlowStatus],
                     },
                 })
             );
@@ -869,6 +875,10 @@ class LineLayer extends CompositeLayer {
                         this.props.filteredNominalVoltages.includes(
                             compositeData.nominalVoltage
                         ) && this.props.labelsVisible,
+                    opacity:
+                        this.props.loadFlowStatus !== RunningStatus.SUCCEED
+                            ? 0.2
+                            : 1,
                     updateTriggers: {
                         getPosition: [
                             this.props.lineFullPath,

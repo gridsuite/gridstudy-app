@@ -43,6 +43,7 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
 import LineMenu from './line-menu';
+import { RunningStatus } from './run-button';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -90,6 +91,11 @@ const useStyles = makeStyles((theme) => ({
         '& .sld-flash, .sld-lock': {
             stroke: 'none',
             fill: theme.palette.text.primary,
+        },
+    },
+    divInvalid: {
+        '& .sld-arrow-p, .sld-arrow-q': {
+            opacity: 0.2,
         },
     },
     close: {
@@ -249,7 +255,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
 
-    const { totalWidth, totalHeight, svgType } = props;
+    const { totalWidth, totalHeight, svgType, loadFlowStatus } = props;
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
@@ -768,7 +774,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 ) : (
                     <div
                         id="sld-svg"
-                        className={classes.divSld}
+                        className={
+                            loadFlowStatus !== RunningStatus.SUCCEED
+                                ? classes.divSld + ' ' + classes.divInvalid
+                                : classes.divSld
+                        }
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 )}
