@@ -22,3 +22,5 @@ export function getNominalVoltageColor(nominalVoltage) {
         return [171, 175, 40];
     }
 }
+
+export const INVALID_LOADFLOW_OPACITY = 0.2;

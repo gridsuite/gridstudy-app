@@ -9,12 +9,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 import SplitButton from './util/split-button';
-export const RunningStatus = {
-    SUCCEED: 'SUCCEED',
-    FAILED: 'FAILED',
-    IDLE: 'IDLE',
-    RUNNING: 'RUNNING',
-};
+import { RunningStatus } from './util/running-status';
 
 const useStyles = makeStyles((theme) => ({
     succeed: {

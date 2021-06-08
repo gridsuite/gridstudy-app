@@ -18,6 +18,8 @@ import {
     SUBSTATION_RADIUS_MAX_PIXEL,
     SUBSTATION_RADIUS_MIN_PIXEL,
 } from './constants';
+import { RunningStatus } from '../util/running-status';
+import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 
 const DISTANCE_BETWEEN_ARROWS = 10000.0;
 //Constants for Feeders mode
@@ -739,15 +741,21 @@ class LineLayer extends CompositeLayer {
                         this.props.filteredNominalVoltages.includes(
                             compositeData.nominalVoltage
                         ),
+                    opacity:
+                        this.props.loadFlowStatus !== RunningStatus.SUCCEED
+                            ? INVALID_LOADFLOW_OPACITY
+                            : 1,
                     updateTriggers: {
                         getLinePositions: [this.props.lineFullPath],
                         getLineParallelIndex: [this.props.lineParallelPath],
                         getLineAngles: [this.props.lineFullPath],
                         getColor: [
+                            this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
                             this.props.lineFlowAlertThreshold,
                             this.props.updatedLines,
                         ],
+                        opacity: [this.props.loadFlowStatus],
                     },
                 })
             );
@@ -869,12 +877,17 @@ class LineLayer extends CompositeLayer {
                         this.props.filteredNominalVoltages.includes(
                             compositeData.nominalVoltage
                         ) && this.props.labelsVisible,
+                    opacity:
+                        this.props.loadFlowStatus !== RunningStatus.SUCCEED
+                            ? INVALID_LOADFLOW_OPACITY
+                            : 1,
                     updateTriggers: {
                         getPosition: [
                             this.props.lineFullPath,
                             this.props.lineParallelPath,
                         ],
                         getPixelOffset: [this.props.lineFullPath],
+                        opacity: [this.props.loadFlowStatus],
                     },
                 })
             );

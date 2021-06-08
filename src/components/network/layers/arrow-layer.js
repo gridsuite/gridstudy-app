@@ -46,6 +46,7 @@ const defaultProps = {
     distanceBetweenLines: { type: 'number', value: 1000 },
     maxParallelOffset: { type: 'number', value: 100 },
     minParallelOffset: { type: 'number', value: 3 },
+    opacity: { type: 'number', value: 1.0 },
 };
 
 /**
