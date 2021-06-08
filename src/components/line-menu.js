@@ -32,6 +32,7 @@ import {
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { displayInfoMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { equipments } from './network/network-equipments';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -150,6 +151,7 @@ const withLineMenu = (BaseMenu) => ({
         >
             <BaseMenu
                 equipment={line}
+                equipmentType={equipments.lines}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />
 

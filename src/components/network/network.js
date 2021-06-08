@@ -254,6 +254,10 @@ export default class Network {
         return this.generatorsById.get(id);
     }
 
+    getLoad(id) {
+        return this.loads.find((l) => l.id === id);
+    }
+
     getLineOrTransformer(id) {
         return (
             this.getLine(id) ||

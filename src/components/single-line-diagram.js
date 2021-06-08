@@ -44,6 +44,8 @@ import EquipmentMenu from './equipment-menu';
 
 import { AutoSizer } from 'react-virtualized';
 import withLineMenu from './line-menu';
+import withLoadMenu from './load-menu';
+import { equipments } from './network/network-equipments';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -117,7 +119,7 @@ const SWITCH_COMPONENT_TYPES = new Set([
     'DISCONNECTOR',
     'LOAD_BREAK_SWITCH',
 ]);
-const LINE_COMPONENT_TYPES = new Set(['LINE']);
+const FEEDER_COMPONENT_TYPES = new Set(['LINE', 'LOAD']);
 
 let arrowSvg;
 let arrowHoverSvg;
@@ -204,6 +206,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [loadingState, updateLoadingState] = useState(false);
 
     const MenuLine = withLineMenu(EquipmentMenu);
+
+    const MenuLoad = withLoadMenu(EquipmentMenu);
 
     const theme = useTheme();
 
@@ -526,6 +530,19 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             });
         }
 
+        function getEquipmentTypeFromFeederType(feederType) {
+            switch (feederType) {
+                case 'LINE':
+                    return equipments.lines;
+                case 'LOAD':
+                    return equipments.loads;
+                default: {
+                    console.log('bad feeder type ', feederType);
+                    return null;
+                }
+            }
+        }
+
         if (svg.svg) {
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
@@ -578,14 +595,19 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
             // handling the right click on a branch feeder (menu)
             if (!isComputationRunning) {
-                const lineFeeders = svg.metadata.nodes.filter(
-                    (element) =>
-                        LINE_COMPONENT_TYPES.has(element.componentType) &&
-                        // FIXME : currently ony lines (and not transformers) are taken into account
-                        // This test must be removed
-                        network.getLine(element.equipmentId)
-                );
-                lineFeeders.forEach((feeder) => {
+                const feeders = svg.metadata.nodes.filter((element) => {
+                    if (FEEDER_COMPONENT_TYPES.has(element.componentType)) {
+                        if (element.componentType === 'LINE') {
+                            return network.getLine(element.equipmentId);
+                        } else if (element.componentType === 'LOAD') {
+                            if (!network.isResourceFetched(equipments.loads)) {
+                                network.useEquipment(equipments.loads); // fetch network loads if not already loaded
+                            }
+                            return network.getLoad(element.equipmentId);
+                        } else return false;
+                    } else return false;
+                });
+                feeders.forEach((feeder) => {
                     const svgText = document
                         .getElementById(feeder.id)
                         .querySelector('text');
@@ -598,7 +620,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     svgText.addEventListener('contextmenu', function (event) {
                         showEquipmentMenu(
                             feeder.equipmentId,
-                            'LINES',
+                            getEquipmentTypeFromFeederType(
+                                feeder.componentType
+                            ),
                             feeder.id,
                             event.x,
                             event.y
@@ -786,14 +810,24 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 )}
-                {equipmentMenu.display && (
-                    <MenuLine
-                        line={network.getLine(equipmentMenu.equipmentId)}
-                        position={equipmentMenu.position}
-                        handleClose={closeEquipmentMenu}
-                        handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    />
-                )}
+                {equipmentMenu.display &&
+                    equipmentMenu.equipmentType === equipments.lines && (
+                        <MenuLine
+                            line={network.getLine(equipmentMenu.equipmentId)}
+                            position={equipmentMenu.position}
+                            handleClose={closeEquipmentMenu}
+                            handleViewInSpreadsheet={handleViewInSpreadsheet}
+                        />
+                    )}
+                {equipmentMenu.display &&
+                    equipmentMenu.equipmentType === equipments.loads && (
+                        <MenuLoad
+                            load={network.getLoad(equipmentMenu.equipmentId)}
+                            position={equipmentMenu.position}
+                            handleClose={closeEquipmentMenu}
+                            handleViewInSpreadsheet={handleViewInSpreadsheet}
+                        />
+                    )}
                 {!loadingState &&
                     !svg.error &&
                     (fullScreen ? (

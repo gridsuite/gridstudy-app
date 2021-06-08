@@ -28,7 +28,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const EquipmentMenu = ({ equipment, handleViewInSpreadsheet }) => {
+const EquipmentMenu = ({
+    equipment,
+    equipmentType,
+    handleViewInSpreadsheet,
+}) => {
     const classes = useStyles();
     const intl = useIntl();
 

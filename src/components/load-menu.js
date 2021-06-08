@@ -18,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const withVoltageLevelMenu = (BaseMenu) => ({
-    voltageLevel,
+const withLoadMenu = (BaseMenu) => ({
+    load,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -35,17 +35,17 @@ const withVoltageLevelMenu = (BaseMenu) => ({
                 top: position[1],
                 left: position[0],
             }}
-            id="voltage-level-menu"
+            id="load-menu"
             open={true}
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={voltageLevel}
-                equipmentType={equipments.voltageLevels}
+                equipment={load}
+                equipmentType={equipments.loads}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />
         </Menu>
     );
 };
 
-export default withVoltageLevelMenu;
+export default withLoadMenu;

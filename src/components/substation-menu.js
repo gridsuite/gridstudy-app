@@ -8,6 +8,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
+import { equipments } from './network/network-equipments';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -40,6 +41,7 @@ const withSubstationMenu = (BaseMenu) => ({
         >
             <BaseMenu
                 equipment={substation}
+                equipmentType={equipments.substations}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />
         </Menu>

@@ -957,17 +957,27 @@ const StudyPane = (props) => {
                         ref={mapRef}
                         onSubstationClick={openVoltageLevel}
                         onLineMenuClick={(equipment, x, y) =>
-                            showEquipmentMenu(equipment, x, y, 'LINES')
+                            showEquipmentMenu(equipment, x, y, equipments.lines)
                         }
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
                         }
                         onSubstationMenuClick={(equipment, x, y) =>
-                            showEquipmentMenu(equipment, x, y, 'SUBSTATIONS')
+                            showEquipmentMenu(
+                                equipment,
+                                x,
+                                y,
+                                equipments.substations
+                            )
                         }
                         onVoltageLevelMenuClick={(equipment, x, y) =>
-                            showEquipmentMenu(equipment, x, y, 'VOLTAGE_LEVELS')
+                            showEquipmentMenu(
+                                equipment,
+                                x,
+                                y,
+                                equipments.voltageLevels
+                            )
                         }
                     />
                     {network && displayOverloadTable && (
@@ -1031,7 +1041,7 @@ const StudyPane = (props) => {
                     </div>
                     {equipmentMenu.equipment !== null &&
                         equipmentMenu.display &&
-                        equipmentMenu.equipmentType === 'LINES' && (
+                        equipmentMenu.equipmentType === equipments.lines && (
                             <MenuLine
                                 line={equipmentMenu.equipment}
                                 position={[
@@ -1046,7 +1056,8 @@ const StudyPane = (props) => {
                         )}
                     {equipmentMenu.equipment !== null &&
                         equipmentMenu.display &&
-                        equipmentMenu.equipmentType === 'SUBSTATIONS' && (
+                        equipmentMenu.equipmentType ===
+                            equipments.substations && (
                             <MenuSubstation
                                 substation={equipmentMenu.equipment}
                                 position={[
@@ -1061,7 +1072,8 @@ const StudyPane = (props) => {
                         )}
                     {equipmentMenu.equipment !== null &&
                         equipmentMenu.display &&
-                        equipmentMenu.equipmentType === 'VOLTAGE_LEVELS' && (
+                        equipmentMenu.equipmentType ===
+                            equipments.voltageLevels && (
                             <MenuVoltageLevel
                                 voltageLevel={equipmentMenu.equipment}
                                 position={[
@@ -1188,13 +1200,6 @@ const StudyPane = (props) => {
                     <NetworkTable
                         network={network}
                         studyUuid={studyUuid}
-                        // equipmentId={
-                        //     equipmentMenu.equipment !== undefined &&
-                        //     equipmentMenu.equipment !== null
-                        //         ? equipmentMenu.equipment.id
-                        //         : null
-                        // }
-                        // equipmentType={equipmentMenu.equipmentType}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
                     />

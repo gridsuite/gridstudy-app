@@ -106,11 +106,16 @@ const NetworkTable = (props) => {
         [props.network]
     );
 
+    function getTabIndexFromEquipementType(equipmentType) {
+        const definition = Object.values(TABLES_DEFINITIONS).find(
+            (d) => d.name.toLowerCase() === equipmentType.toLowerCase()
+        );
+        return definition ? definition.index : 0;
+    }
+
     useEffect(() => {
         if (props.equipmentId !== null && props.equipmentType !== null) {
-            let newIndex = Object.keys(TABLES_DEFINITIONS).indexOf(
-                props.equipmentType
-            );
+            const newIndex = getTabIndexFromEquipementType(props.equipmentType);
             setTabIndex(newIndex); // select the right table type
             // calculate row index to scroll to
             const rows = getRows(newIndex);
