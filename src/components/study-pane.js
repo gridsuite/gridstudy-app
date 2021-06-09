@@ -238,10 +238,6 @@ const StudyPane = (props) => {
         setSecurityAnalysisResultFetcher,
     ] = useState(null);
     const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
-    const [
-        securityAnalysisResultFetched,
-        setSecurityAnalysisResultFetched,
-    ] = useState(false);
 
     const [computationStopped, setComputationStopped] = useState(false);
 
@@ -331,19 +327,13 @@ const StudyPane = (props) => {
                 () => fetchSecurityAnalysisResult(studyUuid),
                 (res) => {
                     setSecurityAnalysisResult(res);
-                    setSecurityAnalysisResultFetched(true);
                 },
                 (e) => {
                     // produces 404 error when missing in the normal case, don't crash. TODO deal with other errors
-                    setSecurityAnalysisResultFetched(true);
                 }
             )
         );
-    }, [
-        studyUuid,
-        setSecurityAnalysisResult,
-        setSecurityAnalysisResultFetched,
-    ]);
+    }, [studyUuid, setSecurityAnalysisResult]);
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         // close the contingency list selection window
@@ -1156,7 +1146,6 @@ const StudyPane = (props) => {
             >
                 <SecurityAnalysisResult
                     result={securityAnalysisResult}
-                    fetched={securityAnalysisResultFetched}
                     onClickNmKConstraint={onClickNmKConstraint}
                 />
             </Paper>
