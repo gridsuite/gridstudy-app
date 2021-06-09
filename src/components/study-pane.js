@@ -356,6 +356,7 @@ const StudyPane = (props) => {
 
         // clean result
         setSecurityAnalysisResult(null);
+        setSecurityAnalysisResultFetched(false);
     };
 
     const startComputation = (runnable) => {
