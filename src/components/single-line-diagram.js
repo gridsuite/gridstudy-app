@@ -142,6 +142,8 @@ const FEEDER_COMPONENT_TYPES = new Set([
     'DANGLING_LINE',
     'GENERATOR',
     'VSC_CONVERTER_STATION',
+    'LCC_CONVERTER_STATION',
+    'HVDC_LINE',
     'CAPACITOR',
     'INDUCTOR',
     'STATIC_VAR_COMPENSATOR',
@@ -583,7 +585,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     return equipments.danglingLines;
                 case 'GENERATOR':
                     return equipments.generators;
-                case 'VSC_CONVERTER_STATION': // TODO ??????
+                case 'VSC_CONVERTER_STATION':
+                    return equipments.vscConverterStations;
+                case 'LCC_CONVERTER_STATION':
+                    return equipments.lccConverterStations;
+                case 'HVDC_LINE':
                     return equipments.hvdcLines;
                 case 'CAPACITOR':
                 case 'INDUCTOR':
@@ -649,7 +655,17 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                             equipments.threeWindingsTransformers
                         ); // fetch network three windings transformers if not already loaded
                     return true;
-                case 'VSC_CONVERTER_STATION': // TODO ????????????
+                case 'VSC_CONVERTER_STATION':
+                    !network.isResourceFetched(
+                        equipments.vscConverterStations
+                    ) && network.useEquipment(equipments.vscConverterStations); // fetch network vsc converter stations if not already loaded
+                    return true;
+                case 'LCC_CONVERTER_STATION':
+                    !network.isResourceFetched(
+                        equipments.lccConverterStations
+                    ) && network.useEquipment(equipments.lccConverterStations); // fetch network lcc converter stations if not already loaded
+                    return true;
+                case 'HVDC_LINE':
                     !network.isResourceFetched(equipments.hvdcLines) &&
                         network.useEquipment(equipments.hvdcLines); // fetch network hvdc lines if not already loaded
                     return true;
@@ -711,11 +727,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the right click on a branch feeder (menu)
             if (!isComputationRunning) {
                 const feeders = svg.metadata.nodes.filter((element) => {
-                    // console.log(
-                    //     '********** metadata node componentType = ',
-                    //     element.componentType,
-                    //     ' **************'
-                    // );
                     return (
                         FEEDER_COMPONENT_TYPES.has(element.componentType) &&
                         fetchEquipmentTypeIfNeeded(element.componentType)

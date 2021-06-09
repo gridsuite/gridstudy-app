@@ -79,6 +79,7 @@ const NetworkTable = (props) => {
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [scrollToIndex, setScrollToIndex] = useState(-1);
+    const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
     const intl = useIntl();
 
@@ -107,11 +108,6 @@ const NetworkTable = (props) => {
     );
 
     function getTabIndexFromEquipementType(equipmentType) {
-        console.log(
-            '********** getTabIndexFromEquipementType : equipmentType = ',
-            equipmentType,
-            ' ************'
-        );
         const definition = Object.values(TABLES_DEFINITIONS).find(
             (d) => d.name.toLowerCase() === equipmentType.toLowerCase()
         );
@@ -119,10 +115,15 @@ const NetworkTable = (props) => {
     }
 
     useEffect(() => {
-        console.log(
-            '************ useEffect : dependencies props.network, props.equipmentId, props.equipmentType, props.equipmentChanged, getRows ********'
-        );
-        if (props.equipmentId !== null && props.equipmentType !== null) {
+        setManualTabSwitch(false);
+    }, [props.equipmentChanged]);
+
+    useEffect(() => {
+        if (
+            props.equipmentId !== null &&
+            props.equipmentType !== null &&
+            !manualTabSwitch
+        ) {
             const newIndex = getTabIndexFromEquipementType(props.equipmentType);
             setTabIndex(newIndex); // select the right table type
             // calculate row index to scroll to
@@ -136,6 +137,7 @@ const NetworkTable = (props) => {
         props.equipmentType,
         props.equipmentChanged,
         getRows,
+        manualTabSwitch,
     ]);
 
     function renderTable() {
@@ -282,9 +284,10 @@ const NetworkTable = (props) => {
                             indicatorColor="primary"
                             variant="scrollable"
                             scrollButtons="auto"
-                            onChange={(event, newValue) =>
-                                setTabIndex(newValue)
-                            }
+                            onChange={(event, newValue) => {
+                                setTabIndex(newValue);
+                                setManualTabSwitch(true);
+                            }}
                             aria-label="tables"
                         >
                             {Object.values(TABLES_DEFINITIONS).map((table) => (
