@@ -57,7 +57,7 @@ import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage-level-choice';
-import RunButton, { RunningStatus } from './run-button';
+import RunButton from './run-button';
 import ContingencyListSelector from './contingency-list-selector';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DoneIcon from '@material-ui/icons/Done';
@@ -86,6 +86,7 @@ import {
 } from '../utils/config-params';
 import EquipmentMenu from './equipment-menu';
 import LateralToolbar from './lateral-toolbar';
+import { RunningStatus } from './util/running-status';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -370,7 +371,7 @@ const StudyPane = (props) => {
         startSecurityAnalysis(studyUuid, contingencyListNames);
 
         // clean result
-        setSecurityAnalysisResultFetcher(null);
+        setSecurityAnalysisResult(null);
     };
 
     const startComputation = (runnable) => {
@@ -954,6 +955,7 @@ const StudyPane = (props) => {
                         lineFlowMode={lineFlowMode}
                         lineFlowColorMode={lineFlowColorMode}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        loadFlowStatus={loadFlowStatus}
                         ref={mapRef}
                         onSubstationClick={openVoltageLevel}
                         onLineMenuClick={(equipment, x, y) =>
@@ -1181,6 +1183,7 @@ const StudyPane = (props) => {
                                         : SvgType.SUBSTATION
                                 }
                                 showInSpreadsheet={showInSpreadsheet}
+                                loadFlowStatus={loadFlowStatus}
                             />
                         </div>
                     )}

@@ -30,6 +30,7 @@ import GeoData from './geo-data';
 import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
+import { RunningStatus } from '../util/running-status';
 
 const MAPBOX_TOKEN =
     'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
@@ -326,6 +327,7 @@ const NetworkMap = forwardRef((props, ref) => {
                 showLineFlow: props.visible && showLineFlow,
                 lineFlowColorMode: props.lineFlowColorMode,
                 lineFlowAlertThreshold: props.lineFlowAlertThreshold,
+                loadFlowStatus: props.loadFlowStatus,
                 lineFullPath: props.lineFullPath,
                 lineParallelPath: props.lineParallelPath,
                 labelsVisible: labelsVisible,
@@ -415,6 +417,7 @@ NetworkMap.defaultProps = {
     lineFlowHidden: true,
     lineFlowColorMode: LineFlowColorMode.NOMINAL_VOLTAGE,
     lineFlowAlertThreshold: 100,
+    loadFlowStatus: RunningStatus.IDLE,
     visible: true,
 };
 
@@ -440,6 +443,7 @@ NetworkMap.propTypes = {
     lineFlowHidden: PropTypes.bool,
     lineFlowColorMode: PropTypes.oneOf(Object.values(LineFlowColorMode)),
     lineFlowAlertThreshold: PropTypes.number.isRequired,
+    loadFlowStatus: PropTypes.oneOf(Object.values(RunningStatus)),
     visible: PropTypes.bool,
     updatedLines: PropTypes.array,
 };

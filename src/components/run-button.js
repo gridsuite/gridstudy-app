@@ -9,13 +9,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 
 import SplitButton from './util/split-button';
-
-export const RunningStatus = {
-    SUCCEED: 'SUCCEED',
-    FAILED: 'FAILED',
-    IDLE: 'IDLE',
-    RUNNING: 'RUNNING',
-};
+import { RunningStatus } from './util/running-status';
 
 const useStyles = makeStyles((theme) => ({
     succeed: {
@@ -24,10 +18,8 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid #0ca789',
         '&:nth-child(1)': {
             minWidth: 270,
-            border: 'none',
         },
         '&:nth-child(2)': {
-            border: 'none',
             borderLeft: '1px solid #92b1ab',
         },
         '&:disabled, &:hover': {
@@ -41,10 +33,8 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid #d85050',
         '&:nth-child(1)': {
             minWidth: 270,
-            border: 'none',
         },
         '&:nth-child(2)': {
-            border: 'none',
             borderLeft: '1px solid #c58585',
         },
         '&:disabled, &:hover': {
@@ -55,13 +45,12 @@ const useStyles = makeStyles((theme) => ({
     running: {
         backgroundColor: '#242424',
         color: '#fdfdfd',
-        border: theme.palette.type === 'dark' ? '1px solid #808080' : 'none',
+        border: '1px solid #808080',
         '&:nth-child(1)': {
             minWidth: 270,
             color: '#fdfdfd',
         },
         '&:nth-child(2)': {
-            border: 'none',
             borderLeft: '1px solid #4a4a4a',
         },
         '&:hover': {
@@ -72,17 +61,17 @@ const useStyles = makeStyles((theme) => ({
     idle: {
         backgroundColor: '#242424',
         color: '#fdfdfd',
-        border: theme.palette.type === 'dark' ? '1px solid #808080' : 'none',
+        border: '1px solid #808080',
         '&:nth-child(1)': {
             minWidth: 270,
             color: '#fdfdfd',
         },
         '&:nth-child(2)': {
-            border: 'none',
             borderLeft: '1px solid #4a4a4a',
         },
         '&:hover': {
             backgroundColor: '#242424',
+            border: '1px solid ' + theme.palette.primary,
             color: '#fdfdfd',
         },
     },
