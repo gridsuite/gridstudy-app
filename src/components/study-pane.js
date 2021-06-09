@@ -273,6 +273,7 @@ const StudyPane = (props) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
+        flip: false,
     });
 
     const MenuLine = withLineMenu(EquipmentMenu);
@@ -826,7 +827,11 @@ const StudyPane = (props) => {
             equipmentType: type,
             display: true,
         });
-        setTableEquipment({ id: equipment.id, type: type });
+        setTableEquipment({
+            id: equipment.id,
+            type: type,
+            flip: !equipmentMenu.flip,
+        });
     }
 
     function closeEquipmentMenu() {
@@ -836,8 +841,8 @@ const StudyPane = (props) => {
         setTableEquipment({
             id: null,
             type: null,
+            flip: false,
         });
-
     }
 
     function handleViewInSpreadsheet() {
@@ -847,8 +852,14 @@ const StudyPane = (props) => {
 
     function showInSpreadsheet(equipment) {
         // TODO : do a copy to really have a change
-        let newTableEquipment = { id: equipment.equipmentId, type: equipment.equipmentType};
-        setTableEquipment(newTableEquipment);
+        console.log('*********** showInSpreadsheet : equipment = ', equipment);
+        let newTableEquipment = {
+            id: equipment.equipmentId,
+            type: equipment.equipmentType,
+            flip: !tableEquipment.flip,
+        };
+        console.log('*********** newTableEquipment = ', newTableEquipment);
+        setTableEquipment({ ...newTableEquipment });
         props.onChangeTab(1); // switch to spreadsheet view
     }
 
@@ -1209,6 +1220,7 @@ const StudyPane = (props) => {
                         studyUuid={studyUuid}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
+                        equipmentSwitched={tableEquipment.flip}
                     />
                 </Paper>
             )

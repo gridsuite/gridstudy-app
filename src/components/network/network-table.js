@@ -107,7 +107,11 @@ const NetworkTable = (props) => {
     );
 
     function getTabIndexFromEquipementType(equipmentType) {
-        console.log('********** getTabIndexFromEquipementType : equipmentType = ', equipmentType, ' ************');
+        console.log(
+            '********** getTabIndexFromEquipementType : equipmentType = ',
+            equipmentType,
+            ' ************'
+        );
         const definition = Object.values(TABLES_DEFINITIONS).find(
             (d) => d.name.toLowerCase() === equipmentType.toLowerCase()
         );
@@ -115,7 +119,9 @@ const NetworkTable = (props) => {
     }
 
     useEffect(() => {
-        console.log('************ useEffect : dependencies props.network, props.equipmentId, props.equipmentType, getRows ********');
+        console.log(
+            '************ useEffect : dependencies props.network, props.equipmentId, props.equipmentType, getRows ********'
+        );
         if (props.equipmentId !== null && props.equipmentType !== null) {
             const newIndex = getTabIndexFromEquipementType(props.equipmentType);
             setTabIndex(newIndex); // select the right table type
@@ -124,7 +130,13 @@ const NetworkTable = (props) => {
             let index = rows.findIndex((r) => r.id === props.equipmentId);
             setScrollToIndex(index !== undefined ? index : 0);
         }
-    }, [props.network, props.equipmentId, props.equipmentType, getRows]);
+    }, [
+        props.network,
+        props.equipmentId,
+        props.equipmentType,
+        props.equipmentSwitched,
+        getRows,
+    ]);
 
     function renderTable() {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
