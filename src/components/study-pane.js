@@ -273,7 +273,7 @@ const StudyPane = (props) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
-        flip: false,
+        changed: false,
     });
 
     const MenuLine = withLineMenu(EquipmentMenu);
@@ -830,7 +830,7 @@ const StudyPane = (props) => {
         setTableEquipment({
             id: equipment.id,
             type: type,
-            flip: !equipmentMenu.flip,
+            changed: !equipmentMenu.changed,
         });
     }
 
@@ -841,7 +841,7 @@ const StudyPane = (props) => {
         setTableEquipment({
             id: null,
             type: null,
-            flip: false,
+            changed: false,
         });
     }
 
@@ -851,14 +851,11 @@ const StudyPane = (props) => {
     }
 
     function showInSpreadsheet(equipment) {
-        // TODO : do a copy to really have a change
-        console.log('*********** showInSpreadsheet : equipment = ', equipment);
         let newTableEquipment = {
             id: equipment.equipmentId,
             type: equipment.equipmentType,
-            flip: !tableEquipment.flip,
+            changed: !tableEquipment.changed,
         };
-        console.log('*********** newTableEquipment = ', newTableEquipment);
         setTableEquipment({ ...newTableEquipment });
         props.onChangeTab(1); // switch to spreadsheet view
     }
@@ -1220,7 +1217,7 @@ const StudyPane = (props) => {
                         studyUuid={studyUuid}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
-                        equipmentSwitched={tableEquipment.flip}
+                        equipmentChanged={tableEquipment.changed}
                     />
                 </Paper>
             )

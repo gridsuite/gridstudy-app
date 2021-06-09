@@ -120,7 +120,7 @@ const NetworkTable = (props) => {
 
     useEffect(() => {
         console.log(
-            '************ useEffect : dependencies props.network, props.equipmentId, props.equipmentType, getRows ********'
+            '************ useEffect : dependencies props.network, props.equipmentId, props.equipmentType, props.equipmentChanged, getRows ********'
         );
         if (props.equipmentId !== null && props.equipmentType !== null) {
             const newIndex = getTabIndexFromEquipementType(props.equipmentType);
@@ -134,7 +134,7 @@ const NetworkTable = (props) => {
         props.network,
         props.equipmentId,
         props.equipmentType,
-        props.equipmentSwitched,
+        props.equipmentChanged,
         getRows,
     ]);
 
@@ -356,6 +356,7 @@ NetworkTable.defaultProps = {
     studyUuid: '',
     equipmentId: null,
     equipmentType: null,
+    equipmentChanged: false,
 };
 
 NetworkTable.propTypes = {
@@ -363,6 +364,7 @@ NetworkTable.propTypes = {
     studyUuid: PropTypes.string,
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
+    equipmentChanged: PropTypes.bool,
 };
 
 export default NetworkTable;
