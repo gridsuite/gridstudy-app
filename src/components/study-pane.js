@@ -833,6 +833,11 @@ const StudyPane = (props) => {
         setEquipmentMenu({
             display: false,
         });
+        setTableEquipment({
+            id: null,
+            type: null,
+        });
+
     }
 
     function handleViewInSpreadsheet() {
@@ -841,10 +846,9 @@ const StudyPane = (props) => {
     }
 
     function showInSpreadsheet(equipment) {
-        setTableEquipment({
-            id: equipment.equipmentId,
-            type: equipment.equipmentType,
-        });
+        // TODO : do a copy to really have a change
+        let newTableEquipment = { id: equipment.equipmentId, type: equipment.equipmentType};
+        setTableEquipment(newTableEquipment);
         props.onChangeTab(1); // switch to spreadsheet view
     }
 

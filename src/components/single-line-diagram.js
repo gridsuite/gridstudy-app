@@ -605,7 +605,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             switch (componentType) {
                 case 'LINE':
                     !network.isResourceFetched(equipments.lines) &&
-                    network.useEquipment(equipments.lines); // fetch network lines if not already loaded
+                        network.useEquipment(equipments.lines); // fetch network lines if not already loaded
                     return true;
                 case 'LOAD':
                     !network.isResourceFetched(equipments.loads) &&
@@ -711,11 +711,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the right click on a branch feeder (menu)
             if (!isComputationRunning) {
                 const feeders = svg.metadata.nodes.filter((element) => {
-                    console.log(
-                        '********** metadata node componentType = ',
-                        element.componentType,
-                        ' **************'
-                    );
+                    // console.log(
+                    //     '********** metadata node componentType = ',
+                    //     element.componentType,
+                    //     ' **************'
+                    // );
                     return (
                         FEEDER_COMPONENT_TYPES.has(element.componentType) &&
                         fetchEquipmentTypeIfNeeded(element.componentType)

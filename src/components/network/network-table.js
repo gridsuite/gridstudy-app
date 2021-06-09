@@ -107,6 +107,7 @@ const NetworkTable = (props) => {
     );
 
     function getTabIndexFromEquipementType(equipmentType) {
+        console.log('********** getTabIndexFromEquipementType : equipmentType = ', equipmentType, ' ************');
         const definition = Object.values(TABLES_DEFINITIONS).find(
             (d) => d.name.toLowerCase() === equipmentType.toLowerCase()
         );
@@ -114,6 +115,7 @@ const NetworkTable = (props) => {
     }
 
     useEffect(() => {
+        console.log('************ useEffect : dependencies props.network, props.equipmentId, props.equipmentType, getRows ********');
         if (props.equipmentId !== null && props.equipmentType !== null) {
             const newIndex = getTabIndexFromEquipementType(props.equipmentType);
             setTabIndex(newIndex); // select the right table type
