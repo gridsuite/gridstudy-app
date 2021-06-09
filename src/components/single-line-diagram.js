@@ -45,6 +45,15 @@ import EquipmentMenu from './equipment-menu';
 import { AutoSizer } from 'react-virtualized';
 import withLineMenu from './line-menu';
 import withLoadMenu from './load-menu';
+import withBatteryMenu from './battery-menu';
+import withDanglingLineMenu from './dangling-line-menu';
+import withGeneratorMenu from './generator-menu';
+import withHvdcLineMenu from './hvdc-line-menu';
+import withShuntCompensatorMenu from './shunt-compensator-menu';
+import withStaticVarCompensatorMenu from './static-var-compensator-menu';
+import withTwoWindingsTransformerMenu from './two-windings-transformer-menu';
+import withThreeWindingsTransformerMenu from './three-windings-transformer-menu';
+
 import { equipments } from './network/network-equipments';
 
 export const SubstationLayout = {
@@ -119,7 +128,19 @@ const SWITCH_COMPONENT_TYPES = new Set([
     'DISCONNECTOR',
     'LOAD_BREAK_SWITCH',
 ]);
-const FEEDER_COMPONENT_TYPES = new Set(['LINE', 'LOAD']);
+const FEEDER_COMPONENT_TYPES = new Set([
+    'LINE',
+    'LOAD',
+    'BATTERY',
+    'DANGLING_LINE',
+    'GENERATOR',
+    'VSC_CONVERTER_STATION',
+    'CAPACITOR',
+    'INDUCTOR',
+    'STATIC_VAR_COMPENSATOR',
+    'TWO_WINDINGS_TRANSFORMER',
+    'THREE_WINDINGS_TRANSFORMER',
+]);
 
 let arrowSvg;
 let arrowHoverSvg;
@@ -206,8 +227,21 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [loadingState, updateLoadingState] = useState(false);
 
     const MenuLine = withLineMenu(EquipmentMenu);
-
     const MenuLoad = withLoadMenu(EquipmentMenu);
+    const MenuBattery = withBatteryMenu(EquipmentMenu);
+    const MenuDanglingLine = withDanglingLineMenu(EquipmentMenu);
+    const MenuGenerator = withGeneratorMenu(EquipmentMenu);
+    const MenuStaticVarCompensator = withStaticVarCompensatorMenu(
+        EquipmentMenu
+    );
+    const MenuShuntCompensator = withShuntCompensatorMenu(EquipmentMenu);
+    const MenuHvdcLine = withHvdcLineMenu(EquipmentMenu);
+    const MenuTwoWindingsTransformer = withTwoWindingsTransformerMenu(
+        EquipmentMenu
+    );
+    const MenuThreeWindingsTransformer = withThreeWindingsTransformerMenu(
+        EquipmentMenu
+    );
 
     const theme = useTheme();
 
@@ -536,10 +570,84 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     return equipments.lines;
                 case 'LOAD':
                     return equipments.loads;
+                case 'BATTERY':
+                    return equipments.batteries;
+                case 'DANGLING_LINE':
+                    return equipments.danglingLines;
+                case 'GENERATOR':
+                    return equipments.generators;
+                case 'VSC_CONVERTER_STATION': // TODO ??????
+                    return equipments.hvdcLines;
+                case 'CAPACITOR':
+                case 'INDUCTOR':
+                    return equipments.shuntCompensators;
+                case 'STATIC_VAR_COMPENSATOR':
+                    return equipments.staticVarCompensators;
+                case 'TWO_WINDINGS_TRANSFORMER':
+                    return equipments.twoWindingsTransformers;
+                case 'THREE_WINDINGS_TRANSFORMER':
+                    return equipments.threeWindingsTransformers;
                 default: {
                     console.log('bad feeder type ', feederType);
                     return null;
                 }
+            }
+        }
+
+        function fetchEquipmentTypeIfNeeded(componentType) {
+            switch (componentType) {
+                case 'LINE':
+                    !network.isResourceFetched(equipments.lines) &&
+                    network.useEquipment(equipments.lines); // fetch network lines if not already loaded
+                    return true;
+                case 'LOAD':
+                    !network.isResourceFetched(equipments.loads) &&
+                        network.useEquipment(equipments.loads); // fetch network loads if not already loaded
+                    return true;
+                case 'BATTERY':
+                    !network.isResourceFetched(equipments.batteries) &&
+                        network.useEquipment(equipments.batteries); // fetch network batteries if not already loaded
+                    return true;
+                case 'GENERATOR':
+                    !network.isResourceFetched(equipments.generators) &&
+                        network.useEquipment(equipments.generators); // fetch network generators if not already loaded
+                    return true;
+                case 'DANGLING_LINE':
+                    !network.isResourceFetched(equipments.danglingLines) &&
+                        network.useEquipment(equipments.danglingLines); // fetch network dangling lines if not already loaded
+                    return true;
+                case 'CAPACITOR':
+                case 'INDUCTOR':
+                    !network.isResourceFetched(equipments.shuntCompensators) &&
+                        network.useEquipment(equipments.shuntCompensators); // fetch network shunt compensators if not already loaded
+                    return true;
+                case 'STATIC_VAR_COMPENSATOR':
+                    !network.isResourceFetched(
+                        equipments.staticVarCompensators
+                    ) && network.useEquipment(equipments.staticVarCompensators); // fetch network static var compensators if not already loaded
+                    return true;
+                case 'TWO_WINDINGS_TRANSFORMER':
+                    !network.isResourceFetched(
+                        equipments.twoWindingsTransformers
+                    ) &&
+                        network.useEquipment(
+                            equipments.twoWindingsTransformers
+                        ); // fetch network two windings transformers if not already loaded
+                    return true;
+                case 'THREE_WINDINGS_TRANSFORMER':
+                    !network.isResourceFetched(
+                        equipments.threeWindingsTransformers
+                    ) &&
+                        network.useEquipment(
+                            equipments.threeWindingsTransformers
+                        ); // fetch network three windings transformers if not already loaded
+                    return true;
+                case 'VSC_CONVERTER_STATION': // TODO ????????????
+                    !network.isResourceFetched(equipments.hvdcLines) &&
+                        network.useEquipment(equipments.hvdcLines); // fetch network hvdc lines if not already loaded
+                    return true;
+                default:
+                    return false;
             }
         }
 
@@ -596,16 +704,15 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the right click on a branch feeder (menu)
             if (!isComputationRunning) {
                 const feeders = svg.metadata.nodes.filter((element) => {
-                    if (FEEDER_COMPONENT_TYPES.has(element.componentType)) {
-                        if (element.componentType === 'LINE') {
-                            return network.getLine(element.equipmentId);
-                        } else if (element.componentType === 'LOAD') {
-                            if (!network.isResourceFetched(equipments.loads)) {
-                                network.useEquipment(equipments.loads); // fetch network loads if not already loaded
-                            }
-                            return network.getLoad(element.equipmentId);
-                        } else return false;
-                    } else return false;
+                    console.log(
+                        '********** metadata node componentType = ',
+                        element.componentType,
+                        ' **************'
+                    );
+                    return (
+                        FEEDER_COMPONENT_TYPES.has(element.componentType) &&
+                        fetchEquipmentTypeIfNeeded(element.componentType)
+                    );
                 });
                 feeders.forEach((feeder) => {
                     const svgText = document
@@ -734,6 +841,159 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         dispatch(fullScreenSingleLineDiagram(false));
     };
 
+    function displayMenuLine() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.lines && (
+                <MenuLine
+                    line={network.getLine(equipmentMenu.equipmentId)}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuLoad() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.loads && (
+                <MenuLoad
+                    load={network.getLoad(equipmentMenu.equipmentId)}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuBattery() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.batteries && (
+                <MenuBattery
+                    battery={network.getBattery(equipmentMenu.equipmentId)}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuDanglingLine() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.danglingLines && (
+                <MenuDanglingLine
+                    danglingLine={network.getDanglingLine(
+                        equipmentMenu.equipmentId
+                    )}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuGenerator() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.generators && (
+                <MenuGenerator
+                    generator={network.getGenerator(equipmentMenu.equipmentId)}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuStaticVarCompensator() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType ===
+                equipments.staticVarCompensators && (
+                <MenuStaticVarCompensator
+                    staticVarCompensator={network.getStaticVarCompensator(
+                        equipmentMenu.equipmentId
+                    )}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuShuntCompensator() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.shuntCompensators && (
+                <MenuShuntCompensator
+                    shuntCompensator={network.getShuntCompensator(
+                        equipmentMenu.equipmentId
+                    )}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuTwoWindingsTransformer() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType ===
+                equipments.twoWindingsTransformers && (
+                <MenuTwoWindingsTransformer
+                    twoWindingsTransformer={network.getTwoWindingsTransformer(
+                        equipmentMenu.equipmentId
+                    )}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuThreeWindingsTransformer() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType ===
+                equipments.threeWindingsTransformers && (
+                <MenuThreeWindingsTransformer
+                    threeWindingsTransformer={network.getThreeWindingsTransformer(
+                        equipmentMenu.equipmentId
+                    )}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuHvdcLine() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.hvdcLines && (
+                <MenuHvdcLine
+                    hvdcLine={network.getHvdcLine(equipmentMenu.equipmentId)}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
     let sizeWidth, sizeHeight;
     if (svg.error) {
         sizeWidth = errorWidth; // height is not set so height is auto;
@@ -810,24 +1070,17 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 )}
-                {equipmentMenu.display &&
-                    equipmentMenu.equipmentType === equipments.lines && (
-                        <MenuLine
-                            line={network.getLine(equipmentMenu.equipmentId)}
-                            position={equipmentMenu.position}
-                            handleClose={closeEquipmentMenu}
-                            handleViewInSpreadsheet={handleViewInSpreadsheet}
-                        />
-                    )}
-                {equipmentMenu.display &&
-                    equipmentMenu.equipmentType === equipments.loads && (
-                        <MenuLoad
-                            load={network.getLoad(equipmentMenu.equipmentId)}
-                            position={equipmentMenu.position}
-                            handleClose={closeEquipmentMenu}
-                            handleViewInSpreadsheet={handleViewInSpreadsheet}
-                        />
-                    )}
+                {displayMenuLine()}
+                {displayMenuLoad()}
+                {displayMenuBattery()}
+                {displayMenuDanglingLine()}
+                {displayMenuGenerator()}
+                {displayMenuStaticVarCompensator()}
+                {displayMenuShuntCompensator()}
+                {displayMenuTwoWindingsTransformer()}
+                {displayMenuThreeWindingsTransformer()}
+                {displayMenuHvdcLine()}
+
                 {!loadingState &&
                     !svg.error &&
                     (fullScreen ? (
