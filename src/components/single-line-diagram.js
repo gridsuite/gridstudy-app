@@ -151,6 +151,7 @@ const FEEDER_COMPONENT_TYPES = new Set([
     'STATIC_VAR_COMPENSATOR',
     'TWO_WINDINGS_TRANSFORMER',
     'THREE_WINDINGS_TRANSFORMER',
+    'PHASE_SHIFT_TRANSFORMER',
 ]);
 
 let arrowSvg;
@@ -601,6 +602,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 case 'STATIC_VAR_COMPENSATOR':
                     return equipments.staticVarCompensators;
                 case 'TWO_WINDINGS_TRANSFORMER':
+                case 'PHASE_SHIFT_TRANSFORMER':
                     return equipments.twoWindingsTransformers;
                 case 'THREE_WINDINGS_TRANSFORMER':
                     return equipments.threeWindingsTransformers;
@@ -657,6 +659,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     ) && network.useEquipment(equipments.staticVarCompensators); // fetch network static var compensators if not already loaded
                     return true;
                 case 'TWO_WINDINGS_TRANSFORMER':
+                case 'PHASE_SHIFT_TRANSFORMER':
                     !network.isResourceFetched(
                         equipments.twoWindingsTransformers
                     ) &&
