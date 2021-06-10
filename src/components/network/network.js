@@ -278,6 +278,14 @@ export default class Network {
         return this.hvdcLines.find((h) => h.id === id);
     }
 
+    getLccConverterStation(id) {
+        return this.lccConverterStations.find((l) => l.id === id);
+    }
+
+    getVscConverterStation(id) {
+        return this.vscConverterStations.find((v) => v.id === id);
+    }
+
     getLineOrTransformer(id) {
         return (
             this.getLine(id) ||

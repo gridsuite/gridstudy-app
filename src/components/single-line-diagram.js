@@ -53,6 +53,8 @@ import withShuntCompensatorMenu from './shunt-compensator-menu';
 import withStaticVarCompensatorMenu from './static-var-compensator-menu';
 import withTwoWindingsTransformerMenu from './two-windings-transformer-menu';
 import withThreeWindingsTransformerMenu from './three-windings-transformer-menu';
+import withLccConverterStationMenu from './lcc-converter-station-menu';
+import withVscConverterStationMenu from './vsc-converter-station-menu';
 
 import { equipments } from './network/network-equipments';
 import { RunningStatus } from './util/running-status';
@@ -251,6 +253,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const MenuThreeWindingsTransformer = withThreeWindingsTransformerMenu(
         EquipmentMenu
     );
+    const MenuLccConverterStation = withLccConverterStationMenu(EquipmentMenu);
+    const MenuVscConverterStation = withVscConverterStationMenu(EquipmentMenu);
 
     const theme = useTheme();
 
@@ -612,6 +616,19 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 case 'LINE':
                     !network.isResourceFetched(equipments.lines) &&
                         network.useEquipment(equipments.lines); // fetch network lines if not already loaded
+                    // in substation sld, a componentType LINE for a feeder can be a line or a transformer
+                    !network.isResourceFetched(
+                        equipments.twoWindingsTransformers
+                    ) &&
+                        network.useEquipment(
+                            equipments.twoWindingsTransformers
+                        );
+                    !network.isResourceFetched(
+                        equipments.threeWindingsTransformers
+                    ) &&
+                        network.useEquipment(
+                            equipments.threeWindingsTransformers
+                        );
                     return true;
                 case 'LOAD':
                     !network.isResourceFetched(equipments.loads) &&
@@ -735,31 +752,65 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 feeders.forEach((feeder) => {
                     const svgText = document
                         .getElementById(feeder.id)
-                        .querySelector('text');
-                    svgText.addEventListener('mouseenter', function (event) {
-                        showFeederSelection(event.currentTarget);
-                    });
-                    svgText.addEventListener('mouseleave', function (event) {
-                        hideFeederSelection(event.currentTarget);
-                    });
-                    svgText.addEventListener('contextmenu', function (event) {
-                        showEquipmentMenu(
-                            feeder.equipmentId,
-                            getEquipmentTypeFromFeederType(
-                                feeder.componentType
-                            ),
-                            feeder.id,
-                            event.x,
-                            event.y
-                        );
-                    });
+                        .querySelector('text[class="sld-label"]');
+                    if (svgText !== null) {
+                        svgText.addEventListener('mouseenter', function (
+                            event
+                        ) {
+                            showFeederSelection(event.currentTarget);
+                        });
+                        svgText.addEventListener('mouseleave', function (
+                            event
+                        ) {
+                            hideFeederSelection(event.currentTarget);
+                        });
+                        svgText.addEventListener('contextmenu', function (
+                            event
+                        ) {
+                            let show = true;
+                            let componentType = feeder.componentType;
+                            if (componentType === 'LINE') {
+                                // test if equipmentId is really a line or is a transformer
+                                if (!network.getLine(feeder.equipmentId)) {
+                                    if (
+                                        network.getTwoWindingsTransformer(
+                                            feeder.equipmentId
+                                        )
+                                    ) {
+                                        componentType =
+                                            'TWO_WINDINGS_TRANSFORMER';
+                                    } else if (
+                                        network.getThreeWindingsTransformer(
+                                            feeder.equipmentId
+                                        )
+                                    ) {
+                                        componentType =
+                                            'THREE_WINDINGS_TRANSFORMER';
+                                    } else {
+                                        show = false;
+                                    }
+                                }
+                            }
+                            if (show) {
+                                showEquipmentMenu(
+                                    feeder.equipmentId,
+                                    getEquipmentTypeFromFeederType(
+                                        componentType
+                                    ),
+                                    feeder.id,
+                                    event.x,
+                                    event.y
+                                );
+                            }
+                        });
+                    }
                 });
 
                 if (equipmentMenu.display) {
                     showFeederSelection(
                         document
                             .getElementById(equipmentMenu.svgId)
-                            .querySelector('text')
+                            .querySelector('text[class="sld-label"]')
                     );
                 }
             }
@@ -1012,6 +1063,38 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         );
     }
 
+    function displayMenuLccConverterStation() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.lccConverterStations && (
+                <MenuLccConverterStation
+                    lccConverterStation={network.getLccConverterStation(
+                        equipmentMenu.equipmentId
+                    )}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenuVscConverterStation() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.vscConverterStations && (
+                <MenuVscConverterStation
+                    vscConverterStation={network.getVscConverterStation(
+                        equipmentMenu.equipmentId
+                    )}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
     let sizeWidth, sizeHeight;
     if (svg.error) {
         sizeWidth = errorWidth; // height is not set so height is auto;
@@ -1102,6 +1185,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 {displayMenuTwoWindingsTransformer()}
                 {displayMenuThreeWindingsTransformer()}
                 {displayMenuHvdcLine()}
+                {displayMenuLccConverterStation()}
+                {displayMenuVscConverterStation()}
 
                 {!loadingState &&
                     !svg.error &&
