@@ -619,6 +619,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     !network.isResourceFetched(equipments.lines) &&
                         network.useEquipment(equipments.lines); // fetch network lines if not already loaded
                     // in substation sld, a componentType LINE for a feeder can be a line or a transformer
+                    // TODO : to be changed adding equpmentType in nodes metadata in single-line-diagram ????
                     !network.isResourceFetched(
                         equipments.twoWindingsTransformers
                     ) &&
@@ -774,6 +775,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                             let componentType = feeder.componentType;
                             if (componentType === 'LINE') {
                                 // test if equipmentId is really a line or is a transformer
+                                // TODO : to be changed adding equpmentType in nodes metadata in single-line-diagram ????
                                 if (!network.getLine(feeder.equipmentId)) {
                                     if (
                                         network.getTwoWindingsTransformer(
@@ -808,14 +810,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         });
                     }
                 });
-
-                if (equipmentMenu.display) {
-                    showFeederSelection(
-                        document
-                            .getElementById(equipmentMenu.svgId)
-                            .querySelector('text[class="sld-label"]')
-                    );
-                }
             }
 
             // handling the click on a switch
