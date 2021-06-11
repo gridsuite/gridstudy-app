@@ -344,6 +344,26 @@ function fetchEquipments(
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
+const equipmentMap = {
+    twoWindingsTransformer: '2-windings-transformers',
+    threeWindingsTransformer: '3-windings-transformers',
+    generator: 'generators',
+};
+
+export function fetchEquipment(studyUuid, equipmentType, equipmentId) {
+    console.info(
+        `Fetching equipments '${equipmentType}' of study '${studyUuid}' with id '${equipmentId}'...`
+    );
+    const fetchEquipmentsUrl =
+        getStudyUrl(studyUuid) +
+        '/network-map/' +
+        equipmentMap[equipmentType] +
+        '/' +
+        equipmentId;
+    console.debug(fetchEquipmentsUrl);
+    return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
+}
+
 export function fetchLinePositions(studyUuid) {
     console.info(`Fetching line positions of study '${studyUuid}'...`);
     const fetchLinePositionsUrl = getStudyUrl(studyUuid) + '/geo-data/lines';

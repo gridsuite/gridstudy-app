@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { requestNetworkChange } from '../../utils/rest-api';
-import { IconButton, TextField } from '@material-ui/core';
+import { requestNetworkChange, fetchEquipment } from '../../utils/rest-api';
+import { CircularProgress, IconButton, TextField } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
 import Grid from '@material-ui/core/Grid';
 import CheckIcon from '@material-ui/icons/Check';
@@ -10,6 +10,12 @@ import TableCell from '@material-ui/core/TableCell';
 import LoaderWithOverlay from '../loader-with-overlay';
 import VirtualizedTable from '../util/virtualized-table';
 import { makeStyles } from '@material-ui/core/styles';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { useSnackbar } from 'notistack';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     cell: {
@@ -24,6 +30,43 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export function useEquipmentLoader() {
+    const intlRef = useIntlRef();
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const { enqueueSnackbar } = useSnackbar();
+    const [equipment, setEquipment] = useState(null);
+    const [fetched, setFetched] = useState(false);
+    const [equipmentIdentifier, setEquipmentIdentifier] = useState(null);
+
+    useEffect(() => {
+        if (!equipmentIdentifier) return;
+        setFetched(false);
+        fetchEquipment(
+            studyUuid,
+            equipmentIdentifier.equipmentType,
+            equipmentIdentifier.id
+        )
+            .then((res) => {
+                setEquipment(res.data[0]);
+                setFetched(true);
+            })
+            .catch((errorMessage) => {
+                setFetched(false);
+                setEquipment({});
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'equipmentLoadError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }, [equipmentIdentifier, setFetched, enqueueSnackbar, studyUuid, intlRef]);
+
+    return [fetched, equipment, setEquipmentIdentifier];
+}
+
 const ROW_HEIGHT = 48;
 
 export const EquipmentTable = ({
@@ -37,7 +80,11 @@ export const EquipmentTable = ({
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
     const intl = useIntl();
-
+    const [
+        editableEquipmentFetched,
+        editableEquipment,
+        setEditableEquipmentIdentifier,
+    ] = useEquipmentLoader(null);
     const isLineOnEditMode = useCallback(
         (row) => {
             return (lineEdit && lineEdit.line === row) || false;
@@ -45,10 +92,21 @@ export const EquipmentTable = ({
         [lineEdit]
     );
 
+    useEffect(() => setLineEdit({}), [tableDefinition]);
+
+    function startEdition(lineInfo) {
+        setEditableEquipmentIdentifier(lineInfo);
+        setLineEdit(lineInfo);
+    }
+
+    function capitaliseFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     function commitChanges(rowData) {
         let groovyCr =
             'equipment = network.get' +
-            lineEdit.equipmentType +
+            capitaliseFirst(tableDefinition.modifiableEquipmentType) +
             "('" +
             lineEdit.id.replace(/'/g, "\\'") +
             "')\n";
@@ -78,18 +136,19 @@ export const EquipmentTable = ({
         setLineEdit({});
     }
 
-    function createEditableRow(cellData, equipmentType) {
+    function createEditableRow(cellData) {
         return (
             (!isLineOnEditMode(cellData.rowIndex) && (
                 <IconButton
                     disabled={lineEdit && lineEdit.id && true}
                     onClick={() =>
-                        setLineEdit({
+                        startEdition({
                             line: cellData.rowIndex,
                             oldValues: {},
                             newValues: {},
                             id: cellData.rowData['id'],
-                            equipmentType: equipmentType,
+                            equipmentType:
+                                tableDefinition.modifiableEquipmentType,
                         })
                     }
                 >
@@ -116,7 +175,7 @@ export const EquipmentTable = ({
         );
     }
 
-    function formatCellData(cellData, isNumeric, fractionDigit) {
+    function formatNumber(cellData, isNumeric, fractionDigit) {
         return cellData.rowData[cellData.dataKey] && isNumeric && fractionDigit
             ? parseFloat(cellData.rowData[cellData.dataKey]).toFixed(
                   fractionDigit
@@ -137,7 +196,7 @@ export const EquipmentTable = ({
                     <Grid container direction="column">
                         <Grid item xs={1} />
                         <Grid item xs={1}>
-                            {formatCellData(cellData, numeric, fractionDigit)}
+                            {formatNumber(cellData, numeric, fractionDigit)}
                         </Grid>
                     </Grid>
                 </TableCell>
@@ -161,38 +220,58 @@ export const EquipmentTable = ({
     );
 
     const EditableCellRender = useCallback(
-        (cellData, numeric, changeCmd, fractionDigit) => {
-            return !isLineOnEditMode(cellData.rowIndex) ||
-                cellData.rowData[cellData.dataKey] === undefined ? (
-                defaultCellRender(cellData, numeric, fractionDigit)
-            ) : (
-                <TextField
-                    id={cellData.dataKey}
-                    type="Number"
-                    className={classes.cell}
-                    size={'medium'}
-                    margin={'normal'}
-                    inputProps={{ style: { textAlign: 'center' } }}
-                    onChange={(obj) =>
-                        registerChangeRequest(
+        (cellData, numeric, changeCmd, fractionDigit, Editor) => {
+            if (
+                !isLineOnEditMode(cellData.rowIndex) ||
+                cellData.rowData[cellData.dataKey] === undefined
+            ) {
+                return defaultCellRender(cellData, numeric, fractionDigit);
+            } else if (
+                !editableEquipmentFetched ||
+                lineEdit.id !== editableEquipment?.id
+            ) {
+                return <CircularProgress size={ROW_HEIGHT} />;
+            } else {
+                const changeRequest = (value) =>
+                    registerChangeRequest(cellData, changeCmd, value);
+                return Editor ? (
+                    <Editor
+                        key={cellData.dataKey + cellData.rowData.id}
+                        className={classes.cell}
+                        equipment={editableEquipment}
+                        defaultValue={formatNumber(
                             cellData,
-                            changeCmd,
-                            obj.target.value
-                        )
-                    }
-                    defaultValue={formatCellData(
-                        cellData,
-                        numeric,
-                        fractionDigit
-                    )}
-                />
-            );
+                            numeric,
+                            fractionDigit
+                        )}
+                        setter={(val) => changeRequest(val)}
+                    />
+                ) : (
+                    <TextField
+                        id={cellData.dataKey}
+                        type="Number"
+                        className={classes.cell}
+                        size={'medium'}
+                        margin={'normal'}
+                        inputProps={{ style: { textAlign: 'center' } }}
+                        onChange={(obj) => changeRequest(obj.target.value)}
+                        defaultValue={formatNumber(
+                            cellData,
+                            numeric,
+                            fractionDigit
+                        )}
+                    />
+                );
+            }
         },
         [
             classes.cell,
             defaultCellRender,
             isLineOnEditMode,
             registerChangeRequest,
+            editableEquipmentFetched,
+            editableEquipment,
+            lineEdit,
         ]
     );
 
@@ -214,14 +293,15 @@ export const EquipmentTable = ({
                         cell,
                         c.numeric,
                         c.changeCmd,
-                        c.fractionDigits
+                        c.fractionDigits,
+                        c.editor
                     ));
             delete column.changeCmd;
             return column;
         });
     };
 
-    function makeHeaderCell(equipmentType) {
+    function makeHeaderCell() {
         return {
             width: 65,
             label: '',
@@ -229,8 +309,7 @@ export const EquipmentTable = ({
             style: {
                 display: selectedColumnsNames.size > 0 ? '' : 'none',
             },
-            cellRenderer: (cellData) =>
-                createEditableRow(cellData, equipmentType),
+            cellRenderer: createEditableRow,
         };
     }
 
@@ -247,9 +326,9 @@ export const EquipmentTable = ({
                 rows={rows}
                 filter={filter}
                 columns={
-                    tableDefinition.header
+                    tableDefinition.modifiableEquipmentType
                         ? [
-                              makeHeaderCell(tableDefinition.header),
+                              makeHeaderCell(),
                               ...generateTableColumns(tableDefinition),
                           ]
                         : generateTableColumns(tableDefinition)
