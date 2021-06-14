@@ -827,26 +827,19 @@ const StudyPane = (props) => {
             equipmentType: type,
             display: true,
         });
-        setTableEquipment({
-            id: equipment.id,
-            type: type,
-            changed: !equipmentMenu.changed,
-        });
     }
 
     function closeEquipmentMenu() {
         setEquipmentMenu({
             display: false,
         });
-        setTableEquipment({
-            id: null,
-            type: null,
-            changed: false,
-        });
     }
 
-    function handleViewInSpreadsheet() {
-        props.onChangeTab(1); // switch to spreadsheet view
+    function handleViewInSpreadsheet(equipmentType, equipmentId) {
+        showInSpreadsheet({
+            equipmentType: equipmentType,
+            equipmentId: equipmentId,
+        });
         closeEquipmentMenu();
     }
 
