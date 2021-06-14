@@ -13,6 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import TableChartIcon from '@material-ui/icons/TableChart';
+import NestedMenuItem from 'material-ui-nested-menu-item';
 
 import { useIntl } from 'react-intl';
 import { equipments } from './network/network-equipments';
@@ -81,69 +82,62 @@ const EquipmentMenu = ({
                     />
                 )}
 
-            {/* menu for equipment substation or voltage level */}
+            {/* menu for equipment substation */}
             {equipmentType === equipments.substations && equipment && (
-                // menu for the substation
-                <ItemViewInSpreadsheet
-                    equipmentType={equipmentType}
-                    equipmentId={equipment.id}
-                    itemText={
-                        intl.formatMessage({ id: 'ViewOnSpreadsheet' }) +
-                        ' (' +
-                        useName
-                            ? equipment.name
-                            : equipment.id + ')'
-                    }
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )}
-
-            {equipmentType === equipments.substations &&
-                equipment &&
-                equipment.voltageLevels.map((v) => (
-                    // menu for all voltage levels in the substation
-                    <ItemViewInSpreadsheet
-                        equipmentType={equipments.voltageLevels}
-                        equipmentId={v.id}
-                        itemText={
-                            intl.formatMessage({ id: 'ViewOnSpreadsheet' }) +
-                            ' (' +
-                            useName
-                                ? v.name
-                                : v.id + ')'
-                        }
-                        handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    />
-                ))}
-
-            {equipmentType === equipments.voltageLevels && equipment && (
                 <>
                     {/* menu for the substation */}
-                    <ItemViewInSpreadsheet
-                        equipmentType={equipments.substations}
-                        equipmentId={equipment.substationId}
-                        itemText={
-                            intl.formatMessage({ id: 'ViewOnSpreadsheet' }) +
-                            ' (' +
-                            useName
-                                ? equipment.substationName
-                                : equipment.substationId + ')'
-                        }
-                        handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    />
-                    {/* menu for the voltage level */}
-                    <ItemViewInSpreadsheet
-                        equipmentType={equipments.voltageLevels}
-                        equipmentId={equipment.id}
-                        itemText={
-                            intl.formatMessage({ id: 'ViewOnSpreadsheet' }) +
-                            ' (' +
-                            useName
-                                ? equipment.name
-                                : equipment.id + ')'
-                        }
-                        handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    />
+                    <NestedMenuItem
+                        label={intl.formatMessage({ id: 'ViewOnSpreadsheet' })}
+                        parentMenuOpen={true}
+                    >
+                        <ItemViewInSpreadsheet
+                            equipmentType={equipmentType}
+                            equipmentId={equipment.id}
+                            itemText={useName ? equipment.name : equipment.id}
+                            handleViewInSpreadsheet={handleViewInSpreadsheet}
+                        />
+
+                        {equipment.voltageLevels.map((v) => (
+                            // menu for all voltage levels in the substation
+                            <ItemViewInSpreadsheet
+                                equipmentType={equipments.voltageLevels}
+                                equipmentId={v.id}
+                                itemText={useName ? v.name : v.id}
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
+                                }
+                            />
+                        ))}
+                    </NestedMenuItem>
+                </>
+            )}
+
+            {/* menu for equipment voltage level */}
+            {equipmentType === equipments.voltageLevels && equipment && (
+                <>
+                    <NestedMenuItem
+                        label={intl.formatMessage({ id: 'ViewOnSpreadsheet' })}
+                        parentMenuOpen={true}
+                    >
+                        {/* menu for the substation */}
+                        <ItemViewInSpreadsheet
+                            equipmentType={equipments.substations}
+                            equipmentId={equipment.substationId}
+                            itemText={
+                                useName
+                                    ? equipment.substationName
+                                    : equipment.substationId
+                            }
+                            handleViewInSpreadsheet={handleViewInSpreadsheet}
+                        />
+                        {/* menu for the voltage level */}
+                        <ItemViewInSpreadsheet
+                            equipmentType={equipments.voltageLevels}
+                            equipmentId={equipment.id}
+                            itemText={useName ? equipment.name : equipment.id}
+                            handleViewInSpreadsheet={handleViewInSpreadsheet}
+                        />
+                    </NestedMenuItem>
                 </>
             )}
         </>
