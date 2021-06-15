@@ -1050,7 +1050,7 @@ const StudyPane = (props) => {
                         equipmentMenu.display &&
                         equipmentMenu.equipmentType === equipments.lines && (
                             <MenuLine
-                                line={equipmentMenu.equipment}
+                                id={equipmentMenu.equipment.id}
                                 position={[
                                     equipmentMenu.position[0],
                                     equipmentMenu.position[1],
@@ -1066,7 +1066,7 @@ const StudyPane = (props) => {
                         equipmentMenu.equipmentType ===
                             equipments.substations && (
                             <MenuSubstation
-                                substation={equipmentMenu.equipment}
+                                id={equipmentMenu.equipment.id}
                                 position={[
                                     equipmentMenu.position[0],
                                     equipmentMenu.position[1],
@@ -1082,7 +1082,7 @@ const StudyPane = (props) => {
                         equipmentMenu.equipmentType ===
                             equipments.voltageLevels && (
                             <MenuVoltageLevel
-                                voltageLevel={equipmentMenu.equipment}
+                                id={equipmentMenu.equipment.id}
                                 position={[
                                     equipmentMenu.position[0],
                                     equipmentMenu.position[1],

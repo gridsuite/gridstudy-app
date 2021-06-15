@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withGeneratorMenu = (BaseMenu) => ({
-    generator,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withGeneratorMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={generator}
+                equipmentId={id}
                 equipmentType={equipments.generators}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

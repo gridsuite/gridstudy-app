@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withDanglingLineMenu = (BaseMenu) => ({
-    danglingLine,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withDanglingLineMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={danglingLine}
+                equipmentId={id}
                 equipmentType={equipments.danglingLines}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

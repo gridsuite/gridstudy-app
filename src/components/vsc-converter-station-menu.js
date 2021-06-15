@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withVscConverterStationMenu = (BaseMenu) => ({
-    vscConverterStation,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withVscConverterStationMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={vscConverterStation}
+                equipmentId={id}
                 equipmentType={equipments.vscConverterStations}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

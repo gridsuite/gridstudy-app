@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withHvdcLineMenu = (BaseMenu) => ({
-    hvdcLine,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withHvdcLineMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={hvdcLine}
+                equipmentId={id}
                 equipmentType={equipments.hvdcLines}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

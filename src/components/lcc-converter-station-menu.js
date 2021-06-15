@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withLccConverterStationMenu = (BaseMenu) => ({
-    lccConverterStation,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withLccConverterStationMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={lccConverterStation}
+                equipmentId={id}
                 equipmentType={equipments.lccConverterStations}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

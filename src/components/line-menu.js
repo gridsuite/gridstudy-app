@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withLineMenu = (BaseMenu) => ({
-    line,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -61,6 +61,8 @@ const withLineMenu = (BaseMenu) => ({
     const { enqueueSnackbar } = useSnackbar();
     const [displayUseName] = useParameterState(PARAM_USE_NAME);
     const network = useSelector((state) => state.network);
+
+    const line = network.getLine(id);
 
     const getLineDescriptor = useCallback(
         (voltageLevelId) => {
@@ -150,7 +152,7 @@ const withLineMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={line}
+                equipmentId={id}
                 equipmentType={equipments.lines}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

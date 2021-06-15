@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withShuntCompensatorMenu = (BaseMenu) => ({
-    shuntCompensator,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withShuntCompensatorMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={shuntCompensator}
+                equipmentId={id}
                 equipmentType={equipments.shuntCompensators}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

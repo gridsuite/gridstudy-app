@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withLoadMenu = (BaseMenu) => ({
-    load,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withLoadMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={load}
+                equipmentId={id}
                 equipmentType={equipments.loads}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

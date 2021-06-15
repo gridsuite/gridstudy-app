@@ -59,22 +59,35 @@ const ItemViewInSpreadsheet = ({
 };
 
 const EquipmentMenu = ({
-    equipment,
+    equipmentId,
     equipmentType,
     handleViewInSpreadsheet,
 }) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const intl = useIntl();
 
+    const network = useSelector((state) => state.network);
+
+    function getEquipment(equipmentType, equipmentId) {
+        if (equipmentType === equipments.substations) {
+            return network.getSubstation(equipmentId);
+        } else if (equipmentType === equipments.voltageLevels) {
+            return network.getVoltageLevel(equipmentId);
+        } else {
+            return null;
+        }
+    }
+
+    const equipment = getEquipment(equipmentType, equipmentId);
+
     return (
         <>
             {/* menu for equipment other than substation and voltage level */}
             {equipmentType !== equipments.substations &&
-                equipmentType !== equipments.voltageLevels &&
-                equipment && (
+                equipmentType !== equipments.voltageLevels && (
                     <ItemViewInSpreadsheet
                         equipmentType={equipmentType}
-                        equipmentId={equipment.id}
+                        equipmentId={equipmentId}
                         itemText={intl.formatMessage({
                             id: 'ViewOnSpreadsheet',
                         })}

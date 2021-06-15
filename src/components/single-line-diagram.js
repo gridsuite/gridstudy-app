@@ -613,88 +613,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
         }
 
-        function fetchEquipmentTypeIfNeeded(componentType) {
-            switch (componentType) {
-                case 'LINE':
-                    !network.isResourceFetched(equipments.lines) &&
-                        network.useEquipment(equipments.lines); // fetch network lines if not already loaded
-                    // in substation sld, a componentType LINE for a feeder can be a line or a transformer
-                    // TODO : to be changed adding equpmentType in nodes metadata in single-line-diagram ????
-                    !network.isResourceFetched(
-                        equipments.twoWindingsTransformers
-                    ) &&
-                        network.useEquipment(
-                            equipments.twoWindingsTransformers
-                        );
-                    !network.isResourceFetched(
-                        equipments.threeWindingsTransformers
-                    ) &&
-                        network.useEquipment(
-                            equipments.threeWindingsTransformers
-                        );
-                    return true;
-                case 'LOAD':
-                    !network.isResourceFetched(equipments.loads) &&
-                        network.useEquipment(equipments.loads); // fetch network loads if not already loaded
-                    return true;
-                case 'BATTERY':
-                    !network.isResourceFetched(equipments.batteries) &&
-                        network.useEquipment(equipments.batteries); // fetch network batteries if not already loaded
-                    return true;
-                case 'GENERATOR':
-                    !network.isResourceFetched(equipments.generators) &&
-                        network.useEquipment(equipments.generators); // fetch network generators if not already loaded
-                    return true;
-                case 'DANGLING_LINE':
-                    !network.isResourceFetched(equipments.danglingLines) &&
-                        network.useEquipment(equipments.danglingLines); // fetch network dangling lines if not already loaded
-                    return true;
-                case 'CAPACITOR':
-                case 'INDUCTOR':
-                    !network.isResourceFetched(equipments.shuntCompensators) &&
-                        network.useEquipment(equipments.shuntCompensators); // fetch network shunt compensators if not already loaded
-                    return true;
-                case 'STATIC_VAR_COMPENSATOR':
-                    !network.isResourceFetched(
-                        equipments.staticVarCompensators
-                    ) && network.useEquipment(equipments.staticVarCompensators); // fetch network static var compensators if not already loaded
-                    return true;
-                case 'TWO_WINDINGS_TRANSFORMER':
-                case 'PHASE_SHIFT_TRANSFORMER':
-                    !network.isResourceFetched(
-                        equipments.twoWindingsTransformers
-                    ) &&
-                        network.useEquipment(
-                            equipments.twoWindingsTransformers
-                        ); // fetch network two windings transformers if not already loaded
-                    return true;
-                case 'THREE_WINDINGS_TRANSFORMER':
-                    !network.isResourceFetched(
-                        equipments.threeWindingsTransformers
-                    ) &&
-                        network.useEquipment(
-                            equipments.threeWindingsTransformers
-                        ); // fetch network three windings transformers if not already loaded
-                    return true;
-                case 'VSC_CONVERTER_STATION':
-                    !network.isResourceFetched(
-                        equipments.vscConverterStations
-                    ) && network.useEquipment(equipments.vscConverterStations); // fetch network vsc converter stations if not already loaded
-                    return true;
-                case 'LCC_CONVERTER_STATION':
-                    !network.isResourceFetched(
-                        equipments.lccConverterStations
-                    ) && network.useEquipment(equipments.lccConverterStations); // fetch network lcc converter stations if not already loaded
-                    return true;
-                case 'HVDC_LINE':
-                    !network.isResourceFetched(equipments.hvdcLines) &&
-                        network.useEquipment(equipments.hvdcLines); // fetch network hvdc lines if not already loaded
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         if (svg.svg) {
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
@@ -748,10 +666,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the right click on a branch feeder (menu)
             if (!isComputationRunning) {
                 const feeders = svg.metadata.nodes.filter((element) => {
-                    return (
-                        FEEDER_COMPONENT_TYPES.has(element.componentType) &&
-                        fetchEquipmentTypeIfNeeded(element.componentType)
-                    );
+                    return FEEDER_COMPONENT_TYPES.has(element.componentType);
                 });
                 feeders.forEach((feeder) => {
                     const svgText = document
@@ -912,7 +827,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.lines && (
                 <MenuLine
-                    line={network.getLine(equipmentMenu.equipmentId)}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -926,7 +841,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.loads && (
                 <MenuLoad
-                    load={network.getLoad(equipmentMenu.equipmentId)}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -940,7 +855,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.batteries && (
                 <MenuBattery
-                    battery={network.getBattery(equipmentMenu.equipmentId)}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -954,9 +869,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.danglingLines && (
                 <MenuDanglingLine
-                    danglingLine={network.getDanglingLine(
-                        equipmentMenu.equipmentId
-                    )}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -970,7 +883,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.generators && (
                 <MenuGenerator
-                    generator={network.getGenerator(equipmentMenu.equipmentId)}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -985,9 +898,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.equipmentType ===
                 equipments.staticVarCompensators && (
                 <MenuStaticVarCompensator
-                    staticVarCompensator={network.getStaticVarCompensator(
-                        equipmentMenu.equipmentId
-                    )}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -1001,9 +912,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.shuntCompensators && (
                 <MenuShuntCompensator
-                    shuntCompensator={network.getShuntCompensator(
-                        equipmentMenu.equipmentId
-                    )}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -1018,9 +927,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.equipmentType ===
                 equipments.twoWindingsTransformers && (
                 <MenuTwoWindingsTransformer
-                    twoWindingsTransformer={network.getTwoWindingsTransformer(
-                        equipmentMenu.equipmentId
-                    )}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -1035,9 +942,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.equipmentType ===
                 equipments.threeWindingsTransformers && (
                 <MenuThreeWindingsTransformer
-                    threeWindingsTransformer={network.getThreeWindingsTransformer(
-                        equipmentMenu.equipmentId
-                    )}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -1051,7 +956,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.hvdcLines && (
                 <MenuHvdcLine
-                    hvdcLine={network.getHvdcLine(equipmentMenu.equipmentId)}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -1065,9 +970,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.lccConverterStations && (
                 <MenuLccConverterStation
-                    lccConverterStation={network.getLccConverterStation(
-                        equipmentMenu.equipmentId
-                    )}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -1081,9 +984,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipments.vscConverterStations && (
                 <MenuVscConverterStation
-                    vscConverterStation={network.getVscConverterStation(
-                        equipmentMenu.equipmentId
-                    )}
+                    id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}

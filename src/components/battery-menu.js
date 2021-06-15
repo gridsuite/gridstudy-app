@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withBatteryMenu = (BaseMenu) => ({
-    battery,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withBatteryMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={battery}
+                equipmentId={id}
                 equipmentType={equipments.batteries}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

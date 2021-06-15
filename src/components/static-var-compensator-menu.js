@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withStaticVarCompensatorMenu = (BaseMenu) => ({
-    staticVarCompensator,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withStaticVarCompensatorMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={staticVarCompensator}
+                equipmentId={id}
                 equipmentType={equipments.staticVarCompensators}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

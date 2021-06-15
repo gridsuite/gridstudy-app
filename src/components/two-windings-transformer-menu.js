@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withTwoWindingsTransformerMenu = (BaseMenu) => ({
-    twoWindingsTransformer,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withTwoWindingsTransformerMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={twoWindingsTransformer}
+                equipmentId={id}
                 equipmentType={equipments.twoWindingsTransformers}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />

@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const withVoltageLevelMenu = (BaseMenu) => ({
-    voltageLevel,
+    id,
     position,
     handleClose,
     handleViewInSpreadsheet,
@@ -40,7 +40,7 @@ const withVoltageLevelMenu = (BaseMenu) => ({
             onClose={handleClose}
         >
             <BaseMenu
-                equipment={voltageLevel}
+                equipmentId={id}
                 equipmentType={equipments.voltageLevels}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
             />
