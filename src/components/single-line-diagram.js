@@ -663,10 +663,13 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             });
             addNavigationArrow(svg);
 
-            // handling the right click on a branch feeder (menu)
+            // handling the right click on a feeder (menu)
             if (!isComputationRunning) {
                 const feeders = svg.metadata.nodes.filter((element) => {
-                    return FEEDER_COMPONENT_TYPES.has(element.componentType);
+                    return (
+                        element.vid !== '' &&
+                        FEEDER_COMPONENT_TYPES.has(element.componentType)
+                    );
                 });
                 feeders.forEach((feeder) => {
                     const svgText = document
@@ -686,42 +689,29 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         svgText.addEventListener('contextmenu', function (
                             event
                         ) {
-                            let show = true;
                             let componentType = feeder.componentType;
                             if (componentType === 'LINE') {
-                                // test if equipmentId is really a line or is a transformer
-                                // TODO : to be changed adding equpmentType in nodes metadata in single-line-diagram ????
+                                // TODO :
+                                // A correction must be made in single-line-diagram to generate, either the right componentType field or a new EquipmentType field
+                                // in the nodes metadata, for a feeder node corresponding to a 2-windings-transformer leg or a three-windings-transformer leg,
+                                // because, currently :
+                                //
+                                // In voltage level diagram, the componentType for a 3-windings-transformer leg is 'LINE' (NOK) and the equipmentId is the transformer id (OK)
+                                // In substation diagram, the componentType for a 3-windings-transformer leg or a two-windings-transformer leg is 'LINE' (NOK), and
+                                // the equipmentId is the transformer id (OK)
+                                //
+                                // So, to avoid a crash, we consider for the moment that a feeder componentType 'LINE', that is not really a line, is a two-windings-transformer
                                 if (!network.getLine(feeder.equipmentId)) {
-                                    if (
-                                        network.getTwoWindingsTransformer(
-                                            feeder.equipmentId
-                                        )
-                                    ) {
-                                        componentType =
-                                            'TWO_WINDINGS_TRANSFORMER';
-                                    } else if (
-                                        network.getThreeWindingsTransformer(
-                                            feeder.equipmentId
-                                        )
-                                    ) {
-                                        componentType =
-                                            'THREE_WINDINGS_TRANSFORMER';
-                                    } else {
-                                        show = false;
-                                    }
+                                    componentType = 'TWO_WINDINGS_TRANSFORMER';
                                 }
                             }
-                            if (show) {
-                                showEquipmentMenu(
-                                    feeder.equipmentId,
-                                    getEquipmentTypeFromFeederType(
-                                        componentType
-                                    ),
-                                    feeder.id,
-                                    event.x,
-                                    event.y
-                                );
-                            }
+                            showEquipmentMenu(
+                                feeder.equipmentId,
+                                getEquipmentTypeFromFeederType(componentType),
+                                feeder.id,
+                                event.x,
+                                event.y
+                            );
                         });
                     }
                 });
