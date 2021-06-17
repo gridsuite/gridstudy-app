@@ -23,6 +23,7 @@ export const NMK_TYPE_RESULT = {
 const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
+        position: 'relative',
     },
     tabs: {
         position: 'relative',
