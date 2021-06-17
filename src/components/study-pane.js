@@ -326,6 +326,7 @@ const StudyPane = (props) => {
     }, [studyUuid]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
+        setSecurityAnalysisResultFetched(false);
         setSecurityAnalysisResultFetcher(
             new RemoteResourceHandler(
                 () => fetchSecurityAnalysisResult(studyUuid),
@@ -356,7 +357,6 @@ const StudyPane = (props) => {
 
         // clean result
         setSecurityAnalysisResult(null);
-        setSecurityAnalysisResultFetched(false);
     };
 
     const startComputation = (runnable) => {
