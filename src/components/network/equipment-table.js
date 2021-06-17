@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { requestNetworkChange, fetchEquipment } from '../../utils/rest-api';
-import { CircularProgress, IconButton, TextField } from '@material-ui/core';
+import { requestNetworkChange } from '../../utils/rest-api';
+import { IconButton, TextField } from '@material-ui/core';
 import CreateIcon from '@material-ui/icons/Create';
 import Grid from '@material-ui/core/Grid';
 import CheckIcon from '@material-ui/icons/Check';
@@ -10,12 +10,6 @@ import TableCell from '@material-ui/core/TableCell';
 import LoaderWithOverlay from '../loader-with-overlay';
 import VirtualizedTable from '../util/virtualized-table';
 import { makeStyles } from '@material-ui/core/styles';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
-import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     cell: {
@@ -222,6 +216,7 @@ export const EquipmentTable = ({
             isLineOnEditMode,
             registerChangeRequest,
             lineEdit,
+            rows,
         ]
     );
 

@@ -158,8 +158,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
-                        tapChanger:
-                            equipment.ratioTapChanger,
+                        tapChanger: equipment.ratioTapChanger,
                         ...props,
                     }),
             },
@@ -171,8 +170,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
-                        tapChanger:
-                            equipment.phaseTapChanger,
+                        tapChanger: equipment.phaseTapChanger,
                         ...props,
                     }),
             },
@@ -249,8 +247,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
-                        tapChanger:
-                            equipment.ratioTapChanger1,
+                        tapChanger: equipment.ratioTapChanger1,
                         ...props,
                     }),
             },
@@ -262,8 +259,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
-                        tapChanger:
-                            equipment.ratioTapChanger2,
+                        tapChanger: equipment.ratioTapChanger2,
                         ...props,
                     }),
             },
@@ -275,8 +271,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
-                        tapChanger:
-                            equipment.ratioTapChanger3,
+                        tapChanger: equipment.ratioTapChanger3,
                         ...props,
                     }),
             },
@@ -288,8 +283,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
-                        tapChanger:
-                            equipment.phaseTapChanger1,
+                        tapChanger: equipment.phaseTapChanger1,
                         ...props,
                     }),
             },
@@ -301,8 +295,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
-                        tapChanger:
-                            equipment.phaseTapChanger2,
+                        tapChanger: equipment.phaseTapChanger2,
                         ...props,
                     }),
             },
@@ -314,8 +307,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
-                        tapChanger:
-                            equipment.phaseTapChanger3,
+                        tapChanger: equipment.phaseTapChanger3,
                         ...props,
                     }),
             },

@@ -239,6 +239,5 @@
 
     "SubstationList": "Liste des postes",
     "HypothesisTree": "Arbre des hypothèses (indisponible)",
-    "MinMax": "Min:\u202F{min} Max:\u202F{max}",
-    "equipmentLoadError": "Une erreur est survenue lors de la récupération de l'équipement"
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}"
 }
