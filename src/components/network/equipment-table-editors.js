@@ -18,12 +18,12 @@ export const TapChangerSelector = ({
             margin={'none'}
             {...props}
         >
-            {tapChanger.steps.map((step, index) => (
+            {[...Array(tapChanger.highTap - tapChanger.lowTap)].map((step, index) => (
                 <MenuItem
                     key={'tapChanger' + index}
-                    value={index + tapChanger.lowTapPosition}
+                    value={index + tapChanger.lowTap}
                 >
-                    {index + tapChanger.lowTapPosition}
+                    {index + tapChanger.lowTap}
                 </MenuItem>
             ))}
         </Select>

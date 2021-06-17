@@ -30,43 +30,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export function useEquipmentLoader() {
-    const intlRef = useIntlRef();
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const { enqueueSnackbar } = useSnackbar();
-    const [equipment, setEquipment] = useState(null);
-    const [fetched, setFetched] = useState(false);
-    const [equipmentIdentifier, setEquipmentIdentifier] = useState(null);
-
-    useEffect(() => {
-        if (!equipmentIdentifier) return;
-        setFetched(false);
-        fetchEquipment(
-            studyUuid,
-            equipmentIdentifier.equipmentType,
-            equipmentIdentifier.id
-        )
-            .then((res) => {
-                setEquipment(res.data[0]);
-                setFetched(true);
-            })
-            .catch((errorMessage) => {
-                setFetched(false);
-                setEquipment({});
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'equipmentLoadError',
-                        intlRef: intlRef,
-                    },
-                });
-            });
-    }, [equipmentIdentifier, setFetched, enqueueSnackbar, studyUuid, intlRef]);
-
-    return [fetched, equipment, setEquipmentIdentifier];
-}
-
 const ROW_HEIGHT = 48;
 
 export const EquipmentTable = ({
@@ -80,11 +43,6 @@ export const EquipmentTable = ({
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
     const intl = useIntl();
-    const [
-        editableEquipmentFetched,
-        editableEquipment,
-        setEditableEquipmentIdentifier,
-    ] = useEquipmentLoader(null);
     const isLineOnEditMode = useCallback(
         (row) => {
             return (lineEdit && lineEdit.line === row) || false;
@@ -95,7 +53,6 @@ export const EquipmentTable = ({
     useEffect(() => setLineEdit({}), [tableDefinition]);
 
     function startEdition(lineInfo) {
-        setEditableEquipmentIdentifier(lineInfo);
         setLineEdit(lineInfo);
     }
 
@@ -226,11 +183,6 @@ export const EquipmentTable = ({
                 cellData.rowData[cellData.dataKey] === undefined
             ) {
                 return defaultCellRender(cellData, numeric, fractionDigit);
-            } else if (
-                !editableEquipmentFetched ||
-                lineEdit.id !== editableEquipment?.id
-            ) {
-                return <CircularProgress size={ROW_HEIGHT} />;
             } else {
                 const changeRequest = (value) =>
                     registerChangeRequest(cellData, changeCmd, value);
@@ -238,7 +190,7 @@ export const EquipmentTable = ({
                     <Editor
                         key={cellData.dataKey + cellData.rowData.id}
                         className={classes.cell}
-                        equipment={editableEquipment}
+                        equipment={rows[lineEdit.line]}
                         defaultValue={formatNumber(
                             cellData,
                             numeric,
@@ -269,8 +221,6 @@ export const EquipmentTable = ({
             defaultCellRender,
             isLineOnEditMode,
             registerChangeRequest,
-            editableEquipmentFetched,
-            editableEquipment,
             lineEdit,
         ]
     );

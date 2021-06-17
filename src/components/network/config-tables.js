@@ -159,7 +159,7 @@ export const TABLES_DEFINITIONS = {
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger:
-                            equipment.attributes.ratioTapChangerAttributes,
+                            equipment.ratioTapChanger,
                         ...props,
                     }),
             },
@@ -172,7 +172,7 @@ export const TABLES_DEFINITIONS = {
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger:
-                            equipment.attributes.phaseTapChangerAttributes,
+                            equipment.phaseTapChanger,
                         ...props,
                     }),
             },
@@ -250,7 +250,7 @@ export const TABLES_DEFINITIONS = {
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger:
-                            equipment.attributes.leg1.ratioTapChangerAttributes,
+                            equipment.ratioTapChanger1,
                         ...props,
                     }),
             },
@@ -263,7 +263,7 @@ export const TABLES_DEFINITIONS = {
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger:
-                            equipment.attributes.leg2.ratioTapChangerAttributes,
+                            equipment.ratioTapChanger2,
                         ...props,
                     }),
             },
@@ -276,7 +276,7 @@ export const TABLES_DEFINITIONS = {
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger:
-                            equipment.attributes.leg3.ratioTapChangerAttributes,
+                            equipment.ratioTapChanger3,
                         ...props,
                     }),
             },
@@ -289,7 +289,7 @@ export const TABLES_DEFINITIONS = {
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger:
-                            equipment.attributes.leg1.phaseTapChangerAttributes,
+                            equipment.phaseTapChanger1,
                         ...props,
                     }),
             },
@@ -302,7 +302,7 @@ export const TABLES_DEFINITIONS = {
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger:
-                            equipment.attributes.leg2.phaseTapChangerAttributes,
+                            equipment.phaseTapChanger2,
                         ...props,
                     }),
             },
@@ -315,7 +315,7 @@ export const TABLES_DEFINITIONS = {
                 editor: ({ equipment, ...props }) =>
                     TapChangerSelector({
                         tapChanger:
-                            equipment.attributes.leg3.phaseTapChangerAttributes,
+                            equipment.phaseTapChanger3,
                         ...props,
                     }),
             },
@@ -359,9 +359,8 @@ export const TABLES_DEFINITIONS = {
                 changeCmd: 'equipment.setTargetP({})',
                 editor: ({ equipment, ...props }) =>
                     NumericalField({
-                        defaultValue: equipment.attributes.targetP,
-                        min: equipment.attributes.minP,
-                        max: equipment.attributes.maxP,
+                        min: equipment.minP,
+                        max: equipment.maxP,
                         ...props,
                     }),
                 fractionDigits: 1,
