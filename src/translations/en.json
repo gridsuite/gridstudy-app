@@ -239,5 +239,5 @@
 
     "SubstationList": "Substation list",
     "HypothesisTree": "Hypothesis tree (unavailable)",
-    "MinMax": "Min: {min}\nMax: {max}"
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}"
 }
