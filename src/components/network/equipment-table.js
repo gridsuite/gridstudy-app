@@ -22,6 +22,12 @@ const useStyles = makeStyles((theme) => ({
         height: '100%',
         cursor: 'initial',
     },
+    textDiv: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+        width: '100%',
+    },
 }));
 
 const ROW_HEIGHT = 48;
@@ -39,8 +45,8 @@ export const EquipmentTable = ({
     const intl = useIntl();
 
     const isLineOnEditMode = useCallback(
-        (row) => {
-            return (lineEdit && lineEdit.line === row) || false;
+        (cellData) => {
+            return lineEdit && cellData.rowData.id === lineEdit.id;
         },
         [lineEdit]
     );
@@ -80,7 +86,7 @@ export const EquipmentTable = ({
 
     function createEditableRow(cellData, equipmentType) {
         return (
-            (!isLineOnEditMode(cellData.rowIndex) && (
+            (!isLineOnEditMode(cellData) && (
                 <IconButton
                     disabled={lineEdit && lineEdit.id && true}
                     onClick={() =>
@@ -132,18 +138,18 @@ export const EquipmentTable = ({
                     variant="body"
                     style={{ height: ROW_HEIGHT, width: cellData.width }}
                     className={classes.cell}
-                    align="right"
+                    align={numeric ? 'right' : 'left'}
                 >
-                    <Grid container direction="column">
-                        <Grid item xs={1} />
-                        <Grid item xs={1}>
-                            {formatCellData(cellData, numeric, fractionDigit)}
-                        </Grid>
-                    </Grid>
+                    <div
+                        className={classes.textDiv}
+                        style={{ textAlign: numeric ? 'right' : 'left' }}
+                    >
+                        {formatCellData(cellData, numeric, fractionDigit)}
+                    </div>
                 </TableCell>
             );
         },
-        [classes.cell]
+        [classes.cell, classes.textDiv]
     );
 
     const registerChangeRequest = useCallback(
@@ -162,7 +168,7 @@ export const EquipmentTable = ({
 
     const EditableCellRender = useCallback(
         (cellData, numeric, changeCmd, fractionDigit) => {
-            return !isLineOnEditMode(cellData.rowIndex) ||
+            return !isLineOnEditMode(cellData) ||
                 cellData.rowData[cellData.dataKey] === undefined ? (
                 defaultCellRender(cellData, numeric, fractionDigit)
             ) : (
@@ -208,14 +214,18 @@ export const EquipmentTable = ({
                 style: { display: columnDisplayStyle(c.id) },
                 ...c,
             };
-            c.changeCmd !== undefined &&
-                (column.cellRenderer = (cell) =>
+            if (c.changeCmd !== undefined) {
+                column.cellRenderer = (cell) =>
                     EditableCellRender(
                         cell,
                         c.numeric,
                         c.changeCmd,
                         c.fractionDigits
-                    ));
+                    );
+            } else {
+                column.cellRenderer = (cell) =>
+                    defaultCellRender(cell, c.numeric, c.fractionDigits);
+            }
             delete column.changeCmd;
             return column;
         });
@@ -224,6 +234,7 @@ export const EquipmentTable = ({
     function makeHeaderCell(equipmentType) {
         return {
             width: 65,
+            maxWidth: 65,
             label: '',
             dataKey: '',
             style: {
