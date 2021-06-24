@@ -83,6 +83,9 @@ const useStyles = makeStyles((theme) => ({
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
+        '& .sld-label': {
+            cursor: 'pointer',
+        },
         '& .sld-disconnector.sld-constant-color, :not(.sld-breaker).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected': {
             stroke: theme.palette.text.primary,
         },
