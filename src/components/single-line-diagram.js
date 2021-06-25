@@ -583,6 +583,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     const svgText = document
                         .getElementById(feeder.id)
                         .querySelector('text');
+                    svgText.style.cursor = 'pointer';
                     svgText.addEventListener('mouseenter', function (event) {
                         showFeederSelection(event.currentTarget);
                     });
