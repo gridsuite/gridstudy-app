@@ -23,6 +23,7 @@
         "prop-types": "15.7.2",
         "qs": "^6.9.1",
         "react": "^16.13.1",
+        "react-d3-tree": "^2.0.2",
         "react-dom": "^16.13.1",
         "react-intl": "^3.11.0",
         "react-map-gl": "^5.2.3",

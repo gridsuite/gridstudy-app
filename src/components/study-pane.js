@@ -83,6 +83,7 @@ import {
 } from '../utils/config-params';
 import LateralToolbar from './lateral-toolbar';
 import { RunningStatus } from './util/running-status';
+import HypothesisTree from "./hypothesis-tree";
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -126,6 +127,15 @@ const useStyles = makeStyles((theme) => ({
         // zIndex set to be below the loader with overlay
         // and above the network explorer drawer
         zIndex: 60,
+    },
+    drawerHypos: {
+        width: 600,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        // zIndex set to be below the loader with overlay
+        zIndex: 50,
     },
     drawerPaper: {
         position: 'static',
@@ -1061,6 +1071,34 @@ const StudyPane = (props) => {
                             visibleSubstation={visibleSubstation}
                             visible={props.view === StudyView.MAP}
                         />
+                    </div>
+                </Drawer>
+                <Drawer
+                    variant={'persistent'}
+                    className={clsx(classes.drawerHypos, {
+                        [classes.drawerShift]: !drawerOpen,
+                    })}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'hidden',
+                        overflowX: 'hidden',
+                    }}
+                    open={drawerOpen}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <HypothesisTree/>
                     </div>
                 </Drawer>
                 {/*

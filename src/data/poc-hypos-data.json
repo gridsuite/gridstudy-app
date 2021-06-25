@@ -1,0 +1,17 @@
+{
+  "name": "Pt figé recollé",
+  "isRoot": true,
+  "children": [
+    {
+      "hypos": ["Correction divers","Nouvelles IST"],
+      "children": [
+        {
+          "hypos": ["Hypothèses topo","Prises transfo"]
+        },
+        {
+          "hypos": ["Hypothèses struct","Démarrage"]
+        }
+      ]
+    }
+  ]
+}
