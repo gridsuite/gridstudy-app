@@ -3,11 +3,22 @@ import Tree from 'react-d3-tree';
 import orgChartJson from '../data/poc-hypos-data.json';
 import { useCallback, useState } from 'react';
 import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 
 const containerStyles = {
     width: '100vw',
     height: '100vh',
 };
+
+const useStyles = makeStyles((theme) => ({
+    rootPaper: {
+        background: '#83a0c8'
+    },
+    nodePaper: {
+        background: 'grey'
+    },
+}));
 
 const useCenteredTree = () => {
     const [translate, setTranslate] = useState({ x: 0, y: 0 });
@@ -20,43 +31,51 @@ const useCenteredTree = () => {
     return [translate, containerRef];
 };
 
-const renderRoot = (nodeDatum, toggleNode, foreignObjectProps) => {
+function Root(props) {
+    const classes = useStyles();
+    let rootForeignObjectProps = {...props.foreignObjectProps};
+    rootForeignObjectProps.width = 100;
+    rootForeignObjectProps.x = -50;
     return (
-        <foreignObject {...foreignObjectProps}>
-            <div
-                style={{
-                    border: '1px solid black',
-                    backgroundColor: '#dedede',
-                    align: 'flex,',
-                }}
+        <foreignObject {...rootForeignObjectProps}>
+            <Paper
+                variant="outlined"
+                elevation={1}
+                className={classes.rootPaper}
             >
-                <Button color="primary" onClick={toggleNode}>
-                    {nodeDatum.name}
+                <Button variant="contained" color="primary" onClick={props.toggleNode} disableElevation>
+                    {props.nodeDatum.name}
                 </Button>
-            </div>
+            </Paper>
         </foreignObject>
     );
-};
+}
 
-const renderNode = (nodeDatum, toggleNode, foreignObjectProps) => {
+function Node(props) {
+    const classes = useStyles();
+    let nodeForeignObjectProps = {...props.foreignObjectProps};
+    nodeForeignObjectProps.width = 200;
+    nodeForeignObjectProps.height = 500;
+    nodeForeignObjectProps.y = -100;
     return (
-        <foreignObject {...foreignObjectProps}>
-            <div
-                style={{
-                    border: '1px solid black',
-                    backgroundColor: '#dedede',
-                    align: 'flex,',
-                }}
+        <>
+        <circle r={5}/>
+        <foreignObject {...nodeForeignObjectProps}>
+            <Paper
+                variant="outlined"
+                elevation={1}
+                className={classes.nodePaper}
             >
-                {nodeDatum.hypos.map((hyp) => (
-                    <Button color="secondary" onClick={toggleNode}>
+                {props.nodeDatum.hypos.map((hyp) => (
+                    <Button variant="contained" color="secondary" onClick={props.toggleNode} fullWidth>
                         {hyp}
                     </Button>
                 ))}
-            </div>
+            </Paper>
         </foreignObject>
+        </>
     );
-};
+}
 
 // Here we're using `renderCustomNodeElement` render a component that uses
 // both SVG and HTML tags side-by-side.
@@ -69,15 +88,25 @@ const renderForeignObjectNode = ({
 }) => {
     return (
         <g>
-            {nodeDatum.__rd3t.depth === 0 &&
-                renderRoot(nodeDatum, toggleNode, foreignObjectProps)}
-            {nodeDatum.__rd3t.depth > 0 &&
-                renderNode(nodeDatum, toggleNode, foreignObjectProps)}
+            {nodeDatum.__rd3t.depth === 0 && (
+                <Root
+                    nodeDatum={nodeDatum}
+                    toggleNode={toggleNode}
+                    foreignObjectProps={foreignObjectProps}
+                />
+            )}
+            {nodeDatum.__rd3t.depth > 0 && (
+                <Node
+                    nodeDatum={nodeDatum}
+                    toggleNode={toggleNode}
+                    foreignObjectProps={foreignObjectProps}
+                />
+            )}
         </g>
     );
 };
 
-export default function HypothesisTree() {
+const HypothesisTree = (props) => {
     const [translate, containerRef] = useCenteredTree();
     const nodeSize = { x: 200, y: 200 };
     const foreignObjectProps = {
@@ -102,4 +131,6 @@ export default function HypothesisTree() {
             />
         </div>
     );
-}
+};
+
+export default HypothesisTree;
