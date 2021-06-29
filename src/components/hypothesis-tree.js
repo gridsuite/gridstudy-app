@@ -2,14 +2,7 @@ import React from 'react';
 import Tree from 'react-d3-tree';
 import orgChartJson from '../data/poc-hypos-data.json';
 import { useCallback, useState } from 'react';
-import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
 
 const containerStyles = {
     width: '100vw',
@@ -27,10 +20,42 @@ const useCenteredTree = () => {
     return [translate, containerRef];
 };
 
-const renderNode = (hypo) => {
+const renderRoot = (nodeDatum, toggleNode, foreignObjectProps) => {
     return (
-        <h3 style={{ textAlign: 'center' }}>hypo</h3>
-    )
+        <foreignObject {...foreignObjectProps}>
+            <div
+                style={{
+                    border: '1px solid black',
+                    backgroundColor: '#dedede',
+                    align: 'flex,',
+                }}
+            >
+                <Button color="primary" onClick={toggleNode}>
+                    {nodeDatum.name}
+                </Button>
+            </div>
+        </foreignObject>
+    );
+};
+
+const renderNode = (nodeDatum, toggleNode, foreignObjectProps) => {
+    return (
+        <foreignObject {...foreignObjectProps}>
+            <div
+                style={{
+                    border: '1px solid black',
+                    backgroundColor: '#dedede',
+                    align: 'flex,',
+                }}
+            >
+                {nodeDatum.hypos.map((hyp) => (
+                    <Button color="secondary" onClick={toggleNode}>
+                        {hyp}
+                    </Button>
+                ))}
+            </div>
+        </foreignObject>
+    );
 };
 
 // Here we're using `renderCustomNodeElement` render a component that uses
@@ -41,39 +66,25 @@ const renderForeignObjectNode = ({
     nodeDatum,
     toggleNode,
     foreignObjectProps,
-}) => (
-    <g>
-        {/* `foreignObject` requires width & height to be explicitly set. */}
-        <foreignObject {...foreignObjectProps}>
-
-            <div
-                style={{
-                    border: '1px solid black',
-                    backgroundColor: '#dedede',
-                    align: 'flex,'
-                }}
-            >
-                {nodeDatum.__rd3t.depth == 0 && (
-                    <Button color="primary" onClick={toggleNode}>{nodeDatum.name}</Button>
-                )}
-                {nodeDatum.__rd3t.depth > 0 && (
-                    nodeDatum.hypos.map( (hyp) =>
-                        <Button color="secondary" onClick={toggleNode}>{hyp}</Button>
-                )
-                )}
-            </div>
-        </foreignObject>
-    </g>
-);
+}) => {
+    return (
+        <g>
+            {nodeDatum.__rd3t.depth === 0 &&
+                renderRoot(nodeDatum, toggleNode, foreignObjectProps)}
+            {nodeDatum.__rd3t.depth > 0 &&
+                renderNode(nodeDatum, toggleNode, foreignObjectProps)}
+        </g>
+    );
+};
 
 export default function HypothesisTree() {
     const [translate, containerRef] = useCenteredTree();
-    const nodeSize = { x: 200, y: 100 };
+    const nodeSize = { x: 200, y: 200 };
     const foreignObjectProps = {
         width: nodeSize.x,
         height: nodeSize.y,
         x: -100,
-        y: -50,
+        y: 0,
     };
     return (
         <div style={containerStyles} ref={containerRef}>
