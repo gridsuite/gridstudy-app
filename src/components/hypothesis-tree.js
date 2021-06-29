@@ -55,11 +55,11 @@ function Node(props) {
     const classes = useStyles();
     let nodeForeignObjectProps = {...props.foreignObjectProps};
     nodeForeignObjectProps.width = 200;
-    nodeForeignObjectProps.height = 500;
+    nodeForeignObjectProps.height = 100;
     nodeForeignObjectProps.y = -100;
     return (
         <>
-        <circle r={5}/>
+        <circle r={10} onClick={props.toggleNode}/>
         <foreignObject {...nodeForeignObjectProps}>
             <Paper
                 variant="outlined"
@@ -108,7 +108,7 @@ const renderForeignObjectNode = ({
 
 const HypothesisTree = (props) => {
     const [translate, containerRef] = useCenteredTree();
-    const nodeSize = { x: 200, y: 200 };
+    const nodeSize = { x: 250, y: 200 };
     const foreignObjectProps = {
         width: nodeSize.x,
         height: nodeSize.y,

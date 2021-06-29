@@ -9,7 +9,32 @@
           "hypos": ["Hypothèses topo","Prises transfo"]
         },
         {
-          "hypos": ["Hypothèses struct","Démarrage"]
+          "hypos": ["Hypothèses struct","Démarrage"],
+          "children": [
+            {
+              "hypos": ["Hypothèses topo 2","Prises transfo 2"]
+            },
+            {
+              "hypos": ["Hypothèses struct 2","Démarrage 2"]
+            },
+            {
+              "hypos": ["Hypothèses mixtes 2","Démarrage groupes"]
+            }
+            ]
+        },
+        {
+          "hypos": ["Hypothèses mixtes","Démarrage groupes"],
+          "children": [
+            {
+              "hypos": ["Hypothèses topo 3","Prises transfo 3"]
+            },
+            {
+              "hypos": ["Hypothèses struct 3","Démarrage 3"]
+            },
+            {
+              "hypos": ["Hypothèses mixtes 3","Démarrage groupes"]
+            }
+          ]
         }
       ]
     }
