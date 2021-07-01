@@ -1,6 +1,7 @@
-FROM httpd:2.4
+FROM bitnami/apache:2.4
 
-RUN echo "Include conf/app-httpd.conf" >> /usr/local/apache2/conf/httpd.conf
-COPY app-httpd.conf /usr/local/apache2/conf/
-COPY build /usr/local/apache2/htdocs/gridstudy
-RUN sed -i -e 's;<base href="\./"/>;<base href="<!--#echo var="BASE" -->"/>;' /usr/local/apache2/htdocs/gridstudy/index.html
+USER root
+COPY app-httpd.conf /opt/bitnami/apache/conf/bitnami/bitnami.conf
+COPY build /opt/bitnami/apache/htdocs/gridstudy
+RUN sed -i -e 's;<base href="\./"/>;<base href="<!--#echo var="BASE" -->"/>;' /opt/bitnami/apache/htdocs/gridstudy/index.html
+USER 1001
