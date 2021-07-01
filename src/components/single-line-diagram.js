@@ -676,6 +676,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         .getElementById(feeder.id)
                         .querySelector('text[class="sld-label"]');
                     if (svgText !== null) {
+                        svgText.style.cursor = 'pointer';
                         svgText.addEventListener('mouseenter', function (
                             event
                         ) {
