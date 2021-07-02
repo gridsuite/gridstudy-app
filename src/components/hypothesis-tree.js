@@ -1,4 +1,5 @@
 import React from 'react';
+import { linkHorizontal, linkVertical } from 'd3-shape';
 import Tree from 'react-d3-tree';
 import orgChartJson from '../data/poc-hypos-data.json';
 import { useCallback, useState } from 'react';
@@ -13,10 +14,10 @@ const containerStyles = {
 
 const useStyles = makeStyles((theme) => ({
     rootPaper: {
-        background: '#83a0c8'
+        background: '#83a0c8',
     },
     nodePaper: {
-        background: 'grey'
+        background: 'grey',
     },
 }));
 
@@ -33,7 +34,7 @@ const useCenteredTree = () => {
 
 function Root(props) {
     const classes = useStyles();
-    let rootForeignObjectProps = {...props.foreignObjectProps};
+    let rootForeignObjectProps = { ...props.foreignObjectProps };
     rootForeignObjectProps.width = 100;
     rootForeignObjectProps.x = -50;
     return (
@@ -43,7 +44,12 @@ function Root(props) {
                 elevation={1}
                 className={classes.rootPaper}
             >
-                <Button variant="contained" color="primary" onClick={props.toggleNode} disableElevation>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={props.toggleNode}
+                    disableElevation
+                >
                     {props.nodeDatum.name}
                 </Button>
             </Paper>
@@ -53,26 +59,31 @@ function Root(props) {
 
 function Node(props) {
     const classes = useStyles();
-    let nodeForeignObjectProps = {...props.foreignObjectProps};
+    let nodeForeignObjectProps = { ...props.foreignObjectProps };
     nodeForeignObjectProps.width = 200;
     nodeForeignObjectProps.height = 100;
     nodeForeignObjectProps.y = -100;
     return (
         <>
-        <circle r={10} onClick={props.toggleNode}/>
-        <foreignObject {...nodeForeignObjectProps}>
-            <Paper
-                variant="outlined"
-                elevation={1}
-                className={classes.nodePaper}
-            >
-                {props.nodeDatum.hypos.map((hyp) => (
-                    <Button variant="contained" color="secondary" onClick={props.toggleNode} fullWidth>
-                        {hyp}
-                    </Button>
-                ))}
-            </Paper>
-        </foreignObject>
+            <circle r={10} onClick={props.toggleNode} />
+            <foreignObject {...nodeForeignObjectProps}>
+                <Paper
+                    variant="outlined"
+                    elevation={1}
+                    className={classes.nodePaper}
+                >
+                    {props.nodeDatum.hypos.map((hyp) => (
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={props.toggleNode}
+                            fullWidth
+                        >
+                            {hyp}
+                        </Button>
+                    ))}
+                </Paper>
+            </foreignObject>
         </>
     );
 }
@@ -115,6 +126,20 @@ const HypothesisTree = (props) => {
         x: -100,
         y: 0,
     };
+
+    const customPathFunc = (linkDatum, orientation) => {
+        const { source, target } = linkDatum;
+        return orientation === 'horizontal'
+            ? // ? `M${source.y},${source.x}L${target.y-source.y*3/5},${source.x}Q${target.y},${source.x},${target.y},${target.x}`
+              // : `M${source.x},${source.y}L${target.x-source.x*3/5},${source.y}Q${target.x},${source.y},${target.x},${target.y}`;
+              `M${source.y},${source.x}L${
+                  source.y + ((target.y - source.y) * 9) / 10
+              },${source.x}Q${target.y},${source.x},${target.y},${target.x}`
+            : `M${source.x},${source.y}L${
+                  source.x + ((target.x - source.x) * 9) / 10
+              },${source.y}Q${target.x},${source.y},${target.x},${target.y}`;
+    };
+
     return (
         <div style={containerStyles} ref={containerRef}>
             <Tree
@@ -128,6 +153,7 @@ const HypothesisTree = (props) => {
                     })
                 }
                 orientation="vertical"
+                pathFunc={customPathFunc}
             />
         </div>
     );

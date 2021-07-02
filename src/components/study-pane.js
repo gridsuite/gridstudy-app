@@ -83,7 +83,7 @@ import {
 } from '../utils/config-params';
 import LateralToolbar from './lateral-toolbar';
 import { RunningStatus } from './util/running-status';
-import HypothesisTree from "./hypothesis-tree";
+import HypothesisTree from './hypothesis-tree';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -1098,7 +1098,7 @@ const StudyPane = (props) => {
                         }}
                         className={classes.drawerDiv}
                     >
-                        <HypothesisTree/>
+                        <HypothesisTree />
                     </div>
                 </Drawer>
                 {/*
