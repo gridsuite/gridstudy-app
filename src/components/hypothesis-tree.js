@@ -1,5 +1,4 @@
 import React from 'react';
-import { linkHorizontal, linkVertical } from 'd3-shape';
 import Tree from 'react-d3-tree';
 import orgChartJson from '../data/poc-hypos-data.json';
 import { useCallback, useState } from 'react';
