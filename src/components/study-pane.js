@@ -83,6 +83,7 @@ import {
 } from '../utils/config-params';
 import LateralToolbar from './lateral-toolbar';
 import { RunningStatus } from './util/running-status';
+import HypothesisTree from "./hypothesis-tree";
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -1061,6 +1062,35 @@ const StudyPane = (props) => {
                             visibleSubstation={visibleSubstation}
                             visible={props.view === StudyView.MAP}
                         />
+                    </div>
+                </Drawer>
+                <Drawer
+                    id="hypo-tree"
+                    variant={'persistent'}
+                    className={clsx(classes.drawerHypos, {
+                        [classes.drawerShift]: !drawerOpen,
+                    })}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'hidden',
+                        overflowX: 'hidden',
+                    }}
+                    open={drawerOpen}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <HypothesisTree />
                     </div>
                 </Drawer>
                 {/*

@@ -1,0 +1,62 @@
+{
+  "id": "root",
+  "label": "Pt figé recollé",
+  "children": [
+    {
+      "id": "1",
+      "label": "1",
+      "hypos": ["Correction divers","Nouvelles IST"],
+      "children": [
+        {
+          "id": "11",
+          "label": "11",
+          "hypos": ["Hypothèses topo","Prises transfo"]
+        },
+        {
+          "id": "12",
+          "label": "12",
+          "hypos": ["Hypothèses struct","Démarrage"],
+          "children": [
+            {
+              "id": "21",
+              "label": "21",
+              "hypos": ["Hypothèses topo 2","Prises transfo 2"]
+            },
+            {
+              "id": "22",
+              "label": "22",
+              "hypos": ["Hypothèses struct 2","Démarrage 2"]
+            },
+            {
+              "id": "23",
+              "label": "23",
+              "hypos": ["Hypothèses mixtes 2","Démarrage groupes"]
+            }
+          ]
+        },
+        {
+          "id": "13",
+          "label": "13",
+          "hypos": ["Hypothèses mixtes","Démarrage groupes"],
+          "children": [
+            {
+              "id": "31",
+              "label": "31",
+              "hypos": ["Hypothèses topo 3","Prises transfo 3"]
+            },
+            {
+              "id": "32",
+              "label": "32",
+              "hypos": ["Hypothèses struct 3","Démarrage 3"]
+            },
+            {
+              "id": "33",
+              "label": "33",
+              "hypos": ["Hypothèses mixtes 3","Démarrage groupes"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
