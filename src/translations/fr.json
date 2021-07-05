@@ -127,7 +127,7 @@
     "RatioTap3": "Plot régleur 3",
     "PhaseTap3": "Plot déphaseur 3",
 
-    "displayOverloadTable": "Afficher la table des surcharges : ",
+    "displayOverloadTable": "Afficher la table des surcharges en cas de dépassement de seuil : ",
 
     "LoadFlow": "Calcul de répartition",
     "SecurityAnalysis": "Analyse de sécurité",

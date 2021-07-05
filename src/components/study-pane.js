@@ -35,12 +35,14 @@ import {
     updateSwitchState,
 } from '../utils/rest-api';
 import {
+    addLoadflowNotif,
+    addSANotif,
     closeStudy,
     filteredNominalVoltagesUpdated,
-    increaseResultCount,
     loadGeoDataSuccess,
     networkCreated,
     openStudy,
+    resetLoadflowNotif,
     selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
@@ -87,6 +89,7 @@ import {
 import EquipmentMenu from './equipment-menu';
 import LateralToolbar from './lateral-toolbar';
 import { RunningStatus } from './util/running-status';
+import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -234,6 +237,10 @@ const StudyPane = (props) => {
 
     const [loadFlowResult, setLoadFlowResult] = useState(null);
 
+    const [ranLoadflow, setRanLoadflow] = useState(false);
+
+    const [ranSA, setRanSA] = useState(false);
+
     const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(
         RunningStatus.IDLE
     );
@@ -378,8 +385,10 @@ const StudyPane = (props) => {
     const startComputation = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
             startLoadFlow(studyUuid);
+            setRanLoadflow(true);
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
+            setRanSA(true);
         }
     };
 
@@ -699,11 +708,17 @@ const StudyPane = (props) => {
                 //TODO reload data more intelligently
                 updateSld();
                 loadNetwork(true);
+                //add the loadflow notif (only if the user clicked on run loadflow)
+                if (ranLoadflow) {
+                    dispatch(addLoadflowNotif());
+                }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'loadflow_status'
             ) {
                 updateLoadFlowResult();
+                //we reset the notif when the previous loadflow results are removed
+                dispatch(resetLoadflowNotif());
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'securityAnalysis_status'
@@ -714,9 +729,11 @@ const StudyPane = (props) => {
                 'securityAnalysisResult'
             ) {
                 updateSecurityAnalysisResult();
-
+                //add the SA notif (only if the user clicked on run SA)
+                if (ranSA) {
+                    dispatch(addSANotif());
+                }
                 // update badge
-                dispatch(increaseResultCount());
             }
         }
         // Note: studyUuid, and loadNetwork don't change
@@ -727,6 +744,8 @@ const StudyPane = (props) => {
         updateLoadFlowResult,
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
+        ranLoadflow,
+        ranSA,
         dispatch,
     ]);
 
@@ -804,6 +823,19 @@ const StudyPane = (props) => {
             }
         }
     }
+
+    const linesNearOverload = useCallback(() => {
+        if (network) {
+            return network.lines.some((l) => {
+                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
+                return (
+                    zone === LineLoadingZone.WARNING ||
+                    zone === LineLoadingZone.OVERLOAD
+                );
+            });
+        }
+        return false;
+    }, [network, lineFlowAlertThreshold]);
 
     const openVoltageLevel = useCallback(
         (vlId) => {
@@ -987,7 +1019,7 @@ const StudyPane = (props) => {
                             )
                         }
                     />
-                    {network && displayOverloadTable && (
+                    {network && displayOverloadTable && linesNearOverload() && (
                         <div
                             style={{
                                 right: 45,
