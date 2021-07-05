@@ -21,7 +21,8 @@ import StudyPane, { StudyView } from './study-pane';
 import StudyManager from './study-manager';
 import {
     changeDisplayedColumns,
-    resetResultCount,
+    resetLoadflowNotif,
+    resetSANotif,
     selectCenterLabelState,
     selectComputedLanguage,
     selectDiagonalLabelState,
@@ -312,6 +313,8 @@ const App = () => {
 
     function studyClickHandler(studyUuid) {
         history.push('/studies/' + encodeURIComponent(studyUuid));
+        dispatch(resetLoadflowNotif());
+        dispatch(resetSANotif());
     }
 
     const onChangeTab = useCallback((newTabIndex) => {
@@ -320,7 +323,8 @@ const App = () => {
 
     // if result tab is displayed, clean badge
     if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
-        dispatch(resetResultCount());
+        dispatch(resetSANotif());
+        dispatch(resetLoadflowNotif());
     }
 
     return (
