@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             opacity: '100%',
         },
-        pointerEvents: 'auto',
+        pointerEvents: 'none',
     },
     flexContainer: {
         display: 'flex',
