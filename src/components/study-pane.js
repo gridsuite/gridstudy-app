@@ -83,6 +83,7 @@ import {
 } from '../utils/config-params';
 import LateralToolbar from './lateral-toolbar';
 import { RunningStatus } from './util/running-status';
+import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -788,6 +789,19 @@ const StudyPane = (props) => {
         }
     }
 
+    const linesNearOverload = useCallback(() => {
+        if (network) {
+            return network.lines.some((l) => {
+                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
+                return (
+                    zone === LineLoadingZone.WARNING ||
+                    zone === LineLoadingZone.OVERLOAD
+                );
+            });
+        }
+        return false;
+    }, [network, lineFlowAlertThreshold]);
+
     const openVoltageLevel = useCallback(
         (vlId) => {
             if (!network) return;
@@ -933,7 +947,7 @@ const StudyPane = (props) => {
                             chooseVoltageLevelForSubstation
                         }
                     />
-                    {network && displayOverloadTable && (
+                    {network && displayOverloadTable && linesNearOverload() && (
                         <div
                             style={{
                                 right: 45,
