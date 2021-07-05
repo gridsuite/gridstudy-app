@@ -692,7 +692,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         ) {
                             showEquipmentMenu(
                                 feeder.equipmentId,
-                                getEquipmentTypeFromFeederType(feeder.componentType),
+                                getEquipmentTypeFromFeederType(
+                                    feeder.componentType
+                                ),
                                 feeder.id,
                                 event.x,
                                 event.y
