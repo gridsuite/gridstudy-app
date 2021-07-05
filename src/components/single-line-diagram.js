@@ -690,25 +690,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         svgText.addEventListener('contextmenu', function (
                             event
                         ) {
-                            let componentType = feeder.componentType;
-                            if (componentType === 'LINE') {
-                                // TODO :
-                                // A correction must be made in single-line-diagram to generate, either the right componentType field or a new EquipmentType field
-                                // in the nodes metadata, for a feeder node corresponding to a 2-windings-transformer leg or a three-windings-transformer leg,
-                                // because, currently :
-                                //
-                                // In voltage level diagram, the componentType for a 3-windings-transformer leg is 'LINE' (NOK) and the equipmentId is the transformer id (OK)
-                                // In substation diagram, the componentType for a 3-windings-transformer leg or a two-windings-transformer leg is 'LINE' (NOK), and
-                                // the equipmentId is the transformer id (OK)
-                                //
-                                // So, to avoid a crash, we consider for the moment that a feeder componentType 'LINE', that is not really a line, is a two-windings-transformer
-                                if (!network.getLine(feeder.equipmentId)) {
-                                    componentType = 'TWO_WINDINGS_TRANSFORMER';
-                                }
-                            }
                             showEquipmentMenu(
                                 feeder.equipmentId,
-                                getEquipmentTypeFromFeederType(componentType),
+                                getEquipmentTypeFromFeederType(feeder.componentType),
                                 feeder.id,
                                 event.x,
                                 event.y
