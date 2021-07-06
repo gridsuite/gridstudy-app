@@ -26,6 +26,8 @@ const Tree = ({ data }) => {
                         },
                         'drag-canvas',
                         'zoom-canvas',
+                        'click-select',
+                        'drag-node',
                     ],
                 },
                 defaultNode: {
@@ -51,14 +53,15 @@ const Tree = ({ data }) => {
                     getId: function getId(d) {
                         return d.id;
                     },
-                    getHeight: function getHeight() {
-                        return 20;
+                    getHeight: function getHeight(d) {
+                        console.log(d.type);
+                        return d.type === 'hypoNode' ? d.hypos.length * 50 : 50;
                     },
                     getWidth: function getWidth() {
                         return 100;
                     },
                     getVGap: function getVGap() {
-                        return 30;
+                        return 50;
                     },
                     getHGap: function getHGap() {
                         return 30;
