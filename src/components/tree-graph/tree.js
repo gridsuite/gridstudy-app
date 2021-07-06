@@ -1,8 +1,8 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import G6 from "@antv/g6";
+import G6 from '@antv/g6';
 
-const Tree = ({data}) => {
+const Tree = ({ data }) => {
     const ref = React.useRef(null);
     let graph = null;
 
@@ -30,7 +30,7 @@ const Tree = ({data}) => {
                 },
                 defaultNode: {
                     type: 'rect',
-                    size: [100,20],
+                    size: [100, 20],
                     anchorPoints: [
                         [0, 0],
                         [1, 1],
@@ -39,6 +39,12 @@ const Tree = ({data}) => {
                 defaultEdge: {
                     type: 'cubic-vertical',
                 },
+                nodeStateStyles: {
+                    // The state styles defined as following will take effect on keyShape only. To define state styles on other shapes, refer to the link Configure Styles for State above
+                    hover: {
+                        lineWidth: 2,
+                    },
+                },
                 layout: {
                     type: 'compactBox',
                     direction: 'TB',
@@ -46,25 +52,37 @@ const Tree = ({data}) => {
                         return d.id;
                     },
                     getHeight: function getHeight() {
-                        return 16;
+                        return 20;
                     },
                     getWidth: function getWidth() {
-                        return 16;
+                        return 100;
                     },
                     getVGap: function getVGap() {
                         return 30;
                     },
                     getHGap: function getHGap() {
-                        return 50;
+                        return 30;
                     },
                 },
             });
         }
         graph.data(data);
         graph.render();
+        // Listen to the mouse enter event on node
+        graph.on('node:mouseenter', (evt) => {
+            const node = evt.item;
+            // activate the hover state of the node
+            graph.setItemState(node, 'hover', true);
+        });
+        // Listen to the mouse leave event on node
+        graph.on('node:mouseleave', (evt) => {
+            const node = evt.item;
+            // inactivate the hover state of the node
+            graph.setItemState(node, 'hover', false);
+        });
     }, []);
 
-    return (<div ref={ref}/>);
+    return <div ref={ref} />;
 };
 
 export default Tree;

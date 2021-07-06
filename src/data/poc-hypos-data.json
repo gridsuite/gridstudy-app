@@ -1,6 +1,8 @@
 {
   "id": "root",
+  "type": "rootNode",
   "label": "Pt figé recollé",
+  "hypos": [],
   "children": [
     {
       "id": "1",
