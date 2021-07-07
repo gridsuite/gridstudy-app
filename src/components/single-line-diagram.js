@@ -150,7 +150,9 @@ const FEEDER_COMPONENT_TYPES = new Set([
     'INDUCTOR',
     'STATIC_VAR_COMPENSATOR',
     'TWO_WINDINGS_TRANSFORMER',
+    'TWO_WINDINGS_TRANSFORMER_LEG',
     'THREE_WINDINGS_TRANSFORMER',
+    'THREE_WINDINGS_TRANSFORMER_LEG',
     'PHASE_SHIFT_TRANSFORMER',
 ]);
 
@@ -602,9 +604,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 case 'STATIC_VAR_COMPENSATOR':
                     return equipments.staticVarCompensators;
                 case 'TWO_WINDINGS_TRANSFORMER':
+                case 'TWO_WINDINGS_TRANSFORMER_LEG':
                 case 'PHASE_SHIFT_TRANSFORMER':
                     return equipments.twoWindingsTransformers;
                 case 'THREE_WINDINGS_TRANSFORMER':
+                case 'THREE_WINDINGS_TRANSFORMER_LEG':
                     return equipments.threeWindingsTransformers;
                 default: {
                     console.log('bad feeder type ', feederType);
