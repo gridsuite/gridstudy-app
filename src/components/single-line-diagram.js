@@ -40,21 +40,11 @@ import ArrowHover from '../images/arrow_hover.svg';
 import { fullScreenSingleLineDiagram } from '../redux/actions';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
-import EquipmentMenu from './equipment-menu';
 
 import { AutoSizer } from 'react-virtualized';
+import BaseEquipmentMenu from './base-equipment-menu';
+import withEquipmentMenu from './equipment-menu';
 import withLineMenu from './line-menu';
-import withLoadMenu from './load-menu';
-import withBatteryMenu from './battery-menu';
-import withDanglingLineMenu from './dangling-line-menu';
-import withGeneratorMenu from './generator-menu';
-import withHvdcLineMenu from './hvdc-line-menu';
-import withShuntCompensatorMenu from './shunt-compensator-menu';
-import withStaticVarCompensatorMenu from './static-var-compensator-menu';
-import withTwoWindingsTransformerMenu from './two-windings-transformer-menu';
-import withThreeWindingsTransformerMenu from './three-windings-transformer-menu';
-import withLccConverterStationMenu from './lcc-converter-station-menu';
-import withVscConverterStationMenu from './vsc-converter-station-menu';
 
 import { equipments } from './network/network-equipments';
 import { RunningStatus } from './util/running-status';
@@ -240,24 +230,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
-    const MenuLine = withLineMenu(EquipmentMenu);
-    const MenuLoad = withLoadMenu(EquipmentMenu);
-    const MenuBattery = withBatteryMenu(EquipmentMenu);
-    const MenuDanglingLine = withDanglingLineMenu(EquipmentMenu);
-    const MenuGenerator = withGeneratorMenu(EquipmentMenu);
-    const MenuStaticVarCompensator = withStaticVarCompensatorMenu(
-        EquipmentMenu
-    );
-    const MenuShuntCompensator = withShuntCompensatorMenu(EquipmentMenu);
-    const MenuHvdcLine = withHvdcLineMenu(EquipmentMenu);
-    const MenuTwoWindingsTransformer = withTwoWindingsTransformerMenu(
-        EquipmentMenu
-    );
-    const MenuThreeWindingsTransformer = withThreeWindingsTransformerMenu(
-        EquipmentMenu
-    );
-    const MenuLccConverterStation = withLccConverterStationMenu(EquipmentMenu);
-    const MenuVscConverterStation = withVscConverterStationMenu(EquipmentMenu);
+    const MenuLine = withLineMenu(BaseEquipmentMenu);
 
     const theme = useTheme();
 
@@ -817,154 +790,16 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         );
     }
 
-    function displayMenuLoad() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.loads && (
-                <MenuLoad
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
+    function displayMenu(equipmentType, menuId) {
+        const Menu = withEquipmentMenu(
+            BaseEquipmentMenu,
+            menuId,
+            equipmentType
         );
-    }
-
-    function displayMenuBattery() {
         return (
             equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.batteries && (
-                <MenuBattery
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuDanglingLine() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.danglingLines && (
-                <MenuDanglingLine
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuGenerator() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.generators && (
-                <MenuGenerator
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuStaticVarCompensator() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType ===
-                equipments.staticVarCompensators && (
-                <MenuStaticVarCompensator
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuShuntCompensator() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.shuntCompensators && (
-                <MenuShuntCompensator
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuTwoWindingsTransformer() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType ===
-                equipments.twoWindingsTransformers && (
-                <MenuTwoWindingsTransformer
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuThreeWindingsTransformer() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType ===
-                equipments.threeWindingsTransformers && (
-                <MenuThreeWindingsTransformer
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuHvdcLine() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.hvdcLines && (
-                <MenuHvdcLine
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuLccConverterStation() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.lccConverterStations && (
-                <MenuLccConverterStation
-                    id={equipmentMenu.equipmentId}
-                    position={equipmentMenu.position}
-                    handleClose={closeEquipmentMenu}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                />
-            )
-        );
-    }
-
-    function displayMenuVscConverterStation() {
-        return (
-            equipmentMenu.display &&
-            equipmentMenu.equipmentType === equipments.vscConverterStations && (
-                <MenuVscConverterStation
+            equipmentMenu.equipmentType === equipmentType && (
+                <Menu
                     id={equipmentMenu.equipmentId}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
@@ -1055,17 +890,35 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     />
                 )}
                 {displayMenuLine()}
-                {displayMenuLoad()}
-                {displayMenuBattery()}
-                {displayMenuDanglingLine()}
-                {displayMenuGenerator()}
-                {displayMenuStaticVarCompensator()}
-                {displayMenuShuntCompensator()}
-                {displayMenuTwoWindingsTransformer()}
-                {displayMenuThreeWindingsTransformer()}
-                {displayMenuHvdcLine()}
-                {displayMenuLccConverterStation()}
-                {displayMenuVscConverterStation()}
+                {displayMenu(equipments.loads, 'load-menu')}
+                {displayMenu(equipments.batteries, 'battery-menu')}
+                {displayMenu(equipments.danglingLines, 'dangling-line-menu')}
+                {displayMenu(equipments.generators, 'generator-menu')}
+                {displayMenu(
+                    equipments.staticVarCompensators,
+                    'static-var-compensator-menu'
+                )}
+                {displayMenu(
+                    equipments.shuntCompensators,
+                    'shunt-compensator-menu'
+                )}
+                {displayMenu(
+                    equipments.twoWindingsTransformers,
+                    'two-windings-transformer-menu'
+                )}
+                {displayMenu(
+                    equipments.threeWindingsTransformers,
+                    'three-windings-transformer-menu'
+                )}
+                {displayMenu(equipments.hvdcLines, 'hvdc-line-menu')}
+                {displayMenu(
+                    equipments.lccConverterStations,
+                    'lcc-converter-station-menu'
+                )}
+                {displayMenu(
+                    equipments.vscConverterStations,
+                    'vsc-converter-station-menu'
+                )}
 
                 {!loadingState &&
                     !svg.error &&

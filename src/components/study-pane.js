@@ -68,8 +68,6 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
 import withLineMenu from './line-menu';
-import withSubstationMenu from './substation-menu';
-import withVoltageLevelMenu from './voltage-level-menu';
 
 import Drawer from '@material-ui/core/Drawer';
 import clsx from 'clsx';
@@ -86,10 +84,11 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import EquipmentMenu from './equipment-menu';
+import BaseEquipmentMenu from './base-equipment-menu';
 import LateralToolbar from './lateral-toolbar';
 import { RunningStatus } from './util/running-status';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
+import withEquipmentMenu from './equipment-menu';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -283,11 +282,19 @@ const StudyPane = (props) => {
         changed: false,
     });
 
-    const MenuLine = withLineMenu(EquipmentMenu);
+    const MenuLine = withLineMenu(BaseEquipmentMenu);
 
-    const MenuSubstation = withSubstationMenu(EquipmentMenu);
+    const MenuSubstation = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'substation-menu',
+        equipments.substations
+    );
 
-    const MenuVoltageLevel = withVoltageLevelMenu(EquipmentMenu);
+    const MenuVoltageLevel = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'voltage-level-menu',
+        equipments.voltageLevels
+    );
 
     const dispatch = useDispatch();
 
