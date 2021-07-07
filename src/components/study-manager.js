@@ -19,6 +19,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useSnackbar } from 'notistack';
+import { ReportViewer } from '@gridsuite/commons-ui';
 
 import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg';
 import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
@@ -37,6 +38,7 @@ import {
     renameStudy,
     fetchStudyCreationRequests,
     connectNotificationsWsUpdateStudies,
+    fetchReport,
 } from '../utils/rest-api';
 
 import { CardHeader } from '@material-ui/core';
@@ -61,6 +63,7 @@ import CreateStudyForm from './create-study-form';
 import LoaderWithOverlay from './loader-with-overlay';
 import AccessRightsDialog from './access-rights-dialog';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -138,6 +141,7 @@ const DonwnloadIframe = 'downloadIframe';
 const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     const classes = useStyles();
     const intl = useIntl();
+    const { enqueueSnackbar } = useSnackbar();
 
     function logo(caseFormat) {
         switch (caseFormat) {
@@ -284,6 +288,42 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
         setExpanded(!expanded);
     };
 
+    /**
+     * Report dialog
+     */
+    const [openReportViewer, setOpenReportViewer] = useState(false);
+    const [report, setReport] = useState(null);
+    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
+
+    const handleCloseReport = () => {
+        setReport(null);
+        setOpenReportViewer(false);
+    };
+
+    const handleClickShowReport = () => {
+        setWaitingLoadReport(true);
+        setAnchorEl(null);
+        fetchReport(study.studyUuid)
+            .then((report) => {
+                setReport(report);
+                setOpenReportViewer(true);
+            })
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                })
+            )
+            .finally(() => {
+                setAnchorEl(null);
+                setWaitingLoadReport(false);
+            });
+    };
+
+    const isWaitingLoading = useCallback(() => {
+        return studyCreationLoader || waitingLoadReport;
+    }, [studyCreationLoader, waitingLoadReport]);
+
     return (
         <div className={classes.container}>
             <Card className={classes.root}>
@@ -291,12 +331,16 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                     onClick={!studyCreationLoader ? () => onClick() : undefined}
                     className={classes.card}
                 >
-                    {studyCreationLoader && (
+                    {isWaitingLoading() && (
                         <LoaderWithOverlay
                             color="inherit"
                             loaderSize={35}
                             isFixed={false}
-                            loadingMessageText="loadingCreationStudy"
+                            loadingMessageText={
+                                studyCreationLoader
+                                    ? 'loadingCreationStudy'
+                                    : 'loadingReport'
+                            }
                         />
                     )}
                     <Tooltip
@@ -354,7 +398,11 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                         id="case-menu"
                         anchorEl={anchorEl}
                         keepMounted
-                        open={Boolean(anchorEl)}
+                        open={
+                            Boolean(anchorEl) &&
+                            !waitingLoadReport &&
+                            !openReportViewer
+                        }
                         onClose={handleCloseMenu}
                     >
                         <MenuItem onClick={handleOpenDelete}>
@@ -366,7 +414,20 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                             />
                         </MenuItem>
 
-                        {!studyCreationLoader && (
+                        {!isWaitingLoading() && (
+                            <MenuItem onClick={handleClickShowReport}>
+                                <ListItemIcon>
+                                    <AccountTreeIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <FormattedMessage id="showReport" />
+                                    }
+                                />
+                            </MenuItem>
+                        )}
+
+                        {!isWaitingLoading() && (
                             <MenuItem onClick={handleOpenRename}>
                                 <ListItemIcon>
                                     <EditIcon fontSize="small" />
@@ -377,7 +438,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                             </MenuItem>
                         )}
 
-                        {!studyCreationLoader && (
+                        {!isWaitingLoading() && (
                             <MenuItem onClick={handleOpenExport}>
                                 <ListItemIcon>
                                     <GetAppIcon fontSize="small" />
@@ -388,7 +449,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                             </MenuItem>
                         )}
 
-                        {!studyCreationLoader && (
+                        {!isWaitingLoading() && (
                             <MenuItem onClick={handleOpenAccessRights}>
                                 <ListItemIcon>
                                     <BuildIcon fontSize="small" />
@@ -425,6 +486,14 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                     </CardContent>
                 </Collapse>
             </Card>
+            {report && (
+                <ReportViewer
+                    title={'Logs : ' + study.studyUuid}
+                    open={openReportViewer}
+                    onClose={handleCloseReport}
+                    jsonReport={report}
+                />
+            )}
             <DeleteDialog
                 open={openDeleteDialog}
                 onClose={handleCloseDelete}

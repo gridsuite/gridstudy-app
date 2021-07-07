@@ -238,5 +238,10 @@
     "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
 
     "SubstationList": "Substation list",
-    "HypothesisTree": "Hypothesis tree (unavailable)"
+    "HypothesisTree": "Hypothesis tree (unavailable)",
+
+    "showReport" : "Show logs",
+    "severity": "Severity",
+    "message": "Message",
+    "loadingReport": "Loading logs in progress..."
 }

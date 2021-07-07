@@ -238,5 +238,10 @@
     "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
 
     "SubstationList": "Liste des postes",
-    "HypothesisTree": "Arbre des hypothèses (indisponible)"
+    "HypothesisTree": "Arbre des hypothèses (indisponible)",
+
+    "showReport" : "Afficher logs",
+    "severity": "Sévérité",
+    "message": "Message",
+    "loadingReport": "Chargement des logs en cours..."
 }
