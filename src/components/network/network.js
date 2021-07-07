@@ -255,38 +255,6 @@ export default class Network {
         return this.generatorsById.get(id);
     }
 
-    getLoad(id) {
-        return this.loads.find((l) => l.id === id);
-    }
-
-    getBattery(id) {
-        return this.batteries.find((b) => b.id === id);
-    }
-
-    getDanglingLine(id) {
-        return this.danglingLines.find((d) => d.id === id);
-    }
-
-    getStaticVarCompensator(id) {
-        return this.staticVarCompensators.find((s) => s.id === id);
-    }
-
-    getShuntCompensator(id) {
-        return this.shuntCompensators.find((s) => s.id === id);
-    }
-
-    getHvdcLine(id) {
-        return this.hvdcLines.find((h) => h.id === id);
-    }
-
-    getLccConverterStation(id) {
-        return this.lccConverterStations.find((l) => l.id === id);
-    }
-
-    getVscConverterStation(id) {
-        return this.vscConverterStations.find((v) => v.id === id);
-    }
-
     getLineOrTransformer(id) {
         return (
             this.getLine(id) ||
