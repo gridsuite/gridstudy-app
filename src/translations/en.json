@@ -127,7 +127,7 @@
     "RatioTap3": "Ratio tap 3",
     "PhaseTap3": "Phase tap 3",
 
-    "displayOverloadTable": "Display the overload table: ",
+    "displayOverloadTable": "Display the overload table when threshold is exceeded: ",
 
     "LoadFlow": "LoadFlow",
     "SecurityAnalysis": "Security analysis",
