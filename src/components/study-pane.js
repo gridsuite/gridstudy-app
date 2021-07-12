@@ -129,7 +129,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 60,
     },
     drawerHypos: {
-        width: 600,
+        width: 1000,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
