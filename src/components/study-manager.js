@@ -296,8 +296,8 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
     const handleCloseReport = () => {
-        setReport(null);
         setOpenReportViewer(false);
+        setReport(null);
     };
 
     const handleClickShowReport = () => {

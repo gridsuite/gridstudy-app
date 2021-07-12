@@ -63,7 +63,7 @@
 
     "close": "Close",
 
-    "loadingGeoData": "Loading...",
+    "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
 
@@ -240,6 +240,7 @@
     "SubstationList": "Substation list",
     "HypothesisTree": "Hypothesis tree (unavailable)",
 
+    "Logs": "Logs",
     "showReport" : "Show logs",
     "severity": "Severity",
     "message": "Message",

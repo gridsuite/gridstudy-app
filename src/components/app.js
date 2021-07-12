@@ -80,7 +80,12 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const noUserManager = { instance: null, error: null };
 
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
+const STUDY_VIEWS = [
+    StudyView.MAP,
+    StudyView.SPREADSHEET,
+    StudyView.RESULTS,
+    StudyView.LOGS,
+];
 
 const App = () => {
     const intlRef = useIntlRef();

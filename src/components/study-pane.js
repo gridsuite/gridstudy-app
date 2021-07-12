@@ -23,6 +23,7 @@ import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
     fetchLinePositions,
+    fetchReport,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
@@ -86,6 +87,9 @@ import {
 import LateralToolbar from './lateral-toolbar';
 import { RunningStatus } from './util/running-status';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
+import { ReportViewer } from '@gridsuite/commons-ui';
+import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { useSnackbar } from 'notistack';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -167,6 +171,7 @@ export const StudyView = {
     MAP: 'Map',
     SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
+    LOGS: 'Logs',
 };
 
 const StudyPane = (props) => {
@@ -283,6 +288,15 @@ const StudyPane = (props) => {
     const websocketExpectedCloseRef = useRef();
 
     const intl = useIntl();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    /**
+     * Report dialog
+     */
+    const [openReportViewer, setOpenReportViewer] = useState(false);
+    const [report, setReport] = useState(null);
+    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
     const Runnable = {
         LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
@@ -593,6 +607,26 @@ const StudyPane = (props) => {
             );
         }
     }, [network, filteredNominalVoltages, dispatch]);
+
+    useEffect(() => {
+        if (props.view === StudyView.LOGS && !waitingLoadReport && !report) {
+            setWaitingLoadReport(true);
+            fetchReport(studyUuid)
+                .then((report) => {
+                    setReport(report);
+                    setOpenReportViewer(true);
+                })
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                    })
+                )
+                .finally(() => {
+                    setWaitingLoadReport(false);
+                });
+        }
+    }, [props, report, waitingLoadReport, studyUuid, enqueueSnackbar]);
 
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
@@ -1203,6 +1237,29 @@ const StudyPane = (props) => {
         );
     }
 
+    const handleCloseReport = () => {
+        setReport(null);
+        setOpenReportViewer(false);
+        if (props.view === StudyView.LOGS) props.onChangeTab(0);
+    };
+
+    function renderLogsView() {
+        return (
+            report && (
+                <ReportViewer
+                    title={intl.formatMessage({ id: 'Logs' })}
+                    open={openReportViewer}
+                    onClose={handleCloseReport}
+                    jsonReport={report}
+                />
+            )
+        );
+    }
+
+    const isWaitingLoading = useCallback(() => {
+        return waitingLoadGeoData || waitingLoadReport;
+    }, [waitingLoadGeoData, waitingLoadReport]);
+
     if (studyNotFound) {
         return (
             <PageNotFound
@@ -1217,12 +1274,16 @@ const StudyPane = (props) => {
     } else {
         return (
             <>
-                {waitingLoadGeoData && (
+                {isWaitingLoading() && (
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
                         isFixed={true}
-                        loadingMessageText="loadingGeoData"
+                        loadingMessageText={
+                            waitingLoadGeoData
+                                ? 'loadingGeoData'
+                                : 'loadingReport'
+                        }
                     />
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
@@ -1253,6 +1314,14 @@ const StudyPane = (props) => {
                     }}
                 >
                     {renderResultsView()}
+                </div>
+                <div
+                    className="singlestretch-parent singlestretch-child"
+                    style={{
+                        display: props.view === StudyView.LOGS ? null : 'none',
+                    }}
+                >
+                    {renderLogsView()}
                 </div>
             </>
         );
