@@ -35,13 +35,15 @@ import {
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
     DISPLAY_OVERLOAD_TABLE,
-    INCREASE_RESULT_COUNT,
-    RESET_RESULT_COUNT,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
     SELECTED_ITEM_NETWORK,
     FULLSCREEN_SINGLE_LINE_DIAGRAM,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
+    ADD_LOADFLOW_NOTIF,
+    RESET_LOADFLOW_NOTIF,
+    ADD_SA_NOTIF,
+    RESET_SA_NOTIF,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -94,7 +96,8 @@ const initialState = {
     user: null,
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
-    resultCount: 0,
+    loadflowNotif: false,
+    saNotif: false,
     filteredNominalVoltages: null,
     selectItemNetwork: null,
     fullScreen: false,
@@ -222,12 +225,24 @@ export const reducer = createReducer(initialState, {
             action[PARAM_DISPLAY_OVERLOAD_TABLE];
     },
 
-    [INCREASE_RESULT_COUNT]: (state) => {
-        state.resultCount++;
+    [ADD_LOADFLOW_NOTIF]: (state) => {
+        state.loadflowNotif = true;
+        console.log('LOADFLOW TRUE');
     },
 
-    [RESET_RESULT_COUNT]: (state) => {
-        state.resultCount = 0;
+    [RESET_LOADFLOW_NOTIF]: (state) => {
+        state.loadflowNotif = false;
+        console.log('LOADFLOW RESET');
+    },
+
+    [ADD_SA_NOTIF]: (state) => {
+        state.saNotif = true;
+        console.log('SA TRUE');
+    },
+
+    [RESET_SA_NOTIF]: (state) => {
+        state.saNotif = false;
+        console.log('SA RESET');
     },
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {

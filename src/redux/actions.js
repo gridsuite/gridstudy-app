@@ -204,16 +204,28 @@ export function selectDisplayOverloadTableState(displayOverloadTable) {
     };
 }
 
-export const INCREASE_RESULT_COUNT = 'INCREASE_RESULT_COUNT';
+export const ADD_LOADFLOW_NOTIF = 'ADD_LOADFLOW_NOTIF';
 
-export function increaseResultCount() {
-    return { type: INCREASE_RESULT_COUNT };
+export function addLoadflowNotif() {
+    return { type: ADD_LOADFLOW_NOTIF };
 }
 
-export const RESET_RESULT_COUNT = 'RESET_RESULT_COUNT';
+export const RESET_LOADFLOW_NOTIF = 'RESET_LOADFLOW_NOTIF';
 
-export function resetResultCount() {
-    return { type: RESET_RESULT_COUNT };
+export function resetLoadflowNotif() {
+    return { type: RESET_LOADFLOW_NOTIF };
+}
+
+export const ADD_SA_NOTIF = 'ADD_SA_NOTIF';
+
+export function addSANotif() {
+    return { type: ADD_SA_NOTIF };
+}
+
+export const RESET_SA_NOTIF = 'RESET_SA_NOTIF';
+
+export function resetSANotif() {
+    return { type: RESET_SA_NOTIF };
 }
 
 export const FILTERED_NOMINAL_VOLTAGES_UPDATED =
