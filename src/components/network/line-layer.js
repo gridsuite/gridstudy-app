@@ -63,7 +63,11 @@ export const LineLoadingZone = {
     OVERLOAD: 3,
 };
 
-function getLineLoadingZoneOfSide(limit, intensity, lineFlowAlertThreshold) {
+export function getLineLoadingZoneOfSide(
+    limit,
+    intensity,
+    lineFlowAlertThreshold
+) {
     if (limit === undefined || intensity === undefined || intensity === 0) {
         return LineLoadingZone.UNKNOWN;
     } else {
@@ -78,7 +82,7 @@ function getLineLoadingZoneOfSide(limit, intensity, lineFlowAlertThreshold) {
     }
 }
 
-function getLineLoadingZone(line, lineFlowAlertThreshold) {
+export function getLineLoadingZone(line, lineFlowAlertThreshold) {
     const zone1 = getLineLoadingZoneOfSide(
         line.permanentLimit1,
         line.i1,

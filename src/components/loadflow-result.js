@@ -62,7 +62,7 @@ const LoadFlowResult = ({ result }) => {
         const value = cellData.rowData[cellData.dataKey];
         return (
             <TableCell id={cellData.dataKey} className={classes.cell}>
-                {value.toFixed(1)}
+                {!isNaN(value) ? value.toFixed(1) : ''}
             </TableCell>
         );
     }
