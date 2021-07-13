@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'right',
         boxSizing: 'border-box',
         flex: 1,
-        width: '100%',
+        minWidth: 0,
         height: '100%',
         cursor: 'initial',
     },
@@ -26,7 +26,6 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        width: '100%',
     },
 }));
 
