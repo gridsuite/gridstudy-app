@@ -239,5 +239,6 @@
     "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
 
     "SubstationList": "Substation list",
-    "HypothesisTree": "Hypothesis tree (unavailable)"
+    "HypothesisTree": "Hypothesis tree (unavailable)",
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}"
 }

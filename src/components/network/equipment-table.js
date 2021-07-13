@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { requestNetworkChange } from '../../utils/rest-api';
 import { IconButton, TextField } from '@material-ui/core';
@@ -39,7 +39,6 @@ export const EquipmentTable = ({
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
     const intl = useIntl();
-
     const isLineOnEditMode = useCallback(
         (row) => {
             return (lineEdit && lineEdit.line === row) || false;
@@ -47,10 +46,20 @@ export const EquipmentTable = ({
         [lineEdit]
     );
 
+    useEffect(() => setLineEdit({}), [tableDefinition]);
+
+    function startEdition(lineInfo) {
+        setLineEdit(lineInfo);
+    }
+
+    function capitaliseFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     function commitChanges(rowData) {
         let groovyCr =
             'equipment = network.get' +
-            lineEdit.equipmentType +
+            capitaliseFirst(tableDefinition.modifiableEquipmentType) +
             "('" +
             lineEdit.id.replace(/'/g, "\\'") +
             "')\n";
@@ -80,18 +89,19 @@ export const EquipmentTable = ({
         setLineEdit({});
     }
 
-    function createEditableRow(cellData, equipmentType) {
+    function createEditableRow(cellData) {
         return (
             (!isLineOnEditMode(cellData.rowIndex) && (
                 <IconButton
                     disabled={lineEdit && lineEdit.id && true}
                     onClick={() =>
-                        setLineEdit({
+                        startEdition({
                             line: cellData.rowIndex,
                             oldValues: {},
                             newValues: {},
                             id: cellData.rowData['id'],
-                            equipmentType: equipmentType,
+                            equipmentType:
+                                tableDefinition.modifiableEquipmentType,
                         })
                     }
                 >
@@ -118,7 +128,7 @@ export const EquipmentTable = ({
         );
     }
 
-    function formatCellData(cellData, isNumeric, fractionDigit) {
+    function formatNumber(cellData, isNumeric, fractionDigit) {
         return cellData.rowData[cellData.dataKey] && isNumeric && fractionDigit
             ? parseFloat(cellData.rowData[cellData.dataKey]).toFixed(
                   fractionDigit
@@ -139,7 +149,7 @@ export const EquipmentTable = ({
                     <Grid container direction="column">
                         <Grid item xs={1} />
                         <Grid item xs={1}>
-                            {formatCellData(cellData, numeric, fractionDigit)}
+                            {formatNumber(cellData, numeric, fractionDigit)}
                         </Grid>
                     </Grid>
                 </TableCell>
@@ -163,38 +173,52 @@ export const EquipmentTable = ({
     );
 
     const EditableCellRender = useCallback(
-        (cellData, numeric, changeCmd, fractionDigit) => {
-            return !isLineOnEditMode(cellData.rowIndex) ||
-                cellData.rowData[cellData.dataKey] === undefined ? (
-                defaultCellRender(cellData, numeric, fractionDigit)
-            ) : (
-                <TextField
-                    id={cellData.dataKey}
-                    type="Number"
-                    className={classes.cell}
-                    size={'medium'}
-                    margin={'normal'}
-                    inputProps={{ style: { textAlign: 'center' } }}
-                    onChange={(obj) =>
-                        registerChangeRequest(
+        (cellData, numeric, changeCmd, fractionDigit, Editor) => {
+            if (
+                !isLineOnEditMode(cellData.rowIndex) ||
+                cellData.rowData[cellData.dataKey] === undefined
+            ) {
+                return defaultCellRender(cellData, numeric, fractionDigit);
+            } else {
+                const changeRequest = (value) =>
+                    registerChangeRequest(cellData, changeCmd, value);
+                return Editor ? (
+                    <Editor
+                        key={cellData.dataKey + cellData.rowData.id}
+                        className={classes.cell}
+                        equipment={rows[lineEdit.line]}
+                        defaultValue={formatNumber(
                             cellData,
-                            changeCmd,
-                            obj.target.value
-                        )
-                    }
-                    defaultValue={formatCellData(
-                        cellData,
-                        numeric,
-                        fractionDigit
-                    )}
-                />
-            );
+                            numeric,
+                            fractionDigit
+                        )}
+                        setter={(val) => changeRequest(val)}
+                    />
+                ) : (
+                    <TextField
+                        id={cellData.dataKey}
+                        type="Number"
+                        className={classes.cell}
+                        size={'medium'}
+                        margin={'normal'}
+                        inputProps={{ style: { textAlign: 'center' } }}
+                        onChange={(obj) => changeRequest(obj.target.value)}
+                        defaultValue={formatNumber(
+                            cellData,
+                            numeric,
+                            fractionDigit
+                        )}
+                    />
+                );
+            }
         },
         [
             classes.cell,
             defaultCellRender,
             isLineOnEditMode,
             registerChangeRequest,
+            lineEdit,
+            rows,
         ]
     );
 
@@ -216,14 +240,15 @@ export const EquipmentTable = ({
                         cell,
                         c.numeric,
                         c.changeCmd,
-                        c.fractionDigits
+                        c.fractionDigits,
+                        c.editor
                     ));
             delete column.changeCmd;
             return column;
         });
     };
 
-    function makeHeaderCell(equipmentType) {
+    function makeHeaderCell() {
         return {
             width: 65,
             label: '',
@@ -231,8 +256,7 @@ export const EquipmentTable = ({
             style: {
                 display: selectedColumnsNames.size > 0 ? '' : 'none',
             },
-            cellRenderer: (cellData) =>
-                createEditableRow(cellData, equipmentType),
+            cellRenderer: createEditableRow,
         };
     }
 
@@ -249,9 +273,9 @@ export const EquipmentTable = ({
                 rows={rows}
                 filter={filter}
                 columns={
-                    tableDefinition.header
+                    tableDefinition.modifiableEquipmentType
                         ? [
-                              makeHeaderCell(tableDefinition.header),
+                              makeHeaderCell(),
                               ...generateTableColumns(tableDefinition),
                           ]
                         : generateTableColumns(tableDefinition)
