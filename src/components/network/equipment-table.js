@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ROW_HEIGHT = 48;
+const ROW_HEIGHT = 50;
 
 export const EquipmentTable = ({
     fetched,
@@ -279,6 +279,7 @@ export const EquipmentTable = ({
             )}
             <VirtualizedTable
                 rows={rows}
+                rowHeight={ROW_HEIGHT}
                 filter={filter}
                 columns={
                     tableDefinition.modifiableEquipmentType
