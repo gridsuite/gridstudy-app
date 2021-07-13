@@ -42,7 +42,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
-    const resultCount = useSelector((state) => state.resultCount);
+    const loadflowNotif = useSelector((state) => state.loadflowNotif);
+
+    const saNotif = useSelector((state) => state.saNotif);
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 
@@ -121,11 +123,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                             let label;
                             if (
                                 tabName === StudyView.RESULTS &&
-                                resultCount > 0
+                                (loadflowNotif || saNotif)
                             ) {
                                 label = (
                                     <Badge
-                                        badgeContent={resultCount}
+                                        badgeContent={loadflowNotif + saNotif}
                                         color="secondary"
                                     >
                                         <FormattedMessage id={tabName} />

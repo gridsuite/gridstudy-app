@@ -6,6 +6,7 @@
  */
 
 import { equipments } from './network-equipments';
+import { NumericalField, TapChangerSelector } from './equipment-table-editors';
 
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
@@ -107,7 +108,7 @@ export const TABLES_DEFINITIONS = {
         index: 3,
         name: 'TwoWindingsTransformers',
         resource: equipments.twoWindingsTransformers,
-        header: 'TwoWindingsTransformer',
+        modifiableEquipmentType: 'twoWindingsTransformer',
         columns: [
             {
                 id: 'ID',
@@ -155,6 +156,11 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 changeCmd: generateTapRequest('Ratio'),
                 fractionDigits: 0,
+                editor: ({ equipment, ...props }) =>
+                    TapChangerSelector({
+                        tapChanger: equipment.ratioTapChanger,
+                        ...props,
+                    }),
             },
             {
                 id: 'PhaseTap',
@@ -162,6 +168,11 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 changeCmd: generateTapRequest('Phase'),
                 fractionDigits: 0,
+                editor: ({ equipment, ...props }) =>
+                    TapChangerSelector({
+                        tapChanger: equipment.phaseTapChanger,
+                        ...props,
+                    }),
             },
         ],
     },
@@ -170,7 +181,7 @@ export const TABLES_DEFINITIONS = {
         index: 4,
         name: 'ThreeWindingsTransformers',
         resource: equipments.threeWindingsTransformers,
-        header: 'ThreeWindingsTransformer',
+        modifiableEquipmentType: 'threeWindingsTransformer',
         columns: [
             {
                 id: 'ID',
@@ -234,6 +245,11 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 changeCmd: generateTapRequest('Ratio', 1),
                 fractionDigits: 0,
+                editor: ({ equipment, ...props }) =>
+                    TapChangerSelector({
+                        tapChanger: equipment.ratioTapChanger1,
+                        ...props,
+                    }),
             },
             {
                 id: 'RatioTap2',
@@ -241,6 +257,11 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 changeCmd: generateTapRequest('Ratio', 2),
                 fractionDigits: 0,
+                editor: ({ equipment, ...props }) =>
+                    TapChangerSelector({
+                        tapChanger: equipment.ratioTapChanger2,
+                        ...props,
+                    }),
             },
             {
                 id: 'RatioTap3',
@@ -248,6 +269,11 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 changeCmd: generateTapRequest('Ratio', 3),
                 fractionDigits: 0,
+                editor: ({ equipment, ...props }) =>
+                    TapChangerSelector({
+                        tapChanger: equipment.ratioTapChanger3,
+                        ...props,
+                    }),
             },
             {
                 id: 'PhaseTap1',
@@ -255,6 +281,11 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 changeCmd: generateTapRequest('Phase', 1),
                 fractionDigits: 0,
+                editor: ({ equipment, ...props }) =>
+                    TapChangerSelector({
+                        tapChanger: equipment.phaseTapChanger1,
+                        ...props,
+                    }),
             },
             {
                 id: 'PhaseTap2',
@@ -262,6 +293,11 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 changeCmd: generateTapRequest('Phase', 2),
                 fractionDigits: 0,
+                editor: ({ equipment, ...props }) =>
+                    TapChangerSelector({
+                        tapChanger: equipment.phaseTapChanger2,
+                        ...props,
+                    }),
             },
             {
                 id: 'PhaseTap3',
@@ -269,6 +305,11 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 changeCmd: generateTapRequest('Phase', 3),
                 fractionDigits: 0,
+                editor: ({ equipment, ...props }) =>
+                    TapChangerSelector({
+                        tapChanger: equipment.phaseTapChanger3,
+                        ...props,
+                    }),
             },
         ],
     },
@@ -277,7 +318,7 @@ export const TABLES_DEFINITIONS = {
         index: 5,
         name: 'Generators',
         resource: equipments.generators,
-        header: 'Generator',
+        modifiableEquipmentType: 'generator',
         columns: [
             {
                 id: 'ID',
@@ -308,6 +349,12 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'targetP',
                 numeric: true,
                 changeCmd: 'equipment.setTargetP({})',
+                editor: ({ equipment, ...props }) =>
+                    NumericalField({
+                        min: equipment.minP,
+                        max: equipment.maxP,
+                        ...props,
+                    }),
                 fractionDigits: 1,
             },
         ],

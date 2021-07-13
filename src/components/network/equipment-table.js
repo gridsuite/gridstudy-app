@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { requestNetworkChange } from '../../utils/rest-api';
 import { IconButton, TextField } from '@material-ui/core';
@@ -18,13 +18,18 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'right',
         boxSizing: 'border-box',
         flex: 1,
-        width: '100%',
+        minWidth: 0,
         height: '100%',
         cursor: 'initial',
     },
+    textDiv: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
 }));
 
-const ROW_HEIGHT = 48;
+const ROW_HEIGHT = 50;
 
 export const EquipmentTable = ({
     fetched,
@@ -37,18 +42,27 @@ export const EquipmentTable = ({
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
     const intl = useIntl();
-
     const isLineOnEditMode = useCallback(
-        (row) => {
-            return (lineEdit && lineEdit.line === row) || false;
+        (cellData) => {
+            return lineEdit && cellData.rowData.id === lineEdit.id;
         },
         [lineEdit]
     );
 
+    useEffect(() => setLineEdit({}), [tableDefinition]);
+
+    function startEdition(lineInfo) {
+        setLineEdit(lineInfo);
+    }
+
+    function capitaliseFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     function commitChanges(rowData) {
         let groovyCr =
             'equipment = network.get' +
-            lineEdit.equipmentType +
+            capitaliseFirst(tableDefinition.modifiableEquipmentType) +
             "('" +
             lineEdit.id.replace(/'/g, "\\'") +
             "')\n";
@@ -78,18 +92,19 @@ export const EquipmentTable = ({
         setLineEdit({});
     }
 
-    function createEditableRow(cellData, equipmentType) {
+    function createEditableRow(cellData) {
         return (
-            (!isLineOnEditMode(cellData.rowIndex) && (
+            (!isLineOnEditMode(cellData) && (
                 <IconButton
                     disabled={lineEdit && lineEdit.id && true}
                     onClick={() =>
-                        setLineEdit({
+                        startEdition({
                             line: cellData.rowIndex,
                             oldValues: {},
                             newValues: {},
                             id: cellData.rowData['id'],
-                            equipmentType: equipmentType,
+                            equipmentType:
+                                tableDefinition.modifiableEquipmentType,
                         })
                     }
                 >
@@ -116,7 +131,7 @@ export const EquipmentTable = ({
         );
     }
 
-    function formatCellData(cellData, isNumeric, fractionDigit) {
+    function formatNumber(cellData, isNumeric, fractionDigit) {
         return cellData.rowData[cellData.dataKey] && isNumeric && fractionDigit
             ? parseFloat(cellData.rowData[cellData.dataKey]).toFixed(
                   fractionDigit
@@ -132,18 +147,18 @@ export const EquipmentTable = ({
                     variant="body"
                     style={{ height: ROW_HEIGHT, width: cellData.width }}
                     className={classes.cell}
-                    align="right"
+                    align={numeric ? 'right' : 'left'}
                 >
-                    <Grid container direction="column">
-                        <Grid item xs={1} />
-                        <Grid item xs={1}>
-                            {formatCellData(cellData, numeric, fractionDigit)}
-                        </Grid>
-                    </Grid>
+                    <div
+                        className={classes.textDiv}
+                        style={{ textAlign: numeric ? 'right' : 'left' }}
+                    >
+                        {formatNumber(cellData, numeric, fractionDigit)}
+                    </div>
                 </TableCell>
             );
         },
-        [classes.cell]
+        [classes.cell, classes.textDiv]
     );
 
     const registerChangeRequest = useCallback(
@@ -161,38 +176,52 @@ export const EquipmentTable = ({
     );
 
     const EditableCellRender = useCallback(
-        (cellData, numeric, changeCmd, fractionDigit) => {
-            return !isLineOnEditMode(cellData.rowIndex) ||
-                cellData.rowData[cellData.dataKey] === undefined ? (
-                defaultCellRender(cellData, numeric, fractionDigit)
-            ) : (
-                <TextField
-                    id={cellData.dataKey}
-                    type="Number"
-                    className={classes.cell}
-                    size={'medium'}
-                    margin={'normal'}
-                    inputProps={{ style: { textAlign: 'center' } }}
-                    onChange={(obj) =>
-                        registerChangeRequest(
+        (cellData, numeric, changeCmd, fractionDigit, Editor) => {
+            if (
+                !isLineOnEditMode(cellData) ||
+                cellData.rowData[cellData.dataKey] === undefined
+            ) {
+                return defaultCellRender(cellData, numeric, fractionDigit);
+            } else {
+                const changeRequest = (value) =>
+                    registerChangeRequest(cellData, changeCmd, value);
+                return Editor ? (
+                    <Editor
+                        key={cellData.dataKey + cellData.rowData.id}
+                        className={classes.cell}
+                        equipment={rows[lineEdit.line]}
+                        defaultValue={formatNumber(
                             cellData,
-                            changeCmd,
-                            obj.target.value
-                        )
-                    }
-                    defaultValue={formatCellData(
-                        cellData,
-                        numeric,
-                        fractionDigit
-                    )}
-                />
-            );
+                            numeric,
+                            fractionDigit
+                        )}
+                        setter={(val) => changeRequest(val)}
+                    />
+                ) : (
+                    <TextField
+                        id={cellData.dataKey}
+                        type="Number"
+                        className={classes.cell}
+                        size={'medium'}
+                        margin={'normal'}
+                        inputProps={{ style: { textAlign: 'center' } }}
+                        onChange={(obj) => changeRequest(obj.target.value)}
+                        defaultValue={formatNumber(
+                            cellData,
+                            numeric,
+                            fractionDigit
+                        )}
+                    />
+                );
+            }
         },
         [
             classes.cell,
             defaultCellRender,
             isLineOnEditMode,
             registerChangeRequest,
+            lineEdit,
+            rows,
         ]
     );
 
@@ -208,29 +237,34 @@ export const EquipmentTable = ({
                 style: { display: columnDisplayStyle(c.id) },
                 ...c,
             };
-            c.changeCmd !== undefined &&
-                (column.cellRenderer = (cell) =>
+            if (c.changeCmd !== undefined) {
+                column.cellRenderer = (cell) =>
                     EditableCellRender(
                         cell,
                         c.numeric,
                         c.changeCmd,
-                        c.fractionDigits
-                    ));
+                        c.fractionDigits,
+                        c.editor
+                    );
+            } else {
+                column.cellRenderer = (cell) =>
+                    defaultCellRender(cell, c.numeric, c.fractionDigits);
+            }
             delete column.changeCmd;
             return column;
         });
     };
 
-    function makeHeaderCell(equipmentType) {
+    function makeHeaderCell() {
         return {
             width: 65,
+            maxWidth: 65,
             label: '',
             dataKey: '',
             style: {
                 display: selectedColumnsNames.size > 0 ? '' : 'none',
             },
-            cellRenderer: (cellData) =>
-                createEditableRow(cellData, equipmentType),
+            cellRenderer: createEditableRow,
         };
     }
 
@@ -245,11 +279,12 @@ export const EquipmentTable = ({
             )}
             <VirtualizedTable
                 rows={rows}
+                rowHeight={ROW_HEIGHT}
                 filter={filter}
                 columns={
-                    tableDefinition.header
+                    tableDefinition.modifiableEquipmentType
                         ? [
-                              makeHeaderCell(tableDefinition.header),
+                              makeHeaderCell(),
                               ...generateTableColumns(tableDefinition),
                           ]
                         : generateTableColumns(tableDefinition)
