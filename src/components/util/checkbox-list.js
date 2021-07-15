@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useRef } from 'react';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -12,46 +12,40 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 
 const CheckboxList = (props) => {
-    const [checked, setChecked] = React.useState([]);
+    const checked = useRef(new Set());
 
     const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
+        if (!checked.current.delete(value)) {
+            // element was not present
+            checked.current.add(value);
         }
 
-        setChecked(newChecked);
-
         if (props.onChecked) {
-            props.onChecked(newChecked);
+            props.onChecked([...checked.current]);
         }
     };
 
     return (
         <List>
-            {props.values.map((value) => {
+            {props.values.map((item) => {
                 return (
                     <ListItem
-                        key={value}
+                        key={props.id(item)}
                         role={undefined}
                         dense
                         button
-                        onClick={handleToggle(value)}
+                        onClick={handleToggle(props.id(item))}
                     >
                         <ListItemIcon>
                             <Checkbox
                                 color={'primary'}
                                 edge="start"
-                                checked={checked.indexOf(value) !== -1}
+                                defaultValue={false}
                                 tabIndex={-1}
                                 disableRipple
                             />
                         </ListItemIcon>
-                        <ListItemText primary={value} />
+                        <ListItemText primary={props.label(item)} />
                     </ListItem>
                 );
             })}
