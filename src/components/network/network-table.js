@@ -78,6 +78,7 @@ const NetworkTable = (props) => {
     const [rowFilter, setRowFilter] = useState(undefined);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
+    const [selectedDataKey, setSelectedDataKey] = useState(new Set());
 
     const intl = useIntl();
 
@@ -120,19 +121,24 @@ const NetworkTable = (props) => {
         );
     }
 
+    useEffect(() => {
+        let tmpDataKeySet = new Set();
+        TABLES_DEFINITION_INDEXES.get(tabIndex)
+            .columns.filter((col) => selectedColumnsNames.has(col.id))
+            .forEach((col) => tmpDataKeySet.add(col.dataKey));
+        setSelectedDataKey(tmpDataKeySet);
+    }, [tabIndex, selectedColumnsNames]);
+
     const filter = useCallback(
         (cell) => {
             if (!rowFilter) return true;
-            let ok = false;
-            Object.values(cell).forEach((value) => {
-                if (rowFilter.test(value)) {
-                    ok = true;
-                }
-            });
-
-            return ok;
+            return (
+                [...selectedDataKey].find((key) =>
+                    rowFilter.test(cell[key])
+                ) !== undefined
+            );
         },
-        [rowFilter]
+        [rowFilter, selectedDataKey]
     );
 
     const handleOpenPopupSelectColumnNames = () => {
