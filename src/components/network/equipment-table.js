@@ -18,13 +18,18 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'right',
         boxSizing: 'border-box',
         flex: 1,
-        width: '100%',
+        minWidth: 0,
         height: '100%',
         cursor: 'initial',
     },
+    textDiv: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
 }));
 
-const ROW_HEIGHT = 48;
+const ROW_HEIGHT = 50;
 
 export const EquipmentTable = ({
     fetched,
@@ -40,8 +45,8 @@ export const EquipmentTable = ({
     const classes = useStyles();
     const intl = useIntl();
     const isLineOnEditMode = useCallback(
-        (row) => {
-            return (lineEdit && lineEdit.line === row) || false;
+        (cellData) => {
+            return lineEdit && cellData.rowData.id === lineEdit.id;
         },
         [lineEdit]
     );
@@ -91,7 +96,7 @@ export const EquipmentTable = ({
 
     function createEditableRow(cellData) {
         return (
-            (!isLineOnEditMode(cellData.rowIndex) && (
+            (!isLineOnEditMode(cellData) && (
                 <IconButton
                     disabled={lineEdit && lineEdit.id && true}
                     onClick={() =>
@@ -144,18 +149,18 @@ export const EquipmentTable = ({
                     variant="body"
                     style={{ height: ROW_HEIGHT, width: cellData.width }}
                     className={classes.cell}
-                    align="right"
+                    align={numeric ? 'right' : 'left'}
                 >
-                    <Grid container direction="column">
-                        <Grid item xs={1} />
-                        <Grid item xs={1}>
-                            {formatNumber(cellData, numeric, fractionDigit)}
-                        </Grid>
-                    </Grid>
+                    <div
+                        className={classes.textDiv}
+                        style={{ textAlign: numeric ? 'right' : 'left' }}
+                    >
+                        {formatNumber(cellData, numeric, fractionDigit)}
+                    </div>
                 </TableCell>
             );
         },
-        [classes.cell]
+        [classes.cell, classes.textDiv]
     );
 
     const registerChangeRequest = useCallback(
@@ -175,7 +180,7 @@ export const EquipmentTable = ({
     const EditableCellRender = useCallback(
         (cellData, numeric, changeCmd, fractionDigit, Editor) => {
             if (
-                !isLineOnEditMode(cellData.rowIndex) ||
+                !isLineOnEditMode(cellData) ||
                 cellData.rowData[cellData.dataKey] === undefined
             ) {
                 return defaultCellRender(cellData, numeric, fractionDigit);
@@ -234,15 +239,19 @@ export const EquipmentTable = ({
                 style: { display: columnDisplayStyle(c.id) },
                 ...c,
             };
-            c.changeCmd !== undefined &&
-                (column.cellRenderer = (cell) =>
+            if (c.changeCmd !== undefined) {
+                column.cellRenderer = (cell) =>
                     EditableCellRender(
                         cell,
                         c.numeric,
                         c.changeCmd,
                         c.fractionDigits,
                         c.editor
-                    ));
+                    );
+            } else {
+                column.cellRenderer = (cell) =>
+                    defaultCellRender(cell, c.numeric, c.fractionDigits);
+            }
             delete column.changeCmd;
             return column;
         });
@@ -251,6 +260,7 @@ export const EquipmentTable = ({
     function makeHeaderCell() {
         return {
             width: 65,
+            maxWidth: 65,
             label: '',
             dataKey: '',
             style: {
@@ -271,6 +281,7 @@ export const EquipmentTable = ({
             )}
             <VirtualizedTable
                 rows={rows}
+                rowHeight={ROW_HEIGHT}
                 filter={filter}
                 columns={
                     tableDefinition.modifiableEquipmentType
