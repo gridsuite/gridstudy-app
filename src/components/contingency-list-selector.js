@@ -27,7 +27,7 @@ import Grid from '@material-ui/core/Grid';
 const ContingencyListSelector = (props) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const [contingencyListNames, setContingencyListNames] = useState([]);
+    const [contingencyList, setContingencyList] = useState([]);
 
     const [simulatedContingencyCount, setSimulatedContingencyCount] = useState(
         0
@@ -53,11 +53,7 @@ const ContingencyListSelector = (props) => {
     useEffect(() => {
         if (props.open) {
             fetchContingencyLists().then((contingencyLists) => {
-                setContingencyListNames(
-                    contingencyLists.map(
-                        (contingencyLists) => contingencyLists.name
-                    )
-                );
+                setContingencyList(contingencyLists);
             });
             setCheckedContingencyListNames([]);
         }
@@ -94,8 +90,10 @@ const ContingencyListSelector = (props) => {
                 <Grid container spacing={1} direction="column" item xs={12}>
                     <Grid item>
                         <CheckboxList
-                            values={contingencyListNames}
+                            values={contingencyList}
                             onChecked={handleChecked}
+                            label={(item) => item.name}
+                            id={(item) => item.id}
                         />
                     </Grid>
                     <Grid item>
