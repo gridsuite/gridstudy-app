@@ -19,7 +19,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useSnackbar } from 'notistack';
-import { ReportViewer } from '@gridsuite/commons-ui';
+import { ReportViewerDialog } from '@gridsuite/commons-ui';
 
 import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg';
 import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
@@ -487,8 +487,13 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 </Collapse>
             </Card>
             {report && (
-                <ReportViewer
-                    title={'Logs : ' + study.studyUuid}
+                <ReportViewerDialog
+                    title={intl.formatMessage(
+                        { id: 'logsTitle' },
+                        {
+                            title: study.studyUuid,
+                        }
+                    )}
                     open={openReportViewer}
                     onClose={handleCloseReport}
                     jsonReport={report}

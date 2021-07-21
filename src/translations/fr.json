@@ -173,7 +173,6 @@
 
     "isOk": "Ok",
     "metrics": "Métriques",
-    "logs": "Logs",
 
     "SubstationLayout": "Disposition des images de sites : ",
     "HorizontalSubstationLayout": "Horizontal",
@@ -241,9 +240,8 @@
     "HypothesisTree": "Arbre des hypothèses (indisponible)",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
-    "Logs": "Logs",
+    "logs": "Logs",
+    "logsTitle": "Logs : {title}",
     "showReport" : "Afficher logs",
-    "severity": "Sévérité",
-    "message": "Message",
     "loadingReport": "Chargement des logs en cours..."
 }

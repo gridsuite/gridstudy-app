@@ -294,7 +294,6 @@ const StudyPane = (props) => {
     /**
      * Report dialog
      */
-    const [openReportViewer, setOpenReportViewer] = useState(false);
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
@@ -609,12 +608,13 @@ const StudyPane = (props) => {
     }, [network, filteredNominalVoltages, dispatch]);
 
     useEffect(() => {
-        if (props.view === StudyView.LOGS && !waitingLoadReport && !report) {
+        if (props.view !== StudyView.LOGS) {
+            setReport(null);
+        } else if (!waitingLoadReport && !report) {
             setWaitingLoadReport(true);
             fetchReport(studyUuid)
                 .then((report) => {
                     setReport(report);
-                    setOpenReportViewer(true);
                 })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
@@ -1237,21 +1237,12 @@ const StudyPane = (props) => {
         );
     }
 
-    const handleCloseReport = () => {
-        setReport(null);
-        setOpenReportViewer(false);
-        if (props.view === StudyView.LOGS) props.onChangeTab(0);
-    };
-
     function renderLogsView() {
         return (
             report && (
-                <ReportViewer
-                    title={intl.formatMessage({ id: 'Logs' })}
-                    open={openReportViewer}
-                    onClose={handleCloseReport}
-                    jsonReport={report}
-                />
+                <Paper className={clsx('singlestretch-child')}>
+                    <ReportViewer jsonReport={report} />
+                </Paper>
             )
         );
     }

@@ -173,7 +173,6 @@
 
     "isOk": "Ok",
     "metrics": "Metrics",
-    "logs": "Logs",
 
     "SubstationLayout": "Substation diagram layout: ",
     "HorizontalSubstationLayout": "Horizontal",
@@ -241,8 +240,8 @@
     "HypothesisTree": "Hypothesis tree (unavailable)",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
-    "Logs": "Logs",
-    "showReport" : "Show logs",
-    "severity": "Severity",
-    "message": "Message"
+    "logs": "Logs",
+    "logsTitle": "Logs : {title}",
+    "showReport": "Show logs",
+    "loadingReport": "Loading logs in progress..."
 }
