@@ -239,10 +239,10 @@
 
     "SubstationList": "Substation list",
     "HypothesisTree": "Hypothesis tree (unavailable)",
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "Logs": "Logs",
     "showReport" : "Show logs",
     "severity": "Severity",
-    "message": "Message",
-    "loadingReport": "Loading logs in progress..."
+    "message": "Message"
 }

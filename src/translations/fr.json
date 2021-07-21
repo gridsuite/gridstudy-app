@@ -239,6 +239,7 @@
 
     "SubstationList": "Liste des postes",
     "HypothesisTree": "Arbre des hypothèses (indisponible)",
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "Logs": "Logs",
     "showReport" : "Afficher logs",

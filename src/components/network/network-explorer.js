@@ -342,6 +342,7 @@ const NetworkExplorer = ({
                         size="small"
                         placeholder={filterMsg}
                         onChange={filter}
+                        value={currentFilter}
                         variant="outlined"
                         InputProps={{
                             startAdornment: (
