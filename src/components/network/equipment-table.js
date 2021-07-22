@@ -11,15 +11,17 @@ import LoaderWithOverlay from '../loader-with-overlay';
 import VirtualizedTable from '../util/virtualized-table';
 import { makeStyles } from '@material-ui/core/styles';
 
+const ROW_HEIGHT = 50;
+
 const useStyles = makeStyles((theme) => ({
-    cell: {
+    tableCell: {
         display: 'flex',
         alignItems: 'right',
         textAlign: 'right',
         boxSizing: 'border-box',
         flex: 1,
         minWidth: 0,
-        height: '100%',
+        height: ROW_HEIGHT + 'px',
         cursor: 'initial',
     },
     textDiv: {
@@ -28,8 +30,6 @@ const useStyles = makeStyles((theme) => ({
         whiteSpace: 'nowrap',
     },
 }));
-
-const ROW_HEIGHT = 50;
 
 export const EquipmentTable = ({
     fetched,
@@ -145,8 +145,8 @@ export const EquipmentTable = ({
                 <TableCell
                     component="div"
                     variant="body"
-                    style={{ height: ROW_HEIGHT, width: cellData.width }}
-                    className={classes.cell}
+                    style={{ width: cellData.width }}
+                    className={classes.tableCell}
                     align={numeric ? 'right' : 'left'}
                 >
                     <div
@@ -158,7 +158,7 @@ export const EquipmentTable = ({
                 </TableCell>
             );
         },
-        [classes.cell, classes.textDiv]
+        [classes.tableCell, classes.textDiv]
     );
 
     const registerChangeRequest = useCallback(
@@ -188,7 +188,7 @@ export const EquipmentTable = ({
                 return Editor ? (
                     <Editor
                         key={cellData.dataKey + cellData.rowData.id}
-                        className={classes.cell}
+                        className={classes.tableCell}
                         equipment={rows[lineEdit.line]}
                         defaultValue={formatNumber(
                             cellData,
@@ -201,7 +201,7 @@ export const EquipmentTable = ({
                     <TextField
                         id={cellData.dataKey}
                         type="Number"
-                        className={classes.cell}
+                        className={classes.tableCell}
                         size={'medium'}
                         margin={'normal'}
                         inputProps={{ style: { textAlign: 'center' } }}
@@ -216,7 +216,7 @@ export const EquipmentTable = ({
             }
         },
         [
-            classes.cell,
+            classes.tableCell,
             defaultCellRender,
             isLineOnEditMode,
             registerChangeRequest,
