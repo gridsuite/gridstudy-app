@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Tooltip } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
@@ -6,16 +6,16 @@ export const OverflowableText = ({ text, children, childRef }) => {
     const element = childRef;
     const [overflowed, setOverflowed] = useState(false);
 
-    const checkOverflow = () => {
+    const checkOverflow = useCallback(() => {
         if (!element.current) return;
         setOverflowed(
             element.current.scrollWidth > element.current.clientWidth
         );
-    };
+    }, [setOverflowed, element]);
 
     useEffect(() => {
         checkOverflow();
-    }, []);
+    }, [checkOverflow]);
 
     useEffect(() => {
         if (element.current != null) {
@@ -28,7 +28,7 @@ export const OverflowableText = ({ text, children, childRef }) => {
                 window.removeEventListener('resize', resetOverflow);
             };
         }
-    }, [element.current, setOverflowed]);
+    }, [element, setOverflowed]);
 
     return (
         <Tooltip title={text || ''} disableHoverListener={!overflowed}>
