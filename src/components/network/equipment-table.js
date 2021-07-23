@@ -10,6 +10,8 @@ import TableCell from '@material-ui/core/TableCell';
 import LoaderWithOverlay from '../loader-with-overlay';
 import VirtualizedTable from '../util/virtualized-table';
 import { makeStyles } from '@material-ui/core/styles';
+import clsx from 'clsx';
+import { OverflowableText } from '../util/overflowable-text';
 
 const useStyles = makeStyles((theme) => ({
     cell: {
@@ -26,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
+        minWidth: '10px',
     },
 }));
 
@@ -141,6 +144,8 @@ export const EquipmentTable = ({
 
     const defaultCellRender = useCallback(
         (cellData, numeric, fractionDigit) => {
+            const text = formatNumber(cellData, numeric, fractionDigit);
+            const ref = React.createRef();
             return (
                 <TableCell
                     component="div"
@@ -149,12 +154,19 @@ export const EquipmentTable = ({
                     className={classes.cell}
                     align={numeric ? 'right' : 'left'}
                 >
-                    <div
-                        className={classes.textDiv}
-                        style={{ textAlign: numeric ? 'right' : 'left' }}
-                    >
-                        {formatNumber(cellData, numeric, fractionDigit)}
-                    </div>
+                    {
+                        <OverflowableText text={text} childRef={ref}>
+                            <div
+                                ref={ref}
+                                style={{
+                                    textAlign: numeric ? 'right' : 'left',
+                                }}
+                                className={classes.textDiv}
+                            >
+                                {text}
+                            </div>
+                        </OverflowableText>
+                    }
                 </TableCell>
             );
         },
@@ -183,6 +195,8 @@ export const EquipmentTable = ({
             ) {
                 return defaultCellRender(cellData, numeric, fractionDigit);
             } else {
+                const ref = React.createRef();
+                const text = formatNumber(cellData, numeric, fractionDigit);
                 const changeRequest = (value) =>
                     registerChangeRequest(cellData, changeCmd, value);
                 return Editor ? (
@@ -198,25 +212,25 @@ export const EquipmentTable = ({
                         setter={(val) => changeRequest(val)}
                     />
                 ) : (
-                    <TextField
-                        id={cellData.dataKey}
-                        type="Number"
-                        className={classes.cell}
-                        size={'medium'}
-                        margin={'normal'}
-                        inputProps={{ style: { textAlign: 'center' } }}
-                        onChange={(obj) => changeRequest(obj.target.value)}
-                        defaultValue={formatNumber(
-                            cellData,
-                            numeric,
-                            fractionDigit
-                        )}
-                    />
+                    <OverflowableText text={text} childRef={ref}>
+                        <TextField
+                            id={cellData.dataKey}
+                            type="Number"
+                            className={clsx(classes.cell, classes.textDiv)}
+                            size={'medium'}
+                            margin={'normal'}
+                            inputProps={{ style: { textAlign: 'center' } }}
+                            onChange={(obj) => changeRequest(obj.target.value)}
+                            defaultValue={text}
+                            ref={ref}
+                        />
+                    </OverflowableText>
                 );
             }
         },
         [
             classes.cell,
+            classes.textDiv,
             defaultCellRender,
             isLineOnEditMode,
             registerChangeRequest,
