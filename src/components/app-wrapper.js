@@ -12,6 +12,8 @@ import {
     LIGHT_THEME,
     login_en,
     login_fr,
+    report_viewer_en,
+    report_viewer_fr,
     SnackbarProvider,
     top_bar_en,
     top_bar_fr,
@@ -54,8 +56,8 @@ const getMuiTheme = (theme) => {
 };
 
 const messages = {
-    en: { ...messages_en, ...login_en, ...top_bar_en },
-    fr: { ...messages_fr, ...login_fr, ...top_bar_fr },
+    en: { ...messages_en, ...report_viewer_en, ...login_en, ...top_bar_en },
+    fr: { ...messages_fr, ...report_viewer_fr, ...login_fr, ...top_bar_fr },
 };
 
 const basename = new URL(document.querySelector('base').href).pathname;

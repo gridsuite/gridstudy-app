@@ -63,7 +63,7 @@
 
     "close": "Fermer",
 
-    "loadingGeoData": "Chargement en cours...",
+    "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
 
@@ -173,7 +173,6 @@
 
     "isOk": "Ok",
     "metrics": "Métriques",
-    "logs": "Logs",
 
     "SubstationLayout": "Disposition des images de sites : ",
     "HorizontalSubstationLayout": "Horizontal",
@@ -239,5 +238,10 @@
 
     "SubstationList": "Liste des postes",
     "HypothesisTree": "Arbre des hypothèses (indisponible)",
-    "MinMax": "Min:\u202F{min} Max:\u202F{max}"
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+
+    "logs": "Logs",
+    "logsTitle": "Logs : {title}",
+    "showReport" : "Afficher logs",
+    "loadingReport": "Chargement des logs en cours..."
 }
