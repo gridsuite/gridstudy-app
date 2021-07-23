@@ -188,6 +188,15 @@ export function getSubstationSingleLineDiagram(
     );
 }
 
+export function fetchReport(studyUuid) {
+    console.info('get report for study : ' + studyUuid);
+    return backendFetch(getStudyUrl(studyUuid) + '/report').then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) =>

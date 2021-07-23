@@ -31,7 +31,12 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS];
+const STUDY_VIEWS = [
+    StudyView.MAP,
+    StudyView.SPREADSHEET,
+    StudyView.RESULTS,
+    StudyView.LOGS,
+];
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
