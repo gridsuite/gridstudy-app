@@ -48,7 +48,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'substationId',
             },
             {
-                id: 'NominalVoltage',
+                id: 'NominalV',
                 dataKey: 'nominalVoltage',
                 numeric: true,
                 fractionDigits: 0,
@@ -76,6 +76,18 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelIdSide2',
                 dataKey: 'voltageLevelId2',
+            },
+            {
+                id: 'NominalVoltageSide1',
+                dataKey: 'nominalVoltage1',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
+                id: 'NominalVoltageSide2',
+                dataKey: 'nominalVoltage2',
+                numeric: true,
+                fractionDigits: 0,
             },
             {
                 id: 'ActivePowerSide1',
@@ -125,6 +137,18 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelIdSide2',
                 dataKey: 'voltageLevelId2',
+            },
+            {
+                id: 'NominalVoltageSide1',
+                dataKey: 'nominalVoltage1',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
+                id: 'NominalVoltageSide2',
+                dataKey: 'nominalVoltage2',
+                numeric: true,
+                fractionDigits: 0,
             },
             {
                 id: 'ActivePowerSide1',
@@ -202,6 +226,24 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelIdSide3',
                 dataKey: 'voltageLevelId3',
+            },
+            {
+                id: 'NominalVoltageSide1',
+                dataKey: 'nominalVoltage1',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
+                id: 'NominalVoltageSide2',
+                dataKey: 'nominalVoltage2',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
+                id: 'NominalVoltageSide3',
+                dataKey: 'nominalVoltage3',
+                numeric: true,
+                fractionDigits: 0,
             },
             {
                 id: 'ActivePowerSide1',
@@ -333,6 +375,12 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'voltageLevelId',
             },
             {
+                id: 'NominalV',
+                dataKey: 'nominalVoltage',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
                 id: 'ActivePower',
                 dataKey: 'p',
                 numeric: true,
@@ -382,6 +430,12 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'voltageLevelId',
             },
             {
+                id: 'NominalV',
+                dataKey: 'nominalVoltage',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
                 id: 'ActivePower',
                 dataKey: 'p',
                 numeric: true,
@@ -426,6 +480,12 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'voltageLevelId',
             },
             {
+                id: 'NominalV',
+                dataKey: 'nominalVoltage',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
                 id: 'ReactivePower',
                 dataKey: 'q',
                 numeric: true,
@@ -462,6 +522,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 dataKey: 'voltageLevelId',
+            },
+            {
+                id: 'NominalV',
+                dataKey: 'nominalVoltage',
+                numeric: true,
+                fractionDigits: 0,
             },
             {
                 id: 'ActivePower',
@@ -506,6 +572,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 dataKey: 'voltageLevelId',
+            },
+            {
+                id: 'NominalV',
+                dataKey: 'nominalVoltage',
+                numeric: true,
+                fractionDigits: 0,
             },
             {
                 id: 'ActivePower',
@@ -604,6 +676,12 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'voltageLevelId',
             },
             {
+                id: 'NominalV',
+                dataKey: 'nominalVoltage',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
                 id: 'HvdcLineId',
                 dataKey: 'hvdcLineId',
             },
@@ -652,6 +730,12 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'voltageLevelId',
             },
             {
+                id: 'NominalV',
+                dataKey: 'nominalVoltage',
+                numeric: true,
+                fractionDigits: 0,
+            },
+            {
                 id: 'HvdcLineId',
                 dataKey: 'hvdcLineId',
             },
@@ -692,6 +776,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageLevelId',
                 dataKey: 'voltageLevelId',
+            },
+            {
+                id: 'NominalV',
+                dataKey: 'nominalVoltage',
+                numeric: true,
+                fractionDigits: 0,
             },
             {
                 id: 'UcteXnodeCode',
