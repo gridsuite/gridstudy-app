@@ -64,7 +64,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
 
     function renderTableN(preContingencyResult) {
         // extend data with loading
-        const rows = preContingencyResult.limitViolations.map(
+        const rows = preContingencyResult.limitViolationsResult.limitViolations.map(
             (limitViolation) => {
                 return {
                     subjectId: limitViolation.subjectId,
