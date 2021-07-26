@@ -63,7 +63,7 @@
 
     "close": "Close",
 
-    "loadingGeoData": "Loading...",
+    "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
 
@@ -173,7 +173,6 @@
 
     "isOk": "Ok",
     "metrics": "Metrics",
-    "logs": "Logs",
 
     "SubstationLayout": "Substation diagram layout: ",
     "HorizontalSubstationLayout": "Horizontal",
@@ -240,5 +239,10 @@
 
     "SubstationList": "Substation list",
     "HypothesisTree": "Hypothesis tree (unavailable)",
-    "MinMax": "Min:\u202F{min} Max:\u202F{max}"
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+
+    "logs": "Logs",
+    "logsTitle": "Logs : {title}",
+    "showReport": "Show logs",
+    "loadingReport": "Loading logs in progress..."
 }
