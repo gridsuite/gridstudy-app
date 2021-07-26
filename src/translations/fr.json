@@ -223,6 +223,7 @@
     "TripLine": "Déclencher la ligne",
     "EnergiseOnOneEnd": "Mettre sous tension à vide depuis {substation}",
     "SwitchOnLine": "Mettre en service la ligne",
+    "ViewOnSpreadsheet": "Visualiser dans le tableur",
 
     "UnableToLockoutLine": "Impossible de consigner la ligne",
     "UnableToTripLine": "Impossible de déclencher la ligne",
