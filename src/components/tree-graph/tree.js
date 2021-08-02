@@ -28,6 +28,7 @@ const Tree = ({ data }) => {
                         'zoom-canvas',
                         'click-select',
                         'drag-node',
+                        'add-node',
                     ],
                 },
                 defaultNode: {
