@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import G6 from '@antv/g6';
 
-const Tree = ({ data }) => {
+const Tree = ({ data, contextMenu }) => {
     const ref = React.useRef(null);
     let graph = null;
 
@@ -14,6 +14,7 @@ const Tree = ({ data }) => {
                 height: 800,
                 fitView: true,
                 linkCenter: true,
+                //plugins: [contextMenu],
                 modes: {
                     default: [
                         {
@@ -84,7 +85,7 @@ const Tree = ({ data }) => {
             // inactivate the hover state of the node
             graph.setItemState(node, 'hover', false);
         });
-    }, []);
+    }, [data]);
 
     return <div ref={ref} />;
 };
