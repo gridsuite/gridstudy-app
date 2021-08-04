@@ -96,8 +96,9 @@ import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import HypothesisTree from './hypothesis-tree';
 
-const drawerWidth = 300;
+const drawerExplorerWidth = 300;
 const drawerToolbarWidth = 48;
+const drawerHypoTreeWidth = 800;
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -124,8 +125,8 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
-    drawer: {
-        width: drawerWidth,
+    drawerExplorer: {
+        width: drawerExplorerWidth,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -139,25 +140,32 @@ const useStyles = makeStyles((theme) => ({
         // and above the network explorer drawer
         zIndex: 60,
     },
-    drawerHypos: {
-        width: 1000,
+    drawerHypoTree: {
+        width: drawerHypoTreeWidth,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
         // zIndex set to be below the loader with overlay
-        zIndex: 50,
+        zIndex: 51,
     },
     drawerPaper: {
         position: 'static',
         overflow: 'hidden',
     },
-    drawerShift: {
+    drawerExplorerShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: -drawerWidth - drawerToolbarWidth,
+        marginLeft: -drawerExplorerWidth,
+    },
+    drawerHypoTreeShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: -drawerHypoTreeWidth,
     },
     mapCtrlBottomLeft: {
         '& .mapboxgl-ctrl-bottom-left': {
@@ -168,13 +176,22 @@ const useStyles = makeStyles((theme) => ({
             left: drawerToolbarWidth,
         },
     },
-    mapCtrlBottomLeftShift: {
+    mapCtrlBottomLeftExplorerShift: {
         '& .mapboxgl-ctrl-bottom-left': {
             transition: theme.transitions.create('left', {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            left: drawerWidth + drawerToolbarWidth,
+            left: drawerExplorerWidth + drawerToolbarWidth,
+        },
+    },
+    mapCtrlBottomLeftHypoTreeShift: {
+        '& .mapboxgl-ctrl-bottom-left': {
+            transition: theme.transitions.create('left', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+            left: drawerHypoTreeWidth + drawerToolbarWidth,
         },
     },
 }));
@@ -275,7 +292,8 @@ const StudyPane = (props) => {
 
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
-    const [drawerOpen, setDrawerOpen] = useState(true);
+    const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
+    const [drawerHypoTreeOpen, setDrawerHypoTreeOpen] = useState(false);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -705,8 +723,18 @@ const StudyPane = (props) => {
         history.replace('/studies/' + encodeURIComponent(studyUuid));
     }
 
-    const toggleDrawer = () => {
-        setDrawerOpen(!drawerOpen);
+    const toggleExplorerDrawer = () => {
+        setDrawerExplorerOpen(!drawerExplorerOpen);
+        if (drawerHypoTreeOpen) {
+            setDrawerHypoTreeOpen(!drawerHypoTreeOpen);
+        }
+    };
+
+    const toggleHypoTreeDrawer = () => {
+        setDrawerHypoTreeOpen(!drawerHypoTreeOpen);
+        if (drawerExplorerOpen) {
+            setDrawerExplorerOpen(!drawerExplorerOpen);
+        }
     };
 
     const sldRef = useRef();
@@ -1014,8 +1042,10 @@ const StudyPane = (props) => {
             <div className={clsx('relative singlestretch-child', classes.map)}>
                 <div
                     className={
-                        drawerOpen
-                            ? classes.mapCtrlBottomLeftShift
+                        drawerExplorerOpen
+                            ? classes.mapCtrlBottomLeftExplorerShift
+                            : drawerHypoTreeOpen
+                            ? classes.mapCtrlBottomLeftHypoTreeShift
                             : classes.mapCtrlBottomLeft
                     }
                     style={{
@@ -1200,15 +1230,17 @@ const StudyPane = (props) => {
                         className={classes.drawerDiv}
                     >
                         <LateralToolbar
-                            handleDisplayNetworkExplorer={toggleDrawer}
-                            networkExplorerDisplayed={drawerOpen}
+                            handleDisplayNetworkExplorer={toggleExplorerDrawer}
+                            handleDisplayHypoTree={toggleHypoTreeDrawer}
+                            networkExplorerDisplayed={drawerExplorerOpen}
+                            hypoTreeDisplayed={drawerHypoTreeOpen}
                         />
                     </div>
                 </Drawer>
                 <Drawer
                     variant={'persistent'}
-                    className={clsx(classes.drawer, {
-                        [classes.drawerShift]: !drawerOpen,
+                    className={clsx(classes.drawerExplorer, {
+                        [classes.drawerExplorerShift]: !drawerExplorerOpen,
                     })}
                     anchor="left"
                     style={{
@@ -1217,7 +1249,7 @@ const StudyPane = (props) => {
                         overflowY: 'hidden',
                         overflowX: 'hidden',
                     }}
-                    open={drawerOpen}
+                    open={drawerExplorerOpen}
                     classes={{
                         paper: classes.drawerPaper,
                     }}
@@ -1242,8 +1274,8 @@ const StudyPane = (props) => {
                 </Drawer>
                 <Drawer
                     variant={'persistent'}
-                    className={clsx(classes.drawerHypos, {
-                        [classes.drawerShift]: !drawerOpen,
+                    className={clsx(classes.drawerHypoTree, {
+                        [classes.drawerHypoTreeShift]: !drawerHypoTreeOpen,
                     })}
                     anchor="left"
                     style={{
@@ -1252,7 +1284,7 @@ const StudyPane = (props) => {
                         overflowY: 'hidden',
                         overflowX: 'hidden',
                     }}
-                    open={drawerOpen}
+                    open={drawerHypoTreeOpen}
                     classes={{
                         paper: classes.drawerPaper,
                     }}
@@ -1281,7 +1313,7 @@ const StudyPane = (props) => {
                                 display: 'flex',
                                 pointerEvents: 'none',
                                 flexDirection: 'column',
-                                marginLeft: drawerOpen ? 0 : drawerToolbarWidth,
+                                marginLeft: 0,
                             }}
                         >
                             <SingleLineDiagram

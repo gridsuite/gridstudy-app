@@ -61,7 +61,13 @@ const LateralToolbar = (props) => {
                 enterNextDelay={1000}
                 classes={{ tooltip: classes.tooltip }}
             >
-                <IconButton className={classes.notSelected}>
+                <IconButton
+                    className={
+                    props.hypoTreeDisplayed
+                        ? classes.selected
+                        : classes.notSelected
+                }
+                    onClick={props.handleDisplayHypoTree}>
                     <AccountTreeIcon />
                 </IconButton>
             </Tooltip>
@@ -71,7 +77,9 @@ const LateralToolbar = (props) => {
 
 LateralToolbar.propTypes = {
     handleDisplayNetworkExplorer: PropTypes.func,
+    handleDisplayHypoTree: PropTypes.func,
     networkExplorerDisplayed: PropTypes.bool,
+    hypoTreeDisplayed: PropTypes.bool,
 };
 
 export default LateralToolbar;
