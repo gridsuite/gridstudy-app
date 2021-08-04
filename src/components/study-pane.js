@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         // zIndex set to be below the loader with overlay
-        zIndex: 50,
+        zIndex: 51,
     },
     drawerToolbar: {
         width: drawerToolbarWidth,
@@ -147,7 +147,7 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         // zIndex set to be below the loader with overlay
-        zIndex: 51,
+        zIndex: 50,
     },
     drawerPaper: {
         position: 'static',
