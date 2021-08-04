@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import ReactFlow, {removeElements} from 'react-flow-renderer';
+import ReactFlow, {getIncomers, getOutgoers, removeElements} from 'react-flow-renderer';
 import HypoNode from './graph-nodes/hypo-node';
 import ModelNode from "./graph-nodes/model-node";
 import CreateNodeMenu from "./graph-menus/create-node-menu";
@@ -38,6 +38,7 @@ const HypothesisTree = (props) => {
 
     function removeNode(element) {
         setElements((es) => removeElements([element], es));
+        console.log(elements);
     }
 
     const [createNodeMenu, setCreateNodeMenu] = useState({

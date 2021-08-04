@@ -1,9 +1,18 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import {Handle} from "react-flow-renderer";
+import IconButton from "@material-ui/core/IconButton";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+    model: {
+        background: "darkseagreen",
+    },
+}));
 
 const ModelNode = (props) => {
+    const classes = useStyles();
+
     return (
         <>
             <Handle
@@ -20,14 +29,9 @@ const ModelNode = (props) => {
                 onConnect={(params) => console.log('handle onConnect', params)}
                 isConnectable={true}
             />
-            <Button
-                variant="contained"
-                color="primary"
-                disableElevation
-                startIcon={<PlayArrowIcon/>}
-            >
-                Model
-            </Button>
+            <IconButton variant="outlined" className={classes.model} disableElevation>
+                <PlayArrowIcon/>
+            </IconButton>
         </>
     );
 };

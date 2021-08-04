@@ -1,8 +1,18 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import {Handle} from "react-flow-renderer";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+    hypo: {
+        background: "steelblue",
+        textTransform: 'none',
+    },
+}));
 
 const HypoNode = (props) => {
+    const classes = useStyles();
+
     return (
         <>
             <Handle
@@ -20,8 +30,8 @@ const HypoNode = (props) => {
                 isConnectable={true}
             />
             <Button
-                variant="contained"
-                color="primary"
+                variant="outlined"
+                className={classes.hypo}
                 disableElevation
             >
                 Toto
