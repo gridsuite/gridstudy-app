@@ -249,5 +249,9 @@
     "showReport": "Afficher logs",
     "loadingReport": "Chargement des logs en cours...",
 
-    "ComponentLibrary": "Sélection de la bibliothèque de composants : "
+    "ComponentLibrary": "Sélection de la bibliothèque de composants : ",
+
+    "createHypoNode": "Créer nœud hypothèse",
+    "createModelNode": "Créer nœud modèle",
+    "removeNode": "Supprimer nœud"
 }

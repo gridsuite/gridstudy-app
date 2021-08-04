@@ -1,59 +1,89 @@
-import React from 'react';
-import ReactFlow from 'react-flow-renderer';
+import React, {useState} from 'react';
+import ReactFlow, {removeElements} from 'react-flow-renderer';
 import HypoNode from './graph-nodes/hypo-node';
 import ModelNode from "./graph-nodes/model-node";
+import CreateNodeMenu from "./graph-menus/create-node-menu";
 
 const HypothesisTree = (props) => {
+
     const style = {
         width: '100%',
         height: '100%',
     };
 
-    const onElementClick = (event, element) => console.log('click', element, event);
+    const onNodeContextMenu = (event, element) => {
+        setCreateNodeMenu({
+            position: [event.pageX, event.pageY],
+            display: true,
+            selectedNode: element,
+        })
+    };
+
+    // Used for poc, should use a uuid
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    function createNode(element, type) {
+        const newNodeId = getRandomInt(1, 200000000);
+        setElements((es) => es.concat({
+            id: newNodeId.toString(),
+            type: type,
+            position: { x: element.position.x, y: element.position.y + 75 },
+        },{ id: 'e' + element.id + '-' + newNodeId, source: element.id, target: newNodeId.toString() },
+            ));
+    }
+
+    function removeNode(element) {
+        setElements((es) => removeElements([element], es));
+    }
+
+    const [createNodeMenu, setCreateNodeMenu] = useState({
+            position: [-1, -1],
+            display: null,
+            selectedNode: null,
+        }
+    );
+
+    function closeCreateNodeMenu() {
+        setCreateNodeMenu({
+            display: false,
+            selectedNode: null,
+        });
+    }
 
     const nodeTypes = {
         hypoNode: HypoNode,
         modelNode: ModelNode,
     };
 
-    const elements = [
+    const initialElements = [
         {
-            id: '1',
+            id: '0',
             type: 'input', // input node
-            data: { label: 'Input Node' },
+            data: { label: 'Root' },
             position: { x: 250, y: 25 },
         },
-        // hypo node
-        {
-            id: '2',
-            type: 'hypoNode',
-            position: { x: 100, y: 125 },
-        },
-        {
-            id: '3',
-            type: 'modelNode', // output node
-            data: { label: 'Output Node' },
-            position: { x: 250, y: 250 },
-        },
-        {
-            id: '4',
-            type: 'output', // output node
-            data: { label: 'Output Node' },
-            position: { x: 250, y: 350 },
-        },
-        // animated edge
-        { id: 'e1-2', source: '1', target: '2', animated: true },
-        { id: 'e2-3', source: '2', target: '3' },
-        { id: 'e3-4', source: '3', target: '4' },
     ];
 
+    const [elements, setElements] = useState(initialElements);
+
     return (
-        <div style={{ height: 1200 }}>
+        <>
+        <div style={style}>
             <ReactFlow elements={elements}
-                       onElementClick={onElementClick}
+                       onNodeContextMenu={onNodeContextMenu}
                        nodeTypes={nodeTypes}
                        style={style} />
         </div>
+        {createNodeMenu.display && <CreateNodeMenu position={createNodeMenu.position}
+                                                   selectedNode={createNodeMenu.selectedNode}
+                                                   handleNodeCreation={createNode}
+                                                   handleNodeRemoval={removeNode}
+                                                   handleClose={closeCreateNodeMenu} />}
+        </>
     );
 };
 

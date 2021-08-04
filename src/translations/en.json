@@ -249,5 +249,9 @@
     "showReport": "Show logs",
     "loadingReport": "Loading logs in progress...",
 
-    "ComponentLibrary": "Component library selection : "
+    "ComponentLibrary": "Component library selection : ",
+
+    "createHypoNode": "Create hypothesis node",
+    "createModelNode": "Create model node",
+    "removeNode": "Remove node"
 }
