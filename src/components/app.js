@@ -34,6 +34,7 @@ import {
     selectLineFullPathState,
     selectLineParallelPathState,
     selectSubstationLayout,
+    selectComponentLibrary,
     selectTheme,
     selectUseName,
 } from '../redux/actions';
@@ -57,6 +58,7 @@ import {
     APP_NAME,
     COMMON_APP_NAME,
     PARAM_CENTER_LABEL,
+    PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LANGUAGE,
@@ -156,6 +158,9 @@ const App = () => {
                         break;
                     case PARAM_SUBSTATION_LAYOUT:
                         dispatch(selectSubstationLayout(param.value));
+                        break;
+                    case PARAM_COMPONENT_LIBRARY:
+                        dispatch(selectComponentLibrary(param.value));
                         break;
                     case PARAM_DISPLAY_OVERLOAD_TABLE:
                         dispatch(

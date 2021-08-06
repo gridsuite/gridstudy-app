@@ -149,6 +149,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             <Parameters
                 showParameters={showParameters}
                 hideParameters={hideParameters}
+                user={user}
             />
         </>
     );
