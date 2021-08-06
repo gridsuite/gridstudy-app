@@ -95,6 +95,7 @@ const HypothesisTree = (props) => {
             type: 'input', // input node
             data: { label: 'Root' },
             position: { x: 250, y: 25 },
+            selectable: false,
         },
     ];
 

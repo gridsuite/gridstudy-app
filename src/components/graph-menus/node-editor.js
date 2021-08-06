@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
-import { Paper, TextField } from '@material-ui/core';
+import React from 'react';
+import { Paper } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Button from '@material-ui/core/Button';
-import { useIntl } from 'react-intl';
+import HypoNodeEditor from './hypo-node-editor';
+import ModelNodeEditor from './model-node-editor';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -26,36 +25,15 @@ const useStyles = makeStyles((theme) => ({
 
 const NodeEditor = ({ selectedNode, handleNodeModified }) => {
     const classes = useStyles();
-    const intl = useIntl();
-
-    const [nameValue, setNameValue] = useState(selectedNode.data?.label);
-
-    const updateNameValue = (event) => {
-        setNameValue(event.target.value);
-    };
-
-    const handleValidate = (event) => {
-        selectedNode.data.label = nameValue;
-    };
 
     return (
         <Paper className={classes.paper}>
-            <Grid container spacing={3} alignItems="flex-end">
-                <Grid item xs={12}>
-                    <TextField
-                        label={'Name'}
-                        value={nameValue}
-                        onChange={updateNameValue}
-                    />
-                </Grid>
-            </Grid>
-            <Grid container spacing={3} alignItems={'flex-start'}>
-                <Grid item>
-                    <Button onClick={handleValidate}>
-                        {intl.formatMessage({ id: 'validate' })}
-                    </Button>
-                </Grid>
-            </Grid>
+            {selectedNode.type === 'hypoNode' && (
+                <HypoNodeEditor selectedNode={selectedNode} />
+            )}
+            {selectedNode.type === 'modelNode' && (
+                <ModelNodeEditor selectedNode={selectedNode} />
+            )}
         </Paper>
     );
 };
