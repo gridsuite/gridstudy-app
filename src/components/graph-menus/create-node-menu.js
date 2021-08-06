@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -13,7 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { useIntl } from 'react-intl';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -27,7 +27,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const CreateNodeMenu = ({position, handleClose, handleNodeCreation, handleNodeRemoval, selectedNode}) => {
+const CreateNodeMenu = ({
+    position,
+    handleClose,
+    handleNodeCreation,
+    handleNodeRemoval,
+    selectedNode,
+}) => {
     const classes = useStyles();
     const intl = useIntl();
 
@@ -86,10 +92,7 @@ const CreateNodeMenu = ({position, handleClose, handleNodeCreation, handleNodeRe
                 />
             </MenuItem>
 
-            <MenuItem
-                className={classes.menuItem}
-                onClick={() => removeNode()}
-            >
+            <MenuItem className={classes.menuItem} onClick={() => removeNode()}>
                 <ListItemText
                     className={classes.listItemText}
                     primary={

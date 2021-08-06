@@ -1,16 +1,22 @@
+/**
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import {Handle} from "react-flow-renderer";
-import {makeStyles} from "@material-ui/core/styles";
+import { Handle } from 'react-flow-renderer';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     hypo: {
-        background: "steelblue",
+        background: 'steelblue',
         textTransform: 'none',
     },
 }));
 
-const HypoNode = (props) => {
+const HypoNode = ({ data }) => {
     const classes = useStyles();
 
     return (
@@ -34,7 +40,7 @@ const HypoNode = (props) => {
                 className={classes.hypo}
                 disableElevation
             >
-                Toto
+                {data.label}
             </Button>
         </>
     );

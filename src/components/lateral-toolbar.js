@@ -63,11 +63,12 @@ const LateralToolbar = (props) => {
             >
                 <IconButton
                     className={
-                    props.hypoTreeDisplayed
-                        ? classes.selected
-                        : classes.notSelected
-                }
-                    onClick={props.handleDisplayHypoTree}>
+                        props.hypoTreeDisplayed
+                            ? classes.selected
+                            : classes.notSelected
+                    }
+                    onClick={props.handleDisplayHypoTree}
+                >
                     <AccountTreeIcon />
                 </IconButton>
             </Tooltip>
