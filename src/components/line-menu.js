@@ -32,6 +32,7 @@ import {
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { displayInfoMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { equipments } from './network/network-equipments';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -45,7 +46,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const LineMenu = ({ line, position, handleClose }) => {
+const withLineMenu = (BaseMenu) => ({
+    id,
+    position,
+    handleClose,
+    handleViewInSpreadsheet,
+}) => {
     const classes = useStyles();
     const intl = useIntl();
     const intlRef = useIntlRef();
@@ -55,6 +61,8 @@ const LineMenu = ({ line, position, handleClose }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [displayUseName] = useParameterState(PARAM_USE_NAME);
     const network = useSelector((state) => state.network);
+
+    const line = network.getLine(id);
 
     const getLineDescriptor = useCallback(
         (voltageLevelId) => {
@@ -132,16 +140,23 @@ const LineMenu = ({ line, position, handleClose }) => {
 
     return (
         <Menu
+            className={classes.menu}
             anchorReference="anchorPosition"
             anchorPosition={{
                 position: 'absolute',
-                left: position[0],
                 top: position[1],
+                left: position[0],
             }}
             id="line-menu"
             open={true}
             onClose={handleClose}
         >
+            <BaseMenu
+                equipmentId={id}
+                equipmentType={equipments.lines}
+                handleViewInSpreadsheet={handleViewInSpreadsheet}
+            />
+
             <MenuItem
                 className={classes.menuItem}
                 onClick={() => handleLockout()}
@@ -254,10 +269,11 @@ const LineMenu = ({ line, position, handleClose }) => {
     );
 };
 
-LineMenu.propTypes = {
+withLineMenu.propTypes = {
     line: PropTypes.object.isRequired,
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
+    handleViewInSpreadsheet: PropTypes.func.isRequired,
 };
 
-export default LineMenu;
+export default withLineMenu;
