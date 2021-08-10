@@ -8,6 +8,10 @@
 import { equipments } from './network-equipments';
 import { NumericalField, TapChangerSelector } from './equipment-table-editors';
 
+const nominalVoltage = (network, voltageLevelId) => {
+    return network.getVoltageLevel(voltageLevelId).nominalVoltage;
+};
+
 export const TABLES_DEFINITIONS = {
     SUBSTATIONS: {
         index: 0,
@@ -80,12 +84,28 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 dataKey: 'nominalVoltage1',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId1
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVoltageSide2',
                 dataKey: 'nominalVoltage2',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId2
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -141,12 +161,28 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 dataKey: 'nominalVoltage1',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId1
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVoltageSide2',
                 dataKey: 'nominalVoltage2',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId2
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -230,18 +266,42 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalVoltageSide1',
                 dataKey: 'nominalVoltage1',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId1
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVoltageSide2',
                 dataKey: 'nominalVoltage2',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId2
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVoltageSide3',
                 dataKey: 'nominalVoltage3',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId3
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -377,6 +437,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 dataKey: 'nominalVoltage',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -432,6 +500,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 dataKey: 'nominalVoltage',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -482,6 +558,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 dataKey: 'nominalVoltage',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -526,6 +610,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 dataKey: 'nominalVoltage',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -576,6 +668,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 dataKey: 'nominalVoltage',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -638,12 +738,6 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
             },
             {
-                id: 'NominalV',
-                dataKey: 'nominalV',
-                numeric: true,
-                fractionDigits: 1,
-            },
-            {
                 id: 'ActivePowerSetpoint',
                 dataKey: 'activePowerSetpoint',
                 numeric: true,
@@ -678,6 +772,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 dataKey: 'nominalVoltage',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -732,6 +834,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 dataKey: 'nominalVoltage',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },
@@ -780,6 +890,14 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'NominalV',
                 dataKey: 'nominalVoltage',
+                cellDataGetter: (cellData) => {
+                    return (network) => {
+                        return nominalVoltage(
+                            network,
+                            cellData.rowData.voltageLevelId
+                        );
+                    };
+                },
                 numeric: true,
                 fractionDigits: 0,
             },

@@ -154,6 +154,7 @@ const NetworkTable = (props) => {
                 fetched={props.network.isResourceFetched(resource)}
                 scrollToIndex={scrollToIndex}
                 scrollToAlignment="start"
+                network={props.network}
             />
         );
     }
