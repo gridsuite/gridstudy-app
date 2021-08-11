@@ -58,8 +58,10 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
 
     function computeLoading(limitViolation) {
         return (limitViolation.loading =
-            (100 * limitViolation.value) /
-            (limitViolation.limit * limitViolation.limitReduction));
+            limitViolation.limitType === 'CURRENT'
+                ? (100 * limitViolation.value) /
+                  (limitViolation.limit * limitViolation.limitReduction)
+                : undefined);
     }
 
     function renderTableN(preContingencyResult) {
