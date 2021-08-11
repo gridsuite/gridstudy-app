@@ -83,6 +83,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_SUBSTATION_LAYOUT,
+    PARAM_COMPONENT_LIBRARY,
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import BaseEquipmentMenu from './base-equipment-menu';
@@ -214,6 +215,10 @@ const StudyPane = (props) => {
 
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
+    );
+
+    const componentLibrary = useSelector(
+        (state) => state[PARAM_COMPONENT_LIBRARY]
     );
 
     const [studyNotFound, setStudyNotFound] = useState(false);
@@ -975,7 +980,8 @@ const StudyPane = (props) => {
                 displayedVoltageLevelId,
                 useName,
                 centerName,
-                diagonalName
+                diagonalName,
+                componentLibrary
             );
         } else if (displayedSubstation) {
             sldTitle = useName
@@ -996,7 +1002,8 @@ const StudyPane = (props) => {
                 useName,
                 centerName,
                 diagonalName,
-                substationLayout
+                substationLayout,
+                componentLibrary
             );
         }
 

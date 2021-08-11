@@ -244,5 +244,7 @@
     "logs": "Logs",
     "logsTitle": "Logs : {title}",
     "showReport": "Show logs",
-    "loadingReport": "Loading logs in progress..."
+    "loadingReport": "Loading logs in progress...",
+
+    "ComponentLibrary": "Component library selection : "
 }
