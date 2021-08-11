@@ -33,7 +33,8 @@
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
-        "typeface-roboto": "0.0.75"
+        "typeface-roboto": "0.0.75",
+        "material-ui-nested-menu-item": "1.0.2"
     },
     "scripts": {
         "start": "react-scripts start",

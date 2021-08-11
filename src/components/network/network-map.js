@@ -236,18 +236,34 @@ const NetworkMap = forwardRef((props, ref) => {
                     idSubstation = info.object.voltageLevels[0].substationId;
                 }
             }
-            if (idVl !== undefined && props.onSubstationClick) {
-                props.onSubstationClick(idVl);
+            if (idVl !== undefined) {
+                if (props.onSubstationClick && event.leftButton) {
+                    props.onSubstationClick(idVl);
+                } else if (props.onVoltageLevelMenuClick && event.rightButton) {
+                    props.onVoltageLevelMenuClick(
+                        network.getVoltageLevel(idVl),
+                        info.x,
+                        info.y
+                    );
+                }
             }
-            if (
-                idSubstation !== undefined &&
-                props.onSubstationClickChooseVoltageLevel
-            ) {
-                props.onSubstationClickChooseVoltageLevel(
-                    idSubstation,
-                    info.x,
-                    info.y
-                );
+            if (idSubstation !== undefined) {
+                if (
+                    props.onSubstationClickChooseVoltageLevel &&
+                    event.leftButton
+                ) {
+                    props.onSubstationClickChooseVoltageLevel(
+                        idSubstation,
+                        info.x,
+                        info.y
+                    );
+                } else if (props.onSubstationMenuClick && event.rightButton) {
+                    props.onSubstationMenuClick(
+                        network.getSubstation(idSubstation),
+                        info.x,
+                        info.y
+                    );
+                }
             }
         }
         if (
@@ -262,7 +278,7 @@ const NetworkMap = forwardRef((props, ref) => {
             // picked line properties are retrieved from network data and not from pickable object infos,
             // because pickable object infos might not be up to date
             let line = network.getLine(info.object.id);
-            props.onLineClick(line, info.x, info.y + 60);
+            props.onLineMenuClick(line, info.x, info.y + 60);
         }
     }
 
@@ -417,8 +433,10 @@ NetworkMap.propTypes = {
     initialZoom: PropTypes.number.isRequired,
     initialPosition: PropTypes.arrayOf(PropTypes.number).isRequired,
     onSubstationClick: PropTypes.func,
-    onLineClick: PropTypes.func,
+    onLineMenuClick: PropTypes.func,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
+    onSubstationMenuClick: PropTypes.func,
+    onVoltageLevelMenuClick: PropTypes.func,
     lineFullPath: PropTypes.bool,
     lineParallelPath: PropTypes.bool,
     lineFlowMode: PropTypes.oneOf(Object.values(LineFlowMode)),
