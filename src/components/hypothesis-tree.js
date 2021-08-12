@@ -5,12 +5,68 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useState } from 'react';
-import ReactFlow, { removeElements } from 'react-flow-renderer';
+import ReactFlow, {isNode, removeElements} from 'react-flow-renderer';
 import HypoNode from './graph-nodes/hypo-node';
 import ModelNode from './graph-nodes/model-node';
 import CreateNodeMenu from './graph-menus/create-node-menu';
 import NodeEditor from './graph-menus/node-editor';
 import { Box } from '@material-ui/core';
+import dagre from 'dagre';
+
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+const initialElements = [
+    {
+        id: '0',
+        type: 'input', // input node
+        data: { label: 'Root' },
+        selectable: false,
+    },
+];
+
+const nodeWidth = 150;
+const nodeHeight = 50;
+
+const nodeExtent = [
+    [0, 0],
+    [1000, 1000],
+];
+
+const getLayoutedElements = (elements, direction = 'TB') => {
+    const isHorizontal = direction === 'LR';
+    dagreGraph.setGraph({ direction });
+
+    elements.forEach((el) => {
+        if (isNode(el)) {
+            dagreGraph.setNode(el.id, { width: nodeWidth, height: nodeHeight });
+        } else {
+            dagreGraph.setEdge(el.source, el.target);
+        }
+    });
+
+    dagre.layout(dagreGraph);
+
+    return elements.map((el) => {
+        if (isNode(el)) {
+            const nodeWithPosition = dagreGraph.node(el.id);
+            el.targetPosition = isHorizontal ? 'left' : 'top';
+            el.sourcePosition = isHorizontal ? 'right' : 'bottom';
+
+            // unfortunately we need this little hack to pass a slightly different position
+            // to notify react flow about the change. Moreover we are shifting the dagre node position
+            // (anchor=center center) to the top left so it matches the react flow node anchor point (top left).
+            el.position = {
+                x: nodeWithPosition.x - nodeWidth / 2 + Math.random() / 1000,
+                y: nodeWithPosition.y - nodeHeight / 2,
+            };
+        }
+
+        return el;
+    });
+};
+
+const layoutedElements = getLayoutedElements(initialElements);
 
 const HypothesisTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -48,21 +104,20 @@ const HypothesisTree = (props) => {
     function createNode(element, type) {
         const newNodeId = getRandomInt(1, 200000000);
         setElements((es) =>
-            es.concat(
-                {
-                    id: newNodeId.toString(),
-                    type: type,
-                    data: { label: 'New node' },
-                    position: {
-                        x: element.position.x,
-                        y: element.position.y + 75,
+            getLayoutedElements(
+                es.concat(
+                    {
+                        id: newNodeId.toString(),
+                        type: type,
+                        data: { label: 'New node' },
                     },
-                },
-                {
-                    id: 'e' + element.id + '-' + newNodeId,
-                    source: element.id,
-                    target: newNodeId.toString(),
-                }
+                    {
+                        id: 'e' + element.id + '-' + newNodeId,
+                        source: element.id,
+                        target: newNodeId.toString(),
+                        type: 'smoothstep',
+                    }
+                )
             )
         );
     }
@@ -89,17 +144,7 @@ const HypothesisTree = (props) => {
         modelNode: ModelNode,
     };
 
-    const initialElements = [
-        {
-            id: '0',
-            type: 'input', // input node
-            data: { label: 'Root' },
-            position: { x: 250, y: 25 },
-            selectable: false,
-        },
-    ];
-
-    const [elements, setElements] = useState(initialElements);
+    const [elements, setElements] = useState(layoutedElements);
 
     return (
         <>
@@ -113,6 +158,8 @@ const HypothesisTree = (props) => {
                         elementsSelectable
                         selectNodesOnDrag={false}
                         nodeTypes={nodeTypes}
+                        nodeExtent={nodeExtent}
+                        connectionLineType="smoothstep"
                     />
                 </Box>
                 {selectedNode && (

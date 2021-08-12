@@ -34,7 +34,8 @@
         "redux": "^4.0.5",
         "typeface-roboto": "^1.0.0",
         "material-ui-nested-menu-item": "1.0.2",
-        "react-flow-renderer": "^9.6.6"
+        "react-flow-renderer": "^9.6.6",
+        "dagre": "^0.8.5"
     },
     "scripts": {
         "start": "react-scripts start",
