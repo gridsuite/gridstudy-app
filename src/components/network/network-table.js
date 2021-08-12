@@ -78,6 +78,8 @@ const NetworkTable = (props) => {
     const [rowFilter, setRowFilter] = useState(undefined);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
+    const [scrollToIndex, setScrollToIndex] = useState(-1);
+    const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
 
     const intl = useIntl();
@@ -96,12 +98,52 @@ const NetworkTable = (props) => {
         props.network.useEquipment(resource);
     }, [props.network, tabIndex]);
 
+    const getRows = useCallback(
+        (index) => {
+            const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
+            return tableDefinition.getter
+                ? tableDefinition.getter(props.network)
+                : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
+        },
+        [props.network]
+    );
+
+    function getTabIndexFromEquipementType(equipmentType) {
+        const definition = Object.values(TABLES_DEFINITIONS).find(
+            (d) => d.name.toLowerCase() === equipmentType.toLowerCase()
+        );
+        return definition ? definition.index : 0;
+    }
+
+    useEffect(() => {
+        setManualTabSwitch(false);
+    }, [props.equipmentChanged]);
+
+    useEffect(() => {
+        if (
+            props.equipmentId !== null &&
+            props.equipmentType !== null &&
+            !manualTabSwitch
+        ) {
+            const newIndex = getTabIndexFromEquipementType(props.equipmentType);
+            setTabIndex(newIndex); // select the right table type
+            // calculate row index to scroll to
+            const rows = getRows(newIndex);
+            let index = rows.findIndex((r) => r.id === props.equipmentId);
+            setScrollToIndex(index !== undefined ? index : 0);
+        }
+    }, [
+        props.network,
+        props.equipmentId,
+        props.equipmentType,
+        props.equipmentChanged,
+        getRows,
+        manualTabSwitch,
+    ]);
+
     function renderTable() {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
-        const tableDefinition = TABLES_DEFINITION_INDEXES.get(tabIndex);
-        const rows = tableDefinition.getter
-            ? tableDefinition.getter(props.network)
-            : props.network[TABLES_DEFINITION_INDEXES.get(tabIndex).resource];
+        const rows = getRows(tabIndex);
         return (
             <EquipmentTable
                 studyUuid={props.studyUuid}
@@ -110,6 +152,8 @@ const NetworkTable = (props) => {
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 filter={filter}
                 fetched={props.network.isResourceFetched(resource)}
+                scrollToIndex={scrollToIndex}
+                scrollToAlignment="start"
             />
         );
     }
@@ -246,9 +290,10 @@ const NetworkTable = (props) => {
                             indicatorColor="primary"
                             variant="scrollable"
                             scrollButtons="auto"
-                            onChange={(event, newValue) =>
-                                setTabIndex(newValue)
-                            }
+                            onChange={(event, newValue) => {
+                                setTabIndex(newValue);
+                                setManualTabSwitch(true);
+                            }}
                             aria-label="tables"
                         >
                             {Object.values(TABLES_DEFINITIONS).map((table) => (
@@ -318,11 +363,17 @@ const NetworkTable = (props) => {
 NetworkTable.defaultProps = {
     network: null,
     studyUuid: '',
+    equipmentId: null,
+    equipmentType: null,
+    equipmentChanged: false,
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
+    equipmentId: PropTypes.string,
+    equipmentType: PropTypes.string,
+    equipmentChanged: PropTypes.bool,
 };
 
 export default NetworkTable;

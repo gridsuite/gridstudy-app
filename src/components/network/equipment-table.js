@@ -41,6 +41,8 @@ export const EquipmentTable = ({
     selectedColumnsNames,
     tableDefinition,
     filter,
+    scrollToIndex,
+    scrollToAlignment,
 }) => {
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
@@ -303,6 +305,8 @@ export const EquipmentTable = ({
                           ]
                         : generateTableColumns(tableDefinition)
                 }
+                scrollToIndex={scrollToIndex}
+                scrollToAlignment={scrollToAlignment}
             />
         </>
     );

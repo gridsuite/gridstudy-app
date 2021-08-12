@@ -23,6 +23,7 @@ import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
     fetchLinePositions,
+    fetchReport,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
@@ -67,7 +68,8 @@ import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
-import LineMenu from './line-menu';
+import withLineMenu from './line-menu';
+
 import Drawer from '@material-ui/core/Drawer';
 import clsx from 'clsx';
 import { RemoteResourceHandler } from './util/remote-resource-handler';
@@ -81,11 +83,17 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_SUBSTATION_LAYOUT,
+    PARAM_COMPONENT_LIBRARY,
     PARAM_USE_NAME,
 } from '../utils/config-params';
+import BaseEquipmentMenu from './base-equipment-menu';
 import LateralToolbar from './lateral-toolbar';
 import { RunningStatus } from './util/running-status';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
+import withEquipmentMenu from './equipment-menu';
+import { ReportViewer } from '@gridsuite/commons-ui';
+import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { useSnackbar } from 'notistack';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -167,6 +175,7 @@ export const StudyView = {
     MAP: 'Map',
     SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
+    LOGS: 'Logs',
 };
 
 const StudyPane = (props) => {
@@ -208,6 +217,10 @@ const StudyPane = (props) => {
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
 
+    const componentLibrary = useSelector(
+        (state) => state[PARAM_COMPONENT_LIBRARY]
+    );
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [updatedLines, setUpdatedLines] = useState([]);
@@ -220,9 +233,10 @@ const StudyPane = (props) => {
         (state) => state.filteredNominalVoltages
     );
 
-    const [lineMenu, setLineMenu] = useState({
+    const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
-        line: null,
+        equipment: null,
+        equipmentType: null,
         display: null,
     });
 
@@ -272,6 +286,26 @@ const StudyPane = (props) => {
 
     const [visibleSubstation, setVisibleSubstation] = useState(null);
 
+    const [tableEquipment, setTableEquipment] = useState({
+        id: null,
+        type: null,
+        changed: false,
+    });
+
+    const MenuLine = withLineMenu(BaseEquipmentMenu);
+
+    const MenuSubstation = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'substation-menu',
+        equipments.substations
+    );
+
+    const MenuVoltageLevel = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'voltage-level-menu',
+        equipments.voltageLevels
+    );
+
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -283,6 +317,14 @@ const StudyPane = (props) => {
     const websocketExpectedCloseRef = useRef();
 
     const intl = useIntl();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    /**
+     * Report dialog
+     */
+    const [report, setReport] = useState(null);
+    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
     const Runnable = {
         LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
@@ -594,6 +636,27 @@ const StudyPane = (props) => {
         }
     }, [network, filteredNominalVoltages, dispatch]);
 
+    useEffect(() => {
+        if (props.view !== StudyView.LOGS) {
+            setReport(null);
+        } else if (!waitingLoadReport && !report) {
+            setWaitingLoadReport(true);
+            fetchReport(studyUuid)
+                .then((report) => {
+                    setReport(report);
+                })
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                    })
+                )
+                .finally(() => {
+                    setWaitingLoadReport(false);
+                });
+        }
+    }, [props, report, waitingLoadReport, studyUuid, enqueueSnackbar]);
+
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
             setUpdateSwitchMsg('');
@@ -835,18 +898,37 @@ const StudyPane = (props) => {
         network.useEquipment(equipments.lines);
     }, [network]);
 
-    function showLineMenu(line, x, y) {
-        setLineMenu({
+    function showEquipmentMenu(equipment, x, y, type) {
+        setEquipmentMenu({
             position: [x, y],
-            line: line,
+            equipment: equipment,
+            equipmentType: type,
             display: true,
         });
     }
 
-    function closeLineMenu() {
-        setLineMenu({
+    function closeEquipmentMenu() {
+        setEquipmentMenu({
             display: false,
         });
+    }
+
+    function handleViewInSpreadsheet(equipmentType, equipmentId) {
+        showInSpreadsheet({
+            equipmentType: equipmentType,
+            equipmentId: equipmentId,
+        });
+        closeEquipmentMenu();
+    }
+
+    function showInSpreadsheet(equipment) {
+        let newTableEquipment = {
+            id: equipment.equipmentId,
+            type: equipment.equipmentType,
+            changed: !tableEquipment.changed,
+        };
+        setTableEquipment({ ...newTableEquipment });
+        props.onChangeTab(1); // switch to spreadsheet view
     }
 
     function renderMapView() {
@@ -898,7 +980,8 @@ const StudyPane = (props) => {
                 displayedVoltageLevelId,
                 useName,
                 centerName,
-                diagonalName
+                diagonalName,
+                componentLibrary
             );
         } else if (displayedSubstation) {
             sldTitle = useName
@@ -919,7 +1002,8 @@ const StudyPane = (props) => {
                 useName,
                 centerName,
                 diagonalName,
-                substationLayout
+                substationLayout,
+                componentLibrary
             );
         }
 
@@ -959,10 +1043,28 @@ const StudyPane = (props) => {
                         loadFlowStatus={loadFlowStatus}
                         ref={mapRef}
                         onSubstationClick={openVoltageLevel}
-                        onLineClick={showLineMenu}
+                        onLineMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(equipment, x, y, equipments.lines)
+                        }
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
+                        }
+                        onSubstationMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(
+                                equipment,
+                                x,
+                                y,
+                                equipments.substations
+                            )
+                        }
+                        onVoltageLevelMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(
+                                equipment,
+                                x,
+                                y,
+                                equipments.voltageLevels
+                            )
                         }
                     />
                     {network && displayOverloadTable && linesNearOverload() && (
@@ -1024,13 +1126,53 @@ const StudyPane = (props) => {
                             computationStopped={computationStopped}
                         />
                     </div>
-                    {lineMenu.display && (
-                        <LineMenu
-                            line={lineMenu.line}
-                            position={lineMenu.position}
-                            handleClose={closeLineMenu}
-                        />
-                    )}
+                    {equipmentMenu.equipment !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType === equipments.lines && (
+                            <MenuLine
+                                id={equipmentMenu.equipment.id}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
+                                }
+                            />
+                        )}
+                    {equipmentMenu.equipment !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType ===
+                            equipments.substations && (
+                            <MenuSubstation
+                                id={equipmentMenu.equipment.id}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
+                                }
+                            />
+                        )}
+                    {equipmentMenu.equipment !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType ===
+                            equipments.voltageLevels && (
+                            <MenuVoltageLevel
+                                id={equipmentMenu.equipment.id}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
+                                }
+                            />
+                        )}
                 </div>
                 <Drawer
                     variant={'permanent'}
@@ -1125,6 +1267,7 @@ const StudyPane = (props) => {
                                         ? SvgType.VOLTAGE_LEVEL
                                         : SvgType.SUBSTATION
                                 }
+                                showInSpreadsheet={showInSpreadsheet}
                                 loadFlowStatus={loadFlowStatus}
                             />
                         </div>
@@ -1142,7 +1285,13 @@ const StudyPane = (props) => {
         return (
             network && (
                 <Paper className={clsx('singlestretch-child', classes.table)}>
-                    <NetworkTable network={network} studyUuid={studyUuid} />
+                    <NetworkTable
+                        network={network}
+                        studyUuid={studyUuid}
+                        equipmentId={tableEquipment.id}
+                        equipmentType={tableEquipment.type}
+                        equipmentChanged={tableEquipment.changed}
+                    />
                 </Paper>
             )
         );
@@ -1203,6 +1352,20 @@ const StudyPane = (props) => {
         );
     }
 
+    function renderLogsView() {
+        return (
+            report && (
+                <Paper className={clsx('singlestretch-child')}>
+                    <ReportViewer jsonReport={report} />
+                </Paper>
+            )
+        );
+    }
+
+    const isWaitingLoading = useCallback(() => {
+        return waitingLoadGeoData || waitingLoadReport;
+    }, [waitingLoadGeoData, waitingLoadReport]);
+
     if (studyNotFound) {
         return (
             <PageNotFound
@@ -1217,12 +1380,16 @@ const StudyPane = (props) => {
     } else {
         return (
             <>
-                {waitingLoadGeoData && (
+                {isWaitingLoading() && (
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
                         isFixed={true}
-                        loadingMessageText="loadingGeoData"
+                        loadingMessageText={
+                            waitingLoadGeoData
+                                ? 'loadingGeoData'
+                                : 'loadingReport'
+                        }
                     />
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
@@ -1253,6 +1420,14 @@ const StudyPane = (props) => {
                     }}
                 >
                     {renderResultsView()}
+                </div>
+                <div
+                    className="singlestretch-parent singlestretch-child"
+                    style={{
+                        display: props.view === StudyView.LOGS ? null : 'none',
+                    }}
+                >
+                    {renderLogsView()}
                 </div>
             </>
         );

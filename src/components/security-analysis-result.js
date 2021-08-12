@@ -58,13 +58,15 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
 
     function computeLoading(limitViolation) {
         return (limitViolation.loading =
-            (100 * limitViolation.value) /
-            (limitViolation.limit * limitViolation.limitReduction));
+            limitViolation.limitType === 'CURRENT'
+                ? (100 * limitViolation.value) /
+                  (limitViolation.limit * limitViolation.limitReduction)
+                : undefined);
     }
 
     function renderTableN(preContingencyResult) {
         // extend data with loading
-        const rows = preContingencyResult.limitViolations.map(
+        const rows = preContingencyResult.limitViolationsResult.limitViolations.map(
             (limitViolation) => {
                 return {
                     subjectId: limitViolation.subjectId,

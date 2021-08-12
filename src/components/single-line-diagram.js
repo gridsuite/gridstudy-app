@@ -42,7 +42,11 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
-import LineMenu from './line-menu';
+import BaseEquipmentMenu from './base-equipment-menu';
+import withEquipmentMenu from './equipment-menu';
+import withLineMenu from './line-menu';
+
+import { equipments } from './network/network-equipments';
 import { RunningStatus } from './util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../utils/colors';
 
@@ -123,7 +127,24 @@ const SWITCH_COMPONENT_TYPES = new Set([
     'DISCONNECTOR',
     'LOAD_BREAK_SWITCH',
 ]);
-const LINE_COMPONENT_TYPES = new Set(['LINE']);
+const FEEDER_COMPONENT_TYPES = new Set([
+    'LINE',
+    'LOAD',
+    'BATTERY',
+    'DANGLING_LINE',
+    'GENERATOR',
+    'VSC_CONVERTER_STATION',
+    'LCC_CONVERTER_STATION',
+    'HVDC_LINE',
+    'CAPACITOR',
+    'INDUCTOR',
+    'STATIC_VAR_COMPENSATOR',
+    'TWO_WINDINGS_TRANSFORMER',
+    'TWO_WINDINGS_TRANSFORMER_LEG',
+    'THREE_WINDINGS_TRANSFORMER',
+    'THREE_WINDINGS_TRANSFORMER_LEG',
+    'PHASE_SHIFT_TRANSFORMER',
+]);
 
 let arrowSvg;
 let arrowHoverSvg;
@@ -209,33 +230,45 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
+    const MenuLine = withLineMenu(BaseEquipmentMenu);
+
     const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
 
-    const [lineMenu, setLineMenu] = useState({
+    const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
-        lineId: null,
+        equipmentId: null,
+        equipmentType: null,
         svgId: null,
         display: null,
     });
 
-    const showLineMenu = useCallback((branchId, svgId, x, y) => {
-        setLineMenu({
-            position: [x, y],
-            lineId: branchId,
-            svgId: svgId,
-            display: true,
-        });
-    }, []);
+    const showEquipmentMenu = useCallback(
+        (equipmentId, equipmentType, svgId, x, y) => {
+            setEquipmentMenu({
+                position: [x, y],
+                equipmentId: equipmentId,
+                equipmentType: equipmentType,
+                svgId: svgId,
+                display: true,
+            });
+        },
+        []
+    );
 
-    const closeLineMenu = useCallback(() => {
-        setLineMenu({
+    const closeEquipmentMenu = useCallback(() => {
+        setEquipmentMenu({
             display: false,
         });
     }, []);
+
+    function handleViewInSpreadsheet() {
+        props.showInSpreadsheet(equipmentMenu);
+        closeEquipmentMenu();
+    }
 
     useImperativeHandle(
         ref,
@@ -520,6 +553,43 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             });
         }
 
+        function getEquipmentTypeFromFeederType(feederType) {
+            switch (feederType) {
+                case 'LINE':
+                    return equipments.lines;
+                case 'LOAD':
+                    return equipments.loads;
+                case 'BATTERY':
+                    return equipments.batteries;
+                case 'DANGLING_LINE':
+                    return equipments.danglingLines;
+                case 'GENERATOR':
+                    return equipments.generators;
+                case 'VSC_CONVERTER_STATION':
+                    return equipments.vscConverterStations;
+                case 'LCC_CONVERTER_STATION':
+                    return equipments.lccConverterStations;
+                case 'HVDC_LINE':
+                    return equipments.hvdcLines;
+                case 'CAPACITOR':
+                case 'INDUCTOR':
+                    return equipments.shuntCompensators;
+                case 'STATIC_VAR_COMPENSATOR':
+                    return equipments.staticVarCompensators;
+                case 'TWO_WINDINGS_TRANSFORMER':
+                case 'TWO_WINDINGS_TRANSFORMER_LEG':
+                case 'PHASE_SHIFT_TRANSFORMER':
+                    return equipments.twoWindingsTransformers;
+                case 'THREE_WINDINGS_TRANSFORMER':
+                case 'THREE_WINDINGS_TRANSFORMER_LEG':
+                    return equipments.threeWindingsTransformers;
+                default: {
+                    console.log('bad feeder type ', feederType);
+                    return null;
+                }
+            }
+        }
+
         if (svg.svg) {
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
@@ -570,43 +640,45 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             });
             addNavigationArrow(svg);
 
-            // handling the right click on a branch feeder (menu)
+            // handling the right click on a feeder (menu)
             if (!isComputationRunning) {
-                const lineFeeders = svg.metadata.nodes.filter(
-                    (element) =>
-                        LINE_COMPONENT_TYPES.has(element.componentType) &&
-                        // FIXME : currently ony lines (and not transformers) are taken into account
-                        // This test must be removed
-                        network.getLine(element.equipmentId)
-                );
-                lineFeeders.forEach((feeder) => {
+                const feeders = svg.metadata.nodes.filter((element) => {
+                    return (
+                        element.vid !== '' &&
+                        FEEDER_COMPONENT_TYPES.has(element.componentType)
+                    );
+                });
+                feeders.forEach((feeder) => {
                     const svgText = document
                         .getElementById(feeder.id)
-                        .querySelector('text');
-                    svgText.style.cursor = 'pointer';
-                    svgText.addEventListener('mouseenter', function (event) {
-                        showFeederSelection(event.currentTarget);
-                    });
-                    svgText.addEventListener('mouseleave', function (event) {
-                        hideFeederSelection(event.currentTarget);
-                    });
-                    svgText.addEventListener('contextmenu', function (event) {
-                        showLineMenu(
-                            feeder.equipmentId,
-                            feeder.id,
-                            event.x,
-                            event.y
-                        );
-                    });
+                        .querySelector('text[class="sld-label"]');
+                    if (svgText !== null) {
+                        svgText.style.cursor = 'pointer';
+                        svgText.addEventListener('mouseenter', function (
+                            event
+                        ) {
+                            showFeederSelection(event.currentTarget);
+                        });
+                        svgText.addEventListener('mouseleave', function (
+                            event
+                        ) {
+                            hideFeederSelection(event.currentTarget);
+                        });
+                        svgText.addEventListener('contextmenu', function (
+                            event
+                        ) {
+                            showEquipmentMenu(
+                                feeder.equipmentId,
+                                getEquipmentTypeFromFeederType(
+                                    feeder.componentType
+                                ),
+                                feeder.id,
+                                event.x,
+                                event.y
+                            );
+                        });
+                    }
                 });
-
-                if (lineMenu.display) {
-                    showFeederSelection(
-                        document
-                            .getElementById(lineMenu.svgId)
-                            .querySelector('text')
-                    );
-                }
             }
 
             // handling the click on a switch
@@ -649,8 +721,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
-        lineMenu,
-        showLineMenu,
+        equipmentMenu,
+        showEquipmentMenu,
         showFeederSelection,
         hideFeederSelection,
         svgType,
@@ -678,7 +750,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         //TODO, these are from the previous useLayoutEffect
         //how to refactor to avoid repeating them here ?
         svg,
-        lineMenu,
+        equipmentMenu,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -703,6 +775,39 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const hideFullScreen = () => {
         dispatch(fullScreenSingleLineDiagram(false));
     };
+
+    function displayMenuLine() {
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipments.lines && (
+                <MenuLine
+                    id={equipmentMenu.equipmentId}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
+
+    function displayMenu(equipmentType, menuId) {
+        const Menu = withEquipmentMenu(
+            BaseEquipmentMenu,
+            menuId,
+            equipmentType
+        );
+        return (
+            equipmentMenu.display &&
+            equipmentMenu.equipmentType === equipmentType && (
+                <Menu
+                    id={equipmentMenu.equipmentId}
+                    position={equipmentMenu.position}
+                    handleClose={closeEquipmentMenu}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            )
+        );
+    }
 
     let sizeWidth, sizeHeight;
     if (svg.error) {
@@ -784,13 +889,37 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 )}
-                {lineMenu.display && (
-                    <LineMenu
-                        line={network.getLine(lineMenu.lineId)}
-                        position={lineMenu.position}
-                        handleClose={closeLineMenu}
-                    />
+                {displayMenuLine()}
+                {displayMenu(equipments.loads, 'load-menu')}
+                {displayMenu(equipments.batteries, 'battery-menu')}
+                {displayMenu(equipments.danglingLines, 'dangling-line-menu')}
+                {displayMenu(equipments.generators, 'generator-menu')}
+                {displayMenu(
+                    equipments.staticVarCompensators,
+                    'static-var-compensator-menu'
                 )}
+                {displayMenu(
+                    equipments.shuntCompensators,
+                    'shunt-compensator-menu'
+                )}
+                {displayMenu(
+                    equipments.twoWindingsTransformers,
+                    'two-windings-transformer-menu'
+                )}
+                {displayMenu(
+                    equipments.threeWindingsTransformers,
+                    'three-windings-transformer-menu'
+                )}
+                {displayMenu(equipments.hvdcLines, 'hvdc-line-menu')}
+                {displayMenu(
+                    equipments.lccConverterStations,
+                    'lcc-converter-station-menu'
+                )}
+                {displayMenu(
+                    equipments.vscConverterStations,
+                    'vsc-converter-station-menu'
+                )}
+
                 {!loadingState &&
                     !svg.error &&
                     (fullScreen ? (

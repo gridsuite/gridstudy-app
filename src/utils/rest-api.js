@@ -143,7 +143,8 @@ export function getVoltageLevelSingleLineDiagram(
     voltageLevelId,
     useName,
     centerLabel,
-    diagonalLabel
+    diagonalLabel,
+    componentLibrary
 ) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}'...`
@@ -158,6 +159,9 @@ export function getVoltageLevelSingleLineDiagram(
             centerLabel: centerLabel,
             diagonalLabel: diagonalLabel,
             topologicalColoring: true,
+            ...(componentLibrary !== null && {
+                componentLibrary: componentLibrary,
+            }),
         }).toString()
     );
 }
@@ -168,7 +172,8 @@ export function getSubstationSingleLineDiagram(
     useName,
     centerLabel,
     diagonalLabel,
-    substationLayout
+    substationLayout,
+    componentLibrary
 ) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}'...`
@@ -184,7 +189,19 @@ export function getSubstationSingleLineDiagram(
             diagonalLabel: diagonalLabel,
             topologicalColoring: true,
             substationLayout: substationLayout,
+            ...(componentLibrary !== null && {
+                componentLibrary: componentLibrary,
+            }),
         }).toString()
+    );
+}
+
+export function fetchReport(studyUuid) {
+    console.info('get report for study : ' + studyUuid);
+    return backendFetch(getStudyUrl(studyUuid) + '/report').then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
     );
 }
 
@@ -793,4 +810,14 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
             ? response
             : response.text().then((text) => Promise.reject(text))
     );
+}
+
+export function getAvailableComponentLibraries() {
+    console.info('get available component libraries for diagrams');
+    const getAvailableComponentLibrariesUrl =
+        PREFIX_STUDY_QUERIES + '/v1/svg-component-libraries';
+    console.debug(getAvailableComponentLibrariesUrl);
+    return backendFetch(getAvailableComponentLibrariesUrl, {
+        method: 'get',
+    }).then((response) => response.json());
 }

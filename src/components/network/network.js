@@ -84,8 +84,9 @@ export default class Network {
             );
 
             substation.voltageLevels.forEach((voltageLevel, index) => {
-                // add substation id
+                // add substation id and name
                 voltageLevel.substationId = substation.id;
+                voltageLevel.substationName = substation.name;
 
                 // add the current item into the VL map by id
                 this.substationsById.set(substation.id, substation);
