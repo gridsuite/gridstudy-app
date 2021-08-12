@@ -32,7 +32,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { fetchSvg } from '../utils/rest-api';
 
-import { SVG } from '@svgdotjs/svg.js';
+import SldSvg from 'sld-svg/sldsvg.js';
 import '@svgdotjs/svg.panzoom.js';
 import useTheme from '@material-ui/core/styles/useTheme';
 import Arrow from '../images/arrow.svg';
@@ -118,17 +118,12 @@ const useStyles = makeStyles((theme) => ({
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
-const SWITCH_COMPONENT_TYPES = new Set([
-    'BREAKER',
-    'DISCONNECTOR',
-    'LOAD_BREAK_SWITCH',
-]);
 const LINE_COMPONENT_TYPES = new Set(['LINE']);
 
 let arrowSvg;
 let arrowHoverSvg;
 
-fetch(Arrow)
+const arrowPromise = fetch(Arrow)
     .then((data) => {
         return data.text();
     })
@@ -136,7 +131,7 @@ fetch(Arrow)
         arrowSvg = data;
     });
 
-fetch(ArrowHover)
+const arrowHoverPromise = fetch(ArrowHover)
     .then((data) => {
         return data.text();
     })
@@ -399,130 +394,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, []);
 
     useLayoutEffect(() => {
-        function createSvgArrow(element, position, x, highestY, lowestY) {
-            let svgInsert = document.getElementById(element.id).parentElement;
-            let group = document.createElementNS(SVG_NS, 'g');
-
-            let y;
-            if (position === 'TOP') {
-                y = lowestY - 65;
-                x = x - 22;
-            } else {
-                y = highestY + 65;
-                x = x + 22;
-            }
-
-            if (position === 'BOTTOM') {
-                group.setAttribute(
-                    'transform',
-                    'translate(' + x + ',' + y + ') rotate(180)'
-                );
-            } else {
-                group.setAttribute(
-                    'transform',
-                    'translate(' + x + ',' + y + ')'
-                );
-            }
-
-            group.innerHTML = arrowSvg + arrowHoverSvg;
-
-            svgInsert.appendChild(group);
-
-            // handling the navigation between voltage levels
-            group.style.cursor = 'pointer';
-            let dragged = false;
-            group.addEventListener('mousedown', function (event) {
-                dragged = false;
-            });
-            group.addEventListener('mousemove', function (event) {
-                dragged = true;
-            });
-            group.addEventListener('mouseup', function (event) {
-                if (dragged || event.button !== 0) {
-                    return;
-                }
-                const id = document.getElementById(element.id).id;
-                const meta = svg.metadata.nodes.find(
-                    (other) => other.id === id
-                );
-                onNextVoltageLevelClick(meta.nextVId);
-            });
-
-            //handling the color changes when hovering
-            group.addEventListener('mouseenter', function (e) {
-                e.target.querySelector('.arrow').style.fill =
-                    theme.palette.background.paper;
-                e.target.querySelector('.arrow-hover').style.fill =
-                    'currentColor';
-            });
-
-            group.addEventListener('mouseleave', function (e) {
-                e.target.querySelector('.arrow').style.fill = 'currentColor';
-                e.target.querySelector('.arrow-hover').style.fill =
-                    theme.palette.background.paper;
-            });
-        }
-
-        function addNavigationArrow(svg) {
-            let navigable = svg.metadata.nodes.filter(
-                (el) => el.nextVId !== null
-            );
-
-            let vlList = svg.metadata.nodes.map((element) => element.vid);
-            vlList = vlList.filter(
-                (element, index) =>
-                    element !== '' && vlList.indexOf(element) === index
-            );
-
-            //remove arrows if the arrow points to the current svg
-            navigable = navigable.filter((element) => {
-                return vlList.indexOf(element.nextVId) === -1;
-            });
-
-            let highestY = new Map();
-            let lowestY = new Map();
-            let y;
-
-            navigable.forEach((element) => {
-                let transform = document
-                    .getElementById(element.id)
-                    .getAttribute('transform')
-                    .split(',');
-
-                y = parseInt(transform[1].match(/\d+/));
-                if (
-                    highestY.get(element.vid) === undefined ||
-                    y > highestY.get(element.vid)
-                ) {
-                    highestY.set(element.vid, y);
-                }
-                if (
-                    lowestY.get(element.vid) === undefined ||
-                    y < lowestY.get(element.vid)
-                ) {
-                    lowestY.set(element.vid, y);
-                }
-            });
-
-            navigable.forEach((element) => {
-                let transform = document
-                    .getElementById(element.id)
-                    .getAttribute('transform')
-                    .split(',');
-                let x = parseInt(transform[0].match(/\d+/));
-                createSvgArrow(
-                    element,
-                    element.direction,
-                    x,
-                    highestY.get(element.vid),
-                    lowestY.get(element.vid)
-                );
-            });
-        }
-
         if (svg.svg) {
             //need to add it there so the bbox has the right size
-            addNavigationArrow(svg);
+            // addNavigationArrow(svg);
             // calculate svg width and height from svg bounding box
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
@@ -550,10 +424,12 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
-            const draw = SVG()
-                .addTo(divElt)
+
+            const sldsvg = new SldSvg()
+                .addTo('sld-svg')
                 .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, viewboxWidth, viewboxHeight)
+                .svg(svg.svg, svg.metadata)
                 .panZoom({
                     panning: true,
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
@@ -561,14 +437,22 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
                     margins: { top: 100, left: 100, right: 100, bottom: 200 },
                 });
-            draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
-            draw.on('panStart', function (evt) {
-                divElt.style.cursor = 'move';
+
+            sldsvg.addCallbackOnSwitches(onBreakerClick);
+
+            Promise.all([arrowPromise, arrowHoverPromise]).then(() => {
+                sldsvg.addNavigationArrows(
+                    {
+                        arrowIcon: arrowSvg,
+                        arrowHoverIcon: arrowHoverSvg,
+                        backgroundColor: theme.palette.background.paper,
+                        backgroundHoverColor: 'currentColor',
+                        xOffset: 22,
+                        yOffset: 65,
+                    },
+                    onNextVoltageLevelClick
+                );
             });
-            draw.on('panEnd', function (evt) {
-                divElt.style.cursor = 'default';
-            });
-            addNavigationArrow(svg);
 
             // handling the right click on a branch feeder (menu)
             if (!isComputationRunning) {
@@ -609,38 +493,15 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 }
             }
 
-            // handling the click on a switch
-            if (!isComputationRunning) {
-                const switches = svg.metadata.nodes.filter((element) =>
-                    SWITCH_COMPONENT_TYPES.has(element.componentType)
-                );
-                switches.forEach((aSwitch) => {
-                    const domEl = document.getElementById(aSwitch.id);
-                    domEl.style.cursor = 'pointer';
-                    let dragged = false;
-                    domEl.addEventListener('mousedown', function (event) {
-                        dragged = false;
-                    });
-                    domEl.addEventListener('mousemove', function (event) {
-                        dragged = true;
-                    });
-                    domEl.addEventListener('mouseup', function (event) {
-                        if (dragged || event.button !== 0) {
-                            return;
-                        }
-                        const switchId = aSwitch.equipmentId;
-                        const open = aSwitch.open;
-                        onBreakerClick(switchId, !open, event.currentTarget);
-                    });
-                });
-            }
-
             if (svgDraw.current && svgUrl.current === svg.svgUrl) {
-                draw.viewbox(svgDraw.current.viewbox());
+                // FIXME: add this function to the sldsvg lib
+                // draw.viewbox(svgDraw.current.viewbox());
+                sldsvg.canvas.viewbox(svgDraw.current.viewbox());
             }
             svgUrl.current = svg.svgUrl;
 
-            svgDraw.current = draw;
+            // svgDraw.current = draw;
+            svgDraw.current = sldsvg.canvas;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
     }, [

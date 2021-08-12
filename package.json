@@ -33,6 +33,7 @@
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
+        "sld-svg": "file:../../powsybl/sld-svg",
         "typeface-roboto": "0.0.75"
     },
     "scripts": {
