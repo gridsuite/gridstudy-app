@@ -41,6 +41,9 @@ export const EquipmentTable = ({
     selectedColumnsNames,
     tableDefinition,
     filter,
+    scrollToIndex,
+    scrollToAlignment,
+    network,
 }) => {
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
@@ -134,17 +137,21 @@ export const EquipmentTable = ({
         );
     }
 
-    function formatNumber(cellData, isNumeric, fractionDigit) {
-        return cellData.rowData[cellData.dataKey] && isNumeric && fractionDigit
-            ? parseFloat(cellData.rowData[cellData.dataKey]).toFixed(
-                  fractionDigit
-              )
-            : cellData.rowData[cellData.dataKey];
-    }
+    const formatCell = useCallback(
+        (cellData, isNumeric, fractionDigit) => {
+            let value = cellData.cellData;
+            if (typeof value === 'function') value = cellData.cellData(network);
+
+            return value && isNumeric && fractionDigit
+                ? parseFloat(value).toFixed(fractionDigit)
+                : value;
+        },
+        [network]
+    );
 
     const defaultCellRender = useCallback(
         (cellData, numeric, fractionDigit) => {
-            const text = formatNumber(cellData, numeric, fractionDigit);
+            const text = formatCell(cellData, numeric, fractionDigit);
             const ref = React.createRef();
             return (
                 <TableCell
@@ -170,7 +177,7 @@ export const EquipmentTable = ({
                 </TableCell>
             );
         },
-        [classes.cell, classes.textDiv]
+        [classes.cell, classes.textDiv, formatCell]
     );
 
     const registerChangeRequest = useCallback(
@@ -196,7 +203,7 @@ export const EquipmentTable = ({
                 return defaultCellRender(cellData, numeric, fractionDigit);
             } else {
                 const ref = React.createRef();
-                const text = formatNumber(cellData, numeric, fractionDigit);
+                const text = formatCell(cellData, numeric, fractionDigit);
                 const changeRequest = (value) =>
                     registerChangeRequest(cellData, changeCmd, value);
                 return Editor ? (
@@ -204,7 +211,7 @@ export const EquipmentTable = ({
                         key={cellData.dataKey + cellData.rowData.id}
                         className={classes.cell}
                         equipment={rows[lineEdit.line]}
-                        defaultValue={formatNumber(
+                        defaultValue={formatCell(
                             cellData,
                             numeric,
                             fractionDigit
@@ -236,6 +243,7 @@ export const EquipmentTable = ({
             registerChangeRequest,
             lineEdit,
             rows,
+            formatCell,
         ]
     );
 
@@ -303,6 +311,8 @@ export const EquipmentTable = ({
                           ]
                         : generateTableColumns(tableDefinition)
                 }
+                scrollToIndex={scrollToIndex}
+                scrollToAlignment={scrollToAlignment}
             />
         </>
     );

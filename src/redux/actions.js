@@ -16,6 +16,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_SUBSTATION_LAYOUT,
+    PARAM_COMPONENT_LIBRARY,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -244,6 +245,15 @@ export function selectSubstationLayout(substationLayout) {
     return {
         type: SUBSTATION_LAYOUT,
         [PARAM_SUBSTATION_LAYOUT]: substationLayout,
+    };
+}
+
+export const COMPONENT_LIBRARY = 'COMPONENT_LIBRARY';
+
+export function selectComponentLibrary(componentLibrary) {
+    return {
+        type: COMPONENT_LIBRARY,
+        [PARAM_COMPONENT_LIBRARY]: componentLibrary,
     };
 }
 

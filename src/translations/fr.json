@@ -63,7 +63,7 @@
 
     "close": "Fermer",
 
-    "loadingGeoData": "Chargement en cours...",
+    "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
     "loadingCreationStudy": "Création en cours...",
 
@@ -109,6 +109,9 @@
     "VoltageLevelIdSide1": "ID Poste 1",
     "VoltageLevelIdSide2": "ID Poste 2",
     "VoltageLevelIdSide3": "ID Poste 3",
+    "NominalVoltageSide1": "Tension nominale 1 (kV)",
+    "NominalVoltageSide2": "Tension nominale 2 (kV)",
+    "NominalVoltageSide3": "Tension nominale 3 (kV)",
     "ActivePower": "p (MW)",
     "ActivePowerSide1": "p1 (MW)",
     "ActivePowerSide2": "p2 (MW)",
@@ -173,7 +176,6 @@
 
     "isOk": "Ok",
     "metrics": "Métriques",
-    "logs": "Logs",
 
     "SubstationLayout": "Disposition des images de sites : ",
     "HorizontalSubstationLayout": "Horizontal",
@@ -224,6 +226,7 @@
     "TripLine": "Déclencher la ligne",
     "EnergiseOnOneEnd": "Mettre sous tension à vide depuis {substation}",
     "SwitchOnLine": "Mettre en service la ligne",
+    "ViewOnSpreadsheet": "Visualiser dans le tableur",
 
     "UnableToLockoutLine": "Impossible de consigner la ligne",
     "UnableToTripLine": "Impossible de déclencher la ligne",
@@ -239,5 +242,12 @@
 
     "SubstationList": "Liste des postes",
     "HypothesisTree": "Arbre des hypothèses (indisponible)",
-    "MinMax": "Min:\u202F{min} Max:\u202F{max}"
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+
+    "logs": "Logs",
+    "logsTitle": "Logs : {title}",
+    "showReport" : "Afficher logs",
+    "loadingReport": "Chargement des logs en cours...",
+
+    "ComponentLibrary": "Sélection de la bibliothèque de composants : "
 }

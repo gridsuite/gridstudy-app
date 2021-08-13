@@ -44,6 +44,7 @@ import {
     RESET_LOADFLOW_NOTIF,
     ADD_SA_NOTIF,
     RESET_SA_NOTIF,
+    COMPONENT_LIBRARY,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -64,6 +65,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_SUBSTATION_LAYOUT,
+    PARAM_COMPONENT_LIBRARY,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -81,6 +83,7 @@ const paramsInitialState = {
     [PARAM_CENTER_LABEL]: false,
     [PARAM_DIAGONAL_LABEL]: false,
     [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
+    [PARAM_COMPONENT_LIBRARY]: null,
 };
 
 const initialState = {
@@ -251,6 +254,10 @@ export const reducer = createReducer(initialState, {
 
     [SUBSTATION_LAYOUT]: (state, action) => {
         state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
+    },
+
+    [COMPONENT_LIBRARY]: (state, action) => {
+        state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     },
 
     [SELECTED_ITEM_NETWORK]: (state, action) => {

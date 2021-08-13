@@ -63,7 +63,7 @@
 
     "close": "Close",
 
-    "loadingGeoData": "Loading...",
+    "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
     "loadingCreationStudy": "Creation in progress...",
 
@@ -109,6 +109,9 @@
     "VoltageLevelIdSide1": "Voltage level ID 1",
     "VoltageLevelIdSide2": "Voltage level ID 2",
     "VoltageLevelIdSide3": "Voltage level ID 3",
+    "NominalVoltageSide1": "Nominal voltage 1 (kV)",
+    "NominalVoltageSide2": "Nominal voltage 2 (kV)",
+    "NominalVoltageSide3": "Nominal voltage 3 (kV)",
     "ActivePower": "p (MW)",
     "ActivePowerSide1": "p1 (MW)",
     "ActivePowerSide2": "p2 (MW)",
@@ -173,7 +176,6 @@
 
     "isOk": "Ok",
     "metrics": "Metrics",
-    "logs": "Logs",
 
     "SubstationLayout": "Substation diagram layout: ",
     "HorizontalSubstationLayout": "Horizontal",
@@ -224,6 +226,7 @@
     "TripLine": "Trip the line",
     "EnergiseOnOneEnd": "Energise on one end ({substation})",
     "SwitchOnLine": "Switch on the line",
+    "ViewOnSpreadsheet": "View in spreadsheet",
 
     "UnableToLockoutLine": "Unable to lockout the line",
     "UnableToTripLine": "Unable to trip the line",
@@ -239,5 +242,12 @@
 
     "SubstationList": "Substation list",
     "HypothesisTree": "Hypothesis tree (unavailable)",
-    "MinMax": "Min:\u202F{min} Max:\u202F{max}"
+    "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+
+    "logs": "Logs",
+    "logsTitle": "Logs : {title}",
+    "showReport": "Show logs",
+    "loadingReport": "Loading logs in progress...",
+
+    "ComponentLibrary": "Component library selection : "
 }
