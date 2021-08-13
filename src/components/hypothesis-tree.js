@@ -5,7 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useState } from 'react';
-import ReactFlow, {isNode, removeElements} from 'react-flow-renderer';
+import ReactFlow, {
+    getOutgoers,
+    isNode,
+    removeElements,
+} from 'react-flow-renderer';
 import HypoNode from './graph-nodes/hypo-node';
 import ModelNode from './graph-nodes/model-node';
 import CreateNodeMenu from './graph-menus/create-node-menu';
@@ -70,6 +74,7 @@ const layoutedElements = getLayoutedElements(initialElements);
 
 const HypothesisTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
+    const [elements, setElements] = useState(layoutedElements);
 
     const style = {
         width: '100%',
@@ -123,7 +128,9 @@ const HypothesisTree = (props) => {
     }
 
     function removeNode(element) {
-        setElements((es) => removeElements([element], es));
+        let children = getOutgoers(element, elements);
+        children.forEach((ch) => removeNode(ch));
+        setElements((es) => getLayoutedElements(removeElements([element], es)));
     }
 
     const [createNodeMenu, setCreateNodeMenu] = useState({
@@ -143,8 +150,6 @@ const HypothesisTree = (props) => {
         hypoNode: HypoNode,
         modelNode: ModelNode,
     };
-
-    const [elements, setElements] = useState(layoutedElements);
 
     return (
         <>
