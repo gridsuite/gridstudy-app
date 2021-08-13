@@ -40,6 +40,7 @@ export const EquipmentTable = ({
     filter,
     scrollToIndex,
     scrollToAlignment,
+    network,
 }) => {
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
@@ -133,13 +134,17 @@ export const EquipmentTable = ({
         );
     }
 
-    function formatNumber(cellData, isNumeric, fractionDigit) {
-        return cellData.rowData[cellData.dataKey] && isNumeric && fractionDigit
-            ? parseFloat(cellData.rowData[cellData.dataKey]).toFixed(
-                  fractionDigit
-              )
-            : cellData.rowData[cellData.dataKey];
-    }
+    const formatCell = useCallback(
+        (cellData, isNumeric, fractionDigit) => {
+            let value = cellData.cellData;
+            if (typeof value === 'function') value = cellData.cellData(network);
+
+            return value && isNumeric && fractionDigit
+                ? parseFloat(value).toFixed(fractionDigit)
+                : value;
+        },
+        [network]
+    );
 
     const defaultCellRender = useCallback(
         (cellData, numeric, fractionDigit) => {
@@ -155,12 +160,12 @@ export const EquipmentTable = ({
                         className={classes.textDiv}
                         style={{ textAlign: numeric ? 'right' : 'left' }}
                     >
-                        {formatNumber(cellData, numeric, fractionDigit)}
+                        {formatCell(cellData, numeric, fractionDigit)}
                     </div>
                 </TableCell>
             );
         },
-        [classes.cell, classes.textDiv]
+        [classes.cell, classes.textDiv, formatCell]
     );
 
     const registerChangeRequest = useCallback(
@@ -192,7 +197,7 @@ export const EquipmentTable = ({
                         key={cellData.dataKey + cellData.rowData.id}
                         className={classes.cell}
                         equipment={rows[lineEdit.line]}
-                        defaultValue={formatNumber(
+                        defaultValue={formatCell(
                             cellData,
                             numeric,
                             fractionDigit
@@ -208,7 +213,7 @@ export const EquipmentTable = ({
                         margin={'normal'}
                         inputProps={{ style: { textAlign: 'center' } }}
                         onChange={(obj) => changeRequest(obj.target.value)}
-                        defaultValue={formatNumber(
+                        defaultValue={formatCell(
                             cellData,
                             numeric,
                             fractionDigit
@@ -224,6 +229,7 @@ export const EquipmentTable = ({
             registerChangeRequest,
             lineEdit,
             rows,
+            formatCell,
         ]
     );
 
