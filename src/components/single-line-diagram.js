@@ -401,10 +401,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
             const bbox = svgEl.getBBox();
-            const xOrigin = bbox.x - 20;
-            const yOrigin = bbox.y - 20;
-            const svgWidth = bbox.width + 40;
-            const svgHeight = bbox.height + 40;
+            const xOrigin = bbox.x - 40;
+            const yOrigin = bbox.y - 55;
+            const svgWidth = bbox.width + 60;
+            const svgHeight = bbox.height + 70;
 
             setSvgPreferredWidth(svgWidth);
             setSvgPreferredHeight(svgHeight);
