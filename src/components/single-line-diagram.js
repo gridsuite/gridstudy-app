@@ -32,7 +32,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 
 import { fetchSvg } from '../utils/rest-api';
 
-import SldSvg from 'sld-svg/sldsvg.js';
+import SldViewer from 'sld-svg/sld-viewer.js';
 import '@svgdotjs/svg.panzoom.js';
 import useTheme from '@material-ui/core/styles/useTheme';
 import Arrow from '../images/arrow.svg';
@@ -425,7 +425,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
 
-            const sldsvg = new SldSvg()
+            const sldViewer = new SldViewer()
                 .addTo('sld-svg')
                 .size(svgWidth, svgHeight)
                 .viewbox(xOrigin, yOrigin, viewboxWidth, viewboxHeight)
@@ -438,10 +438,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     margins: { top: 100, left: 100, right: 100, bottom: 200 },
                 });
 
-            sldsvg.addCallbackOnSwitches(onBreakerClick);
+            sldViewer.addCallbackOnSwitches(onBreakerClick);
 
             Promise.all([arrowPromise, arrowHoverPromise]).then(() => {
-                sldsvg.addNavigationArrows(
+                sldViewer.addNavigationArrows(
                     {
                         arrowIcon: arrowSvg,
                         arrowHoverIcon: arrowHoverSvg,
@@ -494,14 +494,14 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
 
             if (svgDraw.current && svgUrl.current === svg.svgUrl) {
-                // FIXME: add this function to the sldsvg lib
+                // FIXME: add this function to the sld-viewer lib
                 // draw.viewbox(svgDraw.current.viewbox());
-                sldsvg.canvas.viewbox(svgDraw.current.viewbox());
+                sldViewer.canvas.viewbox(svgDraw.current.viewbox());
             }
             svgUrl.current = svg.svgUrl;
 
             // svgDraw.current = draw;
-            svgDraw.current = sldsvg.canvas;
+            svgDraw.current = sldViewer.canvas;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
     }, [
