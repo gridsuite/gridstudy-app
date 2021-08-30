@@ -35,310 +35,287 @@ const useStyles = makeStyles((theme) => ({
 const ROW_HEIGHT = 50;
 
 export const EquipmentTable = ({
-           fetched,
-           studyUuid,
-           rows,
-           selectedColumnsNames,
-           tableDefinition,
-           filter,
-           scrollToIndex,
-           scrollToAlignment,
-           network,
-       }) => {
-           const [lineEdit, setLineEdit] = useState(undefined);
-           const classes = useStyles();
-           const intl = useIntl();
-           const isLineOnEditMode = useCallback(
-               (cellData) => {
-                   return lineEdit && cellData.rowData.id === lineEdit.id;
-               },
-               [lineEdit]
-           );
+    fetched,
+    studyUuid,
+    rows,
+    selectedColumnsNames,
+    tableDefinition,
+    filter,
+    scrollToIndex,
+    scrollToAlignment,
+    network,
+}) => {
+    const [lineEdit, setLineEdit] = useState(undefined);
+    const classes = useStyles();
+    const intl = useIntl();
+    const isLineOnEditMode = useCallback(
+        (cellData) => {
+            return lineEdit && cellData.rowData.id === lineEdit.id;
+        },
+        [lineEdit]
+    );
 
-           useEffect(() => setLineEdit({}), [tableDefinition]);
+    useEffect(() => setLineEdit({}), [tableDefinition]);
 
-           function startEdition(lineInfo) {
-               setLineEdit(lineInfo);
-           }
+    function startEdition(lineInfo) {
+        setLineEdit(lineInfo);
+    }
 
-           function capitaliseFirst(str) {
-               return str.charAt(0).toUpperCase() + str.slice(1);
-           }
+    function capitaliseFirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
 
-           function commitChanges(rowData) {
-               let groovyCr =
-                   'equipment = network.get' +
-                   capitaliseFirst(tableDefinition.modifiableEquipmentType) +
-                   "('" +
-                   lineEdit.id.replace(/'/g, "\\'") +
-                   "')\n";
-               Object.values(lineEdit.newValues).forEach((cr) => {
-                   groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
-               });
-               requestNetworkChange(studyUuid, groovyCr).then((response) => {
-                   if (response.ok) {
-                       Object.entries(lineEdit.newValues).forEach(
-                           ([key, cr]) => {
-                               rowData[key] = cr.value;
-                           }
-                       );
-                   } else {
-                       Object.entries(lineEdit.oldValues).forEach(
-                           ([key, oldValue]) => {
-                               rowData[key] = oldValue;
-                           }
-                       );
-                   }
-                   setLineEdit({});
-               });
-           }
+    function commitChanges(rowData) {
+        let groovyCr =
+            'equipment = network.get' +
+            capitaliseFirst(tableDefinition.modifiableEquipmentType) +
+            "('" +
+            lineEdit.id.replace(/'/g, "\\'") +
+            "')\n";
+        Object.values(lineEdit.newValues).forEach((cr) => {
+            groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
+        });
+        requestNetworkChange(studyUuid, groovyCr).then((response) => {
+            if (response.ok) {
+                Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
+                    rowData[key] = cr.value;
+                });
+            } else {
+                Object.entries(lineEdit.oldValues).forEach(
+                    ([key, oldValue]) => {
+                        rowData[key] = oldValue;
+                    }
+                );
+            }
+            setLineEdit({});
+        });
+    }
 
-           function resetChanges(rowData) {
-               Object.entries(lineEdit.oldValues).forEach(([key, oldValue]) => {
-                   rowData[key] = oldValue;
-               });
-               setLineEdit({});
-           }
+    function resetChanges(rowData) {
+        Object.entries(lineEdit.oldValues).forEach(([key, oldValue]) => {
+            rowData[key] = oldValue;
+        });
+        setLineEdit({});
+    }
 
-           function createEditableRow(cellData) {
-               return (
-                   (!isLineOnEditMode(cellData) && (
-                       <IconButton
-                           disabled={lineEdit && lineEdit.id && true}
-                           onClick={() =>
-                               startEdition({
-                                   line: cellData.rowIndex,
-                                   oldValues: {},
-                                   newValues: {},
-                                   id: cellData.rowData['id'],
-                                   equipmentType:
-                                       tableDefinition.modifiableEquipmentType,
-                               })
-                           }
-                       >
-                           <CreateIcon alignmentBaseline={'middle'} />
-                       </IconButton>
-                   )) || (
-                       <Grid container>
-                           <Grid item>
-                               <IconButton
-                                   size={'small'}
-                                   onClick={() =>
-                                       commitChanges(cellData.rowData)
-                                   }
-                               >
-                                   <CheckIcon />
-                               </IconButton>
-                               <IconButton
-                                   size={'small'}
-                                   onClick={() =>
-                                       resetChanges(cellData.rowData)
-                                   }
-                               >
-                                   <ClearIcon />
-                               </IconButton>
-                           </Grid>
-                       </Grid>
-                   )
-               );
-           }
+    function createEditableRow(cellData) {
+        return (
+            (!isLineOnEditMode(cellData) && (
+                <IconButton
+                    disabled={lineEdit && lineEdit.id && true}
+                    onClick={() =>
+                        startEdition({
+                            line: cellData.rowIndex,
+                            oldValues: {},
+                            newValues: {},
+                            id: cellData.rowData['id'],
+                            equipmentType:
+                                tableDefinition.modifiableEquipmentType,
+                        })
+                    }
+                >
+                    <CreateIcon alignmentBaseline={'middle'} />
+                </IconButton>
+            )) || (
+                <Grid container>
+                    <Grid item>
+                        <IconButton
+                            size={'small'}
+                            onClick={() => commitChanges(cellData.rowData)}
+                        >
+                            <CheckIcon />
+                        </IconButton>
+                        <IconButton
+                            size={'small'}
+                            onClick={() => resetChanges(cellData.rowData)}
+                        >
+                            <ClearIcon />
+                        </IconButton>
+                    </Grid>
+                </Grid>
+            )
+        );
+    }
 
-           const formatCell = useCallback(
-               (cellData, isNumeric, fractionDigit) => {
-                   let value = cellData.cellData;
-                   if (typeof value === 'function')
-                       value = cellData.cellData(network);
+    const formatCell = useCallback(
+        (cellData, isNumeric, fractionDigit) => {
+            let value = cellData.cellData;
+            if (typeof value === 'function') value = cellData.cellData(network);
 
-                   return value && isNumeric && fractionDigit
-                       ? parseFloat(value).toFixed(fractionDigit)
-                       : value;
-               },
-               [network]
-           );
+            return value && isNumeric && fractionDigit
+                ? parseFloat(value).toFixed(fractionDigit)
+                : value;
+        },
+        [network]
+    );
 
-           const defaultCellRender = useCallback(
-               (cellData, numeric, fractionDigit) => {
-                   const text = formatCell(cellData, numeric, fractionDigit);
-                   const ref = React.createRef();
-                   return (
-                       <TableCell
-                           component="div"
-                           variant="body"
-                           style={{ height: ROW_HEIGHT, width: cellData.width }}
-                           className={classes.cell}
-                           align={numeric ? 'right' : 'left'}
-                       >
-                           {
-                               <OverflowableText text={text} childRef={ref}>
-                                   <div
-                                       ref={ref}
-                                       style={{
-                                           textAlign: numeric
-                                               ? 'right'
-                                               : 'left',
-                                       }}
-                                       className={classes.textDiv}
-                                   >
-                                       {text}
-                                   </div>
-                               </OverflowableText>
-                           }
-                       </TableCell>
-                   );
-               },
-               [classes.cell, classes.textDiv, formatCell]
-           );
+    const defaultCellRender = useCallback(
+        (cellData, numeric, fractionDigit) => {
+            const text = formatCell(cellData, numeric, fractionDigit);
+            const ref = React.createRef();
+            return (
+                <TableCell
+                    component="div"
+                    variant="body"
+                    style={{ height: ROW_HEIGHT, width: cellData.width }}
+                    className={classes.cell}
+                    align={numeric ? 'right' : 'left'}
+                >
+                    {
+                        <OverflowableText text={text} childRef={ref}>
+                            <div
+                                ref={ref}
+                                style={{
+                                    textAlign: numeric ? 'right' : 'left',
+                                }}
+                                className={classes.textDiv}
+                            >
+                                {text}
+                            </div>
+                        </OverflowableText>
+                    }
+                </TableCell>
+            );
+        },
+        [classes.cell, classes.textDiv, formatCell]
+    );
 
-           const registerChangeRequest = useCallback(
-               (data, changeCmd, value) => {
-                   // save original value, dont erase if exists
-                   if (!lineEdit.oldValues[data.dataKey])
-                       lineEdit.oldValues[data.dataKey] =
-                           data.rowData[data.dataKey];
-                   lineEdit.newValues[data.dataKey] = {
-                       changeCmd: changeCmd,
-                       value: value,
-                   };
-                   data.rowData[data.dataKey] = value;
-               },
-               [lineEdit]
-           );
+    const registerChangeRequest = useCallback(
+        (data, changeCmd, value) => {
+            // save original value, dont erase if exists
+            if (!lineEdit.oldValues[data.dataKey])
+                lineEdit.oldValues[data.dataKey] = data.rowData[data.dataKey];
+            lineEdit.newValues[data.dataKey] = {
+                changeCmd: changeCmd,
+                value: value,
+            };
+            data.rowData[data.dataKey] = value;
+        },
+        [lineEdit]
+    );
 
-           const EditableCellRender = useCallback(
-               (cellData, numeric, changeCmd, fractionDigit, Editor) => {
-                   if (
-                       !isLineOnEditMode(cellData) ||
-                       cellData.rowData[cellData.dataKey] === undefined
-                   ) {
-                       return defaultCellRender(
-                           cellData,
-                           numeric,
-                           fractionDigit
-                       );
-                   } else {
-                       const ref = React.createRef();
-                       const text = formatCell(
-                           cellData,
-                           numeric,
-                           fractionDigit
-                       );
-                       const changeRequest = (value) =>
-                           registerChangeRequest(cellData, changeCmd, value);
-                       return Editor ? (
-                           <Editor
-                               key={cellData.dataKey + cellData.rowData.id}
-                               className={classes.cell}
-                               equipment={rows[lineEdit.line]}
-                               defaultValue={formatCell(
-                                   cellData,
-                                   numeric,
-                                   fractionDigit
-                               )}
-                               setter={(val) => changeRequest(val)}
-                           />
-                       ) : (
-                           <OverflowableText text={text} childRef={ref}>
-                               <TextField
-                                   id={cellData.dataKey}
-                                   type="Number"
-                                   className={clsx(
-                                       classes.cell,
-                                       classes.textDiv
-                                   )}
-                                   size={'medium'}
-                                   margin={'normal'}
-                                   inputProps={{
-                                       style: { textAlign: 'center' },
-                                   }}
-                                   onChange={(obj) =>
-                                       changeRequest(obj.target.value)
-                                   }
-                                   defaultValue={text}
-                                   ref={ref}
-                               />
-                           </OverflowableText>
-                       );
-                   }
-               },
-               [
-                   classes.cell,
-                   classes.textDiv,
-                   defaultCellRender,
-                   isLineOnEditMode,
-                   registerChangeRequest,
-                   lineEdit,
-                   rows,
-                   formatCell,
-               ]
-           );
+    const EditableCellRender = useCallback(
+        (cellData, numeric, changeCmd, fractionDigit, Editor) => {
+            if (
+                !isLineOnEditMode(cellData) ||
+                cellData.rowData[cellData.dataKey] === undefined
+            ) {
+                return defaultCellRender(cellData, numeric, fractionDigit);
+            } else {
+                const ref = React.createRef();
+                const text = formatCell(cellData, numeric, fractionDigit);
+                const changeRequest = (value) =>
+                    registerChangeRequest(cellData, changeCmd, value);
+                return Editor ? (
+                    <Editor
+                        key={cellData.dataKey + cellData.rowData.id}
+                        className={classes.cell}
+                        equipment={rows[lineEdit.line]}
+                        defaultValue={formatCell(
+                            cellData,
+                            numeric,
+                            fractionDigit
+                        )}
+                        setter={(val) => changeRequest(val)}
+                    />
+                ) : (
+                    <OverflowableText text={text} childRef={ref}>
+                        <TextField
+                            id={cellData.dataKey}
+                            type="Number"
+                            className={clsx(classes.cell, classes.textDiv)}
+                            size={'medium'}
+                            margin={'normal'}
+                            inputProps={{
+                                style: { textAlign: 'center' },
+                            }}
+                            onChange={(obj) => changeRequest(obj.target.value)}
+                            defaultValue={text}
+                            ref={ref}
+                        />
+                    </OverflowableText>
+                );
+            }
+        },
+        [
+            classes.cell,
+            classes.textDiv,
+            defaultCellRender,
+            isLineOnEditMode,
+            registerChangeRequest,
+            lineEdit,
+            rows,
+            formatCell,
+        ]
+    );
 
-           const columnDisplayStyle = (key) => {
-               return selectedColumnsNames.has(key) ? '' : 'none';
-           };
+    const columnDisplayStyle = (key) => {
+        return selectedColumnsNames.has(key) ? '' : 'none';
+    };
 
-           const generateTableColumns = (table) => {
-               return table.columns.map((c) => {
-                   let column = {
-                       label: intl.formatMessage({ id: c.id }),
-                       headerStyle: { display: columnDisplayStyle(c.id) },
-                       style: { display: columnDisplayStyle(c.id) },
-                       ...c,
-                   };
-                   if (c.changeCmd !== undefined) {
-                       column.cellRenderer = (cell) =>
-                           EditableCellRender(
-                               cell,
-                               c.numeric,
-                               c.changeCmd,
-                               c.fractionDigits,
-                               c.editor
-                           );
-                   } else {
-                       column.cellRenderer = (cell) =>
-                           defaultCellRender(cell, c.numeric, c.fractionDigits);
-                   }
-                   delete column.changeCmd;
-                   return column;
-               });
-           };
+    const generateTableColumns = (table) => {
+        return table.columns.map((c) => {
+            let column = {
+                label: intl.formatMessage({ id: c.id }),
+                headerStyle: { display: columnDisplayStyle(c.id) },
+                style: { display: columnDisplayStyle(c.id) },
+                ...c,
+            };
+            if (c.changeCmd !== undefined) {
+                column.cellRenderer = (cell) =>
+                    EditableCellRender(
+                        cell,
+                        c.numeric,
+                        c.changeCmd,
+                        c.fractionDigits,
+                        c.editor
+                    );
+            } else {
+                column.cellRenderer = (cell) =>
+                    defaultCellRender(cell, c.numeric, c.fractionDigits);
+            }
+            delete column.changeCmd;
+            return column;
+        });
+    };
 
-           function makeHeaderCell() {
-               return {
-                   width: 65,
-                   maxWidth: 65,
-                   label: '',
-                   dataKey: '',
-                   style: {
-                       display: selectedColumnsNames.size > 0 ? '' : 'none',
-                   },
-                   cellRenderer: createEditableRow,
-               };
-           }
+    function makeHeaderCell() {
+        return {
+            width: 65,
+            maxWidth: 65,
+            label: '',
+            dataKey: '',
+            style: {
+                display: selectedColumnsNames.size > 0 ? '' : 'none',
+            },
+            cellRenderer: createEditableRow,
+        };
+    }
 
-           return (
-               <>
-                   {!fetched && (
-                       <LoaderWithOverlay
-                           color="inherit"
-                           loaderSize={70}
-                           loadingMessageText={'LoadingRemoteData'}
-                       />
-                   )}
-                   <VirtualizedTable
-                       rows={rows}
-                       rowHeight={ROW_HEIGHT}
-                       filter={filter}
-                       columns={
-                           tableDefinition.modifiableEquipmentType
-                               ? [
-                                     makeHeaderCell(),
-                                     ...generateTableColumns(tableDefinition),
-                                 ]
-                               : generateTableColumns(tableDefinition)
-                       }
-                       scrollToIndex={scrollToIndex}
-                       scrollToAlignment={scrollToAlignment}
-                   />
-               </>
-           );
-       };
+    return (
+        <>
+            {!fetched && (
+                <LoaderWithOverlay
+                    color="inherit"
+                    loaderSize={70}
+                    loadingMessageText={'LoadingRemoteData'}
+                />
+            )}
+            <VirtualizedTable
+                rows={rows}
+                rowHeight={ROW_HEIGHT}
+                filter={filter}
+                columns={
+                    tableDefinition.modifiableEquipmentType
+                        ? [
+                              makeHeaderCell(),
+                              ...generateTableColumns(tableDefinition),
+                          ]
+                        : generateTableColumns(tableDefinition)
+                }
+                scrollToIndex={scrollToIndex}
+                scrollToAlignment={scrollToAlignment}
+            />
+        </>
+    );
+};
