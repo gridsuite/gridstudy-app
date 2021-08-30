@@ -109,6 +109,9 @@
     "VoltageLevelIdSide1": "Voltage level ID 1",
     "VoltageLevelIdSide2": "Voltage level ID 2",
     "VoltageLevelIdSide3": "Voltage level ID 3",
+    "NominalVoltageSide1": "Nominal voltage 1 (kV)",
+    "NominalVoltageSide2": "Nominal voltage 2 (kV)",
+    "NominalVoltageSide3": "Nominal voltage 3 (kV)",
     "ActivePower": "p (MW)",
     "ActivePowerSide1": "p1 (MW)",
     "ActivePowerSide2": "p2 (MW)",
@@ -244,5 +247,7 @@
     "logs": "Logs",
     "logsTitle": "Logs : {title}",
     "showReport": "Show logs",
-    "loadingReport": "Loading logs in progress..."
+    "loadingReport": "Loading logs in progress...",
+
+    "ComponentLibrary": "Component library selection : "
 }

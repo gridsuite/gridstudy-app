@@ -37,6 +37,7 @@ import {
     getLoadFlowProvider,
     setLoadFlowProvider,
     updateConfigParameter,
+    getAvailableComponentLibraries,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
@@ -49,6 +50,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
+    PARAM_COMPONENT_LIBRARY,
 } from '../utils/config-params';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
@@ -113,7 +115,7 @@ const LF_PROVIDER_VALUES = {
     Hades2: 'Hades2',
 };
 
-const Parameters = ({ showParameters, hideParameters }) => {
+const Parameters = ({ showParameters, hideParameters, user }) => {
     const classes = useStyles();
 
     const intlRef = useIntlRef();
@@ -161,6 +163,11 @@ const Parameters = ({ showParameters, hideParameters }) => {
         handleChangeSubstationLayout,
     ] = useParameterState(PARAM_SUBSTATION_LAYOUT);
 
+    const [
+        componentLibraryLocal,
+        handleChangeComponentLibrary,
+    ] = useParameterState(PARAM_COMPONENT_LIBRARY);
+
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [lfProvider, setLfProvider] = useState(null);
@@ -176,6 +183,8 @@ const Parameters = ({ showParameters, hideParameters }) => {
     );
 
     const [tabIndex, setTabIndex] = useState(0);
+
+    const [componentLibraries, setComponentLibraries] = useState([]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -207,6 +216,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 );
         }
     }, [studyUuid, enqueueSnackbar, intlRef]);
+
+    useEffect(() => {
+        if (user !== null) {
+            getAvailableComponentLibraries().then((libraries) => {
+                setComponentLibraries(libraries);
+            });
+        }
+    }, [user]);
 
     useEffect(() => {
         setDisabledFlowAlertThreshold(
@@ -395,6 +412,37 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         >
                             <FormattedMessage id="SmartWithVerticalCompactionSubstationLayout" />
                         </MenuItem>
+                    </Select>
+                </Grid>
+
+                <MakeLineSeparator />
+
+                <Grid item xs={8}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="ComponentLibrary" />
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={4} className={classes.controlItem}>
+                    <Select
+                        labelId="component-library-select-label"
+                        value={
+                            componentLibraryLocal !== null
+                                ? componentLibraryLocal
+                                : componentLibraries[0]
+                        }
+                        onChange={(event) => {
+                            handleChangeComponentLibrary(event.target.value);
+                        }}
+                    >
+                        {componentLibraries.map((library) => {
+                            return (
+                                <MenuItem key={library} value={library}>
+                                    {library}
+                                </MenuItem>
+                            );
+                        })}
                     </Select>
                 </Grid>
             </Grid>
