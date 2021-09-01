@@ -13,15 +13,17 @@ import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import { OverflowableText } from '../util/overflowable-text';
 
+const ROW_HEIGHT = 50;
+
 const useStyles = makeStyles((theme) => ({
-    cell: {
+    tableCell: {
         display: 'flex',
         alignItems: 'right',
         textAlign: 'right',
         boxSizing: 'border-box',
         flex: 1,
         minWidth: 0,
-        height: '100%',
+        height: ROW_HEIGHT + 'px',
         cursor: 'initial',
     },
     textDiv: {
@@ -31,8 +33,6 @@ const useStyles = makeStyles((theme) => ({
         minWidth: '10px',
     },
 }));
-
-const ROW_HEIGHT = 50;
 
 export const EquipmentTable = ({
     fetched,
@@ -157,8 +157,8 @@ export const EquipmentTable = ({
                 <TableCell
                     component="div"
                     variant="body"
-                    style={{ height: ROW_HEIGHT, width: cellData.width }}
-                    className={classes.cell}
+                    style={{ width: cellData.width }}
+                    className={classes.tableCell}
                     align={numeric ? 'right' : 'left'}
                 >
                     {
@@ -177,7 +177,7 @@ export const EquipmentTable = ({
                 </TableCell>
             );
         },
-        [classes.cell, classes.textDiv, formatCell]
+        [classes.tableCell, classes.textDiv, formatCell]
     );
 
     const registerChangeRequest = useCallback(
@@ -209,7 +209,7 @@ export const EquipmentTable = ({
                 return Editor ? (
                     <Editor
                         key={cellData.dataKey + cellData.rowData.id}
-                        className={classes.cell}
+                        className={classes.tableCell}
                         equipment={rows[lineEdit.line]}
                         defaultValue={formatCell(
                             cellData,
@@ -223,7 +223,7 @@ export const EquipmentTable = ({
                         <TextField
                             id={cellData.dataKey}
                             type="Number"
-                            className={clsx(classes.cell, classes.textDiv)}
+                            className={clsx(classes.tableCell, classes.textDiv)}
                             size={'medium'}
                             margin={'normal'}
                             inputProps={{
@@ -238,7 +238,7 @@ export const EquipmentTable = ({
             }
         },
         [
-            classes.cell,
+            classes.tableCell,
             classes.textDiv,
             defaultCellRender,
             isLineOnEditMode,
