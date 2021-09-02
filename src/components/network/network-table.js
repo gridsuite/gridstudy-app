@@ -155,6 +155,7 @@ const NetworkTable = (props) => {
                 scrollToIndex={scrollToIndex}
                 scrollToAlignment="start"
                 network={props.network}
+                selectedDataKey={Array.from(selectedDataKey)}
             />
         );
     }

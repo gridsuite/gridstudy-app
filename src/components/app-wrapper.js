@@ -17,6 +17,8 @@ import {
     SnackbarProvider,
     top_bar_en,
     top_bar_fr,
+    table_en,
+    table_fr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -56,8 +58,20 @@ const getMuiTheme = (theme) => {
 };
 
 const messages = {
-    en: { ...messages_en, ...report_viewer_en, ...login_en, ...top_bar_en },
-    fr: { ...messages_fr, ...report_viewer_fr, ...login_fr, ...top_bar_fr },
+    en: {
+        ...messages_en,
+        ...report_viewer_en,
+        ...login_en,
+        ...top_bar_en,
+        ...table_en,
+    },
+    fr: {
+        ...messages_fr,
+        ...report_viewer_fr,
+        ...login_fr,
+        ...top_bar_fr,
+        ...table_fr,
+    },
 };
 
 const basename = new URL(document.querySelector('base').href).pathname;
