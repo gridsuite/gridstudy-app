@@ -44,6 +44,7 @@ export const EquipmentTable = ({
     scrollToIndex,
     scrollToAlignment,
     network,
+    selectedDataKey,
 }) => {
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
@@ -315,6 +316,8 @@ export const EquipmentTable = ({
                 }
                 scrollToIndex={scrollToIndex}
                 scrollToAlignment={scrollToAlignment}
+                enableExportCSV={true}
+                exportCSVDataKeys={selectedDataKey}
             />
         </>
     );
