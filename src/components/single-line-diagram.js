@@ -605,33 +605,51 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             setSvgPreferredWidth(svgWidth);
             setSvgPreferredHeight(svgHeight);
 
-            let viewboxWidth = Math.min(
-                svgWidth,
+            let viewboxMaxWidth =
                 svgType === SvgType.VOLTAGE_LEVEL
                     ? maxWidthVoltageLevel
-                    : maxWidthSubstation
-            );
-            let viewboxHeight = Math.min(
-                svgHeight,
+                    : maxWidthSubstation;
+            let viewboxMaxHeight =
                 svgType === SvgType.VOLTAGE_LEVEL
                     ? maxHeightVoltageLevel
-                    : maxHeightSubstation
-            );
+                    : maxHeightSubstation;
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
                 .size(svgWidth, svgHeight)
-                .viewbox(xOrigin, yOrigin, viewboxWidth, viewboxHeight)
+                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
                     zoomMin: svgType === SvgType.VOLTAGE_LEVEL ? 0.5 : 0.1,
                     zoomMax: 10,
                     zoomFactor: svgType === SvgType.VOLTAGE_LEVEL ? 0.3 : 0.15,
-                    margins: { top: 100, left: 100, right: 100, bottom: 200 },
+                    margins: { top: 100, left: 100, right: 100, bottom: 100 },
                 });
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
+            if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
+                //The svg is too big, display only the top left corner because that's
+                //better for users than zooming out. Keep the same aspect ratio
+                //so that panzoom's margins still work correctly.
+                //I am not sure the offsetX and offsetY thing is correct. It seems
+                //to help. When someone finds a big problem, then we can fix it.
+                const newLvlX = svgWidth / viewboxMaxWidth;
+                const newLvlY = svgHeight / viewboxMaxHeight;
+                if (newLvlX > newLvlY) {
+                    const offsetY = (viewboxMaxHeight - svgHeight) / newLvlX;
+                    draw.zoom(newLvlX, {
+                        x: xOrigin,
+                        y: (yOrigin + viewboxMaxHeight - offsetY) / 2,
+                    });
+                } else {
+                    const offsetX = (viewboxMaxWidth - svgWidth) / newLvlY;
+                    draw.zoom(newLvlY, {
+                        x: (xOrigin + viewboxMaxWidth - offsetX) / 2,
+                        y: yOrigin,
+                    });
+                }
+            }
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
             });

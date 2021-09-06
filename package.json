@@ -10,7 +10,7 @@
         "@material-ui/lab": "^4.0.0-alpha.42",
         "@reduxjs/toolkit": "^1.2.3",
         "@svgdotjs/svg.js": "^3.0.12",
-        "@svgdotjs/svg.panzoom.js": "^2.1.1",
+        "@svgdotjs/svg.panzoom.js": "^2.1.2",
         "cheap-ruler": "^2.5.1",
         "clsx": "^1.0.4",
         "core-js": "^3.6.4",
