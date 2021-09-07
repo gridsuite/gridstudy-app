@@ -536,11 +536,26 @@ class LineLayer extends CompositeLayer {
             // +1 => distanceBetweenLines on side
             // -1 => distanceBetweenLines on the other side
             // 0.5 => half of distanceBetweenLines
-            mapOriginDestination.forEach((samePathLine) => {
-                let index = -(samePathLine.size - 1) / 2;
+            mapOriginDestination.forEach((samePathLine, key) => {
+                // restrict parallelIndex to -15.5, -15, .., 15, 15.5 (32 lines, half precision)
+                // for 31 lines, -15, -14, .., 15
+                // for 32 lines, -15.5, -14.5, ..., 14.5, 15.5
+                // (needed by the parallel path shader)
+                let truncatedSize = samePathLine.size;
+                if (truncatedSize > 32) {
+                    console.warn(
+                        'Warning, more than 32 parallel lines between vls ' +
+                            key +
+                            '. The map will only show 32 parallel lines.'
+                    );
+                    truncatedSize = 32;
+                }
+                let index = -(truncatedSize - 1) / 2;
                 samePathLine.forEach((line) => {
                     line.parallelIndex = props.lineParallelPath ? index : 0;
-                    index += 1;
+                    if (index < 15) {
+                        index += 1;
+                    }
                 });
             });
         });
@@ -657,15 +672,18 @@ class LineLayer extends CompositeLayer {
                         ),
                     getWidth: 2,
                     getLineParallelIndex: (line) => line.parallelIndex,
-                    getLineAngles: (line) => [
+                    getExtraAttributes: (line) => [
                         line.angleStart,
                         line.angle,
                         line.angleEnd,
-                    ],
-                    getParallelIndexAndProximityFactor: (line) => [
-                        line.parallelIndex,
-                        line.proximityFactorStart,
-                        line.proximityFactorEnd,
+                        line.parallelIndex * 2 +
+                            31 +
+                            64 *
+                                (Math.ceil(line.proximityFactorStart * 512) -
+                                    1) +
+                            64 *
+                                512 *
+                                (Math.ceil(line.proximityFactorEnd * 512) - 1),
                     ],
                     distanceBetweenLines: this.props.distanceBetweenLines,
                     maxParallelOffset: this.props.maxParallelOffset,
@@ -675,10 +693,10 @@ class LineLayer extends CompositeLayer {
                     ),
                     updateTriggers: {
                         getPath: [this.props.lineFullPath],
-                        getParallelIndexAndProximityFactor: [
+                        getExtraAttributes: [
                             this.props.lineParallelPath,
+                            this.props.lineFullPath,
                         ],
-                        getLineAngles: [this.props.lineFullPath],
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
