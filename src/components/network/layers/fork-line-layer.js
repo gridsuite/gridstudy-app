@@ -108,8 +108,8 @@ uniform float minSubstationRadiusPixel;
                 minParallelOffset: this.props.getMinParallelOffset,
                 substationRadius: this.props.getSubstationRadius,
                 substationMaxPixel: this.props.getSubstationMaxPixel,
-                minSubstationRadiusPixel: this.props
-                    .getMinSubstationRadiusPixel,
+                minSubstationRadiusPixel:
+                    this.props.getMinSubstationRadiusPixel,
             },
         });
     }

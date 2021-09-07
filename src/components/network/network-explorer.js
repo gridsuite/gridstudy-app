@@ -119,7 +119,8 @@ const NetworkExplorer = ({
         new CellMeasurerCache({
             fixedWidth: true,
             defaultHeight: itemSize,
-            minHeight: itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
+            minHeight:
+                itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
         })
     );
 

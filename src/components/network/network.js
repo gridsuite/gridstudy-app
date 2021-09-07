@@ -154,10 +154,8 @@ export default class Network {
     }
 
     completeThreeWindingsTransformersInfos() {
-        this.threeWindingsTransformersById = this.threeWindingsTransformers.reduce(
-            elementIdIndexer,
-            new Map()
-        );
+        this.threeWindingsTransformersById =
+            this.threeWindingsTransformers.reduce(elementIdIndexer, new Map());
     }
 
     updateThreeWindingsTransformers(threeWindingsTransformers) {

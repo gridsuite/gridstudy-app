@@ -46,228 +46,234 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const withLineMenu = (BaseMenu) => ({
-    id,
-    position,
-    handleClose,
-    handleViewInSpreadsheet,
-}) => {
-    const classes = useStyles();
-    const intl = useIntl();
-    const intlRef = useIntlRef();
+const withLineMenu =
+    (BaseMenu) =>
+    ({ id, position, handleClose, handleViewInSpreadsheet }) => {
+        const classes = useStyles();
+        const intl = useIntl();
+        const intlRef = useIntlRef();
 
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+        const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const { enqueueSnackbar } = useSnackbar();
-    const [displayUseName] = useParameterState(PARAM_USE_NAME);
-    const network = useSelector((state) => state.network);
+        const { enqueueSnackbar } = useSnackbar();
+        const [displayUseName] = useParameterState(PARAM_USE_NAME);
+        const network = useSelector((state) => state.network);
 
-    const line = network.getLine(id);
+        const line = network.getLine(id);
 
-    const getLineDescriptor = useCallback(
-        (voltageLevelId) => {
-            return displayUseName
-                ? network.getVoltageLevel(voltageLevelId).name
-                : voltageLevelId;
-        },
-        [displayUseName, network]
-    );
+        const getLineDescriptor = useCallback(
+            (voltageLevelId) => {
+                return displayUseName
+                    ? network.getVoltageLevel(voltageLevelId).name
+                    : voltageLevelId;
+            },
+            [displayUseName, network]
+        );
 
-    function handleLineChangesResponse(response, messsageId) {
-        const utf8Decoder = new TextDecoder('utf-8');
-        response.body
-            .getReader()
-            .read()
-            .then((value) => {
-                displayInfoMessageWithSnackbar({
-                    errorMessage: utf8Decoder.decode(value.value),
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: messsageId,
-                        intlRef: intlRef,
-                    },
+        function handleLineChangesResponse(response, messsageId) {
+            const utf8Decoder = new TextDecoder('utf-8');
+            response.body
+                .getReader()
+                .read()
+                .then((value) => {
+                    displayInfoMessageWithSnackbar({
+                        errorMessage: utf8Decoder.decode(value.value),
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: messsageId,
+                            intlRef: intlRef,
+                        },
+                    });
                 });
+        }
+
+        function handleLockout() {
+            if (line.branchStatus === 'PLANNED_OUTAGE') return;
+            handleClose();
+            lockoutLine(studyUuid, line.id).then((response) => {
+                if (response.status !== 200) {
+                    handleLineChangesResponse(response, 'UnableToLockoutLine');
+                }
             });
-    }
+        }
 
-    function handleLockout() {
-        if (line.branchStatus === 'PLANNED_OUTAGE') return;
-        handleClose();
-        lockoutLine(studyUuid, line.id).then((response) => {
-            if (response.status !== 200) {
-                handleLineChangesResponse(response, 'UnableToLockoutLine');
-            }
-        });
-    }
+        function handleTrip() {
+            if (line.branchStatus === 'FORCED_OUTAGE') return;
+            handleClose();
+            tripLine(studyUuid, line.id).then((response) => {
+                if (response.status !== 200) {
+                    handleLineChangesResponse(response, 'UnableToTripLine');
+                }
+            });
+        }
 
-    function handleTrip() {
-        if (line.branchStatus === 'FORCED_OUTAGE') return;
-        handleClose();
-        tripLine(studyUuid, line.id).then((response) => {
-            if (response.status !== 200) {
-                handleLineChangesResponse(response, 'UnableToTripLine');
-            }
-        });
-    }
+        function handleEnergise(side) {
+            if (
+                (side === 'ONE' &&
+                    line.terminal1Connected &&
+                    !line.terminal2Connected) ||
+                (side === 'TWO' &&
+                    line.terminal2Connected &&
+                    !line.terminal1Connected)
+            )
+                return;
+            handleClose();
+            energiseLineEnd(studyUuid, line.id, side).then((response) => {
+                if (response.status !== 200) {
+                    handleLineChangesResponse(
+                        response,
+                        'UnableToEnergiseLineEnd'
+                    );
+                }
+            });
+        }
 
-    function handleEnergise(side) {
-        if (
-            (side === 'ONE' &&
-                line.terminal1Connected &&
-                !line.terminal2Connected) ||
-            (side === 'TWO' &&
-                line.terminal2Connected &&
-                !line.terminal1Connected)
-        )
-            return;
-        handleClose();
-        energiseLineEnd(studyUuid, line.id, side).then((response) => {
-            if (response.status !== 200) {
-                handleLineChangesResponse(response, 'UnableToEnergiseLineEnd');
-            }
-        });
-    }
+        function handleSwitchOn() {
+            if (line.terminal1Connected && line.terminal2Connected) return;
+            handleClose();
+            switchOnLine(studyUuid, line.id).then((response) => {
+                if (response.status !== 200) {
+                    handleLineChangesResponse(response, 'UnableToSwitchOnLine');
+                }
+            });
+        }
 
-    function handleSwitchOn() {
-        if (line.terminal1Connected && line.terminal2Connected) return;
-        handleClose();
-        switchOnLine(studyUuid, line.id).then((response) => {
-            if (response.status !== 200) {
-                handleLineChangesResponse(response, 'UnableToSwitchOnLine');
-            }
-        });
-    }
-
-    return (
-        <Menu
-            className={classes.menu}
-            anchorReference="anchorPosition"
-            anchorPosition={{
-                position: 'absolute',
-                top: position[1],
-                left: position[0],
-            }}
-            id="line-menu"
-            open={true}
-            onClose={handleClose}
-        >
-            <BaseMenu
-                equipmentId={id}
-                equipmentType={equipments.lines}
-                handleViewInSpreadsheet={handleViewInSpreadsheet}
-            />
-
-            <MenuItem
-                className={classes.menuItem}
-                onClick={() => handleLockout()}
-                selected={line.branchStatus === 'PLANNED_OUTAGE'}
+        return (
+            <Menu
+                className={classes.menu}
+                anchorReference="anchorPosition"
+                anchorPosition={{
+                    position: 'absolute',
+                    top: position[1],
+                    left: position[0],
+                }}
+                id="line-menu"
+                open={true}
+                onClose={handleClose}
             >
-                <ListItemIcon>
-                    <LockOutlinedIcon />
-                </ListItemIcon>
-
-                <ListItemText
-                    className={classes.listItemText}
-                    primary={
-                        <Typography noWrap>
-                            {intl.formatMessage({ id: 'LockoutLine' })}
-                        </Typography>
-                    }
+                <BaseMenu
+                    equipmentId={id}
+                    equipmentType={equipments.lines}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
                 />
-            </MenuItem>
 
-            <MenuItem
-                className={classes.menuItem}
-                onClick={() => handleTrip()}
-                selected={line.branchStatus === 'FORCED_OUTAGE'}
-            >
-                <ListItemIcon>
-                    <OfflineBoltOutlinedIcon />
-                </ListItemIcon>
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() => handleLockout()}
+                    selected={line.branchStatus === 'PLANNED_OUTAGE'}
+                >
+                    <ListItemIcon>
+                        <LockOutlinedIcon />
+                    </ListItemIcon>
 
-                <ListItemText
-                    className={classes.listItemText}
-                    primary={
-                        <Typography noWrap>
-                            {intl.formatMessage({ id: 'TripLine' })}
-                        </Typography>
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({ id: 'LockoutLine' })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
+
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() => handleTrip()}
+                    selected={line.branchStatus === 'FORCED_OUTAGE'}
+                >
+                    <ListItemIcon>
+                        <OfflineBoltOutlinedIcon />
+                    </ListItemIcon>
+
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({ id: 'TripLine' })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
+
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() => handleEnergise('ONE')}
+                    selected={
+                        line.terminal1Connected && !line.terminal2Connected
                     }
-                />
-            </MenuItem>
+                >
+                    <ListItemIcon>
+                        <EnergiseOneSideIcon />
+                    </ListItemIcon>
 
-            <MenuItem
-                className={classes.menuItem}
-                onClick={() => handleEnergise('ONE')}
-                selected={line.terminal1Connected && !line.terminal2Connected}
-            >
-                <ListItemIcon>
-                    <EnergiseOneSideIcon />
-                </ListItemIcon>
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage(
+                                    { id: 'EnergiseOnOneEnd' },
+                                    {
+                                        substation: getLineDescriptor(
+                                            line.voltageLevelId1
+                                        ),
+                                    }
+                                )}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
 
-                <ListItemText
-                    className={classes.listItemText}
-                    primary={
-                        <Typography noWrap>
-                            {intl.formatMessage(
-                                { id: 'EnergiseOnOneEnd' },
-                                {
-                                    substation: getLineDescriptor(
-                                        line.voltageLevelId1
-                                    ),
-                                }
-                            )}
-                        </Typography>
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() => handleEnergise('TWO')}
+                    selected={
+                        line.terminal2Connected && !line.terminal1Connected
                     }
-                />
-            </MenuItem>
+                >
+                    <ListItemIcon>
+                        <EnergiseOtherSideIcon />
+                    </ListItemIcon>
 
-            <MenuItem
-                className={classes.menuItem}
-                onClick={() => handleEnergise('TWO')}
-                selected={line.terminal2Connected && !line.terminal1Connected}
-            >
-                <ListItemIcon>
-                    <EnergiseOtherSideIcon />
-                </ListItemIcon>
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage(
+                                    { id: 'EnergiseOnOneEnd' },
+                                    {
+                                        substation: getLineDescriptor(
+                                            line.voltageLevelId2
+                                        ),
+                                    }
+                                )}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
 
-                <ListItemText
-                    className={classes.listItemText}
-                    primary={
-                        <Typography noWrap>
-                            {intl.formatMessage(
-                                { id: 'EnergiseOnOneEnd' },
-                                {
-                                    substation: getLineDescriptor(
-                                        line.voltageLevelId2
-                                    ),
-                                }
-                            )}
-                        </Typography>
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() => handleSwitchOn()}
+                    selected={
+                        line.terminal1Connected && line.terminal2Connected
                     }
-                />
-            </MenuItem>
+                >
+                    <ListItemIcon>
+                        <PlayIcon />
+                    </ListItemIcon>
 
-            <MenuItem
-                className={classes.menuItem}
-                onClick={() => handleSwitchOn()}
-                selected={line.terminal1Connected && line.terminal2Connected}
-            >
-                <ListItemIcon>
-                    <PlayIcon />
-                </ListItemIcon>
-
-                <ListItemText
-                    className={classes.listItemText}
-                    primary={
-                        <Typography noWrap>
-                            {intl.formatMessage({ id: 'SwitchOnLine' })}
-                        </Typography>
-                    }
-                />
-            </MenuItem>
-        </Menu>
-    );
-};
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({ id: 'SwitchOnLine' })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
+            </Menu>
+        );
+    };
 
 withLineMenu.propTypes = {
     line: PropTypes.object.isRequired,

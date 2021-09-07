@@ -66,19 +66,20 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
 
     function renderTableN(preContingencyResult) {
         // extend data with loading
-        const rows = preContingencyResult.limitViolationsResult.limitViolations.map(
-            (limitViolation) => {
-                return {
-                    subjectId: limitViolation.subjectId,
-                    limitType: intl.formatMessage({
-                        id: limitViolation.limitType,
-                    }),
-                    limit: limitViolation.limit,
-                    value: limitViolation.value,
-                    loading: computeLoading(limitViolation),
-                };
-            }
-        );
+        const rows =
+            preContingencyResult.limitViolationsResult.limitViolations.map(
+                (limitViolation) => {
+                    return {
+                        subjectId: limitViolation.subjectId,
+                        limitType: intl.formatMessage({
+                            id: limitViolation.limitType,
+                        }),
+                        limit: limitViolation.limit,
+                        value: limitViolation.value,
+                        loading: computeLoading(limitViolation),
+                    };
+                }
+            );
 
         return (
             <VirtualizedTable

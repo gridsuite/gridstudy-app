@@ -266,9 +266,8 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
         handleCloseExport();
     };
 
-    const [openAccessRightsDialog, setOpenAccessRightsDialog] = React.useState(
-        false
-    );
+    const [openAccessRightsDialog, setOpenAccessRightsDialog] =
+        React.useState(false);
 
     const handleOpenAccessRights = () => {
         setAnchorEl(null);

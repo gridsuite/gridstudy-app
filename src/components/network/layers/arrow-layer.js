@@ -424,24 +424,7 @@ export default class ArrowLayer extends Layer {
 
     _getModel(gl) {
         const positions = [
-            -1,
-            -1,
-            0,
-            0,
-            1,
-            0,
-            0,
-            -0.6,
-            0,
-            1,
-            -1,
-            0,
-            0,
-            1,
-            0,
-            0,
-            -0.6,
-            0,
+            -1, -1, 0, 0, 1, 0, 0, -0.6, 0, 1, -1, 0, 0, 1, 0, 0, -0.6, 0,
         ];
 
         return new Model(

@@ -87,9 +87,10 @@ const useStyles = makeStyles((theme) => ({
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
-        '& .sld-disconnector.sld-constant-color, :not(.sld-breaker).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected': {
-            stroke: theme.palette.text.primary,
-        },
+        '& .sld-disconnector.sld-constant-color, :not(.sld-breaker).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
+            {
+                stroke: theme.palette.text.primary,
+            },
         '& .arrow': {
             fill: theme.palette.text.primary,
         },
@@ -345,11 +346,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         }
     }, [props.svgUrl, forceState]);
 
-    const {
-        onNextVoltageLevelClick,
-        onBreakerClick,
-        isComputationRunning,
-    } = props;
+    const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
+        props;
 
     function addFeederSelectionRect(svgText, theme) {
         svgText.style.setProperty('fill', theme.palette.background.paper);
@@ -672,29 +670,32 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         .querySelector('text[class="sld-label"]');
                     if (svgText !== null) {
                         svgText.style.cursor = 'pointer';
-                        svgText.addEventListener('mouseenter', function (
-                            event
-                        ) {
-                            showFeederSelection(event.currentTarget);
-                        });
-                        svgText.addEventListener('mouseleave', function (
-                            event
-                        ) {
-                            hideFeederSelection(event.currentTarget);
-                        });
-                        svgText.addEventListener('contextmenu', function (
-                            event
-                        ) {
-                            showEquipmentMenu(
-                                feeder.equipmentId,
-                                getEquipmentTypeFromFeederType(
-                                    feeder.componentType
-                                ),
-                                feeder.id,
-                                event.x,
-                                event.y
-                            );
-                        });
+                        svgText.addEventListener(
+                            'mouseenter',
+                            function (event) {
+                                showFeederSelection(event.currentTarget);
+                            }
+                        );
+                        svgText.addEventListener(
+                            'mouseleave',
+                            function (event) {
+                                hideFeederSelection(event.currentTarget);
+                            }
+                        );
+                        svgText.addEventListener(
+                            'contextmenu',
+                            function (event) {
+                                showEquipmentMenu(
+                                    feeder.equipmentId,
+                                    getEquipmentTypeFromFeederType(
+                                        feeder.componentType
+                                    ),
+                                    feeder.id,
+                                    event.x,
+                                    event.y
+                                );
+                            }
+                        );
                     }
                 });
             }

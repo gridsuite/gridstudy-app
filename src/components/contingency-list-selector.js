@@ -29,14 +29,11 @@ const ContingencyListSelector = (props) => {
 
     const [contingencyList, setContingencyList] = useState([]);
 
-    const [simulatedContingencyCount, setSimulatedContingencyCount] = useState(
-        0
-    );
+    const [simulatedContingencyCount, setSimulatedContingencyCount] =
+        useState(0);
 
-    const [
-        checkedContingencyListNames,
-        setCheckedContingencyListNames,
-    ] = useState([]);
+    const [checkedContingencyListNames, setCheckedContingencyListNames] =
+        useState([]);
 
     const handleClose = () => {
         props.onClose();

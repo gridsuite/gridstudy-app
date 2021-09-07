@@ -122,51 +122,35 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const [lineFullPathLocal, handleChangeLineFullPath] = useParameterState(
-        PARAM_LINE_FULL_PATH
-    );
+    const [lineFullPathLocal, handleChangeLineFullPath] =
+        useParameterState(PARAM_LINE_FULL_PATH);
 
-    const [
-        lineParallelPathLocal,
-        handleChangeLineParallelPath,
-    ] = useParameterState(PARAM_LINE_PARALLEL_PATH);
+    const [lineParallelPathLocal, handleChangeLineParallelPath] =
+        useParameterState(PARAM_LINE_PARALLEL_PATH);
 
-    const [
-        lineFlowAlertThresholdLocal,
-        handleChangeLineFlowAlertThreshold,
-    ] = useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
+    const [lineFlowAlertThresholdLocal, handleChangeLineFlowAlertThreshold] =
+        useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
 
-    const [
-        displayOverloadTableLocal,
-        handleChangeDisplayOverloadTable,
-    ] = useParameterState(PARAM_DISPLAY_OVERLOAD_TABLE);
+    const [displayOverloadTableLocal, handleChangeDisplayOverloadTable] =
+        useParameterState(PARAM_DISPLAY_OVERLOAD_TABLE);
 
-    const [lineFlowModeLocal, handleChangeLineFlowMode] = useParameterState(
-        PARAM_LINE_FLOW_MODE
-    );
+    const [lineFlowModeLocal, handleChangeLineFlowMode] =
+        useParameterState(PARAM_LINE_FLOW_MODE);
 
-    const [
-        lineFlowColorModeLocal,
-        handleChangeLineFlowColorMode,
-    ] = useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
+    const [lineFlowColorModeLocal, handleChangeLineFlowColorMode] =
+        useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
 
-    const [centerLabelLocal, handleChangeCenterLabel] = useParameterState(
-        PARAM_CENTER_LABEL
-    );
+    const [centerLabelLocal, handleChangeCenterLabel] =
+        useParameterState(PARAM_CENTER_LABEL);
 
-    const [diagonalLabelLocal, handleChangeDiagonalLabel] = useParameterState(
-        PARAM_DIAGONAL_LABEL
-    );
+    const [diagonalLabelLocal, handleChangeDiagonalLabel] =
+        useParameterState(PARAM_DIAGONAL_LABEL);
 
-    const [
-        substationLayoutLocal,
-        handleChangeSubstationLayout,
-    ] = useParameterState(PARAM_SUBSTATION_LAYOUT);
+    const [substationLayoutLocal, handleChangeSubstationLayout] =
+        useParameterState(PARAM_SUBSTATION_LAYOUT);
 
-    const [
-        componentLibraryLocal,
-        handleChangeComponentLibrary,
-    ] = useParameterState(PARAM_COMPONENT_LIBRARY);
+    const [componentLibraryLocal, handleChangeComponentLibrary] =
+        useParameterState(PARAM_COMPONENT_LIBRARY);
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -174,13 +158,11 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const [lfParams, setLfParams] = useState(null);
 
-    const [
-        disabledFlowAlertThreshold,
-        setDisabledFlowAlertThreshold,
-    ] = useState(
-        lineFlowColorModeLocal === 'nominalVoltage' &&
-            !displayOverloadTableLocal
-    );
+    const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] =
+        useState(
+            lineFlowColorModeLocal === 'nominalVoltage' &&
+                !displayOverloadTableLocal
+        );
 
     const [tabIndex, setTabIndex] = useState(0);
 

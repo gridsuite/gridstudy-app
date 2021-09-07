@@ -1,4 +1,4 @@
-export default `\
+const fs = `\
 #define SHADER_NAME arrow-layer-fragment-shader
 
 precision highp float;
@@ -13,3 +13,4 @@ void main(void) {
     gl_FragColor = vFillColor;
 }
 `;
+export default fs;

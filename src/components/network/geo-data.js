@@ -97,7 +97,7 @@ export default class GeoData {
             let segmentDistance;
             let ruler;
             for (let i = 0; i < positions.length - 1; i++) {
-                ruler = cheapRuler(positions[i][1], 'meters');
+                ruler = new cheapRuler(positions[i][1], 'meters');
                 segmentDistance = ruler.lineDistance(positions.slice(i, i + 2));
                 cumulativeDistance = cumulativeDistance + segmentDistance;
                 cumulativeDistanceArray[i + 1] = cumulativeDistance;
@@ -196,7 +196,7 @@ export default class GeoData {
             goodSegment.segment[0],
             goodSegment.segment[1]
         );
-        const neededOffset = this.getLabelOffset(angle, 30, arrowDirection);
+        const neededOffset = this.getLabelOffset(angle, 20, arrowDirection);
 
         const position = {
             position: computeDestinationPoint(
