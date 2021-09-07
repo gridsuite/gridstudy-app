@@ -10,10 +10,10 @@ import ReactFlow, {
     isNode,
     removeElements,
 } from 'react-flow-renderer';
-import HypoNode from './graph-nodes/hypo-node';
-import ModelNode from './graph-nodes/model-node';
-import CreateNodeMenu from './graph-menus/create-node-menu';
-import NodeEditor from './graph-menus/node-editor';
+import HypoNode from './graph/nodes/hypo-node';
+import ModelNode from './graph/nodes/model-node';
+import CreateNodeMenu from './graph/menus/create-node-menu';
+import NodeEditor from './graph/menus/node-editor';
 import { Box } from '@material-ui/core';
 import dagre from 'dagre';
 
