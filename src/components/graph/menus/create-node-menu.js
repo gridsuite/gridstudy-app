@@ -38,12 +38,12 @@ const CreateNodeMenu = ({
     const intl = useIntl();
 
     function createHypoNode() {
-        handleNodeCreation(selectedNode, 'hypoNode');
+        handleNodeCreation(selectedNode, 'NETWORK_MODIFICATION');
         handleClose();
     }
 
     function createModelNode() {
-        handleNodeCreation(selectedNode, 'modelNode');
+        handleNodeCreation(selectedNode, 'MODEL');
         handleClose();
     }
 

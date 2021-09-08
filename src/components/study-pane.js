@@ -23,6 +23,7 @@ import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
     fetchLinePositions,
+    fetchNetworkModificationTree,
     fetchReport,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
@@ -41,6 +42,7 @@ import {
     closeStudy,
     filteredNominalVoltagesUpdated,
     loadGeoDataSuccess,
+    loadNetworkModificationTreeSuccess,
     networkCreated,
     openStudy,
     resetLoadflowNotif,
@@ -95,6 +97,7 @@ import { ReportViewer } from '@gridsuite/commons-ui';
 import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import HypothesisTree from './hypothesis-tree';
+import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 
 const drawerExplorerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -211,6 +214,10 @@ const StudyPane = (props) => {
     const network = useSelector((state) => state.network);
 
     const geoData = useSelector((state) => state.geoData);
+
+    const networkModificationTreeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
 
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
@@ -593,6 +600,29 @@ const StudyPane = (props) => {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch]);
 
+    const loadTree = useCallback(() => {
+        console.info(`Loading hypothesis tree of study '${studyUuid}'...`);
+
+        const networkModificationTree = fetchNetworkModificationTree(studyUuid);
+
+        networkModificationTree
+            .then((tree) => {
+                const networkModificationTreeModel = new NetworkModificationTreeModel();
+                networkModificationTreeModel.setTreeElements(tree);
+                console.log(networkModificationTreeModel);
+                dispatch(
+                    loadNetworkModificationTreeSuccess(
+                        networkModificationTreeModel
+                    )
+                );
+            })
+            .catch(function (error) {
+                console.error(error.message);
+                setStudyNotFound(true);
+            });
+        // Note: studyUuid and dispatch don't change
+    }, [studyUuid, dispatch]);
+
     const connectNotifications = useCallback(
         (studyUuid) => {
             console.info(`Connecting to notifications '${studyUuid}'...`);
@@ -620,6 +650,7 @@ const StudyPane = (props) => {
         dispatch(openStudy(studyUuid));
         loadNetwork();
         loadGeoData();
+        loadTree();
         const ws = connectNotifications(studyUuid);
 
         // study cleanup at unmount event
@@ -631,7 +662,14 @@ const StudyPane = (props) => {
         };
         // Note: dispach, studyUuid, loadNetwork, loadGeoData,
         // connectNotifications don't change
-    }, [dispatch, studyUuid, loadNetwork, loadGeoData, connectNotifications]);
+    }, [
+        dispatch,
+        studyUuid,
+        loadNetwork,
+        loadGeoData,
+        loadTree,
+        connectNotifications,
+    ]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -1297,7 +1335,9 @@ const StudyPane = (props) => {
                         }}
                         className={classes.drawerDiv}
                     >
-                        <HypothesisTree />
+                        <HypothesisTree
+                            treeModel={networkModificationTreeModel}
+                        />
                     </div>
                 </Drawer>
                 {/*

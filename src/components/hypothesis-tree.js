@@ -5,29 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useState } from 'react';
-import ReactFlow, {
-    getOutgoers,
-    isNode,
-    removeElements,
-} from 'react-flow-renderer';
+import ReactFlow, { isNode } from 'react-flow-renderer';
 import HypoNode from './graph/nodes/hypo-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import NodeEditor from './graph/menus/node-editor';
 import { Box } from '@material-ui/core';
 import dagre from 'dagre';
+import { createNode } from '../utils/rest-api';
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-const initialElements = [
-    {
-        id: '0',
-        type: 'input', // input node
-        data: { label: 'Root' },
-        selectable: false,
-    },
-];
 
 const nodeWidth = 150;
 const nodeHeight = 50;
@@ -70,11 +58,8 @@ const getLayoutedElements = (elements, direction = 'TB') => {
     });
 };
 
-const layoutedElements = getLayoutedElements(initialElements);
-
 const HypothesisTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
-    const [elements, setElements] = useState(layoutedElements);
 
     const style = {
         width: '100%',
@@ -99,39 +84,17 @@ const HypothesisTree = (props) => {
         setSelectedNode(undefined);
     };
 
-    // Used for poc, should use a uuid
-    function getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min)) + min;
-    }
-
-    function createNode(element, type) {
-        const newNodeId = getRandomInt(1, 200000000);
-        setElements((es) =>
-            getLayoutedElements(
-                es.concat(
-                    {
-                        id: newNodeId.toString(),
-                        type: type,
-                        data: { label: 'New node' },
-                    },
-                    {
-                        id: 'e' + element.id + '-' + newNodeId,
-                        source: element.id,
-                        target: newNodeId.toString(),
-                        type: 'smoothstep',
-                    }
-                )
-            )
+    function handleCreateNode(element, type) {
+        createNode(element.id, { name: 'New node', type: type }).then(
+            (response) => {
+                if (response.status !== 200) {
+                    console.log('Error creating node');
+                }
+            }
         );
     }
 
-    function removeNode(element) {
-        let children = getOutgoers(element, elements);
-        children.forEach((ch) => removeNode(ch));
-        setElements((es) => getLayoutedElements(removeElements([element], es)));
-    }
+    function handleRemoveNode(element) {}
 
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: [-1, -1],
@@ -147,8 +110,8 @@ const HypothesisTree = (props) => {
     }
 
     const nodeTypes = {
-        hypoNode: HypoNode,
-        modelNode: ModelNode,
+        NETWORK_MODIFICATION: HypoNode,
+        MODEL: ModelNode,
     };
 
     return (
@@ -156,7 +119,13 @@ const HypothesisTree = (props) => {
             <Box style={style} display="flex" flexDirection="row">
                 <Box flexGrow={1}>
                     <ReactFlow
-                        elements={elements}
+                        elements={
+                            props.treeModel
+                                ? getLayoutedElements(
+                                      props.treeModel.treeElements
+                                  )
+                                : []
+                        }
                         onNodeContextMenu={onNodeContextMenu}
                         onSelectionChange={onSelectionChange}
                         onPaneClick={onPaneClick}
@@ -177,8 +146,8 @@ const HypothesisTree = (props) => {
                 <CreateNodeMenu
                     position={createNodeMenu.position}
                     selectedNode={createNodeMenu.selectedNode}
-                    handleNodeCreation={createNode}
-                    handleNodeRemoval={removeNode}
+                    handleNodeCreation={handleCreateNode}
+                    handleNodeRemoval={handleRemoveNode}
                     handleClose={closeCreateNodeMenu}
                 />
             )}

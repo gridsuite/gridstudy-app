@@ -28,10 +28,10 @@ const NodeEditor = ({ selectedNode, handleNodeModified }) => {
 
     return (
         <Paper className={classes.paper}>
-            {selectedNode.type === 'hypoNode' && (
+            {selectedNode.type === 'NETWORK_MODIFICATION' && (
                 <HypoNodeEditor selectedNode={selectedNode} />
             )}
-            {selectedNode.type === 'modelNode' && (
+            {selectedNode.type === 'MODEL' && (
                 <ModelNodeEditor selectedNode={selectedNode} />
             )}
         </Paper>

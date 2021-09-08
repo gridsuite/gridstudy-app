@@ -43,6 +43,18 @@ export function loadGeoDataSuccess(geoData) {
     return { type: LOAD_GEO_DATA_SUCCESS, geoData: geoData };
 }
 
+export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS =
+    'LOAD_NETWORK_MODIFICATION_TREE_SUCCESS';
+
+export function loadNetworkModificationTreeSuccess(
+    networkModificationTreeModel
+) {
+    return {
+        type: LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
+        networkModificationTreeModel: networkModificationTreeModel,
+    };
+}
+
 export const SELECT_THEME = 'SELECT_THEME';
 
 export function selectTheme(theme) {

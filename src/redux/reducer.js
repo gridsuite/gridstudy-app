@@ -45,6 +45,7 @@ import {
     ADD_SA_NOTIF,
     RESET_SA_NOTIF,
     COMPONENT_LIBRARY,
+    LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -92,6 +93,7 @@ const initialState = {
     studyUuid: null,
     network: null,
     geoData: null,
+    networkModificationTreeModel: null,
     cases: [],
     selectedCase: null,
     selectedFile: null,
@@ -129,6 +131,7 @@ export const reducer = createReducer(initialState, {
         state.studyUuid = null;
         state.network = null;
         state.geoData = null;
+        state.networkModificationTreeModel = null;
     },
 
     [NETWORK_CREATED]: (state, action) => {
@@ -144,6 +147,11 @@ export const reducer = createReducer(initialState, {
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
         state.geoData = action.geoData;
+    },
+
+    [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
+        state.networkModificationTreeModel =
+            action.networkModificationTreeModel;
     },
 
     [STUDY_UPDATED]: (state, action) => {

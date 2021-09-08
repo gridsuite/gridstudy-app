@@ -589,6 +589,44 @@ export function fetchContingencyCount(studyUuid, contingencyListNames) {
     });
 }
 
+export function fetchNetworkModificationTree(studyUuid) {
+    console.info('Fetching network modification tree');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/tree/' + encodeURIComponent(studyUuid);
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
+}
+
+export function createNode(parentId, node) {
+    const nodeCreationUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/tree/createNode/' +
+        encodeURIComponent(parentId);
+    console.debug('%s with body: %s', nodeCreationUrl, node);
+    return backendFetch(nodeCreationUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(node),
+    });
+}
+
+export function deleteTreeNode(nodeId) {
+    console.info('Fetching network modification tree');
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/tree/deleteNode/' +
+        encodeURIComponent(nodeId);
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'delete',
+    });
+}
+
 export function connectNotificationsWebsocket(studyUuid) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
