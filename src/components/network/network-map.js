@@ -37,7 +37,7 @@ const MAPBOX_TOKEN =
 
 const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
-const LABEL_SIZE = 16;
+const LABEL_SIZE = 12;
 
 const NetworkMap = forwardRef((props, ref) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
@@ -112,7 +112,8 @@ const NetworkMap = forwardRef((props, ref) => {
                     // if this is not the page load, use a fly to animation. On page load, we want to center directly
                     if (centered.centered) {
                         newViewState.transitionDuration = 2000;
-                        newViewState.transitionInterpolator = new FlyToInterpolator();
+                        newViewState.transitionInterpolator =
+                            new FlyToInterpolator();
                     }
                     deck.viewState = newViewState;
                     deck.setProps({});
@@ -384,18 +385,7 @@ const NetworkMap = forwardRef((props, ref) => {
             >
                 {renderTooltip()}
             </StaticMap>
-            <div
-                style={{ position: 'absolute', right: 10, top: 10, zIndex: 1 }}
-            >
-                <NavigationControl
-                    ref={(ref) => {
-                        // Workaround, remove when https://github.com/uber/deck.gl/issues/4383 is resolved
-                        if (ref != null) {
-                            ref._uiVersion = 2;
-                        }
-                    }}
-                />
-            </div>
+            <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
         </DeckGL>
     );
 });

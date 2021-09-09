@@ -161,9 +161,8 @@ export const CreateStudyForm = (props) => {
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [studyInvalid, setStudyInvalid] = useState(false);
-    const [loadingCheckStudyName, setLoadingCheckStudyName] = React.useState(
-        false
-    );
+    const [loadingCheckStudyName, setLoadingCheckStudyName] =
+        React.useState(false);
     const [studyNameChecked, setStudyNameChecked] = React.useState(false);
 
     const userId = useSelector((state) => state.user.profile.sub);

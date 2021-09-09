@@ -46,10 +46,11 @@ class SubstationLayer extends CompositeLayer {
                 props.data.forEach((substation) => {
                     // index voltage levels of this substation by its nominal voltage (this is because we might
                     // have several voltage levels with the same nominal voltage in the same substation)
-                    const voltageLevelsByNominalVoltage = substation.voltageLevels.reduce(
-                        voltageLevelNominalVoltageIndexer,
-                        new Map()
-                    );
+                    const voltageLevelsByNominalVoltage =
+                        substation.voltageLevels.reduce(
+                            voltageLevelNominalVoltageIndexer,
+                            new Map()
+                        );
 
                     // sorted distinct nominal voltages for this substation
                     const nominalVoltages = [
@@ -72,9 +73,10 @@ class SubstationLayer extends CompositeLayer {
                             const nominalVoltage = e[0];
                             const voltageLevels = e[1];
 
-                            let metaVoltageLevels = metaVoltageLevelsByNominalVoltage.get(
-                                nominalVoltage
-                            );
+                            let metaVoltageLevels =
+                                metaVoltageLevelsByNominalVoltage.get(
+                                    nominalVoltage
+                                );
                             if (!metaVoltageLevels) {
                                 metaVoltageLevels = [];
                                 metaVoltageLevelsByNominalVoltage.set(
@@ -84,9 +86,8 @@ class SubstationLayer extends CompositeLayer {
                             }
                             metaVoltageLevels.push({
                                 voltageLevels,
-                                nominalVoltageIndex: nominalVoltages.indexOf(
-                                    nominalVoltage
-                                ),
+                                nominalVoltageIndex:
+                                    nominalVoltages.indexOf(nominalVoltage),
                             });
                         }
                     );
@@ -103,7 +104,8 @@ class SubstationLayer extends CompositeLayer {
                 .sort((a, b) => b.nominalVoltage - a.nominalVoltage);
 
             this.setState({
-                metaVoltageLevelsByNominalVoltage: metaVoltageLevelsByNominalVoltageArray,
+                metaVoltageLevelsByNominalVoltage:
+                    metaVoltageLevelsByNominalVoltageArray,
             });
         }
 
@@ -176,7 +178,7 @@ class SubstationLayer extends CompositeLayer {
                 getAngle: 0,
                 getTextAnchor: 'start',
                 getAlignmentBaseline: 'center',
-                getPixelOffset: [20, 0],
+                getPixelOffset: [20 / 1.5, 0],
                 visible: this.props.labelsVisible,
                 updateTriggers: {
                     getText: this.props.useName,
@@ -199,7 +201,7 @@ SubstationLayer.defaultProps = {
     useName: true,
     labelsVisible: false,
     labelColor: { type: 'color', value: [255, 255, 255] },
-    labelSize: 16,
+    labelSize: 12,
 };
 
 export default SubstationLayer;

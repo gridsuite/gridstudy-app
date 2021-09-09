@@ -246,7 +246,7 @@
 
     "logs": "Logs",
     "logsTitle": "Logs : {title}",
-    "showReport" : "Afficher logs",
+    "showReport": "Afficher logs",
     "loadingReport": "Chargement des logs en cours...",
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants : "
