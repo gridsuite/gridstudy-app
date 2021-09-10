@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactFlow, { isNode } from 'react-flow-renderer';
 import HypoNode from './graph/nodes/hypo-node';
 import ModelNode from './graph/nodes/model-node';
@@ -60,6 +60,16 @@ const getLayoutedElements = (elements, direction = 'TB') => {
 
 const HypothesisTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
+
+    const [layoutedElements, setLayoutedElements] = useState([]);
+
+    useEffect(() => {
+        setLayoutedElements(
+            getLayoutedElements(
+                props.treeModel ? props.treeModel.treeElements : []
+            )
+        );
+    }, [props.treeModel.treeElements]);
 
     const style = {
         width: '100%',
@@ -125,13 +135,7 @@ const HypothesisTree = (props) => {
             <Box style={style} display="flex" flexDirection="row">
                 <Box flexGrow={1}>
                     <ReactFlow
-                        elements={
-                            props.treeModel
-                                ? getLayoutedElements(
-                                      props.treeModel.treeElements
-                                  )
-                                : []
-                        }
+                        elements={layoutedElements}
                         onNodeContextMenu={onNodeContextMenu}
                         onSelectionChange={onSelectionChange}
                         onPaneClick={onPaneClick}

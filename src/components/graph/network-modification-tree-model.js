@@ -27,10 +27,21 @@ export default class NetworkModificationTreeModel {
                 this.addChild(child, element.id);
             });
         }
+
+        this.treeElements = [...this.treeElements];
     }
 
-    removeNode(nodeId) {
-
+    removeNodes(deletedNodes) {
+        deletedNodes.forEach((nodeId) => {
+            const filteredTreeElements = this.treeElements.filter(
+                (element) =>
+                    element.id !== nodeId &&
+                    element.source !== nodeId &&
+                    element.target !== nodeId
+            );
+            this.treeElements = filteredTreeElements;
+        });
+        this.treeElements = [...this.treeElements];
     }
 
     setTreeElements(elements) {

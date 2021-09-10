@@ -425,15 +425,25 @@ const StudyPane = (props) => {
     ]);
 
     const updateNodeCreated = useCallback(
-        (parentNodeId, createdNodeId) => {
+        (treeModel, parentNodeId, createdNodeId) => {
             fetchNetworkModificationTreeNode(createdNodeId).then((node) => {
-                networkModificationTreeModel.addChild(node, parentNodeId);
+                treeModel.addChild(node, parentNodeId);
                 dispatch(
-                    networkModificationTreeUpdated(networkModificationTreeModel)
+                    networkModificationTreeUpdated(treeModel)
                 );
             });
         },
-        [networkModificationTreeModel, dispatch]
+        [dispatch]
+    );
+
+    const updateNodesDeleted = useCallback(
+        (treeModel, deletedNodes) => {
+            treeModel.removeNodes(deletedNodes);
+            dispatch(
+                networkModificationTreeUpdated(treeModel)
+            );
+        },
+        [dispatch]
     );
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
@@ -867,6 +877,7 @@ const StudyPane = (props) => {
                 'NODE_CREATED'
             ) {
                 updateNodeCreated(
+                    networkModificationTreeModel,
                     studyUpdatedForce.eventData.headers['PARENT_NODE'],
                     studyUpdatedForce.eventData.headers['NEW_NODE']
                 );
@@ -874,6 +885,10 @@ const StudyPane = (props) => {
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'NODE_DELETED'
             ) {
+                updateNodesDeleted(
+                    networkModificationTreeModel,
+                    studyUpdatedForce.eventData.headers['NODES']
+                );
             }
         }
         // Note: studyUuid, and loadNetwork don't change
@@ -885,6 +900,7 @@ const StudyPane = (props) => {
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
         updateNodeCreated,
+        updateNodesDeleted,
         ranLoadflow,
         ranSA,
         dispatch,
