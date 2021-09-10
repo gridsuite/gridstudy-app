@@ -12,7 +12,7 @@ import CreateNodeMenu from './graph/menus/create-node-menu';
 import NodeEditor from './graph/menus/node-editor';
 import { Box } from '@material-ui/core';
 import dagre from 'dagre';
-import { createNode } from '../utils/rest-api';
+import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
 
 const dagreGraph = new dagre.graphlib.Graph();
 dagreGraph.setDefaultEdgeLabel(() => ({}));
@@ -85,7 +85,7 @@ const HypothesisTree = (props) => {
     };
 
     function handleCreateNode(element, type) {
-        createNode(element.id, { name: 'New node', type: type }).then(
+        createTreeNode(element.id, { name: 'New node', type: type }).then(
             (response) => {
                 if (response.status !== 200) {
                     console.log('Error creating node');
@@ -94,7 +94,13 @@ const HypothesisTree = (props) => {
         );
     }
 
-    function handleRemoveNode(element) {}
+    function handleRemoveNode(element) {
+        deleteTreeNode(element.id).then((response) => {
+            if (response.status !== 200) {
+                console.log('Error creating node');
+            }
+        });
+    }
 
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: [-1, -1],

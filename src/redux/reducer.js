@@ -46,6 +46,7 @@ import {
     RESET_SA_NOTIF,
     COMPONENT_LIBRARY,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
+    NETWORK_MODIFICATION_TREE_UPDATED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -150,6 +151,11 @@ export const reducer = createReducer(initialState, {
     },
 
     [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
+        state.networkModificationTreeModel =
+            action.networkModificationTreeModel;
+    },
+
+    [NETWORK_MODIFICATION_TREE_UPDATED]: (state, action) => {
         state.networkModificationTreeModel =
             action.networkModificationTreeModel;
     },

@@ -22,20 +22,24 @@ export default class NetworkModificationTreeModel {
             target: element.id,
             type: 'smoothstep',
         });
-        element.children.forEach((child) => {
-            this.addChild(child, element.id);
-        });
+        if (element.children) {
+            element.children.forEach((child) => {
+                this.addChild(child, element.id);
+            });
+        }
+    }
+
+    removeNode(nodeId) {
+
     }
 
     setTreeElements(elements) {
-        console.log(elements);
         // handle root node
         this.treeElements.push({
             id: elements.id,
             type: elements.type, // input node
             data: { label: elements.name, description: elements.description },
         });
-        console.log(this.treeElements);
         // handle root children
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);

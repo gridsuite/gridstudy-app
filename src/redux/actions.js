@@ -55,6 +55,16 @@ export function loadNetworkModificationTreeSuccess(
     };
 }
 
+export const NETWORK_MODIFICATION_TREE_UPDATED =
+    'NETWORK_MODIFICATION_TREE_UPDATED';
+
+export function networkModificationTreeUpdated(networkModificationTreeModel) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_UPDATED,
+        networkModificationTreeModel: networkModificationTreeModel,
+    };
+}
+
 export const SELECT_THEME = 'SELECT_THEME';
 
 export function selectTheme(theme) {

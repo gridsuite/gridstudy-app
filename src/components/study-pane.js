@@ -24,6 +24,7 @@ import {
     fetchAllEquipments,
     fetchLinePositions,
     fetchNetworkModificationTree,
+    fetchNetworkModificationTreeNode,
     fetchReport,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
@@ -44,6 +45,7 @@ import {
     loadGeoDataSuccess,
     loadNetworkModificationTreeSuccess,
     networkCreated,
+    networkModificationTreeUpdated,
     openStudy,
     resetLoadflowNotif,
     selectItemNetwork,
@@ -422,6 +424,18 @@ const StudyPane = (props) => {
         setSecurityAnalysisResultFetched,
     ]);
 
+    const updateNodeCreated = useCallback(
+        (parentNodeId, createdNodeId) => {
+            fetchNetworkModificationTreeNode(createdNodeId).then((node) => {
+                networkModificationTreeModel.addChild(node, parentNodeId);
+                dispatch(
+                    networkModificationTreeUpdated(networkModificationTreeModel)
+                );
+            });
+        },
+        [networkModificationTreeModel, dispatch]
+    );
+
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         // close the contingency list selection window
         setShowContingencyListSelector(false);
@@ -609,7 +623,6 @@ const StudyPane = (props) => {
             .then((tree) => {
                 const networkModificationTreeModel = new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
-                console.log(networkModificationTreeModel);
                 dispatch(
                     loadNetworkModificationTreeSuccess(
                         networkModificationTreeModel
@@ -849,6 +862,18 @@ const StudyPane = (props) => {
                     dispatch(addSANotif());
                 }
                 // update badge
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'NODE_CREATED'
+            ) {
+                updateNodeCreated(
+                    studyUpdatedForce.eventData.headers['PARENT_NODE'],
+                    studyUpdatedForce.eventData.headers['NEW_NODE']
+                );
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'NODE_DELETED'
+            ) {
             }
         }
         // Note: studyUuid, and loadNetwork don't change
@@ -859,6 +884,7 @@ const StudyPane = (props) => {
         updateLoadFlowResult,
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
+        updateNodeCreated,
         ranLoadflow,
         ranSA,
         dispatch,

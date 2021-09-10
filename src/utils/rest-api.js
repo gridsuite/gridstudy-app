@@ -599,7 +599,17 @@ export function fetchNetworkModificationTree(studyUuid) {
     );
 }
 
-export function createNode(parentId, node) {
+export function fetchNetworkModificationTreeNode(nodeUuid) {
+    console.info('Fetching network modification tree node');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/tree/node/' + encodeURIComponent(nodeUuid);
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
+}
+
+export function createTreeNode(parentId, node) {
     const nodeCreationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/tree/createNode/' +
