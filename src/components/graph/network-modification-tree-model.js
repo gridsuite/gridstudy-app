@@ -33,12 +33,29 @@ export default class NetworkModificationTreeModel {
 
     removeNodes(deletedNodes) {
         deletedNodes.forEach((nodeId) => {
+            const edgesOfSource = this.treeElements.filter(
+                (element) => element.source === nodeId
+            );
+            const edgesOfTarget = this.treeElements.filter(
+                (element) =>
+                    element.target === nodeId
+            );
             const filteredTreeElements = this.treeElements.filter(
                 (element) =>
                     element.id !== nodeId &&
                     element.source !== nodeId &&
                     element.target !== nodeId
             );
+            edgesOfTarget.forEach((edgeOfTarget) => {
+                edgesOfSource.forEach((edgeOfSource) => {
+                    filteredTreeElements.push({
+                        id: 'e' + edgeOfTarget.source + '-' + edgeOfSource.target,
+                        source: edgeOfTarget.source,
+                        target: edgeOfSource.target,
+                        type: 'smoothstep',
+                    });
+                });
+            });
             this.treeElements = filteredTreeElements;
         });
         this.treeElements = [...this.treeElements];
