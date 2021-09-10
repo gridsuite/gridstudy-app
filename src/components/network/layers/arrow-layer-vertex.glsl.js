@@ -1,4 +1,4 @@
-export default `\
+const vs = `\
 #define SHADER_NAME arrow-layer-vertex-shader
 
 precision highp float;
@@ -196,3 +196,5 @@ void main(void) {
   }
 }
 `;
+
+export default vs;

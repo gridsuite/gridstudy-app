@@ -327,9 +327,8 @@ class LineLayer extends CompositeLayer {
                         line,
                         props.lineFullPath
                     );
-                    const cumulativeDistances = props.geoData.getLineDistances(
-                        positions
-                    );
+                    const cumulativeDistances =
+                        props.geoData.getLineDistances(positions);
                     lineMap.set(line.id, {
                         positions: positions,
                         cumulativeDistances: cumulativeDistances,
@@ -425,17 +424,18 @@ class LineLayer extends CompositeLayer {
                         lineStatus.branchStatus !== 'IN_OPERATION'
                     ) {
                         let lineData = compositeData.lineMap.get(line.id);
-                        let coordinatesIcon = props.geoData.labelDisplayPosition(
-                            lineData.positions,
-                            lineData.cumulativeDistances,
-                            0.5,
-                            ArrowDirection.NONE,
-                            line.parallelIndex,
-                            (line.angle * 180) / Math.PI,
-                            (line.angleEnd * 180) / Math.PI,
-                            props.distanceBetweenLines,
-                            line.proximityFactorEnd
-                        );
+                        let coordinatesIcon =
+                            props.geoData.labelDisplayPosition(
+                                lineData.positions,
+                                lineData.cumulativeDistances,
+                                0.5,
+                                ArrowDirection.NONE,
+                                line.parallelIndex,
+                                (line.angle * 180) / Math.PI,
+                                (line.angleEnd * 180) / Math.PI,
+                                props.distanceBetweenLines,
+                                line.proximityFactorEnd
+                            );
                         if (coordinatesIcon !== null) {
                             compositeData.branchStatus.push({
                                 status: lineStatus.branchStatus,
@@ -809,8 +809,8 @@ class LineLayer extends CompositeLayer {
                     getMinParallelOffset: this.props.minParallelOffset,
                     getSubstationRadius: this.props.substationRadius,
                     getSubstationMaxPixel: this.props.substationMaxPixel,
-                    getMinSubstationRadiusPixel: this.props
-                        .minSubstationRadiusPixel,
+                    getMinSubstationRadiusPixel:
+                        this.props.minSubstationRadiusPixel,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),
@@ -857,8 +857,8 @@ class LineLayer extends CompositeLayer {
                     getMinParallelOffset: this.props.minParallelOffset,
                     getSubstationRadius: this.props.substationRadius,
                     getSubstationMaxPixel: this.props.substationMaxPixel,
-                    getMinSubstationRadiusPixel: this.props
-                        .minSubstationRadiusPixel,
+                    getMinSubstationRadiusPixel:
+                        this.props.minSubstationRadiusPixel,
                     visible: this.props.filteredNominalVoltages.includes(
                         compositeData.nominalVoltage
                     ),
@@ -893,7 +893,8 @@ class LineLayer extends CompositeLayer {
                     fontFamily: 'Roboto',
                     getSize: this.props.labelSize,
                     getAngle: 0,
-                    getPixelOffset: (activePower) => activePower.offset,
+                    getPixelOffset: (activePower) =>
+                        activePower.offset.map((x) => x),
                     getTextAnchor: 'middle',
                     visible:
                         this.props.filteredNominalVoltages.includes(
@@ -961,7 +962,7 @@ LineLayer.defaultProps = {
     showLineFlow: true,
     lineFullPath: true,
     lineParallelPath: true,
-    labelSize: 16,
+    labelSize: 12,
     iconSize: 48,
     distanceBetweenLines: 1000,
     maxParallelOffset: 100,

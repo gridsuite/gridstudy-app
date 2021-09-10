@@ -225,9 +225,8 @@ const StudyPane = (props) => {
 
     const [updatedLines, setUpdatedLines] = useState([]);
 
-    const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(
-        null
-    );
+    const [displayedVoltageLevelId, setDisplayedVoltageLevelId] =
+        useState(null);
 
     const filteredNominalVoltages = useSelector(
         (state) => state.filteredNominalVoltages
@@ -254,15 +253,11 @@ const StudyPane = (props) => {
         RunningStatus.IDLE
     );
 
-    const [
-        securityAnalysisResultFetcher,
-        setSecurityAnalysisResultFetcher,
-    ] = useState(null);
+    const [securityAnalysisResultFetcher, setSecurityAnalysisResultFetcher] =
+        useState(null);
     const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
-    const [
-        securityAnalysisResultFetched,
-        setSecurityAnalysisResultFetched,
-    ] = useState(false);
+    const [securityAnalysisResultFetched, setSecurityAnalysisResultFetched] =
+        useState(false);
 
     const [computationStopped, setComputationStopped] = useState(false);
 
@@ -279,10 +274,8 @@ const StudyPane = (props) => {
 
     const [tabIndex, setTabIndex] = React.useState(0);
 
-    const [
-        showContingencyListSelector,
-        setShowContingencyListSelector,
-    ] = useState(false);
+    const [showContingencyListSelector, setShowContingencyListSelector] =
+        useState(false);
 
     const [visibleSubstation, setVisibleSubstation] = useState(null);
 

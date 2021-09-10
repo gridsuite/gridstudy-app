@@ -17,34 +17,31 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const withEquipmentMenu = (BaseMenu, menuId, equipmentType) => ({
-    id,
-    position,
-    handleClose,
-    handleViewInSpreadsheet,
-}) => {
-    const classes = useStyles();
+const withEquipmentMenu =
+    (BaseMenu, menuId, equipmentType) =>
+    ({ id, position, handleClose, handleViewInSpreadsheet }) => {
+        const classes = useStyles();
 
-    return (
-        <Menu
-            className={classes.menu}
-            anchorReference="anchorPosition"
-            anchorPosition={{
-                position: 'absolute',
-                top: position[1],
-                left: position[0],
-            }}
-            id={menuId}
-            open={true}
-            onClose={handleClose}
-        >
-            <BaseMenu
-                equipmentId={id}
-                equipmentType={equipmentType}
-                handleViewInSpreadsheet={handleViewInSpreadsheet}
-            />
-        </Menu>
-    );
-};
+        return (
+            <Menu
+                className={classes.menu}
+                anchorReference="anchorPosition"
+                anchorPosition={{
+                    position: 'absolute',
+                    top: position[1],
+                    left: position[0],
+                }}
+                id={menuId}
+                open={true}
+                onClose={handleClose}
+            >
+                <BaseMenu
+                    equipmentId={id}
+                    equipmentType={equipmentType}
+                    handleViewInSpreadsheet={handleViewInSpreadsheet}
+                />
+            </Menu>
+        );
+    };
 
 export default withEquipmentMenu;

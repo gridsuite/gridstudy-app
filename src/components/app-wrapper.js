@@ -7,7 +7,7 @@
 
 import App from './app';
 import React from 'react';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import {
     LIGHT_THEME,
     login_en,
@@ -29,7 +29,7 @@ import { store } from '../redux/store';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
-const lightTheme = createMuiTheme({
+const lightTheme = createTheme({
     palette: {
         type: 'light',
     },
@@ -39,7 +39,7 @@ const lightTheme = createMuiTheme({
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
-const darkTheme = createMuiTheme({
+const darkTheme = createTheme({
     palette: {
         type: 'dark',
     },

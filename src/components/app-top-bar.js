@@ -55,13 +55,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
-    const [languageLocal, handleChangeLanguage] = useParameterState(
-        PARAM_LANGUAGE
-    );
+    const [languageLocal, handleChangeLanguage] =
+        useParameterState(PARAM_LANGUAGE);
 
-    const [useNameLocal, handleChangeUseName] = useParameterState(
-        PARAM_USE_NAME
-    );
+    const [useNameLocal, handleChangeUseName] =
+        useParameterState(PARAM_USE_NAME);
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
