@@ -17,11 +17,10 @@ import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
 const nodeWidth = 150;
 const nodeHeight = 50;
 
-const getLayoutedElements = (elements, direction = 'TB') => {
+const getLayoutedElements = (elements) => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
-    const isHorizontal = direction === 'LR';
-    dagreGraph.setGraph({ direction });
+    dagreGraph.setGraph({ direction: 'TB', align: 'UL' });
 
     elements.forEach((el) => {
         if (isNode(el)) {
@@ -36,8 +35,8 @@ const getLayoutedElements = (elements, direction = 'TB') => {
     return elements.map((el) => {
         if (isNode(el)) {
             const nodeWithPosition = dagreGraph.node(el.id);
-            el.targetPosition = isHorizontal ? 'left' : 'top';
-            el.sourcePosition = isHorizontal ? 'right' : 'bottom';
+            el.targetPosition = 'top';
+            el.sourcePosition = 'bottom';
 
             // unfortunately we need this little hack to pass a slightly different position
             // to notify react flow about the change. Moreover we are shifting the dagre node position
