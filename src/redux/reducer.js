@@ -71,7 +71,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import NetworkModificationTreeModel from "../components/graph/network-modification-tree-model";
+import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -95,7 +95,7 @@ const initialState = {
     studyUuid: null,
     network: null,
     geoData: null,
-    networkModificationTreeModel: {treeElements: []},
+    networkModificationTreeModel: { treeElements: [] },
     cases: [],
     selectedCase: null,
     selectedFile: null,
@@ -158,7 +158,8 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_MODIFICATION_TREE_UPDATED]: (state, action) => {
         let newModel = new NetworkModificationTreeModel();
-        newModel.treeElements = action.networkModificationTreeModel.treeElements;
+        newModel.treeElements =
+            action.networkModificationTreeModel.treeElements;
         state.networkModificationTreeModel = newModel;
     },
 

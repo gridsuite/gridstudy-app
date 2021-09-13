@@ -37,8 +37,7 @@ export default class NetworkModificationTreeModel {
                 (element) => element.source === nodeId
             );
             const edgesOfTarget = this.treeElements.filter(
-                (element) =>
-                    element.target === nodeId
+                (element) => element.target === nodeId
             );
             const filteredTreeElements = this.treeElements.filter(
                 (element) =>
@@ -49,7 +48,11 @@ export default class NetworkModificationTreeModel {
             edgesOfTarget.forEach((edgeOfTarget) => {
                 edgesOfSource.forEach((edgeOfSource) => {
                     filteredTreeElements.push({
-                        id: 'e' + edgeOfTarget.source + '-' + edgeOfSource.target,
+                        id:
+                            'e' +
+                            edgeOfTarget.source +
+                            '-' +
+                            edgeOfSource.target,
                         source: edgeOfTarget.source,
                         target: edgeOfSource.target,
                         type: 'smoothstep',

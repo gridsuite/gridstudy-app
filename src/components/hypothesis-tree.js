@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect, useState } from 'react';
-import ReactFlow, { isNode } from 'react-flow-renderer';
+import ReactFlow, {isNode} from 'react-flow-renderer';
 import HypoNode from './graph/nodes/hypo-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
@@ -14,18 +14,12 @@ import { Box } from '@material-ui/core';
 import dagre from 'dagre';
 import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-
 const nodeWidth = 150;
 const nodeHeight = 50;
 
-const nodeExtent = [
-    [0, 0],
-    [1000, 1000],
-];
-
 const getLayoutedElements = (elements, direction = 'TB') => {
+    const dagreGraph = new dagre.graphlib.Graph();
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
     const isHorizontal = direction === 'LR';
     dagreGraph.setGraph({ direction });
 
@@ -69,7 +63,7 @@ const HypothesisTree = (props) => {
                 props.treeModel ? props.treeModel.treeElements : []
             )
         );
-    }, [props.treeModel.treeElements]);
+    }, [props.treeModel]);
 
     const style = {
         width: '100%',
@@ -142,7 +136,6 @@ const HypothesisTree = (props) => {
                         elementsSelectable
                         selectNodesOnDrag={false}
                         nodeTypes={nodeTypes}
-                        nodeExtent={nodeExtent}
                         connectionLineType="smoothstep"
                     />
                 </Box>
