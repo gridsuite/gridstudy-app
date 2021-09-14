@@ -52,7 +52,7 @@
     },
     "browserslist": {
         "production": [
-            ">0.2%",
+            ">0.2% and supports es6-class",
             "not dead",
             "not op_mini all",
             "not chrome < 51",
