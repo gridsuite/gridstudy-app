@@ -427,10 +427,11 @@ const StudyPane = (props) => {
     const updateNodeCreated = useCallback(
         (treeModel, parentNodeId, createdNodeId) => {
             fetchNetworkModificationTreeNode(createdNodeId).then((node) => {
-                treeModel.addChild(node, parentNodeId);
-                dispatch(
-                    networkModificationTreeUpdated(treeModel)
-                );
+                if (treeModel) {
+                    treeModel.addChild(node, parentNodeId);
+                    treeModel.updateLayout();
+                    dispatch(networkModificationTreeUpdated(treeModel));
+                }
             });
         },
         [dispatch]
@@ -438,10 +439,11 @@ const StudyPane = (props) => {
 
     const updateNodesDeleted = useCallback(
         (treeModel, deletedNodes) => {
-            treeModel.removeNodes(deletedNodes);
-            dispatch(
-                networkModificationTreeUpdated(treeModel)
-            );
+            if (treeModel) {
+                treeModel.removeNodes(deletedNodes);
+                treeModel.updateLayout();
+                dispatch(networkModificationTreeUpdated(treeModel));
+            }
         },
         [dispatch]
     );
@@ -633,6 +635,7 @@ const StudyPane = (props) => {
             .then((tree) => {
                 const networkModificationTreeModel = new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
+                networkModificationTreeModel.updateLayout();
                 dispatch(
                     loadNetworkModificationTreeSuccess(
                         networkModificationTreeModel

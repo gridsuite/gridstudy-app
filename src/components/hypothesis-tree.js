@@ -4,65 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
-import ReactFlow, {isNode} from 'react-flow-renderer';
+import React, { useState } from 'react';
+import ReactFlow from 'react-flow-renderer';
 import HypoNode from './graph/nodes/hypo-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import NodeEditor from './graph/menus/node-editor';
 import { Box } from '@material-ui/core';
-import dagre from 'dagre';
 import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
-
-const nodeWidth = 150;
-const nodeHeight = 50;
-
-const getLayoutedElements = (elements) => {
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ direction: 'TB', align: 'UL' });
-
-    elements.forEach((el) => {
-        if (isNode(el)) {
-            dagreGraph.setNode(el.id, { width: nodeWidth, height: nodeHeight });
-        } else {
-            dagreGraph.setEdge(el.source, el.target);
-        }
-    });
-
-    dagre.layout(dagreGraph);
-
-    return elements.map((el) => {
-        if (isNode(el)) {
-            const nodeWithPosition = dagreGraph.node(el.id);
-            el.targetPosition = 'top';
-            el.sourcePosition = 'bottom';
-
-            // unfortunately we need this little hack to pass a slightly different position
-            // to notify react flow about the change. Moreover we are shifting the dagre node position
-            // (anchor=center center) to the top left so it matches the react flow node anchor point (top left).
-            el.position = {
-                x: nodeWithPosition.x - nodeWidth / 2 + Math.random() / 1000,
-                y: nodeWithPosition.y - nodeHeight / 2,
-            };
-        }
-
-        return el;
-    });
-};
 
 const HypothesisTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
-
-    const [layoutedElements, setLayoutedElements] = useState([]);
-
-    useEffect(() => {
-        setLayoutedElements(
-            getLayoutedElements(
-                props.treeModel ? props.treeModel.treeElements : []
-            )
-        );
-    }, [props.treeModel]);
 
     const style = {
         width: '100%',
@@ -119,6 +71,7 @@ const HypothesisTree = (props) => {
     }
 
     const nodeTypes = {
+        ROOT: HypoNode,
         NETWORK_MODIFICATION: HypoNode,
         MODEL: ModelNode,
     };
@@ -128,7 +81,9 @@ const HypothesisTree = (props) => {
             <Box style={style} display="flex" flexDirection="row">
                 <Box flexGrow={1}>
                     <ReactFlow
-                        elements={layoutedElements}
+                        elements={
+                            props.treeModel ? props.treeModel.treeElements : []
+                        }
                         onNodeContextMenu={onNodeContextMenu}
                         onSelectionChange={onSelectionChange}
                         onPaneClick={onPaneClick}
