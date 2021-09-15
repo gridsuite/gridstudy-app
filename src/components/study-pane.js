@@ -47,6 +47,7 @@ import {
     networkCreated,
     networkModificationTreeNodeAdded,
     networkModificationTreeNodesRemoved,
+    networkModificationTreeNodesUpdated,
     openStudy,
     resetLoadflowNotif,
     selectItemNetwork,
@@ -884,6 +885,17 @@ const StudyPane = (props) => {
         }
     }, [studyUpdatedForce, updateNetwork]);
 
+    const updateNodes = useCallback(
+        (updatedNodesIds) => {
+            Promise.all(
+                updatedNodesIds.map(fetchNetworkModificationTreeNode)
+            ).then((values) => {
+                dispatch(networkModificationTreeNodesUpdated(values));
+            });
+        },
+        [dispatch]
+    );
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
@@ -909,9 +921,14 @@ const StudyPane = (props) => {
                         studyUpdatedForce.eventData.headers['NODES']
                     )
                 );
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'NODE_UPDATED'
+            ) {
+                updateNodes(studyUpdatedForce.eventData.headers['NODES']);
             }
         }
-    }, [studyUpdatedForce, dispatch]);
+    }, [studyUpdatedForce, updateNodes, dispatch]);
 
     const mapRef = useRef();
     const centerSubstation = useCallback(

@@ -66,6 +66,15 @@ export default class NetworkModificationTreeModel {
         });
     }
 
+    updateNodes(updatedNodes) {
+        updatedNodes.forEach((node) => {
+            const indexModifiedNode = this.treeElements.findIndex(
+                (element) => element.id === node.id
+            );
+            this.treeElements[indexModifiedNode].data.label = node.name;
+        });
+    }
+
     setTreeElements(elements) {
         // handle root node
         this.treeElements.push({

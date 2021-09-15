@@ -637,6 +637,19 @@ export function deleteTreeNode(nodeId) {
     });
 }
 
+export function updateTreeNode(node) {
+    const nodeUpdateUrl = PREFIX_STUDY_QUERIES + '/v1/tree/updateNode/';
+    console.debug(nodeUpdateUrl);
+    return backendFetch(nodeUpdateUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(node),
+    });
+}
+
 export function connectNotificationsWebsocket(studyUuid) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI

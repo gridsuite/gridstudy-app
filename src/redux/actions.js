@@ -81,6 +81,18 @@ export function networkModificationTreeNodesRemoved(
     };
 }
 
+export const NETWORK_MODIFICATION_TREE_NODES_UPDATED =
+    'NETWORK_MODIFICATION_TREE_NODES_UPDATED';
+
+export function networkModificationTreeNodesUpdated(
+    networkModificationTreeNodes
+) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_NODES_UPDATED,
+        networkModificationTreeNodes: networkModificationTreeNodes,
+    };
+}
+
 export const SELECT_THEME = 'SELECT_THEME';
 
 export function selectTheme(theme) {

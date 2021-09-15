@@ -48,6 +48,7 @@ import {
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
+    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -173,6 +174,14 @@ export const reducer = createReducer(initialState, {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+        }
+    },
+
+    [NETWORK_MODIFICATION_TREE_NODES_UPDATED]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
         }
     },
