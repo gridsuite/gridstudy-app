@@ -32,8 +32,6 @@ export default class NetworkModificationTreeModel {
                 this.addChild(child, element.id);
             });
         }
-
-        this.treeElements = [...this.treeElements];
     }
 
     removeNodes(deletedNodes) {
@@ -66,7 +64,6 @@ export default class NetworkModificationTreeModel {
             });
             this.treeElements = filteredTreeElements;
         });
-        this.treeElements = [...this.treeElements];
     }
 
     setTreeElements(elements) {
@@ -80,5 +77,14 @@ export default class NetworkModificationTreeModel {
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);
         });
+    }
+
+    newSharedForUpdate() {
+        /* shallow clone of the network https://stackoverflow.com/a/44782052 */
+        let newTreeModel = Object.assign(
+            Object.create(Object.getPrototypeOf(this)),
+            this
+        );
+        return newTreeModel;
     }
 }

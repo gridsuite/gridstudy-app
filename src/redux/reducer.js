@@ -46,7 +46,8 @@ import {
     RESET_SA_NOTIF,
     COMPONENT_LIBRARY,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
-    NETWORK_MODIFICATION_TREE_UPDATED,
+    NETWORK_MODIFICATION_TREE_NODE_ADDED,
+    NETWORK_MODIFICATION_TREE_NODES_REMOVED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -71,7 +72,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -156,11 +156,25 @@ export const reducer = createReducer(initialState, {
             action.networkModificationTreeModel;
     },
 
-    [NETWORK_MODIFICATION_TREE_UPDATED]: (state, action) => {
-        let newModel = new NetworkModificationTreeModel();
-        newModel.treeElements =
-            action.networkModificationTreeModel.treeElements;
-        state.networkModificationTreeModel = newModel;
+    [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.addChild(
+                action.networkModificationTreeNode,
+                action.parentNodeId
+            );
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+        }
+    },
+
+    [NETWORK_MODIFICATION_TREE_NODES_REMOVED]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.removeNodes(action.networkModificationTreeNodes);
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+        }
     },
 
     [STUDY_UPDATED]: (state, action) => {

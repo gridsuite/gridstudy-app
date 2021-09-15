@@ -45,7 +45,8 @@ import {
     loadGeoDataSuccess,
     loadNetworkModificationTreeSuccess,
     networkCreated,
-    networkModificationTreeUpdated,
+    networkModificationTreeNodeAdded,
+    networkModificationTreeNodesRemoved,
     openStudy,
     resetLoadflowNotif,
     selectItemNetwork,
@@ -423,30 +424,6 @@ const StudyPane = (props) => {
         setSecurityAnalysisResult,
         setSecurityAnalysisResultFetched,
     ]);
-
-    const updateNodeCreated = useCallback(
-        (treeModel, parentNodeId, createdNodeId) => {
-            fetchNetworkModificationTreeNode(createdNodeId).then((node) => {
-                if (treeModel) {
-                    treeModel.addChild(node, parentNodeId);
-                    treeModel.updateLayout();
-                    dispatch(networkModificationTreeUpdated(treeModel));
-                }
-            });
-        },
-        [dispatch]
-    );
-
-    const updateNodesDeleted = useCallback(
-        (treeModel, deletedNodes) => {
-            if (treeModel) {
-                treeModel.removeNodes(deletedNodes);
-                treeModel.updateLayout();
-                dispatch(networkModificationTreeUpdated(treeModel));
-            }
-        },
-        [dispatch]
-    );
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         // close the contingency list selection window
@@ -875,23 +852,6 @@ const StudyPane = (props) => {
                     dispatch(addSANotif());
                 }
                 // update badge
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'NODE_CREATED'
-            ) {
-                updateNodeCreated(
-                    networkModificationTreeModel,
-                    studyUpdatedForce.eventData.headers['PARENT_NODE'],
-                    studyUpdatedForce.eventData.headers['NEW_NODE']
-                );
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'NODE_DELETED'
-            ) {
-                updateNodesDeleted(
-                    networkModificationTreeModel,
-                    studyUpdatedForce.eventData.headers['NODES']
-                );
             }
         }
         // Note: studyUuid, and loadNetwork don't change
@@ -902,8 +862,6 @@ const StudyPane = (props) => {
         updateLoadFlowResult,
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
-        updateNodeCreated,
-        updateNodesDeleted,
         ranLoadflow,
         ranSA,
         dispatch,
@@ -925,6 +883,35 @@ const StudyPane = (props) => {
             }
         }
     }, [studyUpdatedForce, updateNetwork]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'NODE_CREATED'
+            ) {
+                fetchNetworkModificationTreeNode(
+                    studyUpdatedForce.eventData.headers['NEW_NODE']
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeAdded(
+                            node,
+                            studyUpdatedForce.eventData.headers['PARENT_NODE']
+                        )
+                    );
+                });
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'NODE_DELETED'
+            ) {
+                dispatch(
+                    networkModificationTreeNodesRemoved(
+                        studyUpdatedForce.eventData.headers['NODES']
+                    )
+                );
+            }
+        }
+    }, [studyUpdatedForce, dispatch]);
 
     const mapRef = useRef();
     const centerSubstation = useCallback(

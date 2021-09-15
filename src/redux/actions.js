@@ -55,13 +55,29 @@ export function loadNetworkModificationTreeSuccess(
     };
 }
 
-export const NETWORK_MODIFICATION_TREE_UPDATED =
-    'NETWORK_MODIFICATION_TREE_UPDATED';
+export const NETWORK_MODIFICATION_TREE_NODE_ADDED =
+    'NETWORK_MODIFICATION_TREE_NODE_ADDED';
 
-export function networkModificationTreeUpdated(networkModificationTreeModel) {
+export function networkModificationTreeNodeAdded(
+    networkModificationTreeNode,
+    parentNodeId
+) {
     return {
-        type: NETWORK_MODIFICATION_TREE_UPDATED,
-        networkModificationTreeModel: networkModificationTreeModel,
+        type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
+        networkModificationTreeNode: networkModificationTreeNode,
+        parentNodeId: parentNodeId,
+    };
+}
+
+export const NETWORK_MODIFICATION_TREE_NODES_REMOVED =
+    'NETWORK_MODIFICATION_TREE_NODES_REMOVED';
+
+export function networkModificationTreeNodesRemoved(
+    networkModificationTreeNodes
+) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_NODES_REMOVED,
+        networkModificationTreeNodes: networkModificationTreeNodes,
     };
 }
 
