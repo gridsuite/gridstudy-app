@@ -17,7 +17,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NetworkModificationNode = ({ data }) => {
-  console.log('NNO:', data);
     const classes = useStyles();
 
     return (

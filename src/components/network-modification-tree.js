@@ -63,7 +63,7 @@ const NetworkModificationTree = (props) => {
         });
     }, []);
 
-    const closeCreateNodeMenu = useCallback( () => {
+    const closeCreateNodeMenu = useCallback(() => {
         setCreateNodeMenu({
             display: false,
             selectedNode: null,
