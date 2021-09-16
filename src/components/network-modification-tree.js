@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import ReactFlow from 'react-flow-renderer';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
@@ -21,14 +21,6 @@ const NetworkModificationTree = (props) => {
         height: '100%',
     };
 
-    const onNodeContextMenu = (event, element) => {
-        setCreateNodeMenu({
-            position: [event.pageX, event.pageY],
-            display: true,
-            selectedNode: element,
-        });
-    };
-
     const onSelectionChange = (selectedElements) => {
         if (selectedElements?.length > 0) {
             setSelectedNode(selectedElements[0]);
@@ -39,7 +31,7 @@ const NetworkModificationTree = (props) => {
         setSelectedNode(undefined);
     };
 
-    function handleCreateNode(element, type) {
+    const handleCreateNode = useCallback((element, type) => {
         createTreeNode(element.id, { name: 'New node', type: type }).then(
             (response) => {
                 if (response.status !== 200) {
@@ -47,15 +39,15 @@ const NetworkModificationTree = (props) => {
                 }
             }
         );
-    }
+    }, []);
 
-    function handleRemoveNode(element) {
+    const handleRemoveNode = useCallback((element) => {
         deleteTreeNode(element.id).then((response) => {
             if (response.status !== 200) {
                 console.log('Error creating node');
             }
         });
-    }
+    }, []);
 
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: [-1, -1],
@@ -63,12 +55,20 @@ const NetworkModificationTree = (props) => {
         selectedNode: null,
     });
 
-    function closeCreateNodeMenu() {
+    const onNodeContextMenu = useCallback((event, element) => {
+        setCreateNodeMenu({
+            position: [event.pageX, event.pageY],
+            display: true,
+            selectedNode: element,
+        });
+    }, []);
+
+    const closeCreateNodeMenu = useCallback( () => {
         setCreateNodeMenu({
             display: false,
             selectedNode: null,
         });
-    }
+    }, []);
 
     const nodeTypes = {
         ROOT: NetworkModificationNode,
@@ -91,6 +91,7 @@ const NetworkModificationTree = (props) => {
                         selectNodesOnDrag={false}
                         nodeTypes={nodeTypes}
                         connectionLineType="smoothstep"
+                        nodesDraggable={false}
                     />
                 </Box>
                 {selectedNode && (

@@ -25,14 +25,12 @@ const ModelNode = (props) => {
                 type="source"
                 position="bottom"
                 style={{ background: '#555' }}
-                onConnect={(params) => console.log('handle onConnect', params)}
                 isConnectable={true}
             />
             <Handle
                 type="target"
                 position="top"
                 style={{ background: '#555' }}
-                onConnect={(params) => console.log('handle onConnect', params)}
                 isConnectable={true}
             />
             <IconButton variant="outlined" className={classes.model}>

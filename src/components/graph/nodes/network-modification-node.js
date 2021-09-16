@@ -17,6 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NetworkModificationNode = ({ data }) => {
+  console.log('NNO:', data);
     const classes = useStyles();
 
     return (
@@ -25,14 +26,12 @@ const NetworkModificationNode = ({ data }) => {
                 type="source"
                 position="bottom"
                 style={{ background: '#555' }}
-                onConnect={(params) => console.log('handle onConnect', params)}
                 isConnectable={true}
             />
             <Handle
                 type="target"
                 position="top"
                 style={{ background: '#555' }}
-                onConnect={(params) => console.log('handle onConnect', params)}
                 isConnectable={true}
             />
             <Button

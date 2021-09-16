@@ -36,17 +36,21 @@ export default class NetworkModificationTreeModel {
 
     removeNodes(deletedNodes) {
         deletedNodes.forEach((nodeId) => {
-            const edgesOfSource = this.treeElements.filter(
-                (element) => element.source === nodeId
-            );
-            const edgesOfTarget = this.treeElements.filter(
-                (element) => element.target === nodeId
+            const edges = this.treeElements.filter(
+                (element) =>
+                    element.source === nodeId || element.target === nodeId
             );
             const filteredTreeElements = this.treeElements.filter(
                 (element) =>
                     element.id !== nodeId &&
                     element.source !== nodeId &&
                     element.target !== nodeId
+            );
+            const edgesOfSource = edges.filter(
+                (element) => element.source === nodeId
+            );
+            const edgesOfTarget = edges.filter(
+                (element) => element.target === nodeId
             );
             edgesOfTarget.forEach((edgeOfTarget) => {
                 edgesOfSource.forEach((edgeOfSource) => {
