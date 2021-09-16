@@ -304,7 +304,10 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
-    const [drawerNetworkModificationTreeOpen, setDrawerNetworkModificationTreeOpen] = useState(false);
+    const [
+        drawerNetworkModificationTreeOpen,
+        setDrawerNetworkModificationTreeOpen,
+    ] = useState(false);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -605,7 +608,9 @@ const StudyPane = (props) => {
     }, [studyUuid, dispatch]);
 
     const loadTree = useCallback(() => {
-        console.info(`Loading network modification tree of study '${studyUuid}'...`);
+        console.info(
+            `Loading network modification tree of study '${studyUuid}'...`
+        );
 
         const networkModificationTree = fetchNetworkModificationTree(studyUuid);
 
@@ -768,12 +773,16 @@ const StudyPane = (props) => {
     const toggleExplorerDrawer = () => {
         setDrawerExplorerOpen(!drawerExplorerOpen);
         if (drawerNetworkModificationTreeOpen) {
-            setDrawerNetworkModificationTreeOpen(!drawerNetworkModificationTreeOpen);
+            setDrawerNetworkModificationTreeOpen(
+                !drawerNetworkModificationTreeOpen
+            );
         }
     };
 
     const toggleNetworkModificationTreeDrawer = () => {
-        setDrawerNetworkModificationTreeOpen(!drawerNetworkModificationTreeOpen);
+        setDrawerNetworkModificationTreeOpen(
+            !drawerNetworkModificationTreeOpen
+        );
         if (drawerExplorerOpen) {
             setDrawerExplorerOpen(!drawerExplorerOpen);
         }
@@ -1318,9 +1327,13 @@ const StudyPane = (props) => {
                     >
                         <LateralToolbar
                             handleDisplayNetworkExplorer={toggleExplorerDrawer}
-                            handleDisplayNetworkModificationTree={toggleNetworkModificationTreeDrawer}
+                            handleDisplayNetworkModificationTree={
+                                toggleNetworkModificationTreeDrawer
+                            }
                             networkExplorerDisplayed={drawerExplorerOpen}
-                            networkModificationTreeDisplayed={drawerNetworkModificationTreeOpen}
+                            networkModificationTreeDisplayed={
+                                drawerNetworkModificationTreeOpen
+                            }
                         />
                     </div>
                 </Drawer>

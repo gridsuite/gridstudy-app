@@ -72,7 +72,9 @@ const CreateNodeMenu = ({
                     className={classes.listItemText}
                     primary={
                         <Typography noWrap>
-                            {intl.formatMessage({ id: 'createNetworkModificationNode' })}
+                            {intl.formatMessage({
+                                id: 'createNetworkModificationNode',
+                            })}
                         </Typography>
                     }
                 />
