@@ -10,7 +10,7 @@ import { Handle } from 'react-flow-renderer';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-    hypo: {
+    networkModification: {
         background: 'steelblue',
         textTransform: 'none',
     },
@@ -37,7 +37,7 @@ const NetworkModificationNode = ({ data }) => {
             />
             <Button
                 variant="outlined"
-                className={classes.hypo}
+                className={classes.networkModification}
                 disableElevation
             >
                 {data.label}

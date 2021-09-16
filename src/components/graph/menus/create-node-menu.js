@@ -37,7 +37,7 @@ const CreateNodeMenu = ({
     const classes = useStyles();
     const intl = useIntl();
 
-    function createHypoNode() {
+    function createNetworkModificationNode() {
         handleNodeCreation(selectedNode, 'NETWORK_MODIFICATION');
         handleClose();
     }
@@ -66,13 +66,13 @@ const CreateNodeMenu = ({
         >
             <MenuItem
                 className={classes.menuItem}
-                onClick={() => createHypoNode()}
+                onClick={() => createNetworkModificationNode()}
             >
                 <ListItemText
                     className={classes.listItemText}
                     primary={
                         <Typography noWrap>
-                            {intl.formatMessage({ id: 'createHypoNode' })}
+                            {intl.formatMessage({ id: 'createNetworkModificationNode' })}
                         </Typography>
                     }
                 />

@@ -242,7 +242,7 @@
     "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
 
     "SubstationList": "Substation list",
-    "HypothesisTree": "Hypothesis tree",
+    "NetworkModificationTree": "Network modification tree",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -252,7 +252,7 @@
 
     "ComponentLibrary": "Component library selection : ",
 
-    "createHypoNode": "Create hypothesis node",
+    "createNetworkModificationNode": "Create modification node",
     "createModelNode": "Create model node",
     "removeNode": "Remove node"
 }

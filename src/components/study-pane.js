@@ -105,7 +105,7 @@ import NetworkModificationTreeModel from './graph/network-modification-tree-mode
 
 const drawerExplorerWidth = 300;
 const drawerToolbarWidth = 48;
-const drawerHypoTreeWidth = 800;
+const drawerNetworkModificationTreeWidth = 800;
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -147,8 +147,8 @@ const useStyles = makeStyles((theme) => ({
         // and above the network explorer drawer
         zIndex: 60,
     },
-    drawerHypoTree: {
-        width: drawerHypoTreeWidth,
+    drawerNetworkModificationTree: {
+        width: drawerNetworkModificationTreeWidth,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -167,12 +167,12 @@ const useStyles = makeStyles((theme) => ({
         }),
         marginLeft: -drawerExplorerWidth,
     },
-    drawerHypoTreeShift: {
+    drawerNetworkModificationTreeShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: -drawerHypoTreeWidth,
+        marginLeft: -drawerNetworkModificationTreeWidth,
     },
     mapCtrlBottomLeft: {
         '& .mapboxgl-ctrl-bottom-left': {
@@ -192,13 +192,13 @@ const useStyles = makeStyles((theme) => ({
             left: drawerExplorerWidth + drawerToolbarWidth,
         },
     },
-    mapCtrlBottomLeftHypoTreeShift: {
+    mapCtrlBottomLeftNetworkModificationTreeShift: {
         '& .mapboxgl-ctrl-bottom-left': {
             transition: theme.transitions.create('left', {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            left: drawerHypoTreeWidth + drawerToolbarWidth,
+            left: drawerNetworkModificationTreeWidth + drawerToolbarWidth,
         },
     },
 }));
@@ -304,7 +304,7 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
-    const [drawerHypoTreeOpen, setDrawerHypoTreeOpen] = useState(false);
+    const [drawerNetworkModificationTreeOpen, setDrawerNetworkModificationTreeOpen] = useState(false);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -605,7 +605,7 @@ const StudyPane = (props) => {
     }, [studyUuid, dispatch]);
 
     const loadTree = useCallback(() => {
-        console.info(`Loading hypothesis tree of study '${studyUuid}'...`);
+        console.info(`Loading network modification tree of study '${studyUuid}'...`);
 
         const networkModificationTree = fetchNetworkModificationTree(studyUuid);
 
@@ -767,13 +767,13 @@ const StudyPane = (props) => {
 
     const toggleExplorerDrawer = () => {
         setDrawerExplorerOpen(!drawerExplorerOpen);
-        if (drawerHypoTreeOpen) {
-            setDrawerHypoTreeOpen(!drawerHypoTreeOpen);
+        if (drawerNetworkModificationTreeOpen) {
+            setDrawerNetworkModificationTreeOpen(!drawerNetworkModificationTreeOpen);
         }
     };
 
-    const toggleHypoTreeDrawer = () => {
-        setDrawerHypoTreeOpen(!drawerHypoTreeOpen);
+    const toggleNetworkModificationTreeDrawer = () => {
+        setDrawerNetworkModificationTreeOpen(!drawerNetworkModificationTreeOpen);
         if (drawerExplorerOpen) {
             setDrawerExplorerOpen(!drawerExplorerOpen);
         }
@@ -1131,8 +1131,8 @@ const StudyPane = (props) => {
                     className={
                         drawerExplorerOpen
                             ? classes.mapCtrlBottomLeftExplorerShift
-                            : drawerHypoTreeOpen
-                            ? classes.mapCtrlBottomLeftHypoTreeShift
+                            : drawerNetworkModificationTreeOpen
+                            ? classes.mapCtrlBottomLeftNetworkModificationTreeShift
                             : classes.mapCtrlBottomLeft
                     }
                     style={{
@@ -1318,9 +1318,9 @@ const StudyPane = (props) => {
                     >
                         <LateralToolbar
                             handleDisplayNetworkExplorer={toggleExplorerDrawer}
-                            handleDisplayHypoTree={toggleHypoTreeDrawer}
+                            handleDisplayNetworkModificationTree={toggleNetworkModificationTreeDrawer}
                             networkExplorerDisplayed={drawerExplorerOpen}
-                            hypoTreeDisplayed={drawerHypoTreeOpen}
+                            networkModificationTreeDisplayed={drawerNetworkModificationTreeOpen}
                         />
                     </div>
                 </Drawer>
@@ -1361,8 +1361,8 @@ const StudyPane = (props) => {
                 </Drawer>
                 <Drawer
                     variant={'persistent'}
-                    className={clsx(classes.drawerHypoTree, {
-                        [classes.drawerHypoTreeShift]: !drawerHypoTreeOpen,
+                    className={clsx(classes.drawerNetworkModificationTree, {
+                        [classes.drawerNetworkModificationTreeShift]: !drawerNetworkModificationTreeOpen,
                     })}
                     anchor="left"
                     style={{
@@ -1371,7 +1371,7 @@ const StudyPane = (props) => {
                         overflowY: 'hidden',
                         overflowX: 'hidden',
                     }}
-                    open={drawerHypoTreeOpen}
+                    open={drawerNetworkModificationTreeOpen}
                     classes={{
                         paper: classes.drawerPaper,
                     }}
