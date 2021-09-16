@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const HypoNode = ({ data }) => {
+const NetworkModificationNode = ({ data }) => {
     const classes = useStyles();
 
     return (
@@ -46,4 +46,4 @@ const HypoNode = ({ data }) => {
     );
 };
 
-export default HypoNode;
+export default NetworkModificationNode;

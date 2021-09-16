@@ -6,14 +6,14 @@
  */
 import React, { useState } from 'react';
 import ReactFlow from 'react-flow-renderer';
-import HypoNode from './graph/nodes/hypo-node';
+import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import NodeEditor from './graph/menus/node-editor';
 import { Box } from '@material-ui/core';
 import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
 
-const HypothesisTree = (props) => {
+const NetworkModificationTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
 
     const style = {
@@ -71,8 +71,8 @@ const HypothesisTree = (props) => {
     }
 
     const nodeTypes = {
-        ROOT: HypoNode,
-        NETWORK_MODIFICATION: HypoNode,
+        ROOT: NetworkModificationNode,
+        NETWORK_MODIFICATION: NetworkModificationNode,
         MODEL: ModelNode,
     };
 
@@ -112,4 +112,4 @@ const HypothesisTree = (props) => {
     );
 };
 
-export default HypothesisTree;
+export default NetworkModificationTree;

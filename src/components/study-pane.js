@@ -100,7 +100,7 @@ import withEquipmentMenu from './equipment-menu';
 import { ReportViewer } from '@gridsuite/commons-ui';
 import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import { useSnackbar } from 'notistack';
-import HypothesisTree from './hypothesis-tree';
+import NetworkModificationTree from './network-modification-tree';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 
 const drawerExplorerWidth = 300;
@@ -1384,7 +1384,7 @@ const StudyPane = (props) => {
                         }}
                         className={classes.drawerDiv}
                     >
-                        <HypothesisTree
+                        <NetworkModificationTree
                             treeModel={networkModificationTreeModel}
                         />
                     </div>

@@ -9,7 +9,7 @@ import React from 'react';
 import { Paper } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import HypoNodeEditor from './hypo-node-editor';
+import NetworkModificationNodeEditor from './network-modification-node-editor';
 import ModelNodeEditor from './model-node-editor';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +29,7 @@ const NodeEditor = ({ selectedNode, handleNodeModified }) => {
     return (
         <Paper className={classes.paper}>
             {selectedNode.type === 'NETWORK_MODIFICATION' && (
-                <HypoNodeEditor selectedNode={selectedNode} />
+                <NetworkModificationNodeEditor selectedNode={selectedNode} />
             )}
             {selectedNode.type === 'MODEL' && (
                 <ModelNodeEditor selectedNode={selectedNode} />

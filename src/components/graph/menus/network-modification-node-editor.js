@@ -13,7 +13,7 @@ import Button from '@material-ui/core/Button';
 import { useIntl } from 'react-intl';
 import { updateTreeNode } from '../../../utils/rest-api';
 
-const HypoNodeEditor = ({ selectedNode }) => {
+const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const intl = useIntl();
 
     const [nameValue, setNameValue] = useState(selectedNode.data?.label);
@@ -56,8 +56,8 @@ const HypoNodeEditor = ({ selectedNode }) => {
     );
 };
 
-HypoNodeEditor.propTypes = {
+NetworkModificationNodeEditor.propTypes = {
     selectedNode: PropTypes.object.isRequired,
 };
 
-export default HypoNodeEditor;
+export default NetworkModificationNodeEditor;
