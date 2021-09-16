@@ -616,7 +616,8 @@ const StudyPane = (props) => {
 
         networkModificationTree
             .then((tree) => {
-                const networkModificationTreeModel = new NetworkModificationTreeModel();
+                const networkModificationTreeModel =
+                    new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
                 dispatch(
@@ -1375,7 +1376,8 @@ const StudyPane = (props) => {
                 <Drawer
                     variant={'persistent'}
                     className={clsx(classes.drawerNetworkModificationTree, {
-                        [classes.drawerNetworkModificationTreeShift]: !drawerNetworkModificationTreeOpen,
+                        [classes.drawerNetworkModificationTreeShift]:
+                            !drawerNetworkModificationTreeOpen,
                     })}
                     anchor="left"
                     style={{

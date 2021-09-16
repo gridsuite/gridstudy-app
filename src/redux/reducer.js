@@ -159,7 +159,8 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
         if (state.networkModificationTreeModel) {
-            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId
@@ -171,7 +172,8 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_MODIFICATION_TREE_NODES_REMOVED]: (state, action) => {
         if (state.networkModificationTreeModel) {
-            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -180,7 +182,8 @@ export const reducer = createReducer(initialState, {
 
     [NETWORK_MODIFICATION_TREE_NODES_UPDATED]: (state, action) => {
         if (state.networkModificationTreeModel) {
-            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
         }
