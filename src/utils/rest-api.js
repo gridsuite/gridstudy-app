@@ -602,7 +602,7 @@ export function fetchNetworkModificationTree(studyUuid) {
 export function fetchNetworkModificationTreeNode(nodeUuid) {
     console.info('Fetching network modification tree node');
     const url =
-        PREFIX_STUDY_QUERIES + '/v1/tree/node/' + encodeURIComponent(nodeUuid);
+        PREFIX_STUDY_QUERIES + '/v1/tree/nodes/' + encodeURIComponent(nodeUuid);
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()
@@ -611,12 +611,10 @@ export function fetchNetworkModificationTreeNode(nodeUuid) {
 
 export function createTreeNode(parentId, node) {
     const nodeCreationUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/tree/createNode/' +
-        encodeURIComponent(parentId);
+        PREFIX_STUDY_QUERIES + '/v1/tree/nodes/' + encodeURIComponent(parentId);
     console.debug('%s with body: %s', nodeCreationUrl, node);
     return backendFetch(nodeCreationUrl, {
-        method: 'put',
+        method: 'post',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -628,9 +626,7 @@ export function createTreeNode(parentId, node) {
 export function deleteTreeNode(nodeId) {
     console.info('Fetching network modification tree');
     const url =
-        PREFIX_STUDY_QUERIES +
-        '/v1/tree/deleteNode/' +
-        encodeURIComponent(nodeId);
+        PREFIX_STUDY_QUERIES + '/v1/tree/nodes/' + encodeURIComponent(nodeId);
     console.debug(url);
     return backendFetch(url, {
         method: 'delete',
@@ -638,7 +634,7 @@ export function deleteTreeNode(nodeId) {
 }
 
 export function updateTreeNode(node) {
-    const nodeUpdateUrl = PREFIX_STUDY_QUERIES + '/v1/tree/updateNode/';
+    const nodeUpdateUrl = PREFIX_STUDY_QUERIES + '/v1/tree/nodes/';
     console.debug(nodeUpdateUrl);
     return backendFetch(nodeUpdateUrl, {
         method: 'put',

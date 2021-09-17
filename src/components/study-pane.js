@@ -918,7 +918,7 @@ const StudyPane = (props) => {
                     dispatch(
                         networkModificationTreeNodeAdded(
                             node,
-                            studyUpdatedForce.eventData.headers['PARENT_NODE']
+                            studyUpdatedForce.eventData.headers['NODE']
                         )
                     );
                 });
