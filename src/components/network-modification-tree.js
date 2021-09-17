@@ -13,6 +13,12 @@ import NodeEditor from './graph/menus/node-editor';
 import { Box } from '@material-ui/core';
 import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
 
+const nodeTypes = {
+    ROOT: NetworkModificationNode,
+    NETWORK_MODIFICATION: NetworkModificationNode,
+    MODEL: ModelNode,
+};
+
 const NetworkModificationTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
 
@@ -21,15 +27,15 @@ const NetworkModificationTree = (props) => {
         height: '100%',
     };
 
-    const onSelectionChange = (selectedElements) => {
+    const onSelectionChange = useCallback((selectedElements) => {
         if (selectedElements?.length > 0) {
             setSelectedNode(selectedElements[0]);
         }
-    };
+    }, []);
 
-    const onPaneClick = () => {
+    const onPaneClick = useCallback(() => {
         setSelectedNode(undefined);
-    };
+    }, []);
 
     const handleCreateNode = useCallback((element, type) => {
         createTreeNode(element.id, { name: 'New node', type: type }).then(
@@ -69,12 +75,6 @@ const NetworkModificationTree = (props) => {
             selectedNode: null,
         });
     }, []);
-
-    const nodeTypes = {
-        ROOT: NetworkModificationNode,
-        NETWORK_MODIFICATION: NetworkModificationNode,
-        MODEL: ModelNode,
-    };
 
     return (
         <>
