@@ -19,6 +19,8 @@ const nodeTypes = {
     MODEL: ModelNode,
 };
 
+const snapGrid = [15, 15];
+
 const NetworkModificationTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
 
@@ -92,6 +94,8 @@ const NetworkModificationTree = (props) => {
                         nodeTypes={nodeTypes}
                         connectionLineType="smoothstep"
                         nodesDraggable={false}
+                        snapToGrid={false}
+                        snapGrid={snapGrid}
                     />
                 </Box>
                 {selectedNode && (
