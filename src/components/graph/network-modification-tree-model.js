@@ -76,9 +76,10 @@ export default class NetworkModificationTreeModel {
                 (element) => element.id === node.id
             );
             if (indexModifiedNode !== -1) {
-                this.treeElements[indexModifiedNode].data.label = node.name;
+                this.treeElements[indexModifiedNode].data = {...this.treeElements[indexModifiedNode].data, label: node.name};
             }
         });
+        this.treeElements = [...this.treeElements];
     }
 
     setTreeElements(elements) {
