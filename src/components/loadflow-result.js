@@ -73,6 +73,7 @@ const LoadFlowResult = ({ result }) => {
                 <Paper className={classes.tablePaper}>
                     <VirtualizedTable
                         rows={result.componentResults}
+                        sortable={true}
                         columns={[
                             {
                                 label: intl.formatMessage({

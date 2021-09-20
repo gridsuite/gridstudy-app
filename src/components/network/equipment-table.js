@@ -318,6 +318,7 @@ export const EquipmentTable = ({
                 scrollToAlignment={scrollToAlignment}
                 enableExportCSV={true}
                 exportCSVDataKeys={selectedDataKey}
+                sortable={true}
             />
         </>
     );
