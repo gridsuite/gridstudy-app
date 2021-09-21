@@ -910,32 +910,32 @@ const StudyPane = (props) => {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'NODE_CREATED'
+                'nodeCreated'
             ) {
                 fetchNetworkModificationTreeNode(
-                    studyUpdatedForce.eventData.headers['NEW_NODE']
+                    studyUpdatedForce.eventData.headers['newNode']
                 ).then((node) => {
                     dispatch(
                         networkModificationTreeNodeAdded(
                             node,
-                            studyUpdatedForce.eventData.headers['NODE']
+                            studyUpdatedForce.eventData.headers['node']
                         )
                     );
                 });
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'NODE_DELETED'
+                'nodeDeleted'
             ) {
                 dispatch(
                     networkModificationTreeNodesRemoved(
-                        studyUpdatedForce.eventData.headers['NODES']
+                        studyUpdatedForce.eventData.headers['nodes']
                     )
                 );
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'NODE_UPDATED'
+                'nodeUpdated'
             ) {
-                updateNodes(studyUpdatedForce.eventData.headers['NODES']);
+                updateNodes(studyUpdatedForce.eventData.headers['nodes']);
             }
         }
     }, [studyUpdatedForce, updateNodes, dispatch]);
