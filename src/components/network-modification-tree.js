@@ -58,14 +58,14 @@ const NetworkModificationTree = (props) => {
     }, []);
 
     const [createNodeMenu, setCreateNodeMenu] = useState({
-        position: [-1, -1],
+        position: { x: -1, y: -1 },
         display: null,
         selectedNode: null,
     });
 
     const onNodeContextMenu = useCallback((event, element) => {
         setCreateNodeMenu({
-            position: [event.pageX, event.pageY],
+            position: { x: event.pageX, y: event.pageY },
             display: true,
             selectedNode: element,
         });

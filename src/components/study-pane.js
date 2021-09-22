@@ -139,6 +139,8 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         // zIndex set to be below the loader with overlay
+        // and above the network explorer, for mouse events on network modification tree
+        // to be taken into account correctly
         zIndex: 51,
     },
     drawerToolbar: {

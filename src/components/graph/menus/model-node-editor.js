@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useIntl } from 'react-intl';
+import { updateTreeNode } from '../../../utils/rest-api';
 
 const ModelNodeEditor = ({ selectedNode }) => {
     const intl = useIntl();
@@ -27,8 +28,15 @@ const ModelNodeEditor = ({ selectedNode }) => {
     };
 
     const handleValidate = (event) => {
-        selectedNode.data.label = nameValue;
-        selectedNode.modelType = modelType;
+        updateTreeNode({
+            id: selectedNode.id,
+            type: selectedNode.type,
+            name: nameValue,
+        }).then((response) => {
+            if (response.status !== 200) {
+                console.log('Error updating node');
+            }
+        });
     };
 
     return (

@@ -57,8 +57,8 @@ const CreateNodeMenu = ({
             anchorReference="anchorPosition"
             anchorPosition={{
                 position: 'absolute',
-                left: position[0],
-                top: position[1],
+                left: position.x,
+                top: position.y,
             }}
             id="create-node-menu"
             open={true}
@@ -109,7 +109,7 @@ const CreateNodeMenu = ({
 };
 
 CreateNodeMenu.propTypes = {
-    position: PropTypes.arrayOf(PropTypes.number).isRequired,
+    position: PropTypes.object.isRequired,
     handleNodeCreation: PropTypes.func.isRequired,
     handleNodeRemoval: PropTypes.func.isRequired,
     handleClose: PropTypes.func.isRequired,
