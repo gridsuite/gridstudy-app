@@ -32,23 +32,23 @@ const CreateNodeMenu = ({
     handleClose,
     handleNodeCreation,
     handleNodeRemoval,
-    selectedNode,
+    activeNode,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
 
     function createNetworkModificationNode() {
-        handleNodeCreation(selectedNode, 'NETWORK_MODIFICATION');
+        handleNodeCreation(activeNode, 'NETWORK_MODIFICATION');
         handleClose();
     }
 
     function createModelNode() {
-        handleNodeCreation(selectedNode, 'MODEL');
+        handleNodeCreation(activeNode, 'MODEL');
         handleClose();
     }
 
     function removeNode() {
-        handleNodeRemoval(selectedNode);
+        handleNodeRemoval(activeNode);
         handleClose();
     }
 

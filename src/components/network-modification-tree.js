@@ -112,7 +112,7 @@ const NetworkModificationTree = (props) => {
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}
-                    selectedNode={createNodeMenu.selectedNode}
+                    activeNode={createNodeMenu.selectedNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
                     handleClose={closeCreateNodeMenu}
