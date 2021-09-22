@@ -631,7 +631,10 @@ const StudyPane = (props) => {
             .catch(function (error) {
                 console.error(error.message);
                 setStudyNotFound(true);
-            });
+            })
+            .finally(() =>
+                console.debug('Network modification tree loading finished')
+            );
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch]);
 
@@ -775,20 +778,14 @@ const StudyPane = (props) => {
 
     const toggleExplorerDrawer = () => {
         setDrawerExplorerOpen(!drawerExplorerOpen);
-        if (drawerNetworkModificationTreeOpen) {
-            setDrawerNetworkModificationTreeOpen(
-                !drawerNetworkModificationTreeOpen
-            );
-        }
+        setDrawerNetworkModificationTreeOpen(false);
     };
 
     const toggleNetworkModificationTreeDrawer = () => {
         setDrawerNetworkModificationTreeOpen(
             !drawerNetworkModificationTreeOpen
         );
-        if (drawerExplorerOpen) {
-            setDrawerExplorerOpen(!drawerExplorerOpen);
-        }
+        setDrawerExplorerOpen(false);
     };
 
     const sldRef = useRef();

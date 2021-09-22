@@ -19,6 +19,9 @@ const nodeTypes = {
     MODEL: ModelNode,
 };
 
+// snapGrid value set to [15, 15] which is the default value for ReactFlow
+// it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
+// in order to avoid unwanted tree nodes rendering (react-flow bug ?)
 const snapGrid = [15, 15];
 
 const NetworkModificationTree = (props) => {

@@ -34,24 +34,31 @@ export default class NetworkModificationTreeModel {
         }
     }
 
+    // Remove nodes AND reparent their children
     removeNodes(deletedNodes) {
         deletedNodes.forEach((nodeId) => {
+            // get edges which have the deleted node as source or target
             const edges = this.treeElements.filter(
                 (element) =>
                     element.source === nodeId || element.target === nodeId
             );
+            // From the edges array
+            // get edges which have the deleted node as source
+            const edgesOfSource = edges.filter(
+                (element) => element.source === nodeId
+            );
+            // get edges which have the deleted node as target
+            const edgesOfTarget = edges.filter(
+                (element) => element.target === nodeId
+            );
+            // Remove these edges and the node from the treeElements array
             const filteredTreeElements = this.treeElements.filter(
                 (element) =>
                     element.id !== nodeId &&
                     element.source !== nodeId &&
                     element.target !== nodeId
             );
-            const edgesOfSource = edges.filter(
-                (element) => element.source === nodeId
-            );
-            const edgesOfTarget = edges.filter(
-                (element) => element.target === nodeId
-            );
+            // Recreate edges by reparenting previously targeted nodes to previous source nodes
             edgesOfTarget.forEach((edgeOfTarget) => {
                 edgesOfSource.forEach((edgeOfSource) => {
                     filteredTreeElements.push({
