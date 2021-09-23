@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             opacity: '100%',
         },
-        pointerEvents: 'auto',
+        pointerEvents: 'none',
     },
     flexContainer: {
         display: 'flex',
@@ -98,7 +98,6 @@ const OverloadedLinesView = (props) => {
             }
             return fields;
         };
-
         setLines(
             props.lines
                 .map((line) => makeData(line))
@@ -134,12 +133,12 @@ const OverloadedLinesView = (props) => {
                 <VirtualizedTable
                     height={Math.min(lines.length * rowHeight + 50, 400)}
                     className={classes.table}
-                    rowCount={lines.length}
-                    rowGetter={({ index }) => lines[index]}
+                    rows={lines}
                     rowStyle={{ alignItems: 'stretch' }}
                     rowHeight={rowHeight}
                     classes={{ tableRow: classes.rowCell }}
                     filter={filter}
+                    sortable={true}
                     columns={[
                         {
                             width: 150,

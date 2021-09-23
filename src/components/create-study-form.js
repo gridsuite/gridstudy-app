@@ -151,7 +151,7 @@ const UploadCase = () => {
     );
 };
 
-export const CreateStudyForm = () => {
+export const CreateStudyForm = (props) => {
     const [open, setOpen] = React.useState(false);
     const [caseExist, setCaseExist] = React.useState(false);
 
@@ -161,9 +161,8 @@ export const CreateStudyForm = () => {
     const [createStudyErr, setCreateStudyErr] = React.useState('');
 
     const [studyInvalid, setStudyInvalid] = useState(false);
-    const [loadingCheckStudyName, setLoadingCheckStudyName] = React.useState(
-        false
-    );
+    const [loadingCheckStudyName, setLoadingCheckStudyName] =
+        React.useState(false);
     const [studyNameChecked, setStudyNameChecked] = React.useState(false);
 
     const userId = useSelector((state) => state.user.profile.sub);
@@ -268,12 +267,16 @@ export const CreateStudyForm = () => {
             return;
         }
 
-        let isPrivateStudy = false;
-        if (studyPrivacy === 'private') {
-            isPrivateStudy = true;
-        }
+        let isPrivateStudy = studyPrivacy === 'private';
 
         setOpen(false);
+        const study = {
+            studyName: studyName,
+            userId: userId,
+            isPrivate: isPrivateStudy,
+            creationDate: Date.now() + '',
+        };
+        props.addCreationRequest(study);
         createStudy(
             caseExist,
             studyName,
@@ -285,6 +288,7 @@ export const CreateStudyForm = () => {
             setCreateStudyErr('');
             setStudyName('');
             setStudyDescription('');
+            props.addStudyCreationSubmitted(study);
             dispatch(removeSelectedFile());
 
             if (!res.ok) {

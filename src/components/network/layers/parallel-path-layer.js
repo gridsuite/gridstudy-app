@@ -34,16 +34,29 @@ export default class ParallelPathLayer extends PathLayer {
             'vs:#decl':
                 shaders.inject['vs:#decl'] +
                 `\
-//Note: with the following 2 attributes, we have reached the limit (16 on most platforms) of the number of attributes.
+//Note: with the following attribute, we have reached the limit (16 on most platforms) of the number of attributes.
 //      with webgl2, this might be raised in the future to 32 on most platforms...
-//      The PathLayer that this class extends already uses 13 attributes (and 14 with the dash extension).
-//      If needed, we can pack some attributes together in a single attribute to
-//      workaround the low limit of the number of vertex attrbutes .
+//      The PathLayer that this class extends already uses 13 attributes (and 15 with the dash extension).
+//      we have packed all our attributes together in a single attribute to
+//      workaround the low limit of the number of vertex attrbutes...
+//      To pack the attributes, for now we use a very simple system. If needed, we can change it to a more efficient packing.
+//      We just add an extra float to the line angles vec3. The
+//      extra float contains the previous attributes:
+//          parallelIndex (an half integer, between -15.5 and +15.5 (32 lines max..))
+//          proximityFactors (two floats, between 0 and 1)
+//
+//          To simplify further, we use only positive integers for
+//          this extra float, ie values only from 0 to 2^24. For parallelIndex, we encode the half integers from -15.5 to 15.5
+//          to 0..62, which fits in 6 bits.
+//          For proximityFactors, We switch from floating to a fixed precision of 9 bits
+//          without the 0 (ie multiples of 512: 1/512, 2/512, ..., 1).
+//          So in the 24 bits of the integer value of the float, we have 6 bits of parallel index,
+//          9 bits of proximity factor start, 9 bits of proximity factor end, for a total of 24 bits.
 //Note2: packing the attributes together, in addition to not beeing very readable,
 //       also has the downside that you can't update one attribute and reconstruct
-//       only its buffer, so it hurts performance in this case.
-attribute float instanceLineParallelIndex;
-attribute float instanceLineAngle;
+//       only its buffer, so it hurts performance a bit in this case.
+//       But this is a rare case for us (changing parameters) so it doesn't matter much.
+attribute vec4 instanceExtraAttributes;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
@@ -51,24 +64,36 @@ uniform float minParallelOffset;
             'vs:#main-end':
                 shaders.inject['vs:#main-end'] +
                 `\
-if (abs(instanceLineParallelIndex) == 9999.) return;
-
-float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
-float offsetCommonSpace = project_pixel_size(offsetPixels);
-vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle), 0, 0.) * instanceLineParallelIndex;
 
 bool isSegmentEnd = isEnd > EPSILON;
 bool isFirstSegment = (instanceTypes == 1.0 || instanceTypes == 3.0);
 bool isLastSegment = (instanceTypes == 2.0 || instanceTypes == 3.0);
+
+float instanceLineAngle = instanceExtraAttributes[1];
+if ( !isSegmentEnd && isFirstSegment ){
+    instanceLineAngle = instanceExtraAttributes[0];
+}
+else if ( isSegmentEnd && isLastSegment){
+    instanceLineAngle = instanceExtraAttributes[2];
+}
+float instanceLineParallelIndex = (mod(instanceExtraAttributes[3], 64.0) - 31.0) / 2.0;
+ 
+float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
+float offsetCommonSpace = project_pixel_size(offsetPixels);
+vec4 trans = vec4(cos(instanceLineAngle), -sin(instanceLineAngle), 0, 0.) * instanceLineParallelIndex;
+
 if(isSegmentEnd && isLastSegment) {
-  trans.x += sin(instanceLineAngle);
-  trans.y += cos(instanceLineAngle);
+  float pf = (mod(instanceExtraAttributes[3] / 64.0, 512.0) + 1.0) / 512.0;
+  trans.x += sin(instanceLineAngle) * pf ;
+  trans.y += cos(instanceLineAngle) * pf;
 }
-if (!isSegmentEnd && isFirstSegment)
+else if (!isSegmentEnd && isFirstSegment)
 {
-  trans.x -= sin(instanceLineAngle);
-  trans.y -= cos(instanceLineAngle);
+  float pf = (mod(instanceExtraAttributes[3] / 32768.0, 512.0) + 1.0) / 512.0;
+  trans.x -= sin(instanceLineAngle) * pf;
+  trans.y -= cos(instanceLineAngle) * pf;
 }
+
 trans = trans * offsetCommonSpace;
 gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
 `,
@@ -81,15 +106,11 @@ gl_Position += project_common_position_to_clipspace(trans) - project_uCenter;
 
         const attributeManager = this.getAttributeManager();
         attributeManager.addInstanced({
-            instanceLineParallelIndex: {
-                size: 1,
+            // too much instances variables need to compact some...
+            instanceExtraAttributes: {
+                size: 4,
                 type: GL.FLOAT,
-                accessor: 'getLineParallelIndex',
-            },
-            instanceLineAngle: {
-                size: 1,
-                type: GL.FLOAT,
-                accessor: 'getLineAngle',
+                accessor: 'getExtraAttributes',
             },
         });
     }

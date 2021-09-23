@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -21,37 +21,37 @@ import NetworkMap from './network/network-map';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
     connectNotificationsWebsocket,
-    fetchGenerators,
+    fetchAllEquipments,
     fetchLinePositions,
-    fetchLines,
+    fetchReport,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
     fetchSubstationPositions,
-    fetchSubstations,
-    fetchThreeWindingsTransformers,
-    fetchTwoWindingsTransformers,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     startLoadFlow,
     startSecurityAnalysis,
+    stopSecurityAnalysis,
     updateSwitchState,
 } from '../utils/rest-api';
 import {
+    addLoadflowNotif,
+    addSANotif,
     closeStudy,
     filteredNominalVoltagesUpdated,
-    increaseResultCount,
     loadGeoDataSuccess,
-    loadNetworkSuccess,
+    networkCreated,
     openStudy,
+    resetLoadflowNotif,
     selectItemNetwork,
     studyUpdated,
 } from '../redux/actions';
 import Network from './network/network';
+import { equipments } from './network/network-equipments';
 import GeoData from './network/geo-data';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import Paper from '@material-ui/core/Paper';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import PageNotFound from './page-not-found';
@@ -60,7 +60,7 @@ import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import VoltageLevelChoice from './voltage-level-choice';
-import RunButton, { RunningStatus } from './run-button';
+import RunButton from './run-button';
 import ContingencyListSelector from './contingency-list-selector';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import DoneIcon from '@material-ui/icons/Done';
@@ -68,25 +68,44 @@ import LoopIcon from '@material-ui/icons/Loop';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
+import withLineMenu from './line-menu';
+
 import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
 import clsx from 'clsx';
-import { MenuOpen } from '@material-ui/icons';
+import { RemoteResourceHandler } from './util/remote-resource-handler';
+import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_COMPONENT_LIBRARY,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
+import BaseEquipmentMenu from './base-equipment-menu';
+import LateralToolbar from './lateral-toolbar';
+import { RunningStatus } from './util/running-status';
+import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
+import withEquipmentMenu from './equipment-menu';
+import { ReportViewer } from '@gridsuite/commons-ui';
+import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { useSnackbar } from 'notistack';
 
 const drawerWidth = 300;
+const drawerToolbarWidth = 48;
 
 const useStyles = makeStyles((theme) => ({
-    main: {
-        position: 'absolute',
-        width: '100%',
-        height: 'calc(100vh - 56px)',
-        [`${theme.breakpoints.up('xs')} and (orientation: landscape)`]: {
-            height: 'calc(100vh - 48px)',
-        },
-        [theme.breakpoints.up('sm')]: {
-            height: 'calc(100vh - 65px)',
-        },
+    map: {
         display: 'flex',
+        flexDirection: 'row',
+    },
+    table: {
+        display: 'flex',
+        flexDirection: 'column',
     },
     error: {
         padding: theme.spacing(2),
@@ -106,31 +125,47 @@ const useStyles = makeStyles((theme) => ({
     },
     drawer: {
         width: drawerWidth,
-        flexShrink: 0,
-    },
-    drawerPaper: {
-        position: 'relative',
-        overflow: 'hidden',
-        zIndex: 98,
-    },
-    drawerDiv: {
-        height: 'calc(100vh - 56px)',
-        pointerEvents: 'all',
-    },
-    content: {
-        flexGrow: 1,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        marginLeft: 0,
+        // zIndex set to be below the loader with overlay
+        zIndex: 50,
     },
-    contentShift: {
+    drawerToolbar: {
+        width: drawerToolbarWidth,
+        // zIndex set to be below the loader with overlay
+        // and above the network explorer drawer
+        zIndex: 60,
+    },
+    drawerPaper: {
+        position: 'static',
+        overflow: 'hidden',
+    },
+    drawerShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: drawerWidth,
+        marginLeft: -drawerWidth - drawerToolbarWidth,
+    },
+    mapCtrlBottomLeft: {
+        '& .mapboxgl-ctrl-bottom-left': {
+            transition: theme.transitions.create('left', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            }),
+            left: drawerToolbarWidth,
+        },
+    },
+    mapCtrlBottomLeftShift: {
+        '& .mapboxgl-ctrl-bottom-left': {
+            transition: theme.transitions.create('left', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+            left: drawerWidth + drawerToolbarWidth,
+        },
     },
 }));
 
@@ -138,52 +173,71 @@ const INITIAL_POSITION = [0, 0];
 
 export const StudyView = {
     MAP: 'Map',
-    TABLE: 'Table',
+    SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
+    LOGS: 'Logs',
 };
 
 const StudyPane = (props) => {
-    const studyName = decodeURIComponent(useParams().studyName);
-
-    const userId = decodeURIComponent(useParams().userId);
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const network = useSelector((state) => state.network);
 
     const geoData = useSelector((state) => state.geoData);
 
-    const useName = useSelector((state) => state.useName);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
-    const centerName = useSelector((state) => state.centerLabel);
+    const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
 
-    const diagonalName = useSelector((state) => state.diagonalLabel);
+    const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
 
-    const lineFullPath = useSelector((state) => state.lineFullPath);
+    const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
 
-    const lineParallelPath = useSelector((state) => state.lineParallelPath);
-
-    const lineFlowMode = useSelector((state) => state.lineFlowMode);
-
-    const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
-
-    const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state.lineFlowAlertThreshold)
+    const lineParallelPath = useSelector(
+        (state) => state[PARAM_LINE_PARALLEL_PATH]
     );
 
-    const substationLayout = useSelector((state) => state.substationLayout);
+    const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
+
+    const lineFlowColorMode = useSelector(
+        (state) => state[PARAM_LINE_FLOW_COLOR_MODE]
+    );
+
+    const lineFlowAlertThreshold = useSelector((state) =>
+        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
+    );
+
+    const substationLayout = useSelector(
+        (state) => state[PARAM_SUBSTATION_LAYOUT]
+    );
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
-    const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
+    const displayOverloadTable = useSelector(
+        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
+    );
+
+    const componentLibrary = useSelector(
+        (state) => state[PARAM_COMPONENT_LIBRARY]
+    );
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
-    const [displayedVoltageLevelId, setDisplayedVoltageLevelId] = useState(
-        null
-    );
+    const [updatedLines, setUpdatedLines] = useState([]);
+
+    const [displayedVoltageLevelId, setDisplayedVoltageLevelId] =
+        useState(null);
 
     const filteredNominalVoltages = useSelector(
         (state) => state.filteredNominalVoltages
     );
+
+    const [equipmentMenu, setEquipmentMenu] = useState({
+        position: [-1, -1],
+        equipment: null,
+        equipmentType: null,
+        display: null,
+    });
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
 
@@ -191,11 +245,21 @@ const StudyPane = (props) => {
 
     const [loadFlowResult, setLoadFlowResult] = useState(null);
 
+    const [ranLoadflow, setRanLoadflow] = useState(false);
+
+    const [ranSA, setRanSA] = useState(false);
+
     const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(
         RunningStatus.IDLE
     );
 
+    const [securityAnalysisResultFetcher, setSecurityAnalysisResultFetcher] =
+        useState(null);
     const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
+    const [securityAnalysisResultFetched, setSecurityAnalysisResultFetched] =
+        useState(false);
+
+    const [computationStopped, setComputationStopped] = useState(false);
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
@@ -210,10 +274,30 @@ const StudyPane = (props) => {
 
     const [tabIndex, setTabIndex] = React.useState(0);
 
-    const [
-        showContingencyListSelector,
-        setShowContingencyListSelector,
-    ] = useState(false);
+    const [showContingencyListSelector, setShowContingencyListSelector] =
+        useState(false);
+
+    const [visibleSubstation, setVisibleSubstation] = useState(null);
+
+    const [tableEquipment, setTableEquipment] = useState({
+        id: null,
+        type: null,
+        changed: false,
+    });
+
+    const MenuLine = withLineMenu(BaseEquipmentMenu);
+
+    const MenuSubstation = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'substation-menu',
+        equipments.substations
+    );
+
+    const MenuVoltageLevel = withEquipmentMenu(
+        BaseEquipmentMenu,
+        'voltage-level-menu',
+        equipments.voltageLevels
+    );
 
     const dispatch = useDispatch();
 
@@ -221,11 +305,19 @@ const StudyPane = (props) => {
 
     const location = useLocation();
 
-    const history = useNavigate();
+    const navigate = useNavigate();
 
     const websocketExpectedCloseRef = useRef();
 
     const intl = useIntl();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    /**
+     * Report dialog
+     */
+    const [report, setReport] = useState(null);
+    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
     const Runnable = {
         LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
@@ -250,11 +342,11 @@ const StudyPane = (props) => {
     }
 
     const updateLoadFlowResult = useCallback(() => {
-        fetchStudy(studyName, userId).then((study) => {
+        fetchStudy(studyUuid).then((study) => {
             setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowStatus));
             setLoadFlowResult(study.loadFlowResult);
         });
-    }, [studyName, userId]);
+    }, [studyUuid]);
 
     function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
         switch (securityAnalysisStatus) {
@@ -270,40 +362,62 @@ const StudyPane = (props) => {
     }
 
     const updateSecurityAnalysisStatus = useCallback(() => {
-        fetchSecurityAnalysisStatus(studyName, userId).then((status) => {
+        fetchSecurityAnalysisStatus(studyUuid).then((status) => {
             setSecurityAnalysisStatus(getSecurityAnalysisRunningStatus(status));
         });
-    }, [studyName, userId]);
+    }, [studyUuid]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
-        fetchSecurityAnalysisResult(studyName, userId).then(function (
-            response
-        ) {
-            if (response.ok) {
-                response.json().then((result) => {
-                    setSecurityAnalysisResult(result);
-                });
-            }
-        });
-    }, [studyName, userId]);
+        setSecurityAnalysisResultFetcher(
+            new RemoteResourceHandler(
+                () => fetchSecurityAnalysisResult(studyUuid),
+                (res) => {
+                    setSecurityAnalysisResult(res);
+                    setSecurityAnalysisResultFetched(true);
+                },
+                (e) => {
+                    // produces 404 error when missing in the normal case, don't crash. TODO deal with other errors
+                    setSecurityAnalysisResultFetched(true);
+                }
+            )
+        );
+    }, [
+        studyUuid,
+        setSecurityAnalysisResult,
+        setSecurityAnalysisResultFetched,
+    ]);
 
     const handleStartSecurityAnalysis = (contingencyListNames) => {
         // close the contingency list selection window
         setShowContingencyListSelector(false);
 
+        setComputationStopped(false);
+
         // start server side security analysis
-        startSecurityAnalysis(studyName, userId, contingencyListNames);
+        startSecurityAnalysis(studyUuid, contingencyListNames);
 
         // clean result
         setSecurityAnalysisResult(null);
     };
 
-    const start = (runnable) => {
+    const startComputation = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
-            startLoadFlow(studyName, userId);
+            startLoadFlow(studyUuid);
+            setRanLoadflow(true);
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
+            setRanSA(true);
         }
+    };
+
+    const ACTION_ON_RUNNABLES = {
+        text: intl.formatMessage({ id: 'StopComputation' }),
+        action: (runnable) => {
+            if (runnable === Runnable.SECURITY_ANALYSIS) {
+                stopSecurityAnalysis(studyUuid);
+                setComputationStopped(!computationStopped);
+            }
+        },
     };
 
     const getRunningStatus = (runnable) => {
@@ -340,59 +454,101 @@ const StudyPane = (props) => {
 
     const [position, setPosition] = useState([-1, -1]);
 
-    const loadNetwork = useCallback(() => {
-        console.info(`Loading network of study '${studyName}'...`);
-        updateLoadFlowResult();
-        updateSecurityAnalysisResult();
-        updateSecurityAnalysisStatus();
-        const substations = fetchSubstations(studyName, userId);
-        const lines = fetchLines(studyName, userId);
-        const twoWindingsTransformers = fetchTwoWindingsTransformers(
-            studyName,
-            userId
-        );
-        const threeWindingsTransformers = fetchThreeWindingsTransformers(
-            studyName,
-            userId
-        );
-        const generators = fetchGenerators(studyName, userId);
+    const loadNetwork = useCallback(
+        (isUpdate) => {
+            console.info(`Loading network of study '${studyUuid}'...`);
+            updateLoadFlowResult();
+            updateSecurityAnalysisResult();
+            updateSecurityAnalysisStatus();
+            if (isUpdate) {
+                // After a load flow, network has to be recreated.
+                // In order to avoid glitches during sld and map rendering,
+                // lines and substations have to be prefetched and set before network creation event is dispatched
+                // Network creation event is dispatched directly in the network constructor
+                new Network(
+                    studyUuid,
+                    (error) => {
+                        console.error(error.message);
+                        setStudyNotFound(true);
+                    },
+                    dispatch,
+                    { equipments: [equipments.lines, equipments.substations] }
+                );
+            } else {
+                const network = new Network(
+                    studyUuid,
+                    (error) => {
+                        console.error(error.message);
+                        setStudyNotFound(true);
+                    },
+                    dispatch
+                );
+                // For initial network loading, no need to initialize lines and substations at first,
+                // lazy loading will do the job (no glitches to avoid)
+                dispatch(networkCreated(network));
+            }
+        },
+        [
+            studyUuid,
+            dispatch,
+            updateLoadFlowResult,
+            updateSecurityAnalysisResult,
+            updateSecurityAnalysisStatus,
+        ]
+    );
 
-        Promise.all([
-            substations,
-            lines,
-            twoWindingsTransformers,
-            threeWindingsTransformers,
-            generators,
-        ])
-            .then((values) => {
-                const network = new Network();
-                network.setSubstations(values[0]);
-                network.setLines(values[1]);
-                network.setTwoWindingsTransformers(values[2]);
-                network.setThreeWindingsTransformers(values[3]);
-                network.setGenerators(values[4]);
-                dispatch(loadNetworkSuccess(network));
-            })
-            .catch(function (error) {
-                console.error(error.message);
-                setStudyNotFound(true);
-            });
-        // Note: studyName and dispatch don't change
-    }, [
-        studyName,
-        userId,
-        dispatch,
-        updateLoadFlowResult,
-        updateSecurityAnalysisResult,
-        updateSecurityAnalysisStatus,
-    ]);
+    const updateNetwork = useCallback(
+        (substationsIds) => {
+            const updatedEquipments = fetchAllEquipments(
+                studyUuid,
+                substationsIds
+            );
+            console.info('network update');
+            Promise.all([updatedEquipments])
+                .then((values) => {
+                    network.updateSubstations(values[0].substations);
+                    network.updateLines(values[0].lines);
+                    network.updateTwoWindingsTransformers(
+                        values[0].twoWindingsTransformers
+                    );
+                    network.updateThreeWindingsTransformers(
+                        values[0].threeWindingsTransformers
+                    );
+                    network.updateGenerators(values[0].generators);
+                    network.updateLoads(values[0].loads);
+                    network.updateBatteries(values[0].batteries);
+                    network.updateDanglingLines(values[0].danglingLines);
+                    network.updateLccConverterStations(
+                        values[0].lccConverterStations
+                    );
+                    network.updateVscConverterStations(
+                        values[0].vscConverterStations
+                    );
+                    network.updateHvdcLines(values[0].hvdcLines);
+                    network.updateShuntCompensators(
+                        values[0].shuntCompensators
+                    );
+                    network.updateStaticVarCompensators(
+                        values[0].staticVarCompensators
+                    );
+
+                    setUpdatedLines(values[0].lines);
+                })
+                .catch(function (error) {
+                    console.error(error.message);
+                    setStudyNotFound(true);
+                });
+            // Note: studyUuid don't change
+        },
+        [studyUuid, network]
+    );
 
     const loadGeoData = useCallback(() => {
-        console.info(`Loading geo data of study '${studyName}'...`);
+        console.info(`Loading geo data of study '${studyUuid}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyName, userId);
+        const substationPositions = fetchSubstationPositions(studyUuid);
 
-        const linePositions = fetchLinePositions(studyName, userId);
+        const linePositions = fetchLinePositions(studyUuid);
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
@@ -406,14 +562,14 @@ const StudyPane = (props) => {
                 console.error(error.message);
                 setStudyNotFound(true);
             });
-        // Note: studyName and dispatch don't change
-    }, [studyName, userId, dispatch]);
+        // Note: studyUuid and dispatch don't change
+    }, [studyUuid, dispatch]);
 
     const connectNotifications = useCallback(
-        (studyName) => {
-            console.info(`Connecting to notifications '${studyName}'...`);
+        (studyUuid) => {
+            console.info(`Connecting to notifications '${studyUuid}'...`);
 
-            const ws = connectNotificationsWebsocket(studyName);
+            const ws = connectNotificationsWebsocket(studyUuid);
             ws.onmessage = function (event) {
                 dispatch(studyUpdated(JSON.parse(event.data)));
             };
@@ -433,11 +589,10 @@ const StudyPane = (props) => {
 
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
-        dispatch(openStudy(studyName, userId));
-
+        dispatch(openStudy(studyUuid));
         loadNetwork();
         loadGeoData();
-        const ws = connectNotifications(studyName);
+        const ws = connectNotifications(studyUuid);
 
         // study cleanup at unmount event
         return function () {
@@ -446,16 +601,9 @@ const StudyPane = (props) => {
             dispatch(closeStudy());
             dispatch(filteredNominalVoltagesUpdated(null));
         };
-        // Note: dispach, studyName, loadNetwork, loadGeoData,
+        // Note: dispach, studyUuid, loadNetwork, loadGeoData,
         // connectNotifications don't change
-    }, [
-        dispatch,
-        studyName,
-        userId,
-        loadNetwork,
-        loadGeoData,
-        connectNotifications,
-    ]);
+    }, [dispatch, studyUuid, loadNetwork, loadGeoData, connectNotifications]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -470,48 +618,71 @@ const StudyPane = (props) => {
     }, [location.search]);
 
     useEffect(() => {
-        if (network && !filteredNominalVoltages) {
+        if (
+            network &&
+            network.substations.length > 0 &&
+            !filteredNominalVoltages
+        ) {
             dispatch(
                 filteredNominalVoltagesUpdated(network.getNominalVoltages())
             );
         }
     }, [network, filteredNominalVoltages, dispatch]);
 
+    useEffect(() => {
+        if (props.view !== StudyView.LOGS) {
+            setReport(null);
+        } else if (!waitingLoadReport && !report) {
+            setWaitingLoadReport(true);
+            fetchReport(studyUuid)
+                .then((report) => {
+                    setReport(report);
+                })
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                    })
+                )
+                .finally(() => {
+                    setWaitingLoadReport(false);
+                });
+        }
+    }, [props, report, waitingLoadReport, studyUuid, enqueueSnackbar]);
+
     const showVoltageLevelDiagram = useCallback(
         (voltageLevelId) => {
             setUpdateSwitchMsg('');
-            history.replace(
-                '/' +
-                    encodeURIComponent(userId) +
-                    '/studies/' +
-                    encodeURIComponent(studyName) +
+            navigate(
+                '/studies/' +
+                    encodeURIComponent(studyUuid) +
                     stringify(
                         { voltageLevelId: voltageLevelId },
                         { addQueryPrefix: true }
-                    )
+                    ),
+                { replace: true }
             );
         },
-        // Note: studyName and history don't change
-        [studyName, userId, history]
+        // Note: studyUuid and navigate don't change
+        [studyUuid, navigate]
     );
 
     const showSubstationDiagram = useCallback(
         (substationId) => {
             dispatch(selectItemNetwork(substationId));
             setUpdateSwitchMsg('');
-            history.replace(
-                '/' +
-                    encodeURIComponent(userId) +
-                    '/studies/' +
-                    encodeURIComponent(studyName) +
+            navigate(
+                '/studies/' +
+                    encodeURIComponent(studyUuid) +
                     stringify(
                         { substationId: substationId },
                         { addQueryPrefix: true }
-                    )
+                    ),
+                { replace: true }
             );
         },
-        // Note: studyName and history don't change
-        [studyName, userId, history, dispatch]
+        // Note: studyUuid and navigate don't change
+        [studyUuid, navigate, dispatch]
     );
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -523,12 +694,9 @@ const StudyPane = (props) => {
     );
 
     function closeVoltageLevelDiagram() {
-        history.replace(
-            '/' +
-                encodeURIComponent(userId) +
-                '/studies/' +
-                encodeURIComponent(studyName)
-        );
+        navigate('/studies/' + encodeURIComponent(studyUuid), {
+            replace: true,
+        });
     }
 
     const toggleDrawer = () => {
@@ -538,45 +706,62 @@ const StudyPane = (props) => {
     const sldRef = useRef();
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
-            let eltOpen = switchElement.querySelector('.open');
-            let eltClose = switchElement.querySelector('.closed');
+            if (open) {
+                switchElement.classList.replace('sld-closed', 'sld-open');
+            } else {
+                switchElement.classList.replace('sld-open', 'sld-closed');
+            }
 
-            eltOpen.style.visibility = open ? 'visible' : 'hidden';
-            eltClose.style.visibility = open ? 'hidden' : 'visible';
-
-            updateSwitchState(studyName, userId, breakerId, open).then(
-                (response) => {
-                    if (!response.ok) {
-                        console.error(response);
-                        eltOpen.style.visibility = open ? 'hidden' : 'visible';
-                        eltClose.style.visibility = open ? 'visible' : 'hidden';
-                        setUpdateSwitchMsg(
-                            response.status + ' : ' + response.statusText
+            updateSwitchState(studyUuid, breakerId, open).then((response) => {
+                if (!response.ok) {
+                    console.error(response);
+                    // revert switch position change
+                    if (open) {
+                        switchElement.classList.replace(
+                            'sld-open',
+                            'sld-closed'
+                        );
+                    } else {
+                        switchElement.classList.replace(
+                            'sld-closed',
+                            'sld-open'
                         );
                     }
+                    setUpdateSwitchMsg(
+                        response.status + ' : ' + response.statusText
+                    );
                 }
-            );
+            });
         },
-        [studyName, userId]
+        [studyUuid]
     );
+
+    const updateSld = () => {
+        if (sldRef.current) {
+            setUpdateSwitchMsg('');
+            sldRef.current.reloadSvg();
+        }
+    };
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (sldRef.current) {
-                setUpdateSwitchMsg('');
-                sldRef.current.reloadSvg();
-            }
-
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                loadNetwork();
+                updateSld();
+                loadNetwork(true);
+                //add the loadflow notif (only if the user clicked on run loadflow)
+                if (ranLoadflow) {
+                    dispatch(addLoadflowNotif());
+                }
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'loadflow_status'
             ) {
                 updateLoadFlowResult();
+                //we reset the notif when the previous loadflow results are removed
+                dispatch(resetLoadflowNotif());
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'securityAnalysis_status'
@@ -587,21 +772,42 @@ const StudyPane = (props) => {
                 'securityAnalysisResult'
             ) {
                 updateSecurityAnalysisResult();
-
+                //add the SA notif (only if the user clicked on run SA)
+                if (ranSA) {
+                    dispatch(addSANotif());
+                }
                 // update badge
-                dispatch(increaseResultCount());
             }
         }
-        // Note: studyName, and loadNetwork don't change
+        // Note: studyUuid, and loadNetwork don't change
     }, [
         studyUpdatedForce,
-        studyName,
+        studyUuid,
         loadNetwork,
         updateLoadFlowResult,
         updateSecurityAnalysisStatus,
         updateSecurityAnalysisResult,
+        ranLoadflow,
+        ranSA,
         dispatch,
     ]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
+                updateSld();
+
+                // study partial update : loading equipments involved in the study modification and updating the network
+                const ids =
+                    studyUpdatedForce.eventData.headers['substationsIds'];
+                const tmp = ids.substring(1, ids.length - 1); // removing square brackets
+                if (tmp && tmp.length > 0) {
+                    const substationsIds = tmp.split(', ');
+                    updateNetwork(substationsIds);
+                }
+            }
+        }
+    }, [studyUpdatedForce, updateNetwork]);
 
     const mapRef = useRef();
     const centerSubstation = useCallback(
@@ -616,8 +822,110 @@ const StudyPane = (props) => {
     }
 
     function choiceVoltageLevel(voltageLevelId) {
-        showVoltageLevelDiagram(voltageLevelId);
+        openVoltageLevel(voltageLevelId);
         closeChoiceVoltageLevelMenu();
+    }
+
+    function onClickNmKConstraint(row, column) {
+        if (network) {
+            if (column.dataKey === 'subjectId') {
+                let vlId;
+                let substationId;
+
+                let equipment = network.getLineOrTransformer(row.subjectId);
+                if (equipment) {
+                    if (row.side) {
+                        vlId =
+                            row.side === 'ONE'
+                                ? equipment.voltageLevelId1
+                                : row.side === 'TWO'
+                                ? equipment.voltageLevelId2
+                                : equipment.voltageLevelId3;
+                    } else {
+                        vlId = equipment.voltageLevelId1;
+                    }
+                    const vl = network.getVoltageLevel(vlId);
+                    substationId = vl.substationId;
+                } else {
+                    equipment = network.getVoltageLevel(row.subjectId);
+                    if (equipment) {
+                        vlId = equipment.id;
+                        substationId = equipment.substationId;
+                    }
+                }
+
+                if (vlId) {
+                    setDisplayedVoltageLevelId(null);
+                    setDisplayedSubstationId(null);
+                    dispatch(selectItemNetwork(vlId));
+                    props.onChangeTab(0); // switch to map view
+                    showVoltageLevelDiagram(vlId); // show voltage level
+                    setVisibleSubstation(substationId);
+                    setDisplayedVoltageLevelId(vlId);
+                }
+            }
+        }
+    }
+
+    const linesNearOverload = useCallback(() => {
+        if (network) {
+            return network.lines.some((l) => {
+                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
+                return (
+                    zone === LineLoadingZone.WARNING ||
+                    zone === LineLoadingZone.OVERLOAD
+                );
+            });
+        }
+        return false;
+    }, [network, lineFlowAlertThreshold]);
+
+    const openVoltageLevel = useCallback(
+        (vlId) => {
+            if (!network) return;
+            showVoltageLevelDiagram(vlId);
+            dispatch(selectItemNetwork(vlId));
+        },
+        [network, showVoltageLevelDiagram, dispatch]
+    );
+
+    useEffect(() => {
+        if (!network) return;
+        network.useEquipment(equipments.substations);
+        network.useEquipment(equipments.lines);
+    }, [network]);
+
+    function showEquipmentMenu(equipment, x, y, type) {
+        setEquipmentMenu({
+            position: [x, y],
+            equipment: equipment,
+            equipmentType: type,
+            display: true,
+        });
+    }
+
+    function closeEquipmentMenu() {
+        setEquipmentMenu({
+            display: false,
+        });
+    }
+
+    function handleViewInSpreadsheet(equipmentType, equipmentId) {
+        showInSpreadsheet({
+            equipmentType: equipmentType,
+            equipmentId: equipmentId,
+        });
+        closeEquipmentMenu();
+    }
+
+    function showInSpreadsheet(equipment) {
+        let newTableEquipment = {
+            id: equipment.equipmentId,
+            type: equipment.equipmentType,
+            changed: !tableEquipment.changed,
+        };
+        setTableEquipment({ ...newTableEquipment });
+        props.onChangeTab(1); // switch to spreadsheet view
     }
 
     function renderMapView() {
@@ -665,12 +973,12 @@ const StudyPane = (props) => {
             }
 
             svgUrl = getVoltageLevelSingleLineDiagram(
-                studyName,
-                userId,
+                studyUuid,
                 displayedVoltageLevelId,
                 useName,
                 centerName,
-                diagonalName
+                diagonalName,
+                componentLibrary
             );
         } else if (displayedSubstation) {
             sldTitle = useName
@@ -686,57 +994,37 @@ const StudyPane = (props) => {
             }
 
             svgUrl = getSubstationSingleLineDiagram(
-                studyName,
-                userId,
+                studyUuid,
                 displayedSubstationId,
                 useName,
                 centerName,
                 diagonalName,
-                substationLayout
+                substationLayout,
+                componentLibrary
             );
         }
 
         return (
-            <div className={classes.main}>
-                <Drawer
-                    variant={'persistent'}
-                    className={classes.drawer}
-                    anchor="left"
-                    style={{
-                        flexShrink: 1,
-                        overflowY: 'hidden',
-                        overflowX: 'hidden',
-                    }}
-                    open={drawerOpen}
-                    classes={{
-                        paper: classes.drawerPaper,
-                    }}
-                >
-                    <div
-                        style={{
-                            overflowY: 'none',
-                            overflowX: 'none',
-                        }}
-                        className={classes.drawerDiv}
-                    >
-                        <NetworkExplorer
-                            network={network}
-                            onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                            onSubstationDisplayClick={showSubstationDiagram}
-                            onSubstationFocus={centerSubstation}
-                            hideExplorer={toggleDrawer}
-                        />
-                    </div>
-                </Drawer>
+            <div className={clsx('relative singlestretch-child', classes.map)}>
                 <div
+                    className={
+                        drawerOpen
+                            ? classes.mapCtrlBottomLeftShift
+                            : classes.mapCtrlBottomLeft
+                    }
                     style={{
-                        position: 'relative',
-                        width: '100%',
-                        marginLeft: -drawerWidth,
+                        position: 'absolute',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
                     }}
                 >
                     <NetworkMap
                         network={network}
+                        substations={network ? network.substations : []}
+                        lines={network ? network.lines : []}
+                        updatedLines={updatedLines}
                         geoData={geoData}
                         useName={useName}
                         filteredNominalVoltages={filteredNominalVoltages}
@@ -749,69 +1037,36 @@ const StudyPane = (props) => {
                         lineFlowMode={lineFlowMode}
                         lineFlowColorMode={lineFlowColorMode}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        loadFlowStatus={loadFlowStatus}
                         ref={mapRef}
-                        onSubstationClick={showVoltageLevelDiagram}
+                        onSubstationClick={openVoltageLevel}
+                        onLineMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(equipment, x, y, equipments.lines)
+                        }
                         visible={props.view === StudyView.MAP}
                         onSubstationClickChooseVoltageLevel={
                             chooseVoltageLevelForSubstation
                         }
+                        onSubstationMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(
+                                equipment,
+                                x,
+                                y,
+                                equipments.substations
+                            )
+                        }
+                        onVoltageLevelMenuClick={(equipment, x, y) =>
+                            showEquipmentMenu(
+                                equipment,
+                                x,
+                                y,
+                                equipments.voltageLevels
+                            )
+                        }
                     />
-                    {!drawerOpen && (
+                    {network && displayOverloadTable && linesNearOverload() && (
                         <div
                             style={{
-                                position: 'absolute',
-                                left: '0px',
-                                zIndex: 1,
-                                flex: 1,
-                            }}
-                            className={clsx(classes.content, {
-                                [classes.contentShift]: drawerOpen,
-                            })}
-                        >
-                            <IconButton onClick={toggleDrawer}>
-                                <MenuOpen />
-                            </IconButton>
-                        </div>
-                    )}
-                    {/*
-                    Rendering single line diagram only in map view and if
-                    displayed voltage level or substation id has been set
-                    */}
-                    {props.view === StudyView.MAP &&
-                        (displayedVoltageLevelId || displayedSubstationId) && (
-                            <div
-                                style={{
-                                    position: 'absolute',
-                                    top: drawerOpen ? 0 : 55,
-                                    zIndex: 0,
-                                }}
-                                className={clsx(classes.content, {
-                                    [classes.contentShift]: drawerOpen,
-                                })}
-                            >
-                                <SingleLineDiagram
-                                    onClose={() => closeVoltageLevelDiagram()}
-                                    onNextVoltageLevelClick={
-                                        showVoltageLevelDiagram
-                                    }
-                                    onBreakerClick={handleUpdateSwitchState}
-                                    diagramTitle={sldTitle}
-                                    svgUrl={svgUrl}
-                                    ref={sldRef}
-                                    updateSwitchMsg={updateSwitchMsg}
-                                    isComputationRunning={isComputationRunning()}
-                                    svgType={
-                                        displayedVoltageLevelId
-                                            ? SvgType.VOLTAGE_LEVEL
-                                            : SvgType.SUBSTATION
-                                    }
-                                />
-                            </div>
-                        )}
-                    {network && viewOverloadsTable && (
-                        <div
-                            style={{
-                                zIndex: 0,
                                 right: 45,
                                 top: 10,
                                 minWidth: '500px',
@@ -837,13 +1092,12 @@ const StudyPane = (props) => {
                             position={[position[0] + 200, position[1]]}
                         />
                     )}
-                    {network && (
+                    {network && network.substations.length > 0 && (
                         <div
                             style={{
                                 position: 'absolute',
                                 right: 10,
                                 bottom: 30,
-                                zIndex: 1,
                             }}
                         >
                             <NominalVoltageFilter />
@@ -857,18 +1111,164 @@ const StudyPane = (props) => {
                             marginLeft: 8,
                             marginRight: 8,
                             marginTop: 8,
-                            zIndex: 0,
                         }}
                     >
                         <RunButton
                             runnables={RUNNABLES}
+                            actionOnRunnable={ACTION_ON_RUNNABLES}
                             getStatus={getRunningStatus}
-                            onStartClick={start}
+                            onStartClick={startComputation}
                             getText={getRunningText}
                             getStartIcon={getRunningIcon}
+                            computationStopped={computationStopped}
                         />
                     </div>
+                    {equipmentMenu.equipment !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType === equipments.lines && (
+                            <MenuLine
+                                id={equipmentMenu.equipment.id}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
+                                }
+                            />
+                        )}
+                    {equipmentMenu.equipment !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType ===
+                            equipments.substations && (
+                            <MenuSubstation
+                                id={equipmentMenu.equipment.id}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
+                                }
+                            />
+                        )}
+                    {equipmentMenu.equipment !== null &&
+                        equipmentMenu.display &&
+                        equipmentMenu.equipmentType ===
+                            equipments.voltageLevels && (
+                            <MenuVoltageLevel
+                                id={equipmentMenu.equipment.id}
+                                position={[
+                                    equipmentMenu.position[0],
+                                    equipmentMenu.position[1],
+                                ]}
+                                handleClose={closeEquipmentMenu}
+                                handleViewInSpreadsheet={
+                                    handleViewInSpreadsheet
+                                }
+                            />
+                        )}
                 </div>
+                <Drawer
+                    variant={'permanent'}
+                    className={classes.drawerToolbar}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'none',
+                        overflowX: 'none',
+                    }}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <LateralToolbar
+                            handleDisplayNetworkExplorer={toggleDrawer}
+                            networkExplorerDisplayed={drawerOpen}
+                        />
+                    </div>
+                </Drawer>
+                <Drawer
+                    variant={'persistent'}
+                    className={clsx(classes.drawer, {
+                        [classes.drawerShift]: !drawerOpen,
+                    })}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'hidden',
+                        overflowX: 'hidden',
+                    }}
+                    open={drawerOpen}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <NetworkExplorer
+                            substations={network ? network.substations : []}
+                            onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+                            onSubstationDisplayClick={showSubstationDiagram}
+                            onSubstationFocus={centerSubstation}
+                            visibleSubstation={visibleSubstation}
+                            visible={props.view === StudyView.MAP}
+                        />
+                    </div>
+                </Drawer>
+                {/*
+                Rendering single line diagram only in map view and if
+                displayed voltage level or substation id has been set
+                */}
+                {props.view === StudyView.MAP &&
+                    (displayedVoltageLevelId || displayedSubstationId) && (
+                        <div
+                            style={{
+                                flexGrow: 1,
+                                position: 'relative',
+                                display: 'flex',
+                                pointerEvents: 'none',
+                                flexDirection: 'column',
+                                marginLeft: drawerOpen ? 0 : drawerToolbarWidth,
+                            }}
+                        >
+                            <SingleLineDiagram
+                                onClose={() => closeVoltageLevelDiagram()}
+                                onNextVoltageLevelClick={openVoltageLevel}
+                                onBreakerClick={handleUpdateSwitchState}
+                                diagramTitle={sldTitle}
+                                svgUrl={svgUrl}
+                                ref={sldRef}
+                                updateSwitchMsg={updateSwitchMsg}
+                                isComputationRunning={isComputationRunning()}
+                                svgType={
+                                    displayedVoltageLevelId
+                                        ? SvgType.VOLTAGE_LEVEL
+                                        : SvgType.SUBSTATION
+                                }
+                                showInSpreadsheet={showInSpreadsheet}
+                                loadFlowStatus={loadFlowStatus}
+                            />
+                        </div>
+                    )}
                 <ContingencyListSelector
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
@@ -880,62 +1280,88 @@ const StudyPane = (props) => {
 
     function renderTableView() {
         return (
-            <Paper className={classes.main}>
-                <NetworkTable
-                    network={network}
-                    studyName={studyName}
-                    userId={userId}
-                />
-            </Paper>
+            network && (
+                <Paper className={clsx('singlestretch-child', classes.table)}>
+                    <NetworkTable
+                        network={network}
+                        studyUuid={studyUuid}
+                        equipmentId={tableEquipment.id}
+                        equipmentType={tableEquipment.type}
+                        equipmentChanged={tableEquipment.changed}
+                    />
+                </Paper>
+            )
         );
     }
 
+    useEffect(() => {
+        if (tabIndex === 1) securityAnalysisResultFetcher.fetch();
+    }, [tabIndex, securityAnalysisResultFetcher]);
+
     function renderResultsView() {
         return (
-            <AutoSizer>
-                {({ width, height }) => (
-                    <div style={{ width: width, height: height - 48 }}>
-                        <Tabs
-                            value={tabIndex}
-                            indicatorColor="primary"
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
-                        >
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'loadFlowResults',
-                                })}
-                            />
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'securityAnalysisResults',
-                                })}
-                            />
-                        </Tabs>
-                        {tabIndex === 0 && renderLoadFlowResult()}
-                        {tabIndex === 1 && renderSecurityAnalysisResult()}
-                    </div>
-                )}
-            </AutoSizer>
+            <div className={clsx('singlestretch-child', classes.table)}>
+                <Tabs
+                    value={tabIndex}
+                    indicatorColor="primary"
+                    onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
+                >
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'loadFlowResults',
+                        })}
+                    />
+                    <Tab
+                        label={intl.formatMessage({
+                            id: 'securityAnalysisResults',
+                        })}
+                    />
+                </Tabs>
+                {tabIndex === 0 && renderLoadFlowResult()}
+                {tabIndex === 1 && renderSecurityAnalysisResult()}
+            </div>
         );
     }
 
     function renderSecurityAnalysisResult() {
         return (
-            <Paper className={classes.main}>
-                <SecurityAnalysisResult result={securityAnalysisResult} />
+            <Paper
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flexGrow: 1,
+                }}
+            >
+                <SecurityAnalysisResult
+                    result={securityAnalysisResult}
+                    fetched={securityAnalysisResultFetched}
+                    onClickNmKConstraint={onClickNmKConstraint}
+                />
             </Paper>
         );
     }
 
     function renderLoadFlowResult() {
         return (
-            <Paper className={classes.main}>
+            <Paper style={{ flexGrow: 1 }} className={classes.table}>
                 <LoadFlowResult result={loadFlowResult} />
             </Paper>
         );
     }
+
+    function renderLogsView() {
+        return (
+            report && (
+                <Paper className={clsx('singlestretch-child')}>
+                    <ReportViewer jsonReport={report} />
+                </Paper>
+            )
+        );
+    }
+
+    const isWaitingLoading = useCallback(() => {
+        return waitingLoadGeoData || waitingLoadReport;
+    }, [waitingLoadGeoData, waitingLoadReport]);
 
     if (studyNotFound) {
         return (
@@ -943,49 +1369,64 @@ const StudyPane = (props) => {
                 message={
                     <FormattedMessage
                         id="studyNotFound"
-                        values={{ studyName: studyName }}
+                        values={{ studyUuid: studyUuid }}
                     />
                 }
             />
         );
     } else {
         return (
-            <div>
-                {waitingLoadGeoData && (
+            <>
+                {isWaitingLoading() && (
                     <LoaderWithOverlay
                         color="inherit"
                         loaderSize={70}
                         isFixed={true}
-                        loadingMessageText="loadingGeoData"
+                        loadingMessageText={
+                            waitingLoadGeoData
+                                ? 'loadingGeoData'
+                                : 'loadingReport'
+                        }
                     />
                 )}
                 {/*Rendering the map is slow, do it once and keep it display:none*/}
                 <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
-                        display:
-                            props.view === StudyView.MAP ? 'block' : 'none',
-                        pointerEvents: 'all',
+                        display: props.view === StudyView.MAP ? null : 'none',
                     }}
                 >
                     {renderMapView()}
                 </div>
                 <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
                         display:
-                            props.view === StudyView.TABLE ? 'block' : 'none',
+                            props.view === StudyView.SPREADSHEET
+                                ? null
+                                : 'none',
                     }}
                 >
                     {renderTableView()}
                 </div>
                 <div
+                    className="singlestretch-parent singlestretch-child"
                     style={{
                         display:
-                            props.view === StudyView.RESULTS ? 'block' : 'none',
+                            props.view === StudyView.RESULTS ? null : 'none',
                     }}
                 >
                     {renderResultsView()}
                 </div>
-            </div>
+                <div
+                    className="singlestretch-parent singlestretch-child"
+                    style={{
+                        display: props.view === StudyView.LOGS ? null : 'none',
+                    }}
+                >
+                    {renderLogsView()}
+                </div>
+            </>
         );
     }
 };
@@ -998,6 +1439,7 @@ StudyPane.defaultProps = {
 StudyPane.propTypes = {
     view: PropTypes.oneOf(Object.values(StudyView)).isRequired,
     lineFlowAlertThreshold: PropTypes.number.isRequired,
+    onChangeTab: PropTypes.func,
 };
 
 export default StudyPane;

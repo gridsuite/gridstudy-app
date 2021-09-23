@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -18,6 +18,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Tooltip from '@material-ui/core/Tooltip';
+import { useSnackbar } from 'notistack';
+import { ReportViewerDialog } from '@gridsuite/commons-ui';
 
 import { ReactComponent as PowsyblLogo } from '../images/powsybl_logo.svg';
 import { ReactComponent as EntsoeLogo } from '../images/entsoe_logo.svg';
@@ -36,6 +38,7 @@ import {
     renameStudy,
     fetchStudyCreationRequests,
     connectNotificationsWsUpdateStudies,
+    fetchReport,
 } from '../utils/rest-api';
 
 import { CardHeader } from '@material-ui/core';
@@ -59,6 +62,8 @@ import Box from '@material-ui/core/Box';
 import CreateStudyForm from './create-study-form';
 import LoaderWithOverlay from './loader-with-overlay';
 import AccessRightsDialog from './access-rights-dialog';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -118,20 +123,25 @@ const CustomTypography = withStyles({
     },
 })(Typography);
 
+function makeKey({ userId, studyName }) {
+    return userId + '/' + studyName;
+}
+
 const DonwnloadIframe = 'downloadIframe';
 /**
  * Card displaying a study on the screen, with the ability to open and edit it
  * @param {object} study Study object containing ad hoc information to be displayed on the card
- * @param {String} study.studyName Name of the study
+ * @param {String} study.studyUuid Name of the study
  * @param {String} study.caseFormat Format of the study
  * @param {String} study.description Description of the study
- * @param {Date} study.creationDate Date of the study
+ * @param {String} study.creationDate Date of the study
  * @param {EventListener} onClick Event to open the study
  * @param inprogressLoader
  */
 const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     const classes = useStyles();
     const intl = useIntl();
+    const { enqueueSnackbar } = useSnackbar();
 
     function logo(caseFormat) {
         switch (caseFormat) {
@@ -193,7 +203,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickDelete = () => {
-        deleteStudy(study.studyName, study.userId).then((response) => {
+        deleteStudy(study.studyUuid).then((response) => {
             if (!response.ok) {
                 setDeleteError(intl.formatMessage({ id: 'deleteStudyError' }));
             }
@@ -217,17 +227,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
     };
 
     const handleClickRename = (newStudyNameValue) => {
-        renameStudy(study.studyName, study.userId, newStudyNameValue).then(
-            (response) => {
-                if (!response.ok) {
+        renameStudy(study.studyUuid, newStudyNameValue)
+            .then((response) => {
+                if (response === 'NOT_ALLOWED') {
                     setRenameError(
                         intl.formatMessage({ id: 'renameStudyError' })
                     );
                 } else {
                     setOpenRename(false);
                 }
-            }
-        );
+            })
+            .catch((e) => {
+                setRenameError(e.message || e);
+            });
     };
 
     const handleCloseRename = () => {
@@ -254,9 +266,8 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
         handleCloseExport();
     };
 
-    const [openAccessRightsDialog, setOpenAccessRightsDialog] = React.useState(
-        false
-    );
+    const [openAccessRightsDialog, setOpenAccessRightsDialog] =
+        React.useState(false);
 
     const handleOpenAccessRights = () => {
         setAnchorEl(null);
@@ -276,6 +287,42 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
         setExpanded(!expanded);
     };
 
+    /**
+     * Report dialog
+     */
+    const [openReportViewer, setOpenReportViewer] = useState(false);
+    const [report, setReport] = useState(null);
+    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
+
+    const handleCloseReport = () => {
+        setOpenReportViewer(false);
+        setReport(null);
+    };
+
+    const handleClickShowReport = () => {
+        setWaitingLoadReport(true);
+        setAnchorEl(null);
+        fetchReport(study.studyUuid)
+            .then((report) => {
+                setReport(report);
+                setOpenReportViewer(true);
+            })
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                })
+            )
+            .finally(() => {
+                setAnchorEl(null);
+                setWaitingLoadReport(false);
+            });
+    };
+
+    const isWaitingLoading = useCallback(() => {
+        return studyCreationLoader || waitingLoadReport;
+    }, [studyCreationLoader, waitingLoadReport]);
+
     return (
         <div className={classes.container}>
             <Card className={classes.root}>
@@ -283,12 +330,16 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                     onClick={!studyCreationLoader ? () => onClick() : undefined}
                     className={classes.card}
                 >
-                    {studyCreationLoader && (
+                    {isWaitingLoading() && (
                         <LoaderWithOverlay
                             color="inherit"
                             loaderSize={35}
                             isFixed={false}
-                            loadingMessageText="loadingCreationStudy"
+                            loadingMessageText={
+                                studyCreationLoader
+                                    ? 'loadingCreationStudy'
+                                    : 'loadingReport'
+                            }
                         />
                     )}
                     <Tooltip
@@ -346,7 +397,11 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                         id="case-menu"
                         anchorEl={anchorEl}
                         keepMounted
-                        open={Boolean(anchorEl)}
+                        open={
+                            Boolean(anchorEl) &&
+                            !waitingLoadReport &&
+                            !openReportViewer
+                        }
                         onClose={handleCloseMenu}
                     >
                         <MenuItem onClick={handleOpenDelete}>
@@ -358,7 +413,20 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                             />
                         </MenuItem>
 
-                        {!studyCreationLoader && (
+                        {!isWaitingLoading() && (
+                            <MenuItem onClick={handleClickShowReport}>
+                                <ListItemIcon>
+                                    <AccountTreeIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={
+                                        <FormattedMessage id="showReport" />
+                                    }
+                                />
+                            </MenuItem>
+                        )}
+
+                        {!isWaitingLoading() && (
                             <MenuItem onClick={handleOpenRename}>
                                 <ListItemIcon>
                                     <EditIcon fontSize="small" />
@@ -369,7 +437,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                             </MenuItem>
                         )}
 
-                        {!studyCreationLoader && (
+                        {!isWaitingLoading() && (
                             <MenuItem onClick={handleOpenExport}>
                                 <ListItemIcon>
                                     <GetAppIcon fontSize="small" />
@@ -380,7 +448,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                             </MenuItem>
                         )}
 
-                        {!studyCreationLoader && (
+                        {!isWaitingLoading() && (
                             <MenuItem onClick={handleOpenAccessRights}>
                                 <ListItemIcon>
                                     <BuildIcon fontSize="small" />
@@ -397,19 +465,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                     <CardContent>
                         <CustomTypography>
-                            <FormattedMessage id="studyName" />:{' '}
+                            <FormattedMessage id="studyNameProperty" />
                             <span className={classes.contentStyle}>
                                 {study.studyName}
                             </span>
                         </CustomTypography>
                         <CustomTypography>
-                            <FormattedMessage id="studyDescription" />:{' '}
+                            <FormattedMessage id="studyDescriptionProperty" />
                             <span className={classes.contentStyle}>
                                 {study.description ? study.description : '—'}
                             </span>
                         </CustomTypography>
                         <CustomTypography>
-                            <FormattedMessage id="owner" />:{' '}
+                            <FormattedMessage id="owner" />
                             <span className={classes.contentStyle}>
                                 {study.userId}
                             </span>
@@ -417,6 +485,19 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                     </CardContent>
                 </Collapse>
             </Card>
+            {report && (
+                <ReportViewerDialog
+                    title={intl.formatMessage(
+                        { id: 'logsTitle' },
+                        {
+                            title: study.studyUuid,
+                        }
+                    )}
+                    open={openReportViewer}
+                    onClose={handleCloseReport}
+                    jsonReport={report}
+                />
+            )}
             <DeleteDialog
                 open={openDeleteDialog}
                 onClose={handleCloseDelete}
@@ -438,15 +519,13 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
                 open={openExportDialog}
                 onClose={handleCloseExport}
                 onClick={handleClickExport}
-                studyName={study.studyName}
-                userId={study.userId}
+                studyUuid={study.studyUuid}
                 title={useIntl().formatMessage({ id: 'exportNetwork' })}
             />
             <AccessRightsDialog
                 open={openAccessRightsDialog}
                 onClose={handleCloseAccessRights}
-                studyName={study.studyName}
-                userId={study.userId}
+                studyUuid={study.studyUuid}
                 title={useIntl().formatMessage({ id: 'modifyAccessRights' })}
                 isPrivate={study.studyPrivate}
             />
@@ -456,7 +535,7 @@ const StudyCard = ({ study, onClick, studyCreationLoader }) => {
 
 StudyCard.propTypes = {
     study: PropTypes.shape({
-        studyName: PropTypes.string.isRequired,
+        studyUuid: PropTypes.string.isRequired,
         userId: PropTypes.string.isRequired,
         caseFormat: PropTypes.string,
         description: PropTypes.string,
@@ -470,6 +549,8 @@ StudyCard.propTypes = {
  * @param {EventListener} onClick Action to open the study
  */
 const StudyManager = ({ onClick }) => {
+    const intlRef = useIntlRef();
+
     const dispatch = useDispatch();
     const websocketExpectedCloseRef = useRef();
 
@@ -479,6 +560,11 @@ const StudyManager = ({ onClick }) => {
     );
 
     const classes = useStyles();
+
+    const [localCreationRequests, setlocalCreationRequests] = useState({});
+    const studyCreationSubmitted = useRef(new Set());
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const dispatchStudies = useCallback(() => {
         fetchStudyCreationRequests().then((studies) => {
@@ -490,10 +576,33 @@ const StudyManager = ({ onClick }) => {
         // Note: dispatch doesn't change
     }, [dispatch]);
 
+    const displayErrorIfExist = useCallback(
+        (event) => {
+            let eventData = JSON.parse(event.data);
+            if (eventData.headers) {
+                const error = eventData.headers['error'];
+                if (error) {
+                    const studyName = eventData.headers['studyName'];
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: error,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'studyCreatingError',
+                            headerMessageValues: { studyName: studyName },
+                            intlRef: intlRef,
+                        },
+                    });
+                }
+            }
+        },
+        [enqueueSnackbar, intlRef]
+    );
+
     const connectNotificationsUpdateStudies = useCallback(() => {
         const ws = connectNotificationsWsUpdateStudies();
 
         ws.onmessage = function (event) {
+            displayErrorIfExist(event);
             dispatchStudies();
         };
         ws.onclose = function (event) {
@@ -505,7 +614,7 @@ const StudyManager = ({ onClick }) => {
             console.error('Unexpected Notification WebSocket error', event);
         };
         return ws;
-    }, [dispatchStudies]);
+    }, [dispatchStudies, displayErrorIfExist]);
 
     useEffect(() => {
         dispatchStudies();
@@ -519,16 +628,93 @@ const StudyManager = ({ onClick }) => {
         };
     }, [connectNotificationsUpdateStudies, dispatchStudies]);
 
+    function addCreationRequest({ studyName, userId, ...rest }) {
+        setlocalCreationRequests({
+            ...localCreationRequests,
+            ...{
+                [makeKey({ userId: userId, studyName: studyName })]: {
+                    studyName: studyName,
+                    userId: userId,
+                    ...rest,
+                },
+            },
+        });
+    }
+
+    function addStudyCreationSubmitted(study) {
+        studyCreationSubmitted.current.add(makeKey(study));
+    }
+
+    const cleanLocalCreationRequests = useCallback(
+        (remote) => {
+            function deleteKey(list, key) {
+                if (list.hasOwnProperty(key)) {
+                    delete localCreationRequests[key];
+                    return true;
+                }
+                return false;
+            }
+
+            if (localCreationRequests) {
+                let didDelete = false;
+                remote.forEach((study) => {
+                    didDelete |= deleteKey(
+                        localCreationRequests,
+                        makeKey(study)
+                    );
+                });
+                studyCreationSubmitted.current.forEach((key) => {
+                    didDelete |= deleteKey(localCreationRequests, key);
+                });
+                studyCreationSubmitted.current.clear();
+                if (didDelete)
+                    setlocalCreationRequests(
+                        Object.assign({}, localCreationRequests)
+                    );
+            }
+        },
+        [localCreationRequests]
+    );
+
+    useEffect(() => {
+        cleanLocalCreationRequests(studyCreationRequests);
+    }, [studyCreationRequests, cleanLocalCreationRequests]);
+
+    useEffect(() => {
+        cleanLocalCreationRequests(studies);
+    }, [studies, cleanLocalCreationRequests]);
+
+    function mergeCreationRequests(remote, local) {
+        let merged = {};
+        if (local)
+            Object.values(local).forEach((study) => {
+                merged[makeKey(study)] = study;
+            });
+        if (remote)
+            remote.forEach((study) => {
+                merged[makeKey(study)] = study;
+            });
+        return Object.values(merged);
+    }
+
     return (
         <Container maxWidth="lg" className={classes.cardContainer}>
             <Grid container spacing={2} className={classes.grid}>
                 <Grid item xs={12} sm={6} md={3} align="center">
                     <Box className={classes.addButtonBox}>
-                        <CreateStudyForm />
+                        <CreateStudyForm
+                            addCreationRequest={addCreationRequest}
+                            addStudyCreationSubmitted={
+                                addStudyCreationSubmitted
+                            }
+                        />
                     </Box>
                 </Grid>
-                {studyCreationRequests &&
-                    studyCreationRequests.map((study) => (
+                {(studyCreationRequests || localCreationRequests) &&
+                    mergeCreationRequests(
+                        studyCreationRequests,
+                        localCreationRequests
+                    ).map((study) => (
                         <Grid
                             item
                             xs={12}
@@ -539,7 +725,7 @@ const StudyManager = ({ onClick }) => {
                             <StudyCard
                                 studyCreationLoader={true}
                                 study={study}
-                                onClick={() => onClick(study.studyName)}
+                                onClick={() => onClick(study.studyUuid)}
                             />
                         </Grid>
                     ))}
@@ -554,9 +740,7 @@ const StudyManager = ({ onClick }) => {
                         <StudyCard
                             studyCreationLoader={false}
                             study={study}
-                            onClick={() =>
-                                onClick(study.studyName, study.userId)
-                            }
+                            onClick={() => onClick(study.studyUuid)}
                         />
                     </Grid>
                 ))}

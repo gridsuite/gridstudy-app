@@ -4,37 +4,37 @@
     "homepage": ".",
     "private": true,
     "dependencies": {
-        "@gridsuite/commons-ui": "^0.5.3",
-        "notistack": "^1.0.1",
+        "@gridsuite/commons-ui": "0.13.0",
         "@material-ui/core": "^4.9.5",
         "@material-ui/icons": "^4.5.1",
         "@material-ui/lab": "^4.0.0-alpha.42",
         "@reduxjs/toolkit": "^1.2.3",
         "@svgdotjs/svg.js": "^3.0.12",
-        "@svgdotjs/svg.panzoom.js": "^2.1.1",
-        "cheap-ruler": "^2.5.1",
+        "@svgdotjs/svg.panzoom.js": "^2.1.2",
+        "cheap-ruler": "^3.0.0",
+        "clsx": "^1.0.4",
         "core-js": "^3.6.4",
         "deck.gl": "^8.0.0",
         "geolib": "^3.2.1",
-        "http-proxy-middleware": "^1.0.3",
         "memoize-one": "^5.1.1",
         "mjolnir.js": "^2.4.0",
+        "notistack": "^1.0.1",
         "prop-types": "15.7.2",
         "qs": "^6.9.1",
-        "react": "^16.13.1",
-        "react-dom": "^16.13.1",
-        "react-intl": "^3.11.0",
-        "react-map-gl": "^5.2.3",
+        "react": "^17.0.0",
+        "react-dom": "^17.0.0",
+        "react-intl": "^5.0.0",
+        "react-map-gl": "^6.0.0",
         "react-redux": "^7.1.3",
-        "react-router-dom": "^6.0.0-beta.0",
-        "react-router": "^6.0.0-beta.0",
-        "history": "^5.0.0",
-        "react-scripts": "3.4.1",
+        "history": "^5.0.1",
+        "react-router-dom": "^6.0.0-beta.4",
+        "react-scripts": "^4.0.0",
         "react-virtualized": "^9.21.2",
         "react-window": "^1.8.5",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^4.0.5",
-        "typeface-roboto": "0.0.75"
+        "typeface-roboto": "^1.0.0",
+        "material-ui-nested-menu-item": "1.0.2"
     },
     "scripts": {
         "start": "react-scripts start",
@@ -53,9 +53,11 @@
     },
     "browserslist": {
         "production": [
-            ">0.2%",
+            ">0.2% and supports es6-class",
             "not dead",
-            "not op_mini all"
+            "not op_mini all",
+            "not chrome < 51",
+            "not safari < 10"
         ],
         "development": [
             "last 1 chrome version",
@@ -64,9 +66,9 @@
         ]
     },
     "devDependencies": {
-        "clsx": "^1.1.1",
-        "eslint-config-prettier": "^2.9.0",
-        "eslint-plugin-prettier": "^2.6.0",
-        "prettier": "2.0.5"
+        "http-proxy-middleware": "^2.0.0",
+        "eslint-config-prettier": "^8.0.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "prettier": "^2.0.5"
     }
 }

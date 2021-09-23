@@ -1,4 +1,4 @@
-export default `\
+const vs = `\
 #define SHADER_NAME arrow-layer-vertex-shader
 
 precision highp float;
@@ -15,7 +15,8 @@ attribute float instanceLinePointCount;
 attribute float instanceLineDistance;
 attribute float instanceArrowDirection;
 attribute float instanceLineParallelIndex;
-attribute float instanceLineAngle;
+attribute vec3 instanceLineAngles;
+attribute vec2 instanceProximityFactors;
 
 uniform float sizeMinPixels;
 uniform float sizeMaxPixels;
@@ -28,6 +29,7 @@ uniform float webgl2;
 uniform float distanceBetweenLines;
 uniform float maxParallelOffset;
 uniform float minParallelOffset;
+uniform float opacity;
 
 varying vec4 vFillColor;
 varying float shouldDiscard;
@@ -147,23 +149,29 @@ void main(void) {
 
       // calculate translation for the parallels lines, use the angle calculated from origin/destination
       // to maintain the same translation between segments
-      if(abs(instanceLineParallelIndex) != 9999.) {
-          float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
-          float offsetCommonSpace = project_pixel_size(offsetPixels);
-          vec3 trans = vec3(cos(instanceLineAngle), -sin(instanceLineAngle),0.) * instanceLineParallelIndex;
-          vec3 transOr = trans;
-          if(linePoint == 1) {
-              transOr.x -= sin(instanceLineAngle);
-              transOr.y -= cos(instanceLineAngle);
-          }
-          commonPosition1 += transOr * offsetCommonSpace;
-          vec3 transEx = trans;
-          if (linePoint == int(instanceLinePointCount)-1) {
-              transEx.x += sin(instanceLineAngle);
-              transEx.y += cos(instanceLineAngle);
-          }
-          commonPosition2 += transEx * offsetCommonSpace;
+      float offsetPixels = clamp(project_size_to_pixel(distanceBetweenLines), minParallelOffset, maxParallelOffset);
+      float offsetCommonSpace = project_pixel_size(offsetPixels);
+
+      float instanceLineAngle1 = instanceLineAngles[1]; 
+      float instanceLineAngle2 = instanceLineAngles[1]; 
+      if( linePoint == 1 ){
+        instanceLineAngle1 = instanceLineAngles[0];
       }
+      if ( linePoint == int(instanceLinePointCount)-1 ){
+        instanceLineAngle2 = instanceLineAngles[2];
+      }      
+      vec3 transOr = vec3(cos(instanceLineAngle1), -sin(instanceLineAngle1),0.) * instanceLineParallelIndex;      
+      if(linePoint == 1) {
+          transOr.x -= sin(instanceLineAngle1) * instanceProximityFactors[0];
+          transOr.y -= cos(instanceLineAngle1) * instanceProximityFactors[0];
+      }
+      commonPosition1 += transOr * offsetCommonSpace;
+      vec3 transEx = vec3(cos(instanceLineAngle2), -sin(instanceLineAngle2),0.) * instanceLineParallelIndex;
+      if (linePoint == int(instanceLinePointCount)-1) {
+          transEx.x += sin(instanceLineAngle2) * instanceProximityFactors[1];
+          transEx.y += cos(instanceLineAngle2) * instanceProximityFactors[1];
+      }
+      commonPosition2 += transEx * offsetCommonSpace;
 
       // calculate arrow position in the common space by interpolating the 2 line points position
       float lineDistance1 = fetchLineDistance(linePoint - 1);
@@ -183,8 +191,10 @@ void main(void) {
       gl_Position = vertexPosition;
 
       // arrow fill color for fragment shader 
-      vFillColor = instanceColor;
+      vFillColor = vec4(instanceColor.rgb, opacity);
       shouldDiscard = 0.0;
   }
 }
 `;
+
+export default vs;

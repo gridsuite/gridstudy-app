@@ -25,20 +25,15 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 
 const ContingencyListSelector = (props) => {
-    const studyName = decodeURIComponent(useParams().studyName);
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const userId = decodeURIComponent(useParams().userId);
+    const [contingencyList, setContingencyList] = useState([]);
 
-    const [contingencyListNames, setContingencyListNames] = useState([]);
+    const [simulatedContingencyCount, setSimulatedContingencyCount] =
+        useState(0);
 
-    const [simulatedContingencyCount, setSimulatedContingencyCount] = useState(
-        0
-    );
-
-    const [
-        checkedContingencyListNames,
-        setCheckedContingencyListNames,
-    ] = useState([]);
+    const [checkedContingencyListNames, setCheckedContingencyListNames] =
+        useState([]);
 
     const handleClose = () => {
         props.onClose();
@@ -55,11 +50,7 @@ const ContingencyListSelector = (props) => {
     useEffect(() => {
         if (props.open) {
             fetchContingencyLists().then((contingencyLists) => {
-                setContingencyListNames(
-                    contingencyLists.map(
-                        (contingencyLists) => contingencyLists.name
-                    )
-                );
+                setContingencyList(contingencyLists);
             });
             setCheckedContingencyListNames([]);
         }
@@ -67,14 +58,12 @@ const ContingencyListSelector = (props) => {
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
-        fetchContingencyCount(
-            userId,
-            studyName,
-            checkedContingencyListNames
-        ).then((contingencyCount) => {
-            setSimulatedContingencyCount(contingencyCount);
-        });
-    }, [userId, studyName, checkedContingencyListNames]);
+        fetchContingencyCount(studyUuid, checkedContingencyListNames).then(
+            (contingencyCount) => {
+                setSimulatedContingencyCount(contingencyCount);
+            }
+        );
+    }, [studyUuid, checkedContingencyListNames]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null
@@ -98,8 +87,10 @@ const ContingencyListSelector = (props) => {
                 <Grid container spacing={1} direction="column" item xs={12}>
                     <Grid item>
                         <CheckboxList
-                            values={contingencyListNames}
+                            values={contingencyList}
                             onChecked={handleChecked}
+                            label={(item) => item.name}
+                            id={(item) => item.id}
                         />
                     </Grid>
                     <Grid item>

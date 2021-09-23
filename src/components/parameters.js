@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -18,41 +18,41 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
+import { useSnackbar } from 'notistack';
 
-import {
-    DARK_THEME,
-    LIGHT_THEME,
-    selectLineFlowMode,
-    selectLineFlowColorMode,
-    selectLineFlowAlertThreshold,
-    selectTheme,
-    selectSubstationLayout,
-    toggleCenterLabelState,
-    toggleDiagonalLabelState,
-    toggleLineFullPathState,
-    toggleLineParallelPathState,
-    toggleUseNameState,
-    toggleViewOverloadsTableState,
-} from '../redux/actions';
 import { LineFlowMode } from './network/line-layer';
 import { LineFlowColorMode } from './network/line-layer';
 import {
     getLoadFlowParameters,
     setLoadFlowParameters,
+    getLoadFlowProvider,
+    setLoadFlowProvider,
+    updateConfigParameter,
+    getAvailableComponentLibraries,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
+import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_COMPONENT_LIBRARY,
+} from '../utils/config-params';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     title: {
@@ -69,48 +69,150 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Parameters = ({ showParameters, hideParameters }) => {
-    const dispatch = useDispatch();
+export function useParameterState(paramName) {
+    const intlRef = useIntlRef();
 
-    const classes = useStyles();
+    const { enqueueSnackbar } = useSnackbar();
 
-    const useName = useSelector((state) => state.useName);
-    const centerLabel = useSelector((state) => state.centerLabel);
-    const diagonalLabel = useSelector((state) => state.diagonalLabel);
-    const lineFullPath = useSelector((state) => state.lineFullPath);
-    const lineParallelPath = useSelector((state) => state.lineParallelPath);
-    const lineFlowMode = useSelector((state) => state.lineFlowMode);
-    const lineFlowColorMode = useSelector((state) => state.lineFlowColorMode);
-    const studyName = useSelector((state) => state.studyName);
-    const userId = useSelector((state) => state.userId);
+    const paramGlobalState = useSelector((state) => state[paramName]);
 
-    const [lfParams, setLfParams] = React.useState(null);
-
-    const lineFlowAlertThreshold = useSelector(
-        (state) => state.lineFlowAlertThreshold
-    );
-    const viewOverloadsTable = useSelector((state) => state.viewOverloadsTable);
-
-    const [
-        disabledFlowAlertThreshold,
-        setDisabledFlowAlertThreshold,
-    ] = React.useState(
-        lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
-    );
-
-    const [tabIndex, setTabIndex] = React.useState(0);
+    const [paramLocalState, setParamLocalState] = useState(paramGlobalState);
 
     useEffect(() => {
-        if (userId) {
-            getLoadFlowParameters(studyName, userId).then((params) =>
-                setLfParams(params)
-            );
+        setParamLocalState(paramGlobalState);
+    }, [paramGlobalState]);
+
+    const handleChangeParamLocalState = useCallback(
+        (value) => {
+            setParamLocalState(value);
+            updateConfigParameter(paramName, value).catch((errorMessage) => {
+                setParamLocalState(paramGlobalState);
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'paramsChangingError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        },
+        [
+            paramName,
+            enqueueSnackbar,
+            intlRef,
+            setParamLocalState,
+            paramGlobalState,
+        ]
+    );
+
+    return [paramLocalState, handleChangeParamLocalState];
+}
+
+const LF_PROVIDER_VALUES = {
+    Default: 'Default',
+    OpenLoadFlow: 'OpenLoadFlow',
+    Hades2: 'Hades2',
+};
+
+const Parameters = ({ showParameters, hideParameters, user }) => {
+    const classes = useStyles();
+
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    const [lineFullPathLocal, handleChangeLineFullPath] =
+        useParameterState(PARAM_LINE_FULL_PATH);
+
+    const [lineParallelPathLocal, handleChangeLineParallelPath] =
+        useParameterState(PARAM_LINE_PARALLEL_PATH);
+
+    const [lineFlowAlertThresholdLocal, handleChangeLineFlowAlertThreshold] =
+        useParameterState(PARAM_LINE_FLOW_ALERT_THRESHOLD);
+
+    const [displayOverloadTableLocal, handleChangeDisplayOverloadTable] =
+        useParameterState(PARAM_DISPLAY_OVERLOAD_TABLE);
+
+    const [lineFlowModeLocal, handleChangeLineFlowMode] =
+        useParameterState(PARAM_LINE_FLOW_MODE);
+
+    const [lineFlowColorModeLocal, handleChangeLineFlowColorMode] =
+        useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
+
+    const [centerLabelLocal, handleChangeCenterLabel] =
+        useParameterState(PARAM_CENTER_LABEL);
+
+    const [diagonalLabelLocal, handleChangeDiagonalLabel] =
+        useParameterState(PARAM_DIAGONAL_LABEL);
+
+    const [substationLayoutLocal, handleChangeSubstationLayout] =
+        useParameterState(PARAM_SUBSTATION_LAYOUT);
+
+    const [componentLibraryLocal, handleChangeComponentLibrary] =
+        useParameterState(PARAM_COMPONENT_LIBRARY);
+
+    const studyUuid = useSelector((state) => state.studyUuid);
+
+    const [lfProvider, setLfProvider] = useState(null);
+
+    const [lfParams, setLfParams] = useState(null);
+
+    const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] =
+        useState(
+            lineFlowColorModeLocal === 'nominalVoltage' &&
+                !displayOverloadTableLocal
+        );
+
+    const [tabIndex, setTabIndex] = useState(0);
+
+    const [componentLibraries, setComponentLibraries] = useState([]);
+
+    useEffect(() => {
+        if (studyUuid) {
+            getLoadFlowParameters(studyUuid)
+                .then((params) => setLfParams(params))
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'paramsRetrievingError',
+                            intlRef: intlRef,
+                        },
+                    })
+                );
+            getLoadFlowProvider(studyUuid)
+                .then((provider) => {
+                    setLfProvider(provider === '' ? 'Default' : provider);
+                })
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'getLoadFlowProviderError',
+                            intlRef: intlRef,
+                        },
+                    })
+                );
         }
-    }, [studyName, userId]);
+    }, [studyUuid, enqueueSnackbar, intlRef]);
 
-    const theme = useSelector((state) => state.theme);
+    useEffect(() => {
+        if (user !== null) {
+            getAvailableComponentLibraries().then((libraries) => {
+                setComponentLibraries(libraries);
+            });
+        }
+    }, [user]);
 
-    const substationLayout = useSelector((state) => state.substationLayout);
+    useEffect(() => {
+        setDisabledFlowAlertThreshold(
+            lineFlowColorModeLocal === 'nominalVoltage' &&
+                !displayOverloadTableLocal
+        );
+    }, [lineFlowColorModeLocal, displayOverloadTableLocal]);
 
     const alertThresholdMarks = [
         {
@@ -122,40 +224,6 @@ const Parameters = ({ showParameters, hideParameters }) => {
             label: '100',
         },
     ];
-
-    const handleChangeTheme = (event) => {
-        const theme = event.target.value;
-        dispatch(selectTheme(theme));
-    };
-
-    const handleLineFlowModeChange = (event) => {
-        const lineFlowMode = event.target.value;
-        dispatch(selectLineFlowMode(lineFlowMode));
-    };
-
-    const handleLineFlowColorModeChange = (event) => {
-        const lineFlowColorMode = event.target.value;
-        setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && !viewOverloadsTable
-        );
-        dispatch(selectLineFlowColorMode(lineFlowColorMode));
-    };
-
-    const handleLineFlowAlertThresholdChange = (event, value) => {
-        dispatch(selectLineFlowAlertThreshold(value));
-    };
-
-    const handleViewOverloadsTableChange = (event) => {
-        setDisabledFlowAlertThreshold(
-            lineFlowColorMode === 'nominalVoltage' && viewOverloadsTable
-        );
-        dispatch(toggleViewOverloadsTableState());
-    };
-
-    const handleSubstationLayoutChange = (event) => {
-        const substationLayout = event.target.value;
-        dispatch(selectSubstationLayout(substationLayout));
-    };
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -177,14 +245,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeSwitch(prop, label, callback) {
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Switch
                         checked={prop}
                         onChange={callback}
@@ -200,14 +268,14 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeDropDown(prop, label, values, callback) {
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select labelId={label} value={prop} onChange={callback}>
                         {Object.keys(values).map((key) => (
                             <MenuItem key={key} value={key}>
@@ -238,27 +306,34 @@ const Parameters = ({ showParameters, hideParameters }) => {
     function MakeSlider(
         threshold,
         label,
-        disabledFlowAlertThreshold,
-        callback,
+        disabled,
+        onCommitCallback,
         thresholdMarks
     ) {
+        const [sliderValue, setSliderValue] = useState(threshold);
+
+        const handleValueChanged = (event, newValue) => {
+            setSliderValue(newValue);
+        };
+
         return (
             <>
-                <Grid item xs={6}>
+                <Grid item xs={7}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />:
+                            <FormattedMessage id={label} />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={5} className={classes.controlItem}>
                     <Slider
                         min={0}
                         max={100}
                         valueLabelDisplay="auto"
-                        onChangeCommitted={callback}
-                        value={threshold}
-                        disabled={disabledFlowAlertThreshold}
+                        onChange={handleValueChanged}
+                        onChangeCommitted={onCommitCallback}
+                        value={sliderValue}
+                        disabled={disabled}
                         marks={thresholdMarks}
                     />
                 </Grid>
@@ -274,61 +349,31 @@ const Parameters = ({ showParameters, hideParameters }) => {
         );
     }
 
-    function GeneralTab() {
-        return (
-            <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(useName, 'useName', () =>
-                    dispatch(toggleUseNameState())
-                )}
-                <MakeLineSeparator />
-                <Grid item xs={6}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="theme" />:
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
-                    <RadioGroup row value={theme} onChange={handleChangeTheme}>
-                        <FormControlLabel
-                            value={DARK_THEME}
-                            control={<Radio color="primary" />}
-                            label={DARK_THEME}
-                        />
-                        <FormControlLabel
-                            value={LIGHT_THEME}
-                            control={<Radio color="primary" />}
-                            label={LIGHT_THEME}
-                        />
-                    </RadioGroup>
-                </Grid>
-            </Grid>
-        );
-    }
-
     function SingleLineDiagramParameters() {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(diagonalLabel, 'diagonalLabel', () =>
-                    dispatch(toggleDiagonalLabelState())
-                )}
+                {MakeSwitch(diagonalLabelLocal, 'diagonalLabel', () => {
+                    handleChangeDiagonalLabel(!diagonalLabelLocal);
+                })}
                 <MakeLineSeparator />
-                {MakeSwitch(centerLabel, 'centerLabel', () =>
-                    dispatch(toggleCenterLabelState())
-                )}
+                {MakeSwitch(centerLabelLocal, 'centerLabel', () => {
+                    handleChangeCenterLabel(!centerLabelLocal);
+                })}
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="SubstationLayout" />:
+                            <FormattedMessage id="SubstationLayout" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="substation-layout-select-label"
-                        value={substationLayout}
-                        onChange={handleSubstationLayoutChange}
+                        value={substationLayoutLocal}
+                        onChange={(event) => {
+                            handleChangeSubstationLayout(event.target.value);
+                        }}
                     >
                         <MenuItem value={SubstationLayout.HORIZONTAL}>
                             <FormattedMessage id="HorizontalSubstationLayout" />
@@ -351,6 +396,37 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         </MenuItem>
                     </Select>
                 </Grid>
+
+                <MakeLineSeparator />
+
+                <Grid item xs={8}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="ComponentLibrary" />
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={4} className={classes.controlItem}>
+                    <Select
+                        labelId="component-library-select-label"
+                        value={
+                            componentLibraryLocal !== null
+                                ? componentLibraryLocal
+                                : componentLibraries[0]
+                        }
+                        onChange={(event) => {
+                            handleChangeComponentLibrary(event.target.value);
+                        }}
+                    >
+                        {componentLibraries.map((library) => {
+                            return (
+                                <MenuItem key={library} value={library}>
+                                    {library}
+                                </MenuItem>
+                            );
+                        })}
+                    </Select>
+                </Grid>
             </Grid>
         );
     }
@@ -358,26 +434,28 @@ const Parameters = ({ showParameters, hideParameters }) => {
     const MapParameters = () => {
         return (
             <Grid container spacing={2} className={classes.grid}>
-                {MakeSwitch(lineFullPath, 'lineFullPath', () =>
-                    dispatch(toggleLineFullPathState())
-                )}
+                {MakeSwitch(lineFullPathLocal, 'lineFullPath', () => {
+                    handleChangeLineFullPath(!lineFullPathLocal);
+                })}
                 <MakeLineSeparator />
-                {MakeSwitch(lineParallelPath, 'lineParallelPath', () =>
-                    dispatch(toggleLineParallelPathState())
-                )}
+                {MakeSwitch(lineParallelPathLocal, 'lineParallelPath', () => {
+                    handleChangeLineParallelPath(!lineParallelPathLocal);
+                })}
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="LineFlowMode" />:
+                            <FormattedMessage id="LineFlowMode" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-mode-select-label"
-                        value={lineFlowMode}
-                        onChange={handleLineFlowModeChange}
+                        value={lineFlowModeLocal}
+                        onChange={(event) => {
+                            handleChangeLineFlowMode(event.target.value);
+                        }}
                     >
                         <MenuItem value={LineFlowMode.STATIC_ARROWS}>
                             <FormattedMessage id="StaticArrows" />
@@ -391,18 +469,20 @@ const Parameters = ({ showParameters, hideParameters }) => {
                     </Select>
                 </Grid>
                 <MakeLineSeparator />
-                <Grid item xs={6}>
+                <Grid item xs={8}>
                     <Typography component="span" variant="body1">
                         <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="LineFlowColorMode" />:
+                            <FormattedMessage id="LineFlowColorMode" />
                         </Box>
                     </Typography>
                 </Grid>
-                <Grid item container xs={6} className={classes.controlItem}>
+                <Grid item container xs={4} className={classes.controlItem}>
                     <Select
                         labelId="line-flow-color-mode-select-label"
-                        value={lineFlowColorMode}
-                        onChange={handleLineFlowColorModeChange}
+                        value={lineFlowColorModeLocal}
+                        onChange={(event) => {
+                            handleChangeLineFlowColorMode(event.target.value);
+                        }}
                     >
                         <MenuItem value={LineFlowColorMode.NOMINAL_VOLTAGE}>
                             <FormattedMessage id="NominalVoltage" />
@@ -414,17 +494,23 @@ const Parameters = ({ showParameters, hideParameters }) => {
                 </Grid>
                 <MakeLineSeparator />
                 {MakeSlider(
-                    Number(lineFlowAlertThreshold),
+                    Number(lineFlowAlertThresholdLocal),
                     'AlertThresholdLabel',
                     disabledFlowAlertThreshold,
-                    handleLineFlowAlertThresholdChange,
+                    (event, value) => {
+                        handleChangeLineFlowAlertThreshold(value);
+                    },
                     alertThresholdMarks
                 )}
                 <MakeLineSeparator />
                 {MakeSwitch(
-                    viewOverloadsTable,
-                    'viewOverloadsTable',
-                    handleViewOverloadsTableChange
+                    displayOverloadTableLocal,
+                    'displayOverloadTable',
+                    () => {
+                        handleChangeDisplayOverloadTable(
+                            !displayOverloadTableLocal
+                        );
+                    }
                 )}
             </Grid>
         );
@@ -460,16 +546,89 @@ const Parameters = ({ showParameters, hideParameters }) => {
     }
 
     const resetLfParameters = () => {
-        setLoadFlowParameters(studyName, userId, null)
+        setLoadFlowParameters(studyUuid, null)
             .then(() => {
-                return getLoadFlowParameters(studyName, userId);
+                return getLoadFlowParameters(studyUuid)
+                    .then((params) => setLfParams(params))
+                    .catch((errorMessage) =>
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'paramsRetrievingError',
+                                intlRef: intlRef,
+                            },
+                        })
+                    );
             })
-            .then((params) => setLfParams(params));
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'paramsChangingError',
+                        intlRef: intlRef,
+                    },
+                })
+            );
     };
 
     const commitLFParameter = (newParams) => {
+        let oldParams = { ...lfParams };
         setLfParams(newParams);
-        setLoadFlowParameters(studyName, userId, newParams).then();
+        setLoadFlowParameters(studyUuid, newParams).catch((errorMessage) => {
+            setLfParams(oldParams);
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'paramsChangingError',
+                    intlRef: intlRef,
+                },
+            });
+        });
+    };
+
+    const updateLfProvider = (evt) => {
+        const newProvider = evt.target.value;
+        const oldProvider = lfProvider;
+        setLfProvider(newProvider);
+        setLoadFlowProvider(
+            studyUuid,
+            newProvider === 'Default' ? '' : newProvider
+        ).catch((errorMessage) => {
+            setLfProvider(oldProvider); // restore old value
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'setLoadFlowProviderError',
+                    intlRef: intlRef,
+                },
+            });
+        });
+    };
+
+    const LoadFlow = () => {
+        return (
+            <Grid
+                container
+                spacing={2}
+                className={classes.grid}
+                justify="flex-end"
+            >
+                <Grid container key="lfProvider">
+                    {MakeDropDown(
+                        lfProvider,
+                        'Provider',
+                        LF_PROVIDER_VALUES,
+                        updateLfProvider
+                    )}
+                </Grid>
+                <MakeLineSeparator />
+                <LoadFlowParameters />
+            </Grid>
+        );
     };
 
     const LoadFlowParameters = () => {
@@ -515,15 +674,10 @@ const Parameters = ({ showParameters, hideParameters }) => {
 
         return (
             lfParams && (
-                <Grid
-                    container
-                    spacing={2}
-                    className={classes.grid}
-                    justify="flex-end"
-                >
+                <>
                     {makeComponentsFor(defParams, lfParams, commitLFParameter)}
-                    {MakeButton(() => resetLfParameters(), 'resetToDefault')}
-                </Grid>
+                    {MakeButton(resetLfParameters, 'resetToDefault')}
+                </>
             )
         );
     };
@@ -555,28 +709,24 @@ const Parameters = ({ showParameters, hideParameters }) => {
                         onChange={(event, newValue) => setTabIndex(newValue)}
                         aria-label="parameters"
                     >
-                        <Tab label={<FormattedMessage id="General" />} />
                         <Tab
                             label={<FormattedMessage id="SingleLineDiagram" />}
                         />
                         <Tab label={<FormattedMessage id="Map" />} />
                         <Tab
-                            disabled={!studyName}
+                            disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
-                        <GeneralTab />
-                    </TabPanel>
-                    <TabPanel value={tabIndex} index={1}>
                         <SingleLineDiagramParameters />
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={2}>
+                    <TabPanel value={tabIndex} index={1}>
                         <MapParameters />
                     </TabPanel>
-                    <TabPanel value={tabIndex} index={3}>
-                        {studyName && <LoadFlowParameters />}
+                    <TabPanel value={tabIndex} index={2}>
+                        {studyUuid && <LoadFlow />}
                     </TabPanel>
                     <Grid item xs={12}>
                         <Button

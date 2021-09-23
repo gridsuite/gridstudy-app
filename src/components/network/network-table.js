@@ -1,674 +1,161 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from './network';
-import VirtualizedTable from '../util/virtualized-table';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import { useIntl } from 'react-intl';
-import AutoSizer from 'react-virtualized/dist/commonjs/AutoSizer';
+import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
-import TableCell from '@material-ui/core/TableCell';
 import { IconButton, TextField } from '@material-ui/core';
-import CreateIcon from '@material-ui/icons/Create';
-import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import { requestNetworkChange } from '../../utils/rest-api';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
+import { updateConfigParameter } from '../../utils/rest-api';
 
-const TABLE_NAMES = [
-    'Substations',
-    'VoltageLevels',
-    'Lines',
-    'TwoWindingsTransformers',
-    'ThreeWindingsTransformers',
-    'Generators',
-];
+import ViewColumnIcon from '@material-ui/icons/ViewColumn';
+import { SelectOptionsDialog } from '../../utils/dialogs';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+import {
+    COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    TABLES_COLUMNS_NAMES,
+    TABLES_DEFINITION_INDEXES,
+    TABLES_DEFINITIONS,
+    TABLES_NAMES,
+} from './config-tables';
+import { EquipmentTable } from './equipment-table';
+import { makeStyles } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
 
-const useStyles = makeStyles((theme) => ({
-    cell: {
-        display: 'flex',
-        alignItems: 'right',
-        textAlign: 'right',
-        boxSizing: 'border-box',
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        cursor: 'initial',
-    },
+const useStyles = makeStyles(() => ({
     searchSection: {
-        height: '48px',
         paddingRight: '10px',
         alignItems: 'center',
-        minWidth: '300px',
+    },
+    table: {
+        marginTop: '20px',
+    },
+    containerInputSearch: {
+        marginTop: '15px',
+        marginLeft: '10px',
+    },
+    checkboxSelectAll: {
+        padding: '0 32px 15px 15px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+    },
+    checkboxItem: {
+        cursor: 'pointer',
+    },
+    selectColumns: {
+        marginTop: '12px',
+        marginLeft: '50px',
     },
 }));
 
 const NetworkTable = (props) => {
     const classes = useStyles();
 
-    const [tabIndex, setTabIndex] = React.useState(0);
-    const [lineEdit, setLineEdit] = React.useState({});
-    const [rowFilter, setRowFilter] = React.useState(undefined);
+    const { enqueueSnackbar } = useSnackbar();
+
+    const allDisplayedColumnsNames = useSelector(
+        (state) => state.allDisplayedColumnsNames
+    );
+    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
+    const [rowFilter, setRowFilter] = useState(undefined);
+    const [tabIndex, setTabIndex] = useState(0);
+    const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
+    const [scrollToIndex, setScrollToIndex] = useState(-1);
+    const [manualTabSwitch, setManualTabSwitch] = useState(true);
+    const [selectedDataKey, setSelectedDataKey] = useState(new Set());
+
     const intl = useIntl();
 
-    const rowHeight = 48;
+    const intlRef = useIntlRef();
 
-    function isLineOnEditMode(row) {
-        return (lineEdit[tabIndex] && lineEdit[tabIndex].line === row) || false;
+    useEffect(() => {
+        setSelectedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
+    }, [tabIndex, allDisplayedColumnsNames]);
+
+    useEffect(() => {
+        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
+        if (!props.network) return;
+        props.network.useEquipment(resource);
+    }, [props.network, tabIndex]);
+
+    const getRows = useCallback(
+        (index) => {
+            const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
+            return tableDefinition.getter
+                ? tableDefinition.getter(props.network)
+                : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
+        },
+        [props.network]
+    );
+
+    function getTabIndexFromEquipementType(equipmentType) {
+        const definition = Object.values(TABLES_DEFINITIONS).find(
+            (d) => d.name.toLowerCase() === equipmentType.toLowerCase()
+        );
+        return definition ? definition.index : 0;
     }
 
-    function setLineEditAt(index, value) {
-        setLineEdit({
-            ...lineEdit,
-            ...{ [index]: value },
-        });
-    }
+    useEffect(() => {
+        setManualTabSwitch(false);
+    }, [props.equipmentChanged]);
 
-    function generateTapRequest(type, leg) {
-        const getLeg = leg !== undefined ? '.getLeg' + leg + '()' : '';
+    useEffect(() => {
+        if (
+            props.equipmentId !== null &&
+            props.equipmentType !== null &&
+            !manualTabSwitch
+        ) {
+            const newIndex = getTabIndexFromEquipementType(props.equipmentType);
+            setTabIndex(newIndex); // select the right table type
+            // calculate row index to scroll to
+            const rows = getRows(newIndex);
+            let index = rows.findIndex((r) => r.id === props.equipmentId);
+            setScrollToIndex(index !== undefined ? index : 0);
+        }
+    }, [
+        props.network,
+        props.equipmentId,
+        props.equipmentType,
+        props.equipmentChanged,
+        getRows,
+        manualTabSwitch,
+    ]);
+
+    function renderTable() {
+        const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
+        const rows = getRows(tabIndex);
         return (
-            'tap = equipment' +
-            getLeg +
-            '.get' +
-            type +
-            'TapChanger()\n' +
-            'if (tap.getLowTapPosition() <= {} && {} < tap.getHighTapPosition() ) { \n' +
-            '    tap.setTapPosition({})\n' +
-            // to force update of transformer as sub elements changes like tapChanger are not detected
-            '    equipment.setFictitious(equipment.isFictitious())\n' +
-            '} else {\n' +
-            "throw new Exception('incorrect value')\n" +
-            ' }\n'
-        );
-    }
-
-    function commitChanges(rowData) {
-        const tab = tabIndex;
-        let groovyCr =
-            'equipment = network.get' +
-            lineEdit[tab].equipmentType +
-            "('" +
-            lineEdit[tabIndex].id.replace(/'/g, "\\'") +
-            "')\n";
-        Object.values(lineEdit[tabIndex].newValues).forEach((cr) => {
-            groovyCr += cr.command.replace(/\{\}/g, cr.value) + '\n';
-        });
-        requestNetworkChange(props.userId, props.studyName, groovyCr).then(
-            (response) => {
-                if (response.ok) {
-                    Object.entries(lineEdit[tab].newValues).forEach(
-                        ([key, cr]) => {
-                            rowData[key] = cr.value;
-                        }
-                    );
-                } else {
-                    Object.entries(lineEdit[tab].oldValues).forEach(
-                        ([key, oldValue]) => {
-                            rowData[key] = oldValue;
-                        }
-                    );
-                }
-                setLineEditAt(tab, {});
-            }
-        );
-    }
-
-    function resetChanges(rowData) {
-        Object.entries(lineEdit[tabIndex].oldValues).forEach(
-            ([key, oldValue]) => {
-                rowData[key] = oldValue;
-            }
-        );
-        setLineEditAt(tabIndex, {});
-    }
-
-    function createEditableRow(cellData, equipmentType) {
-        return (
-            (!isLineOnEditMode(cellData.rowIndex) && (
-                <IconButton
-                    disabled={
-                        lineEdit[tabIndex] && lineEdit[tabIndex].id && true
-                    }
-                    onClick={() =>
-                        setLineEditAt(tabIndex, {
-                            line: cellData.rowIndex,
-                            oldValues: {},
-                            newValues: {},
-                            id: cellData.rowData['id'],
-                            equipmentType: equipmentType,
-                        })
-                    }
-                >
-                    <CreateIcon alignmentBaseline={'middle'} />
-                </IconButton>
-            )) || (
-                <Grid container>
-                    <Grid item>
-                        <IconButton
-                            size={'small'}
-                            onClick={() => commitChanges(cellData.rowData)}
-                        >
-                            <CheckIcon />
-                        </IconButton>
-                        <IconButton
-                            size={'small'}
-                            onClick={() => resetChanges(cellData.rowData)}
-                        >
-                            <ClearIcon />
-                        </IconButton>
-                    </Grid>
-                </Grid>
-            )
-        );
-    }
-
-    function formatCellData(cellData, isNumeric, fractionDigit) {
-        return cellData.rowData[cellData.dataKey] && isNumeric && fractionDigit
-            ? parseFloat(cellData.rowData[cellData.dataKey]).toFixed(
-                  fractionDigit
-              )
-            : cellData.rowData[cellData.dataKey];
-    }
-
-    function defaultCellRender(cellData, numeric, fractionDigit) {
-        return (
-            <TableCell
-                component="div"
-                variant="body"
-                style={{ height: rowHeight, width: cellData.width }}
-                className={classes.cell}
-                align="right"
-            >
-                <Grid container direction="column">
-                    <Grid item xs={1} />
-                    <Grid item xs={1}>
-                        {formatCellData(cellData, numeric, fractionDigit)}
-                    </Grid>
-                </Grid>
-            </TableCell>
-        );
-    }
-
-    function registerChangeRequest(data, command, value) {
-        // save original value, dont erase if exists
-        if (!lineEdit[tabIndex].oldValues[data.dataKey])
-            lineEdit[tabIndex].oldValues[data.dataKey] =
-                data.rowData[data.dataKey];
-        lineEdit[tabIndex].newValues[data.dataKey] = {
-            command: command,
-            value: value,
-        };
-        data.rowData[data.dataKey] = value;
-    }
-
-    function EditableCellRender(cellData, numeric, command, fractionDigit) {
-        return !isLineOnEditMode(cellData.rowIndex) ||
-            cellData.rowData[cellData.dataKey] === undefined ? (
-            defaultCellRender(cellData, numeric, fractionDigit)
-        ) : (
-            <TextField
-                id={cellData.dataKey}
-                type="Number"
-                className={classes.cell}
-                size={'medium'}
-                margin={'normal'}
-                inputProps={{ style: { textAlign: 'center' } }}
-                onChange={(obj) =>
-                    registerChangeRequest(cellData, command, obj.target.value)
-                }
-                defaultValue={formatCellData(cellData, numeric, fractionDigit)}
-            />
-        );
-    }
-
-    function renderSubstationsTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.substations.length}
-                rowGetter={({ index }) => props.network.substations[index]}
+            <EquipmentTable
+                studyUuid={props.studyUuid}
+                rows={rows}
+                selectedColumnsNames={selectedColumnsNames}
+                tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Country' }),
-                        dataKey: 'countryName',
-                    },
-                ]}
-            />
-        );
-    }
-
-    function renderVoltageLevelsTable() {
-        const voltageLevels = props.network.getVoltageLevels();
-        return (
-            <VirtualizedTable
-                rowCount={voltageLevels.length}
-                rowGetter={({ index }) => voltageLevels[index]}
-                filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'SubstationId' }),
-                        dataKey: 'substationId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'NominalVoltage' }),
-                        dataKey: 'nominalVoltage',
-                        numeric: true,
-                        fractionDigits: 0,
-                    },
-                ]}
-            />
-        );
-    }
-
-    function renderLinesTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.lines.length}
-                rowGetter={({ index }) => props.network.lines[index]}
-                filter={filter}
-                columns={[
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide1',
-                        }),
-                        dataKey: 'voltageLevelId1',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide2',
-                        }),
-                        dataKey: 'voltageLevelId2',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        dataKey: 'p1',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        dataKey: 'p2',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        dataKey: 'q1',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                        dataKey: 'q2',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                ]}
-            />
-        );
-    }
-
-    function makeHeaderCell(equipmentType) {
-        return {
-            width: 80,
-            label: '',
-            dataKey: '',
-            cellRenderer: (cellData) =>
-                createEditableRow(cellData, equipmentType),
-        };
-    }
-
-    function renderTwoWindingsTransformersTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.twoWindingsTransformers.length}
-                rowGetter={({ index }) =>
-                    props.network.twoWindingsTransformers[index]
-                }
-                filter={filter}
-                columns={[
-                    makeHeaderCell('TwoWindingsTransformer'),
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide1',
-                        }),
-                        dataKey: 'voltageLevelId1',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide2',
-                        }),
-                        dataKey: 'voltageLevelId2',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        dataKey: 'p1',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        dataKey: 'p2',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        dataKey: 'q1',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                        dataKey: 'q2',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'RatioTap' }),
-                        dataKey: 'ratioTapChangerPosition',
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Ratio'),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'PhaseTap' }),
-                        dataKey: 'phaseTapChangerPosition',
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Phase'),
-                                0
-                            ),
-                    },
-                ]}
-            />
-        );
-    }
-
-    function renderThreeWindingsTransformersTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.threeWindingsTransformers.length}
-                rowGetter={({ index }) =>
-                    props.network.threeWindingsTransformers[index]
-                }
-                filter={filter}
-                columns={[
-                    makeHeaderCell('ThreeWindingsTransformer'),
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide1',
-                        }),
-                        dataKey: 'voltageLevelId1',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide2',
-                        }),
-                        dataKey: 'voltageLevelId2',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelIdSide3',
-                        }),
-                        dataKey: 'voltageLevelId3',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide1' }),
-                        dataKey: 'p1',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide2' }),
-                        dataKey: 'p2',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePowerSide3' }),
-                        dataKey: 'p3',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide1' }),
-                        dataKey: 'q1',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide2' }),
-                        dataKey: 'q2',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePowerSide3' }),
-                        dataKey: 'q3',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'RatioTap1' }),
-                        dataKey: 'ratioTapChanger1Position',
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Ratio', 1),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'RatioTap2' }),
-                        dataKey: 'ratioTapChanger2Position',
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Ratio', 2),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'RatioTap3' }),
-                        dataKey: 'ratioTapChanger3Position',
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Ratio', 3),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'PhaseTap1' }),
-                        dataKey: 'phaseTapChanger1Position',
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Phase', 1),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'PhaseTap2' }),
-                        dataKey: 'phaseTapChanger2Position',
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Phase', 2),
-                                0
-                            ),
-                    },
-                    {
-                        width: 150,
-                        label: intl.formatMessage({ id: 'PhaseTap3' }),
-                        numeric: true,
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                generateTapRequest('Phase', 3),
-                                0
-                            ),
-                    },
-                ]}
-            />
-        );
-    }
-
-    function renderGeneratorsTable() {
-        return (
-            <VirtualizedTable
-                rowCount={props.network.generators.length}
-                rowGetter={({ index }) => props.network.generators[index]}
-                filter={filter}
-                columns={[
-                    makeHeaderCell('Generator'),
-                    {
-                        width: 400,
-                        label: intl.formatMessage({ id: 'ID' }),
-                        dataKey: 'id',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'Name' }),
-                        dataKey: 'name',
-                    },
-                    {
-                        width: 400,
-                        label: intl.formatMessage({
-                            id: 'VoltageLevelId',
-                        }),
-                        dataKey: 'voltageLevelId',
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ActivePower' }),
-                        dataKey: 'p',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'ReactivePower' }),
-                        dataKey: 'q',
-                        numeric: true,
-                        fractionDigits: 1,
-                    },
-                    {
-                        width: 200,
-                        label: intl.formatMessage({ id: 'TargetP' }),
-                        dataKey: 'targetP',
-                        cellRenderer: (cell) =>
-                            EditableCellRender(
-                                cell,
-                                true,
-                                'equipment.setTargetP({})',
-                                1
-                            ),
-                    },
-                ]}
+                fetched={props.network.isResourceFetched(resource)}
+                scrollToIndex={scrollToIndex}
+                scrollToAlignment="start"
+                network={props.network}
+                selectedDataKey={Array.from(selectedDataKey)}
             />
         );
     }
@@ -680,102 +167,215 @@ const NetworkTable = (props) => {
         );
     }
 
+    useEffect(() => {
+        let tmpDataKeySet = new Set();
+        TABLES_DEFINITION_INDEXES.get(tabIndex)
+            .columns.filter((col) => selectedColumnsNames.has(col.id))
+            .forEach((col) => tmpDataKeySet.add(col.dataKey));
+        setSelectedDataKey(tmpDataKeySet);
+    }, [tabIndex, selectedColumnsNames]);
+
     const filter = useCallback(
         (cell) => {
             if (!rowFilter) return true;
-            let ok = false;
-            Object.values(cell).forEach((value) => {
-                if (rowFilter.test(value)) {
-                    ok = true;
-                }
-            });
-
-            return ok;
+            return (
+                [...selectedDataKey].find((key) =>
+                    rowFilter.test(cell[key])
+                ) !== undefined
+            );
         },
-        [rowFilter]
+        [rowFilter, selectedDataKey]
     );
+
+    const handleOpenPopupSelectColumnNames = () => {
+        setPopupSelectColumnNames(true);
+    };
+
+    const handleCancelPopupSelectColumnNames = useCallback(() => {
+        setSelectedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
+        setPopupSelectColumnNames(false);
+    }, [tabIndex, allDisplayedColumnsNames]);
+
+    const handleSaveSelectedColumnNames = useCallback(() => {
+        updateConfigParameter(
+            COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            JSON.stringify([...selectedColumnsNames])
+        ).catch((errorMessage) => {
+            setSelectedColumnsNames(
+                new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+            );
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'paramsChangingError',
+                    intlRef: intlRef,
+                },
+            });
+        });
+
+        setPopupSelectColumnNames(false);
+    }, [
+        tabIndex,
+        selectedColumnsNames,
+        allDisplayedColumnsNames,
+        enqueueSnackbar,
+        intlRef,
+    ]);
+
+    const handleToggle = (value) => () => {
+        const newChecked = new Set(selectedColumnsNames.values());
+        if (selectedColumnsNames.has(value)) {
+            newChecked.delete(value);
+        } else {
+            newChecked.add(value);
+        }
+        setSelectedColumnsNames(newChecked);
+    };
+
+    const handleToggleAll = () => {
+        let isAllChecked =
+            selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        setSelectedColumnsNames(
+            isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]
+        );
+    };
+
+    const checkListColumnsNames = () => {
+        let isAllChecked =
+            selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
+        return (
+            <List>
+                <ListItem
+                    className={classes.checkboxSelectAll}
+                    onClick={handleToggleAll}
+                >
+                    <Checkbox
+                        checked={isAllChecked}
+                        indeterminate={isSomeChecked}
+                        color="primary"
+                    />
+                    <FormattedMessage id="CheckAll" />
+                </ListItem>
+                {[...TABLES_COLUMNS_NAMES[tabIndex]].map((value, index) => (
+                    <ListItem
+                        key={tabIndex + '-' + index}
+                        className={classes.checkboxItem}
+                        onClick={handleToggle(value)}
+                        style={{ padding: '0 16px' }}
+                    >
+                        <ListItemIcon>
+                            <Checkbox
+                                checked={selectedColumnsNames.has(value)}
+                                color="primary"
+                            />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={intl.formatMessage({ id: `${value}` })}
+                        />
+                    </ListItem>
+                ))}
+            </List>
+        );
+    };
 
     return (
         props.network && (
-            <AutoSizer>
-                {({ width, height }) => (
-                    <div style={{ width: width, height: height - 48 }}>
-                        <Grid container justify={'space-between'}>
-                            <Grid item>
-                                <Tabs
-                                    value={tabIndex}
-                                    indicatorColor="primary"
-                                    variant="scrollable"
-                                    scrollButtons="auto"
-                                    onChange={(event, newValue) =>
-                                        setTabIndex(newValue)
-                                    }
-                                    aria-label="tables"
-                                >
-                                    {TABLE_NAMES.map((tableName) => (
-                                        <Tab
-                                            key={tableName}
-                                            label={intl.formatMessage({
-                                                id: tableName,
-                                            })}
-                                        />
-                                    ))}
-                                </Tabs>
-                            </Grid>
-                            <Grid
-                                item
-                                alignContent={'flex-end'}
-                                className={classes.searchSection}
-                            >
-                                <TextField
-                                    className={classes.textField}
-                                    size="medium"
-                                    placeholder={
-                                        intl.formatMessage({ id: 'filter' }) +
-                                        '...'
-                                    }
-                                    onChange={setFilter}
-                                    variant="standard"
-                                    classes={classes.searchSection}
-                                    fullWidth
-                                    InputProps={{
-                                        classes: {
-                                            input: classes.searchSection,
-                                        },
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
+            <>
+                <Grid container justify={'space-between'}>
+                    <Grid container justify={'space-between'} item>
+                        <Tabs
+                            value={tabIndex}
+                            indicatorColor="primary"
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            onChange={(event, newValue) => {
+                                setTabIndex(newValue);
+                                setManualTabSwitch(true);
+                            }}
+                            aria-label="tables"
+                        >
+                            {Object.values(TABLES_DEFINITIONS).map((table) => (
+                                <Tab
+                                    key={table.name}
+                                    label={intl.formatMessage({
+                                        id: table.name,
+                                    })}
                                 />
-                            </Grid>
+                            ))}
+                        </Tabs>
+                    </Grid>
+                    <Grid container>
+                        <Grid item className={classes.containerInputSearch}>
+                            <TextField
+                                className={classes.textField}
+                                size="small"
+                                placeholder={
+                                    intl.formatMessage({ id: 'filter' }) + '...'
+                                }
+                                onChange={setFilter}
+                                variant="outlined"
+                                fullWidth
+                                InputProps={{
+                                    classes: {
+                                        input: classes.searchSection,
+                                    },
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
                         </Grid>
-                        {/*This render is fast, rerender full dom everytime*/}
-                        {tabIndex === 0 && renderSubstationsTable()}
-                        {tabIndex === 1 && renderVoltageLevelsTable()}
-                        {tabIndex === 2 && renderLinesTable()}
-                        {tabIndex === 3 && renderTwoWindingsTransformersTable()}
-                        {tabIndex === 4 &&
-                            renderThreeWindingsTransformersTable()}
-                        {tabIndex === 5 && renderGeneratorsTable()}
-                    </div>
-                )}
-            </AutoSizer>
+                        <Grid item className={classes.selectColumns}>
+                            <span>
+                                <FormattedMessage id="LabelSelectList" />
+                            </span>
+                            <IconButton
+                                aria-label="dialog"
+                                onClick={handleOpenPopupSelectColumnNames}
+                            >
+                                <ViewColumnIcon />
+                            </IconButton>
+                            <SelectOptionsDialog
+                                open={popupSelectColumnNames}
+                                onClose={handleCancelPopupSelectColumnNames}
+                                onClick={handleSaveSelectedColumnNames}
+                                title={intl.formatMessage({
+                                    id: 'ColumnsList',
+                                })}
+                                child={checkListColumnsNames()}
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <div className={classes.table} style={{ flexGrow: 1 }}>
+                    {/*This render is fast, rerender full dom everytime*/}
+                    {renderTable()}
+                </div>
+            </>
         )
     );
 };
 
 NetworkTable.defaultProps = {
     network: null,
-    userId: '',
-    studyName: '',
+    studyUuid: '',
+    equipmentId: null,
+    equipmentType: null,
+    equipmentChanged: false,
 };
 
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
-    userId: PropTypes.string,
-    studyName: PropTypes.string,
+    studyUuid: PropTypes.string,
+    equipmentId: PropTypes.string,
+    equipmentType: PropTypes.string,
+    equipmentChanged: PropTypes.bool,
 };
 
 export default NetworkTable;

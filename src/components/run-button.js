@@ -6,67 +6,73 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { green, grey, red } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
 
 import SplitButton from './util/split-button';
-
-export const RunningStatus = {
-    SUCCEED: 'SUCCEED',
-    FAILED: 'FAILED',
-    IDLE: 'IDLE',
-    RUNNING: 'RUNNING',
-};
+import { RunningStatus } from './util/running-status';
 
 const useStyles = makeStyles((theme) => ({
     succeed: {
-        backgroundColor: '#00000066',
-        color: green[500],
-        borderColor: green[500],
-        '&:disabled': {
-            backgroundColor: '#00000066',
-            color: green[500],
-            borderColor: green[500],
+        backgroundColor: '#0ca789',
+        color: '#fdfdfd',
+        border: '1px solid #0ca789',
+        '&:nth-child(1)': {
+            minWidth: 270,
         },
-        '&:hover': {
-            backgroundColor: '#00000066',
-            color: green[700],
-            borderColor: green[700],
+        '&:nth-child(2)': {
+            borderLeft: '1px solid #92b1ab',
+        },
+        '&:disabled, &:hover': {
+            backgroundColor: '#0ca789',
+            color: '#fdfdfd',
         },
     },
     failed: {
-        backgroundColor: '#00000066',
-        color: red[500],
-        borderColor: red[500],
-        '&:disabled': {
-            backgroundColor: '#00000066',
-            color: red[500],
-            borderColor: red[500],
+        backgroundColor: '#d85050',
+        color: '#fdfdfd',
+        border: '1px solid #d85050',
+        '&:nth-child(1)': {
+            minWidth: 270,
         },
-        '&:hover': {
-            backgroundColor: '#00000066',
-            color: red[700],
-            borderColor: red[700],
+        '&:nth-child(2)': {
+            borderLeft: '1px solid #c58585',
+        },
+        '&:disabled, &:hover': {
+            backgroundColor: '#d85050',
+            color: '#fdfdfd',
         },
     },
     running: {
-        backgroundColor: '#00000066',
-        color: grey[500],
-        borderColor: grey[500],
-        '&:disabled': {
-            backgroundColor: '#00000066',
-            color: grey[500],
-            borderColor: grey[500],
+        backgroundColor: '#242424',
+        color: '#fdfdfd',
+        border: '1px solid #808080',
+        '&:nth-child(1)': {
+            minWidth: 270,
+            color: '#fdfdfd',
+        },
+        '&:nth-child(2)': {
+            borderLeft: '1px solid #4a4a4a',
+        },
+        '&:hover': {
+            backgroundColor: '#242424',
+            color: '#fdfdfd',
         },
     },
     idle: {
-        backgroundColor: grey[500],
-        color: 'white',
-        borderColor: grey[500],
+        backgroundColor: '#242424',
+        color: '#fdfdfd',
+        border: '1px solid #808080',
+        '&:nth-child(1)': {
+            minWidth: 270,
+            color: '#fdfdfd',
+        },
+        '&:nth-child(2)': {
+            borderLeft: '1px solid #4a4a4a',
+        },
         '&:hover': {
-            backgroundColor: grey[700],
-            borderColor: grey[700],
+            backgroundColor: '#242424',
+            border: '1px solid ' + theme.palette.primary,
+            color: '#fdfdfd',
         },
     },
 }));
@@ -90,6 +96,23 @@ const RunButton = (props) => {
         }
     }
 
+    function getOptions(runningStatus, runnables, actionOnRunnable) {
+        switch (runningStatus) {
+            case RunningStatus.SUCCEED:
+            case RunningStatus.FAILED:
+            case RunningStatus.IDLE:
+                return runnables;
+            case RunningStatus.RUNNING:
+                return Array.of(actionOnRunnable.text);
+            default:
+                return '';
+        }
+    }
+
+    function isRunning() {
+        return getRunningStatus() === RunningStatus.RUNNING;
+    }
+
     const handleClick = () => {
         if (props.onStartClick) {
             props.onStartClick(getRunnable());
@@ -104,28 +127,36 @@ const RunButton = (props) => {
         return props.getStatus(getRunnable());
     }
 
-    const runningStatus = getRunningStatus();
-
     let disabled =
-        (selectedIndex === 0 && runningStatus !== RunningStatus.IDLE) ||
-        (selectedIndex === 1 && runningStatus === RunningStatus.RUNNING);
+        (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
+        (selectedIndex === 1 && isRunning());
+
+    function handleActionOnRunnable() {
+        props.actionOnRunnable.action(getRunnable());
+    }
 
     return (
         <SplitButton
-            fullWidth
-            options={props.runnables}
+            options={getOptions(
+                getRunningStatus(),
+                props.runnables,
+                props.actionOnRunnable
+            )}
             selectedIndex={selectedIndex}
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
-            className={getStyle(runningStatus)}
+            className={getStyle(getRunningStatus())}
             buttonDisabled={disabled}
-            selectionDisabled={runningStatus === RunningStatus.RUNNING}
+            selectionDisabled={selectedIndex === 0 && isRunning()}
             startIcon={props.getStartIcon(getRunningStatus())}
             text={
                 props.getText
                     ? props.getText(getRunnable(), getRunningStatus())
                     : ''
             }
+            actionOnRunnable={handleActionOnRunnable}
+            isRunning={isRunning()}
+            computationStopped={props.computationStopped}
         />
     );
 };
@@ -136,6 +167,8 @@ RunButton.propTypes = {
     getText: PropTypes.func.isRequired,
     getStartIcon: PropTypes.func.isRequired,
     onStartClick: PropTypes.func,
+    actionOnRunnable: PropTypes.object.isRequired,
+    computationStopped: PropTypes.bool.isRequired,
 };
 
 export default RunButton;

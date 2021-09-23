@@ -8,31 +8,6 @@
 import { createReducer } from '@reduxjs/toolkit';
 
 import {
-    getLocalStorageCenterLabel,
-    getLocalStorageDiagonalLabel,
-    getLocalStorageLineFlowMode,
-    getLocalStorageLineFlowColorMode,
-    getLocalStorageLineFlowAlertThreshold,
-    getLocalStorageLineFullPath,
-    getLocalStorageLineParallelPath,
-    getLocalStorageTheme,
-    getLocalStorageUseName,
-    getLocalStorageViewOverloadsTable,
-    getLocalStorageSubstationLayout,
-    saveLocalStorageCenterLabel,
-    saveLocalStorageDiagonalLabel,
-    saveLocalStorageLineFlowMode,
-    saveLocalStorageLineFlowColorMode,
-    saveLocalStorageLineFlowAlertThreshold,
-    saveLocalStorageLineFullPath,
-    saveLocalStorageLineParallelPath,
-    saveLocalStorageTheme,
-    saveLocalStorageUseName,
-    saveLocalStorageViewOverloadsTable,
-    saveLocalStorageSubstationLayout,
-} from './local-storage';
-
-import {
     CENTER_LABEL,
     CLOSE_STUDY,
     DIAGONAL_LABEL,
@@ -43,7 +18,8 @@ import {
     LINE_PARALLEL_PATH,
     LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
-    LOAD_NETWORK_SUCCESS,
+    NETWORK_CREATED,
+    NETWORK_EQUIPMENT_LOADED,
     LOAD_STUDIES_SUCCESS,
     LOAD_TEMPORARY_STUDIES,
     OPEN_STUDY,
@@ -53,44 +29,83 @@ import {
     SELECT_FILE,
     SELECT_THEME,
     USE_NAME,
+    SELECT_LANGUAGE,
+    SELECT_COMPUTED_LANGUAGE,
     USER,
     SIGNIN_CALLBACK_ERROR,
     STUDY_UPDATED,
-    VIEW_OVERLOADS_TABLE,
-    INCREASE_RESULT_COUNT,
-    RESET_RESULT_COUNT,
+    DISPLAY_OVERLOAD_TABLE,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
     SELECTED_ITEM_NETWORK,
+    FULLSCREEN_SINGLE_LINE_DIAGRAM,
+    CHANGE_DISPLAYED_COLUMNS_NAMES,
+    ADD_LOADFLOW_NOTIF,
+    RESET_LOADFLOW_NOTIF,
+    ADD_SA_NOTIF,
+    RESET_SA_NOTIF,
+    COMPONENT_LIBRARY,
 } from './actions';
+import {
+    getLocalStorageTheme,
+    saveLocalStorageTheme,
+    getLocalStorageLanguage,
+    saveLocalStorageLanguage,
+    getLocalStorageComputedLanguage,
+} from './local-storage';
+import { TABLES_COLUMNS_NAMES_JSON } from '../components/network/config-tables';
+import {
+    PARAM_CENTER_LABEL,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_LANGUAGE,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_COMPONENT_LIBRARY,
+    PARAM_THEME,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
+
+const paramsInitialState = {
+    [PARAM_THEME]: getLocalStorageTheme(),
+    [PARAM_LANGUAGE]: getLocalStorageLanguage(),
+    [PARAM_USE_NAME]: true,
+    [PARAM_LINE_FULL_PATH]: true,
+    [PARAM_LINE_PARALLEL_PATH]: true,
+    [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
+    [PARAM_DISPLAY_OVERLOAD_TABLE]: false,
+    [PARAM_LINE_FLOW_MODE]: 'feeders',
+    [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage',
+    [PARAM_CENTER_LABEL]: false,
+    [PARAM_DIAGONAL_LABEL]: false,
+    [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
+    [PARAM_COMPONENT_LIBRARY]: null,
+};
 
 const initialState = {
     studies: [],
     temporaryStudies: [],
-    studyName: null,
-    userId: null,
+    studyUuid: null,
     network: null,
     geoData: null,
-    theme: getLocalStorageTheme(),
     cases: [],
     selectedCase: null,
     selectedFile: null,
-    useName: getLocalStorageUseName(),
+    computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
-    centerLabel: getLocalStorageCenterLabel(),
-    diagonalLabel: getLocalStorageDiagonalLabel(),
-    lineFullPath: getLocalStorageLineFullPath(),
-    lineParallelPath: getLocalStorageLineParallelPath(),
-    lineFlowMode: getLocalStorageLineFlowMode(),
-    lineFlowColorMode: getLocalStorageLineFlowColorMode(),
-    lineFlowAlertThreshold: getLocalStorageLineFlowAlertThreshold(),
     signInCallbackError: null,
     studyUpdated: { force: 0, eventData: {} },
-    viewOverloadsTable: getLocalStorageViewOverloadsTable(),
-    resultCount: 0,
+    loadflowNotif: false,
+    saNotif: false,
     filteredNominalVoltages: null,
-    substationLayout: getLocalStorageSubstationLayout(),
     selectItemNetwork: null,
+    fullScreen: false,
+    allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
+    ...paramsInitialState,
 };
 
 export const reducer = createReducer(initialState, {
@@ -107,19 +122,24 @@ export const reducer = createReducer(initialState, {
     },
 
     [OPEN_STUDY]: (state, action) => {
-        state.studyName = action.studyRef[0];
-        state.userId = action.studyRef[1];
+        state.studyUuid = action.studyRef[0];
     },
 
     [CLOSE_STUDY]: (state) => {
-        state.studyName = null;
-        state.userId = null;
+        state.studyUuid = null;
         state.network = null;
         state.geoData = null;
     },
 
-    [LOAD_NETWORK_SUCCESS]: (state, action) => {
+    [NETWORK_CREATED]: (state, action) => {
         state.network = action.network;
+    },
+
+    [NETWORK_EQUIPMENT_LOADED]: (state, action) => {
+        state.network = state.network.newSharedForUpdate(
+            action.equipmentsName,
+            action.values
+        );
     },
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
@@ -134,10 +154,18 @@ export const reducer = createReducer(initialState, {
     },
 
     [SELECT_THEME]: (state, action) => {
-        state.theme = action.theme;
-        saveLocalStorageTheme(state.theme);
+        state[PARAM_THEME] = action[PARAM_THEME];
+        saveLocalStorageTheme(state[PARAM_THEME]);
     },
 
+    [SELECT_LANGUAGE]: (state, action) => {
+        state[PARAM_LANGUAGE] = action[PARAM_LANGUAGE];
+        saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
+    },
+
+    [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
+        state.computedLanguage = action.computedLanguage;
+    },
     [SELECT_CASE]: (state, action) => {
         state.selectedCase = action.selectedCase;
     },
@@ -154,65 +182,70 @@ export const reducer = createReducer(initialState, {
         state.selectedFile = null;
     },
 
-    [USE_NAME]: (state) => {
-        state.useName = !state.useName;
-        saveLocalStorageUseName(state.useName);
+    [USE_NAME]: (state, action) => {
+        state[PARAM_USE_NAME] = action[PARAM_USE_NAME];
     },
 
     [USER]: (state, action) => {
         state.user = action.user;
     },
 
-    [CENTER_LABEL]: (state) => {
-        state.centerLabel = !state.centerLabel;
-        saveLocalStorageCenterLabel(state.centerLabel);
+    [CENTER_LABEL]: (state, action) => {
+        state[PARAM_CENTER_LABEL] = action[PARAM_CENTER_LABEL];
     },
 
-    [DIAGONAL_LABEL]: (state) => {
-        state.diagonalLabel = !state.diagonalLabel;
-        saveLocalStorageDiagonalLabel(state.diagonalLabel);
+    [DIAGONAL_LABEL]: (state, action) => {
+        state[PARAM_DIAGONAL_LABEL] = action[PARAM_DIAGONAL_LABEL];
     },
 
-    [LINE_FULL_PATH]: (state) => {
-        state.lineFullPath = !state.lineFullPath;
-        saveLocalStorageLineFullPath(state.lineFullPath);
+    [LINE_FULL_PATH]: (state, action) => {
+        state[PARAM_LINE_FULL_PATH] = action[PARAM_LINE_FULL_PATH];
     },
 
-    [LINE_PARALLEL_PATH]: (state) => {
-        state.lineParallelPath = !state.lineParallelPath;
-        saveLocalStorageLineParallelPath(state.lineParallelPath);
+    [LINE_PARALLEL_PATH]: (state, action) => {
+        state[PARAM_LINE_PARALLEL_PATH] = action[PARAM_LINE_PARALLEL_PATH];
     },
 
     [LINE_FLOW_MODE]: (state, action) => {
-        state.lineFlowMode = action.lineFlowMode;
-        saveLocalStorageLineFlowMode(state.lineFlowMode);
+        state[PARAM_LINE_FLOW_MODE] = action[PARAM_LINE_FLOW_MODE];
     },
 
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
-        state.lineFlowColorMode = action.lineFlowColorMode;
-        saveLocalStorageLineFlowColorMode(state.lineFlowColorMode);
+        state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
     },
 
     [LINE_FLOW_ALERT_THRESHOLD]: (state, action) => {
-        state.lineFlowAlertThreshold = action.lineFlowAlertThreshold;
-        saveLocalStorageLineFlowAlertThreshold(state.lineFlowAlertThreshold);
+        state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
+            action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
     },
 
     [SIGNIN_CALLBACK_ERROR]: (state, action) => {
         state.signInCallbackError = action.signInCallbackError;
     },
 
-    [VIEW_OVERLOADS_TABLE]: (state) => {
-        state.viewOverloadsTable = !state.viewOverloadsTable;
-        saveLocalStorageViewOverloadsTable(state.viewOverloadsTable);
+    [DISPLAY_OVERLOAD_TABLE]: (state, action) => {
+        state[PARAM_DISPLAY_OVERLOAD_TABLE] =
+            action[PARAM_DISPLAY_OVERLOAD_TABLE];
     },
 
-    [INCREASE_RESULT_COUNT]: (state) => {
-        state.resultCount++;
+    [ADD_LOADFLOW_NOTIF]: (state) => {
+        state.loadflowNotif = true;
+        console.log('LOADFLOW TRUE');
     },
 
-    [RESET_RESULT_COUNT]: (state) => {
-        state.resultCount = 0;
+    [RESET_LOADFLOW_NOTIF]: (state) => {
+        state.loadflowNotif = false;
+        console.log('LOADFLOW RESET');
+    },
+
+    [ADD_SA_NOTIF]: (state) => {
+        state.saNotif = true;
+        console.log('SA TRUE');
+    },
+
+    [RESET_SA_NOTIF]: (state) => {
+        state.saNotif = false;
+        console.log('SA RESET');
     },
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
@@ -220,11 +253,28 @@ export const reducer = createReducer(initialState, {
     },
 
     [SUBSTATION_LAYOUT]: (state, action) => {
-        state.substationLayout = action.substationLayout;
-        saveLocalStorageSubstationLayout(state.substationLayout);
+        state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
+    },
+
+    [COMPONENT_LIBRARY]: (state, action) => {
+        state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     },
 
     [SELECTED_ITEM_NETWORK]: (state, action) => {
         state.selectItemNetwork = action.selectItemNetwork;
+    },
+
+    [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
+        state.fullScreen = action.fullScreen;
+    },
+
+    [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {
+        let newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
+        action.displayedColumnsNamesParams.forEach((param) => {
+            if (param) {
+                newDisplayedColumnsNames[param.index] = param.value;
+            }
+        });
+        state.allDisplayedColumnsNames = newDisplayedColumnsNames;
     },
 });

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import getDistance from 'geolib/es/getDistance';
 import computeDestinationPoint from 'geolib/es/computeDestinationPoint';
 import cheapRuler from 'cheap-ruler';
 import getGreatCircleBearing from 'geolib/es/getGreatCircleBearing';
@@ -76,59 +75,14 @@ export default class GeoData {
         );
         if (detailed) {
             const linePositions = this.linePositionsById.get(line.id);
-
             // Is there any position for this line ?
             if (linePositions) {
-                // Get the first line position
-                const firstPosition = linePositions[0];
+                const positions = new Array(linePositions.length);
 
-                // Distance between substation 1 and the first line position
-                const distSub1 = getDistance(
-                    {
-                        latitude: substationPosition1[1],
-                        longitude: substationPosition1[0],
-                    },
-                    {
-                        latitude: firstPosition.lat,
-                        longitude: firstPosition.lon,
-                    }
-                );
-
-                // Distance between substation 2 and the first line position
-                const distSub2 = getDistance(
-                    {
-                        latitude: substationPosition2[1],
-                        longitude: substationPosition2[0],
-                    },
-                    {
-                        latitude: firstPosition.lat,
-                        longitude: firstPosition.lon,
-                    }
-                );
-
-                // Create an array with 2 more position to add inside the two substation positions
-                const positions = new Array(linePositions.length + 2);
-
-                // Add the endpoints (side 1, side 2)
-                positions[0] = substationPosition1;
-                positions[positions.length - 1] = substationPosition2;
-
-                // If the first line position was closer from the sub1, add the sub1 + line + sub2
-                if (distSub1 < distSub2) {
-                    for (const [index, position] of linePositions.entries()) {
-                        positions[index + 1] = [position.lon, position.lat];
-                    }
+                for (const [index, position] of linePositions.entries()) {
+                    positions[index] = [position.lon, position.lat];
                 }
-                // If the first line position was closer from the sub2, add the sub1 + invert(line) + sub2
-                else {
-                    // reverse positions order to go from side 1 to 2
-                    for (const [index, position] of linePositions.entries()) {
-                        positions[positions.length - 2 - index] = [
-                            position.lon,
-                            position.lat,
-                        ];
-                    }
-                }
+
                 return positions;
             }
         }
@@ -143,7 +97,7 @@ export default class GeoData {
             let segmentDistance;
             let ruler;
             for (let i = 0; i < positions.length - 1; i++) {
-                ruler = cheapRuler(positions[i][1], 'meters');
+                ruler = new cheapRuler(positions[i][1], 'meters');
                 segmentDistance = ruler.lineDistance(positions.slice(i, i + 2));
                 cumulativeDistance = cumulativeDistance + segmentDistance;
                 cumulativeDistanceArray[i + 1] = cumulativeDistance;
@@ -185,7 +139,9 @@ export default class GeoData {
         arrowDirection,
         lineParallelIndex,
         lineAngle,
-        distanceBetweenLines
+        proximityAngle,
+        distanceBetweenLines,
+        proximityFactor
     ) {
         if (arrowPosition > 1 || arrowPosition < 0) {
             throw new Error(
@@ -202,15 +158,13 @@ export default class GeoData {
         let lineDistance = cumulativeDistances[cumulativeDistances.length - 1];
         let wantedDistance = lineDistance * arrowPosition;
 
-        if (
-            Math.abs(lineParallelIndex) !== 9999 &&
-            cumulativeDistances.length === 2
-        ) {
+        if (cumulativeDistances.length === 2) {
             // For parallel lines, the initial fork line distance does not count
             // when there are no intermediate points between the substations.
             // I'm not sure this is entirely correct but it displays well enough.
             wantedDistance =
-                wantedDistance - 2 * distanceBetweenLines * arrowPosition;
+                wantedDistance -
+                2 * distanceBetweenLines * arrowPosition * proximityFactor;
         }
 
         let goodSegment = this.findSegment(
@@ -242,7 +196,7 @@ export default class GeoData {
             goodSegment.segment[0],
             goodSegment.segment[1]
         );
-        const neededOffset = this.getLabelOffset(angle, 30, arrowDirection);
+        const neededOffset = this.getLabelOffset(angle, 20, arrowDirection);
 
         const position = {
             position: computeDestinationPoint(
@@ -253,46 +207,44 @@ export default class GeoData {
             angle: angle,
             offset: neededOffset,
         };
-        if (Math.abs(lineParallelIndex) !== 9999) {
-            // apply parallel spread between lines
+        // apply parallel spread between lines
+        position.position = computeDestinationPoint(
+            position.position,
+            distanceBetweenLines * lineParallelIndex,
+            lineAngle + 90
+        );
+        if (cumulativeDistances.length === 2) {
+            // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
+            // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
             position.position = computeDestinationPoint(
                 position.position,
-                distanceBetweenLines * lineParallelIndex,
-                lineAngle + 90
+                -distanceBetweenLines * proximityFactor,
+                lineAngle
             );
-            if (cumulativeDistances.length === 2) {
-                // For line with only one segment, we can just apply a translation by lineAngle because both segment ends
-                // connect to fork lines. This accounts for the fact that the forkline part of the line doesn't count
-                position.position = computeDestinationPoint(
-                    position.position,
-                    -distanceBetweenLines,
-                    lineAngle
-                );
-            } else if (
-                goodSegment.idx === 0 ||
-                goodSegment.idx === cumulativeDistances.length - 2
-            ) {
-                // When the label is on the first or last segment and there is an intermediate point,
-                // when must shift by the percentange of position of the label on this segment
-                const segmentDistance =
-                    cumulativeDistances[goodSegment.idx + 1] -
-                    cumulativeDistances[goodSegment.idx];
-                const alreadyDoneDistance = segmentDistance - remainingDistance;
-                let labelDistanceInSegment;
-                if (goodSegment.idx === 0) {
-                    labelDistanceInSegment = -alreadyDoneDistance;
-                } else {
-                    labelDistanceInSegment = remainingDistance;
-                }
-                const labelPercentage =
-                    labelDistanceInSegment / segmentDistance;
-                position.position = computeDestinationPoint(
-                    position.position,
-                    distanceBetweenLines * labelPercentage,
-                    lineAngle
-                );
+        } else if (
+            goodSegment.idx === 0 ||
+            goodSegment.idx === cumulativeDistances.length - 2
+        ) {
+            // When the label is on the first or last segment and there is an intermediate point,
+            // when must shift by the percentange of position of the label on this segment
+            const segmentDistance =
+                cumulativeDistances[goodSegment.idx + 1] -
+                cumulativeDistances[goodSegment.idx];
+            const alreadyDoneDistance = segmentDistance - remainingDistance;
+            let labelDistanceInSegment;
+            if (goodSegment.idx === 0) {
+                labelDistanceInSegment = -alreadyDoneDistance;
+            } else {
+                labelDistanceInSegment = remainingDistance;
             }
+            const labelPercentage = labelDistanceInSegment / segmentDistance;
+            position.position = computeDestinationPoint(
+                position.position,
+                distanceBetweenLines * labelPercentage,
+                proximityAngle
+            );
         }
+
         return position;
     }
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +19,6 @@ import ListItem from '@material-ui/core/ListItem';
 import SearchIcon from '@material-ui/icons/Search';
 import TextField from '@material-ui/core/TextField';
 
-import Network from './network';
 import Divider from '@material-ui/core/Divider';
 import {
     AutoSizer,
@@ -31,7 +30,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import { DoubleArrow } from '@material-ui/icons';
+import { PARAM_USE_NAME } from '../../utils/config-params';
 import { selectItemNetwork } from '../../redux/actions';
 
 const itemSize = 48;
@@ -39,7 +38,6 @@ const itemSize = 48;
 const useStyles = makeStyles((theme) => ({
     textField: {
         margin: theme.spacing(1),
-        width: 'calc(100% - 64px)', // to fix an issue with fullWidth of textfield and get << on the same line
     },
     listSubHeaderRoot: {
         backgroundColor: darken(theme.palette.background.default, 0.2),
@@ -83,11 +81,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NetworkExplorer = ({
-    network,
+    substations,
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
     onSubstationFocus,
-    hideExplorer,
+    visibleSubstation,
+    visible,
 }) => {
     const intl = useIntl();
 
@@ -95,11 +94,13 @@ const NetworkExplorer = ({
 
     const selectItem = useSelector((state) => state.selectItemNetwork);
 
-    const useName = useSelector((state) => state.useName);
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const filterMsg = intl.formatMessage({ id: 'filter' }) + '...';
 
     const classes = useStyles();
+
+    const [currentFilter, setCurrentFilter] = React.useState('');
 
     const [filteredVoltageLevels, setFilteredVoltageLevels] = React.useState(
         []
@@ -118,9 +119,12 @@ const NetworkExplorer = ({
         new CellMeasurerCache({
             fixedWidth: true,
             defaultHeight: itemSize,
-            minHeight: itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
+            minHeight:
+                itemSize /* mandatory, as the computation when display:none will cause 'Maximum update depth exceeded' */,
         })
     );
+
+    const listeRef = useRef(null);
 
     const generateFilteredSubstation = useCallback(
         (entry) => {
@@ -132,7 +136,7 @@ const NetworkExplorer = ({
                 return lc.includes(entry);
             };
 
-            network.getSubstations().forEach((item) => {
+            substations.forEach((item) => {
                 let subVoltagesLevel = entry
                     ? item.voltageLevels.filter(match)
                     : item.voltageLevels;
@@ -151,14 +155,40 @@ const NetworkExplorer = ({
             subs.sort((a, b) => identifiedElementComparator(a[0], b[0]));
             setFilteredVoltageLevels(subs);
         },
-        [identifiedElementComparator, network, useName]
+        [identifiedElementComparator, substations, useName]
     );
 
     useEffect(() => {
-        if (network) {
-            generateFilteredSubstation();
+        if (substations.length > 0) {
+            generateFilteredSubstation(currentFilter);
+            cache.clearAll();
         }
-    }, [network, identifiedElementComparator, generateFilteredSubstation]);
+    }, [
+        substations,
+        identifiedElementComparator,
+        generateFilteredSubstation,
+        currentFilter,
+        cache,
+    ]);
+
+    useEffect(() => {
+        if (visibleSubstation && listeRef.current) {
+            // calculate row index to scroll
+            let index = 0;
+            for (let i = 0; i < filteredVoltageLevels.length; i++) {
+                if (filteredVoltageLevels[i][0].id === visibleSubstation) {
+                    break;
+                } else {
+                    index++;
+                }
+            }
+            listeRef.current.scrollToRow(index);
+            // Workaround, remove when https://github.com/bvaughn/react-virtualized/issues/995 is resolved
+            setTimeout(() => {
+                listeRef.current.scrollToRow(index);
+            }, 0);
+        }
+    }, [visibleSubstation, filteredVoltageLevels]);
 
     function onDisplayClickHandler(vl) {
         if (onVoltageLevelDisplayClick !== null) {
@@ -299,63 +329,66 @@ const NetworkExplorer = ({
     };
 
     const filter = (event) => {
-        generateFilteredSubstation(event.target.value.toLowerCase());
-        cache.clearAll();
+        const filterText = event.target.value.toLowerCase();
+        generateFilteredSubstation(filterText);
+        setCurrentFilter(filterText);
     };
 
     return (
-        <AutoSizer>
-            {({ width, height }) => {
-                return (
-                    <div style={{ width: width, height: height }}>
-                        <Grid container direction="column">
-                            <Grid item>
-                                <TextField
-                                    className={classes.textField}
-                                    size="small"
-                                    placeholder={filterMsg}
-                                    onChange={filter}
-                                    variant="outlined"
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <SearchIcon />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                                <IconButton onClick={hideExplorer}>
-                                    <DoubleArrow transform={'rotate(180)'} />
-                                </IconButton>
-                            </Grid>
-                            <Divider />
-                            <Grid item>
+        visible && (
+            <Grid container direction="column" style={{ height: '100%' }}>
+                <Grid item>
+                    <TextField
+                        className={classes.textField}
+                        size="small"
+                        placeholder={filterMsg}
+                        onChange={filter}
+                        value={currentFilter}
+                        variant="outlined"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </Grid>
+                <Divider />
+                <Grid item style={{ flex: '1 1 auto' }}>
+                    <AutoSizer>
+                        {({ width, height }) => {
+                            return (
                                 <List
-                                    height={height - 46}
+                                    height={height}
                                     rowHeight={cache.rowHeight}
                                     rowRenderer={subStationRow}
                                     rowCount={filteredVoltageLevels.length}
                                     width={width}
                                     subheader={<li />}
                                 />
-                            </Grid>
-                        </Grid>
-                    </div>
-                );
-            }}
-        </AutoSizer>
+                            );
+                        }}
+                    </AutoSizer>
+                </Grid>
+            </Grid>
+        )
     );
 };
 
 NetworkExplorer.defaultProps = {
-    network: null,
+    substations: [],
+    visibleSubstation: null,
+    visible: true,
 };
 
 NetworkExplorer.propTypes = {
-    network: PropTypes.instanceOf(Network),
+    substations: PropTypes.array,
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,
+    visibleSubstation: PropTypes.string,
+    visible: PropTypes.bool,
 };
 
 export default React.memo(NetworkExplorer);
