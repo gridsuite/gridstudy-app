@@ -5,15 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import List from '@material-ui/core/List';
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import IconButton from '@material-ui/core/IconButton';
+import BuildIcon from '@material-ui/icons/Build';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useIntl } from 'react-intl';
+import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles((theme) => ({
     selected: {
@@ -72,6 +74,21 @@ const LateralToolbar = (props) => {
                     <AccountTreeIcon />
                 </IconButton>
             </Tooltip>
+            <Divider />
+            <Tooltip
+                title={intl.formatMessage({ id: 'NetworkModifications' })}
+                placement="right"
+                arrow
+                enterDelay={1000}
+                enterNextDelay={1000}
+                classes={{ tooltip: classes.tooltip }}
+            >
+                <IconButton
+                    onClick={props.handleOpenNetworkModificationConfiguration}
+                >
+                    <BuildIcon />
+                </IconButton>
+            </Tooltip>
         </List>
     );
 };
@@ -81,6 +98,7 @@ LateralToolbar.propTypes = {
     handleDisplayNetworkModificationTree: PropTypes.func,
     networkExplorerDisplayed: PropTypes.bool,
     networkModificationTreeDisplayed: PropTypes.bool,
+    handleOpenNetworkModificationConfiguration: PropTypes.func,
 };
 
 export default LateralToolbar;

@@ -243,6 +243,7 @@
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre de modification de réseau",
+    "NetworkModifications": "Modifications de réseau",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -258,5 +259,6 @@
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
-    "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud"
+    "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
+    "CreateLoad": "Créer consommation"
 }
