@@ -242,6 +242,7 @@
 
     "SubstationList": "Liste des postes",
     "HypothesisTree": "Arbre des hypothèses (indisponible)",
+    "NetworkModifications": "Modifications de réseau",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -249,5 +250,8 @@
     "showReport": "Afficher logs",
     "loadingReport": "Chargement des logs en cours...",
 
-    "ComponentLibrary": "Sélection de la bibliothèque de composants : "
+    "ComponentLibrary": "Sélection de la bibliothèque de composants : ",
+
+    "NetworkModifications": "Modifications de réseau",
+    "CreateLoad": "Créer consommation"
 }

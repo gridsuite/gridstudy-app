@@ -94,6 +94,7 @@ import withEquipmentMenu from './equipment-menu';
 import { ReportViewer } from '@gridsuite/commons-ui';
 import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import { useSnackbar } from 'notistack';
+import NetworkModificationDialog from './dialogs/network-modifications-dialog';
 
 const drawerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -266,6 +267,9 @@ const StudyPane = (props) => {
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const [drawerOpen, setDrawerOpen] = useState(true);
+
+    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
+        useState(false);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -697,6 +701,14 @@ const StudyPane = (props) => {
 
     const toggleDrawer = () => {
         setDrawerOpen(!drawerOpen);
+    };
+
+    const openNetworkModificationConfiguration = () => {
+        setOpenNetworkModificationsDialog(true);
+    };
+
+    const closeNetworkModificationConfiguration = () => {
+        setOpenNetworkModificationsDialog(false);
     };
 
     const sldRef = useRef();
@@ -1192,6 +1204,9 @@ const StudyPane = (props) => {
                         <LateralToolbar
                             handleDisplayNetworkExplorer={toggleDrawer}
                             networkExplorerDisplayed={drawerOpen}
+                            handleOpenNetworkModificationConfiguration={
+                                openNetworkModificationConfiguration
+                            }
                         />
                     </div>
                 </Drawer>
@@ -1269,6 +1284,11 @@ const StudyPane = (props) => {
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
                     onStart={handleStartSecurityAnalysis}
+                />
+                <NetworkModificationDialog
+                    open={openNetworkModificationsDialog}
+                    onClose={closeNetworkModificationConfiguration}
+                    title={intl.formatMessage({ id: 'NetworkModifications' })}
                 />
             </div>
         );

@@ -242,6 +242,7 @@
 
     "SubstationList": "Substation list",
     "HypothesisTree": "Hypothesis tree (unavailable)",
+    "NetworkModifications": "Network modifications",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -249,5 +250,8 @@
     "showReport": "Show logs",
     "loadingReport": "Loading logs in progress...",
 
-    "ComponentLibrary": "Component library selection : "
+    "ComponentLibrary": "Component library selection : ",
+
+    "NetworkModifications": "Network modifications",
+    "CreateLoad": "Create load"
 }
