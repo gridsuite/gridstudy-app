@@ -89,6 +89,8 @@ const STUDY_VIEWS = [
     StudyView.LOGS,
 ];
 
+const basename = new URL(document.querySelector('base').href).pathname
+
 const App = () => {
     const intlRef = useIntlRef();
 
@@ -323,7 +325,7 @@ const App = () => {
     ]);
 
     function studyClickHandler(studyUuid) {
-        navigate('/studies/' + encodeURIComponent(studyUuid));
+        navigate( '/' + basename + '/studies/' + encodeURIComponent(studyUuid));
         dispatch(resetLoadflowNotif());
         dispatch(resetSANotif());
     }
@@ -370,12 +372,16 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar
-                user={user}
-                tabIndex={tabIndex}
-                onChangeTab={onChangeTab}
-                userManager={userManager}
-            />
+            <Routes basename={basename}>
+                <Route path={"*"} element={
+                    <AppTopBar
+                      user={user}
+                      tabIndex={tabIndex}
+                      onChangeTab={onChangeTab}
+                      userManager={userManager}
+                    />
+                }/>
+            </Routes>
             <div
                 className="singlestretch-parent"
                 style={{
@@ -393,21 +399,21 @@ const App = () => {
                 }}
             >
                 {user !== null ? (
-                    <Routes>
+                    <Routes basename={basename}>
                         <Route path="/" element={studyManager()} />
                         <Route
-                            path="/studies/:studyUuid"
+                            path="studies/:studyUuid"
                             element={studyPane()}
                         />
                         <Route
-                            path="/sign-in-callback"
-                            element={<Navigate to={getPreLoginPath() || '/'} />}
+                            path="sign-in-callback"
+                            element={<Navigate to={getPreLoginPath() || './'} />}
                         />
                         <Route
-                            path="/logout-callback"
+                            path="logout-callback"
                             element={errorLogout()}
                         />
-                        <Route element={pageNotFound()} />
+                        <Route path="*" element={pageNotFound()} />
                     </Routes>
                 ) : (
                     <AuthenticationRouter
