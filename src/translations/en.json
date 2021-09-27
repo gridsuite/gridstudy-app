@@ -243,6 +243,7 @@
 
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
+    "NetworkModifications": "Network modifications",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -258,5 +259,6 @@
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
-    "NodeUpdateError": "An error occured while updating node"
+    "NodeUpdateError": "An error occured while updating node",
+    "CreateLoad": "Create load"
 }
