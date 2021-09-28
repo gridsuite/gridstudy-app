@@ -139,6 +139,8 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                         </FormControl>
                     </Grid>
                 </Grid>
+                <br />
+                <br />
                 <FormattedMessage id="Setpoints" />
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="center">
@@ -176,6 +178,8 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                         />
                     </Grid>
                 </Grid>
+                <br />
+                <br />
                 <FormattedMessage id="Connectivity" />
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="center">
@@ -190,7 +194,6 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                                 id="voltage-level"
                                 value={voltageLevel}
                                 onChange={handleChangeVoltageLevel}
-                                variant="filled"
                                 fullWidth
                             >
                                 <MenuItem value="">
@@ -208,7 +211,6 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                                 id="bus"
                                 value={bus}
                                 onChange={handleChangeBus}
-                                variant="filled"
                                 fullWidth
                             >
                                 <MenuItem value="">
