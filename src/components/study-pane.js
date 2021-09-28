@@ -1468,7 +1468,6 @@ const StudyPane = (props) => {
                 <NetworkModificationDialog
                     open={openNetworkModificationsDialog}
                     onClose={closeNetworkModificationConfiguration}
-                    title={intl.formatMessage({ id: 'NetworkModifications' })}
                 />
             </div>
         );
