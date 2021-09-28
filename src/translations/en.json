@@ -260,5 +260,15 @@
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
     "NodeUpdateError": "An error occured while updating node",
-    "CreateLoad": "Create load"
+    "NetworkModifications": "Network modifications",
+    "CreateLoad": "Create load",
+    "NameOptional": "Name (optional)",
+    "TypeOptional": "Type (optional)",
+    "UndefinedDefaultValue": "Undefined (default value)",
+    "Auxiliary": "Auxiliary",
+    "Fictitious": "Fictitious",
+    "ActivePowerText": "Active power",
+    "ReactivePowerText": "Reactive power",
+    "VoltageLevel": "Voltage level",
+    "BusBarBus": "Bus bar section / bus"
 }

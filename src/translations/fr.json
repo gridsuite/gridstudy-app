@@ -260,5 +260,16 @@
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
-    "CreateLoad": "Créer consommation"
+    "NetworkModifications": "Modifications de réseau",
+
+    "CreateLoad": "Créer consommation",
+    "NameOptional": "Nom (optionnel)",
+    "TypeOptional": "Type (optionnel)",
+    "UndefinedDefaultValue": "Non défini (valeur par défaut)",
+    "Auxiliary": "Auxiliaire",
+    "Fictitious": "Fictif",
+    "ActivePowerText": "Puissance active",
+    "ReactivePowerText": "Puissance réactive",
+    "VoltageLevel": "Poste",
+    "BusBarBus": "SJB / nœud"
 }
