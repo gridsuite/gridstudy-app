@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import List from '@material-ui/core/List';
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';

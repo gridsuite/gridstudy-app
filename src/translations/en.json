@@ -253,5 +253,14 @@
     "ComponentLibrary": "Component library selection : ",
 
     "NetworkModifications": "Network modifications",
-    "CreateLoad": "Create load"
+    "CreateLoad": "Create load",
+    "NameOptional": "Name (optional)",
+    "TypeOptional": "Type (optional)",
+    "UndefinedDefaultValue": "Undefined (default value)",
+    "Auxiliary": "Auxiliary",
+    "Fictitious": "Fictitious",
+    "ActivePowerText": "Active power",
+    "ReactivePowerText": "Reactive power",
+    "VoltageLevel": "Voltage level",
+    "BusBarBus": "Bus bar section / bus"
 }
