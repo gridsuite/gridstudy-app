@@ -270,5 +270,7 @@
     "ActivePowerText": "Active power",
     "ReactivePowerText": "Reactive power",
     "VoltageLevel": "Voltage level",
-    "BusBarBus": "Bus bar section / bus"
+    "BusBarBus": "Bus bar section / bus",
+    "Setpoints": "Setpoints",
+    "Connectivity": "Connectivity"
 }

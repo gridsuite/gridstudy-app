@@ -271,5 +271,7 @@
     "ActivePowerText": "Puissance active",
     "ReactivePowerText": "Puissance réactive",
     "VoltageLevel": "Poste",
-    "BusBarBus": "SJB / nœud"
+    "BusBarBus": "SJB / nœud",
+    "Setpoints": "Consignes de puissance",
+    "Connectivity": "Connectivité"
 }
