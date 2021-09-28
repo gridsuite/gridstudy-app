@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -15,6 +15,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import AddIcon from '@material-ui/icons/ControlPoint';
 import PropTypes from 'prop-types';
+import LoadCreationDialog from './load-creation-dialog';
 
 /**
  * Dialog to select network modification to create
@@ -22,8 +23,10 @@ import PropTypes from 'prop-types';
  * @param {EventListener} onClose Event to close the dialog
  * @param {String} title Title of the dialog
  */
-const NetworkModificationDialog = ({ open, onClose, title }) => {
+const NetworkModificationDialog = ({ open, onClose }) => {
     const intl = useIntl();
+
+    const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
 
     const handleClose = () => {
         onClose();
@@ -33,38 +36,57 @@ const NetworkModificationDialog = ({ open, onClose, title }) => {
         onClose();
     };
 
+    const handleCreateLoad = () => {
+        setOpenCreateLoadDialog(true);
+    };
+
+    const closeCreateLoadDialog = () => {
+        setOpenCreateLoadDialog(false);
+    };
+
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            onExited={handleExited}
-            aria-labelledby="dialog-network-modifications"
-        >
-            <DialogTitle>{title}</DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={3} align="center">
-                        <Box>
-                            <Button variant="outlined" startIcon={<AddIcon />}>
-                                {intl.formatMessage({ id: 'CreateLoad' })}
-                            </Button>
-                        </Box>
+        <>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                onExited={handleExited}
+                aria-labelledby="dialog-network-modifications"
+            >
+                <DialogTitle>
+                    {intl.formatMessage({ id: 'NetworkModifications' })}
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        <Grid item xs={2} align="center">
+                            <Box>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<AddIcon />}
+                                    onClick={handleCreateLoad}
+                                >
+                                    {intl.formatMessage({ id: 'CreateLoad' })}
+                                </Button>
+                            </Box>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <LoadCreationDialog
+                open={openCreateLoadDialog}
+                onClose={closeCreateLoadDialog}
+            />
+        </>
     );
 };
 
 NetworkModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
 };
 
 export default NetworkModificationDialog;
