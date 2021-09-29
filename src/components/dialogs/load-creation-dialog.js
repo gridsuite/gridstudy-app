@@ -23,7 +23,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
  * @param {EventListener} onClose Event to close the dialog
  * @param {String} title Title of the dialog
  */
-const LoadCreationDialog = ({ open, onClose, title }) => {
+const LoadCreationDialog = ({ open, onClose, network }) => {
     const intl = useIntl();
 
     const [loadId, setLoadId] = useState('');
@@ -288,6 +288,14 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                                 <MenuItem value="">
                                     <em>None</em>
                                 </MenuItem>
+                                {network &&
+                                    network.voltageLevels?.map((vl) => {
+                                        return (
+                                            <MenuItem value={vl.id}>
+                                                {vl.name}
+                                            </MenuItem>
+                                        );
+                                    })}
                             </Select>
                         </FormControl>
                     </Grid>
@@ -329,6 +337,7 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
 LoadCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    network: PropTypes.object.isRequired,
 };
 
 export default LoadCreationDialog;

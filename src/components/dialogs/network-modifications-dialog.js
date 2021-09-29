@@ -23,7 +23,7 @@ import LoadCreationDialog from './load-creation-dialog';
  * @param {EventListener} onClose Event to close the dialog
  * @param {String} title Title of the dialog
  */
-const NetworkModificationDialog = ({ open, onClose }) => {
+const NetworkModificationDialog = ({ open, onClose, network }) => {
     const intl = useIntl();
 
     const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
@@ -79,6 +79,7 @@ const NetworkModificationDialog = ({ open, onClose }) => {
             <LoadCreationDialog
                 open={openCreateLoadDialog}
                 onClose={closeCreateLoadDialog}
+                network={network}
             />
         </>
     );
@@ -87,6 +88,7 @@ const NetworkModificationDialog = ({ open, onClose }) => {
 NetworkModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    network: PropTypes.object.isRequired,
 };
 
 export default NetworkModificationDialog;
