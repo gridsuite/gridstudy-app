@@ -1288,6 +1288,7 @@ const StudyPane = (props) => {
                 <NetworkModificationDialog
                     open={openNetworkModificationsDialog}
                     onClose={closeNetworkModificationConfiguration}
+                    network={network}
                 />
             </div>
         );
