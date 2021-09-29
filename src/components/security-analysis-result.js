@@ -84,6 +84,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
         return (
             <VirtualizedTable
                 rows={rows}
+                sortable={true}
                 columns={[
                     {
                         width: 200,
@@ -236,6 +237,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
             <VirtualizedTable
                 rows={rows}
                 onCellClick={onClickNmKConstraint}
+                sortable={true}
                 sort={(dataKey, reverse, isNumeric) =>
                     sortResult(
                         rows,
@@ -381,6 +383,7 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
             <VirtualizedTable
                 rows={rows}
                 onCellClick={onClickNmKConstraint}
+                sortable={true}
                 sort={(dataKey, reverse, isNumeric) =>
                     sortResult(
                         rows,

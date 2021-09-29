@@ -138,6 +138,7 @@ const OverloadedLinesView = (props) => {
                     rowHeight={rowHeight}
                     classes={{ tableRow: classes.rowCell }}
                     filter={filter}
+                    sortable={true}
                     columns={[
                         {
                             width: 150,
