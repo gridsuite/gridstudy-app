@@ -273,5 +273,12 @@
     "VoltageLevel": "Poste",
     "BusBarBus": "SJB / nœud",
     "Setpoints": "Consignes de puissance",
-    "Connectivity": "Connectivité"
+    "Connectivity": "Connectivité",
+    "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
+    "DefaultValueUsed": "Si aucune saisie, la valeur par défaut sera utilisée",
+    "IdToCreateLoad":"Un ID doit être saisi pour pouvoir créer une nouvelle consommation",
+    "ActivePowerToCreateLoad": "Une consigne de puissance active doit être saisie pour pouvoir créer une nouvelle consommation",
+    "ReactivePowerToCreateLoad": "Une consigne de puissance réactive doit être saisie pour pouvoir créer une nouvelle consommation",
+    "VoltageLevelToCreateLoad": "A voltage level has to be entered in order to create a new load",
+    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load"
 }
