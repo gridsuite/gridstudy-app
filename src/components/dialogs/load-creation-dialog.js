@@ -30,18 +30,30 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
 
     const [loadType, setLoadType] = useState('');
 
+    const [activePower, setActivePower] = useState('');
+
+    const [reactivePower, setReactivePower] = useState('');
+
     const [voltageLevel, setVoltageLevel] = useState('');
 
     const [bus, setBus] = useState('');
 
     const [errors, setErrors] = useState({});
 
+    const handleChangeLoadId = (event) => {
+        setLoadId(event.target.value);
+    };
+
     const handleChangeLoadType = (event) => {
         setLoadType(event.target.value);
     };
 
-    const handleChangeLoadId = (event) => {
-        setLoadId(event.target.value);
+    const handleChangeActivePower = (event) => {
+        setActivePower(event.target.value);
+    };
+
+    const handleChangeReactivePower = (event) => {
+        setReactivePower(event.target.value);
     };
 
     const handleChangeVoltageLevel = (event) => {
@@ -56,11 +68,71 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
         let tmpErrors = { ...errors };
 
         if (loadId === '') {
-            tmpErrors['load-id'] = true;
+            tmpErrors['load-id'] = {
+                error: true,
+                errorText: intl.formatMessage({ id: 'IdToCreateLoad' }),
+            };
         } else {
-            handleClose();
+            tmpErrors['load-id'] = { error: false, errorText: '' };
         }
 
+        if (activePower === '') {
+            tmpErrors['active-power'] = {
+                error: true,
+                errorText: intl.formatMessage({
+                    id: 'ActivePowerToCreateLoad',
+                }),
+            };
+        } else {
+            let activePowerVal = Number(activePower.replace(',', '.'));
+            if (isNaN(activePowerVal)) {
+                tmpErrors['active-power'] = {
+                    error: true,
+                    errorText: intl.formatMessage({ id: 'FieldAcceptNumeric' }),
+                };
+            } else {
+                tmpErrors['active-power'] = { error: false, errorText: '' };
+            }
+        }
+
+        if (reactivePower === '') {
+            tmpErrors['reactive-power'] = {
+                error: true,
+                errorText: intl.formatMessage({
+                    id: 'ReactivePowerToCreateLoad',
+                }),
+            };
+        } else {
+            let reactivePowerVal = Number(reactivePower.replace(',', '.'));
+            if (isNaN(reactivePowerVal)) {
+                tmpErrors['reactive-power'] = {
+                    error: true,
+                    errorText: intl.formatMessage({ id: 'FieldAcceptNumeric' }),
+                };
+            } else {
+                tmpErrors['reactive-power'] = { error: false, errorText: '' };
+            }
+        }
+
+        if (voltageLevel === '') {
+            tmpErrors['voltage-level'] = {
+                error: true,
+                errorText: intl.formatMessage({
+                    id: 'VoltageLevelToCreateLoad',
+                }),
+            };
+        } else {
+            tmpErrors['voltage-level'] = { error: false, errorText: '' };
+        }
+
+        if (bus === '') {
+            tmpErrors['bus-bar'] = {
+                error: true,
+                errorText: intl.formatMessage({ id: 'BusBarBusToCreateLoad' }),
+            };
+        } else {
+            tmpErrors['bus-bar'] = { error: false, errorText: '' };
+        }
         setErrors({ ...tmpErrors });
     };
 
@@ -95,9 +167,9 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                             color="secondary"
                             value={loadId}
                             onChange={handleChangeLoadId}
-                            {...(errors['load-id'] && {
+                            {...(errors['load-id']?.error && {
                                 error: true,
-                                helperText: 'This field is required',
+                                helperText: errors['load-id']?.errorText,
                             })}
                         />
                     </Grid>
@@ -157,7 +229,13 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                                     </InputAdornment>
                                 ),
                             }}
+                            value={activePower}
+                            onChange={handleChangeActivePower}
                             defaultValue=""
+                            {...(errors['active-power']?.error && {
+                                error: true,
+                                helperText: errors['active-power']?.errorText,
+                            })}
                         />
                     </Grid>
                     <Grid item xs={4} align="center">
@@ -174,7 +252,13 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                                     </InputAdornment>
                                 ),
                             }}
+                            value={reactivePower}
+                            onChange={handleChangeReactivePower}
                             defaultValue=""
+                            {...(errors['reactive-power']?.error && {
+                                error: true,
+                                helperText: errors['reactive-power']?.errorText,
+                            })}
                         />
                     </Grid>
                 </Grid>
@@ -195,6 +279,11 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                                 value={voltageLevel}
                                 onChange={handleChangeVoltageLevel}
                                 fullWidth
+                                {...(errors['voltage-level']?.error && {
+                                    error: true,
+                                    helperText:
+                                        errors['voltage-level']?.errorText,
+                                })}
                             >
                                 <MenuItem value="">
                                     <em>None</em>
@@ -212,6 +301,10 @@ const LoadCreationDialog = ({ open, onClose, title }) => {
                                 value={bus}
                                 onChange={handleChangeBus}
                                 fullWidth
+                                {...(errors['bus-bar']?.error && {
+                                    error: true,
+                                    helperText: errors['bus-bar']?.errorText,
+                                })}
                             >
                                 <MenuItem value="">
                                     <em>None</em>
