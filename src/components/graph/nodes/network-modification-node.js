@@ -25,13 +25,13 @@ const NetworkModificationNode = ({ data }) => {
                 type="source"
                 position="bottom"
                 style={{ background: '#555' }}
-                isConnectable={true}
+                isConnectable={false}
             />
             <Handle
                 type="target"
                 position="top"
                 style={{ background: '#555' }}
-                isConnectable={true}
+                isConnectable={false}
             />
             <Button
                 variant="outlined"

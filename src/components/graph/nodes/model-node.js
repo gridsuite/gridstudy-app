@@ -25,13 +25,13 @@ const ModelNode = (props) => {
                 type="source"
                 position="bottom"
                 style={{ background: '#555' }}
-                isConnectable={true}
+                isConnectable={false}
             />
             <Handle
                 type="target"
                 position="top"
                 style={{ background: '#555' }}
-                isConnectable={true}
+                isConnectable={false}
             />
             <IconButton variant="outlined" className={classes.model}>
                 <PlayArrowIcon />

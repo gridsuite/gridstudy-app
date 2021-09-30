@@ -119,6 +119,7 @@ const NetworkModificationTree = (props) => {
                         nodeTypes={nodeTypes}
                         connectionLineType="smoothstep"
                         nodesDraggable={false}
+                        nodesConnectable={false}
                         snapToGrid={false}
                         // Although snapToGrid is set to false, we have to set snapGrid constant
                         // value in order to avoid useless re-rendering
