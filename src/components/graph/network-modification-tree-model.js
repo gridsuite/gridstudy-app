@@ -13,6 +13,7 @@ export default class NetworkModificationTreeModel {
         this.treeElements = getLayoutedElements(this.treeElements);
     }
 
+    // TODO: support the cases where node is inserted between two existing nodes
     addChild(element, parentId) {
         // Add node
         this.treeElements.push({
@@ -35,6 +36,7 @@ export default class NetworkModificationTreeModel {
     }
 
     // Remove nodes AND reparent their children
+    // TODO: support the case where children are deleted too (no reparenting)
     removeNodes(deletedNodes) {
         deletedNodes.forEach((nodeId) => {
             // get edges which have the deleted node as source or target

@@ -98,7 +98,7 @@ import { RunningStatus } from './util/running-status';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import withEquipmentMenu from './equipment-menu';
 import { ReportViewer } from '@gridsuite/commons-ui';
-import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import NetworkModificationTree from './network-modification-tree';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
@@ -354,6 +354,8 @@ const StudyPane = (props) => {
     const websocketExpectedCloseRef = useRef();
 
     const intl = useIntl();
+
+    const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -628,15 +630,21 @@ const StudyPane = (props) => {
                     )
                 );
             })
-            .catch(function (error) {
-                console.error(error.message);
-                setStudyNotFound(true);
-            })
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NetworkModificationTreeLoadError',
+                        intlRef: intlRef,
+                    },
+                })
+            )
             .finally(() =>
                 console.debug('Network modification tree loading finished')
             );
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, dispatch]);
+    }, [studyUuid, enqueueSnackbar, intlRef, dispatch]);
 
     const connectNotifications = useCallback(
         (studyUuid) => {
@@ -1416,7 +1424,6 @@ const StudyPane = (props) => {
                                 display: 'flex',
                                 pointerEvents: 'none',
                                 flexDirection: 'column',
-                                marginLeft: 0,
                             }}
                         >
                             <SingleLineDiagram

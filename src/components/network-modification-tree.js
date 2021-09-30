@@ -12,6 +12,8 @@ import CreateNodeMenu from './graph/menus/create-node-menu';
 import NodeEditor from './graph/menus/node-editor';
 import { Box } from '@material-ui/core';
 import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackbar } from 'notistack';
 
 const nodeTypes = {
     ROOT: NetworkModificationNode,
@@ -26,6 +28,10 @@ const snapGrid = [15, 15];
 
 const NetworkModificationTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
+
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const style = {
         width: '100%',
@@ -42,23 +48,39 @@ const NetworkModificationTree = (props) => {
         setSelectedNode(undefined);
     }, []);
 
-    const handleCreateNode = useCallback((element, type) => {
-        createTreeNode(element.id, { name: 'New node', type: type }).then(
-            (response) => {
-                if (response.status !== 200) {
-                    console.log('Error creating node');
+    const handleCreateNode = useCallback(
+        (element, type) => {
+            createTreeNode(element.id, { name: 'New node', type: type }).catch(
+                (errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NodeCreateError',
+                            intlRef: intlRef,
+                        },
+                    });
                 }
-            }
-        );
-    }, []);
+            );
+        },
+        [enqueueSnackbar, intlRef]
+    );
 
-    const handleRemoveNode = useCallback((element) => {
-        deleteTreeNode(element.id).then((response) => {
-            if (response.status !== 200) {
-                console.log('Error creating node');
-            }
-        });
-    }, []);
+    const handleRemoveNode = useCallback(
+        (element) => {
+            deleteTreeNode(element.id).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeDeleteError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        },
+        [enqueueSnackbar, intlRef]
+    );
 
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: { x: -1, y: -1 },

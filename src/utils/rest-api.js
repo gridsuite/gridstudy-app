@@ -595,7 +595,9 @@ export function fetchNetworkModificationTree(studyUuid) {
         PREFIX_STUDY_QUERIES + '/v1/tree/' + encodeURIComponent(studyUuid);
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
-        response.json()
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
     );
 }
 
@@ -620,7 +622,11 @@ export function createTreeNode(parentId, node) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(node),
-    });
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function deleteTreeNode(nodeId) {
@@ -630,7 +636,11 @@ export function deleteTreeNode(nodeId) {
     console.debug(url);
     return backendFetch(url, {
         method: 'delete',
-    });
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function updateTreeNode(node) {
@@ -643,7 +653,11 @@ export function updateTreeNode(node) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(node),
-    });
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function connectNotificationsWebsocket(studyUuid) {

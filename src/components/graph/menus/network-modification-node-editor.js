@@ -12,9 +12,17 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useIntl } from 'react-intl';
 import { updateTreeNode } from '../../../utils/rest-api';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../../utils/messages';
+import { useSnackbar } from 'notistack';
 
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const intl = useIntl();
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [nameValue, setNameValue] = useState(selectedNode.data?.label);
 
@@ -27,10 +35,15 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             id: selectedNode.id,
             type: selectedNode.type,
             name: nameValue,
-        }).then((response) => {
-            if (response.status !== 200) {
-                console.log('Error updating node');
-            }
+        }).catch((errorMessage) => {
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'NodeUpdateError',
+                    intlRef: intlRef,
+                },
+            });
         });
     };
 

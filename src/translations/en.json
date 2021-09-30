@@ -254,5 +254,9 @@
 
     "createNetworkModificationNode": "Create a network modification node",
     "createModelNode": "Create model node",
-    "removeNode": "Remove node"
+    "removeNode": "Remove node",
+    "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
+    "NodeCreateError": "An error occured while creating node",
+    "NodeDeleteError": "An error occured while deleting node",
+    "NodeUpdateError": "An error occured while updating node"
 }

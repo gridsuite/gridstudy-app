@@ -73,6 +73,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
+import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -96,7 +97,7 @@ const initialState = {
     studyUuid: null,
     network: null,
     geoData: null,
-    networkModificationTreeModel: { treeElements: [] },
+    networkModificationTreeModel: new NetworkModificationTreeModel(),
     cases: [],
     selectedCase: null,
     selectedFile: null,
