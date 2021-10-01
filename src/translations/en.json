@@ -62,6 +62,7 @@
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
 
     "close": "Close",
+    "validate": "Validate",
 
     "loadingGeoData": "Loading geographic data in progress...",
     "LoadingRemoteData": "Loading...",
@@ -241,7 +242,7 @@
     "getLoadFlowProviderError": "An error occurred while getting the load flow provider",
 
     "SubstationList": "Substation list",
-    "HypothesisTree": "Hypothesis tree (unavailable)",
+    "NetworkModificationTree": "Network modification tree",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -249,5 +250,13 @@
     "showReport": "Show logs",
     "loadingReport": "Loading logs in progress...",
 
-    "ComponentLibrary": "Component library selection : "
+    "ComponentLibrary": "Component library selection : ",
+
+    "createNetworkModificationNode": "Create a network modification node",
+    "createModelNode": "Create model node",
+    "removeNode": "Remove node",
+    "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
+    "NodeCreateError": "An error occured while creating node",
+    "NodeDeleteError": "An error occured while deleting node",
+    "NodeUpdateError": "An error occured while updating node"
 }
