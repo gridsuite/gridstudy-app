@@ -45,6 +45,10 @@ import {
     ADD_SA_NOTIF,
     RESET_SA_NOTIF,
     COMPONENT_LIBRARY,
+    LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
+    NETWORK_MODIFICATION_TREE_NODE_ADDED,
+    NETWORK_MODIFICATION_TREE_NODES_REMOVED,
+    NETWORK_MODIFICATION_TREE_NODES_UPDATED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -69,6 +73,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
+import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -92,6 +97,7 @@ const initialState = {
     studyUuid: null,
     network: null,
     geoData: null,
+    networkModificationTreeModel: new NetworkModificationTreeModel(),
     cases: [],
     selectedCase: null,
     selectedFile: null,
@@ -129,6 +135,7 @@ export const reducer = createReducer(initialState, {
         state.studyUuid = null;
         state.network = null;
         state.geoData = null;
+        state.networkModificationTreeModel = null;
     },
 
     [NETWORK_CREATED]: (state, action) => {
@@ -144,6 +151,43 @@ export const reducer = createReducer(initialState, {
 
     [LOAD_GEO_DATA_SUCCESS]: (state, action) => {
         state.geoData = action.geoData;
+    },
+
+    [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
+        state.networkModificationTreeModel =
+            action.networkModificationTreeModel;
+    },
+
+    [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.addChild(
+                action.networkModificationTreeNode,
+                action.parentNodeId
+            );
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+        }
+    },
+
+    [NETWORK_MODIFICATION_TREE_NODES_REMOVED]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.removeNodes(action.networkModificationTreeNodes);
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+        }
+    },
+
+    [NETWORK_MODIFICATION_TREE_NODES_UPDATED]: (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel =
+                state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.updateNodes(action.networkModificationTreeNodes);
+            state.networkModificationTreeModel = newModel;
+        }
     },
 
     [STUDY_UPDATED]: (state, action) => {
