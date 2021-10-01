@@ -23,6 +23,8 @@ import {
     connectNotificationsWebsocket,
     fetchAllEquipments,
     fetchLinePositions,
+    fetchNetworkModificationTree,
+    fetchNetworkModificationTreeNode,
     fetchReport,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
@@ -41,7 +43,11 @@ import {
     closeStudy,
     filteredNominalVoltagesUpdated,
     loadGeoDataSuccess,
+    loadNetworkModificationTreeSuccess,
     networkCreated,
+    networkModificationTreeNodeAdded,
+    networkModificationTreeNodesRemoved,
+    networkModificationTreeNodesUpdated,
     openStudy,
     resetLoadflowNotif,
     selectItemNetwork,
@@ -92,12 +98,15 @@ import { RunningStatus } from './util/running-status';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import withEquipmentMenu from './equipment-menu';
 import { ReportViewer } from '@gridsuite/commons-ui';
-import { displayErrorMessageWithSnackbar } from '../utils/messages';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
+import NetworkModificationTree from './network-modification-tree';
+import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import NetworkModificationDialog from './dialogs/network-modifications-dialog';
 
-const drawerWidth = 300;
+const drawerExplorerWidth = 300;
 const drawerToolbarWidth = 48;
+const drawerNetworkModificationTreeWidth = 800;
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -124,14 +133,16 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
-    drawer: {
-        width: drawerWidth,
+    drawerExplorer: {
+        width: drawerExplorerWidth,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
         // zIndex set to be below the loader with overlay
-        zIndex: 50,
+        // and above the network explorer, for mouse events on network modification tree
+        // to be taken into account correctly
+        zIndex: 51,
     },
     drawerToolbar: {
         width: drawerToolbarWidth,
@@ -139,16 +150,32 @@ const useStyles = makeStyles((theme) => ({
         // and above the network explorer drawer
         zIndex: 60,
     },
+    drawerNetworkModificationTree: {
+        width: drawerNetworkModificationTreeWidth,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        // zIndex set to be below the loader with overlay
+        zIndex: 50,
+    },
     drawerPaper: {
         position: 'static',
         overflow: 'hidden',
     },
-    drawerShift: {
+    drawerExplorerShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: -drawerWidth - drawerToolbarWidth,
+        marginLeft: -drawerExplorerWidth,
+    },
+    drawerNetworkModificationTreeShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: -drawerNetworkModificationTreeWidth,
     },
     mapCtrlBottomLeft: {
         '& .mapboxgl-ctrl-bottom-left': {
@@ -159,13 +186,22 @@ const useStyles = makeStyles((theme) => ({
             left: drawerToolbarWidth,
         },
     },
-    mapCtrlBottomLeftShift: {
+    mapCtrlBottomLeftExplorerShift: {
         '& .mapboxgl-ctrl-bottom-left': {
             transition: theme.transitions.create('left', {
                 easing: theme.transitions.easing.easeOut,
                 duration: theme.transitions.duration.enteringScreen,
             }),
-            left: drawerWidth + drawerToolbarWidth,
+            left: drawerExplorerWidth + drawerToolbarWidth,
+        },
+    },
+    mapCtrlBottomLeftNetworkModificationTreeShift: {
+        '& .mapboxgl-ctrl-bottom-left': {
+            transition: theme.transitions.create('left', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+            left: drawerNetworkModificationTreeWidth + drawerToolbarWidth,
         },
     },
 }));
@@ -185,6 +221,10 @@ const StudyPane = (props) => {
     const network = useSelector((state) => state.network);
 
     const geoData = useSelector((state) => state.geoData);
+
+    const networkModificationTreeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
 
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
@@ -266,7 +306,14 @@ const StudyPane = (props) => {
 
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
-    const [drawerOpen, setDrawerOpen] = useState(true);
+    const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
+    const [
+        drawerNetworkModificationTreeOpen,
+        setDrawerNetworkModificationTreeOpen,
+    ] = useState(false);
+
+    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
+        useState(false);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -314,6 +361,8 @@ const StudyPane = (props) => {
     const websocketExpectedCloseRef = useRef();
 
     const intl = useIntl();
+
+    const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -569,6 +618,41 @@ const StudyPane = (props) => {
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch]);
 
+    const loadTree = useCallback(() => {
+        console.info(
+            `Loading network modification tree of study '${studyUuid}'...`
+        );
+
+        const networkModificationTree = fetchNetworkModificationTree(studyUuid);
+
+        networkModificationTree
+            .then((tree) => {
+                const networkModificationTreeModel =
+                    new NetworkModificationTreeModel();
+                networkModificationTreeModel.setTreeElements(tree);
+                networkModificationTreeModel.updateLayout();
+                dispatch(
+                    loadNetworkModificationTreeSuccess(
+                        networkModificationTreeModel
+                    )
+                );
+            })
+            .catch((errorMessage) =>
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NetworkModificationTreeLoadError',
+                        intlRef: intlRef,
+                    },
+                })
+            )
+            .finally(() =>
+                console.debug('Network modification tree loading finished')
+            );
+        // Note: studyUuid and dispatch don't change
+    }, [studyUuid, enqueueSnackbar, intlRef, dispatch]);
+
     const connectNotifications = useCallback(
         (studyUuid) => {
             console.info(`Connecting to notifications '${studyUuid}'...`);
@@ -596,6 +680,7 @@ const StudyPane = (props) => {
         dispatch(openStudy(studyUuid));
         loadNetwork();
         loadGeoData();
+        loadTree();
         const ws = connectNotifications(studyUuid);
 
         // study cleanup at unmount event
@@ -607,7 +692,14 @@ const StudyPane = (props) => {
         };
         // Note: dispach, studyUuid, loadNetwork, loadGeoData,
         // connectNotifications don't change
-    }, [dispatch, studyUuid, loadNetwork, loadGeoData, connectNotifications]);
+    }, [
+        dispatch,
+        studyUuid,
+        loadNetwork,
+        loadGeoData,
+        loadTree,
+        connectNotifications,
+    ]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -699,8 +791,24 @@ const StudyPane = (props) => {
         history.replace('/studies/' + encodeURIComponent(studyUuid));
     }
 
-    const toggleDrawer = () => {
-        setDrawerOpen(!drawerOpen);
+    const toggleExplorerDrawer = () => {
+        setDrawerExplorerOpen(!drawerExplorerOpen);
+        setDrawerNetworkModificationTreeOpen(false);
+    };
+
+    const toggleNetworkModificationTreeDrawer = () => {
+        setDrawerNetworkModificationTreeOpen(
+            !drawerNetworkModificationTreeOpen
+        );
+        setDrawerExplorerOpen(false);
+    };
+
+    const openNetworkModificationConfiguration = () => {
+        setOpenNetworkModificationsDialog(true);
+    };
+
+    const closeNetworkModificationConfiguration = () => {
+        setOpenNetworkModificationsDialog(false);
     };
 
     const openNetworkModificationConfiguration = () => {
@@ -816,6 +924,51 @@ const StudyPane = (props) => {
             }
         }
     }, [studyUpdatedForce, updateNetwork]);
+
+    const updateNodes = useCallback(
+        (updatedNodesIds) => {
+            Promise.all(
+                updatedNodesIds.map(fetchNetworkModificationTreeNode)
+            ).then((values) => {
+                dispatch(networkModificationTreeNodesUpdated(values));
+            });
+        },
+        [dispatch]
+    );
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeCreated'
+            ) {
+                fetchNetworkModificationTreeNode(
+                    studyUpdatedForce.eventData.headers['newNode']
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeAdded(
+                            node,
+                            studyUpdatedForce.eventData.headers['node']
+                        )
+                    );
+                });
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeDeleted'
+            ) {
+                dispatch(
+                    networkModificationTreeNodesRemoved(
+                        studyUpdatedForce.eventData.headers['nodes']
+                    )
+                );
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'nodeUpdated'
+            ) {
+                updateNodes(studyUpdatedForce.eventData.headers['nodes']);
+            }
+        }
+    }, [studyUpdatedForce, updateNodes, dispatch]);
 
     const mapRef = useRef();
     const centerSubstation = useCallback(
@@ -1016,8 +1169,10 @@ const StudyPane = (props) => {
             <div className={clsx('relative singlestretch-child', classes.map)}>
                 <div
                     className={
-                        drawerOpen
-                            ? classes.mapCtrlBottomLeftShift
+                        drawerExplorerOpen
+                            ? classes.mapCtrlBottomLeftExplorerShift
+                            : drawerNetworkModificationTreeOpen
+                            ? classes.mapCtrlBottomLeftNetworkModificationTreeShift
                             : classes.mapCtrlBottomLeft
                     }
                     style={{
@@ -1202,8 +1357,14 @@ const StudyPane = (props) => {
                         className={classes.drawerDiv}
                     >
                         <LateralToolbar
-                            handleDisplayNetworkExplorer={toggleDrawer}
-                            networkExplorerDisplayed={drawerOpen}
+                            handleDisplayNetworkExplorer={toggleExplorerDrawer}
+                            handleDisplayNetworkModificationTree={
+                                toggleNetworkModificationTreeDrawer
+                            }
+                            networkExplorerDisplayed={drawerExplorerOpen}
+                            networkModificationTreeDisplayed={
+                                drawerNetworkModificationTreeOpen
+                            }
                             handleOpenNetworkModificationConfiguration={
                                 openNetworkModificationConfiguration
                             }
@@ -1212,8 +1373,8 @@ const StudyPane = (props) => {
                 </Drawer>
                 <Drawer
                     variant={'persistent'}
-                    className={clsx(classes.drawer, {
-                        [classes.drawerShift]: !drawerOpen,
+                    className={clsx(classes.drawerExplorer, {
+                        [classes.drawerExplorerShift]: !drawerExplorerOpen,
                     })}
                     anchor="left"
                     style={{
@@ -1222,7 +1383,7 @@ const StudyPane = (props) => {
                         overflowY: 'hidden',
                         overflowX: 'hidden',
                     }}
-                    open={drawerOpen}
+                    open={drawerExplorerOpen}
                     classes={{
                         paper: classes.drawerPaper,
                     }}
@@ -1245,6 +1406,37 @@ const StudyPane = (props) => {
                         />
                     </div>
                 </Drawer>
+                <Drawer
+                    variant={'persistent'}
+                    className={clsx(classes.drawerNetworkModificationTree, {
+                        [classes.drawerNetworkModificationTreeShift]:
+                            !drawerNetworkModificationTreeOpen,
+                    })}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'hidden',
+                        overflowX: 'hidden',
+                    }}
+                    open={drawerNetworkModificationTreeOpen}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div
+                        style={{
+                            flex: '1 1 auto',
+                            overflowY: 'none',
+                            overflowX: 'none',
+                        }}
+                        className={classes.drawerDiv}
+                    >
+                        <NetworkModificationTree
+                            treeModel={networkModificationTreeModel}
+                        />
+                    </div>
+                </Drawer>
                 {/*
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
@@ -1258,7 +1450,6 @@ const StudyPane = (props) => {
                                 display: 'flex',
                                 pointerEvents: 'none',
                                 flexDirection: 'column',
-                                marginLeft: drawerOpen ? 0 : drawerToolbarWidth,
                             }}
                         >
                             <SingleLineDiagram

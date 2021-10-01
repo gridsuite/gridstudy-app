@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { Autocomplete } from '@material-ui/lab';
 
 /**
  * Dialog to create a load in the network
@@ -56,8 +57,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         setReactivePower(event.target.value);
     };
 
-    const handleChangeVoltageLevel = (event) => {
-        setVoltageLevel(event.target.value);
+    const handleChangeVoltageLevel = (event, value, reason) => {
+        setVoltageLevel(value);
     };
 
     const handleChangeBus = (event) => {
@@ -267,37 +268,31 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <FormattedMessage id="Connectivity" />
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="center">
-                        <FormControl fullWidth>
-                            <InputLabel
-                                id="voltage-level-label"
-                                margin={'dense'}
-                            >
-                                {intl.formatMessage({ id: 'VoltageLevel' })}
-                            </InputLabel>
-                            <Select
-                                id="voltage-level"
-                                value={voltageLevel}
-                                onChange={handleChangeVoltageLevel}
-                                fullWidth
-                                {...(errors['voltage-level']?.error && {
-                                    error: true,
-                                    helperText:
-                                        errors['voltage-level']?.errorText,
-                                })}
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                                {network &&
-                                    network.voltageLevels?.map((vl) => {
-                                        return (
-                                            <MenuItem value={vl.id}>
-                                                {vl.name}
-                                            </MenuItem>
-                                        );
+                        <Autocomplete
+                            id="voltage-level"
+                            size="small"
+                            autoComplete
+                            autoSelect
+                            autoHighlight
+                            options={network?.voltageLevels}
+                            getOptionLabel={(vl) => vl.name}
+                            value={voltageLevel}
+                            onChange={handleChangeVoltageLevel}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    fullWidth
+                                    label={intl.formatMessage({
+                                        id: 'VoltageLevel',
                                     })}
-                            </Select>
-                        </FormControl>
+                                    {...(errors['voltage-level']?.error && {
+                                        error: true,
+                                        helperText:
+                                            errors['voltage-level']?.errorText,
+                                    })}
+                                />
+                            )}
+                        />
                     </Grid>
                     <Grid item xs={4} align="center">
                         <FormControl fullWidth>

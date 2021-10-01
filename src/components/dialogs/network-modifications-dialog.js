@@ -15,7 +15,6 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import AddIcon from '@material-ui/icons/ControlPoint';
 import DeleteIcon from '@material-ui/icons/Delete';
-import PropTypes from 'prop-types';
 import LoadCreationDialog from './load-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
 

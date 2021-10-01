@@ -43,6 +43,56 @@ export function loadGeoDataSuccess(geoData) {
     return { type: LOAD_GEO_DATA_SUCCESS, geoData: geoData };
 }
 
+export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS =
+    'LOAD_NETWORK_MODIFICATION_TREE_SUCCESS';
+
+export function loadNetworkModificationTreeSuccess(
+    networkModificationTreeModel
+) {
+    return {
+        type: LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
+        networkModificationTreeModel: networkModificationTreeModel,
+    };
+}
+
+export const NETWORK_MODIFICATION_TREE_NODE_ADDED =
+    'NETWORK_MODIFICATION_TREE_NODE_ADDED';
+
+export function networkModificationTreeNodeAdded(
+    networkModificationTreeNode,
+    parentNodeId
+) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
+        networkModificationTreeNode: networkModificationTreeNode,
+        parentNodeId: parentNodeId,
+    };
+}
+
+export const NETWORK_MODIFICATION_TREE_NODES_REMOVED =
+    'NETWORK_MODIFICATION_TREE_NODES_REMOVED';
+
+export function networkModificationTreeNodesRemoved(
+    networkModificationTreeNodes
+) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_NODES_REMOVED,
+        networkModificationTreeNodes: networkModificationTreeNodes,
+    };
+}
+
+export const NETWORK_MODIFICATION_TREE_NODES_UPDATED =
+    'NETWORK_MODIFICATION_TREE_NODES_UPDATED';
+
+export function networkModificationTreeNodesUpdated(
+    networkModificationTreeNodes
+) {
+    return {
+        type: NETWORK_MODIFICATION_TREE_NODES_UPDATED,
+        networkModificationTreeNodes: networkModificationTreeNodes,
+    };
+}
+
 export const SELECT_THEME = 'SELECT_THEME';
 
 export function selectTheme(theme) {

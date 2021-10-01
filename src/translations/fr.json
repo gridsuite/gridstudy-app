@@ -62,6 +62,7 @@
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
 
     "close": "Fermer",
+    "validate": "Valider",
 
     "loadingGeoData": "Chargement des données géographiques en cours...",
     "LoadingRemoteData": "Chargement en cours...",
@@ -241,8 +242,7 @@
     "getLoadFlowProviderError": "Une erreur est survenue lors de la récupération du fournisseur de load flow",
 
     "SubstationList": "Liste des postes",
-    "HypothesisTree": "Arbre des hypothèses (indisponible)",
-    "NetworkModifications": "Modifications de réseau",
+    "NetworkModificationTree": "Arbre de modification de réseau",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -251,6 +251,14 @@
     "loadingReport": "Chargement des logs en cours...",
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants : ",
+
+    "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
+    "createModelNode": "Créer nœud modèle",
+    "removeNode": "Supprimer nœud",
+    "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
+    "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
+    "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
+    "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
 
     "NetworkModifications": "Modifications de réseau",
     "CreateLoad": "Créer consommation",
