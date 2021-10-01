@@ -14,8 +14,10 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import AddIcon from '@material-ui/icons/ControlPoint';
+import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 import LoadCreationDialog from './load-creation-dialog';
+import EquipmentDeletionDialog from './equipment-deletion-dialog';
 
 /**
  * Dialog to select network modification to create
@@ -27,6 +29,8 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
     const intl = useIntl();
 
     const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
+    const [openEquipmentDeletionDialog, setOpenEquipmentDeletionDialog] =
+        useState(false);
 
     const handleClose = () => {
         onClose();
@@ -42,6 +46,14 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
 
     const closeCreateLoadDialog = () => {
         setOpenCreateLoadDialog(false);
+    };
+
+    const handleDeleteEquipment = () => {
+        setOpenEquipmentDeletionDialog(true);
+    };
+
+    const closeEquipmentDeletionDialog = () => {
+        setOpenEquipmentDeletionDialog(false);
     };
 
     return (
@@ -67,6 +79,18 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
                                     {intl.formatMessage({ id: 'CreateLoad' })}
                                 </Button>
                             </Box>
+                            <br />
+                            <Box>
+                                <Button
+                                    variant="outlined"
+                                    startIcon={<DeleteIcon />}
+                                    onClick={handleDeleteEquipment}
+                                >
+                                    {intl.formatMessage({
+                                        id: 'DeleteEquipment',
+                                    })}
+                                </Button>
+                            </Box>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -79,6 +103,11 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
             <LoadCreationDialog
                 open={openCreateLoadDialog}
                 onClose={closeCreateLoadDialog}
+                network={network}
+            />
+            <EquipmentDeletionDialog
+                open={openEquipmentDeletionDialog}
+                onClose={closeEquipmentDeletionDialog}
                 network={network}
             />
         </>

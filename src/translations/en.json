@@ -271,5 +271,23 @@
     "ActivePowerToCreateLoad": "An active power set point has to be entered in order to create a new load",
     "ReactivePowerToCreateLoad": "A reactive power set point has to be entered in order to create a new load",
     "VoltageLevelToCreateLoad": "A voltage level has to be entered in order to create a new load",
-    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load"
+    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load",
+
+    "DeleteEquipment": "Delete equipment",
+    "IdToDeleteEquipment":"An ID has to be entered in order to delete an equipment",
+    "TypeToDeleteEquipment": "A type must be given in order to delete an equipment",
+    "Type": "Type",
+    "SUBSTATION": "Substation",
+    "VOLTAGE_LEVEL": "Voltage_Level",
+    "LINE": "Line",
+    "TWO_WINDINGS_TRANSFORMER": "Two_Windings_Transformer",
+    "THREE_WINDINGS_TRANSFORMER": "Three_Windings_Transformer",
+    "GENERATOR": "Generator",
+    "LOAD": "Load",
+    "BATTERY": "Battery",
+    "DANGLING_LINE": "Dangling_Line",
+    "HVDC_LINE": "Hvdc_Line",
+    "HVDC_CONVERTER_STATION": "Hvdc_Converter_Station",
+    "SHUNT_COMPENSATOR": "Shunt_Compenstor",
+    "STATIC_VAR_COMPENSATOR": "Static_Var_Compensator"
 }

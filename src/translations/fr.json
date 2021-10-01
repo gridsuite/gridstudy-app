@@ -271,5 +271,23 @@
     "ActivePowerToCreateLoad": "Une consigne de puissance active doit être saisie pour pouvoir créer une nouvelle consommation",
     "ReactivePowerToCreateLoad": "Une consigne de puissance réactive doit être saisie pour pouvoir créer une nouvelle consommation",
     "VoltageLevelToCreateLoad": "A voltage level has to be entered in order to create a new load",
-    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load"
+    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load",
+
+    "DeleteEquipment": "Supprimer ouvrage",
+    "IdToDeleteEquipment": "Un ID doit être saisi pour pouvoir supprimer un ouvrage",
+    "TypeToDeleteEquipment": "Un type doit être saisi pour pouvoir supprimer un ouvrage",
+    "Type": "Type",
+    "SUBSTATION": "Site",
+    "VOLTAGE_LEVEL": "Poste",
+    "LINE": "Ligne",
+    "TWO_WINDINGS_TRANSFORMER": "Transformateur à 2 enroulements",
+    "THREE_WINDINGS_TRANSFORMER": "Transformateur à 3 enroulements",
+    "GENERATOR": "Groupe",
+    "LOAD": "Consommation",
+    "BATTERY": "Batterie",
+    "DANGLING_LINE": "Ligne frontière",
+    "HVDC_LINE": "Ligne HVDC",
+    "HVDC_CONVERTER_STATION": "Station de conversion HVDC",
+    "SHUNT_COMPENSATOR": "Moyen de compensation",
+    "STATIC_VAR_COMPENSATOR": "CSPR"
 }
