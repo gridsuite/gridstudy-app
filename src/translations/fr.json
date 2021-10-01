@@ -260,8 +260,8 @@
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
-    "NetworkModifications": "Modifications de réseau",
 
+    "NetworkModifications": "Modifications de réseau",
     "CreateLoad": "Créer consommation",
     "NameOptional": "Nom (optionnel)",
     "TypeOptional": "Type (optionnel)",
