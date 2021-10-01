@@ -275,6 +275,7 @@
     "Setpoints": "Consignes de puissance",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
+    "FieldIsRequired": "Ce champ doit être renseigné",
     "DefaultValueUsed": "Si aucune saisie, la valeur par défaut sera utilisée",
     "IdToCreateLoad":"Un ID doit être saisi pour pouvoir créer une nouvelle consommation",
     "ActivePowerToCreateLoad": "Une consigne de puissance active doit être saisie pour pouvoir créer une nouvelle consommation",

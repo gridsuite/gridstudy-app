@@ -15,8 +15,8 @@ import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import { Autocomplete } from '@material-ui/lab';
+import TextFieldWithAdornment from '../util/text-field-with-adornment';
 
 /**
  * Dialog to create a load in the network
@@ -71,7 +71,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         if (loadId === '') {
             tmpErrors['load-id'] = {
                 error: true,
-                errorText: intl.formatMessage({ id: 'IdToCreateLoad' }),
+                errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
             };
         } else {
             tmpErrors['load-id'] = { error: false, errorText: '' };
@@ -81,7 +81,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             tmpErrors['active-power'] = {
                 error: true,
                 errorText: intl.formatMessage({
-                    id: 'ActivePowerToCreateLoad',
+                    id: 'FieldIsRequired',
                 }),
             };
         } else {
@@ -100,7 +100,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             tmpErrors['reactive-power'] = {
                 error: true,
                 errorText: intl.formatMessage({
-                    id: 'ReactivePowerToCreateLoad',
+                    id: 'FieldIsRequired',
                 }),
             };
         } else {
@@ -119,7 +119,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             tmpErrors['voltage-level'] = {
                 error: true,
                 errorText: intl.formatMessage({
-                    id: 'VoltageLevelToCreateLoad',
+                    id: 'FieldIsRequired',
                 }),
             };
         } else {
@@ -129,7 +129,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         if (bus === '') {
             tmpErrors['bus-bar'] = {
                 error: true,
-                errorText: intl.formatMessage({ id: 'BusBarBusToCreateLoad' }),
+                errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
             };
         } else {
             tmpErrors['bus-bar'] = { error: false, errorText: '' };
@@ -161,7 +161,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="center">
                         <TextField
-                            required
+                            fullWidth
                             id="load-id"
                             label={intl.formatMessage({ id: 'ID' })}
                             variant="filled"
@@ -217,19 +217,13 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <FormattedMessage id="Setpoints" />
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="center">
-                        <TextField
-                            required
+                        <TextFieldWithAdornment
                             id="load-active-power"
                             label={intl.formatMessage({
                                 id: 'ActivePowerText',
                             })}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        MW
-                                    </InputAdornment>
-                                ),
-                            }}
+                            adornmentPosition={'end'}
+                            adornmentText={'MW'}
                             value={activePower}
                             onChange={handleChangeActivePower}
                             defaultValue=""
@@ -240,19 +234,13 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                         />
                     </Grid>
                     <Grid item xs={4} align="center">
-                        <TextField
-                            required
+                        <TextFieldWithAdornment
                             id="load-reactive-power"
                             label={intl.formatMessage({
                                 id: 'ReactivePowerText',
                             })}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        MW
-                                    </InputAdornment>
-                                ),
-                            }}
+                            adornmentPosition={'end'}
+                            adornmentText={'MV'}
                             value={reactivePower}
                             onChange={handleChangeReactivePower}
                             defaultValue=""
@@ -275,7 +263,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             autoSelect
                             autoHighlight
                             options={network?.voltageLevels}
-                            getOptionLabel={(vl) => vl.name}
+                            getOptionLabel={(vl) => vl.id}
                             value={voltageLevel}
                             onChange={handleChangeVoltageLevel}
                             renderInput={(params) => (
