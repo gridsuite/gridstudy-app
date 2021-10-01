@@ -66,9 +66,10 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleSave = () => {
+        console.log('NNO', voltageLevel);
         let tmpErrors = { ...errors };
 
-        if (loadId === '') {
+        if (!loadId) {
             tmpErrors['load-id'] = {
                 error: true,
                 errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
@@ -77,7 +78,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             tmpErrors['load-id'] = { error: false, errorText: '' };
         }
 
-        if (activePower === '') {
+        if (!activePower) {
             tmpErrors['active-power'] = {
                 error: true,
                 errorText: intl.formatMessage({
@@ -96,7 +97,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             }
         }
 
-        if (reactivePower === '') {
+        if (!reactivePower) {
             tmpErrors['reactive-power'] = {
                 error: true,
                 errorText: intl.formatMessage({
@@ -115,7 +116,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             }
         }
 
-        if (voltageLevel === '') {
+        if (!voltageLevel) {
             tmpErrors['voltage-level'] = {
                 error: true,
                 errorText: intl.formatMessage({
@@ -126,7 +127,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             tmpErrors['voltage-level'] = { error: false, errorText: '' };
         }
 
-        if (bus === '') {
+        if (!bus) {
             tmpErrors['bus-bar'] = {
                 error: true,
                 errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
@@ -283,25 +284,31 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                         />
                     </Grid>
                     <Grid item xs={4} align="center">
-                        <FormControl fullWidth>
-                            <InputLabel id="bus-label" margin={'dense'}>
-                                {intl.formatMessage({ id: 'BusBarBus' })}
-                            </InputLabel>
-                            <Select
-                                id="bus"
-                                value={bus}
-                                onChange={handleChangeBus}
-                                fullWidth
-                                {...(errors['bus-bar']?.error && {
-                                    error: true,
-                                    helperText: errors['bus-bar']?.errorText,
-                                })}
-                            >
-                                <MenuItem value="">
-                                    <em>None</em>
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
+                        <Autocomplete
+                            id="bus"
+                            size="small"
+                            autoComplete
+                            autoSelect
+                            autoHighlight
+                            options={[]}
+                            getOptionLabel={(bus) => bus.id}
+                            value={voltageLevel}
+                            onChange={handleChangeBus}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    fullWidth
+                                    label={intl.formatMessage({
+                                        id: 'BusBarBus',
+                                    })}
+                                    {...(errors['bus-bar']?.error && {
+                                        error: true,
+                                        helperText:
+                                            errors['bus-bar']?.errorText,
+                                    })}
+                                />
+                            )}
+                        />
                     </Grid>
                 </Grid>
             </DialogContent>
