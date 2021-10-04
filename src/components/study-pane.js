@@ -315,9 +315,6 @@ const StudyPane = (props) => {
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
 
-    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
-        useState(false);
-
     const [
         choiceVoltageLevelsSubstationId,
         setChoiceVoltageLevelsSubstationId,
@@ -801,14 +798,6 @@ const StudyPane = (props) => {
             !drawerNetworkModificationTreeOpen
         );
         setDrawerExplorerOpen(false);
-    };
-
-    const openNetworkModificationConfiguration = () => {
-        setOpenNetworkModificationsDialog(true);
-    };
-
-    const closeNetworkModificationConfiguration = () => {
-        setOpenNetworkModificationsDialog(false);
     };
 
     const openNetworkModificationConfiguration = () => {

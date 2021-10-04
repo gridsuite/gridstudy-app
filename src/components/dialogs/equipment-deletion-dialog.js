@@ -16,22 +16,29 @@ import PropTypes from 'prop-types';
 import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
+import { useParams } from 'react-router-dom';
+import { deleteEquipment } from '../../utils/rest-api';
+import {
+    displayInfoMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { useSnackbar } from 'notistack';
 
-const equipmentTypes = {
-    SUBSTATION: { label: 'SUBSTATION' },
-    VOLTAGE_LEVEL: { label: 'VOLTAGE_LEVEL' },
-    LINE: { label: 'LINE' },
-    TWO_WINDINGS_TRANSFORMER: { label: 'TWO_WINDINGS_TRANSFORMER' },
-    THREE_WINDINGS_TRANSFORMER: { label: 'THREE_WINDINGS_TRANSFORMER' },
-    GENERATOR: { label: 'GENERATOR' },
-    LOAD: { label: 'LOAD' },
-    BATTERY: { label: 'BATTERY' },
-    DANGLING_LINE: { label: 'DANGLING_LINE' },
-    HVDC_LINE: { label: 'HVDC_LINE' },
-    HVDC_CONVERTER_STATION: { label: 'HVDC_CONVERTER_STATION' },
-    SHUNT_COMPENSATOR: { label: 'SHUNT_COMPENSATOR' },
-    STATIC_VAR_COMPENSATOR: { label: 'STATIC_VAR_COMPENSATOR' },
-};
+const equipmentTypes = [
+    'SUBSTATION',
+    'VOLTAGE_LEVEL',
+    'LINE',
+    'TWO_WINDINGS_TRANSFORMER',
+    'THREE_WINDINGS_TRANSFORMER',
+    'GENERATOR',
+    'LOAD',
+    'BATTERY',
+    'DANGLING_LINE',
+    'HVDC_LINE',
+    'HVDC_CONVERTER_STATION',
+    'SHUNT_COMPENSATOR',
+    'STATIC_VAR_COMPENSATOR',
+];
 
 const useStyles = makeStyles(() => ({
     dialogPaper: {
@@ -52,13 +59,17 @@ const useStyles = makeStyles(() => ({
  * @param {String} title Title of the dialog
  */
 const EquipmentDeletionDialog = ({ open, onClose, network }) => {
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+
     const classes = useStyles();
+    const intlRef = useIntlRef();
+    const { enqueueSnackbar } = useSnackbar();
 
     const intl = useIntl();
 
     const [equipmentId, setEquipmentId] = useState('');
 
-    const [equipmentType, setEquipmentType] = useState('');
+    const [equipmentType, setEquipmentType] = useState('LINE');
 
     const [errors, setErrors] = useState({});
 
@@ -70,17 +81,25 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
         setEquipmentType(event.target.value);
     };
 
+    function handleDeleteEquipmentError(response, messsageId) {
+        const utf8Decoder = new TextDecoder('utf-8');
+        response.body
+            .getReader()
+            .read()
+            .then((value) => {
+                displayInfoMessageWithSnackbar({
+                    errorMessage: utf8Decoder.decode(value.value),
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: messsageId,
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }
+
     const handleSave = () => {
         let tmpErrors = { ...errors };
-
-        if (equipmentType === '') {
-            tmpErrors['equipment-type'] = {
-                error: true,
-                errorText: intl.formatMessage({ id: 'TypeToDeleteEquipment' }),
-            };
-        } else {
-            tmpErrors['equipment-type'] = { error: false, errorText: '' };
-        }
 
         if (equipmentId === '') {
             tmpErrors['equipment-id'] = {
@@ -91,6 +110,25 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
             tmpErrors['equipment-id'] = { error: false, errorText: '' };
         }
         setErrors({ ...tmpErrors });
+
+        if (
+            Object.entries(tmpErrors).find(
+                (entry) => entry[1].error === true
+            ) === undefined
+        ) {
+            deleteEquipment(studyUuid, equipmentType, equipmentId).then(
+                (response) => {
+                    if (response.status !== 200) {
+                        handleDeleteEquipmentError(
+                            response,
+                            'UnableToDeleteEquipment'
+                        );
+                    } else {
+                        handleClose();
+                    }
+                }
+            );
+        }
     };
 
     const handleClose = () => {
@@ -148,20 +186,15 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
                                     variant="filled"
                                     fullWidth
                                 >
-                                    <MenuItem value="">
-                                        <em>None</em>
-                                    </MenuItem>
-                                    {Object.entries(equipmentTypes).map(
-                                        (item) => {
-                                            return (
-                                                <MenuItem value={item[0]}>
-                                                    {intl.formatMessage({
-                                                        id: item[0],
-                                                    })}
-                                                </MenuItem>
-                                            );
-                                        }
-                                    )}
+                                    {equipmentTypes.map((item) => {
+                                        return (
+                                            <MenuItem value={item}>
+                                                {intl.formatMessage({
+                                                    id: item,
+                                                })}
+                                            </MenuItem>
+                                        );
+                                    })}
                                 </Select>
                             </FormControl>
                         </Grid>

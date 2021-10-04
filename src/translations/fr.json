@@ -297,5 +297,7 @@
     "HVDC_LINE": "Ligne HVDC",
     "HVDC_CONVERTER_STATION": "Station de conversion HVDC",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
-    "STATIC_VAR_COMPENSATOR": "CSPR"
+    "STATIC_VAR_COMPENSATOR": "CSPR",
+
+    "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage"
 }

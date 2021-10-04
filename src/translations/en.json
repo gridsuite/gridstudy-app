@@ -296,5 +296,7 @@
     "HVDC_LINE": "Hvdc_Line",
     "HVDC_CONVERTER_STATION": "Hvdc_Converter_Station",
     "SHUNT_COMPENSATOR": "Shunt_Compenstor",
-    "STATIC_VAR_COMPENSATOR": "Static_Var_Compensator"
+    "STATIC_VAR_COMPENSATOR": "Static_Var_Compensator",
+
+    "UnableToDeleteEquipment": "Unable to delete the equipment"
 }
