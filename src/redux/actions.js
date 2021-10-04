@@ -19,6 +19,7 @@ import {
     PARAM_COMPONENT_LIBRARY,
     PARAM_THEME,
     PARAM_USE_NAME,
+    PARAM_FAVORITE_CONTINGENCY_LISTS,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -278,5 +279,14 @@ export function changeDisplayedColumns(displayedColumnsParams) {
     return {
         type: CHANGE_DISPLAYED_COLUMNS_NAMES,
         displayedColumnsNamesParams: displayedColumnsParams,
+    };
+}
+
+export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
+
+export function selectFavoriteContingencyList(favoriteContingencyList) {
+    return {
+        type: FAVORITE_CONTINGENCY_LISTS,
+        [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyList,
     };
 }

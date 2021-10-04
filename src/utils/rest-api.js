@@ -16,6 +16,8 @@ const PREFIX_NOTIFICATION_WS =
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
+let PREFIX_DIRECTORY_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/directory';
 
 function getToken() {
     const state = store.getState();
@@ -57,6 +59,29 @@ export function fetchConfigParameter(name) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}`;
     return backendFetch(fetchParams).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchRootFolders() {
+    console.info('Fetching Root Directories');
+    const fetchRootFoldersUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+    return backendFetch(fetchRootFoldersUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchDirectoryContent(directoryUuid) {
+    console.info("Fetching Folder content '%s'", directoryUuid);
+    const fetchDirectoryContentUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/content`;
+    return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
