@@ -279,5 +279,6 @@
     "ActivePowerToCreateLoad": "An active power set point has to be entered in order to create a new load",
     "ReactivePowerToCreateLoad": "A reactive power set point has to be entered in order to create a new load",
     "VoltageLevelToCreateLoad": "A voltage level has to be entered in order to create a new load",
-    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load"
+    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load",
+    "LoadCreationError": "Error while creating load"
 }
