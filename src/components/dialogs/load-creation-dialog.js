@@ -17,7 +17,17 @@ import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import { Autocomplete } from '@material-ui/lab';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
-
+import { useParams } from 'react-router-dom';
+import {
+    createLoad,
+    fetchBusbarSectionsForVoltageLevel,
+    fetchBusesForVoltageLevel,
+} from '../../utils/rest-api';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { useSnackbar } from 'notistack';
 /**
  * Dialog to create a load in the network
  * @param {Boolean} open Is the dialog open ?
@@ -25,9 +35,20 @@ import TextFieldWithAdornment from '../util/text-field-with-adornment';
  * @param {String} title Title of the dialog
  */
 const LoadCreationDialog = ({ open, onClose, network }) => {
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+
     const intl = useIntl();
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
+        []
+    );
 
     const [loadId, setLoadId] = useState('');
+
+    const [loadName, setLoadName] = useState('');
 
     const [loadType, setLoadType] = useState('');
 
@@ -37,12 +58,16 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 
     const [voltageLevel, setVoltageLevel] = useState('');
 
-    const [bus, setBus] = useState('');
+    const [busOrBusbarSection, setBusOrBusbarSection] = useState('');
 
     const [errors, setErrors] = useState({});
 
     const handleChangeLoadId = (event) => {
         setLoadId(event.target.value);
+    };
+
+    const handleChangeLoadName = (event) => {
+        setLoadName(event.target.value);
     };
 
     const handleChangeLoadType = (event) => {
@@ -59,17 +84,28 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 
     const handleChangeVoltageLevel = (event, value, reason) => {
         setVoltageLevel(value);
+        if (value?.topologyKind === 'NODE_BREAKER') {
+            fetchBusbarSectionsForVoltageLevel(studyUuid, value.id).then((r) =>
+                setBusOrBusbarSectionOptions(r)
+            );
+        } else if (value?.topologyKind === 'BUS_BREAKER') {
+            fetchBusesForVoltageLevel(studyUuid, value.id).then((r) =>
+                setBusOrBusbarSectionOptions(r)
+            );
+        }
     };
 
-    const handleChangeBus = (event) => {
-        setBus(event.target.value);
+    const handleChangeBus = (event, value, reason) => {
+        setBusOrBusbarSection(value);
     };
 
     const handleSave = () => {
-        console.log('NNO', voltageLevel);
         let tmpErrors = { ...errors };
 
+        let isError = false;
+
         if (!loadId) {
+            isError = true;
             tmpErrors['load-id'] = {
                 error: true,
                 errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
@@ -79,6 +115,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         }
 
         if (!activePower) {
+            isError = true;
             tmpErrors['active-power'] = {
                 error: true,
                 errorText: intl.formatMessage({
@@ -88,6 +125,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         } else {
             let activePowerVal = Number(activePower.replace(',', '.'));
             if (isNaN(activePowerVal)) {
+                isError = true;
                 tmpErrors['active-power'] = {
                     error: true,
                     errorText: intl.formatMessage({ id: 'FieldAcceptNumeric' }),
@@ -98,6 +136,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         }
 
         if (!reactivePower) {
+            isError = true;
             tmpErrors['reactive-power'] = {
                 error: true,
                 errorText: intl.formatMessage({
@@ -107,6 +146,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         } else {
             let reactivePowerVal = Number(reactivePower.replace(',', '.'));
             if (isNaN(reactivePowerVal)) {
+                isError = true;
                 tmpErrors['reactive-power'] = {
                     error: true,
                     errorText: intl.formatMessage({ id: 'FieldAcceptNumeric' }),
@@ -117,6 +157,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         }
 
         if (!voltageLevel) {
+            isError = true;
             tmpErrors['voltage-level'] = {
                 error: true,
                 errorText: intl.formatMessage({
@@ -127,7 +168,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             tmpErrors['voltage-level'] = { error: false, errorText: '' };
         }
 
-        if (!bus) {
+        if (!busOrBusbarSection) {
+            isError = true;
             tmpErrors['bus-bar'] = {
                 error: true,
                 errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
@@ -136,6 +178,28 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             tmpErrors['bus-bar'] = { error: false, errorText: '' };
         }
         setErrors({ ...tmpErrors });
+
+        if (!isError) {
+            createLoad(
+                studyUuid,
+                loadId,
+                loadName,
+                loadType,
+                activePower,
+                reactivePower,
+                voltageLevel.id,
+                busOrBusbarSection.id
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LoadCreationError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        }
     };
 
     const handleClose = () => {
@@ -180,6 +244,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             id="load-name"
                             label={intl.formatMessage({ id: 'NameOptional' })}
                             defaultValue=""
+                            value={loadName}
+                            onChange={handleChangeLoadName}
                             variant="filled"
                         />
                     </Grid>
@@ -241,7 +307,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                                 id: 'ReactivePowerText',
                             })}
                             adornmentPosition={'end'}
-                            adornmentText={'MV'}
+                            adornmentText={'MVar'}
                             value={reactivePower}
                             onChange={handleChangeReactivePower}
                             defaultValue=""
@@ -287,12 +353,15 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                         <Autocomplete
                             id="bus"
                             size="small"
+                            //disabled={!voltageLevel}
                             autoComplete
                             autoSelect
                             autoHighlight
-                            options={[]}
-                            getOptionLabel={(bus) => bus.id}
-                            value={voltageLevel}
+                            options={busOrBusbarSectionOptions}
+                            getOptionLabel={(busOrBusbarSection) =>
+                                busOrBusbarSection.id
+                            }
+                            value={busOrBusbarSection}
                             onChange={handleChangeBus}
                             renderInput={(params) => (
                                 <TextField
