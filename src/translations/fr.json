@@ -139,8 +139,6 @@
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",
     "DeleteContingencyList": "Supprimer",
-    "treeview_finder/cancel": "Annuler",
-    "treeview_finder/contentText": " ",
     "xContingenciesWillBeSimulated": "{x} contingences seront simulées",
 
     "LimitType": "Type de limite",
