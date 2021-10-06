@@ -243,6 +243,7 @@
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre de modification de réseau",
+    "NetworkModifications": "Modifications de réseau",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -279,8 +280,6 @@
     "IdToCreateLoad":"Un ID doit être saisi pour pouvoir créer une nouvelle consommation",
     "ActivePowerToCreateLoad": "Une consigne de puissance active doit être saisie pour pouvoir créer une nouvelle consommation",
     "ReactivePowerToCreateLoad": "Une consigne de puissance réactive doit être saisie pour pouvoir créer une nouvelle consommation",
-    "VoltageLevelToCreateLoad": "A voltage level has to be entered in order to create a new load",
-    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load",
 
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
@@ -299,5 +298,9 @@
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
 
-    "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage"
+    "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
+
+    "VoltageLevelToCreateLoad": "Un poste doit être saisi pour créer une consommation",
+    "BusBarBusToCreateLoad": "Un bus ou une SJB doit être saisi pour créer une consommation",
+    "LoadCreationError": "Erreur lors de la création d'une consommation"
 }

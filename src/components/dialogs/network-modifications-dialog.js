@@ -6,7 +6,6 @@
  */
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -26,6 +25,7 @@ const useStyles = makeStyles(() => ({
         justifyContent: 'start',
     },
 }));
+import PropTypes from 'prop-types';
 
 /**
  * Dialog to select network modification to create

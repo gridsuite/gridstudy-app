@@ -110,6 +110,7 @@ export default class Network {
     }
 
     updateEquipments(currentEquipments, newEquipements) {
+        // replace current modified equipments
         currentEquipments.forEach((equipment1, index) => {
             const found = newEquipements.filter(
                 (equipment2) => equipment2.id === equipment1.id
@@ -222,7 +223,7 @@ export default class Network {
 
     updateLccConverterStations(lccConverterStations) {
         this.lccConverterStations = [...this.updateEquipments(this.lccConverterStations, lccConverterStations)];
-    }]
+    }
 
     updateVscConverterStations(vscConverterStations) {
         this.vscConverterStations = [...this.updateEquipments(this.vscConverterStations, vscConverterStations)];

@@ -298,5 +298,6 @@
     "SHUNT_COMPENSATOR": "Shunt_Compenstor",
     "STATIC_VAR_COMPENSATOR": "Static_Var_Compensator",
 
-    "UnableToDeleteEquipment": "Unable to delete the equipment"
+    "UnableToDeleteEquipment": "Unable to delete the equipment",
+    "LoadCreationError": "Error while creating load"
 }
