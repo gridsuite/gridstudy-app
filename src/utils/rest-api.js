@@ -380,7 +380,7 @@ export function fetchBusbarSectionsForVoltageLevel(studyUuid, voltageLevelId) {
         getStudyUrl(studyUuid) +
         '/network/voltage-levels/' +
         voltageLevelId +
-        '/busbarSections';
+        '/busbar-sections';
     console.debug(fetchBusbarSectionsUrl);
     return backendFetch(fetchBusbarSectionsUrl).then((response) =>
         response.json()
@@ -888,7 +888,7 @@ export function createLoad(
 ) {
     console.info('Creating load ');
     const createLoadUrl =
-        getStudyUrl(studyUuid) + '/network-modification/createLoad';
+        getStudyUrl(studyUuid) + '/network-modification/loads';
     return backendFetch(createLoadUrl, {
         method: 'PUT',
         headers: {
