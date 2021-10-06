@@ -52,8 +52,6 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
-    console.log('NNO', activeNode);
-
     return (
         <Menu
             anchorReference="anchorPosition"
