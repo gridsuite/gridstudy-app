@@ -52,6 +52,8 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
+    console.log('NNO', activeNode);
+
     return (
         <Menu
             anchorReference="anchorPosition"
@@ -94,16 +96,21 @@ const CreateNodeMenu = ({
                 />
             </MenuItem>
 
-            <MenuItem className={classes.menuItem} onClick={() => removeNode()}>
-                <ListItemText
-                    className={classes.listItemText}
-                    primary={
-                        <Typography noWrap>
-                            {intl.formatMessage({ id: 'removeNode' })}
-                        </Typography>
-                    }
-                />
-            </MenuItem>
+            {activeNode?.type !== 'ROOT' && (
+                <MenuItem
+                    className={classes.menuItem}
+                    onClick={() => removeNode()}
+                >
+                    <ListItemText
+                        className={classes.listItemText}
+                        primary={
+                            <Typography noWrap>
+                                {intl.formatMessage({ id: 'removeNode' })}
+                            </Typography>
+                        }
+                    />
+                </MenuItem>
+            )}
         </Menu>
     );
 };
