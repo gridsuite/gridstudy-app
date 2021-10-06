@@ -283,8 +283,6 @@
     "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load",
 
     "DeleteEquipment": "Supprimer ouvrage",
-    "IdToDeleteEquipment": "Un ID doit être saisi pour pouvoir supprimer un ouvrage",
-    "TypeToDeleteEquipment": "Un type doit être saisi pour pouvoir supprimer un ouvrage",
     "Type": "Type",
     "SUBSTATION": "Site",
     "VOLTAGE_LEVEL": "Poste",
@@ -296,7 +294,8 @@
     "BATTERY": "Batterie",
     "DANGLING_LINE": "Ligne frontière",
     "HVDC_LINE": "Ligne HVDC",
-    "HVDC_CONVERTER_STATION": "Station de conversion HVDC",
+    "LCC_CONVERTER_STATION": "Station de conversion LCC",
+    "VSC_CONVERTER_STATION": "Station de conversion VSC",
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
 

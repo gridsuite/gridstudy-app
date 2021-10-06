@@ -18,6 +18,14 @@ import AddIcon from '@material-ui/icons/ControlPoint';
 import DeleteIcon from '@material-ui/icons/Delete';
 import LoadCreationDialog from './load-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(() => ({
+    button: {
+        width: 200,
+        justifyContent: 'start',
+    },
+}));
 
 /**
  * Dialog to select network modification to create
@@ -27,6 +35,7 @@ import EquipmentDeletionDialog from './equipment-deletion-dialog';
  */
 const NetworkModificationDialog = ({ open, onClose, network }) => {
     const intl = useIntl();
+    const classes = useStyles();
 
     const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
     const [openEquipmentDeletionDialog, setOpenEquipmentDeletionDialog] =
@@ -68,20 +77,26 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
                     {intl.formatMessage({ id: 'NetworkModifications' })}
                 </DialogTitle>
                 <DialogContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={2} align="center">
+                    <Grid container direction="row" spacing={2}>
+                        <Grid item xs={12} justify="start">
                             <Box>
                                 <Button
+                                    className={classes.button}
                                     variant="outlined"
                                     startIcon={<AddIcon />}
                                     onClick={handleCreateLoad}
                                 >
-                                    {intl.formatMessage({ id: 'CreateLoad' })}
+                                    {intl.formatMessage({
+                                        id: 'CreateLoad',
+                                    })}
                                 </Button>
                             </Box>
-                            <br />
+                        </Grid>
+                        <br />
+                        <Grid item xs={12} justify="start">
                             <Box>
                                 <Button
+                                    className={classes.button}
                                     variant="outlined"
                                     startIcon={<DeleteIcon />}
                                     onClick={handleDeleteEquipment}

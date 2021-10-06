@@ -25,8 +25,6 @@ import {
 import { useSnackbar } from 'notistack';
 
 const equipmentTypes = [
-    'SUBSTATION',
-    'VOLTAGE_LEVEL',
     'LINE',
     'TWO_WINDINGS_TRANSFORMER',
     'THREE_WINDINGS_TRANSFORMER',
@@ -35,7 +33,8 @@ const equipmentTypes = [
     'BATTERY',
     'DANGLING_LINE',
     'HVDC_LINE',
-    'HVDC_CONVERTER_STATION',
+    'LCC_CONVERTER_STATION',
+    'VSC_CONVERTER_STATION',
     'SHUNT_COMPENSATOR',
     'STATIC_VAR_COMPENSATOR',
 ];
@@ -101,10 +100,10 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
     const handleSave = () => {
         let tmpErrors = { ...errors };
 
-        if (equipmentId === '') {
+        if (!equipmentId) {
             tmpErrors['equipment-id'] = {
                 error: true,
-                errorText: intl.formatMessage({ id: 'IdToDeleteEquipment' }),
+                errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
             };
         } else {
             tmpErrors['equipment-id'] = { error: false, errorText: '' };

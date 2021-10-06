@@ -282,8 +282,6 @@
     "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load",
 
     "DeleteEquipment": "Delete equipment",
-    "IdToDeleteEquipment":"An ID has to be entered in order to delete an equipment",
-    "TypeToDeleteEquipment": "A type must be given in order to delete an equipment",
     "Type": "Type",
     "SUBSTATION": "Substation",
     "VOLTAGE_LEVEL": "Voltage_Level",
@@ -295,7 +293,8 @@
     "BATTERY": "Battery",
     "DANGLING_LINE": "Dangling_Line",
     "HVDC_LINE": "Hvdc_Line",
-    "HVDC_CONVERTER_STATION": "Hvdc_Converter_Station",
+    "LCC_CONVERTER_STATION": "Lcc_Converter_Station",
+    "VSC_CONVERTER_STATION": "Vsc_Converter_Station",
     "SHUNT_COMPENSATOR": "Shunt_Compenstor",
     "STATIC_VAR_COMPENSATOR": "Static_Var_Compensator",
 
