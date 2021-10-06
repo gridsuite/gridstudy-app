@@ -85,12 +85,14 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     const handleChangeVoltageLevel = (event, value, reason) => {
         setVoltageLevel(value);
         if (value?.topologyKind === 'NODE_BREAKER') {
-            fetchBusbarSectionsForVoltageLevel(studyUuid, value.id).then((r) =>
-                setBusOrBusbarSectionOptions(r)
+            fetchBusbarSectionsForVoltageLevel(studyUuid, value.id).then(
+                (busbarSections) => {
+                    setBusOrBusbarSectionOptions(busbarSections);
+                }
             );
         } else if (value?.topologyKind === 'BUS_BREAKER') {
-            fetchBusesForVoltageLevel(studyUuid, value.id).then((r) =>
-                setBusOrBusbarSectionOptions(r)
+            fetchBusesForVoltageLevel(studyUuid, value.id).then((buses) =>
+                setBusOrBusbarSectionOptions(buses)
             );
         }
     };
@@ -359,7 +361,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             autoHighlight
                             options={busOrBusbarSectionOptions}
                             getOptionLabel={(busOrBusbarSection) =>
-                                busOrBusbarSection.id
+                                busOrBusbarSection?.id
                             }
                             value={busOrBusbarSection}
                             onChange={handleChangeBus}
