@@ -37,7 +37,7 @@ import {
     selectComponentLibrary,
     selectTheme,
     selectUseName,
-    selectFavoriteContingencyList,
+    selectFavoriteContingencyLists,
 } from '../redux/actions';
 
 import {
@@ -176,7 +176,7 @@ const App = () => {
                         break;
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
                         dispatch(
-                            selectFavoriteContingencyList(
+                            selectFavoriteContingencyLists(
                                 param.value.split(',')
                             )
                         );

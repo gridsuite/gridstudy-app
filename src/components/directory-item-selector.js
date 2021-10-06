@@ -52,7 +52,6 @@ const DirectoryItemSelector = (props) => {
 
     const addToDirectory = useCallback(
         (data, nodeId, content) => {
-            // create fake root
             const node = nodeMap.current[nodeId];
             node.children = content.map(directory2Tree);
             if (!node.children || node.children.length === 0) {
@@ -93,8 +92,6 @@ DirectoryItemSelector.propTypes = {
     onClose: PropTypes.func.isRequired,
     types: PropTypes.array.isRequired,
     title: PropTypes.object.isRequired,
-    validationButtonText: PropTypes.object.isRequired,
-    cancelButtonText: PropTypes.string.isRequired,
 };
 
 export default DirectoryItemSelector;

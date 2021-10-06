@@ -6,60 +6,8 @@
  */
 import React, { useEffect, useState } from 'react';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import * as PropTypes from 'prop-types';
+import ListItemWithDeleteButton from './list-item-with-delete-button';
 
-function CustomListItem(props) {
-    const [isHoover, setHoover] = useState(false);
-
-    function handleHoover(enter) {
-        return setHoover(enter);
-    }
-
-    return (
-        <ListItem
-            role={undefined}
-            dense
-            button
-            onClick={props.onClick}
-            onMouseEnter={() => handleHoover(true)}
-            onMouseLeave={() => handleHoover(false)}
-        >
-            <ListItemIcon>
-                <Checkbox
-                    color={'primary'}
-                    edge="start"
-                    checked={props.set.has(props.value)}
-                    tabIndex={-1}
-                    disableRipple
-                />
-            </ListItemIcon>
-            <ListItemText primary={props.primary} />
-            {props.removeFromList && isHoover && (
-                <IconButton onClick={props.removeFromList} size={'small'}>
-                    <DeleteIcon
-                        style={{
-                            alignItems: 'end',
-                        }}
-                    />
-                </IconButton>
-            )}
-        </ListItem>
-    );
-}
-
-CustomListItem.propTypes = {
-    onClick: PropTypes.func,
-    set: PropTypes.any,
-    value: PropTypes.any,
-    primary: PropTypes.any,
-    removeFromList: PropTypes.any,
-};
 const CheckboxList = (props) => {
     const [checked, setChecked] = useState(new Set(props.initialSelection));
 
@@ -74,12 +22,9 @@ const CheckboxList = (props) => {
         }
     }, [props.values, props.id, checked, setChecked]);
 
-    const handleToggle = (value, forceRemove) => {
+    const handleToggle = (value) => {
         const newChecked = new Set(checked);
         if (!newChecked.delete(value)) {
-            if (forceRemove) {
-                return;
-            }
             newChecked.add(value);
         }
         setChecked(newChecked);
@@ -93,7 +38,7 @@ const CheckboxList = (props) => {
         <List>
             {props.values.map((item) => {
                 return (
-                    <CustomListItem
+                    <ListItemWithDeleteButton
                         key={props.id(item)}
                         onClick={() => handleToggle(props.id(item), false)}
                         set={checked}
@@ -103,7 +48,6 @@ const CheckboxList = (props) => {
                             props.removeFromList
                                 ? (e) => {
                                       e.stopPropagation();
-                                      handleToggle(props.id(item), true);
                                       props.removeFromList(props.id(item));
                                   }
                                 : undefined

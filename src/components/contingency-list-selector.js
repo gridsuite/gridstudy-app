@@ -28,24 +28,6 @@ import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../utils/config-params';
 import { useSelector } from 'react-redux';
 import { elementType } from '@gridsuite/commons-ui/lib/utils/elementType';
 
-function idsToObj(ids, cb) {
-    /* TODO : waiting for explore-server to asks for uuids metadata */
-    fetchContingencyLists().then((res) => {
-        const mapCont = res.reduce((map, obj) => {
-            map[obj.id] = obj;
-            return map;
-        }, {});
-        cb(
-            ids
-                .map((id) => mapCont[id])
-                .filter((item) => item !== undefined)
-                .sort((a, b) =>
-                    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-                )
-        );
-    });
-}
-
 function makeButton(onClick, message, disabled) {
     return (
         <Grid item>
@@ -64,7 +46,7 @@ function makeButton(onClick, message, disabled) {
 const ContingencyListSelector = (props) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const favoriteContingencyList = useSelector(
+    const favoriteContingencyListUuids = useSelector(
         (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]
     );
 
@@ -73,9 +55,8 @@ const ContingencyListSelector = (props) => {
     const [simulatedContingencyCount, setSimulatedContingencyCount] =
         useState(0);
 
-    const [checkedContingencyListIds, setCheckedContingencyListIds] = useState(
-        []
-    );
+    const [checkedContingencyListUuids, setCheckedContingencyListUuids] =
+        useState([]);
 
     const [favoriteSelectorOpen, setFavoriteSelectorOpen] = useState(false);
 
@@ -84,11 +65,11 @@ const ContingencyListSelector = (props) => {
     };
 
     const handleStart = () => {
-        props.onStart(checkedContingencyListIds);
+        props.onStart(checkedContingencyListUuids);
     };
 
     const handleChecked = (checked) => {
-        setCheckedContingencyListIds(checked);
+        setCheckedContingencyListUuids(checked);
     };
 
     const saveFavourite = (newList) => {
@@ -101,16 +82,30 @@ const ContingencyListSelector = (props) => {
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
-        fetchContingencyCount(studyUuid, checkedContingencyListIds).then(
+        fetchContingencyCount(studyUuid, checkedContingencyListUuids).then(
             (contingencyCount) => {
                 setSimulatedContingencyCount(contingencyCount);
             }
         );
-    }, [studyUuid, checkedContingencyListIds]);
+    }, [studyUuid, checkedContingencyListUuids]);
 
     useEffect(() => {
-        idsToObj(favoriteContingencyList, setContingencyList);
-    }, [favoriteContingencyList]);
+        /* TODO : waiting for explore-server to asks for uuids metadata */
+        fetchContingencyLists().then((res) => {
+            const mapCont = res.reduce((map, obj) => {
+                map[obj.id] = obj;
+                return map;
+            }, {});
+            setContingencyList(
+                favoriteContingencyListUuids
+                    .map((id) => mapCont[id])
+                    .filter((item) => item !== undefined)
+                    .sort((a, b) =>
+                        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+                    )
+            );
+        });
+    }, [favoriteContingencyListUuids, setContingencyList]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null
@@ -122,16 +117,16 @@ const ContingencyListSelector = (props) => {
         setFavoriteSelectorOpen(true);
     };
 
-    const handleDelete = () => {
-        const toDelete = new Set(checkedContingencyListIds);
+    const removeFromFavorite = (toRemove) => {
+        const toDelete = new Set(toRemove);
         saveFavourite(
-            favoriteContingencyList.filter((item) => !toDelete.has(item))
+            favoriteContingencyListUuids.filter((item) => !toDelete.has(item))
         );
-        setCheckedContingencyListIds([]);
-    };
-
-    const removeFromFavorite = (id) => {
-        saveFavourite(favoriteContingencyList.filter((item) => item !== id));
+        const newChecked = checkedContingencyListUuids.filter(
+            (item) => !toDelete.has(item)
+        );
+        if (newChecked.length !== checkedContingencyListUuids.length)
+            setCheckedContingencyListUuids(newChecked);
     };
 
     const addFavorites = useCallback(
@@ -141,7 +136,7 @@ const ContingencyListSelector = (props) => {
                     PARAM_FAVORITE_CONTINGENCY_LISTS,
                     Array.from([
                         ...new Set([
-                            ...favoriteContingencyList,
+                            ...favoriteContingencyListUuids,
                             ...favorites.map((item) => item.id),
                         ]),
                     ])
@@ -150,7 +145,7 @@ const ContingencyListSelector = (props) => {
 
             setFavoriteSelectorOpen(false);
         },
-        [setFavoriteSelectorOpen, favoriteContingencyList]
+        [setFavoriteSelectorOpen, favoriteContingencyListUuids]
     );
 
     const renderButtons = () => {
@@ -158,9 +153,9 @@ const ContingencyListSelector = (props) => {
             <Grid container spacing={1} item justifyContent={'center'}>
                 {makeButton(handleAddFavorite, 'AddContingencyList', false)}
                 {makeButton(
-                    handleDelete,
+                    () => removeFromFavorite(checkedContingencyListUuids),
                     'DeleteContingencyList',
-                    checkedContingencyListIds.length === 0
+                    checkedContingencyListUuids.length === 0
                 )}
                 {makeButton(
                     handleStart,
@@ -192,8 +187,8 @@ const ContingencyListSelector = (props) => {
                                 onChecked={handleChecked}
                                 label={(item) => item.name}
                                 id={(item) => item.id}
-                                removeFromList={removeFromFavorite}
-                                selection={checkedContingencyListIds}
+                                removeFromList={(e) => removeFromFavorite([e])}
+                                selection={checkedContingencyListUuids}
                             />
                         </Grid>
                         <Grid item>
@@ -218,10 +213,6 @@ const ContingencyListSelector = (props) => {
                     elementType.SCRIPT_CONTINGENCY_LIST,
                 ]}
                 title={<FormattedMessage id={'ContingencyListsSelection'} />}
-                validationButtonText={
-                    <FormattedMessage id={'AddContingencyList'} />
-                }
-                cancelButtonText={'Cancel'}
             />
         </>
     );

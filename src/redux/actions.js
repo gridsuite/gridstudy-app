@@ -284,9 +284,9 @@ export function changeDisplayedColumns(displayedColumnsParams) {
 
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
 
-export function selectFavoriteContingencyList(favoriteContingencyList) {
+export function selectFavoriteContingencyLists(favoriteContingencyLists) {
     return {
         type: FAVORITE_CONTINGENCY_LISTS,
-        [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyList,
+        [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
     };
 }
