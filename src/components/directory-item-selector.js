@@ -33,9 +33,7 @@ const DirectoryItemSelector = (props) => {
                 name: newData.elementName,
                 icon: getIconFor(newData.type, classes.icon),
                 children:
-                    newData.type === elementType.DIRECTORY
-                        ? [{ id: '', name: '' }]
-                        : undefined,
+                    newData.type === elementType.DIRECTORY ? [] : undefined,
             };
             return (nodeMap.current[newNode.id] = newNode);
         },
@@ -54,10 +52,6 @@ const DirectoryItemSelector = (props) => {
         (nodeId, content) => {
             const node = nodeMap.current[nodeId];
             node.children = content.map(directory2Tree);
-            if (!node.children || node.children.length === 0) {
-                // create virtual empty node to prevent selection;
-                node.children = [{ id: '', name: '' }];
-            }
         },
         [directory2Tree]
     );
