@@ -51,14 +51,13 @@ const DirectoryItemSelector = (props) => {
     }, [props.open, data, directory2Tree]);
 
     const addToDirectory = useCallback(
-        (data, nodeId, content) => {
+        (nodeId, content) => {
             const node = nodeMap.current[nodeId];
             node.children = content.map(directory2Tree);
             if (!node.children || node.children.length === 0) {
                 // create virtual empty node to prevent selection;
                 node.children = [{ id: '', name: '' }];
             }
-            return [...data];
         },
         [directory2Tree]
     );
@@ -66,13 +65,11 @@ const DirectoryItemSelector = (props) => {
     const fetchDirectory = (nodeId) => {
         const filter = contentFilter();
         fetchDirectoryContent(nodeId).then((content) => {
-            setData(
-                addToDirectory(
-                    data,
-                    nodeId,
-                    content.filter((item) => filter.has(item.type))
-                )
+            addToDirectory(
+                nodeId,
+                content.filter((item) => filter.has(item.type))
             );
+            setData([...data]);
         });
     };
 
