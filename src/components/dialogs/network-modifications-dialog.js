@@ -18,6 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import LoadCreationDialog from './load-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
     button: {
@@ -25,7 +26,6 @@ const useStyles = makeStyles(() => ({
         justifyContent: 'start',
     },
 }));
-import PropTypes from 'prop-types';
 
 /**
  * Dialog to select network modification to create

@@ -203,7 +203,7 @@ export default class Network {
     }
 
     updateDanglingLines(danglingLines) {
-        this.danglingLines = [...updateEquipments(this.danglingLines, danglingLines)];
+        this.danglingLines = [...this.updateEquipments(this.danglingLines, danglingLines)];
     }
 
     updateShuntCompensators(shuntCompensators) {
