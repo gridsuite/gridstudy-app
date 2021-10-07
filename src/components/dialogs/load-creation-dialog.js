@@ -83,7 +83,11 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeVoltageLevel = (event, value, reason) => {
-        setVoltageLevel(value);
+        if (reason === 'input') {
+            setVoltageLevel({ id: value });
+        } else {
+            setVoltageLevel(value);
+        }
         if (value?.topologyKind === 'NODE_BREAKER') {
             // TODO specify the correct network variant num
             fetchBusbarSectionsForVoltageLevel(studyUuid, 0, value.id).then(
@@ -96,11 +100,17 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             fetchBusesForVoltageLevel(studyUuid, 0, value.id).then((buses) =>
                 setBusOrBusbarSectionOptions(buses)
             );
+        } else {
+            setBusOrBusbarSectionOptions([]);
         }
     };
 
     const handleChangeBus = (event, value, reason) => {
-        setBusOrBusbarSection(value);
+        if (reason === 'input') {
+            setBusOrBusbarSection({ id: value });
+        } else {
+            setBusOrBusbarSection(value);
+        }
     };
 
     const handleSave = () => {
@@ -328,15 +338,15 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="center">
                         <Autocomplete
+                            freeSolo
+                            forcePopupIcon
                             id="voltage-level"
                             size="small"
-                            autoComplete
-                            autoSelect
-                            autoHighlight
                             options={network?.voltageLevels}
                             getOptionLabel={(vl) => vl.id}
                             value={voltageLevel}
                             onChange={handleChangeVoltageLevel}
+                            onInputChange={handleChangeVoltageLevel}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -355,18 +365,18 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                     </Grid>
                     <Grid item xs={4} align="center">
                         <Autocomplete
+                            freeSolo
+                            forcePopupIcon
                             id="bus"
                             size="small"
-                            //disabled={!voltageLevel}
-                            autoComplete
-                            autoSelect
-                            autoHighlight
+                            disabled={!voltageLevel}
                             options={busOrBusbarSectionOptions}
                             getOptionLabel={(busOrBusbarSection) =>
                                 busOrBusbarSection?.id
                             }
                             value={busOrBusbarSection}
                             onChange={handleChangeBus}
+                            onInputChange={handleChangeBus}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
