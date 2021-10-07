@@ -203,25 +203,41 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 reactivePower,
                 voltageLevel.id,
                 busOrBusbarSection.id
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'LoadCreationError',
-                        intlRef: intlRef,
-                    },
+            )
+                .then(() => {
+                    handleCloseAndClear();
+                })
+                .catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'LoadCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
         }
     };
 
-    const handleClose = () => {
+    const clearValues = () => {
+        setLoadId('');
+        setLoadName('');
+        setLoadType('');
+        setActivePower('');
+        setReactivePower('');
+        setVoltageLevel('');
+        setBusOrBusbarSection('');
+        setBusOrBusbarSectionOptions([])
+    }
+
+    const handleCloseAndClear = () => {
+        clearValues();
         setErrors({});
         onClose();
     };
 
-    const handleExited = () => {
+    const handleClose = () => {
         setErrors({});
         onClose();
     };
@@ -230,7 +246,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         <Dialog
             open={open}
             onClose={handleClose}
-            onExited={handleExited}
             aria-labelledby="dialog-create-load"
         >
             <DialogTitle>
@@ -396,7 +411,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="text">
+                <Button onClick={handleCloseAndClear} variant="text">
                     <FormattedMessage id="close" />
                 </Button>
                 <Button onClick={handleSave} variant="text">
