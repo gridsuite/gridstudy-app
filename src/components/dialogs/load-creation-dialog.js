@@ -188,7 +188,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 studyUuid,
                 loadId,
                 loadName,
-                loadType,
+                !loadType ? 'UNDEFINED' : loadType,
                 activePower,
                 reactivePower,
                 voltageLevel.id,
