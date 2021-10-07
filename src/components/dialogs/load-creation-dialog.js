@@ -228,8 +228,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         setReactivePower('');
         setVoltageLevel('');
         setBusOrBusbarSection('');
-        setBusOrBusbarSectionOptions([])
-    }
+        setBusOrBusbarSectionOptions([]);
+    };
 
     const handleCloseAndClear = () => {
         clearValues();
@@ -259,7 +259,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             id="load-id"
                             label={intl.formatMessage({ id: 'ID' })}
                             variant="filled"
-                            color="secondary"
                             value={loadId}
                             onChange={handleChangeLoadId}
                             {...(errors['load-id']?.error && {
