@@ -24,6 +24,7 @@
     "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
     "studyDeletedSuccessMsg": "Étude supprimée",
     "deleteStudyError": "Vous ne pouvez pas supprimer une étude dont vous n'êtes pas propriétaire",
+    "equipmentsSearchingError": "Une erreur est survenue lors de la recherche des équipements",
 
     "renameStudyMsg": "Nouveau nom de l'étude : ",
     "renameStudy": "Renommer l'étude",
@@ -245,7 +246,7 @@
     "NetworkModificationTree": "Arbre de modification de réseau",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
-    "logs": "Logs",
+    "Logs": "Logs",
     "logsTitle": "Logs : {title}",
     "showReport": "Afficher logs",
     "loadingReport": "Chargement des logs en cours...",

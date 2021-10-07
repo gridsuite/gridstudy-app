@@ -361,6 +361,27 @@ function fetchEquipments(
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
+export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
+    console.info(
+        "Fetching equipments infos matching with '%s' term ... ",
+        searchTerm
+    );
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append(
+        'q',
+        useName
+            ? `equipmentName:*${searchTerm}*`
+            : `equipmentId:*${searchTerm}*`
+    );
+    return backendFetch(
+        getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
+    ).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function fetchLinePositions(studyUuid) {
     console.info(`Fetching line positions of study '${studyUuid}'...`);
     const fetchLinePositionsUrl = getStudyUrl(studyUuid) + '/geo-data/lines';

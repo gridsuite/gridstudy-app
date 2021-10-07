@@ -24,6 +24,7 @@
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
     "studyDeletedSuccessMsg": "Study deleted",
     "deleteStudyError": "Cannot remove the study if you are not the owner",
+    "equipmentsSearchingError": "An error occurred while searching the equipments",
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
@@ -245,7 +246,7 @@
     "NetworkModificationTree": "Network modification tree",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
-    "logs": "Logs",
+    "Logs": "Logs",
     "logsTitle": "Logs : {title}",
     "showReport": "Show logs",
     "loadingReport": "Loading logs in progress...",

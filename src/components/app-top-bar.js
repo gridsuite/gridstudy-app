@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
@@ -20,10 +20,13 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls } from '../utils/rest-api';
+import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackbar } from 'notistack';
+import { stringify } from 'qs';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -45,6 +48,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const dispatch = useDispatch();
 
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
+
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
     const loadflowNotif = useSelector((state) => state.loadflowNotif);
@@ -52,6 +59,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const saNotif = useSelector((state) => state.saNotif);
 
     const theme = useSelector((state) => state[PARAM_THEME]);
+
+    const network = useSelector((state) => state.network);
 
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
@@ -64,6 +73,46 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [showParameters, setShowParameters] = useState(false);
+
+    // Equipments search bar
+    const [equipmentsFound, setEquipmentsFound] = useState([]);
+    const searchMatchingEquipments = useCallback(
+        (searchTerm) => {
+            fetchEquipmentsInfos(studyUuid, searchTerm, useNameLocal)
+                .then((infos) => setEquipmentsFound(infos))
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'equipmentsSearchingError',
+                            intlRef: intlRef,
+                        },
+                    })
+                );
+        },
+        [studyUuid, useNameLocal, enqueueSnackbar, intlRef]
+    );
+    const showVoltageLevelDiagram = useCallback(
+        (equipmentInfos) => {
+            console.info('Equipment matching = ', equipmentInfos);
+            onChangeTab(0); // switch to map view
+            history.replace(
+                // show voltage level
+                '/studies/' +
+                    encodeURIComponent(studyUuid) +
+                    stringify(
+                        {
+                            voltageLevelId: network.voltageLevelsById
+                                .keys()
+                                .next().value,
+                        },
+                        { addQueryPrefix: true }
+                    )
+            );
+        },
+        [studyUuid, history, onChangeTab, network]
+    );
 
     useEffect(() => {
         if (user !== null) {
@@ -107,8 +156,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 theme={themeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
+                onEquipmentsSearchTermChange={searchMatchingEquipments}
+                onEquipmentSearchValidation={showVoltageLevelDiagram}
+                equipmentsFound={equipmentsFound}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
+                studyUuid={studyUuid}
             >
                 {studyUuid && (
                     <Tabs
