@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 
@@ -27,6 +27,8 @@ import DirectoryItemSelector from './directory-item-selector';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../utils/config-params';
 import { useSelector } from 'react-redux';
 import { elementType } from '@gridsuite/commons-ui/lib/utils/elementType';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackbar } from 'notistack';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -60,6 +62,12 @@ const ContingencyListSelector = (props) => {
 
     const [favoriteSelectorOpen, setFavoriteSelectorOpen] = useState(false);
 
+    const { enqueueSnackbar } = useSnackbar();
+
+    const intlRef = useIntlRef();
+
+    const [saveDisabled, setSaveDisabled] = useState(true);
+
     const handleClose = () => {
         props.onClose();
     };
@@ -73,11 +81,20 @@ const ContingencyListSelector = (props) => {
     };
 
     const saveFavourite = (newList) => {
-        const existingLists = new Set(contingencyList.map((item) => item.id));
-        updateConfigParameter(
-            PARAM_FAVORITE_CONTINGENCY_LISTS,
-            newList.filter((item) => existingLists.has(item))
-        ).then();
+        if (!saveDisabled) {
+            updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
+                .then()
+                .catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'paramsChangingError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+        }
     };
 
     useEffect(() => {
@@ -91,21 +108,42 @@ const ContingencyListSelector = (props) => {
 
     useEffect(() => {
         /* TODO : waiting for explore-server to asks for uuids metadata */
-        fetchContingencyLists().then((res) => {
-            const mapCont = res.reduce((map, obj) => {
-                map[obj.id] = obj;
-                return map;
-            }, {});
-            setContingencyList(
-                favoriteContingencyListUuids
-                    .map((id) => mapCont[id])
-                    .filter((item) => item !== undefined)
-                    .sort((a, b) =>
-                        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-                    )
-            );
-        });
-    }, [favoriteContingencyListUuids, setContingencyList]);
+        fetchContingencyLists()
+            .then((res) => {
+                const mapCont = res.reduce((map, obj) => {
+                    map[obj.id] = obj;
+                    return map;
+                }, {});
+                setContingencyList(
+                    favoriteContingencyListUuids
+                        .map((id) => mapCont[id])
+                        .filter((item) => item !== undefined)
+                        .sort((a, b) =>
+                            a.name
+                                .toLowerCase()
+                                .localeCompare(b.name.toLowerCase())
+                        )
+                );
+                setSaveDisabled(false);
+            })
+            .catch(() => {
+                setSaveDisabled(true);
+                displayErrorMessageWithSnackbar({
+                    errorMessage: '',
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'getContingencyListError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }, [
+        favoriteContingencyListUuids,
+        setContingencyList,
+        setSaveDisabled,
+        intlRef,
+        enqueueSnackbar,
+    ]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null
@@ -129,24 +167,19 @@ const ContingencyListSelector = (props) => {
             setCheckedContingencyListUuids(newChecked);
     };
 
-    const addFavorites = useCallback(
-        (favorites) => {
-            if (favorites) {
-                updateConfigParameter(
-                    PARAM_FAVORITE_CONTINGENCY_LISTS,
-                    Array.from([
-                        ...new Set([
-                            ...favoriteContingencyListUuids,
-                            ...favorites.map((item) => item.id),
-                        ]),
-                    ])
-                ).then();
-            }
-
-            setFavoriteSelectorOpen(false);
-        },
-        [setFavoriteSelectorOpen, favoriteContingencyListUuids]
-    );
+    const addFavorites = (favorites) => {
+        if (favorites) {
+            saveFavourite(
+                Array.from([
+                    ...new Set([
+                        ...favoriteContingencyListUuids,
+                        ...favorites.map((item) => item.id),
+                    ]),
+                ])
+            );
+        }
+        setFavoriteSelectorOpen(false);
+    };
 
     const renderButtons = () => {
         return (
