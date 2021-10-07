@@ -127,11 +127,11 @@ export default class Network {
                 currentEquipments.push(equipment1);
             }
         });
-        return currentEquipments;
+        return [...currentEquipments];
     }
 
     updateSubstations(substations) {
-        this.substations = [...this.updateEquipments(this.substations, substations)];
+        this.substations = this.updateEquipments(this.substations, substations);
 
         // add more infos
         this.completeSubstationsInfos();
@@ -142,7 +142,7 @@ export default class Network {
     }
 
     updateLines(lines) {
-        this.lines = [...this.updateEquipments(this.lines, lines)];
+        this.lines = this.updateEquipments(this.lines, lines);
 
         // add more infos
         this.completeLinesInfos();
@@ -156,10 +156,10 @@ export default class Network {
     }
 
     updateTwoWindingsTransformers(twoWindingsTransformers) {
-        this.twoWindingsTransformers = [...this.updateEquipments(
+        this.twoWindingsTransformers = this.updateEquipments(
             this.twoWindingsTransformers,
             twoWindingsTransformers
-        )];
+        );
 
         // add more infos
         this.completeTwoWindingsTransformersInfos();
@@ -171,10 +171,10 @@ export default class Network {
     }
 
     updateThreeWindingsTransformers(threeWindingsTransformers) {
-        this.threeWindingsTransformers = [...this.updateEquipments(
+        this.threeWindingsTransformers = this.updateEquipments(
             this.threeWindingsTransformers,
             threeWindingsTransformers
-        )];
+        );
 
         // add more infos
         this.completeThreeWindingsTransformersInfos();
@@ -188,45 +188,57 @@ export default class Network {
     }
 
     updateGenerators(generators) {
-        this.generators = [...this.updateEquipments(this.generators, generators)];
+        this.generators = this.updateEquipments(this.generators, generators);
 
         // add more infos
         this.completeGeneratorsInfos();
     }
 
     updateBatteries(batteries) {
-        this.batteries = [...this.updateEquipments(this.batteries, batteries)];
+        this.batteries = this.updateEquipments(this.batteries, batteries);
     }
 
     updateLoads(loads) {
-        this.loads = [...this.updateEquipments(this.loads, loads)];
+        this.loads = this.updateEquipments(this.loads, loads);
     }
 
     updateDanglingLines(danglingLines) {
-        this.danglingLines = [...this.updateEquipments(this.danglingLines, danglingLines)];
+        this.danglingLines = this.updateEquipments(
+            this.danglingLines,
+            danglingLines
+        );
     }
 
     updateShuntCompensators(shuntCompensators) {
-        this.shuntCompensators = [...this.updateEquipments(this.shuntCompensators, shuntCompensators)];
+        this.shuntCompensators = this.updateEquipments(
+            this.shuntCompensators,
+            shuntCompensators
+        );
     }
 
     updateStaticVarCompensators(staticVarCompensators) {
-        this.staticVarCompensators = [...this.updateEquipments(
+        this.staticVarCompensators = this.updateEquipments(
             this.staticVarCompensators,
             staticVarCompensators
-        )];
+        );
     }
 
     updateHvdcLines(hvdcLines) {
-        this.hvdcLines = [...this.updateEquipments(this.hvdcLines, hvdcLines)];
+        this.hvdcLines = this.updateEquipments(this.hvdcLines, hvdcLines);
     }
 
     updateLccConverterStations(lccConverterStations) {
-        this.lccConverterStations = [...this.updateEquipments(this.lccConverterStations, lccConverterStations)];
+        this.lccConverterStations = this.updateEquipments(
+            this.lccConverterStations,
+            lccConverterStations
+        );
     }
 
     updateVscConverterStations(vscConverterStations) {
-        this.vscConverterStations = [...this.updateEquipments(this.vscConverterStations, vscConverterStations)];
+        this.vscConverterStations = this.updateEquipments(
+            this.vscConverterStations,
+            vscConverterStations
+        );
     }
 
     getVoltageLevels() {
