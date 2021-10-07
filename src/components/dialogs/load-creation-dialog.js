@@ -85,13 +85,15 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     const handleChangeVoltageLevel = (event, value, reason) => {
         setVoltageLevel(value);
         if (value?.topologyKind === 'NODE_BREAKER') {
-            fetchBusbarSectionsForVoltageLevel(studyUuid, value.id).then(
+            // TODO specify the correct network variant num
+            fetchBusbarSectionsForVoltageLevel(studyUuid, 0, value.id).then(
                 (busbarSections) => {
                     setBusOrBusbarSectionOptions(busbarSections);
                 }
             );
         } else if (value?.topologyKind === 'BUS_BREAKER') {
-            fetchBusesForVoltageLevel(studyUuid, value.id).then((buses) =>
+            // TODO specify the correct network variant num
+            fetchBusesForVoltageLevel(studyUuid, 0, value.id).then((buses) =>
                 setBusOrBusbarSectionOptions(buses)
             );
         }
