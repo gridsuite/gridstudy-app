@@ -13,7 +13,13 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
-import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import {
+    InputLabel,
+    MenuItem,
+    Popper,
+    Select,
+    TextField,
+} from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import { Autocomplete } from '@material-ui/lab';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
@@ -35,6 +41,12 @@ import { useSnackbar } from 'notistack';
  * @param {String} title Title of the dialog
  */
 const LoadCreationDialog = ({ open, onClose, network }) => {
+    const styles = () => ({
+        popper: {
+            width: 'fit-content',
+        },
+    });
+
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const intl = useIntl();
@@ -242,6 +254,12 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         onClose();
     };
 
+    const FittingPopper = (props) => {
+        return (
+            <Popper {...props} style={styles.popper} placement="bottom-start" />
+        );
+    };
+
     return (
         <Dialog
             open={open}
@@ -375,6 +393,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                                     })}
                                 />
                             )}
+                            PopperComponent={FittingPopper}
                         />
                     </Grid>
                     <Grid item xs={4} align="center">
@@ -405,6 +424,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                                     })}
                                 />
                             )}
+                            PopperComponent={FittingPopper}
                         />
                     </Grid>
                 </Grid>
