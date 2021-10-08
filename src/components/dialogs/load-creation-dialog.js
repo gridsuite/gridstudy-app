@@ -34,6 +34,8 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
+import { validateField } from '../util/validation-functions';
+
 /**
  * Dialog to create a load in the network
  * @param {Boolean} open Is the dialog open ?
@@ -72,7 +74,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 
     const [busOrBusbarSection, setBusOrBusbarSection] = useState('');
 
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(new Map());
 
     const handleChangeLoadId = (event) => {
         setLoadId(event.target.value);
@@ -126,86 +128,52 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleSave = () => {
-        let tmpErrors = { ...errors };
+        let tmpErrors = new Map(errors);
 
-        let isError = false;
+        tmpErrors.set(
+            'load-id',
+            validateField(loadId, {
+                isFieldRequired: true,
+            })
+        );
 
-        if (!loadId) {
-            isError = true;
-            tmpErrors['load-id'] = {
-                error: true,
-                errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
-            };
-        } else {
-            tmpErrors['load-id'] = { error: false, errorText: '' };
-        }
+        tmpErrors.set(
+            'active-power',
+            validateField(activePower, {
+                isFieldRequired: true,
+                isFieldNumeric: true,
+            })
+        );
 
-        if (!activePower) {
-            isError = true;
-            tmpErrors['active-power'] = {
-                error: true,
-                errorText: intl.formatMessage({
-                    id: 'FieldIsRequired',
-                }),
-            };
-        } else {
-            let activePowerVal = Number(activePower.replace(',', '.'));
-            if (isNaN(activePowerVal)) {
-                isError = true;
-                tmpErrors['active-power'] = {
-                    error: true,
-                    errorText: intl.formatMessage({ id: 'FieldAcceptNumeric' }),
-                };
-            } else {
-                tmpErrors['active-power'] = { error: false, errorText: '' };
-            }
-        }
+        tmpErrors.set(
+            'reactive-power',
+            validateField(reactivePower, {
+                isFieldRequired: true,
+                isFieldNumeric: true,
+            })
+        );
 
-        if (!reactivePower) {
-            isError = true;
-            tmpErrors['reactive-power'] = {
-                error: true,
-                errorText: intl.formatMessage({
-                    id: 'FieldIsRequired',
-                }),
-            };
-        } else {
-            let reactivePowerVal = Number(reactivePower.replace(',', '.'));
-            if (isNaN(reactivePowerVal)) {
-                isError = true;
-                tmpErrors['reactive-power'] = {
-                    error: true,
-                    errorText: intl.formatMessage({ id: 'FieldAcceptNumeric' }),
-                };
-            } else {
-                tmpErrors['reactive-power'] = { error: false, errorText: '' };
-            }
-        }
+        tmpErrors.set(
+            'voltage-level',
+            validateField(voltageLevel, {
+                isFieldRequired: true,
+            })
+        );
 
-        if (!voltageLevel) {
-            isError = true;
-            tmpErrors['voltage-level'] = {
-                error: true,
-                errorText: intl.formatMessage({
-                    id: 'FieldIsRequired',
-                }),
-            };
-        } else {
-            tmpErrors['voltage-level'] = { error: false, errorText: '' };
-        }
+        tmpErrors.set(
+            'bus-bar',
+            validateField(busOrBusbarSection, {
+                isFieldRequired: true,
+            })
+        );
 
-        if (!busOrBusbarSection) {
-            isError = true;
-            tmpErrors['bus-bar'] = {
-                error: true,
-                errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
-            };
-        } else {
-            tmpErrors['bus-bar'] = { error: false, errorText: '' };
-        }
-        setErrors({ ...tmpErrors });
+        setErrors(tmpErrors);
 
-        if (!isError) {
+        // Check if error list contains an error
+        let isValid =
+            Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
+
+        if (isValid) {
             createLoad(
                 studyUuid,
                 loadId,
@@ -245,12 +213,12 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 
     const handleCloseAndClear = () => {
         clearValues();
-        setErrors({});
+        setErrors(new Map());
         onClose();
     };
 
     const handleClose = () => {
-        setErrors({});
+        setErrors(new Map());
         onClose();
     };
 
@@ -279,9 +247,11 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             variant="filled"
                             value={loadId}
                             onChange={handleChangeLoadId}
-                            {...(errors['load-id']?.error && {
+                            {...(errors.get('load-id')?.error && {
                                 error: true,
-                                helperText: errors['load-id']?.errorText,
+                                helperText: intl.formatMessage({
+                                    id: errors.get('load-id')?.errorMsgId,
+                                }),
                             })}
                         />
                     </Grid>
@@ -340,9 +310,11 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             value={activePower}
                             onChange={handleChangeActivePower}
                             defaultValue=""
-                            {...(errors['active-power']?.error && {
+                            {...(errors.get('active-power')?.error && {
                                 error: true,
-                                helperText: errors['active-power']?.errorText,
+                                helperText: intl.formatMessage({
+                                    id: errors.get('active-power')?.errorMsgId,
+                                }),
                             })}
                         />
                     </Grid>
@@ -357,9 +329,12 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             value={reactivePower}
                             onChange={handleChangeReactivePower}
                             defaultValue=""
-                            {...(errors['reactive-power']?.error && {
+                            {...(errors.get('reactive-power')?.error && {
                                 error: true,
-                                helperText: errors['reactive-power']?.errorText,
+                                helperText: intl.formatMessage({
+                                    id: errors.get('reactive-power')
+                                        ?.errorMsgId,
+                                }),
                             })}
                         />
                     </Grid>
@@ -386,10 +361,12 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                                     label={intl.formatMessage({
                                         id: 'VoltageLevel',
                                     })}
-                                    {...(errors['voltage-level']?.error && {
+                                    {...(errors.get('voltage-level')?.error && {
                                         error: true,
-                                        helperText:
-                                            errors['voltage-level']?.errorText,
+                                        helperText: intl.formatMessage({
+                                            id: errors.get('voltage-level')
+                                                ?.errorMsgId,
+                                        }),
                                     })}
                                 />
                             )}
@@ -417,10 +394,12 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                                     label={intl.formatMessage({
                                         id: 'BusBarBus',
                                     })}
-                                    {...(errors['bus-bar']?.error && {
+                                    {...(errors.get('bus-bar')?.error && {
                                         error: true,
-                                        helperText:
-                                            errors['bus-bar']?.errorText,
+                                        helperText: intl.formatMessage({
+                                            id: errors.get('bus-bar')
+                                                ?.errorMsgId,
+                                        }),
                                     })}
                                 />
                             )}
