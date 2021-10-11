@@ -109,7 +109,7 @@ export default class Network {
         );
     }
 
-    updateEquipments(currentEquipments, newEquipements) {
+    updateEquipments(currentEquipments, newEquipements, equipmentType) {
         // replace current modified equipments
         currentEquipments.forEach((equipment1, index) => {
             const found = newEquipements.filter(
@@ -119,19 +119,30 @@ export default class Network {
         });
 
         // add newly created equipments
-        newEquipements.forEach((equipment1) => {
-            const found = currentEquipments.find(
-                (equipment2) => equipment2.id === equipment1.id
-            );
-            if (found === undefined) {
-                currentEquipments.push(equipment1);
-            }
-        });
-        return [...currentEquipments];
+        let equipmentsAdded = false;
+        if (this.isResourceFetched(equipmentType)) {
+            newEquipements.forEach((equipment1) => {
+                const found = currentEquipments.find(
+                    (equipment2) => equipment2.id === equipment1.id
+                );
+                if (found === undefined) {
+                    currentEquipments.push(equipment1);
+                    equipmentsAdded = true;
+                }
+            });
+        }
+
+        return equipmentsAdded === true
+            ? [...currentEquipments]
+            : currentEquipments;
     }
 
     updateSubstations(substations) {
-        this.substations = this.updateEquipments(this.substations, substations);
+        this.substations = this.updateEquipments(
+            this.substations,
+            substations,
+            equipments.substations
+        );
 
         // add more infos
         this.completeSubstationsInfos();
@@ -142,7 +153,7 @@ export default class Network {
     }
 
     updateLines(lines) {
-        this.lines = this.updateEquipments(this.lines, lines);
+        this.lines = this.updateEquipments(this.lines, lines, equipments.lines);
 
         // add more infos
         this.completeLinesInfos();
@@ -158,7 +169,8 @@ export default class Network {
     updateTwoWindingsTransformers(twoWindingsTransformers) {
         this.twoWindingsTransformers = this.updateEquipments(
             this.twoWindingsTransformers,
-            twoWindingsTransformers
+            twoWindingsTransformers,
+            equipments.twoWindingsTransformers
         );
 
         // add more infos
@@ -173,7 +185,8 @@ export default class Network {
     updateThreeWindingsTransformers(threeWindingsTransformers) {
         this.threeWindingsTransformers = this.updateEquipments(
             this.threeWindingsTransformers,
-            threeWindingsTransformers
+            threeWindingsTransformers,
+            equipments.threeWindingsTransformers
         );
 
         // add more infos
@@ -188,56 +201,73 @@ export default class Network {
     }
 
     updateGenerators(generators) {
-        this.generators = this.updateEquipments(this.generators, generators);
+        this.generators = this.updateEquipments(
+            this.generators,
+            generators,
+            equipments.generators
+        );
 
         // add more infos
         this.completeGeneratorsInfos();
     }
 
     updateBatteries(batteries) {
-        this.batteries = this.updateEquipments(this.batteries, batteries);
+        this.batteries = this.updateEquipments(
+            this.batteries,
+            batteries,
+            equipments.batteries
+        );
     }
 
     updateLoads(loads) {
-        this.loads = this.updateEquipments(this.loads, loads);
+        this.loads = this.updateEquipments(this.loads, loads, equipments.loads);
     }
 
     updateDanglingLines(danglingLines) {
         this.danglingLines = this.updateEquipments(
             this.danglingLines,
-            danglingLines
+            danglingLines,
+            equipments.danglingLines
         );
     }
 
     updateShuntCompensators(shuntCompensators) {
         this.shuntCompensators = this.updateEquipments(
             this.shuntCompensators,
-            shuntCompensators
+            shuntCompensators,
+            equipments.shuntCompensators
         );
     }
 
     updateStaticVarCompensators(staticVarCompensators) {
         this.staticVarCompensators = this.updateEquipments(
             this.staticVarCompensators,
-            staticVarCompensators
+            staticVarCompensators,
+            equipments.staticVarCompensators
         );
     }
 
     updateHvdcLines(hvdcLines) {
-        this.hvdcLines = this.updateEquipments(this.hvdcLines, hvdcLines);
+        this.hvdcLines = this.updateEquipments(
+            this.hvdcLines,
+            hvdcLines,
+            equipments.hvdcLines
+        );
     }
 
     updateLccConverterStations(lccConverterStations) {
         this.lccConverterStations = this.updateEquipments(
             this.lccConverterStations,
-            lccConverterStations
+            lccConverterStations,
+            equipments.lccConverterStations
         );
     }
 
     updateVscConverterStations(vscConverterStations) {
         this.vscConverterStations = this.updateEquipments(
             this.vscConverterStations,
-            vscConverterStations
+            vscConverterStations,
+            equipments.vscConverterStations
         );
     }
 
