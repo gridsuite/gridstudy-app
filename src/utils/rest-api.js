@@ -361,24 +361,36 @@ function fetchEquipments(
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
-export function fetchBusesForVoltageLevel(studyUuid, voltageLevelId) {
+export function fetchBusesForVoltageLevel(
+    studyUuid,
+    variantNum,
+    voltageLevelId
+) {
     console.info(`Fetching buses for voltage level '${voltageLevelId}'...`);
     const fetchBusesUrl =
         getStudyUrl(studyUuid) +
-        '/network/voltage-levels/' +
+        '/network/' +
+        variantNum +
+        '/voltage-levels/' +
         voltageLevelId +
         '/buses';
     console.debug(fetchBusesUrl);
     return backendFetch(fetchBusesUrl).then((response) => response.json());
 }
 
-export function fetchBusbarSectionsForVoltageLevel(studyUuid, voltageLevelId) {
+export function fetchBusbarSectionsForVoltageLevel(
+    studyUuid,
+    variantNum,
+    voltageLevelId
+) {
     console.info(
         `Fetching busbar sections for voltage level '${voltageLevelId}'...`
     );
     const fetchBusbarSectionsUrl =
         getStudyUrl(studyUuid) +
-        '/network/voltage-levels/' +
+        '/network/' +
+        variantNum +
+        '/voltage-levels/' +
         voltageLevelId +
         '/busbar-sections';
     console.debug(fetchBusbarSectionsUrl);
