@@ -35,6 +35,18 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    helperText: {
+        margin: 0,
+    },
+    popper: {
+        style: {
+            width: 'fit-content',
+        },
+    },
+}));
 
 /**
  * Dialog to create a load in the network
@@ -43,11 +55,7 @@ import { validateField } from '../util/validation-functions';
  * @param {String} title Title of the dialog
  */
 const LoadCreationDialog = ({ open, onClose, network }) => {
-    const styles = () => ({
-        popper: {
-            width: 'fit-content',
-        },
-    });
+    const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -224,7 +232,11 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 
     const FittingPopper = (props) => {
         return (
-            <Popper {...props} style={styles.popper} placement="bottom-start" />
+            <Popper
+                {...props}
+                style={classes.popper.style}
+                placement="bottom-start"
+            />
         );
     };
 
@@ -247,6 +259,11 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             variant="filled"
                             value={loadId}
                             onChange={handleChangeLoadId}
+                            /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
+                               which is not the case when no variant is used) */
+                            FormHelperTextProps={{
+                                className: classes.helperText,
+                            }}
                             {...(errors.get('load-id')?.error && {
                                 error: true,
                                 helperText: intl.formatMessage({
@@ -267,7 +284,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                     </Grid>
                     <Grid item xs={4} align="center">
                         <FormControl fullWidth>
-                            <InputLabel id="load-type-label" margin={'dense'}>
+                            <InputLabel id="load-type-label" variant={'filled'}>
                                 {intl.formatMessage({ id: 'TypeOptional' })}
                             </InputLabel>
                             <Select
