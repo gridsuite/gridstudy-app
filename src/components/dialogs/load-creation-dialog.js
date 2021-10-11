@@ -267,7 +267,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                     </Grid>
                     <Grid item xs={4} align="center">
                         <FormControl fullWidth>
-                            <InputLabel id="load-type-label" margin={'dense'} variant={'filled'}>
+                            <InputLabel id="load-type-label" variant={'filled'}>
                                 {intl.formatMessage({ id: 'TypeOptional' })}
                             </InputLabel>
                             <Select
