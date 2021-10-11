@@ -19,10 +19,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from 'react-router-dom';
 import { deleteEquipment } from '../../utils/rest-api';
 import {
-    displayInfoMessageWithSnackbar,
+    displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
+import { validateField } from '../util/validation-functions';
 
 const equipmentTypes = [
     'LINE',
@@ -40,6 +41,10 @@ const equipmentTypes = [
 ];
 
 const useStyles = makeStyles(() => ({
+    helperText: {
+        margin: 0,
+    },
+
     dialogPaper: {
         minWidth: '550px',
         minHeight: '200px',
@@ -70,7 +75,7 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
 
     const [equipmentType, setEquipmentType] = useState('LINE');
 
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState(new Map());
 
     const handleChangeEquipmentId = (event) => {
         setEquipmentId(event.target.value);
@@ -86,7 +91,7 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
             .getReader()
             .read()
             .then((value) => {
-                displayInfoMessageWithSnackbar({
+                displayErrorMessageWithSnackbar({
                     errorMessage: utf8Decoder.decode(value.value),
                     enqueueSnackbar: enqueueSnackbar,
                     headerMessage: {
@@ -98,23 +103,22 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
     }
 
     const handleSave = () => {
-        let tmpErrors = { ...errors };
+        let tmpErrors = new Map(errors);
 
-        if (!equipmentId) {
-            tmpErrors['equipment-id'] = {
-                error: true,
-                errorText: intl.formatMessage({ id: 'FieldIsRequired' }),
-            };
-        } else {
-            tmpErrors['equipment-id'] = { error: false, errorText: '' };
-        }
-        setErrors({ ...tmpErrors });
+        tmpErrors.set(
+            'equipment-id',
+            validateField(equipmentId, {
+                isFieldRequired: true,
+            })
+        );
 
-        if (
-            Object.entries(tmpErrors).find(
-                (entry) => entry[1].error === true
-            ) === undefined
-        ) {
+        setErrors(tmpErrors);
+
+        // Check if error list contains an error
+        let isValid =
+            Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
+
+        if (isValid) {
             deleteEquipment(studyUuid, equipmentType, equipmentId).then(
                 (response) => {
                     if (response.status !== 200) {
@@ -123,20 +127,26 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
                             'UnableToDeleteEquipment'
                         );
                     } else {
-                        handleClose();
+                        handleCloseAndClear();
                     }
                 }
             );
         }
     };
 
-    const handleClose = () => {
-        setErrors({});
+    const clearValues = () => {
+        setEquipmentId('');
+        setEquipmentType('LINE');
+    };
+
+    const handleCloseAndClear = () => {
+        clearValues();
+        setErrors(new Map());
         onClose();
     };
 
-    const handleExited = () => {
-        setErrors({});
+    const handleClose = () => {
+        setErrors(new Map());
         onClose();
     };
 
@@ -145,7 +155,6 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
             classes={{ paper: classes.dialogPaper }}
             open={open}
             onClose={handleClose}
-            onExited={handleExited}
             aria-labelledby="dialog-delete-equipment"
         >
             <DialogTitle>
@@ -160,13 +169,19 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
                                 id="equipment-id"
                                 label={intl.formatMessage({ id: 'ID' })}
                                 variant="filled"
-                                color="secondary"
                                 value={equipmentId}
                                 onChange={handleChangeEquipmentId}
-                                {...(errors['equipment-id']?.error && {
+                                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
+                                   which is not the case when no variant is used) */
+                                FormHelperTextProps={{
+                                    className: classes.helperText,
+                                }}
+                                {...(errors.get('equipment-id')?.error && {
                                     error: true,
-                                    helperText:
-                                        errors['equipment-id']?.errorText,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('equipment-id')
+                                            ?.errorMsgId,
+                                    }),
                                 })}
                             />
                         </Grid>
@@ -202,7 +217,7 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="text">
+                <Button onClick={handleCloseAndClear} variant="text">
                     <FormattedMessage id="close" />
                 </Button>
                 <Button onClick={handleSave} variant="text">
