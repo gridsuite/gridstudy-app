@@ -105,11 +105,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeVoltageLevel = (event, value, reason) => {
-        if (reason === 'input') {
-            setVoltageLevel({ id: value });
-        } else {
-            setVoltageLevel(value);
-        }
+        setVoltageLevel(value);
+        setBusOrBusbarSection('');
         if (value?.topologyKind === 'NODE_BREAKER') {
             // TODO specify the correct network variant num
             fetchBusbarSectionsForVoltageLevel(studyUuid, 0, value.id).then(
@@ -128,11 +125,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeBus = (event, value, reason) => {
-        if (reason === 'input') {
-            setBusOrBusbarSection({ id: value });
-        } else {
-            setBusOrBusbarSection(value);
-        }
+        setBusOrBusbarSection(value);
     };
 
     const handleSave = () => {
@@ -370,7 +363,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             getOptionLabel={(vl) => vl.id}
                             value={voltageLevel}
                             onChange={handleChangeVoltageLevel}
-                            onInputChange={handleChangeVoltageLevel}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -403,7 +395,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             }
                             value={busOrBusbarSection}
                             onChange={handleChangeBus}
-                            onInputChange={handleChangeBus}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
