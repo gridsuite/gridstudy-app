@@ -21,7 +21,7 @@ import {
     TextField,
 } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
-import { Autocomplete } from '@material-ui/lab';
+import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { useParams } from 'react-router-dom';
 import {
@@ -36,6 +36,8 @@ import {
 import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
 import { makeStyles } from '@material-ui/core/styles';
+
+const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -105,21 +107,27 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeVoltageLevel = (event, value, reason) => {
-        setVoltageLevel(value);
-        setBusOrBusbarSection('');
-        if (value?.topologyKind === 'NODE_BREAKER') {
-            // TODO specify the correct network variant num
-            fetchBusbarSectionsForVoltageLevel(studyUuid, 0, value.id).then(
-                (busbarSections) => {
-                    setBusOrBusbarSectionOptions(busbarSections);
-                }
-            );
-        } else if (value?.topologyKind === 'BUS_BREAKER') {
-            // TODO specify the correct network variant num
-            fetchBusesForVoltageLevel(studyUuid, 0, value.id).then((buses) =>
-                setBusOrBusbarSectionOptions(buses)
-            );
-        } else {
+        if (reason === 'select-option') {
+            setVoltageLevel(value);
+            setBusOrBusbarSection('');
+            if (value?.topologyKind === 'NODE_BREAKER') {
+                // TODO specify the correct network variant num
+                fetchBusbarSectionsForVoltageLevel(studyUuid, 0, value.id).then(
+                    (busbarSections) => {
+                        setBusOrBusbarSectionOptions(busbarSections);
+                    }
+                );
+            } else if (value?.topologyKind === 'BUS_BREAKER') {
+                // TODO specify the correct network variant num
+                fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
+                    (buses) => setBusOrBusbarSectionOptions(buses)
+                );
+            } else {
+                setBusOrBusbarSectionOptions([]);
+            }
+        } else if (reason === 'clear') {
+            setVoltageLevel(null);
+            setBusOrBusbarSection('');
             setBusOrBusbarSectionOptions([]);
         }
     };
@@ -223,6 +231,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         onClose();
     };
 
+    // Specific Popper component to be used with Autocomplete
+    // This allows the popper to fit its content, which is not the case by default
     const FittingPopper = (props) => {
         return (
             <Popper
@@ -277,6 +287,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                     </Grid>
                     <Grid item xs={4} align="center">
                         <FormControl fullWidth>
+                            {/*This InputLabel is necessary in order to display
+                            the label describing the content of the Select*/}
                             <InputLabel id="load-type-label" variant={'filled'}>
                                 {intl.formatMessage({ id: 'TypeOptional' })}
                             </InputLabel>
@@ -354,13 +366,30 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <FormattedMessage id="Connectivity" />
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="center">
+                        {/* TODO: autoComplete prop is not working properly with material-ui v4,
+                            it clears the field when blur event is raised, which actually forces the user to validate free input
+                            with enter key for it to be validated.
+                            check if autoComplete prop is fixed in v5 */}
                         <Autocomplete
                             freeSolo
                             forcePopupIcon
+                            autoHighlight
+                            selectOnFocus
                             id="voltage-level"
                             size="small"
                             options={network?.voltageLevels}
                             getOptionLabel={(vl) => vl.id}
+                            filterOptions={(options, params) => {
+                                const filtered = filter(options, params);
+
+                                if (params.inputValue !== '') {
+                                    filtered.push({
+                                        inputValue: params.inputValue,
+                                        id: params.inputValue,
+                                    });
+                                }
+                                return filtered;
+                            }}
                             value={voltageLevel}
                             onChange={handleChangeVoltageLevel}
                             renderInput={(params) => (
@@ -386,6 +415,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                         <Autocomplete
                             freeSolo
                             forcePopupIcon
+                            autoHighlight
+                            selectOnFocus
                             id="bus"
                             size="small"
                             disabled={!voltageLevel}
@@ -393,6 +424,17 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             getOptionLabel={(busOrBusbarSection) =>
                                 busOrBusbarSection?.id
                             }
+                            filterOptions={(options, params) => {
+                                const filtered = filter(options, params);
+
+                                if (params.inputValue !== '') {
+                                    filtered.push({
+                                        inputValue: params.inputValue,
+                                        id: params.inputValue,
+                                    });
+                                }
+                                return filtered;
+                            }}
                             value={busOrBusbarSection}
                             onChange={handleChangeBus}
                             renderInput={(params) => (
