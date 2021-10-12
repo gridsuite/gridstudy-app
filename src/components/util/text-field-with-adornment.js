@@ -12,25 +12,27 @@ import PropTypes from 'prop-types';
 const TextFieldWithAdornment = (props) => {
     const [isSelected, setIsSelected] = useState(false);
 
-    const endAdornment = isSelected
-        ? {
-              endAdornment: (
-                  <InputAdornment position="end">
-                      {props.adornmentText}
-                  </InputAdornment>
-              ),
-          }
-        : {};
+    const endAdornment =
+        isSelected || props.value
+            ? {
+                  endAdornment: (
+                      <InputAdornment position="end">
+                          {props.adornmentText}
+                      </InputAdornment>
+                  ),
+              }
+            : {};
 
-    const startAdornment = isSelected
-        ? {
-              startAdornment: (
-                  <InputAdornment position="start">
-                      {props.adornmentText}
-                  </InputAdornment>
-              ),
-          }
-        : {};
+    const startAdornment =
+        isSelected || props.value
+            ? {
+                  startAdornment: (
+                      <InputAdornment position="start">
+                          {props.adornmentText}
+                      </InputAdornment>
+                  ),
+              }
+            : {};
 
     return (
         <TextField

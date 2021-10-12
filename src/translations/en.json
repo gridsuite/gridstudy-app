@@ -297,7 +297,6 @@
     "VSC_CONVERTER_STATION": "Vsc_Converter_Station",
     "SHUNT_COMPENSATOR": "Shunt_Compenstor",
     "STATIC_VAR_COMPENSATOR": "Static_Var_Compensator",
-
     "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load"
 }
