@@ -44,7 +44,7 @@ module.exports = function (app) {
 
     app.use(
         createProxyMiddleware(
-            'http://localhost:5010/ws/config-notification-server',
+            'http://localhost:5024/ws/config-notification-server',
             {
                 pathRewrite: { '^/ws/config-notification-server': '/' },
                 ws: true,

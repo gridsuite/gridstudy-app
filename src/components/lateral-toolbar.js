@@ -54,14 +54,21 @@ const LateralToolbar = (props) => {
                 </IconButton>
             </Tooltip>
             <Tooltip
-                title={intl.formatMessage({ id: 'HypothesisTree' })}
+                title={intl.formatMessage({ id: 'NetworkModificationTree' })}
                 placement="right"
                 arrow
                 enterDelay={1000}
                 enterNextDelay={1000}
                 classes={{ tooltip: classes.tooltip }}
             >
-                <IconButton className={classes.notSelected}>
+                <IconButton
+                    className={
+                        props.networkModificationTreeDisplayed
+                            ? classes.selected
+                            : classes.notSelected
+                    }
+                    onClick={props.handleDisplayNetworkModificationTree}
+                >
                     <AccountTreeIcon />
                 </IconButton>
             </Tooltip>
@@ -71,7 +78,9 @@ const LateralToolbar = (props) => {
 
 LateralToolbar.propTypes = {
     handleDisplayNetworkExplorer: PropTypes.func,
+    handleDisplayNetworkModificationTree: PropTypes.func,
     networkExplorerDisplayed: PropTypes.bool,
+    networkModificationTreeDisplayed: PropTypes.bool,
 };
 
 export default LateralToolbar;

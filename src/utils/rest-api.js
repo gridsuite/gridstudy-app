@@ -614,6 +614,77 @@ export function fetchContingencyCount(studyUuid, contingencyListNames) {
     });
 }
 
+export function fetchNetworkModificationTree(studyUuid) {
+    console.info('Fetching network modification tree');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/tree/' + encodeURIComponent(studyUuid);
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchNetworkModificationTreeNode(nodeUuid) {
+    console.info('Fetching network modification tree node');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/tree/nodes/' + encodeURIComponent(nodeUuid);
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
+}
+
+export function createTreeNode(parentId, node) {
+    const nodeCreationUrl =
+        PREFIX_STUDY_QUERIES + '/v1/tree/nodes/' + encodeURIComponent(parentId);
+    console.debug('%s with body: %s', nodeCreationUrl, node);
+    return backendFetch(nodeCreationUrl, {
+        method: 'post',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(node),
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function deleteTreeNode(nodeId) {
+    console.info('Fetching network modification tree');
+    const url =
+        PREFIX_STUDY_QUERIES + '/v1/tree/nodes/' + encodeURIComponent(nodeId);
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'delete',
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function updateTreeNode(node) {
+    const nodeUpdateUrl = PREFIX_STUDY_QUERIES + '/v1/tree/nodes/';
+    console.debug(nodeUpdateUrl);
+    return backendFetch(nodeUpdateUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(node),
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function connectNotificationsWebsocket(studyUuid) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
