@@ -302,7 +302,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                                 fullWidth
                             >
                                 <MenuItem value="">
-                                    <em>None</em>
+                                    <em>
+                                        {intl.formatMessage({ id: 'None' })}
+                                    </em>
                                 </MenuItem>
                                 <MenuItem value={'UNDEFINED'}>
                                     {intl.formatMessage({
