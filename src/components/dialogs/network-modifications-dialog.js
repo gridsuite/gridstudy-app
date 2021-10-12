@@ -27,7 +27,6 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-
 /**
  * Dialog to select network modification to create
  * @param {Boolean} open Is the dialog open ?
