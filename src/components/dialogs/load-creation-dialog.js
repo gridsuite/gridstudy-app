@@ -99,11 +99,13 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeActivePower = (event) => {
-        setActivePower(event.target.value);
+        // Replace ',' by '.' to ensure double values can be parsed correctly
+        setActivePower(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeReactivePower = (event) => {
-        setReactivePower(event.target.value);
+        // Replace ',' by '.' to ensure double values can be parsed correctly
+        setReactivePower(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeVoltageLevel = (event, value, reason) => {
