@@ -16,6 +16,7 @@ import Box from '@material-ui/core/Box';
 import AddIcon from '@material-ui/icons/ControlPoint';
 import DeleteIcon from '@material-ui/icons/Delete';
 import LoadCreationDialog from './load-creation-dialog';
+import GeneratorCreationDialog from './generator-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -40,6 +41,8 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
     const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
     const [openEquipmentDeletionDialog, setOpenEquipmentDeletionDialog] =
         useState(false);
+    const [openCreateGeneratorDialog, setOpenCreateGeneratorDialog] =
+        useState(false);
 
     const handleClose = () => {
         onClose();
@@ -63,6 +66,14 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
 
     const closeEquipmentDeletionDialog = () => {
         setOpenEquipmentDeletionDialog(false);
+    };
+
+    const handleCreateGenerator = () => {
+        setOpenCreateGeneratorDialog(true);
+    };
+
+    const closeCreateGeneratorDialog = () => {
+        setOpenCreateGeneratorDialog(false);
     };
 
     return (
@@ -98,6 +109,21 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
                                 <Button
                                     className={classes.button}
                                     variant="outlined"
+                                    startIcon={<AddIcon />}
+                                    onClick={handleCreateGenerator}
+                                >
+                                    {intl.formatMessage({
+                                        id: 'CreateGenerator',
+                                    })}
+                                </Button>
+                            </Box>
+                        </Grid>
+                        <br />
+                        <Grid item xs={12} justify="start">
+                            <Box>
+                                <Button
+                                    className={classes.button}
+                                    variant="outlined"
                                     startIcon={<DeleteIcon />}
                                     onClick={handleDeleteEquipment}
                                 >
@@ -118,6 +144,11 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
             <LoadCreationDialog
                 open={openCreateLoadDialog}
                 onClose={closeCreateLoadDialog}
+                network={network}
+            />
+            <GeneratorCreationDialog
+                open={openCreateGeneratorDialog}
+                onClose={closeCreateGeneratorDialog()}
                 network={network}
             />
             <EquipmentDeletionDialog

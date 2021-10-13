@@ -923,6 +923,51 @@ export function createLoad(
     );
 }
 
+export function createGenerator(
+    studyUuid,
+    id,
+    name,
+    energySource,
+    minimumActivePower,
+    maximumActivePower,
+    ratedNominalPower,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    voltageRegulation,
+    voltageSetpoint,
+    voltageLevelId,
+    busId
+) {
+    console.info('Creating generator ');
+    const createGeneratorUrl =
+        getStudyUrl(studyUuid) + '/network-modification/generators';
+    return backendFetch(createGeneratorUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: id,
+            equipmentName: name,
+            energySource: energySource,
+            minimumActivePower: minimumActivePower,
+            maximumActivePower: maximumActivePower,
+            ratedNominalPower: ratedNominalPower,
+            activePowerSetpoint: activePowerSetpoint,
+            reactivePowerSetpoint: reactivePowerSetpoint,
+            voltageRegulation: voltageRegulation,
+            voltageSetpoint: voltageSetpoint,
+            voltageLevelId: voltageLevelId,
+            busId: busId,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =

@@ -292,5 +292,20 @@
     "SHUNT_COMPENSATOR": "Moyen de compensation",
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
-    "LoadCreationError": "Erreur lors de la création d'une consommation"
+    "LoadCreationError": "Erreur lors de la création d'une consommation",
+
+    "CreateGenerator": "Créer groupe",
+    "GeneratorCreationError": "Erreur lors de la création d'un groupe",
+    "EnergySourceOptional": "Source d'énergie (optionnel)",
+    "Hydro" : "Hydraulique",
+    "Nuclear" : "Nucléaire",
+    "Wind" : "Eolien",
+    "Thermal" : "Thermique",
+    "Solar" : "Solaire",
+    "Other" : "Autre",
+    "MinimumActivePowerText" : "Puissance active min",
+    "MaximumActivePowerText" : "Puissance active max",
+    "RatedNominalPower" : "Puissance nominale",
+    "VoltageRegulationText" : "Réglage tension",
+    "VoltageText" : "Tension"
 }
