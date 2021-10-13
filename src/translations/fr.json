@@ -305,7 +305,7 @@
     "Other" : "Autre",
     "MinimumActivePowerText" : "Puissance active min",
     "MaximumActivePowerText" : "Puissance active max",
-    "RatedNominalPower" : "Puissance nominale",
+    "RatedNominalPowerText" : "Puissance nominale",
     "VoltageRegulationText" : "Réglage tension",
     "VoltageText" : "Tension"
 }

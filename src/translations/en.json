@@ -298,7 +298,7 @@
     "GeneratorCreationError": "Error while creating generator",
     "EnergySourceOptional": "Energy source (optional)",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
-    "Hydro" : "Hydraulic",
+    "Hydro" : "Hydro",
     "Nuclear" : "Nuclear",
     "Wind" : "Wind",
     "Thermal" : "Thermal",
@@ -306,11 +306,7 @@
     "Other" : "Other",
     "MinimumActivePowerText" : "Minimum active power",
     "MaximumActivePowerText" : "Maximum active power",
-    "RatedNominalPower" : "Rated nominal power",
+    "RatedNominalPowerText" : "Rated nominal power",
     "VoltageRegulationText" : "Voltage regulation",
     "VoltageText" : "Voltage"
-
-
-
-
 }

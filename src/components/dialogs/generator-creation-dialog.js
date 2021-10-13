@@ -50,6 +50,17 @@ const useStyles = makeStyles((theme) => ({
             width: 'fit-content',
         },
     },
+    dialogPaper: {
+        minWidth: '800px',
+        margin: 'auto',
+    },
+    divDialog: {
+        minWidth: '750px',
+        margin: 'auto',
+    },
+    voltageRegulation: {
+        paddingTop: '10px'
+    }
 }));
 
 /**
@@ -136,8 +147,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeVoltageRegulation = (event) => {
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setVoltageRegulation(event.target.value);
+        setVoltageRegulation(event.target.checked);
     };
 
     const handleChangeVoltageSetpoint = (event) => {
@@ -326,6 +336,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
 
     return (
         <Dialog
+            classes={{ paper: classes.dialogPaper }}
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-create-generator"
@@ -334,327 +345,346 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                 {intl.formatMessage({ id: 'CreateGenerator' })}
             </DialogTitle>
             <DialogContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
-                        <TextField
-                            fullWidth
-                            id="generator-id"
-                            label={intl.formatMessage({ id: 'ID' })}
-                            variant="filled"
-                            value={generatorId}
-                            onChange={handleChangeGenertorId}
-                            /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                               which is not the case when no variant is used) */
-                            FormHelperTextProps={{
-                                className: classes.helperText,
-                            }}
-                            {...(errors.get('generator-id')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('generator-id')?.errorMsgId,
-                                }),
-                            })}
-                        />
-                    </Grid>
-                    <Grid item xs={4} align="center">
-                        <TextField
-                            id="generator-name"
-                            label={intl.formatMessage({ id: 'NameOptional' })}
-                            defaultValue=""
-                            value={generatorName}
-                            onChange={handleChangeGeneratorName}
-                            variant="filled"
-                        />
-                    </Grid>
-                    <Grid item xs={4} align="center">
-                        <FormControl fullWidth>
-                            {/*This InputLabel is necessary in order to display
-                            the label describing the content of the Select*/}
-                            <InputLabel
-                                id="energy-source-label"
-                                variant={'filled'}
-                            >
-                                {intl.formatMessage({
-                                    id: 'EnergySourceOptional',
-                                })}
-                            </InputLabel>
-                            <Select
-                                id="energy-source"
-                                value={energySource}
-                                onChange={handleChangeEnergySource}
-                                variant="filled"
+                <div className={classes.divDialog}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={4} align="center">
+                            <TextField
                                 fullWidth
-                            >
-                                <MenuItem value="">
-                                    <em>
-                                        {intl.formatMessage({ id: 'None' })}
-                                    </em>
-                                </MenuItem>
-                                <MenuItem value={'HYDRO'}>
-                                    {intl.formatMessage({ id: 'Hydro' })}
-                                </MenuItem>
-                                <MenuItem value={'NUCLEAR'}>
-                                    {intl.formatMessage({ id: 'Nuclear' })}
-                                </MenuItem>
-                                <MenuItem value={'WIND'}>
-                                    {intl.formatMessage({ id: 'Wind' })}
-                                </MenuItem>
-                                <MenuItem value={'THERMAL'}>
-                                    {intl.formatMessage({ id: 'Thermal' })}
-                                </MenuItem>
-                                <MenuItem value={'SOLAR'}>
-                                    {intl.formatMessage({ id: 'Solar' })}
-                                </MenuItem>
-                                <MenuItem value={'OTHER'}>
-                                    {intl.formatMessage({ id: 'Other' })}
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
+                                id="generator-id"
+                                label={intl.formatMessage({ id: 'ID' })}
+                                variant="filled"
+                                value={generatorId}
+                                onChange={handleChangeGenertorId}
+                                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
+                               which is not the case when no variant is used) */
+                                FormHelperTextProps={{
+                                    className: classes.helperText,
+                                }}
+                                {...(errors.get('generator-id')?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('generator-id')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="center">
+                            <TextField
+                                id="generator-name"
+                                label={intl.formatMessage({
+                                    id: 'NameOptional',
+                                })}
+                                defaultValue=""
+                                value={generatorName}
+                                onChange={handleChangeGeneratorName}
+                                variant="filled"
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="center">
+                            <FormControl fullWidth>
+                                {/*This InputLabel is necessary in order to display
+                            the label describing the content of the Select*/}
+                                <InputLabel
+                                    id="energy-source-label"
+                                    variant={'filled'}
+                                >
+                                    {intl.formatMessage({
+                                        id: 'EnergySourceOptional',
+                                    })}
+                                </InputLabel>
+                                <Select
+                                    id="energy-source"
+                                    value={energySource}
+                                    onChange={handleChangeEnergySource}
+                                    variant="filled"
+                                    fullWidth
+                                >
+                                    <MenuItem value="">
+                                        <em>
+                                            {intl.formatMessage({ id: 'None' })}
+                                        </em>
+                                    </MenuItem>
+                                    <MenuItem value={'HYDRO'}>
+                                        {intl.formatMessage({ id: 'Hydro' })}
+                                    </MenuItem>
+                                    <MenuItem value={'NUCLEAR'}>
+                                        {intl.formatMessage({ id: 'Nuclear' })}
+                                    </MenuItem>
+                                    <MenuItem value={'WIND'}>
+                                        {intl.formatMessage({ id: 'Wind' })}
+                                    </MenuItem>
+                                    <MenuItem value={'THERMAL'}>
+                                        {intl.formatMessage({ id: 'Thermal' })}
+                                    </MenuItem>
+                                    <MenuItem value={'SOLAR'}>
+                                        {intl.formatMessage({ id: 'Solar' })}
+                                    </MenuItem>
+                                    <MenuItem value={'OTHER'}>
+                                        {intl.formatMessage({ id: 'Other' })}
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
                     </Grid>
-                </Grid>
-                <br />
-                <br />
-                <FormattedMessage id="Limits" />
-                <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
-                        <TextFieldWithAdornment
-                            id="minimum-active-power"
-                            label={intl.formatMessage({
-                                id: 'MinimumActivePowerText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'MW'}
-                            value={minimumActivePower}
-                            onChange={handleChangeMinimumActivePower}
-                            defaultValue=""
-                            {...(errors.get('minimum-active-power')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('minimum-active-power')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
+                    <br />
+                    <br />
+                    <FormattedMessage id="Limits" />
+                    <Grid container spacing={2}>
+                        <Grid item xs={4} align="start">
+                            <TextFieldWithAdornment
+                                id="minimum-active-power"
+                                label={intl.formatMessage({
+                                    id: 'MinimumActivePowerText',
+                                })}
+                                adornmentPosition={'end'}
+                                adornmentText={'MW'}
+                                value={minimumActivePower}
+                                onChange={handleChangeMinimumActivePower}
+                                defaultValue=""
+                                {...(errors.get('minimum-active-power')
+                                    ?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('minimum-active-power')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="start">
+                            <TextFieldWithAdornment
+                                id="maximum-active-power"
+                                label={intl.formatMessage({
+                                    id: 'MaximumActivePowerText',
+                                })}
+                                adornmentPosition={'end'}
+                                adornmentText={'MW'}
+                                value={maximumActivePower}
+                                onChange={handleChangeMaximumActivePower}
+                                defaultValue=""
+                                {...(errors.get('maximum-active-power')
+                                    ?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('maximum-active-power')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="start">
+                            <TextFieldWithAdornment
+                                id="rated-nominal-power"
+                                label={intl.formatMessage({
+                                    id: 'RatedNominalPowerText',
+                                })}
+                                adornmentPosition={'end'}
+                                adornmentText={'MVA'}
+                                value={ratedNominalPower}
+                                onChange={handleChangeRatedNominalPower}
+                                defaultValue=""
+                                {...(errors.get('rated-nominal-power')
+                                    ?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('rated-nominal-power')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={4} align="center">
-                        <TextFieldWithAdornment
-                            id="maximum-active-power"
-                            label={intl.formatMessage({
-                                id: 'MaximumActivePowerText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'MW'}
-                            value={maximumActivePower}
-                            onChange={handleChangeMaximumActivePower}
-                            defaultValue=""
-                            {...(errors.get('maximum-active-power')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('maximum-active-power')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
+                    <br />
+                    <br />
+                    <FormattedMessage id="Setpoints" />
+                    <Grid container spacing={2}>
+                        <Grid item xs={4} align="start">
+                            <TextFieldWithAdornment
+                                id="active-power-set-point"
+                                label={intl.formatMessage({
+                                    id: 'ActivePowerText',
+                                })}
+                                adornmentPosition={'end'}
+                                adornmentText={'MW'}
+                                value={activePowerSetpoint}
+                                onChange={handleChangeActivePowerSetpoint}
+                                defaultValue=""
+                                {...(errors.get('active-power-set-point')
+                                    ?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('active-power-set-point')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="start">
+                            <TextFieldWithAdornment
+                                id="reactive-power-set-point"
+                                label={intl.formatMessage({
+                                    id: 'ReactivePowerText',
+                                })}
+                                adornmentPosition={'end'}
+                                adornmentText={'MVar'}
+                                value={reactivePowerSetpoint}
+                                onChange={handleChangeReactivePowerSetpoint}
+                                defaultValue=""
+                                {...(errors.get('reactive-power-set-point')
+                                    ?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get(
+                                            'reactive-power-set-point'
+                                        )?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={4} align="center">
-                        <TextFieldWithAdornment
-                            id="rated-nominal-power"
-                            label={intl.formatMessage({
-                                id: 'RatedNominalPowerText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'MVA'}
-                            value={ratedNominalPower}
-                            onChange={handleChangeRatedNominalPower}
-                            defaultValue=""
-                            {...(errors.get('rated-nominal-power')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('rated-nominal-power')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={4} align="start">
+                            <FormControlLabel
+                              className={classes.voltageRegulation}
+                              id="voltage-regulation"
+                                control={
+                                    <Switch
+                                        checked={voltageRegulation}
+                                        onChange={(e) =>
+                                            handleChangeVoltageRegulation(e)
+                                        }
+                                        value="checked"
+                                        color="primary"
+                                        inputProps={{
+                                            'aria-label': 'primary checkbox',
+                                        }}
+                                    />
+                                }
+                                label={intl.formatMessage({
+                                    id: 'VoltageRegulationText',
+                                })}
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="start">
+                            <TextFieldWithAdornment
+                                id="voltage-set-point"
+                                label={intl.formatMessage({
+                                    id: 'VoltageText',
+                                })}
+                                adornmentPosition={'end'}
+                                adornmentText={'kV'}
+                                value={voltageSetpoint}
+                                onChange={handleChangeVoltageSetpoint}
+                                defaultValue=""
+                                {...(errors.get('voltage-set-point')?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('voltage-set-point')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
-                <br />
-                <br />
-                <FormattedMessage id="Setpoints" />
-                <Grid container spacing={2}>
-                    <Grid item xs={6} align="center">
-                        <TextFieldWithAdornment
-                            id="active-power-set-point"
-                            label={intl.formatMessage({
-                                id: 'ActivePowerText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'MW'}
-                            value={activePowerSetpoint}
-                            onChange={handleChangeActivePowerSetpoint}
-                            defaultValue=""
-                            {...(errors.get('active-power-set-point')
-                                ?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('active-power-set-point')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
-                    </Grid>
-                    <Grid item xs={6} align="center">
-                        <TextFieldWithAdornment
-                            id="reactive-power-set-point"
-                            label={intl.formatMessage({
-                                id: 'ReactivePowerText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'MVar'}
-                            value={reactivePowerSetpoint}
-                            onChange={handleChangeReactivePowerSetpoint}
-                            defaultValue=""
-                            {...(errors.get('reactive-power-set-point')
-                                ?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('reactive-power-set-point')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
-                    </Grid>
-                    <Grid item xs={6} align="center">
-                        <FormControlLabel
-                            id="voltage-regulation"
-                            control={
-                                <Switch
-                                    checked={voltageRegulation}
-                                    onChange={handleChangeVoltageRegulation}
-                                    name="voltage-regulation"
-                                />
-                            }
-                            label={intl.formatMessage({
-                                id: 'VoltageRegulationText',
-                            })}
-                        />
-                    </Grid>
-                    <Grid item xs={6} align="center">
-                        <TextFieldWithAdornment
-                            id="voltage-set-point"
-                            label={intl.formatMessage({
-                                id: 'VoltageText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'kV'}
-                            value={voltageSetpoint}
-                            onChange={handleChangeVoltageSetpoint}
-                            defaultValue=""
-                            {...(errors.get('voltage-set-point')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('voltage-set-point')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
-                    </Grid>
-                </Grid>
-                <br />
-                <br />
-                <FormattedMessage id="Connectivity" />
-                <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
-                        {/* TODO: autoComplete prop is not working properly with material-ui v4,
+                    <br />
+                    <br />
+                    <FormattedMessage id="Connectivity" />
+                    <Grid container spacing={2}>
+                        <Grid item xs={4} align="center">
+                            {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
                             check if autoComplete prop is fixed in v5 */}
-                        <Autocomplete
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            id="voltage-level"
-                            size="small"
-                            options={network?.voltageLevels}
-                            getOptionLabel={(vl) => vl.id}
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
+                            <Autocomplete
+                                freeSolo
+                                forcePopupIcon
+                                autoHighlight
+                                selectOnFocus
+                                id="voltage-level"
+                                size="small"
+                                options={network?.voltageLevels}
+                                getOptionLabel={(vl) => vl.id}
+                                filterOptions={(options, params) => {
+                                    const filtered = filter(options, params);
 
-                                if (params.inputValue !== '') {
-                                    filtered.push({
-                                        inputValue: params.inputValue,
-                                        id: params.inputValue,
-                                    });
+                                    if (params.inputValue !== '') {
+                                        filtered.push({
+                                            inputValue: params.inputValue,
+                                            id: params.inputValue,
+                                        });
+                                    }
+                                    return filtered;
+                                }}
+                                value={voltageLevel}
+                                onChange={handleChangeVoltageLevel}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        fullWidth
+                                        label={intl.formatMessage({
+                                            id: 'VoltageLevel',
+                                        })}
+                                        {...(errors.get('voltage-level')
+                                            ?.error && {
+                                            error: true,
+                                            helperText: intl.formatMessage({
+                                                id: errors.get('voltage-level')
+                                                    ?.errorMsgId,
+                                            }),
+                                        })}
+                                    />
+                                )}
+                                PopperComponent={FittingPopper}
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="center">
+                            <Autocomplete
+                                freeSolo
+                                forcePopupIcon
+                                autoHighlight
+                                selectOnFocus
+                                id="bus"
+                                size="small"
+                                disabled={!voltageLevel}
+                                options={busOrBusbarSectionOptions}
+                                getOptionLabel={(busOrBusbarSection) =>
+                                    busOrBusbarSection?.id
                                 }
-                                return filtered;
-                            }}
-                            value={voltageLevel}
-                            onChange={handleChangeVoltageLevel}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    label={intl.formatMessage({
-                                        id: 'VoltageLevel',
-                                    })}
-                                    {...(errors.get('voltage-level')?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get('voltage-level')
-                                                ?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            )}
-                            PopperComponent={FittingPopper}
-                        />
-                    </Grid>
-                    <Grid item xs={4} align="center">
-                        <Autocomplete
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            id="bus"
-                            size="small"
-                            disabled={!voltageLevel}
-                            options={busOrBusbarSectionOptions}
-                            getOptionLabel={(busOrBusbarSection) =>
-                                busOrBusbarSection?.id
-                            }
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
+                                filterOptions={(options, params) => {
+                                    const filtered = filter(options, params);
 
-                                if (params.inputValue !== '') {
-                                    filtered.push({
-                                        inputValue: params.inputValue,
-                                        id: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            value={busOrBusbarSection}
-                            onChange={handleChangeBus}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    label={intl.formatMessage({
-                                        id: 'BusBarBus',
-                                    })}
-                                    {...(errors.get('bus-bar')?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get('bus-bar')
-                                                ?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            )}
-                            PopperComponent={FittingPopper}
-                        />
+                                    if (params.inputValue !== '') {
+                                        filtered.push({
+                                            inputValue: params.inputValue,
+                                            id: params.inputValue,
+                                        });
+                                    }
+                                    return filtered;
+                                }}
+                                value={busOrBusbarSection}
+                                onChange={handleChangeBus}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        fullWidth
+                                        label={intl.formatMessage({
+                                            id: 'BusBarBus',
+                                        })}
+                                        {...(errors.get('bus-bar')?.error && {
+                                            error: true,
+                                            helperText: intl.formatMessage({
+                                                id: errors.get('bus-bar')
+                                                    ?.errorMsgId,
+                                            }),
+                                        })}
+                                    />
+                                )}
+                                PopperComponent={FittingPopper}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
+                </div>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCloseAndClear} variant="text">

@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(() => ({
     button: {
-        width: 200,
+        width: 300,
         justifyContent: 'start',
     },
 }));
@@ -148,7 +148,7 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
             />
             <GeneratorCreationDialog
                 open={openCreateGeneratorDialog}
-                onClose={closeCreateGeneratorDialog()}
+                onClose={closeCreateGeneratorDialog}
                 network={network}
             />
             <EquipmentDeletionDialog
