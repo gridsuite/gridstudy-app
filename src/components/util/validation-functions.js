@@ -16,7 +16,7 @@ export function validateField(value, toValidate) {
     }
 
     if (toValidate.isFieldNumeric) {
-        let valueNumericVal = Number(value.replace(',', '.'));
+        const valueNumericVal = Number(value.replace(',', '.'));
         if (isNaN(valueNumericVal)) {
             return {
                 error: true,

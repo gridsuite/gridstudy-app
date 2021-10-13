@@ -51,6 +51,7 @@ const TextFieldWithAdornment = (props) => {
 TextFieldWithAdornment.propTypes = {
     adornmentPosition: PropTypes.string.isRequired,
     adornmentText: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
 };
 
 export default TextFieldWithAdornment;

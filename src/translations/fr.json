@@ -243,7 +243,6 @@
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre de modification de réseau",
-    "NetworkModifications": "Modifications de réseau",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "logs": "Logs",
@@ -260,7 +259,6 @@
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
-
     "NetworkModifications": "Modifications de réseau",
     "CreateLoad": "Créer consommation",
     "NameOptional": "Nom (optionnel)",
@@ -276,12 +274,6 @@
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
-    "DefaultValueUsed": "Si aucune saisie, la valeur par défaut sera utilisée",
-    "IdToCreateLoad":"Un ID doit être saisi pour pouvoir créer une nouvelle consommation",
-    "ActivePowerToCreateLoad": "Une consigne de puissance active doit être saisie pour pouvoir créer une nouvelle consommation",
-    "ReactivePowerToCreateLoad": "Une consigne de puissance réactive doit être saisie pour pouvoir créer une nouvelle consommation",
-    "VoltageLevelToCreateLoad": "Un poste doit être saisi pour créer une consommation",
-    "BusBarBusToCreateLoad": "Un bus ou une SJB doit être saisi pour créer une consommation",
 
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
