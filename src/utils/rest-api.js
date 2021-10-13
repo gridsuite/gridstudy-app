@@ -366,7 +366,9 @@ export function fetchBusesForVoltageLevel(
     variantNum,
     voltageLevelId
 ) {
-    console.info(`Fetching buses for voltage level '${voltageLevelId}'...`);
+    console.info(
+        `Fetching buses of study '${studyUuid}' for voltage level '${voltageLevelId}'...`
+    );
     const fetchBusesUrl =
         getStudyUrl(studyUuid) +
         '/network/' +
@@ -384,7 +386,7 @@ export function fetchBusbarSectionsForVoltageLevel(
     voltageLevelId
 ) {
     console.info(
-        `Fetching busbar sections for voltage level '${voltageLevelId}'...`
+        `Fetching busbar sections of study '${studyUuid}' for voltage level '${voltageLevelId}'...`
     );
     const fetchBusbarSectionsUrl =
         getStudyUrl(studyUuid) +

@@ -4,15 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import PropTypes from 'prop-types';
 import {
     InputLabel,
     MenuItem,
@@ -20,23 +11,34 @@ import {
     Select,
     TextField,
 } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-import TextFieldWithAdornment from '../util/text-field-with-adornment';
+import { useSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
 import {
     createLoad,
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
 } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { validateField } from '../util/validation-functions';
-import { makeStyles } from '@material-ui/core/styles';
 
+// Factory used to create a filter method that is used to change the default
+// option filter behaviour of the Autocomplete component
 const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
@@ -54,7 +56,6 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param {String} title Title of the dialog
  */
 const LoadCreationDialog = ({ open, onClose, network }) => {
     const classes = useStyles();
@@ -112,20 +113,28 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         if (reason === 'select-option') {
             setVoltageLevel(value);
             setBusOrBusbarSection('');
-            if (value?.topologyKind === 'NODE_BREAKER') {
-                // TODO specify the correct network variant num
-                fetchBusbarSectionsForVoltageLevel(studyUuid, 0, value.id).then(
-                    (busbarSections) => {
+            switch (value?.topologyKind) {
+                case 'NODE_BREAKER':
+                    // TODO specify the correct network variant num
+                    fetchBusbarSectionsForVoltageLevel(
+                        studyUuid,
+                        0,
+                        value.id
+                    ).then((busbarSections) => {
                         setBusOrBusbarSectionOptions(busbarSections);
-                    }
-                );
-            } else if (value?.topologyKind === 'BUS_BREAKER') {
-                // TODO specify the correct network variant num
-                fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
-                    (buses) => setBusOrBusbarSectionOptions(buses)
-                );
-            } else {
-                setBusOrBusbarSectionOptions([]);
+                    });
+                    break;
+
+                case 'BUS_BREAKER':
+                    // TODO specify the correct network variant num
+                    fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
+                        (buses) => setBusOrBusbarSectionOptions(buses)
+                    );
+                    break;
+
+                default:
+                    setBusOrBusbarSectionOptions([]);
+                    break;
             }
         } else if (reason === 'clear') {
             setVoltageLevel('');
@@ -224,8 +233,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 
     const handleCloseAndClear = () => {
         clearValues();
-        setErrors(new Map());
-        onClose();
+        handleClose();
     };
 
     const handleClose = () => {
@@ -383,6 +391,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             size="small"
                             options={network?.voltageLevels}
                             getOptionLabel={(vl) => vl.id}
+                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                               is created in the options list with a value equal to the input value
+                            */
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
 
@@ -416,6 +427,10 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                         />
                     </Grid>
                     <Grid item xs={4} align="center">
+                        {/* TODO: autoComplete prop is not working properly with material-ui v4,
+                            it clears the field when blur event is raised, which actually forces the user to validate free input
+                            with enter key for it to be validated.
+                            check if autoComplete prop is fixed in v5 */}
                         <Autocomplete
                             freeSolo
                             forcePopupIcon
@@ -428,6 +443,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             getOptionLabel={(busOrBusbarSection) =>
                                 busOrBusbarSection?.id
                             }
+                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                               is created in the options list with a value equal to the input value
+                            */
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
 
