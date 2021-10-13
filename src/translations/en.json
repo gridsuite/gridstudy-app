@@ -274,11 +274,5 @@
     "Connectivity": "Connectivity",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
-    "DefaultValueUsed": "If no input, the default value will be used",
-    "IdToCreateLoad": "An ID has to entered in order to create a new load",
-    "ActivePowerToCreateLoad": "An active power set point has to be entered in order to create a new load",
-    "ReactivePowerToCreateLoad": "A reactive power set point has to be entered in order to create a new load",
-    "VoltageLevelToCreateLoad": "A voltage level has to be entered in order to create a new load",
-    "BusBarBusToCreateLoad": "A bus or bus bar section has to be entered in order to create a new load",
     "LoadCreationError": "Error while creating load"
 }
