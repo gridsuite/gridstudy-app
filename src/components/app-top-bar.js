@@ -60,8 +60,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 
-    const network = useSelector((state) => state.network);
-
     const [themeLocal, handleChangeTheme] = useParameterState(PARAM_THEME);
 
     const [languageLocal, handleChangeLanguage] =
@@ -94,24 +92,26 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         [studyUuid, useNameLocal, enqueueSnackbar, intlRef]
     );
     const showVoltageLevelDiagram = useCallback(
+        // TODO create a global treatment for displaying a VL via a hook
         (equipmentInfos) => {
-            console.info('Equipment matching = ', equipmentInfos);
             onChangeTab(0); // switch to map view
             history.replace(
                 // show voltage level
                 '/studies/' +
                     encodeURIComponent(studyUuid) +
                     stringify(
-                        {
-                            voltageLevelId: network.voltageLevelsById
-                                .keys()
-                                .next().value,
-                        },
+                        equipmentInfos.type === 'SUBSTATION'
+                            ? {
+                                  substationId: equipmentInfos.id,
+                              }
+                            : {
+                                  voltageLevelId: equipmentInfos.voltageLevelId,
+                              },
                         { addQueryPrefix: true }
                     )
             );
         },
-        [studyUuid, history, onChangeTab, network]
+        [studyUuid, history, onChangeTab]
     );
 
     useEffect(() => {
