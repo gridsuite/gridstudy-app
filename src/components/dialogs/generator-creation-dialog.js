@@ -175,7 +175,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                 setBusOrBusbarSectionOptions([]);
             }
         } else if (reason === 'clear') {
-            setVoltageLevel(null);
+            setVoltageLevel('');
             setBusOrBusbarSection('');
             setBusOrBusbarSectionOptions([]);
         }
