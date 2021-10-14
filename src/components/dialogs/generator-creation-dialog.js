@@ -39,6 +39,8 @@ import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
 import { makeStyles } from '@material-ui/core/styles';
 
+// Factory used to create a filter method that is used to change the default
+// option filter behaviour of the Autocomplete component
 const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
@@ -59,15 +61,14 @@ const useStyles = makeStyles((theme) => ({
         margin: 'auto',
     },
     voltageRegulation: {
-        paddingTop: '10px'
-    }
+        paddingTop: '10px',
+    },
 }));
 
 /**
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param {String} title Title of the dialog
  */
 const GeneratorCreationDialog = ({ open, onClose, network }) => {
     const classes = useStyles();
@@ -98,10 +99,13 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
     const [activePowerSetpoint, setActivePowerSetpoint] = useState('');
 
     const [reactivePowerSetpoint, setReactivePowerSetpoint] = useState('');
+    const [enabledReactivePowerSetpoint, setEnabledReactivePowerSetpoint] =
+        useState(true);
 
     const [voltageRegulation, setVoltageRegulation] = useState(false);
 
     const [voltageSetpoint, setVoltageSetpoint] = useState('');
+    const [enabledVoltageSetpoint, setEnabledVoltageSetpoint] = useState(false);
 
     const [voltageLevel, setVoltageLevel] = useState('');
 
@@ -148,6 +152,13 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
 
     const handleChangeVoltageRegulation = (event) => {
         setVoltageRegulation(event.target.checked);
+        setEnabledReactivePowerSetpoint(!event.target.checked);
+        setEnabledVoltageSetpoint(event.target.checked);
+        if (event.target.checked) {
+            setReactivePowerSetpoint('');
+        } else {
+            setVoltageSetpoint('');
+        }
     };
 
     const handleChangeVoltageSetpoint = (event) => {
@@ -159,20 +170,28 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
         if (reason === 'select-option') {
             setVoltageLevel(value);
             setBusOrBusbarSection('');
-            if (value?.topologyKind === 'NODE_BREAKER') {
-                // TODO specify the correct network variant num
-                fetchBusbarSectionsForVoltageLevel(studyUuid, 0, value.id).then(
-                    (busbarSections) => {
+            switch (value?.topologyKind) {
+                case 'NODE_BREAKER':
+                    // TODO specify the correct network variant num
+                    fetchBusbarSectionsForVoltageLevel(
+                        studyUuid,
+                        0,
+                        value.id
+                    ).then((busbarSections) => {
                         setBusOrBusbarSectionOptions(busbarSections);
-                    }
-                );
-            } else if (value?.topologyKind === 'BUS_BREAKER') {
-                // TODO specify the correct network variant num
-                fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
-                    (buses) => setBusOrBusbarSectionOptions(buses)
-                );
-            } else {
-                setBusOrBusbarSectionOptions([]);
+                    });
+                    break;
+
+                case 'BUS_BREAKER':
+                    // TODO specify the correct network variant num
+                    fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
+                        (buses) => setBusOrBusbarSectionOptions(buses)
+                    );
+                    break;
+
+                default:
+                    setBusOrBusbarSectionOptions([]);
+                    break;
             }
         } else if (reason === 'clear') {
             setVoltageLevel('');
@@ -183,6 +202,51 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
 
     const handleChangeBus = (event, value, reason) => {
         setBusOrBusbarSection(value);
+    };
+
+    const checkMinMaxPower = (minPower, maxPower) => {
+        if (maxPower) {
+            if (Number(minPower) > Number(maxPower)) {
+                return {
+                    error: true,
+                    errorMsgId: 'MinActivePowerLessThanMaxActivePower',
+                };
+            } else {
+                return { error: false, errorMsgId: '' };
+            }
+        } else {
+            return { error: false, errorMsgId: '' };
+        }
+    };
+
+    const checkRatedNominalPower = (ratedPower) => {
+        if (ratedPower) {
+            if (Number(ratedPower) <= 0) {
+                return {
+                    error: true,
+                    errorMsgId: 'RatedNominalPowerGreaterThanZero',
+                };
+            } else {
+                return { error: false, errorMsgId: '' };
+            }
+        } else {
+            return { error: false, errorMsgId: '' };
+        }
+    };
+
+    const checkVoltageSetpoint = (vSetpoint) => {
+        if (vSetpoint) {
+            if (Number(vSetpoint) <= 0) {
+                return {
+                    error: true,
+                    errorMsgId: 'VoltageGreaterThanZero',
+                };
+            } else {
+                return { error: false, errorMsgId: '' };
+            }
+        } else {
+            return { error: false, errorMsgId: '' };
+        }
     };
 
     const handleSave = () => {
@@ -200,6 +264,12 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
             validateField(minimumActivePower, {
                 isFieldRequired: true,
                 isFieldNumeric: true,
+                checkFieldValue: () => {
+                    return checkMinMaxPower(
+                        minimumActivePower,
+                        maximumActivePower
+                    );
+                },
             })
         );
 
@@ -216,6 +286,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
             validateField(ratedNominalPower, {
                 isFieldRequired: false,
                 isFieldNumeric: true,
+                checkFieldValue: () => {
+                    return checkRatedNominalPower(ratedNominalPower);
+                },
             })
         );
 
@@ -230,16 +303,19 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
         tmpErrors.set(
             'reactive-power-set-point',
             validateField(reactivePowerSetpoint, {
-                isFieldRequired: voltageRegulation === false,
+                isFieldRequired: !voltageRegulation,
                 isFieldNumeric: true,
             })
         );
 
         tmpErrors.set(
-            'voltage-level-set-point',
+            'voltage-set-point',
             validateField(voltageSetpoint, {
-                isFieldRequired: voltageRegulation === true,
+                isFieldRequired: voltageRegulation,
                 isFieldNumeric: true,
+                checkFieldValue: () => {
+                    return checkVoltageSetpoint(voltageSetpoint);
+                },
             })
         );
 
@@ -313,8 +389,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
 
     const handleCloseAndClear = () => {
         clearValues();
-        setErrors(new Map());
-        onClose();
+        handleClose();
     };
 
     const handleClose = () => {
@@ -528,6 +603,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                                 adornmentPosition={'end'}
                                 adornmentText={'MVar'}
+                                disabled={!enabledReactivePowerSetpoint}
                                 value={reactivePowerSetpoint}
                                 onChange={handleChangeReactivePowerSetpoint}
                                 defaultValue=""
@@ -546,8 +622,8 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     <Grid container spacing={2}>
                         <Grid item xs={4} align="start">
                             <FormControlLabel
-                              className={classes.voltageRegulation}
-                              id="voltage-regulation"
+                                className={classes.voltageRegulation}
+                                id="voltage-regulation"
                                 control={
                                     <Switch
                                         checked={voltageRegulation}
@@ -574,6 +650,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                                 adornmentPosition={'end'}
                                 adornmentText={'kV'}
+                                disabled={!enabledVoltageSetpoint}
                                 value={voltageSetpoint}
                                 onChange={handleChangeVoltageSetpoint}
                                 defaultValue=""
@@ -605,6 +682,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 size="small"
                                 options={network?.voltageLevels}
                                 getOptionLabel={(vl) => vl.id}
+                                /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                                   is created in the options list with a value equal to the input value
+                                */
                                 filterOptions={(options, params) => {
                                     const filtered = filter(options, params);
 
@@ -639,6 +719,10 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                             />
                         </Grid>
                         <Grid item xs={4} align="center">
+                            {/* TODO: autoComplete prop is not working properly with material-ui v4,
+                            it clears the field when blur event is raised, which actually forces the user to validate free input
+                            with enter key for it to be validated.
+                            check if autoComplete prop is fixed in v5 */}
                             <Autocomplete
                                 freeSolo
                                 forcePopupIcon
@@ -651,6 +735,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 getOptionLabel={(busOrBusbarSection) =>
                                     busOrBusbarSection?.id
                                 }
+                                /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                                   is created in the options list with a value equal to the input value
+                                 */
                                 filterOptions={(options, params) => {
                                     const filtered = filter(options, params);
 

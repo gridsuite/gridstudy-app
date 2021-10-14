@@ -25,6 +25,10 @@ export function validateField(value, toValidate) {
         }
     }
 
+    if (toValidate.checkFieldValue) {
+        return toValidate.checkFieldValue();
+    }
+
     return {
         error: false,
         errorMsgId: '',
