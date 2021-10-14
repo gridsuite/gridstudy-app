@@ -10,10 +10,10 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const TextFieldWithAdornment = (props) => {
-    const [isSelected, setIsSelected] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
     const endAdornment =
-        isSelected || props.value
+        isFocused || props.value
             ? {
                   endAdornment: (
                       <InputAdornment position="end">
@@ -24,7 +24,7 @@ const TextFieldWithAdornment = (props) => {
             : {};
 
     const startAdornment =
-        isSelected || props.value
+        isFocused || props.value
             ? {
                   startAdornment: (
                       <InputAdornment position="start">
@@ -42,8 +42,8 @@ const TextFieldWithAdornment = (props) => {
                     ? startAdornment
                     : endAdornment
             }
-            onFocus={(e) => setIsSelected(true)}
-            onBlur={(e) => setIsSelected(false)}
+            onFocus={(e) => setIsFocused(true)}
+            onBlur={(e) => setIsFocused(false)}
         />
     );
 };
