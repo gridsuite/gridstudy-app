@@ -100,11 +100,13 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeActivePower = (event) => {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setActivePower(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeReactivePower = (event) => {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setReactivePower(event.target.value?.replace(',', '.'));
     };
