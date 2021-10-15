@@ -81,9 +81,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 
     const [reactivePower, setReactivePower] = useState('');
 
-    const [voltageLevel, setVoltageLevel] = useState('');
+    const [voltageLevel, setVoltageLevel] = useState(null);
 
-    const [busOrBusbarSection, setBusOrBusbarSection] = useState('');
+    const [busOrBusbarSection, setBusOrBusbarSection] = useState(null);
 
     const [errors, setErrors] = useState(new Map());
 
@@ -112,7 +112,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     const handleChangeVoltageLevel = (event, value, reason) => {
         if (reason === 'select-option') {
             setVoltageLevel(value);
-            setBusOrBusbarSection('');
+            setBusOrBusbarSection(null);
             switch (value?.topologyKind) {
                 case 'NODE_BREAKER':
                     // TODO specify the correct network variant num
@@ -137,8 +137,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                     break;
             }
         } else if (reason === 'clear') {
-            setVoltageLevel('');
-            setBusOrBusbarSection('');
+            setVoltageLevel(null);
+            setBusOrBusbarSection(null);
             setBusOrBusbarSectionOptions([]);
         }
     };
@@ -226,8 +226,8 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         setLoadType('');
         setActivePower('');
         setReactivePower('');
-        setVoltageLevel('');
-        setBusOrBusbarSection('');
+        setVoltageLevel(null);
+        setBusOrBusbarSection(null);
         setBusOrBusbarSectionOptions([]);
     };
 
