@@ -361,6 +361,46 @@ function fetchEquipments(
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
+export function fetchBusesForVoltageLevel(
+    studyUuid,
+    variantNum,
+    voltageLevelId
+) {
+    console.info(
+        `Fetching buses of study '${studyUuid}' for voltage level '${voltageLevelId}'...`
+    );
+    const fetchBusesUrl =
+        getStudyUrl(studyUuid) +
+        '/network/' +
+        variantNum +
+        '/voltage-levels/' +
+        voltageLevelId +
+        '/buses';
+    console.debug(fetchBusesUrl);
+    return backendFetch(fetchBusesUrl).then((response) => response.json());
+}
+
+export function fetchBusbarSectionsForVoltageLevel(
+    studyUuid,
+    variantNum,
+    voltageLevelId
+) {
+    console.info(
+        `Fetching busbar sections of study '${studyUuid}' for voltage level '${voltageLevelId}'...`
+    );
+    const fetchBusbarSectionsUrl =
+        getStudyUrl(studyUuid) +
+        '/network/' +
+        variantNum +
+        '/voltage-levels/' +
+        voltageLevelId +
+        '/busbar-sections';
+    console.debug(fetchBusbarSectionsUrl);
+    return backendFetch(fetchBusbarSectionsUrl).then((response) =>
+        response.json()
+    );
+}
+
 export function fetchLinePositions(studyUuid) {
     console.info(`Fetching line positions of study '${studyUuid}'...`);
     const fetchLinePositionsUrl = getStudyUrl(studyUuid) + '/geo-data/lines';
@@ -848,6 +888,41 @@ export function energiseLineEnd(studyUuid, lineId, lineEnd) {
 export function switchOnLine(studyUuid, lineId) {
     console.info('switching on line ' + lineId + ' ...');
     return changeLineStatus(studyUuid, lineId, 'switchOn');
+}
+
+export function createLoad(
+    studyUuid,
+    id,
+    name,
+    loadType,
+    activePower,
+    reactivePower,
+    voltageLevelId,
+    busId
+) {
+    console.info('Creating load ');
+    const createLoadUrl =
+        getStudyUrl(studyUuid) + '/network-modification/loads';
+    return backendFetch(createLoadUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: id,
+            equipmentName: name,
+            loadType: loadType,
+            activePower: activePower,
+            reactivePower: reactivePower,
+            voltageLevelId: voltageLevelId,
+            busId: busId,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
 }
 
 export function getLoadFlowProvider(studyUuid) {

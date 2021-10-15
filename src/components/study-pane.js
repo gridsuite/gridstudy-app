@@ -102,6 +102,7 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import NetworkModificationTree from './network-modification-tree';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
+import NetworkModificationDialog from './dialogs/network-modifications-dialog';
 
 const drawerExplorerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -310,6 +311,9 @@ const StudyPane = (props) => {
         drawerNetworkModificationTreeOpen,
         setDrawerNetworkModificationTreeOpen,
     ] = useState(false);
+
+    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
+        useState(false);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -794,6 +798,14 @@ const StudyPane = (props) => {
             !drawerNetworkModificationTreeOpen
         );
         setDrawerExplorerOpen(false);
+    };
+
+    const openNetworkModificationConfiguration = () => {
+        setOpenNetworkModificationsDialog(true);
+    };
+
+    const closeNetworkModificationConfiguration = () => {
+        setOpenNetworkModificationsDialog(false);
     };
 
     const sldRef = useRef();
@@ -1342,6 +1354,9 @@ const StudyPane = (props) => {
                             networkModificationTreeDisplayed={
                                 drawerNetworkModificationTreeOpen
                             }
+                            handleOpenNetworkModificationConfiguration={
+                                openNetworkModificationConfiguration
+                            }
                         />
                     </div>
                 </Drawer>
@@ -1449,6 +1464,11 @@ const StudyPane = (props) => {
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
                     onStart={handleStartSecurityAnalysis}
+                />
+                <NetworkModificationDialog
+                    open={openNetworkModificationsDialog}
+                    onClose={closeNetworkModificationConfiguration}
+                    network={network}
                 />
             </div>
         );
