@@ -898,7 +898,7 @@ export function createLoad(
     activePower,
     reactivePower,
     voltageLevelId,
-    busId
+    busOrBusbarSectionId
 ) {
     console.info('Creating load ');
     const createLoadUrl =
@@ -916,7 +916,7 @@ export function createLoad(
             activePower: activePower,
             reactivePower: reactivePower,
             voltageLevelId: voltageLevelId,
-            busId: busId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
         }),
     }).then((response) =>
         response.ok
@@ -930,15 +930,15 @@ export function createGenerator(
     id,
     name,
     energySource,
-    minimumActivePower,
-    maximumActivePower,
+    minActivePower,
+    maxActivePower,
     ratedNominalPower,
     activePowerSetpoint,
     reactivePowerSetpoint,
-    voltageRegulation,
+    voltageRegulationOn,
     voltageSetpoint,
     voltageLevelId,
-    busId
+    busOrBusbarSectionId
 ) {
     console.info('Creating generator ');
     const createGeneratorUrl =
@@ -953,15 +953,15 @@ export function createGenerator(
             equipmentId: id,
             equipmentName: name,
             energySource: energySource,
-            minimumActivePower: minimumActivePower,
-            maximumActivePower: maximumActivePower,
+            minActivePower: minActivePower,
+            maxActivePower: maxActivePower,
             ratedNominalPower: ratedNominalPower,
             activePowerSetpoint: activePowerSetpoint,
             reactivePowerSetpoint: reactivePowerSetpoint,
-            voltageRegulation: voltageRegulation,
+            voltageRegulationOn: voltageRegulationOn,
             voltageSetpoint: voltageSetpoint,
             voltageLevelId: voltageLevelId,
-            busId: busId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
         }),
     }).then((response) =>
         response.ok

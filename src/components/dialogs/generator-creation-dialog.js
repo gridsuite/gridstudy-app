@@ -156,6 +156,11 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
         setEnabledVoltageSetpoint(event.target.checked);
         if (event.target.checked) {
             setReactivePowerSetpoint('');
+            errors.set(
+            'reactive-power-set-point', {
+                  error: false,
+                  errorMsgId: '',
+              });
         } else {
             setVoltageSetpoint('');
         }
@@ -343,15 +348,15 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
             createGenerator(
                 studyUuid,
                 generatorId,
-                generatorName,
+                generatorName ? generatorName : null,
                 !energySource ? 'OTHER' : energySource,
                 minimumActivePower,
                 maximumActivePower,
-                ratedNominalPower,
+                ratedNominalPower ? ratedNominalPower : null,
                 activePowerSetpoint,
-                reactivePowerSetpoint,
+                reactivePowerSetpoint ? reactivePowerSetpoint : null,
                 voltageRegulation,
-                voltageSetpoint,
+                voltageSetpoint ? voltageSetpoint : null,
                 voltageLevel.id,
                 busOrBusbarSection.id
             )
