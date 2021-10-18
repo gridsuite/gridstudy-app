@@ -16,6 +16,7 @@ export function validateField(value, toValidate) {
     }
 
     if (toValidate.isFieldNumeric) {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         const valueNumericVal = Number(value.replace(',', '.'));
         if (isNaN(valueNumericVal)) {
             return {
