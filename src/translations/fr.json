@@ -270,7 +270,7 @@
     "ReactivePowerText": "Puissance réactive",
     "VoltageLevel": "Poste",
     "BusBarBus": "SJB / nœud",
-    "Setpoints": "Consignes de puissance",
+    "Setpoints": "Consignes",
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
