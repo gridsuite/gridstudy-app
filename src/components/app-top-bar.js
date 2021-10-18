@@ -92,7 +92,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         [studyUuid, useNameLocal, enqueueSnackbar, intlRef]
     );
     const showVoltageLevelDiagram = useCallback(
-        // TODO create a global treatment for displaying a VL via a hook
+        // TODO code factorization for displaying a VL via a hook
         (equipmentInfos) => {
             onChangeTab(0); // switch to map view
             history.replace(

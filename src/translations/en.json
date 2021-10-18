@@ -259,5 +259,21 @@
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
-    "NodeUpdateError": "An error occured while updating node"
+    "NodeUpdateError": "An error occured while updating node",
+    "NetworkModifications": "Network modifications",
+    "CreateLoad": "Create load",
+    "NameOptional": "Name (optional)",
+    "TypeOptional": "Type (optional)",
+    "UndefinedDefaultValue": "Undefined (default value)",
+    "Auxiliary": "Auxiliary",
+    "Fictitious": "Fictitious",
+    "ActivePowerText": "Active power",
+    "ReactivePowerText": "Reactive power",
+    "VoltageLevel": "Voltage level",
+    "BusBarBus": "Bus bar section / bus",
+    "Setpoints": "Setpoints",
+    "Connectivity": "Connectivity",
+    "FieldAcceptNumeric": "This field only accepts numeric values",
+    "FieldIsRequired": "This field is required",
+    "LoadCreationError": "Error while creating load"
 }
