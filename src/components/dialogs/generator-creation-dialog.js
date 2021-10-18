@@ -107,9 +107,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
     const [voltageSetpoint, setVoltageSetpoint] = useState('');
     const [enabledVoltageSetpoint, setEnabledVoltageSetpoint] = useState(false);
 
-    const [voltageLevel, setVoltageLevel] = useState('');
+    const [voltageLevel, setVoltageLevel] = useState(null);
 
-    const [busOrBusbarSection, setBusOrBusbarSection] = useState('');
+    const [busOrBusbarSection, setBusOrBusbarSection] = useState(null);
 
     const [errors, setErrors] = useState(new Map());
 
@@ -154,16 +154,22 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
         setVoltageRegulation(event.target.checked);
         setEnabledReactivePowerSetpoint(!event.target.checked);
         setEnabledVoltageSetpoint(event.target.checked);
+
+        let tmpErrors = new Map(errors);
         if (event.target.checked) {
             setReactivePowerSetpoint('');
-            errors.set(
-            'reactive-power-set-point', {
-                  error: false,
-                  errorMsgId: '',
-              });
+            tmpErrors.set('reactive-power-set-point', {
+                error: false,
+                errorMsgId: '',
+            });
         } else {
             setVoltageSetpoint('');
+            tmpErrors.set('voltage-set-point', {
+                error: false,
+                errorMsgId: '',
+            });
         }
+        setErrors(tmpErrors);
     };
 
     const handleChangeVoltageSetpoint = (event) => {
@@ -174,7 +180,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
     const handleChangeVoltageLevel = (event, value, reason) => {
         if (reason === 'select-option') {
             setVoltageLevel(value);
-            setBusOrBusbarSection('');
+            setBusOrBusbarSection(null);
             switch (value?.topologyKind) {
                 case 'NODE_BREAKER':
                     // TODO specify the correct network variant num
@@ -199,8 +205,8 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     break;
             }
         } else if (reason === 'clear') {
-            setVoltageLevel('');
-            setBusOrBusbarSection('');
+            setVoltageLevel(null);
+            setBusOrBusbarSection(null);
             setBusOrBusbarSectionOptions([]);
         }
     };
@@ -387,8 +393,8 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
         setReactivePowerSetpoint('');
         setVoltageRegulation(false);
         setVoltageSetpoint('');
-        setVoltageLevel('');
-        setBusOrBusbarSection('');
+        setVoltageLevel(null);
+        setBusOrBusbarSection(null);
         setBusOrBusbarSectionOptions([]);
     };
 
@@ -464,7 +470,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                         <Grid item xs={4} align="center">
                             <FormControl fullWidth>
                                 {/*This InputLabel is necessary in order to display
-                            the label describing the content of the Select*/}
+                                   the label describing the content of the Select*/}
                                 <InputLabel
                                     id="energy-source-label"
                                     variant={'filled'}
