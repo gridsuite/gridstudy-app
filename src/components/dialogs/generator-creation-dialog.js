@@ -32,6 +32,7 @@ import ConnectivityDialog from './connectivity-dialog';
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
+        marginTop: 3,
     },
     popper: {
         style: {
@@ -375,7 +376,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
             <DialogContent>
                 <div className={classes.divDialog}>
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="center">
+                        <Grid item xs={4} align="left">
                             <TextField
                                 fullWidth
                                 id="generator-id"
@@ -397,7 +398,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="center">
+                        <Grid item xs={4} align="left">
                             <TextField
                                 id="generator-name"
                                 label={intl.formatMessage({
@@ -409,7 +410,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 variant="filled"
                             />
                         </Grid>
-                        <Grid item xs={4} align="center">
+                        <Grid item xs={4} align="left">
                             <FormControl fullWidth>
                                 {/*This InputLabel is necessary in order to display
                                    the label describing the content of the Select*/}
@@ -459,7 +460,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     <br />
                     <FormattedMessage id="Limits" />
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
+                        <Grid item xs={4} align="left">
                             <TextFieldWithAdornment
                                 id="minimum-active-power"
                                 label={intl.formatMessage({
@@ -480,7 +481,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="start">
+                        <Grid item xs={4} align="left">
                             <TextFieldWithAdornment
                                 id="maximum-active-power"
                                 label={intl.formatMessage({
@@ -501,7 +502,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="start">
+                        <Grid item xs={4} align="left">
                             <TextFieldWithAdornment
                                 id="rated-nominal-power"
                                 label={intl.formatMessage({
@@ -527,7 +528,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     <br />
                     <FormattedMessage id="Setpoints" />
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
+                        <Grid item xs={4} align="left">
                             <TextFieldWithAdornment
                                 id="active-power-set-point"
                                 label={intl.formatMessage({
@@ -548,7 +549,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="start">
+                        <Grid item xs={4} align="left">
                             <TextFieldWithAdornment
                                 id="reactive-power-set-point"
                                 label={intl.formatMessage({
@@ -573,7 +574,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
+                        <Grid item xs={4} align="left">
                             <FormControlLabel
                                 className={classes.voltageRegulation}
                                 id="voltage-regulation"
@@ -595,7 +596,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="start">
+                        <Grid item xs={4} align="left">
                             <TextFieldWithAdornment
                                 id="voltage-set-point"
                                 label={intl.formatMessage({

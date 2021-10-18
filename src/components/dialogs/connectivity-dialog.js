@@ -25,6 +25,7 @@ const filter = createFilterOptions();
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
+        marginTop: 3,
     },
     popper: {
         style: {
@@ -101,7 +102,7 @@ const ConnectivityDialog = ({
         <>
             <FormattedMessage id="Connectivity" />
             <Grid container spacing={2}>
-                <Grid item xs={4} align="center">
+                <Grid item xs={4} align="left">
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -121,7 +122,12 @@ const ConnectivityDialog = ({
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
 
-                            if (params.inputValue !== '') {
+                            if (
+                                params.inputValue !== '' &&
+                                !options.find(
+                                    (opt) => opt.id === params.inputValue
+                                )
+                            ) {
                                 filtered.push({
                                     inputValue: params.inputValue,
                                     id: params.inputValue,
@@ -150,7 +156,7 @@ const ConnectivityDialog = ({
                         PopperComponent={FittingPopper}
                     />
                 </Grid>
-                <Grid item xs={4} align="center">
+                <Grid item xs={4} align="left">
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -173,7 +179,12 @@ const ConnectivityDialog = ({
                         filterOptions={(options, params) => {
                             const filtered = filter(options, params);
 
-                            if (params.inputValue !== '') {
+                            if (
+                                params.inputValue !== '' &&
+                                !options.find(
+                                    (opt) => opt.id === params.inputValue
+                                )
+                            ) {
                                 filtered.push({
                                     inputValue: params.inputValue,
                                     id: params.inputValue,
