@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import { LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
+import {
+    LIGHT_THEME,
+    logout,
+    TopBar,
+    EQUIPMENT_TYPE,
+} from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import Tabs from '@material-ui/core/Tabs';
@@ -27,6 +32,7 @@ import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import { stringify } from 'qs';
+import { selectItemNetwork } from '../redux/actions';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -94,24 +100,27 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (equipmentInfos) => {
+            let substationOrVlId;
+            let requestParam;
+            if (equipmentInfos.type === EQUIPMENT_TYPE.SUBSTATION) {
+                substationOrVlId = equipmentInfos.id;
+                requestParam = { substationId: equipmentInfos.id };
+            } else {
+                substationOrVlId = equipmentInfos.voltageLevelId;
+                requestParam = {
+                    voltageLevelId: equipmentInfos.voltageLevelId,
+                };
+            }
+            dispatch(selectItemNetwork(substationOrVlId));
             onChangeTab(0); // switch to map view
             history.replace(
                 // show voltage level
                 '/studies/' +
                     encodeURIComponent(studyUuid) +
-                    stringify(
-                        equipmentInfos.type === 'SUBSTATION'
-                            ? {
-                                  substationId: equipmentInfos.id,
-                              }
-                            : {
-                                  voltageLevelId: equipmentInfos.voltageLevelId,
-                              },
-                        { addQueryPrefix: true }
-                    )
+                    stringify(requestParam, { addQueryPrefix: true })
             );
         },
-        [studyUuid, history, onChangeTab]
+        [studyUuid, history, onChangeTab, dispatch]
     );
 
     useEffect(() => {
