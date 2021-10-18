@@ -626,6 +626,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     margins: { top: 100, left: 100, right: 100, bottom: 100 },
                 });
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
+
+            // PowSyBl SLD introduced server side calculated SVG viewbox
+            // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
+            draw.node.firstChild.removeAttribute('viewBox')
+
             if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
                 //The svg is too big, display only the top left corner because that's
                 //better for users than zooming out. Keep the same aspect ratio
