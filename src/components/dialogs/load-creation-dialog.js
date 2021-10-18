@@ -4,13 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    InputLabel,
-    MenuItem,
-    Popper,
-    Select,
-    TextField,
-} from '@material-ui/core';
+import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -19,7 +13,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
@@ -29,17 +22,10 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import {
-    createLoad,
-    fetchBusbarSectionsForVoltageLevel,
-    fetchBusesForVoltageLevel,
-} from '../../utils/rest-api';
+import { createLoad } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { validateField } from '../util/validation-functions';
-
-// Factory used to create a filter method that is used to change the default
-// option filter behaviour of the Autocomplete component
-const filter = createFilterOptions();
+import ConnectivityDialog from './connectivity-dialog';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -111,44 +97,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         setReactivePower(event.target.value?.replace(',', '.'));
     };
 
-    const handleChangeVoltageLevel = (event, value, reason) => {
-        if (reason === 'select-option') {
-            setVoltageLevel(value);
-            setBusOrBusbarSection(null);
-            switch (value?.topologyKind) {
-                case 'NODE_BREAKER':
-                    // TODO specify the correct network variant num
-                    fetchBusbarSectionsForVoltageLevel(
-                        studyUuid,
-                        0,
-                        value.id
-                    ).then((busbarSections) => {
-                        setBusOrBusbarSectionOptions(busbarSections);
-                    });
-                    break;
-
-                case 'BUS_BREAKER':
-                    // TODO specify the correct network variant num
-                    fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
-                        (buses) => setBusOrBusbarSectionOptions(buses)
-                    );
-                    break;
-
-                default:
-                    setBusOrBusbarSectionOptions([]);
-                    break;
-            }
-        } else if (reason === 'clear') {
-            setVoltageLevel(null);
-            setBusOrBusbarSection(null);
-            setBusOrBusbarSectionOptions([]);
-        }
-    };
-
-    const handleChangeBus = (event, value, reason) => {
-        setBusOrBusbarSection(value);
-    };
-
     const handleSave = () => {
         let tmpErrors = new Map(errors);
 
@@ -199,7 +147,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             createLoad(
                 studyUuid,
                 loadId,
-                loadName,
+                loadName ? loadName : null,
                 !loadType ? 'UNDEFINED' : loadType,
                 activePower,
                 reactivePower,
@@ -241,18 +189,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     const handleClose = () => {
         setErrors(new Map());
         onClose();
-    };
-
-    // Specific Popper component to be used with Autocomplete
-    // This allows the popper to fit its content, which is not the case by default
-    const FittingPopper = (props) => {
-        return (
-            <Popper
-                {...props}
-                style={classes.popper.style}
-                placement="bottom-start"
-            />
-        );
     };
 
     return (
@@ -377,110 +313,24 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 </Grid>
                 <br />
                 <br />
-                <FormattedMessage id="Connectivity" />
-                <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
-                        {/* TODO: autoComplete prop is not working properly with material-ui v4,
-                            it clears the field when blur event is raised, which actually forces the user to validate free input
-                            with enter key for it to be validated.
-                            check if autoComplete prop is fixed in v5 */}
-                        <Autocomplete
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            id="voltage-level"
-                            size="small"
-                            options={network?.voltageLevels}
-                            getOptionLabel={(vl) => vl.id}
-                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
-                               is created in the options list with a value equal to the input value
-                            */
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
 
-                                if (params.inputValue !== '') {
-                                    filtered.push({
-                                        inputValue: params.inputValue,
-                                        id: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            value={voltageLevel}
-                            onChange={handleChangeVoltageLevel}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    label={intl.formatMessage({
-                                        id: 'VoltageLevel',
-                                    })}
-                                    {...(errors.get('voltage-level')?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get('voltage-level')
-                                                ?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            )}
-                            PopperComponent={FittingPopper}
-                        />
-                    </Grid>
-                    <Grid item xs={4} align="center">
-                        {/* TODO: autoComplete prop is not working properly with material-ui v4,
-                            it clears the field when blur event is raised, which actually forces the user to validate free input
-                            with enter key for it to be validated.
-                            check if autoComplete prop is fixed in v5 */}
-                        <Autocomplete
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            id="bus"
-                            size="small"
-                            disabled={!voltageLevel}
-                            options={busOrBusbarSectionOptions}
-                            getOptionLabel={(busOrBusbarSection) =>
-                                busOrBusbarSection?.id
-                            }
-                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
-                               is created in the options list with a value equal to the input value
-                            */
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-
-                                if (params.inputValue !== '') {
-                                    filtered.push({
-                                        inputValue: params.inputValue,
-                                        id: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            value={busOrBusbarSection}
-                            onChange={handleChangeBus}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    label={intl.formatMessage({
-                                        id: 'BusBarBus',
-                                    })}
-                                    {...(errors.get('bus-bar')?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get('bus-bar')
-                                                ?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            )}
-                            PopperComponent={FittingPopper}
-                        />
-                    </Grid>
-                </Grid>
+                {/* Connectivity part */}
+                <ConnectivityDialog
+                    network={network}
+                    voltageLevel={voltageLevel}
+                    busOrBusbarSection={busOrBusbarSection}
+                    busOrBusbarSectionOptions={busOrBusbarSectionOptions}
+                    errors={errors}
+                    changeBusOrBusbarSectionOptions={(
+                        busOrBusbarSectionOptions
+                    ) =>
+                        setBusOrBusbarSectionOptions(busOrBusbarSectionOptions)
+                    }
+                    changeVoltageLevel={(value) => setVoltageLevel(value)}
+                    changeBusOrBusbarSection={(busOrBusbarSection) =>
+                        setBusOrBusbarSection(busOrBusbarSection)
+                    }
+                />
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCloseAndClear} variant="text">
