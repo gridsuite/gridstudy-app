@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ConnectivityDialog = ({
+const ConnectivityEdition = ({
     network,
     voltageLevel,
     busOrBusbarSection,
@@ -217,7 +217,7 @@ const ConnectivityDialog = ({
     );
 };
 
-ConnectivityDialog.propTypes = {
+ConnectivityEdition.propTypes = {
     network: PropTypes.object.isRequired,
     voltageLevel: PropTypes.object,
     busOrBusbarSection: PropTypes.object,
@@ -228,4 +228,4 @@ ConnectivityDialog.propTypes = {
     changeBusOrBusbarSectionOptions: PropTypes.func.isRequired,
 };
 
-export default ConnectivityDialog;
+export default ConnectivityEdition;

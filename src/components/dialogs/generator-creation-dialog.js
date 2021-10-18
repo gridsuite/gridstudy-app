@@ -27,7 +27,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
 import { makeStyles } from '@material-ui/core/styles';
-import ConnectivityDialog from './connectivity-dialog';
+import ConnectivityEdition from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -622,7 +622,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     <br />
 
                     {/* Connectivity part */}
-                    <ConnectivityDialog
+                    <ConnectivityEdition
                         network={network}
                         voltageLevel={voltageLevel}
                         busOrBusbarSection={busOrBusbarSection}

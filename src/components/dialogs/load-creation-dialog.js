@@ -25,7 +25,7 @@ import {
 import { createLoad } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { validateField } from '../util/validation-functions';
-import ConnectivityDialog from './connectivity-dialog';
+import ConnectivityEdition from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -315,7 +315,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <br />
 
                 {/* Connectivity part */}
-                <ConnectivityDialog
+                <ConnectivityEdition
                     network={network}
                     voltageLevel={voltageLevel}
                     busOrBusbarSection={busOrBusbarSection}
