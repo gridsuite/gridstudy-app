@@ -126,26 +126,31 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeMinimumActivePower = (event) => {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setMinimumActivePower(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeMaximumActivePower = (event) => {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setMaximumActivePower(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeRatedNominalPower = (event) => {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setRatedNominalPower(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeActivePowerSetpoint = (event) => {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setActivePowerSetpoint(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeReactivePowerSetpoint = (event) => {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setReactivePowerSetpoint(event.target.value?.replace(',', '.'));
     };
@@ -173,6 +178,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeVoltageSetpoint = (event) => {
+        // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setVoltageSetpoint(event.target.value?.replace(',', '.'));
     };
