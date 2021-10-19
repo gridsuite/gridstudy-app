@@ -9,7 +9,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@material-ui/core/Grid';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { Popper, TextField } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchBusbarSectionsForVoltageLevel,
@@ -34,19 +34,31 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/*
+ * Component to edit the connection of an equipment (voltage level and bus or busbar section)
+ *
+ * @param network : the network
+ * @param voltage level : the voltage level currently selected
+ * @param busOrBusbarSection : the bus or busbar section currently selected
+ * @param errors : errors eventually associated to the fields
+ * @param onChangeVoltageLevel : callback to change the voltage level in the parent component
+ * @param onChangeBusOrBusbarSection : callback to change the bus or busbar section in the parent component
+ */
 const ConnectivityEdition = ({
     network,
     voltageLevel,
     busOrBusbarSection,
-    busOrBusbarSectionOptions,
     errors,
-    changeVoltageLevel,
-    changeBusOrBusbarSection,
-    changeBusOrBusbarSectionOptions,
+    onChangeVoltageLevel,
+    onChangeBusOrBusbarSection,
 }) => {
     const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const intl = useIntl();
+
+    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
+        []
+    );
 
     // Specific Popper component to be used with Autocomplete
     // This allows the popper to fit its content, which is not the case by default
@@ -62,8 +74,8 @@ const ConnectivityEdition = ({
 
     const handleChangeVoltageLevel = (event, value, reason) => {
         if (reason === 'select-option') {
-            changeVoltageLevel(value);
-            changeBusOrBusbarSection(null);
+            onChangeVoltageLevel(value);
+            onChangeBusOrBusbarSection(null);
             switch (value?.topologyKind) {
                 case 'NODE_BREAKER':
                     // TODO specify the correct network variant num
@@ -72,37 +84,37 @@ const ConnectivityEdition = ({
                         0,
                         value.id
                     ).then((busbarSections) => {
-                        changeBusOrBusbarSectionOptions(busbarSections);
+                        setBusOrBusbarSectionOptions(busbarSections);
                     });
                     break;
 
                 case 'BUS_BREAKER':
                     // TODO specify the correct network variant num
                     fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
-                        (buses) => changeBusOrBusbarSectionOptions(buses)
+                        (buses) => setBusOrBusbarSectionOptions(buses)
                     );
                     break;
 
                 default:
-                    changeBusOrBusbarSectionOptions([]);
+                    setBusOrBusbarSectionOptions([]);
                     break;
             }
         } else if (reason === 'clear') {
-            changeVoltageLevel(null);
-            changeBusOrBusbarSection(null);
-            changeBusOrBusbarSectionOptions([]);
+            onChangeVoltageLevel(null);
+            onChangeBusOrBusbarSection(null);
+            setBusOrBusbarSectionOptions([]);
         }
     };
 
     const handleChangeBus = (event, value, reason) => {
-        changeBusOrBusbarSection(value);
+        onChangeBusOrBusbarSection(value);
     };
 
     return (
         <>
             <FormattedMessage id="Connectivity" />
             <Grid container spacing={2}>
-                <Grid item xs={4} align="left">
+                <Grid item xs={6} align="left">
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -113,7 +125,6 @@ const ConnectivityEdition = ({
                         autoHighlight
                         selectOnFocus
                         id="voltage-level"
-                        size="small"
                         options={network?.voltageLevels}
                         getOptionLabel={(vl) => vl.id}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
@@ -156,7 +167,7 @@ const ConnectivityEdition = ({
                         PopperComponent={FittingPopper}
                     />
                 </Grid>
-                <Grid item xs={4} align="left">
+                <Grid item xs={6} align="left">
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -167,7 +178,6 @@ const ConnectivityEdition = ({
                         autoHighlight
                         selectOnFocus
                         id="bus"
-                        size="small"
                         disabled={!voltageLevel}
                         options={busOrBusbarSectionOptions}
                         getOptionLabel={(busOrBusbarSection) =>
@@ -221,11 +231,9 @@ ConnectivityEdition.propTypes = {
     network: PropTypes.object.isRequired,
     voltageLevel: PropTypes.object,
     busOrBusbarSection: PropTypes.object,
-    busOrBusbarSectionOptions: PropTypes.array,
     errors: PropTypes.object,
-    changeVoltageLevel: PropTypes.func.isRequired,
-    changeBusOrBusbarSection: PropTypes.func.isRequired,
-    changeBusOrBusbarSectionOptions: PropTypes.func.isRequired,
+    onChangeVoltageLevel: PropTypes.func.isRequired,
+    onChangeBusOrBusbarSection: PropTypes.func.isRequired,
 };
 
 export default ConnectivityEdition;

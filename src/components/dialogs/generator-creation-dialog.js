@@ -34,19 +34,6 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
         marginTop: 3,
     },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
-    },
-    dialogPaper: {
-        minWidth: '800px',
-        margin: 'auto',
-    },
-    divDialog: {
-        minWidth: '750px',
-        margin: 'auto',
-    },
     voltageRegulation: {
         paddingTop: '10px',
     },
@@ -66,10 +53,6 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
-
-    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
-        []
-    );
 
     const [generatorId, setGeneratorId] = useState('');
 
@@ -100,7 +83,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
 
     const [errors, setErrors] = useState(new Map());
 
-    const handleChangeGenertorId = (event) => {
+    const handleChangeGeneratorId = (event) => {
         setGeneratorId(event.target.value);
     };
 
@@ -350,7 +333,6 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
         setVoltageSetpoint('');
         setVoltageLevel(null);
         setBusOrBusbarSection(null);
-        setBusOrBusbarSectionOptions([]);
     };
 
     const handleCloseAndClear = () => {
@@ -365,7 +347,8 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
 
     return (
         <Dialog
-            classes={{ paper: classes.dialogPaper }}
+            fullWidth
+            maxWidth="md"
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-create-generator"
@@ -374,16 +357,16 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                 {intl.formatMessage({ id: 'CreateGenerator' })}
             </DialogTitle>
             <DialogContent>
-                <div className={classes.divDialog}>
+                <div>
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <TextField
                                 fullWidth
                                 id="generator-id"
                                 label={intl.formatMessage({ id: 'ID' })}
                                 variant="filled"
                                 value={generatorId}
-                                onChange={handleChangeGenertorId}
+                                onChange={handleChangeGeneratorId}
                                 /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
                                which is not the case when no variant is used) */
                                 FormHelperTextProps={{
@@ -398,8 +381,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <TextField
+                                fullWidth
                                 id="generator-name"
                                 label={intl.formatMessage({
                                     id: 'NameOptional',
@@ -410,7 +394,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 variant="filled"
                             />
                         </Grid>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <FormControl fullWidth>
                                 {/*This InputLabel is necessary in order to display
                                    the label describing the content of the Select*/}
@@ -460,8 +444,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     <br />
                     <FormattedMessage id="Limits" />
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <TextFieldWithAdornment
+                                fullWidth
                                 id="minimum-active-power"
                                 label={intl.formatMessage({
                                     id: 'MinimumActivePowerText',
@@ -481,8 +466,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <TextFieldWithAdornment
+                                fullWidth
                                 id="maximum-active-power"
                                 label={intl.formatMessage({
                                     id: 'MaximumActivePowerText',
@@ -502,8 +488,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <TextFieldWithAdornment
+                                fullWidth
                                 id="rated-nominal-power"
                                 label={intl.formatMessage({
                                     id: 'RatedNominalPowerText',
@@ -528,8 +515,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     <br />
                     <FormattedMessage id="Setpoints" />
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <TextFieldWithAdornment
+                                fullWidth
                                 id="active-power-set-point"
                                 label={intl.formatMessage({
                                     id: 'ActivePowerText',
@@ -549,8 +537,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <TextFieldWithAdornment
+                                fullWidth
                                 id="reactive-power-set-point"
                                 label={intl.formatMessage({
                                     id: 'ReactivePowerText',
@@ -574,8 +563,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <FormControlLabel
+                                fullWidth
                                 className={classes.voltageRegulation}
                                 id="voltage-regulation"
                                 control={
@@ -596,8 +586,9 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                                 })}
                             />
                         </Grid>
-                        <Grid item xs={4} align="left">
+                        <Grid item xs={4} align="start">
                             <TextFieldWithAdornment
+                                fullWidth
                                 id="voltage-set-point"
                                 label={intl.formatMessage({
                                     id: 'VoltageText',
@@ -622,24 +613,22 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     <br />
 
                     {/* Connectivity part */}
-                    <ConnectivityEdition
-                        network={network}
-                        voltageLevel={voltageLevel}
-                        busOrBusbarSection={busOrBusbarSection}
-                        busOrBusbarSectionOptions={busOrBusbarSectionOptions}
-                        errors={errors}
-                        changeBusOrBusbarSectionOptions={(
-                            busOrBusbarSectionOptions
-                        ) =>
-                            setBusOrBusbarSectionOptions(
-                                busOrBusbarSectionOptions
-                            )
-                        }
-                        changeVoltageLevel={(value) => setVoltageLevel(value)}
-                        changeBusOrBusbarSection={(busOrBusbarSection) =>
-                            setBusOrBusbarSection(busOrBusbarSection)
-                        }
-                    />
+                    <Grid container spacing={2}>
+                        <Grid item xs={8} align="start">
+                            <ConnectivityEdition
+                                network={network}
+                                voltageLevel={voltageLevel}
+                                busOrBusbarSection={busOrBusbarSection}
+                                errors={errors}
+                                onChangeVoltageLevel={(value) =>
+                                    setVoltageLevel(value)
+                                }
+                                onChangeBusOrBusbarSection={(
+                                    busOrBusbarSection
+                                ) => setBusOrBusbarSection(busOrBusbarSection)}
+                            />
+                        </Grid>
+                    </Grid>
                 </div>
             </DialogContent>
             <DialogActions>

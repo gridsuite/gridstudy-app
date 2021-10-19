@@ -31,11 +31,6 @@ const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
     },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
-    },
 }));
 
 /**
@@ -52,10 +47,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
-
-    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
-        []
-    );
 
     const [loadId, setLoadId] = useState('');
 
@@ -178,7 +169,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         setReactivePower('');
         setVoltageLevel(null);
         setBusOrBusbarSection(null);
-        setBusOrBusbarSectionOptions([]);
     };
 
     const handleCloseAndClear = () => {
@@ -319,13 +309,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                     network={network}
                     voltageLevel={voltageLevel}
                     busOrBusbarSection={busOrBusbarSection}
-                    busOrBusbarSectionOptions={busOrBusbarSectionOptions}
                     errors={errors}
-                    changeBusOrBusbarSectionOptions={(
-                        busOrBusbarSectionOptions
-                    ) =>
-                        setBusOrBusbarSectionOptions(busOrBusbarSectionOptions)
-                    }
                     changeVoltageLevel={(value) => setVoltageLevel(value)}
                     changeBusOrBusbarSection={(busOrBusbarSection) =>
                         setBusOrBusbarSection(busOrBusbarSection)
