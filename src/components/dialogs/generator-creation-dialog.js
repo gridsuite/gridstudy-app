@@ -153,51 +153,6 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
         setVoltageSetpoint(event.target.value?.replace(',', '.'));
     };
 
-    const checkMinMaxPower = (minPower, maxPower) => {
-        if (maxPower) {
-            if (Number(minPower) > Number(maxPower)) {
-                return {
-                    error: true,
-                    errorMsgId: 'MinActivePowerLessThanMaxActivePower',
-                };
-            } else {
-                return { error: false, errorMsgId: '' };
-            }
-        } else {
-            return { error: false, errorMsgId: '' };
-        }
-    };
-
-    const checkRatedNominalPower = (ratedPower) => {
-        if (ratedPower) {
-            if (Number(ratedPower) <= 0) {
-                return {
-                    error: true,
-                    errorMsgId: 'RatedNominalPowerGreaterThanZero',
-                };
-            } else {
-                return { error: false, errorMsgId: '' };
-            }
-        } else {
-            return { error: false, errorMsgId: '' };
-        }
-    };
-
-    const checkVoltageSetpoint = (vSetpoint) => {
-        if (vSetpoint) {
-            if (Number(vSetpoint) <= 0) {
-                return {
-                    error: true,
-                    errorMsgId: 'VoltageGreaterThanZero',
-                };
-            } else {
-                return { error: false, errorMsgId: '' };
-            }
-        } else {
-            return { error: false, errorMsgId: '' };
-        }
-    };
-
     const handleSave = () => {
         let tmpErrors = new Map(errors);
 
@@ -213,12 +168,8 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
             validateField(minimumActivePower, {
                 isFieldRequired: true,
                 isFieldNumeric: true,
-                checkFieldValue: () => {
-                    return checkMinMaxPower(
-                        minimumActivePower,
-                        maximumActivePower
-                    );
-                },
+                isValueLessOrEqualTo: maximumActivePower,
+                errorMsgId: 'MinActivePowerLessThanMaxActivePower',
             })
         );
 
@@ -235,9 +186,8 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
             validateField(ratedNominalPower, {
                 isFieldRequired: false,
                 isFieldNumeric: true,
-                checkFieldValue: () => {
-                    return checkRatedNominalPower(ratedNominalPower);
-                },
+                isValueGreaterThan: '0',
+                errorMsgId: 'RatedNominalPowerGreaterThanZero',
             })
         );
 
@@ -262,9 +212,8 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
             validateField(voltageSetpoint, {
                 isFieldRequired: voltageRegulation,
                 isFieldNumeric: true,
-                checkFieldValue: () => {
-                    return checkVoltageSetpoint(voltageSetpoint);
-                },
+                isValueGreaterThan: '0',
+                errorMsgId: 'VoltageGreaterThanZero',
             })
         );
 
