@@ -267,7 +267,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="left">
+                    <Grid item xs={4} align="start">
                         <TextField
                             fullWidth
                             id="load-id"
@@ -288,7 +288,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             })}
                         />
                     </Grid>
-                    <Grid item xs={4} align="left">
+                    <Grid item xs={4} align="start">
                         <TextField
                             id="load-name"
                             label={intl.formatMessage({ id: 'NameOptional' })}
@@ -298,7 +298,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             variant="filled"
                         />
                     </Grid>
-                    <Grid item xs={4} align="left">
+                    <Grid item xs={4} align="start">
                         <FormControl fullWidth>
                             {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
@@ -336,7 +336,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <br />
                 <FormattedMessage id="Setpoints" />
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="left">
+                    <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
                             id="load-active-power"
                             label={intl.formatMessage({
@@ -355,7 +355,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             })}
                         />
                     </Grid>
-                    <Grid item xs={4} align="left">
+                    <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
                             id="load-reactive-power"
                             label={intl.formatMessage({
@@ -380,7 +380,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <br />
                 <FormattedMessage id="Connectivity" />
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="left">
+                    <Grid item xs={4} align="start">
                         {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -434,7 +434,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             PopperComponent={FittingPopper}
                         />
                     </Grid>
-                    <Grid item xs={4} align="left">
+                    <Grid item xs={4} align="start">
                         {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
