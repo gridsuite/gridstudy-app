@@ -290,6 +290,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                     </Grid>
                     <Grid item xs={4} align="start">
                         <TextField
+                            fullWidth
                             id="load-name"
                             label={intl.formatMessage({ id: 'NameOptional' })}
                             defaultValue=""
@@ -338,6 +339,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            fullWidth
                             id="load-active-power"
                             label={intl.formatMessage({
                                 id: 'ActivePowerText',
@@ -357,6 +359,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                     </Grid>
                     <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            fullWidth
                             id="load-reactive-power"
                             label={intl.formatMessage({
                                 id: 'ReactivePowerText',
@@ -386,6 +389,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             with enter key for it to be validated.
                             check if autoComplete prop is fixed in v5 */}
                         <Autocomplete
+                            fullWidth
                             freeSolo
                             forcePopupIcon
                             autoHighlight
@@ -440,6 +444,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             with enter key for it to be validated.
                             check if autoComplete prop is fixed in v5 */}
                         <Autocomplete
+                            fullWidth
                             freeSolo
                             forcePopupIcon
                             autoHighlight
