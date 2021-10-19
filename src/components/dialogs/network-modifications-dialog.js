@@ -23,7 +23,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
     button: {
-        width: 300,
+        width: 250,
         justifyContent: 'start',
     },
 }));
@@ -74,6 +74,8 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
     return (
         <>
             <Dialog
+                fullWidth
+                maxWidth="xs"
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="dialog-network-modifications"
