@@ -17,12 +17,13 @@ import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import LoadCreationDialog from './load-creation-dialog';
+import GeneratorCreationDialog from './generator-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
     button: {
-        width: 200,
+        width: 250,
         justifyContent: 'start',
     },
 }));
@@ -38,6 +39,8 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
 
     const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
     const [openEquipmentDeletionDialog, setOpenEquipmentDeletionDialog] =
+        useState(false);
+    const [openCreateGeneratorDialog, setOpenCreateGeneratorDialog] =
         useState(false);
 
     const handleClose = () => {
@@ -60,9 +63,19 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
         setOpenEquipmentDeletionDialog(false);
     };
 
+    const handleCreateGenerator = () => {
+        setOpenCreateGeneratorDialog(true);
+    };
+
+    const closeCreateGeneratorDialog = () => {
+        setOpenCreateGeneratorDialog(false);
+    };
+
     return (
         <>
             <Dialog
+                fullWidth
+                maxWidth="xs"
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="dialog-network-modifications"
@@ -82,6 +95,21 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
                                 >
                                     {intl.formatMessage({
                                         id: 'CreateLoad',
+                                    })}
+                                </Button>
+                            </Box>
+                        </Grid>
+                        <br />
+                        <Grid item xs={12} justify="start">
+                            <Box>
+                                <Button
+                                    className={classes.button}
+                                    variant="outlined"
+                                    startIcon={<AddIcon />}
+                                    onClick={handleCreateGenerator}
+                                >
+                                    {intl.formatMessage({
+                                        id: 'CreateGenerator',
                                     })}
                                 </Button>
                             </Box>
@@ -112,6 +140,11 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
             <LoadCreationDialog
                 open={openCreateLoadDialog}
                 onClose={closeCreateLoadDialog}
+                network={network}
+            />
+            <GeneratorCreationDialog
+                open={openCreateGeneratorDialog}
+                onClose={closeCreateGeneratorDialog}
                 network={network}
             />
             <EquipmentDeletionDialog

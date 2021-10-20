@@ -292,5 +292,24 @@
     "SHUNT_COMPENSATOR": "Shunt_Compenstor",
     "STATIC_VAR_COMPENSATOR": "Static_Var_Compensator",
     "UnableToDeleteEquipment": "Unable to delete the equipment",
-    "LoadCreationError": "Error while creating load"
+    "LoadCreationError": "Error while creating load",
+
+    "CreateGenerator": "Create generator",
+    "GeneratorCreationError": "Error while creating generator",
+    "EnergySourceOptional": "Energy source (optional)",
+    "Hydro" : "Hydro",
+    "Nuclear" : "Nuclear",
+    "Wind" : "Wind",
+    "Thermal" : "Thermal",
+    "Solar" : "Solar",
+    "Other" : "Other",
+    "MinimumActivePowerText" : "Minimum active power",
+    "MaximumActivePowerText" : "Maximum active power",
+    "RatedNominalPowerText" : "Rated nominal power",
+    "VoltageRegulationText" : "Voltage regulation",
+    "VoltageText" : "Voltage",
+    "Limits" : "Limits",
+    "MinActivePowerLessThanMaxActivePower" : "Minimum active power value must be less or equal than maximum active power value",
+    "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
+    "VoltageGreaterThanZero" : "The voltage value must be strictly positive"
 }

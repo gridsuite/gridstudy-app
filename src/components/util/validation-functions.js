@@ -26,6 +26,46 @@ export function validateField(value, toValidate) {
         }
     }
 
+    if (toValidate.isValueLessOrEqualTo !== undefined) {
+        if (value && toValidate.isValueLessOrEqualTo) {
+            // TODO: remove replace when parsing behaviour will be made according to locale
+            const maxValue = Number(
+                toValidate.isValueLessOrEqualTo.replace(',', '.')
+            );
+            if (!isNaN(maxValue)) {
+                // TODO: remove replace when parsing behaviour will be made according to locale
+                const valueNumericVal = Number(value.replace(',', '.'));
+                if (valueNumericVal > maxValue) {
+                    return {
+                        error: true,
+                        errorMsgId: toValidate.errorMsgId,
+                    };
+                }
+            }
+        }
+        return { error: false, errorMsgId: '' };
+    }
+
+    if (toValidate.isValueGreaterThan !== undefined) {
+        if (value && toValidate.isValueGreaterThan) {
+            // TODO: remove replace when parsing behaviour will be made according to locale
+            const minValue = Number(
+                toValidate.isValueGreaterThan.replace(',', '.')
+            );
+            if (!isNaN(minValue)) {
+                // TODO: remove replace when parsing behaviour will be made according to locale
+                const valueNumericVal = Number(value.replace(',', '.'));
+                if (valueNumericVal <= minValue) {
+                    return {
+                        error: true,
+                        errorMsgId: toValidate.errorMsgId,
+                    };
+                }
+            }
+        }
+        return { error: false, errorMsgId: '' };
+    }
+
     return {
         error: false,
         errorMsgId: '',
