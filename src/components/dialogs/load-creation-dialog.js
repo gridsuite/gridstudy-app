@@ -316,10 +316,10 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             voltageLevel={voltageLevel}
                             busOrBusbarSection={busOrBusbarSection}
                             errors={errors}
-                            changeVoltageLevel={(value) =>
+                            onChangeVoltageLevel={(value) =>
                                 setVoltageLevel(value)
                             }
-                            changeBusOrBusbarSection={(busOrBusbarSection) =>
+                            onChangeBusOrBusbarSection={(busOrBusbarSection) =>
                                 setBusOrBusbarSection(busOrBusbarSection)
                             }
                         />
