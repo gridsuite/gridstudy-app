@@ -47,7 +47,7 @@ export function validateField(value, toValidate) {
     }
 
     if (toValidate.isValueGreaterThan !== undefined) {
-        if (value) {
+        if (value && toValidate.isValueGreaterThan) {
             // TODO: remove replace when parsing behaviour will be made according to locale
             const minValue = Number(
                 toValidate.isValueGreaterThan.replace(',', '.')
