@@ -114,7 +114,7 @@ const ConnectivityEdition = ({
         <>
             <FormattedMessage id="Connectivity" />
             <Grid container spacing={2}>
-                <Grid item xs={6} align="left">
+                <Grid item xs={6} align="start">
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -167,7 +167,7 @@ const ConnectivityEdition = ({
                         PopperComponent={FittingPopper}
                     />
                 </Grid>
-                <Grid item xs={6} align="left">
+                <Grid item xs={6} align="start">
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.

@@ -305,16 +305,22 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <br />
 
                 {/* Connectivity part */}
-                <ConnectivityEdition
-                    network={network}
-                    voltageLevel={voltageLevel}
-                    busOrBusbarSection={busOrBusbarSection}
-                    errors={errors}
-                    changeVoltageLevel={(value) => setVoltageLevel(value)}
-                    changeBusOrBusbarSection={(busOrBusbarSection) =>
-                        setBusOrBusbarSection(busOrBusbarSection)
-                    }
-                />
+                <Grid container spacing={2}>
+                    <Grid item xs={8} align="start">
+                        <ConnectivityEdition
+                            network={network}
+                            voltageLevel={voltageLevel}
+                            busOrBusbarSection={busOrBusbarSection}
+                            errors={errors}
+                            changeVoltageLevel={(value) =>
+                                setVoltageLevel(value)
+                            }
+                            changeBusOrBusbarSection={(busOrBusbarSection) =>
+                                setBusOrBusbarSection(busOrBusbarSection)
+                            }
+                        />
+                    </Grid>
+                </Grid>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCloseAndClear} variant="text">
