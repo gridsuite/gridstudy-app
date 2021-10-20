@@ -274,5 +274,23 @@
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
+
+    "DeleteEquipment": "Supprimer ouvrage",
+    "Type": "Type",
+    "SUBSTATION": "Site",
+    "VOLTAGE_LEVEL": "Poste",
+    "LINE": "Ligne",
+    "TWO_WINDINGS_TRANSFORMER": "Transformateur à 2 enroulements",
+    "THREE_WINDINGS_TRANSFORMER": "Transformateur à 3 enroulements",
+    "GENERATOR": "Groupe",
+    "LOAD": "Consommation",
+    "BATTERY": "Batterie",
+    "DANGLING_LINE": "Ligne frontière",
+    "HVDC_LINE": "Ligne HVDC",
+    "LCC_CONVERTER_STATION": "Station de conversion LCC",
+    "VSC_CONVERTER_STATION": "Station de conversion VSC",
+    "SHUNT_COMPENSATOR": "Moyen de compensation",
+    "STATIC_VAR_COMPENSATOR": "CSPR",
+    "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation"
 }

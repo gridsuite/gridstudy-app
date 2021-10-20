@@ -12,10 +12,20 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/ControlPoint';
+import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import LoadCreationDialog from './load-creation-dialog';
+import EquipmentDeletionDialog from './equipment-deletion-dialog';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(() => ({
+    button: {
+        width: 200,
+        justifyContent: 'start',
+    },
+}));
 
 /**
  * Dialog to select network modification to create
@@ -24,8 +34,11 @@ import LoadCreationDialog from './load-creation-dialog';
  */
 const NetworkModificationDialog = ({ open, onClose, network }) => {
     const intl = useIntl();
+    const classes = useStyles();
 
     const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
+    const [openEquipmentDeletionDialog, setOpenEquipmentDeletionDialog] =
+        useState(false);
 
     const handleClose = () => {
         onClose();
@@ -39,6 +52,14 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
         setOpenCreateLoadDialog(false);
     };
 
+    const handleDeleteEquipment = () => {
+        setOpenEquipmentDeletionDialog(true);
+    };
+
+    const closeEquipmentDeletionDialog = () => {
+        setOpenEquipmentDeletionDialog(false);
+    };
+
     return (
         <>
             <Dialog
@@ -50,15 +71,33 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
                     {intl.formatMessage({ id: 'NetworkModifications' })}
                 </DialogTitle>
                 <DialogContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={2} align="center">
+                    <Grid container direction="row" spacing={2}>
+                        <Grid item xs={12} justify="start">
                             <Box>
                                 <Button
+                                    className={classes.button}
                                     variant="outlined"
                                     startIcon={<AddIcon />}
                                     onClick={handleCreateLoad}
                                 >
-                                    {intl.formatMessage({ id: 'CreateLoad' })}
+                                    {intl.formatMessage({
+                                        id: 'CreateLoad',
+                                    })}
+                                </Button>
+                            </Box>
+                        </Grid>
+                        <br />
+                        <Grid item xs={12} justify="start">
+                            <Box>
+                                <Button
+                                    className={classes.button}
+                                    variant="outlined"
+                                    startIcon={<DeleteIcon />}
+                                    onClick={handleDeleteEquipment}
+                                >
+                                    {intl.formatMessage({
+                                        id: 'DeleteEquipment',
+                                    })}
                                 </Button>
                             </Box>
                         </Grid>
@@ -73,6 +112,11 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
             <LoadCreationDialog
                 open={openCreateLoadDialog}
                 onClose={closeCreateLoadDialog}
+                network={network}
+            />
+            <EquipmentDeletionDialog
+                open={openEquipmentDeletionDialog}
+                onClose={closeEquipmentDeletionDialog}
                 network={network}
             />
         </>

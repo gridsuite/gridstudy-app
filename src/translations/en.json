@@ -274,5 +274,23 @@
     "Connectivity": "Connectivity",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
+
+    "DeleteEquipment": "Delete equipment",
+    "Type": "Type",
+    "SUBSTATION": "Substation",
+    "VOLTAGE_LEVEL": "Voltage_Level",
+    "LINE": "Line",
+    "TWO_WINDINGS_TRANSFORMER": "Two_Windings_Transformer",
+    "THREE_WINDINGS_TRANSFORMER": "Three_Windings_Transformer",
+    "GENERATOR": "Generator",
+    "LOAD": "Load",
+    "BATTERY": "Battery",
+    "DANGLING_LINE": "Dangling_Line",
+    "HVDC_LINE": "Hvdc_Line",
+    "LCC_CONVERTER_STATION": "Lcc_Converter_Station",
+    "VSC_CONVERTER_STATION": "Vsc_Converter_Station",
+    "SHUNT_COMPENSATOR": "Shunt_Compenstor",
+    "STATIC_VAR_COMPENSATOR": "Static_Var_Compensator",
+    "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load"
 }

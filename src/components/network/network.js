@@ -431,4 +431,72 @@ export default class Network {
             this.prefetch(prefetch.equipments);
         }
     }
+
+    removeEquipment(equipmentType, equipmentId) {
+        switch (equipmentType) {
+            case 'LINE':
+                this.lines = this.lines.filter((l) => l.id !== equipmentId);
+                this.completeLinesInfos();
+                break;
+            case 'TWO_WINDINGS_TRANSFORMER':
+                this.twoWindingsTransformers =
+                    this.twoWindingsTransformers.filter(
+                        (l) => l.id !== equipmentId
+                    );
+                this.completeTwoWindingsTransformersInfos();
+                break;
+            case 'THREE_WINDINGS_TRANSFORMER':
+                this.threeWindingsTransformers =
+                    this.threeWindingsTransformers.filter(
+                        (l) => l.id !== equipmentId
+                    );
+                this.completeThreeWindingsTransformersInfos();
+                break;
+            case 'GENERATOR':
+                this.generators = this.generators.filter(
+                    (l) => l.id !== equipmentId
+                );
+                this.completeGeneratorsInfos();
+                break;
+            case 'LOAD':
+                this.loads = this.loads.filter((l) => l.id !== equipmentId);
+                break;
+            case 'BATTERY':
+                this.batteries = this.batteries.filter(
+                    (l) => l.id !== equipmentId
+                );
+                break;
+            case 'DANGLING_LINE':
+                this.danglingLines = this.danglingLines.filter(
+                    (l) => l.id !== equipmentId
+                );
+                break;
+            case 'HVDC_LINE':
+                this.hvdcLines = this.hvdcLines.filter(
+                    (l) => l.id !== equipmentId
+                );
+                break;
+            case 'LCC_CONVERTER_STATION':
+                this.lccConverterStations = this.lccConverterStations.filter(
+                    (l) => l.id !== equipmentId
+                );
+                break;
+            case 'VSC_CONVERTER_STATION':
+                this.vscConverterStations = this.vscConverterStations.filter(
+                    (l) => l.id !== equipmentId
+                );
+                break;
+            case 'SHUNT_COMPENSATOR':
+                this.shuntCompensators = this.shuntCompensators.filter(
+                    (l) => l.id !== equipmentId
+                );
+                break;
+            case 'STATIC_VAR_COMPENSATOR':
+                this.staticVarCompensators = this.staticVarCompensators.filter(
+                    (l) => l.id !== equipmentId
+                );
+                break;
+            default:
+        }
+    }
 }

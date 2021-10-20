@@ -967,3 +967,20 @@ export function getAvailableComponentLibraries() {
         method: 'get',
     }).then((response) => response.json());
 }
+
+export function deleteEquipment(studyUuid, equipmentType, equipmentId) {
+    console.info(
+        'deleting equipment ' +
+            equipmentId +
+            ' with type ' +
+            equipmentType +
+            ' ...'
+    );
+    const deleteEquipmentUrl =
+        getStudyUrl(studyUuid) +
+        '/network-modification/equipments/type/' +
+        encodeURIComponent(equipmentType) +
+        '/id/' +
+        encodeURIComponent(equipmentId);
+    return backendFetch(deleteEquipmentUrl, { method: 'delete' });
+}
