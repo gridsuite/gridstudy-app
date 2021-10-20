@@ -30,6 +30,7 @@ import ConnectivityEdition from './connectivity-edition';
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
+        marginTop: 3,
     },
 }));
 
@@ -192,7 +193,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextField
                             fullWidth
                             id="load-id"
@@ -213,8 +214,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             })}
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextField
+                            fullWidth
                             id="load-name"
                             label={intl.formatMessage({ id: 'NameOptional' })}
                             defaultValue=""
@@ -223,7 +225,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             variant="filled"
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <FormControl fullWidth>
                             {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
@@ -261,8 +263,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <br />
                 <FormattedMessage id="Setpoints" />
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            fullWidth
                             id="load-active-power"
                             label={intl.formatMessage({
                                 id: 'ActivePowerText',
@@ -280,8 +283,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             })}
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            fullWidth
                             id="load-reactive-power"
                             label={intl.formatMessage({
                                 id: 'ReactivePowerText',
