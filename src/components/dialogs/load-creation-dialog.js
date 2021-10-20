@@ -44,6 +44,7 @@ const filter = createFilterOptions();
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
+        marginTop: 3,
     },
     popper: {
         style: {
@@ -266,7 +267,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextField
                             fullWidth
                             id="load-id"
@@ -287,8 +288,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             })}
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextField
+                            fullWidth
                             id="load-name"
                             label={intl.formatMessage({ id: 'NameOptional' })}
                             defaultValue=""
@@ -297,7 +299,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             variant="filled"
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <FormControl fullWidth>
                             {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
@@ -335,8 +337,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <br />
                 <FormattedMessage id="Setpoints" />
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            fullWidth
                             id="load-active-power"
                             label={intl.formatMessage({
                                 id: 'ActivePowerText',
@@ -354,8 +357,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             })}
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            fullWidth
                             id="load-reactive-power"
                             label={intl.formatMessage({
                                 id: 'ReactivePowerText',
@@ -379,12 +383,13 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <br />
                 <FormattedMessage id="Connectivity" />
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
                             check if autoComplete prop is fixed in v5 */}
                         <Autocomplete
+                            fullWidth
                             freeSolo
                             forcePopupIcon
                             autoHighlight
@@ -399,7 +404,12 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
 
-                                if (params.inputValue !== '') {
+                                if (
+                                    params.inputValue !== '' &&
+                                    !options.find(
+                                        (opt) => opt.id === params.inputValue
+                                    )
+                                ) {
                                     filtered.push({
                                         inputValue: params.inputValue,
                                         id: params.inputValue,
@@ -428,12 +438,13 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             PopperComponent={FittingPopper}
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
                             check if autoComplete prop is fixed in v5 */}
                         <Autocomplete
+                            fullWidth
                             freeSolo
                             forcePopupIcon
                             autoHighlight
@@ -451,7 +462,12 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
 
-                                if (params.inputValue !== '') {
+                                if (
+                                    params.inputValue !== '' &&
+                                    !options.find(
+                                        (opt) => opt.id === params.inputValue
+                                    )
+                                ) {
                                     filtered.push({
                                         inputValue: params.inputValue,
                                         id: params.inputValue,
