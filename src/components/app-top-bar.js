@@ -23,7 +23,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls } from '../utils/rest-api';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -40,8 +39,6 @@ const STUDY_VIEWS = [
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
-
-    const history = useHistory();
 
     const dispatch = useDispatch();
 
@@ -81,10 +78,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         setShowParameters(false);
     }
 
-    function onLogoClicked() {
-        history.replace('/');
-    }
-
     return (
         <>
             <TopBar
@@ -99,7 +92,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 }
                 onParametersClick={() => showParametersClicked()}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
-                onLogoClick={() => onLogoClicked()}
                 user={user}
                 appsAndUrls={appsAndUrls}
                 onThemeClick={handleChangeTheme}
