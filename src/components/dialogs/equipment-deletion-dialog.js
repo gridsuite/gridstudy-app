@@ -163,29 +163,7 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
             <DialogContent>
                 <div className={classes.divDialog}>
                     <Grid container spacing={2}>
-                        <Grid item xs={6} align="center">
-                            <TextField
-                                required
-                                id="equipment-id"
-                                label={intl.formatMessage({ id: 'ID' })}
-                                variant="filled"
-                                value={equipmentId}
-                                onChange={handleChangeEquipmentId}
-                                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                                   which is not the case when no variant is used) */
-                                FormHelperTextProps={{
-                                    className: classes.helperText,
-                                }}
-                                {...(errors.get('equipment-id')?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('equipment-id')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
-                        <Grid item xs={6} align="center">
+                        <Grid item xs={6} align="start">
                             <FormControl fullWidth>
                                 <InputLabel
                                     id="equipment-type-label"
@@ -211,6 +189,28 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
                                     })}
                                 </Select>
                             </FormControl>
+                        </Grid>
+                        <Grid item xs={6} align="start">
+                            <TextField
+                                fullWidth
+                                id="equipment-id"
+                                label={intl.formatMessage({ id: 'ID' })}
+                                variant="filled"
+                                value={equipmentId}
+                                onChange={handleChangeEquipmentId}
+                                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
+                                 which is not the case when no variant is used) */
+                                FormHelperTextProps={{
+                                    className: classes.helperText,
+                                }}
+                                {...(errors.get('equipment-id')?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('equipment-id')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
                         </Grid>
                     </Grid>
                     <br />
