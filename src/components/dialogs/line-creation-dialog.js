@@ -1,0 +1,864 @@
+/**
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+import { Popper, TextField } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import { Autocomplete, createFilterOptions } from '@material-ui/lab';
+import { useSnackbar } from 'notistack';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useParams } from 'react-router-dom';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import {
+    createLine,
+    fetchBusbarSectionsForVoltageLevel,
+    fetchBusesForVoltageLevel,
+} from '../../utils/rest-api';
+import TextFieldWithAdornment from '../util/text-field-with-adornment';
+import { validateField } from '../util/validation-functions';
+
+// Factory used to create a filter method that is used to change the default
+// option filter behaviour of the Autocomplete component
+const filter = createFilterOptions();
+
+const useStyles = makeStyles((theme) => ({
+    helperText: {
+        margin: 0,
+    },
+    popper: {
+        style: {
+            width: 'fit-content',
+        },
+    },
+    h3: {
+        marginBottom: 0,
+        paddingBottom: 1,
+    },
+    h4: {
+        marginBottom: 0,
+    },
+}));
+
+/**
+ * Dialog to create a line in the network
+ * @param {Boolean} open Is the dialog open ?
+ * @param {EventListener} onClose Event to close the dialog
+ */
+const LineCreationDialog = ({ open, onClose, network }) => {
+    const classes = useStyles();
+
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+
+    const intl = useIntl();
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
+
+    const [lineId, setLineId] = useState('');
+
+    const [lineName, setLineName] = useState('');
+
+    const [seriesResistance, setSeriesResistance] = useState('');
+
+    const [seriesReactance, setSeriesReactance] = useState('');
+
+    const [shuntConductance1, setShuntConductance1] = useState('');
+    const [shuntSusceptance1, setShuntSusceptance1] = useState('');
+    const [voltageLevel1, setVoltageLevel1] = useState(null);
+    const [busOrBusbarSection1, setBusOrBusbarSection1] = useState(null);
+    const [busOrBusbarSectionOptions1, setBusOrBusbarSectionOptions1] =
+        useState([]);
+
+    const [shuntConductance2, setShuntConductance2] = useState('');
+    const [shuntSusceptance2, setShuntSusceptance2] = useState('');
+    const [voltageLevel2, setVoltageLevel2] = useState(null);
+    const [busOrBusbarSection2, setBusOrBusbarSection2] = useState(null);
+    const [busOrBusbarSectionOptions2, setBusOrBusbarSectionOptions2] =
+        useState([]);
+
+    const [errors, setErrors] = useState(new Map());
+
+    const handleChangeLineId = (event) => {
+        setLineId(event.target.value);
+    };
+
+    const handleChangeLineName = (event) => {
+        setLineName(event.target.value);
+    };
+
+    const handleChangeSeriesResistance = (event) => {
+        setSeriesResistance(event.target.value?.replace(',', '.'));
+    };
+
+    const handleChangeSeriesReactance = (event) => {
+        setSeriesReactance(event.target.value?.replace(',', '.'));
+    };
+
+    const handleChangeShuntConductance1 = (event) => {
+        setShuntConductance1(event.target.value);
+    };
+
+    const handleChangeShuntSusceptance1 = (event) => {
+        setShuntSusceptance1(event.target.value);
+    };
+
+    const handleChangeShuntConductance2 = (event) => {
+        setShuntConductance2(event.target.value);
+    };
+
+    const handleChangeShuntSusceptance2 = (event) => {
+        setShuntSusceptance2(event.target.value);
+    };
+
+    const handleChangeVoltageLevel1 = (event, value, reason) => {
+        if (reason === 'select-option') {
+            setVoltageLevel1(value);
+            setBusOrBusbarSection1(null);
+            switch (value?.topologyKind) {
+                case 'NODE_BREAKER':
+                    // TODO specify the correct network variant num
+                    fetchBusbarSectionsForVoltageLevel(
+                        studyUuid,
+                        0,
+                        value.id
+                    ).then((busbarSections) => {
+                        setBusOrBusbarSectionOptions1(busbarSections);
+                    });
+                    break;
+
+                case 'BUS_BREAKER':
+                    // TODO specify the correct network variant num
+                    fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
+                        (buses) => setBusOrBusbarSectionOptions1(buses)
+                    );
+                    break;
+
+                default:
+                    setBusOrBusbarSectionOptions1([]);
+                    break;
+            }
+        } else if (reason === 'clear') {
+            setVoltageLevel1(null);
+            setBusOrBusbarSection1(null);
+            setBusOrBusbarSectionOptions1([]);
+        }
+    };
+
+    const handleChangeVoltageLevel2 = (event, value, reason) => {
+        if (reason === 'select-option') {
+            setVoltageLevel2(value);
+            setBusOrBusbarSection2(null);
+            switch (value?.topologyKind) {
+                case 'NODE_BREAKER':
+                    // TODO specify the correct network variant num
+                    fetchBusbarSectionsForVoltageLevel(
+                        studyUuid,
+                        0,
+                        value.id
+                    ).then((busbarSections) => {
+                        setBusOrBusbarSectionOptions2(busbarSections);
+                    });
+                    break;
+
+                case 'BUS_BREAKER':
+                    // TODO specify the correct network variant num
+                    fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
+                        (buses) => setBusOrBusbarSectionOptions2(buses)
+                    );
+                    break;
+
+                default:
+                    setBusOrBusbarSectionOptions2([]);
+                    break;
+            }
+        } else if (reason === 'clear') {
+            setVoltageLevel2(null);
+            setBusOrBusbarSection2(null);
+            setBusOrBusbarSectionOptions2([]);
+        }
+    };
+
+    const handleChangeBus1 = (event, value, reason) => {
+        setBusOrBusbarSection1(value);
+    };
+
+    const handleChangeBus2 = (event, value, reason) => {
+        setBusOrBusbarSection2(value);
+    };
+
+    const handleSave = () => {
+        let tmpErrors = new Map(errors);
+
+        tmpErrors.set(
+            'line-id',
+            validateField(lineId, {
+                isFieldRequired: true,
+            })
+        );
+
+        tmpErrors.set(
+            'series-resistance',
+            validateField(seriesResistance, {
+                isFieldRequired: true,
+                isFieldNumeric: true,
+            })
+        );
+
+        tmpErrors.set(
+            'series-reactance',
+            validateField(seriesReactance, {
+                isFieldRequired: true,
+                isFieldNumeric: true,
+            })
+        );
+
+        tmpErrors.set(
+            'shunt-conductance-side1',
+            validateField(shuntConductance1, {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+            })
+        );
+
+        tmpErrors.set(
+            'shunt-susceptance-side1',
+            validateField(shuntSusceptance1, {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+            })
+        );
+
+        tmpErrors.set(
+            'voltage-level1',
+            validateField(voltageLevel1, {
+                isFieldRequired: true,
+            })
+        );
+
+        tmpErrors.set(
+            'bus-bar1',
+            validateField(busOrBusbarSection1, {
+                isFieldRequired: true,
+            })
+        );
+
+        tmpErrors.set(
+            'shunt-conductance-side2',
+            validateField(shuntConductance2, {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+            })
+        );
+
+        tmpErrors.set(
+            'shunt-susceptance-side2',
+            validateField(shuntSusceptance2, {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+            })
+        );
+
+        tmpErrors.set(
+            'voltage-level2',
+            validateField(voltageLevel2, {
+                isFieldRequired: true,
+            })
+        );
+
+        tmpErrors.set(
+            'bus-bar2',
+            validateField(busOrBusbarSection2, {
+                isFieldRequired: true,
+            })
+        );
+
+        setErrors(tmpErrors);
+
+        // Check if error list contains an error
+        let isValid =
+            Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
+
+        if (isValid) {
+            createLine(
+                studyUuid,
+                lineId,
+                lineName,
+                seriesResistance,
+                seriesReactance,
+                shuntConductance1,
+                shuntSusceptance1,
+                shuntConductance2,
+                shuntSusceptance2,
+                voltageLevel1.id,
+                busOrBusbarSection1.id,
+                voltageLevel2.id,
+                busOrBusbarSection2.id
+            )
+                .then(() => {
+                    handleCloseAndClear();
+                })
+                .catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'LineCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+        }
+    };
+
+    const clearValues = () => {
+        setLineId('');
+        setLineName('');
+        setSeriesResistance('');
+        setSeriesReactance('');
+
+        setShuntConductance1('');
+        setShuntSusceptance1('');
+        setVoltageLevel1(null);
+        setBusOrBusbarSection1(null);
+        setBusOrBusbarSectionOptions1([]);
+
+        setShuntConductance2('');
+        setShuntSusceptance2('');
+        setVoltageLevel2(null);
+        setBusOrBusbarSection2(null);
+        setBusOrBusbarSectionOptions2([]);
+    };
+
+    const handleCloseAndClear = () => {
+        clearValues();
+        handleClose();
+    };
+
+    const handleClose = () => {
+        setErrors(new Map());
+        onClose();
+    };
+
+    // Specific Popper component to be used with Autocomplete
+    // This allows the popper to fit its content, which is not the case by default
+    const FittingPopper = (props) => {
+        return (
+            <Popper
+                {...props}
+                style={classes.popper.style}
+                placement="bottom-start"
+            />
+        );
+    };
+
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="dialog-create-line"
+            fullWidth={true}
+        >
+            <DialogTitle>
+                {intl.formatMessage({ id: 'CreateLine' })}
+            </DialogTitle>
+            <DialogContent>
+                <Grid container spacing={2}>
+                    <Grid item xs={6} align="start">
+                        <TextField
+                            fullWidth
+                            id="line-id"
+                            label={intl.formatMessage({ id: 'ID' })}
+                            variant="filled"
+                            value={lineId}
+                            onChange={handleChangeLineId}
+                            /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
+                               which is not the case when no variant is used) */
+                            FormHelperTextProps={{
+                                className: classes.helperText,
+                            }}
+                            {...(errors.get('line-id')?.error && {
+                                error: true,
+                                helperText: intl.formatMessage({
+                                    id: errors.get('line-id')?.errorMsgId,
+                                }),
+                            })}
+                        />
+                    </Grid>
+                    <Grid item xs={6} align="start">
+                        <TextField
+                            fullWidth
+                            id="line-name"
+                            label={
+                                intl.formatMessage({ id: 'Name' }) +
+                                ' ' +
+                                intl.formatMessage({
+                                    id: 'Optional',
+                                })
+                            }
+                            defaultValue=""
+                            value={lineName}
+                            onChange={handleChangeLineName}
+                            variant="filled"
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Characteristics" />
+                        </h3>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <TextFieldWithAdornment
+                            fullWidth
+                            id="line-series-resistance"
+                            label={intl.formatMessage({
+                                id: 'SeriesResistanceText',
+                            })}
+                            adornmentPosition={'end'}
+                            adornmentText={'Ω'}
+                            value={seriesResistance}
+                            onChange={handleChangeSeriesResistance}
+                            defaultValue=""
+                            {...(errors.get('series-resistance')?.error && {
+                                error: true,
+                                helperText: intl.formatMessage({
+                                    id: errors.get('series-resistance')
+                                        ?.errorMsgId,
+                                }),
+                            })}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextFieldWithAdornment
+                            fullWidth
+                            id="line-series-reactance"
+                            label={intl.formatMessage({
+                                id: 'SeriesReactanceText',
+                            })}
+                            adornmentPosition={'end'}
+                            adornmentText={'Ω'}
+                            value={seriesReactance}
+                            onChange={handleChangeSeriesReactance}
+                            defaultValue=""
+                            {...(errors.get('series-reactance')?.error && {
+                                error: true,
+                                helperText: intl.formatMessage({
+                                    id: errors.get('series-reactance')
+                                        ?.errorMsgId,
+                                }),
+                            })}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side1" />
+                        </h4>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side2" />
+                        </h4>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item container xs={6} direction="column">
+                        <Grid container direction="column" spacing={2}>
+                            <Grid item align="start">
+                                <TextField
+                                    fullWidth
+                                    id="line-shunt-conductance-side1"
+                                    label={
+                                        intl.formatMessage({
+                                            id: 'ShuntConductanceText',
+                                        }) +
+                                        ' ' +
+                                        intl.formatMessage({
+                                            id: 'Optional',
+                                        })
+                                    }
+                                    value={shuntConductance1}
+                                    onChange={handleChangeShuntConductance1}
+                                    defaultValue={0}
+                                    {...(errors.get('shunt-conductance-side1')
+                                        ?.error && {
+                                        error: true,
+                                        helperText: intl.formatMessage({
+                                            id: errors.get(
+                                                'shunt-conductance-side1'
+                                            )?.errorMsgId,
+                                        }),
+                                    })}
+                                />
+                            </Grid>
+                            <Grid item align="start">
+                                <TextField
+                                    fullWidth
+                                    id="line-shunt-susceptance-side1"
+                                    label={
+                                        intl.formatMessage({
+                                            id: 'ShuntSusceptanceText',
+                                        }) +
+                                        ' ' +
+                                        intl.formatMessage({
+                                            id: 'Optional',
+                                        })
+                                    }
+                                    value={shuntSusceptance1}
+                                    onChange={handleChangeShuntSusceptance1}
+                                    defaultValue={0}
+                                    {...(errors.get('shunt-susceptance-side1')
+                                        ?.error && {
+                                        error: true,
+                                        helperText: intl.formatMessage({
+                                            id: errors.get(
+                                                'shunt-susceptance-side1'
+                                            )?.errorMsgId,
+                                        }),
+                                    })}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item container direction="column" xs={6}>
+                        <Grid container direction="column" spacing={2}>
+                            <Grid item align="start">
+                                <TextField
+                                    fullWidth
+                                    id="line-shunt-conductance-side2"
+                                    label={
+                                        intl.formatMessage({
+                                            id: 'ShuntConductanceText',
+                                        }) +
+                                        ' ' +
+                                        intl.formatMessage({
+                                            id: 'Optional',
+                                        })
+                                    }
+                                    value={shuntConductance2}
+                                    onChange={handleChangeShuntConductance2}
+                                    defaultValue={0}
+                                    {...(errors.get('shunt-conductance-side2')
+                                        ?.error && {
+                                        error: true,
+                                        helperText: intl.formatMessage({
+                                            id: errors.get(
+                                                'shunt-conductance-side2'
+                                            )?.errorMsgId,
+                                        }),
+                                    })}
+                                />
+                            </Grid>
+                            <Grid item align="start">
+                                <TextField
+                                    fullWidth
+                                    id="line-shunt-susceptance-side2"
+                                    label={
+                                        intl.formatMessage({
+                                            id: 'ShuntSusceptanceText',
+                                        }) +
+                                        ' ' +
+                                        intl.formatMessage({
+                                            id: 'Optional',
+                                        })
+                                    }
+                                    value={shuntSusceptance2}
+                                    onChange={handleChangeShuntSusceptance2}
+                                    defaultValue=""
+                                    {...(errors.get('shunt-susceptance-side2')
+                                        ?.error && {
+                                        error: true,
+                                        helperText: intl.formatMessage({
+                                            id: errors.get(
+                                                'shunt-susceptance-side2'
+                                            )?.errorMsgId,
+                                        }),
+                                    })}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                {/* <br /> */}
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Connectivity" />
+                        </h3>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side1" />
+                        </h4>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side2" />
+                        </h4>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item container xs={6} direction="column">
+                        <Grid container direction="column" spacing={2}>
+                            <Grid item align="start">
+                                {/* TODO: autoComplete prop is not working properly with material-ui v4,
+                                    it clears the field when blur event is raised, which actually forces the user to validate free input
+                                    with enter key for it to be validated.
+                                    check if autoComplete prop is fixed in v5 */}
+                                <Autocomplete
+                                    freeSolo
+                                    forcePopupIcon
+                                    autoHighlight
+                                    selectOnFocus
+                                    id="voltage-level1"
+                                    options={network?.voltageLevels}
+                                    getOptionLabel={(vl) => vl.id}
+                                    /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                                    is created in the options list with a value equal to the input value
+                                    */
+                                    filterOptions={(options, params) => {
+                                        const filtered = filter(
+                                            options,
+                                            params
+                                        );
+
+                                        if (params.inputValue !== '') {
+                                            filtered.push({
+                                                inputValue: params.inputValue,
+                                                id: params.inputValue,
+                                            });
+                                        }
+                                        return filtered;
+                                    }}
+                                    value={voltageLevel1}
+                                    onChange={handleChangeVoltageLevel1}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            fullWidth
+                                            label={intl.formatMessage({
+                                                id: 'VoltageLevel',
+                                            })}
+                                            {...(errors.get('voltage-level1')
+                                                ?.error && {
+                                                error: true,
+                                                helperText: intl.formatMessage({
+                                                    id: errors.get(
+                                                        'voltage-level1'
+                                                    )?.errorMsgId,
+                                                }),
+                                            })}
+                                        />
+                                    )}
+                                    PopperComponent={FittingPopper}
+                                />
+                            </Grid>
+                            <Grid item align="start">
+                                {/* TODO: autoComplete prop is not working properly with material-ui v4,
+                                    it clears the field when blur event is raised, which actually forces the user to validate free input
+                                    with enter key for it to be validated.
+                                    check if autoComplete prop is fixed in v5 */}
+                                <Autocomplete
+                                    freeSolo
+                                    forcePopupIcon
+                                    autoHighlight
+                                    selectOnFocus
+                                    id="bus1"
+                                    disabled={!voltageLevel1}
+                                    options={busOrBusbarSectionOptions1}
+                                    getOptionLabel={(busOrBusbarSection) =>
+                                        busOrBusbarSection?.id
+                                    }
+                                    /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                                    is created in the options list with a value equal to the input value
+                                    */
+                                    filterOptions={(options, params) => {
+                                        const filtered = filter(
+                                            options,
+                                            params
+                                        );
+
+                                        if (params.inputValue !== '') {
+                                            filtered.push({
+                                                inputValue: params.inputValue,
+                                                id: params.inputValue,
+                                            });
+                                        }
+                                        return filtered;
+                                    }}
+                                    value={busOrBusbarSection1}
+                                    onChange={handleChangeBus1}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            fullWidth
+                                            label={intl.formatMessage({
+                                                id: 'BusBarBus',
+                                            })}
+                                            {...(errors.get('bus-bar1')
+                                                ?.error && {
+                                                error: true,
+                                                helperText: intl.formatMessage({
+                                                    id: errors.get('bus-bar1')
+                                                        ?.errorMsgId,
+                                                }),
+                                            })}
+                                        />
+                                    )}
+                                    PopperComponent={FittingPopper}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item container direction="column" xs={6}>
+                        <Grid container direction="column" spacing={2}>
+                            <Grid item align="start">
+                                {/* TODO: autoComplete prop is not working properly with material-ui v4,
+                                    it clears the field when blur event is raised, which actually forces the user to validate free input
+                                    with enter key for it to be validated.
+                                    check if autoComplete prop is fixed in v5 */}
+                                <Autocomplete
+                                    freeSolo
+                                    forcePopupIcon
+                                    autoHighlight
+                                    selectOnFocus
+                                    id="voltage-level2"
+                                    options={network?.voltageLevels}
+                                    getOptionLabel={(vl) => vl.id}
+                                    /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                                    is created in the options list with a value equal to the input value
+                                    */
+                                    filterOptions={(options, params) => {
+                                        const filtered = filter(
+                                            options,
+                                            params
+                                        );
+
+                                        if (params.inputValue !== '') {
+                                            filtered.push({
+                                                inputValue: params.inputValue,
+                                                id: params.inputValue,
+                                            });
+                                        }
+                                        return filtered;
+                                    }}
+                                    value={voltageLevel2}
+                                    onChange={handleChangeVoltageLevel2}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            fullWidth
+                                            label={intl.formatMessage({
+                                                id: 'VoltageLevel',
+                                            })}
+                                            {...(errors.get('voltage-level2')
+                                                ?.error && {
+                                                error: true,
+                                                helperText: intl.formatMessage({
+                                                    id: errors.get(
+                                                        'voltage-level2'
+                                                    )?.errorMsgId,
+                                                }),
+                                            })}
+                                        />
+                                    )}
+                                    PopperComponent={FittingPopper}
+                                />
+                            </Grid>
+                            <Grid item align="start">
+                                {/* TODO: autoComplete prop is not working properly with material-ui v4,
+                                    it clears the field when blur event is raised, which actually forces the user to validate free input
+                                    with enter key for it to be validated.
+                                    check if autoComplete prop is fixed in v5 */}
+                                <Autocomplete
+                                    freeSolo
+                                    forcePopupIcon
+                                    autoHighlight
+                                    selectOnFocus
+                                    id="bus2"
+                                    disabled={!voltageLevel2}
+                                    options={busOrBusbarSectionOptions2}
+                                    getOptionLabel={(busOrBusbarSection) =>
+                                        busOrBusbarSection?.id
+                                    }
+                                    /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
+                                    is created in the options list with a value equal to the input value
+                                    */
+                                    filterOptions={(options, params) => {
+                                        const filtered = filter(
+                                            options,
+                                            params
+                                        );
+
+                                        if (params.inputValue !== '') {
+                                            filtered.push({
+                                                inputValue: params.inputValue,
+                                                id: params.inputValue,
+                                            });
+                                        }
+                                        return filtered;
+                                    }}
+                                    value={busOrBusbarSection2}
+                                    onChange={handleChangeBus2}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            fullWidth
+                                            label={intl.formatMessage({
+                                                id: 'BusBarBus',
+                                            })}
+                                            {...(errors.get('bus-bar2')
+                                                ?.error && {
+                                                error: true,
+                                                helperText: intl.formatMessage({
+                                                    id: errors.get('bus-bar2')
+                                                        ?.errorMsgId,
+                                                }),
+                                            })}
+                                        />
+                                    )}
+                                    PopperComponent={FittingPopper}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCloseAndClear} variant="text">
+                    <FormattedMessage id="close" />
+                </Button>
+                <Button onClick={handleSave} variant="text">
+                    <FormattedMessage id="save" />
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+};
+
+LineCreationDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    network: PropTypes.object.isRequired,
+};
+
+export default LineCreationDialog;
