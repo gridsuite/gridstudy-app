@@ -10,13 +10,15 @@ import {
     logout,
     TopBar,
     EQUIPMENT_TYPE,
+    getTagLabelForEquipmentType,
+    getEquipmentsInfosForSearchBar,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import Tabs from '@material-ui/core/Tabs';
 import { StudyView } from './study-pane';
 import { Badge } from '@material-ui/core';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@material-ui/core/Tab';
 import Parameters, { useParameterState } from './parameters';
 import {
@@ -33,10 +35,41 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import { stringify } from 'qs';
 import { selectItemNetwork } from '../redux/actions';
+import clsx from 'clsx';
+import match from 'autosuggest-highlight/match';
+import parse from 'autosuggest-highlight/parse';
+
+export const TYPE_TAG_MAX_SIZE = '120px';
+export const VL_TAG_MAX_SIZE = '65px';
 
 const useStyles = makeStyles(() => ({
     tabs: {
         marginLeft: 18,
+    },
+    equipmentOption: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '20px',
+        width: '100%',
+        margin: '0px',
+        padding: '0px',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    equipmentTag: {
+        borderRadius: '10px',
+        padding: '4px',
+        fontSize: 'x-small',
+        textAlign: 'center',
+    },
+    equipmentTypeTag: {
+        width: TYPE_TAG_MAX_SIZE,
+        background: 'lightblue',
+    },
+    equipmentVlTag: {
+        width: VL_TAG_MAX_SIZE,
+        background: 'lightgray',
+        fontStyle: 'italic',
     },
 }));
 
@@ -53,6 +86,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const history = useHistory();
 
     const dispatch = useDispatch();
+
+    const intl = useIntl();
 
     const intlRef = useIntlRef();
 
@@ -99,16 +134,16 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
-        (equipmentInfos) => {
+        (optionInfos) => {
             let substationOrVlId;
             let requestParam;
-            if (equipmentInfos.type === EQUIPMENT_TYPE.SUBSTATION) {
-                substationOrVlId = equipmentInfos.id;
-                requestParam = { substationId: equipmentInfos.id };
+            if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION) {
+                substationOrVlId = optionInfos.label;
+                requestParam = { substationId: optionInfos.label };
             } else {
-                substationOrVlId = equipmentInfos.voltageLevelId;
+                substationOrVlId = optionInfos.voltageLevelId;
                 requestParam = {
-                    voltageLevelId: equipmentInfos.voltageLevelId,
+                    voltageLevelId: optionInfos.voltageLevelId,
                 };
             }
             dispatch(selectItemNetwork(substationOrVlId));
@@ -122,6 +157,49 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         },
         [studyUuid, history, onChangeTab, dispatch]
     );
+    const renderElement = (option, { inputValue }) => {
+        let matches = match(option.label, inputValue);
+        let parts = parse(option.label, matches);
+        return (
+            <div className={classes.equipmentOption}>
+                <span
+                    className={clsx(
+                        classes.equipmentTag,
+                        classes.equipmentTypeTag
+                    )}
+                >
+                    {getTagLabelForEquipmentType(option.type, intl)}
+                </span>
+                <div className={classes.equipmentOption}>
+                    <span>
+                        {parts.map((part, index) => (
+                            <span
+                                key={index}
+                                style={{
+                                    fontWeight: part.highlight
+                                        ? 'bold'
+                                        : 'inherit',
+                                }}
+                            >
+                                {part.text}
+                            </span>
+                        ))}
+                    </span>
+                    {option.type !== EQUIPMENT_TYPE.SUBSTATION &&
+                        option.type !== EQUIPMENT_TYPE.VOLTAGE_LEVEL && (
+                            <span
+                                className={clsx(
+                                    classes.equipmentTag,
+                                    classes.equipmentVlTag
+                                )}
+                            >
+                                {option.voltageLevelId}
+                            </span>
+                        )}
+                </div>
+            </div>
+        );
+    };
 
     useEffect(() => {
         if (user !== null) {
@@ -165,12 +243,19 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 theme={themeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
-                onEquipmentsSearchTermChange={searchMatchingEquipments}
-                onEquipmentSearchValidation={showVoltageLevelDiagram}
-                equipmentsFound={equipmentsFound}
+                withElementsSearch={Boolean(studyUuid)}
+                searchingLabel={intl.formatMessage({
+                    id: 'equipment_search/label',
+                })}
+                onSearchTermChange={searchMatchingEquipments}
+                onSelectionChange={showVoltageLevelDiagram}
+                elementsFound={getEquipmentsInfosForSearchBar(
+                    equipmentsFound,
+                    useNameLocal
+                )}
+                renderElement={renderElement}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
-                studyUuid={studyUuid}
             >
                 {studyUuid && (
                     <Tabs
