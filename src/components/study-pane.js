@@ -593,6 +593,20 @@ const StudyPane = (props) => {
         [studyUuid, network]
     );
 
+    const removeEquipmentFromNetwork = useCallback(
+        (equipmentType, equipmentId) => {
+            console.info(
+                'removing equipment with id=',
+                equipmentId,
+                ' and type=',
+                equipmentType,
+                ' from the network'
+            );
+            network.removeEquipment(equipmentType, equipmentId);
+        },
+        [network]
+    );
+
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
 
@@ -902,17 +916,32 @@ const StudyPane = (props) => {
             if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
                 updateSld();
 
-                // study partial update : loading equipments involved in the study modification and updating the network
-                const ids =
+                // study partial update :
+                // loading equipments involved in the study modification and updating the network
+                const substationsIds =
                     studyUpdatedForce.eventData.headers['substationsIds'];
-                const tmp = ids.substring(1, ids.length - 1); // removing square brackets
+                const tmp = substationsIds.substring(
+                    1,
+                    substationsIds.length - 1
+                ); // removing square brackets
                 if (tmp && tmp.length > 0) {
-                    const substationsIds = tmp.split(', ');
-                    updateNetwork(substationsIds);
+                    updateNetwork(tmp.split(', '));
+                }
+
+                // removing deleted equipment from the network
+                const deletedEquipmentId =
+                    studyUpdatedForce.eventData.headers['deletedEquipmentId'];
+                const deletedEquipmentType =
+                    studyUpdatedForce.eventData.headers['deletedEquipmentType'];
+                if (deletedEquipmentId && deletedEquipmentType) {
+                    removeEquipmentFromNetwork(
+                        deletedEquipmentType,
+                        deletedEquipmentId
+                    );
                 }
             }
         }
-    }, [studyUpdatedForce, updateNetwork]);
+    }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
