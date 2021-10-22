@@ -43,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
  * @param errors : errors eventually associated to the fields
  * @param onChangeVoltageLevel : callback to change the voltage level in the parent component
  * @param onChangeBusOrBusbarSection : callback to change the bus or busbar section in the parent component
+ * @param direction : voltageLevel and bus or busbar section inputs direction (row, row-reverse, column, column-reverse)
  */
 const ConnectivityEdition = ({
     network,
@@ -51,6 +52,7 @@ const ConnectivityEdition = ({
     errors,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
+    direction,
 }) => {
     const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -113,8 +115,22 @@ const ConnectivityEdition = ({
     return (
         <>
             <FormattedMessage id="Connectivity" />
-            <Grid container spacing={2}>
-                <Grid item xs={6} align="start">
+            <Grid
+                container
+                direction={direction ? direction : 'row'}
+                spacing={2}
+            >
+                <Grid
+                    item
+                    xs={
+                        direction &&
+                        (direction === 'column' ||
+                            direction === 'column-reverse')
+                            ? 12
+                            : 6
+                    }
+                    align="start"
+                >
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -167,7 +183,17 @@ const ConnectivityEdition = ({
                         PopperComponent={FittingPopper}
                     />
                 </Grid>
-                <Grid item xs={6} align="start">
+                <Grid
+                    item
+                    xs={
+                        direction &&
+                        (direction === 'column' ||
+                            direction === 'column-reverse')
+                            ? 12
+                            : 6
+                    }
+                    align="start"
+                >
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -234,6 +260,7 @@ ConnectivityEdition.propTypes = {
     errors: PropTypes.object,
     onChangeVoltageLevel: PropTypes.func.isRequired,
     onChangeBusOrBusbarSection: PropTypes.func.isRequired,
+    direction: PropTypes.string,
 };
 
 export default ConnectivityEdition;
