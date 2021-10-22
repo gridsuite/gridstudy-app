@@ -48,8 +48,9 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a line in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param voltageLevelOptions : the network voltageLevels available
  */
-const LineCreationDialog = ({ open, onClose, network }) => {
+const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -96,19 +97,19 @@ const LineCreationDialog = ({ open, onClose, network }) => {
     };
 
     const handleChangeShuntConductance1 = (event) => {
-        setShuntConductance1(event.target.value);
+        setShuntConductance1(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeShuntSusceptance1 = (event) => {
-        setShuntSusceptance1(event.target.value);
+        setShuntSusceptance1(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeShuntConductance2 = (event) => {
-        setShuntConductance2(event.target.value);
+        setShuntConductance2(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeShuntSusceptance2 = (event) => {
-        setShuntSusceptance2(event.target.value);
+        setShuntSusceptance2(event.target.value?.replace(',', '.'));
     };
 
     const handleSave = () => {
@@ -380,7 +381,7 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                     <Grid item container xs={6} direction="column">
                         <Grid container direction="column" spacing={2}>
                             <Grid item align="start">
-                                <TextField
+                                <TextFieldWithAdornment
                                     fullWidth
                                     id="line-shunt-conductance-side1"
                                     label={
@@ -392,9 +393,10 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                                             id: 'Optional',
                                         })
                                     }
+                                    adornmentPosition={'end'}
+                                    adornmentText={'S'}
                                     value={shuntConductance1}
                                     onChange={handleChangeShuntConductance1}
-                                    defaultValue={0}
                                     {...(errors.get('shunt-conductance-side1')
                                         ?.error && {
                                         error: true,
@@ -407,7 +409,7 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                                 />
                             </Grid>
                             <Grid item align="start">
-                                <TextField
+                                <TextFieldWithAdornment
                                     fullWidth
                                     id="line-shunt-susceptance-side1"
                                     label={
@@ -419,9 +421,10 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                                             id: 'Optional',
                                         })
                                     }
+                                    adornmentPosition={'end'}
+                                    adornmentText={'S'}
                                     value={shuntSusceptance1}
                                     onChange={handleChangeShuntSusceptance1}
-                                    defaultValue={0}
                                     {...(errors.get('shunt-susceptance-side1')
                                         ?.error && {
                                         error: true,
@@ -438,7 +441,7 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                     <Grid item container direction="column" xs={6}>
                         <Grid container direction="column" spacing={2}>
                             <Grid item align="start">
-                                <TextField
+                                <TextFieldWithAdornment
                                     fullWidth
                                     id="line-shunt-conductance-side2"
                                     label={
@@ -450,9 +453,10 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                                             id: 'Optional',
                                         })
                                     }
+                                    adornmentPosition={'end'}
+                                    adornmentText={'S'}
                                     value={shuntConductance2}
                                     onChange={handleChangeShuntConductance2}
-                                    defaultValue={0}
                                     {...(errors.get('shunt-conductance-side2')
                                         ?.error && {
                                         error: true,
@@ -465,7 +469,7 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                                 />
                             </Grid>
                             <Grid item align="start">
-                                <TextField
+                                <TextFieldWithAdornment
                                     fullWidth
                                     id="line-shunt-susceptance-side2"
                                     label={
@@ -477,9 +481,10 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                                             id: 'Optional',
                                         })
                                     }
+                                    adornmentPosition={'end'}
+                                    adornmentText={'S'}
                                     value={shuntSusceptance2}
                                     onChange={handleChangeShuntSusceptance2}
-                                    defaultValue=""
                                     {...(errors.get('shunt-susceptance-side2')
                                         ?.error && {
                                         error: true,
@@ -520,7 +525,7 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                         <Grid container direction="column" spacing={2}>
                             <Grid item align="start">
                                 <ConnectivityEdition
-                                    network={network}
+                                    voltageLevelOptions={voltageLevelOptions}
                                     voltageLevel={voltageLevel1}
                                     busOrBusbarSection={busOrBusbarSection1}
                                     errors={errors}
@@ -543,7 +548,7 @@ const LineCreationDialog = ({ open, onClose, network }) => {
                         <Grid container direction="column" spacing={2}>
                             <Grid item align="start">
                                 <ConnectivityEdition
-                                    network={network}
+                                    voltageLevelOptions={voltageLevelOptions}
                                     voltageLevel={voltageLevel2}
                                     busOrBusbarSection={busOrBusbarSection2}
                                     errors={errors}
@@ -579,7 +584,7 @@ const LineCreationDialog = ({ open, onClose, network }) => {
 LineCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    network: PropTypes.object.isRequired,
+    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default LineCreationDialog;

@@ -294,7 +294,7 @@
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
-    "LineCreationError": "Erreur lors de la création d'une liaison",
+    "LineCreationError": "Erreur lors de la création d'une ligne",
 
     "CreateGenerator": "Créer un groupe",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
@@ -315,7 +315,7 @@
     "RatedNominalPowerGreaterThanZero": "La valeur de la puissance nominale doit être strictement positive",
     "VoltageGreaterThanZero" : "La valeur de la tension doit être strictement positive",
     
-    "CreateLine": "Créer une liaison",
+    "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
     "Side1": "Origine",
     "Side2": "Extrémité",

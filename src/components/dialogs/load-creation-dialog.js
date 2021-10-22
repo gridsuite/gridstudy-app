@@ -38,8 +38,9 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param voltageLevelOptions : the network voltageLevels available
  */
-const LoadCreationDialog = ({ open, onClose, network }) => {
+const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -312,7 +313,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={8} align="start">
                         <ConnectivityEdition
-                            network={network}
+                            voltageLevelOptions={voltageLevelOptions}
                             voltageLevel={voltageLevel}
                             busOrBusbarSection={busOrBusbarSection}
                             errors={errors}
@@ -341,7 +342,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 LoadCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    network: PropTypes.object.isRequired,
+    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default LoadCreationDialog;

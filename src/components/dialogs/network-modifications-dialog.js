@@ -153,17 +153,17 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
             <LoadCreationDialog
                 open={openCreateLoadDialog}
                 onClose={closeCreateLoadDialog}
-                network={network}
+                voltageLevelOptions={network?.voltageLevels}
             />
             <GeneratorCreationDialog
                 open={openCreateGeneratorDialog}
                 onClose={closeCreateGeneratorDialog}
-                network={network}
+                voltageLevelOptions={network?.voltageLevels}
             />
             <LineCreationDialog
                 open={openCreateLineDialog}
                 onClose={closeCreateLineDialog}
-                network={network}
+                voltageLevelOptions={network?.voltageLevels}
             />
             <EquipmentDeletionDialog
                 open={openEquipmentDeletionDialog}

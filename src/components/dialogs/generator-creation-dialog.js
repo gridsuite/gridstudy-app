@@ -43,8 +43,9 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param voltageLevelOptions : the network voltageLevels available
  */
-const GeneratorCreationDialog = ({ open, onClose, network }) => {
+const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -565,7 +566,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
                     <Grid container spacing={2}>
                         <Grid item xs={8} align="start">
                             <ConnectivityEdition
-                                network={network}
+                                voltageLevelOptions={voltageLevelOptions}
                                 voltageLevel={voltageLevel}
                                 busOrBusbarSection={busOrBusbarSection}
                                 errors={errors}
@@ -595,7 +596,7 @@ const GeneratorCreationDialog = ({ open, onClose, network }) => {
 GeneratorCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    network: PropTypes.object.isRequired,
+    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default GeneratorCreationDialog;

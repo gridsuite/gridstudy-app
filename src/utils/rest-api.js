@@ -980,10 +980,10 @@ export function createLine(
     shuntSusceptance1,
     shuntConductance2,
     shuntSusceptance2,
-    voltageLevelID1,
-    busOrBusbarSectionID1,
-    voltageLevelID2,
-    busOrBusbarSectionID2
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2
 ) {
     console.info('Creating line ');
     const createLineUrl =
@@ -1003,10 +1003,10 @@ export function createLine(
             shuntSusceptance1: shuntSusceptance1,
             shuntConductance2: shuntConductance2,
             shuntSusceptance2: shuntSusceptance2,
-            voltageLevelId1: voltageLevelID1,
-            busOrBusbarSectionId1: busOrBusbarSectionID1,
-            voltageLevelId2: voltageLevelID2,
-            busOrBusbarSectionId2: busOrBusbarSectionID2,
+            voltageLevelId1: voltageLevelId1,
+            busOrBusbarSectionId1: busOrBusbarSectionId1,
+            voltageLevelId2: voltageLevelId2,
+            busOrBusbarSectionId2: busOrBusbarSectionId2,
         }),
     }).then((response) =>
         response.ok

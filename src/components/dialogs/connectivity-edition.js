@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import Grid from '@material-ui/core/Grid';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { Popper, TextField } from '@material-ui/core';
@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
 /*
  * Component to edit the connection of an equipment (voltage level and bus or busbar section)
  *
- * @param network : the network
+ * @param voltageLevelOptions : the network voltageLevels available
  * @param voltage level : the voltage level currently selected
  * @param busOrBusbarSection : the bus or busbar section currently selected
  * @param errors : errors eventually associated to the fields
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
  * @param direction : voltageLevel and bus or busbar section inputs direction (row, row-reverse, column, column-reverse)
  */
 const ConnectivityEdition = ({
-    network,
+    voltageLevelOptions,
     voltageLevel,
     busOrBusbarSection,
     errors,
@@ -114,7 +114,6 @@ const ConnectivityEdition = ({
 
     return (
         <>
-            <FormattedMessage id="Connectivity" />
             <Grid
                 container
                 direction={direction ? direction : 'row'}
@@ -141,7 +140,7 @@ const ConnectivityEdition = ({
                         autoHighlight
                         selectOnFocus
                         id="voltage-level"
-                        options={network?.voltageLevels}
+                        options={voltageLevelOptions}
                         getOptionLabel={(vl) => vl.id}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
@@ -254,7 +253,7 @@ const ConnectivityEdition = ({
 };
 
 ConnectivityEdition.propTypes = {
-    network: PropTypes.object.isRequired,
+    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     voltageLevel: PropTypes.object,
     busOrBusbarSection: PropTypes.object,
     errors: PropTypes.object,
