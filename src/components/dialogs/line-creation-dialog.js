@@ -528,7 +528,6 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                     voltageLevelOptions={voltageLevelOptions}
                                     voltageLevel={voltageLevel1}
                                     busOrBusbarSection={busOrBusbarSection1}
-                                    errors={errors}
                                     onChangeVoltageLevel={(value) =>
                                         setVoltageLevel1(value)
                                     }
@@ -540,6 +539,26 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                         )
                                     }
                                     direction="column"
+                                    errorVoltageLevel={
+                                        errors.get('voltage-level1')?.error
+                                    }
+                                    helperTextVoltageLevel={
+                                        errors.get('voltage-level1')?.error &&
+                                        intl.formatMessage({
+                                            id: errors.get('voltage-level1')
+                                                ?.errorMsgId,
+                                        })
+                                    }
+                                    errorBusOrBusBarSection={
+                                        errors.get('bus-bar1')?.error
+                                    }
+                                    helperTextBusOrBusBarSection={
+                                        errors.get('bus-bar1')?.error &&
+                                        intl.formatMessage({
+                                            id: errors.get('bus-bar1')
+                                                ?.errorMsgId,
+                                        })
+                                    }
                                 />
                             </Grid>
                         </Grid>
@@ -551,7 +570,6 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                     voltageLevelOptions={voltageLevelOptions}
                                     voltageLevel={voltageLevel2}
                                     busOrBusbarSection={busOrBusbarSection2}
-                                    errors={errors}
                                     onChangeVoltageLevel={(value) =>
                                         setVoltageLevel2(value)
                                     }
@@ -563,6 +581,26 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                         )
                                     }
                                     direction="column"
+                                    errorVoltageLevel={
+                                        errors.get('voltage-level2')?.error
+                                    }
+                                    helperTextVoltageLevel={
+                                        errors.get('voltage-level2')?.error &&
+                                        intl.formatMessage({
+                                            id: errors.get('voltage-level2')
+                                                ?.errorMsgId,
+                                        })
+                                    }
+                                    errorBusOrBusBarSection={
+                                        errors.get('bus-bar2')?.error
+                                    }
+                                    helperTextBusOrBusBarSection={
+                                        errors.get('bus-bar2')?.error &&
+                                        intl.formatMessage({
+                                            id: errors.get('bus-bar2')
+                                                ?.errorMsgId,
+                                        })
+                                    }
                                 />
                             </Grid>
                         </Grid>

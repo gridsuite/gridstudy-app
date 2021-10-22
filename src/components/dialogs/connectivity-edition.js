@@ -44,15 +44,22 @@ const useStyles = makeStyles((theme) => ({
  * @param onChangeVoltageLevel : callback to change the voltage level in the parent component
  * @param onChangeBusOrBusbarSection : callback to change the bus or busbar section in the parent component
  * @param direction : voltageLevel and bus or busbar section inputs direction (row, row-reverse, column, column-reverse)
+ * @param errorVoltageLevel : If true, the VoltageLevel input will be displayed in an error state.
+ * @param helperTextVoltageLevel: helperText to display in cas of error for VoltageLevel input.
+ * @param errorBusOrBusBarSection: If true, the BusOrBusBarSection input will be displayed in an error state.
+ * @param helperTextBusOrBusBarSection: helperText to display in cas of error for BusOrBusBarSection input.
  */
 const ConnectivityEdition = ({
     voltageLevelOptions,
     voltageLevel,
     busOrBusbarSection,
-    errors,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
     direction,
+    errorVoltageLevel,
+    helperTextVoltageLevel,
+    errorBusOrBusBarSection,
+    helperTextBusOrBusBarSection,
 }) => {
     const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -170,12 +177,9 @@ const ConnectivityEdition = ({
                                 label={intl.formatMessage({
                                     id: 'VoltageLevel',
                                 })}
-                                {...(errors.get('voltage-level')?.error && {
+                                {...(errorVoltageLevel && {
                                     error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('voltage-level')
-                                            ?.errorMsgId,
-                                    }),
+                                    helperText: helperTextVoltageLevel,
                                 })}
                             />
                         )}
@@ -236,11 +240,9 @@ const ConnectivityEdition = ({
                                 label={intl.formatMessage({
                                     id: 'BusBarBus',
                                 })}
-                                {...(errors.get('bus-bar')?.error && {
+                                {...(errorBusOrBusBarSection && {
                                     error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('bus-bar')?.errorMsgId,
-                                    }),
+                                    helperText: helperTextBusOrBusBarSection,
                                 })}
                             />
                         )}
@@ -256,10 +258,13 @@ ConnectivityEdition.propTypes = {
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     voltageLevel: PropTypes.object,
     busOrBusbarSection: PropTypes.object,
-    errors: PropTypes.object,
     onChangeVoltageLevel: PropTypes.func.isRequired,
     onChangeBusOrBusbarSection: PropTypes.func.isRequired,
     direction: PropTypes.string,
+    errorVoltageLevel: PropTypes.bool,
+    helperTextVoltageLevel: PropTypes.string,
+    errorBusOrBusBarSection: PropTypes.bool,
+    helperTextBusOrBusBarSection: PropTypes.string,
 };
 
 export default ConnectivityEdition;

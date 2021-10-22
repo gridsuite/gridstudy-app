@@ -310,18 +310,36 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                 <br />
 
                 {/* Connectivity part */}
+                <FormattedMessage id="Connectivity" />
                 <Grid container spacing={2}>
                     <Grid item xs={8} align="start">
                         <ConnectivityEdition
                             voltageLevelOptions={voltageLevelOptions}
                             voltageLevel={voltageLevel}
                             busOrBusbarSection={busOrBusbarSection}
-                            errors={errors}
                             onChangeVoltageLevel={(value) =>
                                 setVoltageLevel(value)
                             }
                             onChangeBusOrBusbarSection={(busOrBusbarSection) =>
                                 setBusOrBusbarSection(busOrBusbarSection)
+                            }
+                            errorVoltageLevel={
+                                errors.get('voltage-level')?.error
+                            }
+                            helperTextVoltageLevel={
+                                errors.get('voltage-level')?.error &&
+                                intl.formatMessage({
+                                    id: errors.get('voltage-level')?.errorMsgId,
+                                })
+                            }
+                            errorBusOrBusBarSection={
+                                errors.get('bus-bar')?.error
+                            }
+                            helperTextBusOrBusBarSection={
+                                errors.get('bus-bar')?.error &&
+                                intl.formatMessage({
+                                    id: errors.get('bus-bar')?.errorMsgId,
+                                })
                             }
                         />
                     </Grid>
