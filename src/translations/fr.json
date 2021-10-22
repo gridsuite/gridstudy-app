@@ -317,8 +317,8 @@
     
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
-    "Side1": "Origine",
-    "Side2": "Extrémité",
+    "Side1": "Côté 1",
+    "Side2": "Côté 2",
     "SeriesResistanceText": "Résistance série",
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",
