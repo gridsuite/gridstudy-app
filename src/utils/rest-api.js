@@ -10,13 +10,12 @@ import { APP_NAME, getAppName } from './config-params';
 
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
-let PREFIX_DIRECTORY_SERVER_QUERIES =
+const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 
 function getToken() {
@@ -586,9 +585,14 @@ export function fetchSecurityAnalysisStatus(studyUuid) {
     });
 }
 
-export function fetchContingencyLists() {
+export function fetchContingencyLists(listIds) {
     console.info('Fetching contingency lists');
-    const url = PREFIX_ACTIONS_QUERIES + '/v1/contingency-lists';
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/elements?id=' +
+        listIds
+            .filter((e) => e != null && e !== '') // filter empty element
+            .join('&id=');
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()

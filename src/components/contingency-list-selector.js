@@ -107,11 +107,14 @@ const ContingencyListSelector = (props) => {
     }, [studyUuid, checkedContingencyListUuids]);
 
     useEffect(() => {
-        /* TODO : waiting for explore-server to asks for uuids metadata */
-        fetchContingencyLists()
+        fetchContingencyLists(favoriteContingencyListUuids)
             .then((res) => {
                 const mapCont = res.reduce((map, obj) => {
-                    map[obj.id] = obj;
+                    map[obj.elementUuid] = {
+                        id: obj.elementUuid,
+                        type: obj.type,
+                        name: obj.elementName
+                    }
                     return map;
                 }, {});
                 setContingencyList(
