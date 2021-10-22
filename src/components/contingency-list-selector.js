@@ -107,39 +107,46 @@ const ContingencyListSelector = (props) => {
     }, [studyUuid, checkedContingencyListUuids]);
 
     useEffect(() => {
-        fetchContingencyLists(favoriteContingencyListUuids)
-            .then((res) => {
-                const mapCont = res.reduce((map, obj) => {
-                    map[obj.elementUuid] = {
-                        id: obj.elementUuid,
-                        type: obj.type,
-                        name: obj.elementName
-                    }
-                    return map;
-                }, {});
-                setContingencyList(
-                    favoriteContingencyListUuids
-                        .map((id) => mapCont[id])
-                        .filter((item) => item !== undefined)
-                        .sort((a, b) =>
-                            a.name
-                                .toLowerCase()
-                                .localeCompare(b.name.toLowerCase())
-                        )
-                );
-                setSaveDisabled(false);
-            })
-            .catch(() => {
-                setSaveDisabled(true);
-                displayErrorMessageWithSnackbar({
-                    errorMessage: '',
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'getContingencyListError',
-                        intlRef: intlRef,
-                    },
+        if (
+            favoriteContingencyListUuids &&
+            favoriteContingencyListUuids.length > 0
+        ) {
+            fetchContingencyLists(favoriteContingencyListUuids)
+                .then((res) => {
+                    const mapCont = res.reduce((map, obj) => {
+                        map[obj.elementUuid] = {
+                            id: obj.elementUuid,
+                            type: obj.type,
+                            name: obj.elementName,
+                        };
+                        return map;
+                    }, {});
+                    setContingencyList(
+                        favoriteContingencyListUuids
+                            .map((id) => mapCont[id])
+                            .filter((item) => item !== undefined)
+                            .sort((a, b) =>
+                                a.name
+                                    .toLowerCase()
+                                    .localeCompare(b.name.toLowerCase())
+                            )
+                    );
+                    setSaveDisabled(false);
+                })
+                .catch(() => {
+                    setSaveDisabled(true);
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: '',
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'getContingencyListError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
+        } else {
+            setContingencyList([]);
+        }
     }, [
         favoriteContingencyListUuids,
         setContingencyList,
@@ -161,7 +168,9 @@ const ContingencyListSelector = (props) => {
     const removeFromFavorite = (toRemove) => {
         const toDelete = new Set(toRemove);
         saveFavourite(
-            favoriteContingencyListUuids.filter((item) => !toDelete.has(item))
+            contingencyList
+                .map((e) => e.id)
+                .filter((item) => !toDelete.has(item))
         );
         const newChecked = checkedContingencyListUuids.filter(
             (item) => !toDelete.has(item)
