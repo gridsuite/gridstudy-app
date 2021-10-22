@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { fetchDirectoryContent, fetchRootFolders } from '../utils/rest-api';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-    getIconFor,
+    getFileIcon,
     elementType,
 } from '@gridsuite/commons-ui/lib/utils/elementType';
 
@@ -31,7 +31,7 @@ const DirectoryItemSelector = (props) => {
             const newNode = {
                 id: newData.elementUuid,
                 name: newData.elementName,
-                icon: getIconFor(newData.type, classes.icon),
+                icon: getFileIcon(newData.type, classes.icon),
                 children:
                     newData.type === elementType.DIRECTORY ? [] : undefined,
             };
