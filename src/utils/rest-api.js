@@ -898,7 +898,7 @@ export function createLoad(
     activePower,
     reactivePower,
     voltageLevelId,
-    busId
+    busOrBusbarSectionId
 ) {
     console.info('Creating load ');
     const createLoadUrl =
@@ -916,7 +916,52 @@ export function createLoad(
             activePower: activePower,
             reactivePower: reactivePower,
             voltageLevelId: voltageLevelId,
-            busId: busId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function createGenerator(
+    studyUuid,
+    id,
+    name,
+    energySource,
+    minActivePower,
+    maxActivePower,
+    ratedNominalPower,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    voltageRegulationOn,
+    voltageSetpoint,
+    voltageLevelId,
+    busOrBusbarSectionId
+) {
+    console.info('Creating generator ');
+    const createGeneratorUrl =
+        getStudyUrl(studyUuid) + '/network-modification/generators';
+    return backendFetch(createGeneratorUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: id,
+            equipmentName: name,
+            energySource: energySource,
+            minActivePower: minActivePower,
+            maxActivePower: maxActivePower,
+            ratedNominalPower: ratedNominalPower,
+            activePowerSetpoint: activePowerSetpoint,
+            reactivePowerSetpoint: reactivePowerSetpoint,
+            voltageRegulationOn: voltageRegulationOn,
+            voltageSetpoint: voltageSetpoint,
+            voltageLevelId: voltageLevelId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
         }),
     }).then((response) =>
         response.ok
@@ -966,4 +1011,21 @@ export function getAvailableComponentLibraries() {
     return backendFetch(getAvailableComponentLibrariesUrl, {
         method: 'get',
     }).then((response) => response.json());
+}
+
+export function deleteEquipment(studyUuid, equipmentType, equipmentId) {
+    console.info(
+        'deleting equipment ' +
+            equipmentId +
+            ' with type ' +
+            equipmentType +
+            ' ...'
+    );
+    const deleteEquipmentUrl =
+        getStudyUrl(studyUuid) +
+        '/network-modification/equipments/type/' +
+        encodeURIComponent(equipmentType) +
+        '/id/' +
+        encodeURIComponent(equipmentId);
+    return backendFetch(deleteEquipmentUrl, { method: 'delete' });
 }
