@@ -1494,11 +1494,13 @@ const StudyPane = (props) => {
                     onClose={() => setShowContingencyListSelector(false)}
                     onStart={handleStartSecurityAnalysis}
                 />
-                <NetworkModificationDialog
-                    open={openNetworkModificationsDialog}
-                    onClose={closeNetworkModificationConfiguration}
-                    network={network}
-                />
+                {network && (
+                    <NetworkModificationDialog
+                        open={openNetworkModificationsDialog}
+                        onClose={closeNetworkModificationConfiguration}
+                        network={network}
+                    />
+                )}
             </div>
         );
     }
