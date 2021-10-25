@@ -338,7 +338,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                 label={intl.formatMessage({
                                     id: 'NameOptional',
                                 })}
-                                defaultValue=""
                                 value={generatorName}
                                 onChange={handleChangeGeneratorName}
                                 variant="filled"
@@ -405,7 +404,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                 adornmentText={'MW'}
                                 value={minimumActivePower}
                                 onChange={handleChangeMinimumActivePower}
-                                defaultValue=""
                                 {...(errors.get('minimum-active-power')
                                     ?.error && {
                                     error: true,
@@ -427,7 +425,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                 adornmentText={'MW'}
                                 value={maximumActivePower}
                                 onChange={handleChangeMaximumActivePower}
-                                defaultValue=""
                                 {...(errors.get('maximum-active-power')
                                     ?.error && {
                                     error: true,
@@ -449,7 +446,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                 adornmentText={'MVA'}
                                 value={ratedNominalPower}
                                 onChange={handleChangeRatedNominalPower}
-                                defaultValue=""
                                 {...(errors.get('rated-nominal-power')
                                     ?.error && {
                                     error: true,
@@ -476,7 +472,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                 adornmentText={'MW'}
                                 value={activePowerSetpoint}
                                 onChange={handleChangeActivePowerSetpoint}
-                                defaultValue=""
                                 {...(errors.get('active-power-set-point')
                                     ?.error && {
                                     error: true,
@@ -499,7 +494,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                 disabled={!enabledReactivePowerSetpoint}
                                 value={reactivePowerSetpoint}
                                 onChange={handleChangeReactivePowerSetpoint}
-                                defaultValue=""
                                 {...(errors.get('reactive-power-set-point')
                                     ?.error && {
                                     error: true,
@@ -548,7 +542,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                 disabled={!enabledVoltageSetpoint}
                                 value={voltageSetpoint}
                                 onChange={handleChangeVoltageSetpoint}
-                                defaultValue=""
                                 {...(errors.get('voltage-set-point')?.error && {
                                     error: true,
                                     helperText: intl.formatMessage({

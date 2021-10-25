@@ -307,7 +307,6 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                     id: 'Optional',
                                 })
                             }
-                            defaultValue=""
                             value={lineName}
                             onChange={handleChangeLineName}
                             variant="filled"
@@ -333,7 +332,6 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                             adornmentText={'Ω'}
                             value={seriesResistance}
                             onChange={handleChangeSeriesResistance}
-                            defaultValue=""
                             {...(errors.get('series-resistance')?.error && {
                                 error: true,
                                 helperText: intl.formatMessage({
@@ -354,7 +352,6 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                             adornmentText={'Ω'}
                             value={seriesReactance}
                             onChange={handleChangeSeriesReactance}
-                            defaultValue=""
                             {...(errors.get('series-reactance')?.error && {
                                 error: true,
                                 helperText: intl.formatMessage({
