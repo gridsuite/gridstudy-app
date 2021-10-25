@@ -360,7 +360,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                     value={energySource}
                                     onChange={handleChangeEnergySource}
                                     variant="filled"
-                                    fullWidth
                                 >
                                     <MenuItem value="">
                                         <em>
@@ -509,7 +508,6 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                     <Grid container spacing={2}>
                         <Grid item xs={4} align="start">
                             <FormControlLabel
-                                fullWidth
                                 className={classes.voltageRegulation}
                                 id="voltage-regulation"
                                 control={
