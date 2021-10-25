@@ -121,11 +121,7 @@ const ConnectivityEdition = ({
 
     return (
         <>
-            <Grid
-                container
-                direction={direction ? direction : 'row'}
-                spacing={2}
-            >
+            <Grid container direction={direction || 'row'} spacing={2}>
                 <Grid
                     item
                     xs={
