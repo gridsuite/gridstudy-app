@@ -180,7 +180,7 @@ const EquipmentDeletionDialog = ({ open, onClose }) => {
                                 >
                                     {equipmentTypes.map((item) => {
                                         return (
-                                            <MenuItem value={item}>
+                                            <MenuItem key={item} value={item}>
                                                 {intl.formatMessage({
                                                     id: item,
                                                 })}

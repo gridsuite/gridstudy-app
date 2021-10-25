@@ -220,7 +220,6 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                             fullWidth
                             id="load-name"
                             label={intl.formatMessage({ id: 'NameOptional' })}
-                            defaultValue=""
                             value={loadName}
                             onChange={handleChangeLoadName}
                             variant="filled"
@@ -275,7 +274,6 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                             adornmentText={'MW'}
                             value={activePower}
                             onChange={handleChangeActivePower}
-                            defaultValue=""
                             {...(errors.get('active-power')?.error && {
                                 error: true,
                                 helperText: intl.formatMessage({
@@ -295,7 +293,6 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                             adornmentText={'MVar'}
                             value={reactivePower}
                             onChange={handleChangeReactivePower}
-                            defaultValue=""
                             {...(errors.get('reactive-power')?.error && {
                                 error: true,
                                 helperText: intl.formatMessage({

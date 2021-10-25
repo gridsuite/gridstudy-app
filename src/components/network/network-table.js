@@ -285,8 +285,8 @@ const NetworkTable = (props) => {
     return (
         props.network && (
             <>
-                <Grid container justify={'space-between'}>
-                    <Grid container justify={'space-between'} item>
+                <Grid container justifyContent={'space-between'}>
+                    <Grid container justifyContent={'space-between'} item>
                         <Tabs
                             value={tabIndex}
                             indicatorColor="primary"
