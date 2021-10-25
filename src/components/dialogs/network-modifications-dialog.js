@@ -4,7 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Box from '@material-ui/core/Box';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -13,18 +15,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/ControlPoint';
 import DeleteIcon from '@material-ui/icons/Delete';
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import LoadCreationDialog from './load-creation-dialog';
 import GeneratorCreationDialog from './generator-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
-import { makeStyles } from '@material-ui/core/styles';
+import LineCreationDialog from './line-creation-dialog';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     button: {
-        width: 250,
-        justifyContent: 'start',
+        justifyContent: 'flex-start',
     },
 }));
 
@@ -34,14 +33,16 @@ const useStyles = makeStyles(() => ({
  * @param {EventListener} onClose Event to close the dialog
  */
 const NetworkModificationDialog = ({ open, onClose, network }) => {
-    const intl = useIntl();
     const classes = useStyles();
+    const intl = useIntl();
 
     const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
     const [openEquipmentDeletionDialog, setOpenEquipmentDeletionDialog] =
         useState(false);
     const [openCreateGeneratorDialog, setOpenCreateGeneratorDialog] =
         useState(false);
+
+    const [openCreateLineDialog, setOpenCreateLineDialog] = useState(false);
 
     const handleClose = () => {
         onClose();
@@ -71,6 +72,14 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
         setOpenCreateGeneratorDialog(false);
     };
 
+    const handleCreateLine = () => {
+        setOpenCreateLineDialog(true);
+    };
+
+    const closeCreateLineDialog = () => {
+        setOpenCreateLineDialog(false);
+    };
+
     return (
         <>
             <Dialog
@@ -84,50 +93,54 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
                     {intl.formatMessage({ id: 'NetworkModifications' })}
                 </DialogTitle>
                 <DialogContent>
-                    <Grid container direction="row" spacing={2}>
-                        <Grid item xs={12} justify="start">
-                            <Box>
-                                <Button
-                                    className={classes.button}
-                                    variant="outlined"
-                                    startIcon={<AddIcon />}
-                                    onClick={handleCreateLoad}
-                                >
-                                    {intl.formatMessage({
-                                        id: 'CreateLoad',
-                                    })}
-                                </Button>
-                            </Box>
+                    <Grid container direction="column" spacing={2}>
+                        <Grid item>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateLoad}
+                            >
+                                {intl.formatMessage({ id: 'CreateLoad' })}
+                            </Button>
                         </Grid>
-                        <br />
-                        <Grid item xs={12} justify="start">
-                            <Box>
-                                <Button
-                                    className={classes.button}
-                                    variant="outlined"
-                                    startIcon={<AddIcon />}
-                                    onClick={handleCreateGenerator}
-                                >
-                                    {intl.formatMessage({
-                                        id: 'CreateGenerator',
-                                    })}
-                                </Button>
-                            </Box>
+                        <Grid item>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateGenerator}
+                            >
+                                {intl.formatMessage({
+                                    id: 'CreateGenerator',
+                                })}
+                            </Button>
                         </Grid>
-                        <br />
-                        <Grid item xs={12} justify="start">
-                            <Box>
-                                <Button
-                                    className={classes.button}
-                                    variant="outlined"
-                                    startIcon={<DeleteIcon />}
-                                    onClick={handleDeleteEquipment}
-                                >
-                                    {intl.formatMessage({
-                                        id: 'DeleteEquipment',
-                                    })}
-                                </Button>
-                            </Box>
+                        <Grid item>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateLine}
+                            >
+                                {intl.formatMessage({ id: 'CreateLine' })}
+                            </Button>
+                        </Grid>
+                        <Grid item>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
+                                startIcon={<DeleteIcon />}
+                                onClick={handleDeleteEquipment}
+                            >
+                                {intl.formatMessage({
+                                    id: 'DeleteEquipment',
+                                })}
+                            </Button>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -140,17 +153,21 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
             <LoadCreationDialog
                 open={openCreateLoadDialog}
                 onClose={closeCreateLoadDialog}
-                network={network}
+                voltageLevelOptions={network?.voltageLevels}
             />
             <GeneratorCreationDialog
                 open={openCreateGeneratorDialog}
                 onClose={closeCreateGeneratorDialog}
-                network={network}
+                voltageLevelOptions={network?.voltageLevels}
+            />
+            <LineCreationDialog
+                open={openCreateLineDialog}
+                onClose={closeCreateLineDialog}
+                voltageLevelOptions={network?.voltageLevels}
             />
             <EquipmentDeletionDialog
                 open={openEquipmentDeletionDialog}
                 onClose={closeEquipmentDeletionDialog}
-                network={network}
             />
         </>
     );

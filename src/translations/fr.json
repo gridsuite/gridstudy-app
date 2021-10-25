@@ -252,6 +252,7 @@
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants : ",
 
+    "Optional": "(optionnel)",
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
     "createModelNode": "Créer nœud modèle",
     "removeNode": "Supprimer nœud",
@@ -260,7 +261,7 @@
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
     "NodeUpdateError": "Une erreur est survenue lors de la mise à jour du nœud",
     "NetworkModifications": "Modifications de réseau",
-    "CreateLoad": "Créer consommation",
+    "CreateLoad": "Créer une consommation",
     "NameOptional": "Nom (optionnel)",
     "TypeOptional": "Type (optionnel)",
     "UndefinedDefaultValue": "Non défini (valeur par défaut)",
@@ -293,8 +294,9 @@
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
+    "LineCreationError": "Erreur lors de la création d'une ligne",
 
-    "CreateGenerator": "Créer groupe",
+    "CreateGenerator": "Créer un groupe",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
     "EnergySourceOptional": "Source d'énergie (optionnel)",
     "Hydro" : "Hydraulique",
@@ -311,5 +313,14 @@
     "Limits" : "Limites",
     "MinActivePowerLessThanMaxActivePower" : "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
     "RatedNominalPowerGreaterThanZero": "La valeur de la puissance nominale doit être strictement positive",
-    "VoltageGreaterThanZero" : "La valeur de la tension doit être strictement positive"
+    "VoltageGreaterThanZero" : "La valeur de la tension doit être strictement positive",
+    
+    "CreateLine": "Créer une ligne",
+    "Characteristics": "Caractéristiques",
+    "Side1": "Côté 1",
+    "Side2": "Côté 2",
+    "SeriesResistanceText": "Résistance série",
+    "SeriesReactanceText": "Réactance série",
+    "ShuntConductanceText": "Conductance parallèle",
+    "ShuntSusceptanceText": "Susceptance parallèle"
 }

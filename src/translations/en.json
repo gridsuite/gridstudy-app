@@ -252,6 +252,7 @@
 
     "ComponentLibrary": "Component library selection : ",
 
+    "Optional": "(optional)",
     "createNetworkModificationNode": "Create a network modification node",
     "createModelNode": "Create model node",
     "removeNode": "Remove node",
@@ -293,6 +294,7 @@
     "STATIC_VAR_COMPENSATOR": "Static Var Compensator",
     "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load",
+    "LineCreationError": "Error while creating line",
 
     "CreateGenerator": "Create generator",
     "GeneratorCreationError": "Error while creating generator",
@@ -311,5 +313,14 @@
     "Limits" : "Limits",
     "MinActivePowerLessThanMaxActivePower" : "Minimum active power value must be less or equal than maximum active power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
-    "VoltageGreaterThanZero" : "The voltage value must be strictly positive"
+    "VoltageGreaterThanZero" : "The voltage value must be strictly positive",
+    
+    "CreateLine": "Create line",
+    "Characteristics": "Characteristics",
+    "SeriesResistanceText": "Series resistance",
+    "SeriesReactanceText": "Series reactance",
+    "Side1": "Side 1",
+    "Side2": "Side 2",
+    "ShuntConductanceText": "Shunt conductance",
+    "ShuntSusceptanceText": "Shunt susceptance"
 }

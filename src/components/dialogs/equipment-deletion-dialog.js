@@ -57,12 +57,12 @@ const useStyles = makeStyles(() => ({
 }));
 
 /**
- * Dialog to delete an equipment n the network
+ * Dialog to delete an equipment in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {String} title Title of the dialog
  */
-const EquipmentDeletionDialog = ({ open, onClose, network }) => {
+const EquipmentDeletionDialog = ({ open, onClose }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const classes = useStyles();
@@ -231,7 +231,6 @@ const EquipmentDeletionDialog = ({ open, onClose, network }) => {
 EquipmentDeletionDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    network: PropTypes.object.isRequired,
 };
 
 export default EquipmentDeletionDialog;
