@@ -30,7 +30,11 @@ import ConnectivityEdition from './connectivity-edition';
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
-        marginTop: 3,
+        marginTop: 4,
+    },
+    h3: {
+        marginBottom: 0,
+        paddingBottom: 1,
     },
 }));
 
@@ -185,6 +189,8 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
 
     return (
         <Dialog
+            fullWidth
+            maxWidth="md" // 3 columns
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-create-load"
@@ -196,6 +202,7 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="start">
                         <TextField
+                            size="small"
                             fullWidth
                             id="load-id"
                             label={intl.formatMessage({ id: 'ID' })}
@@ -217,6 +224,7 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                     </Grid>
                     <Grid item xs={4} align="start">
                         <TextField
+                            size="small"
                             fullWidth
                             id="load-name"
                             label={intl.formatMessage({ id: 'NameOptional' })}
@@ -226,7 +234,7 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                         />
                     </Grid>
                     <Grid item xs={4} align="start">
-                        <FormControl fullWidth>
+                        <FormControl fullWidth size="small">
                             {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                             <InputLabel id="load-type-label" variant={'filled'}>
@@ -259,12 +267,17 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                         </FormControl>
                     </Grid>
                 </Grid>
-                <br />
-                <br />
-                <FormattedMessage id="Setpoints" />
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Setpoints" />
+                        </h3>
+                    </Grid>
+                </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            size="small"
                             fullWidth
                             id="load-active-power"
                             label={intl.formatMessage({
@@ -284,6 +297,7 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                     </Grid>
                     <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            size="small"
                             fullWidth
                             id="load-reactive-power"
                             label={intl.formatMessage({
@@ -303,11 +317,14 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                         />
                     </Grid>
                 </Grid>
-                <br />
-                <br />
-
                 {/* Connectivity part */}
-                <FormattedMessage id="Connectivity" />
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Connectivity" />
+                        </h3>
+                    </Grid>
+                </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={8} align="start">
                         <ConnectivityEdition
