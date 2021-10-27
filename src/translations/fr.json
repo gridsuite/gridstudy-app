@@ -246,7 +246,7 @@
     "NetworkModificationTree": "Arbre de modification de réseau",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
-    "Logs": "Logs",
+    "logs": "Logs",
     "logsTitle": "Logs : {title}",
     "showReport": "Afficher logs",
     "loadingReport": "Chargement des logs en cours...",

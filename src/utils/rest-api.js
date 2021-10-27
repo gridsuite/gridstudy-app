@@ -344,12 +344,13 @@ export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
     );
+    let escapedSearchTerm = escape(searchTerm);
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append(
         'q',
         useName
-            ? `equipmentName:*${searchTerm}*`
-            : `equipmentId:*${searchTerm}*`
+            ? `equipmentName:*${escapedSearchTerm}*`
+            : `equipmentId:*${escapedSearchTerm}*`
     );
     return backendFetch(
         getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()

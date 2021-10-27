@@ -6,12 +6,13 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
+    EQUIPMENT_TYPE,
+    equipmentStyles,
+    getEquipmentsInfosForSearchBar,
     LIGHT_THEME,
     logout,
+    renderEquipmentForSearchBar,
     TopBar,
-    EQUIPMENT_TYPE,
-    getTagLabelForEquipmentType,
-    getEquipmentsInfosForSearchBar,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
@@ -35,43 +36,14 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import { stringify } from 'qs';
 import { selectItemNetwork } from '../redux/actions';
-import clsx from 'clsx';
-import match from 'autosuggest-highlight/match';
-import parse from 'autosuggest-highlight/parse';
-
-export const TYPE_TAG_MAX_SIZE = '120px';
-export const VL_TAG_MAX_SIZE = '65px';
 
 const useStyles = makeStyles(() => ({
     tabs: {
         marginLeft: 18,
     },
-    equipmentOption: {
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '20px',
-        width: '100%',
-        margin: '0px',
-        padding: '0px',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-    equipmentTag: {
-        borderRadius: '10px',
-        padding: '4px',
-        fontSize: 'x-small',
-        textAlign: 'center',
-    },
-    equipmentTypeTag: {
-        width: TYPE_TAG_MAX_SIZE,
-        background: 'lightblue',
-    },
-    equipmentVlTag: {
-        width: VL_TAG_MAX_SIZE,
-        background: 'lightgray',
-        fontStyle: 'italic',
-    },
 }));
+
+const useEquipmentStyles = makeStyles(equipmentStyles);
 
 const STUDY_VIEWS = [
     StudyView.MAP,
@@ -82,6 +54,8 @@ const STUDY_VIEWS = [
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
+
+    const equipmentClasses = useEquipmentStyles();
 
     const history = useHistory();
 
@@ -118,7 +92,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
             fetchEquipmentsInfos(studyUuid, searchTerm, useNameLocal)
-                .then((infos) => setEquipmentsFound(infos))
+                .then((infos) =>
+                    setEquipmentsFound(
+                        getEquipmentsInfosForSearchBar(infos, useNameLocal)
+                    )
+                )
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,
@@ -137,7 +115,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (optionInfos) => {
             let substationOrVlId;
             let requestParam;
-            if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION) {
+            if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
                 substationOrVlId = optionInfos.label;
                 requestParam = { substationId: optionInfos.label };
             } else {
@@ -147,7 +125,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 };
             }
             dispatch(selectItemNetwork(substationOrVlId));
-            onChangeTab(0); // switch to map view
+            onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
             history.replace(
                 // show voltage level
                 '/studies/' +
@@ -157,49 +135,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         },
         [studyUuid, history, onChangeTab, dispatch]
     );
-    const renderElement = (option, { inputValue }) => {
-        let matches = match(option.label, inputValue);
-        let parts = parse(option.label, matches);
-        return (
-            <div className={classes.equipmentOption}>
-                <span
-                    className={clsx(
-                        classes.equipmentTag,
-                        classes.equipmentTypeTag
-                    )}
-                >
-                    {getTagLabelForEquipmentType(option.type, intl)}
-                </span>
-                <div className={classes.equipmentOption}>
-                    <span>
-                        {parts.map((part, index) => (
-                            <span
-                                key={index}
-                                style={{
-                                    fontWeight: part.highlight
-                                        ? 'bold'
-                                        : 'inherit',
-                                }}
-                            >
-                                {part.text}
-                            </span>
-                        ))}
-                    </span>
-                    {option.type !== EQUIPMENT_TYPE.SUBSTATION &&
-                        option.type !== EQUIPMENT_TYPE.VOLTAGE_LEVEL && (
-                            <span
-                                className={clsx(
-                                    classes.equipmentTag,
-                                    classes.equipmentVlTag
-                                )}
-                            >
-                                {option.voltageLevelId}
-                            </span>
-                        )}
-                </div>
-            </div>
-        );
-    };
 
     useEffect(() => {
         if (user !== null) {
@@ -249,11 +184,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 })}
                 onSearchTermChange={searchMatchingEquipments}
                 onSelectionChange={showVoltageLevelDiagram}
-                elementsFound={getEquipmentsInfosForSearchBar(
-                    equipmentsFound,
-                    useNameLocal
+                elementsFound={equipmentsFound}
+                renderElement={renderEquipmentForSearchBar(
+                    equipmentClasses,
+                    intl
                 )}
-                renderElement={renderElement}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             >
