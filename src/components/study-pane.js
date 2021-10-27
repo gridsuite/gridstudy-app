@@ -102,6 +102,7 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import NetworkModificationTree from './network-modification-tree';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
+import NetworkModificationDialog from './dialogs/network-modifications-dialog';
 
 const drawerExplorerWidth = 300;
 const drawerToolbarWidth = 48;
@@ -310,6 +311,9 @@ const StudyPane = (props) => {
         drawerNetworkModificationTreeOpen,
         setDrawerNetworkModificationTreeOpen,
     ] = useState(false);
+
+    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
+        useState(false);
 
     const [
         choiceVoltageLevelsSubstationId,
@@ -589,6 +593,20 @@ const StudyPane = (props) => {
         [studyUuid, network]
     );
 
+    const removeEquipmentFromNetwork = useCallback(
+        (equipmentType, equipmentId) => {
+            console.info(
+                'removing equipment with id=',
+                equipmentId,
+                ' and type=',
+                equipmentType,
+                ' from the network'
+            );
+            network.removeEquipment(equipmentType, equipmentId);
+        },
+        [network]
+    );
+
     const loadGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
 
@@ -796,6 +814,14 @@ const StudyPane = (props) => {
         setDrawerExplorerOpen(false);
     };
 
+    const openNetworkModificationConfiguration = () => {
+        setOpenNetworkModificationsDialog(true);
+    };
+
+    const closeNetworkModificationConfiguration = () => {
+        setOpenNetworkModificationsDialog(false);
+    };
+
     const sldRef = useRef();
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
@@ -890,17 +916,32 @@ const StudyPane = (props) => {
             if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
                 updateSld();
 
-                // study partial update : loading equipments involved in the study modification and updating the network
-                const ids =
+                // study partial update :
+                // loading equipments involved in the study modification and updating the network
+                const substationsIds =
                     studyUpdatedForce.eventData.headers['substationsIds'];
-                const tmp = ids.substring(1, ids.length - 1); // removing square brackets
+                const tmp = substationsIds.substring(
+                    1,
+                    substationsIds.length - 1
+                ); // removing square brackets
                 if (tmp && tmp.length > 0) {
-                    const substationsIds = tmp.split(', ');
-                    updateNetwork(substationsIds);
+                    updateNetwork(tmp.split(', '));
+                }
+
+                // removing deleted equipment from the network
+                const deletedEquipmentId =
+                    studyUpdatedForce.eventData.headers['deletedEquipmentId'];
+                const deletedEquipmentType =
+                    studyUpdatedForce.eventData.headers['deletedEquipmentType'];
+                if (deletedEquipmentId && deletedEquipmentType) {
+                    removeEquipmentFromNetwork(
+                        deletedEquipmentType,
+                        deletedEquipmentId
+                    );
                 }
             }
         }
-    }, [studyUpdatedForce, updateNetwork]);
+    }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -1342,6 +1383,9 @@ const StudyPane = (props) => {
                             networkModificationTreeDisplayed={
                                 drawerNetworkModificationTreeOpen
                             }
+                            handleOpenNetworkModificationConfiguration={
+                                openNetworkModificationConfiguration
+                            }
                         />
                     </div>
                 </Drawer>
@@ -1450,6 +1494,13 @@ const StudyPane = (props) => {
                     onClose={() => setShowContingencyListSelector(false)}
                     onStart={handleStartSecurityAnalysis}
                 />
+                {network && (
+                    <NetworkModificationDialog
+                        open={openNetworkModificationsDialog}
+                        onClose={closeNetworkModificationConfiguration}
+                        network={network}
+                    />
+                )}
             </div>
         );
     }

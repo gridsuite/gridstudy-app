@@ -615,7 +615,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 container
                 spacing={2}
                 className={classes.grid}
-                justify="flex-end"
+                justifyContent="flex-end"
             >
                 <Grid container key="lfProvider">
                     {MakeDropDown(
