@@ -7,6 +7,7 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
+import luceneEscapeQuery from 'lucene-escape-query';
 
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
@@ -344,7 +345,7 @@ export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
     );
-    let escapedSearchTerm = encodeURIComponent(searchTerm);
+    let escapedSearchTerm = '"' + luceneEscapeQuery.escape(searchTerm) + '"';
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append(
         'q',
