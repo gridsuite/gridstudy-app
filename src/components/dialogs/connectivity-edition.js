@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import Grid from '@material-ui/core/Grid';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { Popper, TextField } from '@material-ui/core';
@@ -37,20 +37,29 @@ const useStyles = makeStyles((theme) => ({
 /*
  * Component to edit the connection of an equipment (voltage level and bus or busbar section)
  *
- * @param network : the network
+ * @param voltageLevelOptions : the network voltageLevels available
  * @param voltage level : the voltage level currently selected
  * @param busOrBusbarSection : the bus or busbar section currently selected
  * @param errors : errors eventually associated to the fields
  * @param onChangeVoltageLevel : callback to change the voltage level in the parent component
  * @param onChangeBusOrBusbarSection : callback to change the bus or busbar section in the parent component
+ * @param direction : voltageLevel and bus or busbar section inputs direction (row, row-reverse, column, column-reverse)
+ * @param errorVoltageLevel : If true, the VoltageLevel input will be displayed in an error state.
+ * @param helperTextVoltageLevel: helperText to display in cas of error for VoltageLevel input.
+ * @param errorBusOrBusBarSection: If true, the BusOrBusBarSection input will be displayed in an error state.
+ * @param helperTextBusOrBusBarSection: helperText to display in cas of error for BusOrBusBarSection input.
  */
 const ConnectivityEdition = ({
-    network,
+    voltageLevelOptions,
     voltageLevel,
     busOrBusbarSection,
-    errors,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
+    direction,
+    errorVoltageLevel,
+    helperTextVoltageLevel,
+    errorBusOrBusBarSection,
+    helperTextBusOrBusBarSection,
 }) => {
     const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -112,9 +121,18 @@ const ConnectivityEdition = ({
 
     return (
         <>
-            <FormattedMessage id="Connectivity" />
-            <Grid container spacing={2}>
-                <Grid item xs={6} align="start">
+            <Grid container direction={direction || 'row'} spacing={2}>
+                <Grid
+                    item
+                    xs={
+                        direction &&
+                        (direction === 'column' ||
+                            direction === 'column-reverse')
+                            ? 12
+                            : 6
+                    }
+                    align="start"
+                >
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -125,7 +143,7 @@ const ConnectivityEdition = ({
                         autoHighlight
                         selectOnFocus
                         id="voltage-level"
-                        options={network?.voltageLevels}
+                        options={voltageLevelOptions}
                         getOptionLabel={(vl) => vl.id}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
@@ -155,19 +173,26 @@ const ConnectivityEdition = ({
                                 label={intl.formatMessage({
                                     id: 'VoltageLevel',
                                 })}
-                                {...(errors.get('voltage-level')?.error && {
+                                {...(errorVoltageLevel && {
                                     error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('voltage-level')
-                                            ?.errorMsgId,
-                                    }),
+                                    helperText: helperTextVoltageLevel,
                                 })}
                             />
                         )}
                         PopperComponent={FittingPopper}
                     />
                 </Grid>
-                <Grid item xs={6} align="start">
+                <Grid
+                    item
+                    xs={
+                        direction &&
+                        (direction === 'column' ||
+                            direction === 'column-reverse')
+                            ? 12
+                            : 6
+                    }
+                    align="start"
+                >
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
                             it clears the field when blur event is raised, which actually forces the user to validate free input
                             with enter key for it to be validated.
@@ -211,11 +236,9 @@ const ConnectivityEdition = ({
                                 label={intl.formatMessage({
                                     id: 'BusBarBus',
                                 })}
-                                {...(errors.get('bus-bar')?.error && {
+                                {...(errorBusOrBusBarSection && {
                                     error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('bus-bar')?.errorMsgId,
-                                    }),
+                                    helperText: helperTextBusOrBusBarSection,
                                 })}
                             />
                         )}
@@ -228,12 +251,16 @@ const ConnectivityEdition = ({
 };
 
 ConnectivityEdition.propTypes = {
-    network: PropTypes.object.isRequired,
+    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     voltageLevel: PropTypes.object,
     busOrBusbarSection: PropTypes.object,
-    errors: PropTypes.object,
     onChangeVoltageLevel: PropTypes.func.isRequired,
     onChangeBusOrBusbarSection: PropTypes.func.isRequired,
+    direction: PropTypes.string,
+    errorVoltageLevel: PropTypes.bool,
+    helperTextVoltageLevel: PropTypes.string,
+    errorBusOrBusBarSection: PropTypes.bool,
+    helperTextBusOrBusBarSection: PropTypes.string,
 };
 
 export default ConnectivityEdition;

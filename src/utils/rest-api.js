@@ -344,7 +344,7 @@ export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
     );
-    let escapedSearchTerm = escape(searchTerm);
+    let escapedSearchTerm = encodeURIComponent(searchTerm);
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append(
         'q',
@@ -984,6 +984,51 @@ export function createGenerator(
             voltageSetpoint: voltageSetpoint,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function createLine(
+    studyUuid,
+    lineId,
+    lineName,
+    seriesResistance,
+    seriesReactance,
+    shuntConductance1,
+    shuntSusceptance1,
+    shuntConductance2,
+    shuntSusceptance2,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2
+) {
+    console.info('Creating line ');
+    const createLineUrl =
+        getStudyUrl(studyUuid) + '/network-modification/lines';
+    return backendFetch(createLineUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: lineId,
+            equipmentName: lineName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            shuntConductance1: shuntConductance1,
+            shuntSusceptance1: shuntSusceptance1,
+            shuntConductance2: shuntConductance2,
+            shuntSusceptance2: shuntSusceptance2,
+            voltageLevelId1: voltageLevelId1,
+            busOrBusbarSectionId1: busOrBusbarSectionId1,
+            voltageLevelId2: voltageLevelId2,
+            busOrBusbarSectionId2: busOrBusbarSectionId2,
         }),
     }).then((response) =>
         response.ok
