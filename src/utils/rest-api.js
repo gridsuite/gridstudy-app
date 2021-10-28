@@ -7,6 +7,7 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
+import luceneEscapeQuery from 'lucene-escape-query';
 
 const PREFIX_CASE_QUERIES = process.env.REACT_APP_API_GATEWAY + '/case';
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
@@ -336,6 +337,28 @@ export function fetchStaticVarCompensators(studyUuid, substationsIds) {
         substationsIds,
         'Static var compensators',
         'static-var-compensators'
+    );
+}
+
+export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
+    console.info(
+        "Fetching equipments infos matching with '%s' term ... ",
+        searchTerm
+    );
+    let escapedSearchTerm = '*' + luceneEscapeQuery.escape(searchTerm) + '*';
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append(
+        'q',
+        useName
+            ? `equipmentName:${escapedSearchTerm}`
+            : `equipmentId:${escapedSearchTerm}`
+    );
+    return backendFetch(
+        getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
+    ).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
     );
 }
 
