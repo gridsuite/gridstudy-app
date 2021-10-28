@@ -78,7 +78,7 @@ const ContingencyListSelector = (props) => {
         setCheckedContingencyListUuids(checked);
     };
 
-    const saveFavourite = (newList) => {
+    const saveFavorite = (newList) => {
         updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
             .then()
             .catch((errorMessage) => {
@@ -160,7 +160,7 @@ const ContingencyListSelector = (props) => {
 
     const removeFromFavorite = (toRemove) => {
         const toDelete = new Set(toRemove);
-        saveFavourite(
+        saveFavorite(
             contingencyList
                 .map((e) => e.id)
                 .filter((item) => !toDelete.has(item))
@@ -173,9 +173,8 @@ const ContingencyListSelector = (props) => {
     };
 
     const addFavorites = (favorites) => {
-        console.info('JBO', favoriteContingencyListUuids, favorites);
         if (favorites) {
-            saveFavourite(
+            saveFavorite(
                 Array.from([
                     ...new Set([
                         ...favoriteContingencyListUuids,
