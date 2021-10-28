@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {TreeViewFinder} from '@gridsuite/commons-ui';
+import { TreeViewFinder } from '@gridsuite/commons-ui';
 import PropTypes from 'prop-types';
 import { fetchDirectoryContent, fetchRootFolders } from '../utils/rest-api';
 import { makeStyles } from '@material-ui/core/styles';
