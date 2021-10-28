@@ -7,14 +7,16 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
+import luceneEscapeQuery from 'lucene-escape-query';
 
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
-const PREFIX_ACTIONS_QUERIES = process.env.REACT_APP_API_GATEWAY + '/actions';
 const PREFIX_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/notification';
 const PREFIX_CONFIG_NOTIFICATION_WS =
     process.env.REACT_APP_WS_GATEWAY + '/config-notification';
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
+const PREFIX_DIRECTORY_SERVER_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/directory';
 
 function getToken() {
     const state = store.getState();
@@ -56,6 +58,29 @@ export function fetchConfigParameter(name) {
         PREFIX_CONFIG_QUERIES +
         `/v1/applications/${appName}/parameters/${name}`;
     return backendFetch(fetchParams).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchRootFolders() {
+    console.info('Fetching Root Directories');
+    const fetchRootFoldersUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES + `/v1/root-directories`;
+    return backendFetch(fetchRootFoldersUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function fetchDirectoryContent(directoryUuid) {
+    console.info("Fetching Folder content '%s'", directoryUuid);
+    const fetchDirectoryContentUrl =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        `/v1/directories/${directoryUuid}/content`;
+    return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
@@ -295,6 +320,28 @@ export function fetchStaticVarCompensators(studyUuid, substationsIds) {
     );
 }
 
+export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
+    console.info(
+        "Fetching equipments infos matching with '%s' term ... ",
+        searchTerm
+    );
+    let escapedSearchTerm = '*' + luceneEscapeQuery.escape(searchTerm) + '*';
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append(
+        'q',
+        useName
+            ? `equipmentName:${escapedSearchTerm}`
+            : `equipmentId:${escapedSearchTerm}`
+    );
+    return backendFetch(
+        getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
+    ).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function fetchAllEquipments(studyUuid, substationsIds) {
     return fetchEquipments(studyUuid, substationsIds, 'All', 'all');
 }
@@ -456,9 +503,14 @@ export function fetchSecurityAnalysisStatus(studyUuid) {
     });
 }
 
-export function fetchContingencyLists() {
+export function fetchContingencyLists(listIds) {
     console.info('Fetching contingency lists');
-    const url = PREFIX_ACTIONS_QUERIES + '/v1/contingency-lists';
+    const url =
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/directories/elements?id=' +
+        listIds
+            .filter((e) => e != null && e !== '') // filter empty element
+            .join('&id=');
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()
@@ -726,7 +778,7 @@ export function createLoad(
     activePower,
     reactivePower,
     voltageLevelId,
-    busId
+    busOrBusbarSectionId
 ) {
     console.info('Creating load ');
     const createLoadUrl =
@@ -744,7 +796,97 @@ export function createLoad(
             activePower: activePower,
             reactivePower: reactivePower,
             voltageLevelId: voltageLevelId,
-            busId: busId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function createGenerator(
+    studyUuid,
+    id,
+    name,
+    energySource,
+    minActivePower,
+    maxActivePower,
+    ratedNominalPower,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    voltageRegulationOn,
+    voltageSetpoint,
+    voltageLevelId,
+    busOrBusbarSectionId
+) {
+    console.info('Creating generator ');
+    const createGeneratorUrl =
+        getStudyUrl(studyUuid) + '/network-modification/generators';
+    return backendFetch(createGeneratorUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: id,
+            equipmentName: name,
+            energySource: energySource,
+            minActivePower: minActivePower,
+            maxActivePower: maxActivePower,
+            ratedNominalPower: ratedNominalPower,
+            activePowerSetpoint: activePowerSetpoint,
+            reactivePowerSetpoint: reactivePowerSetpoint,
+            voltageRegulationOn: voltageRegulationOn,
+            voltageSetpoint: voltageSetpoint,
+            voltageLevelId: voltageLevelId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function createLine(
+    studyUuid,
+    lineId,
+    lineName,
+    seriesResistance,
+    seriesReactance,
+    shuntConductance1,
+    shuntSusceptance1,
+    shuntConductance2,
+    shuntSusceptance2,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2
+) {
+    console.info('Creating line ');
+    const createLineUrl =
+        getStudyUrl(studyUuid) + '/network-modification/lines';
+    return backendFetch(createLineUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: lineId,
+            equipmentName: lineName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            shuntConductance1: shuntConductance1,
+            shuntSusceptance1: shuntSusceptance1,
+            shuntConductance2: shuntConductance2,
+            shuntSusceptance2: shuntSusceptance2,
+            voltageLevelId1: voltageLevelId1,
+            busOrBusbarSectionId1: busOrBusbarSectionId1,
+            voltageLevelId2: voltageLevelId2,
+            busOrBusbarSectionId2: busOrBusbarSectionId2,
         }),
     }).then((response) =>
         response.ok
@@ -794,4 +936,21 @@ export function getAvailableComponentLibraries() {
     return backendFetch(getAvailableComponentLibrariesUrl, {
         method: 'get',
     }).then((response) => response.json());
+}
+
+export function deleteEquipment(studyUuid, equipmentType, equipmentId) {
+    console.info(
+        'deleting equipment ' +
+            equipmentId +
+            ' with type ' +
+            equipmentType +
+            ' ...'
+    );
+    const deleteEquipmentUrl =
+        getStudyUrl(studyUuid) +
+        '/network-modification/equipments/type/' +
+        encodeURIComponent(equipmentType) +
+        '/id/' +
+        encodeURIComponent(equipmentId);
+    return backendFetch(deleteEquipmentUrl, { method: 'delete' });
 }

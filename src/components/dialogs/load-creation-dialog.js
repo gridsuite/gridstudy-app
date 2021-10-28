@@ -4,13 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    InputLabel,
-    MenuItem,
-    Popper,
-    Select,
-    TextField,
-} from '@material-ui/core';
+import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -19,7 +13,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
@@ -29,26 +22,19 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import {
-    createLoad,
-    fetchBusbarSectionsForVoltageLevel,
-    fetchBusesForVoltageLevel,
-} from '../../utils/rest-api';
+import { createLoad } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { validateField } from '../util/validation-functions';
-
-// Factory used to create a filter method that is used to change the default
-// option filter behaviour of the Autocomplete component
-const filter = createFilterOptions();
+import ConnectivityEdition from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
+        marginTop: 4,
     },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
+    h3: {
+        marginBottom: 0,
+        paddingBottom: 1,
     },
 }));
 
@@ -56,8 +42,9 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to create a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param voltageLevelOptions : the network voltageLevels available
  */
-const LoadCreationDialog = ({ open, onClose, network }) => {
+const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -66,10 +53,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
-
-    const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
-        []
-    );
 
     const [loadId, setLoadId] = useState('');
 
@@ -109,44 +92,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         // TODO: remove replace when parsing behaviour will be made according to locale
         // Replace ',' by '.' to ensure double values can be parsed correctly
         setReactivePower(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangeVoltageLevel = (event, value, reason) => {
-        if (reason === 'select-option') {
-            setVoltageLevel(value);
-            setBusOrBusbarSection(null);
-            switch (value?.topologyKind) {
-                case 'NODE_BREAKER':
-                    // TODO specify the correct network variant num
-                    fetchBusbarSectionsForVoltageLevel(
-                        studyUuid,
-                        0,
-                        value.id
-                    ).then((busbarSections) => {
-                        setBusOrBusbarSectionOptions(busbarSections);
-                    });
-                    break;
-
-                case 'BUS_BREAKER':
-                    // TODO specify the correct network variant num
-                    fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
-                        (buses) => setBusOrBusbarSectionOptions(buses)
-                    );
-                    break;
-
-                default:
-                    setBusOrBusbarSectionOptions([]);
-                    break;
-            }
-        } else if (reason === 'clear') {
-            setVoltageLevel(null);
-            setBusOrBusbarSection(null);
-            setBusOrBusbarSectionOptions([]);
-        }
-    };
-
-    const handleChangeBus = (event, value, reason) => {
-        setBusOrBusbarSection(value);
     };
 
     const handleSave = () => {
@@ -199,7 +144,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             createLoad(
                 studyUuid,
                 loadId,
-                loadName,
+                loadName ? loadName : null,
                 !loadType ? 'UNDEFINED' : loadType,
                 activePower,
                 reactivePower,
@@ -230,7 +175,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         setReactivePower('');
         setVoltageLevel(null);
         setBusOrBusbarSection(null);
-        setBusOrBusbarSectionOptions([]);
     };
 
     const handleCloseAndClear = () => {
@@ -243,20 +187,10 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
         onClose();
     };
 
-    // Specific Popper component to be used with Autocomplete
-    // This allows the popper to fit its content, which is not the case by default
-    const FittingPopper = (props) => {
-        return (
-            <Popper
-                {...props}
-                style={classes.popper.style}
-                placement="bottom-start"
-            />
-        );
-    };
-
     return (
         <Dialog
+            fullWidth
+            maxWidth="md" // 3 columns
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-create-load"
@@ -266,8 +200,9 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextField
+                            size="small"
                             fullWidth
                             id="load-id"
                             label={intl.formatMessage({ id: 'ID' })}
@@ -287,18 +222,19 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             })}
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextField
+                            size="small"
+                            fullWidth
                             id="load-name"
                             label={intl.formatMessage({ id: 'NameOptional' })}
-                            defaultValue=""
                             value={loadName}
                             onChange={handleChangeLoadName}
                             variant="filled"
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
-                        <FormControl fullWidth>
+                    <Grid item xs={4} align="start">
+                        <FormControl fullWidth size="small">
                             {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                             <InputLabel id="load-type-label" variant={'filled'}>
@@ -331,12 +267,18 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                         </FormControl>
                     </Grid>
                 </Grid>
-                <br />
-                <br />
-                <FormattedMessage id="Setpoints" />
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Setpoints" />
+                        </h3>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            size="small"
+                            fullWidth
                             id="load-active-power"
                             label={intl.formatMessage({
                                 id: 'ActivePowerText',
@@ -345,7 +287,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             adornmentText={'MW'}
                             value={activePower}
                             onChange={handleChangeActivePower}
-                            defaultValue=""
                             {...(errors.get('active-power')?.error && {
                                 error: true,
                                 helperText: intl.formatMessage({
@@ -354,8 +295,10 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             })}
                         />
                     </Grid>
-                    <Grid item xs={4} align="center">
+                    <Grid item xs={4} align="start">
                         <TextFieldWithAdornment
+                            size="small"
+                            fullWidth
                             id="load-reactive-power"
                             label={intl.formatMessage({
                                 id: 'ReactivePowerText',
@@ -364,7 +307,6 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                             adornmentText={'MVar'}
                             value={reactivePower}
                             onChange={handleChangeReactivePower}
-                            defaultValue=""
                             {...(errors.get('reactive-power')?.error && {
                                 error: true,
                                 helperText: intl.formatMessage({
@@ -375,109 +317,44 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
                         />
                     </Grid>
                 </Grid>
-                <br />
-                <br />
-                <FormattedMessage id="Connectivity" />
+                {/* Connectivity part */}
                 <Grid container spacing={2}>
-                    <Grid item xs={4} align="center">
-                        {/* TODO: autoComplete prop is not working properly with material-ui v4,
-                            it clears the field when blur event is raised, which actually forces the user to validate free input
-                            with enter key for it to be validated.
-                            check if autoComplete prop is fixed in v5 */}
-                        <Autocomplete
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            id="voltage-level"
-                            size="small"
-                            options={network?.voltageLevels}
-                            getOptionLabel={(vl) => vl.id}
-                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
-                               is created in the options list with a value equal to the input value
-                            */
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-
-                                if (params.inputValue !== '') {
-                                    filtered.push({
-                                        inputValue: params.inputValue,
-                                        id: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            value={voltageLevel}
-                            onChange={handleChangeVoltageLevel}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    label={intl.formatMessage({
-                                        id: 'VoltageLevel',
-                                    })}
-                                    {...(errors.get('voltage-level')?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get('voltage-level')
-                                                ?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            )}
-                            PopperComponent={FittingPopper}
-                        />
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Connectivity" />
+                        </h3>
                     </Grid>
-                    <Grid item xs={4} align="center">
-                        {/* TODO: autoComplete prop is not working properly with material-ui v4,
-                            it clears the field when blur event is raised, which actually forces the user to validate free input
-                            with enter key for it to be validated.
-                            check if autoComplete prop is fixed in v5 */}
-                        <Autocomplete
-                            freeSolo
-                            forcePopupIcon
-                            autoHighlight
-                            selectOnFocus
-                            id="bus"
-                            size="small"
-                            disabled={!voltageLevel}
-                            options={busOrBusbarSectionOptions}
-                            getOptionLabel={(busOrBusbarSection) =>
-                                busOrBusbarSection?.id
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={8} align="start">
+                        <ConnectivityEdition
+                            voltageLevelOptions={voltageLevelOptions}
+                            voltageLevel={voltageLevel}
+                            busOrBusbarSection={busOrBusbarSection}
+                            onChangeVoltageLevel={(value) =>
+                                setVoltageLevel(value)
                             }
-                            /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
-                               is created in the options list with a value equal to the input value
-                            */
-                            filterOptions={(options, params) => {
-                                const filtered = filter(options, params);
-
-                                if (params.inputValue !== '') {
-                                    filtered.push({
-                                        inputValue: params.inputValue,
-                                        id: params.inputValue,
-                                    });
-                                }
-                                return filtered;
-                            }}
-                            value={busOrBusbarSection}
-                            onChange={handleChangeBus}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    label={intl.formatMessage({
-                                        id: 'BusBarBus',
-                                    })}
-                                    {...(errors.get('bus-bar')?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get('bus-bar')
-                                                ?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            )}
-                            PopperComponent={FittingPopper}
+                            onChangeBusOrBusbarSection={(busOrBusbarSection) =>
+                                setBusOrBusbarSection(busOrBusbarSection)
+                            }
+                            errorVoltageLevel={
+                                errors.get('voltage-level')?.error
+                            }
+                            helperTextVoltageLevel={
+                                errors.get('voltage-level')?.error &&
+                                intl.formatMessage({
+                                    id: errors.get('voltage-level')?.errorMsgId,
+                                })
+                            }
+                            errorBusOrBusBarSection={
+                                errors.get('bus-bar')?.error
+                            }
+                            helperTextBusOrBusBarSection={
+                                errors.get('bus-bar')?.error &&
+                                intl.formatMessage({
+                                    id: errors.get('bus-bar')?.errorMsgId,
+                                })
+                            }
                         />
                     </Grid>
                 </Grid>
@@ -497,7 +374,7 @@ const LoadCreationDialog = ({ open, onClose, network }) => {
 LoadCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    network: PropTypes.object.isRequired,
+    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default LoadCreationDialog;

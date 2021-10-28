@@ -8,39 +8,52 @@ import { TextField } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    inputRight: {
+        textAlign: 'end',
+    },
+    inputLeft: {
+        textAlign: 'start',
+    },
+}));
 
 const TextFieldWithAdornment = (props) => {
+    const classes = useStyles();
+    const { adornmentPosition, adornmentText, value, ...otherProps } = props;
     const [isFocused, setIsFocused] = useState(false);
 
     const endAdornment =
-        isFocused || props.value
+        isFocused || value
             ? {
                   endAdornment: (
                       <InputAdornment position="end">
-                          {props.adornmentText}
+                          {adornmentText}
                       </InputAdornment>
                   ),
+                  classes: { input: classes.inputRight },
               }
             : {};
 
     const startAdornment =
-        isFocused || props.value
+        isFocused || value
             ? {
                   startAdornment: (
                       <InputAdornment position="start">
-                          {props.adornmentText}
+                          {adornmentText}
                       </InputAdornment>
                   ),
+                  classes: { input: classes.inputLeft },
               }
             : {};
 
     return (
         <TextField
-            {...props}
+            {...otherProps}
+            value={value}
             InputProps={
-                props.adornmentPosition === 'start'
-                    ? startAdornment
-                    : endAdornment
+                adornmentPosition === 'start' ? startAdornment : endAdornment
             }
             onFocus={(e) => setIsFocused(true)}
             onBlur={(e) => setIsFocused(false)}

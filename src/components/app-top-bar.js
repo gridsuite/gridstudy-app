@@ -4,14 +4,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
-import { LIGHT_THEME, logout, TopBar } from '@gridsuite/commons-ui';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+    EQUIPMENT_TYPE,
+    equipmentStyles,
+    getEquipmentsInfosForSearchBar,
+    LIGHT_THEME,
+    logout,
+    renderEquipmentForSearchBar,
+    TopBar,
+} from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import Tabs from '@material-ui/core/Tabs';
 import { StudyView } from './study-pane';
 import { Badge } from '@material-ui/core';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@material-ui/core/Tab';
 import Parameters, { useParameterState } from './parameters';
 import {
@@ -20,15 +28,22 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls } from '../utils/rest-api';
+import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackbar } from 'notistack';
+import { stringify } from 'qs';
+import { selectItemNetwork } from '../redux/actions';
 
 const useStyles = makeStyles(() => ({
     tabs: {
         marginLeft: 18,
     },
 }));
+
+const useEquipmentStyles = makeStyles(equipmentStyles);
 
 const STUDY_VIEWS = [
     StudyView.MAP,
@@ -40,7 +55,17 @@ const STUDY_VIEWS = [
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
 
+    const equipmentClasses = useEquipmentStyles();
+
+    const history = useHistory();
+
     const dispatch = useDispatch();
+
+    const intl = useIntl();
+
+    const intlRef = useIntlRef();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [appsAndUrls, setAppsAndUrls] = useState([]);
 
@@ -61,6 +86,55 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [showParameters, setShowParameters] = useState(false);
+
+    // Equipments search bar
+    const [equipmentsFound, setEquipmentsFound] = useState([]);
+    const searchMatchingEquipments = useCallback(
+        (searchTerm) => {
+            fetchEquipmentsInfos(studyUuid, searchTerm, useNameLocal)
+                .then((infos) =>
+                    setEquipmentsFound(
+                        getEquipmentsInfosForSearchBar(infos, useNameLocal)
+                    )
+                )
+                .catch((errorMessage) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'equipmentsSearchingError',
+                            intlRef: intlRef,
+                        },
+                    })
+                );
+        },
+        [studyUuid, useNameLocal, enqueueSnackbar, intlRef]
+    );
+    const showVoltageLevelDiagram = useCallback(
+        // TODO code factorization for displaying a VL via a hook
+        (optionInfos) => {
+            let substationOrVlId;
+            let requestParam;
+            if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
+                substationOrVlId = optionInfos.label;
+                requestParam = { substationId: optionInfos.label };
+            } else {
+                substationOrVlId = optionInfos.voltageLevelId;
+                requestParam = {
+                    voltageLevelId: optionInfos.voltageLevelId,
+                };
+            }
+            dispatch(selectItemNetwork(substationOrVlId));
+            onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
+            history.replace(
+                // show voltage level
+                '/studies/' +
+                    encodeURIComponent(studyUuid) +
+                    stringify(requestParam, { addQueryPrefix: true })
+            );
+        },
+        [studyUuid, history, onChangeTab, dispatch]
+    );
 
     useEffect(() => {
         if (user !== null) {
@@ -99,6 +173,17 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 theme={themeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
+                withElementsSearch={Boolean(studyUuid)}
+                searchingLabel={intl.formatMessage({
+                    id: 'equipment_search/label',
+                })}
+                onSearchTermChange={searchMatchingEquipments}
+                onSelectionChange={showVoltageLevelDiagram}
+                elementsFound={equipmentsFound}
+                renderElement={renderEquipmentForSearchBar(
+                    equipmentClasses,
+                    intl
+                )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             >

@@ -38,6 +38,7 @@ import {
     ADD_SA_NOTIF,
     RESET_SA_NOTIF,
     COMPONENT_LIBRARY,
+    FAVORITE_CONTINGENCY_LISTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
@@ -65,6 +66,7 @@ import {
     PARAM_COMPONENT_LIBRARY,
     PARAM_THEME,
     PARAM_USE_NAME,
+    PARAM_FAVORITE_CONTINGENCY_LISTS,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 
@@ -82,6 +84,7 @@ const paramsInitialState = {
     [PARAM_DIAGONAL_LABEL]: false,
     [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
     [PARAM_COMPONENT_LIBRARY]: null,
+    [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
 };
 
 const initialState = {
@@ -281,5 +284,9 @@ export const reducer = createReducer(initialState, {
             }
         });
         state.allDisplayedColumnsNames = newDisplayedColumnsNames;
+    },
+    [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
+        state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
+            action[PARAM_FAVORITE_CONTINGENCY_LISTS];
     },
 });
