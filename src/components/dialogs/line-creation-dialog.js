@@ -29,6 +29,7 @@ import ConnectivityEdition from './connectivity-edition';
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
+        marginTop: 4,
     },
     popper: {
         style: {
@@ -277,6 +278,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={6} align="start">
                         <TextField
+                            size="small"
                             fullWidth
                             id="line-id"
                             label={intl.formatMessage({ id: 'ID' })}
@@ -298,6 +300,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                     </Grid>
                     <Grid item xs={6} align="start">
                         <TextField
+                            size="small"
                             fullWidth
                             id="line-name"
                             label={
@@ -323,6 +326,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
                         <TextFieldWithAdornment
+                            size="small"
                             fullWidth
                             id="line-series-resistance"
                             label={intl.formatMessage({
@@ -343,6 +347,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                     </Grid>
                     <Grid item xs={6}>
                         <TextFieldWithAdornment
+                            size="small"
                             fullWidth
                             id="line-series-reactance"
                             label={intl.formatMessage({
@@ -379,6 +384,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                         <Grid container direction="column" spacing={2}>
                             <Grid item align="start">
                                 <TextFieldWithAdornment
+                                    size="small"
                                     fullWidth
                                     id="line-shunt-conductance-side1"
                                     label={
@@ -407,6 +413,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                             </Grid>
                             <Grid item align="start">
                                 <TextFieldWithAdornment
+                                    size="small"
                                     fullWidth
                                     id="line-shunt-susceptance-side1"
                                     label={
@@ -439,6 +446,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                         <Grid container direction="column" spacing={2}>
                             <Grid item align="start">
                                 <TextFieldWithAdornment
+                                    size="small"
                                     fullWidth
                                     id="line-shunt-conductance-side2"
                                     label={
@@ -467,6 +475,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                             </Grid>
                             <Grid item align="start">
                                 <TextFieldWithAdornment
+                                    size="small"
                                     fullWidth
                                     id="line-shunt-susceptance-side2"
                                     label={

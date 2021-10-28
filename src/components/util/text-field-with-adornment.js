@@ -8,8 +8,19 @@ import { TextField } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    inputRight: {
+        textAlign: 'end',
+    },
+    inputLeft: {
+        textAlign: 'start',
+    },
+}));
 
 const TextFieldWithAdornment = (props) => {
+    const classes = useStyles();
     const { adornmentPosition, adornmentText, value, ...otherProps } = props;
     const [isFocused, setIsFocused] = useState(false);
 
@@ -21,6 +32,7 @@ const TextFieldWithAdornment = (props) => {
                           {adornmentText}
                       </InputAdornment>
                   ),
+                  classes: { input: classes.inputRight },
               }
             : {};
 
@@ -32,6 +44,7 @@ const TextFieldWithAdornment = (props) => {
                           {adornmentText}
                       </InputAdornment>
                   ),
+                  classes: { input: classes.inputLeft },
               }
             : {};
 
