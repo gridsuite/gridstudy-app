@@ -66,8 +66,6 @@ const ContingencyListSelector = (props) => {
 
     const intlRef = useIntlRef();
 
-    const [saveDisabled, setSaveDisabled] = useState(true);
-
     const handleClose = () => {
         props.onClose();
     };
@@ -81,20 +79,18 @@ const ContingencyListSelector = (props) => {
     };
 
     const saveFavourite = (newList) => {
-        if (!saveDisabled) {
-            updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
-                .then()
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'paramsChangingError',
-                            intlRef: intlRef,
-                        },
-                    });
+        updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
+            .then()
+            .catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'paramsChangingError',
+                        intlRef: intlRef,
+                    },
                 });
-        }
+            });
     };
 
     useEffect(() => {
@@ -131,10 +127,8 @@ const ContingencyListSelector = (props) => {
                                     .localeCompare(b.name.toLowerCase())
                             )
                     );
-                    setSaveDisabled(false);
                 })
                 .catch(() => {
-                    setSaveDisabled(true);
                     displayErrorMessageWithSnackbar({
                         errorMessage: '',
                         enqueueSnackbar: enqueueSnackbar,
@@ -150,7 +144,6 @@ const ContingencyListSelector = (props) => {
     }, [
         favoriteContingencyListUuids,
         setContingencyList,
-        setSaveDisabled,
         intlRef,
         enqueueSnackbar,
     ]);
@@ -180,6 +173,7 @@ const ContingencyListSelector = (props) => {
     };
 
     const addFavorites = (favorites) => {
+        console.info('JBO', favoriteContingencyListUuids, favorites);
         if (favorites) {
             saveFavourite(
                 Array.from([
