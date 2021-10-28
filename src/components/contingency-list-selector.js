@@ -173,7 +173,7 @@ const ContingencyListSelector = (props) => {
     };
 
     const addFavorites = (favorites) => {
-        if (favorites) {
+        if (favorites && favorites.length > 0) {
             saveFavorite(
                 Array.from([
                     ...new Set([
