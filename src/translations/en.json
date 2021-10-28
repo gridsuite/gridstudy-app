@@ -138,7 +138,10 @@
     "SecurityAnalysis": "Security analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
-    "Start": "Start",
+    "Execute": "Execute",
+    "AddContingencyList": "Add",
+    "DeleteContingencyList": "Delete",
+    "getContingencyListError": "can't fetch contingencies lists",
     "xContingenciesWillBeSimulated": "{x} contingencies will be simulated",
 
     "LimitType": "Limit type",

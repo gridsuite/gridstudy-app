@@ -23,6 +23,8 @@ import {
     element_search_en,
     equipment_search_fr,
     equipment_search_en,
+    treeview_finder_fr,
+    treeview_finder_en,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -63,6 +65,7 @@ const getMuiTheme = (theme) => {
 
 const messages = {
     en: {
+        ...treeview_finder_en,
         ...messages_en,
         ...report_viewer_en,
         ...login_en,
@@ -72,6 +75,7 @@ const messages = {
         ...equipment_search_en,
     },
     fr: {
+        ...treeview_finder_fr,
         ...messages_fr,
         ...report_viewer_fr,
         ...login_fr,

@@ -138,7 +138,10 @@
     "SecurityAnalysis": "Analyse de sécurité",
 
     "ContingencyListsSelection": "Sélection des listes de contingences",
-    "Start": "Démarrer",
+    "Execute": "Exécuter",
+    "AddContingencyList": "Ajouter",
+    "DeleteContingencyList": "Supprimer",
+    "getContingencyListError": "Impossible de récuperer les listes de contingences",
     "xContingenciesWillBeSimulated": "{x} contingences seront simulées",
 
     "LimitType": "Type de limite",
