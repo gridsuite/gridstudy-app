@@ -26,7 +26,7 @@ import Grid from '@material-ui/core/Grid';
 import DirectoryItemSelector from './directory-item-selector';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../utils/config-params';
 import { useSelector } from 'react-redux';
-import { elementType } from '@gridsuite/commons-ui/lib/utils/ElementType';
+import { elementType } from '@gridsuite/commons-ui';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 
