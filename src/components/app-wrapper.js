@@ -19,6 +19,10 @@ import {
     top_bar_fr,
     table_en,
     table_fr,
+    element_search_fr,
+    element_search_en,
+    equipment_search_fr,
+    equipment_search_en,
     treeview_finder_fr,
     treeview_finder_en,
 } from '@gridsuite/commons-ui';
@@ -67,6 +71,8 @@ const messages = {
         ...login_en,
         ...top_bar_en,
         ...table_en,
+        ...element_search_en,
+        ...equipment_search_en,
     },
     fr: {
         ...treeview_finder_fr,
@@ -75,6 +81,8 @@ const messages = {
         ...login_fr,
         ...top_bar_fr,
         ...table_fr,
+        ...element_search_fr,
+        ...equipment_search_fr,
     },
 };
 
