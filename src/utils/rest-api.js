@@ -385,6 +385,46 @@ function fetchEquipments(
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
+export function fetchBusesForVoltageLevel(
+    studyUuid,
+    variantNum,
+    voltageLevelId
+) {
+    console.info(
+        `Fetching buses of study '${studyUuid}' for voltage level '${voltageLevelId}'...`
+    );
+    const fetchBusesUrl =
+        getStudyUrl(studyUuid) +
+        '/network/' +
+        variantNum +
+        '/voltage-levels/' +
+        voltageLevelId +
+        '/buses';
+    console.debug(fetchBusesUrl);
+    return backendFetch(fetchBusesUrl).then((response) => response.json());
+}
+
+export function fetchBusbarSectionsForVoltageLevel(
+    studyUuid,
+    variantNum,
+    voltageLevelId
+) {
+    console.info(
+        `Fetching busbar sections of study '${studyUuid}' for voltage level '${voltageLevelId}'...`
+    );
+    const fetchBusbarSectionsUrl =
+        getStudyUrl(studyUuid) +
+        '/network/' +
+        variantNum +
+        '/voltage-levels/' +
+        voltageLevelId +
+        '/busbar-sections';
+    console.debug(fetchBusbarSectionsUrl);
+    return backendFetch(fetchBusbarSectionsUrl).then((response) =>
+        response.json()
+    );
+}
+
 export function fetchLinePositions(studyUuid) {
     console.info(`Fetching line positions of study '${studyUuid}'...`);
     const fetchLinePositionsUrl = getStudyUrl(studyUuid) + '/geo-data/lines';
@@ -879,6 +919,131 @@ export function switchOnLine(studyUuid, lineId) {
     return changeLineStatus(studyUuid, lineId, 'switchOn');
 }
 
+export function createLoad(
+    studyUuid,
+    id,
+    name,
+    loadType,
+    activePower,
+    reactivePower,
+    voltageLevelId,
+    busOrBusbarSectionId
+) {
+    console.info('Creating load ');
+    const createLoadUrl =
+        getStudyUrl(studyUuid) + '/network-modification/loads';
+    return backendFetch(createLoadUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: id,
+            equipmentName: name,
+            loadType: loadType,
+            activePower: activePower,
+            reactivePower: reactivePower,
+            voltageLevelId: voltageLevelId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function createGenerator(
+    studyUuid,
+    id,
+    name,
+    energySource,
+    minActivePower,
+    maxActivePower,
+    ratedNominalPower,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    voltageRegulationOn,
+    voltageSetpoint,
+    voltageLevelId,
+    busOrBusbarSectionId
+) {
+    console.info('Creating generator ');
+    const createGeneratorUrl =
+        getStudyUrl(studyUuid) + '/network-modification/generators';
+    return backendFetch(createGeneratorUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: id,
+            equipmentName: name,
+            energySource: energySource,
+            minActivePower: minActivePower,
+            maxActivePower: maxActivePower,
+            ratedNominalPower: ratedNominalPower,
+            activePowerSetpoint: activePowerSetpoint,
+            reactivePowerSetpoint: reactivePowerSetpoint,
+            voltageRegulationOn: voltageRegulationOn,
+            voltageSetpoint: voltageSetpoint,
+            voltageLevelId: voltageLevelId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function createLine(
+    studyUuid,
+    lineId,
+    lineName,
+    seriesResistance,
+    seriesReactance,
+    shuntConductance1,
+    shuntSusceptance1,
+    shuntConductance2,
+    shuntSusceptance2,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2
+) {
+    console.info('Creating line ');
+    const createLineUrl =
+        getStudyUrl(studyUuid) + '/network-modification/lines';
+    return backendFetch(createLineUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: lineId,
+            equipmentName: lineName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            shuntConductance1: shuntConductance1,
+            shuntSusceptance1: shuntSusceptance1,
+            shuntConductance2: shuntConductance2,
+            shuntSusceptance2: shuntSusceptance2,
+            voltageLevelId1: voltageLevelId1,
+            busOrBusbarSectionId1: busOrBusbarSectionId1,
+            voltageLevelId2: voltageLevelId2,
+            busOrBusbarSectionId2: busOrBusbarSectionId2,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =
@@ -920,4 +1085,21 @@ export function getAvailableComponentLibraries() {
     return backendFetch(getAvailableComponentLibrariesUrl, {
         method: 'get',
     }).then((response) => response.json());
+}
+
+export function deleteEquipment(studyUuid, equipmentType, equipmentId) {
+    console.info(
+        'deleting equipment ' +
+            equipmentId +
+            ' with type ' +
+            equipmentType +
+            ' ...'
+    );
+    const deleteEquipmentUrl =
+        getStudyUrl(studyUuid) +
+        '/network-modification/equipments/type/' +
+        encodeURIComponent(equipmentType) +
+        '/id/' +
+        encodeURIComponent(equipmentId);
+    return backendFetch(deleteEquipmentUrl, { method: 'delete' });
 }
