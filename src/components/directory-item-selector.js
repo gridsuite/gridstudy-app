@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
     getFileIcon,
     elementType,
-} from '@gridsuite/commons-ui/lib/utils/elementType';
+} from '@gridsuite/commons-ui/lib/utils/ElementType';
 
 const useStyles = makeStyles((theme) => ({
     icon: {
