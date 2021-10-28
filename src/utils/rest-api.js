@@ -345,13 +345,13 @@ export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
     );
-    let escapedSearchTerm = '"' + luceneEscapeQuery.escape(searchTerm) + '"';
+    let escapedSearchTerm = '*' + luceneEscapeQuery.escape(searchTerm) + '*';
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append(
         'q',
         useName
-            ? `equipmentName:*${escapedSearchTerm}*`
-            : `equipmentId:*${escapedSearchTerm}*`
+            ? `equipmentName:${escapedSearchTerm}`
+            : `equipmentId:${escapedSearchTerm}`
     );
     return backendFetch(
         getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
