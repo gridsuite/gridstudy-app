@@ -425,25 +425,6 @@ export function updateSwitchState(studyUuid, switchId, open) {
     return backendFetch(updateSwitchUrl, { method: 'put' });
 }
 
-export function changeStudyAccessRights(studyUuid, toPrivate) {
-    console.info('Change access rights of study ' + studyUuid);
-    let changeStudyAccessRightsUrl;
-    if (toPrivate === 'true') {
-        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/private';
-    } else {
-        changeStudyAccessRightsUrl = getStudyUrl(studyUuid) + '/public';
-    }
-
-    console.debug(changeStudyAccessRightsUrl);
-    return backendFetch(changeStudyAccessRightsUrl, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-    });
-}
-
 export function startLoadFlow(studyUuid) {
     console.info('Running loadflow on ' + studyUuid + '...');
     const startLoadFlowUrl = getStudyUrl(studyUuid) + '/loadflow/run';
