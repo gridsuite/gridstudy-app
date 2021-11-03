@@ -1035,7 +1035,9 @@ export function createLine(
     voltageLevelId1,
     busOrBusbarSectionId1,
     voltageLevelId2,
-    busOrBusbarSectionId2
+    busOrBusbarSectionId2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2
 ) {
     console.info('Creating line ');
     const createLineUrl =
@@ -1059,6 +1061,8 @@ export function createLine(
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
+            permanentCurrentLimit1: permanentCurrentLimit1,
+            permanentCurrentLimit2: permanentCurrentLimit2,
         }),
     }).then((response) =>
         response.ok
