@@ -328,6 +328,6 @@
     "ShuntConductanceText": "Conductance parallèle",
     "ShuntSusceptanceText": "Susceptance parallèle",
 
-    "PermanentCurrentLimitText": "IMAP",
-    "permanentCurrentLimitGreaterThanZero": "La valeur IMAP doit être strictement positive"
+    "PermanentCurrentLimitText": "IST",
+    "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive"
 }
