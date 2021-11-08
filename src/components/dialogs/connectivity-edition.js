@@ -25,7 +25,7 @@ const filter = createFilterOptions();
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
-        marginTop: 3,
+        marginTop: 4,
     },
     popper: {
         style: {
@@ -138,6 +138,7 @@ const ConnectivityEdition = ({
                             with enter key for it to be validated.
                             check if autoComplete prop is fixed in v5 */}
                     <Autocomplete
+                        size="small"
                         freeSolo
                         forcePopupIcon
                         autoHighlight
@@ -173,6 +174,9 @@ const ConnectivityEdition = ({
                                 label={intl.formatMessage({
                                     id: 'VoltageLevel',
                                 })}
+                                FormHelperTextProps={{
+                                    className: classes.helperText,
+                                }}
                                 {...(errorVoltageLevel && {
                                     error: true,
                                     helperText: helperTextVoltageLevel,
@@ -198,6 +202,7 @@ const ConnectivityEdition = ({
                             with enter key for it to be validated.
                             check if autoComplete prop is fixed in v5 */}
                     <Autocomplete
+                        size="small"
                         freeSolo
                         forcePopupIcon
                         autoHighlight
@@ -236,6 +241,9 @@ const ConnectivityEdition = ({
                                 label={intl.formatMessage({
                                     id: 'BusBarBus',
                                 })}
+                                FormHelperTextProps={{
+                                    className: classes.helperText,
+                                }}
                                 {...(errorBusOrBusBarSection && {
                                     error: true,
                                     helperText: helperTextBusOrBusBarSection,

@@ -1033,6 +1033,7 @@ const StudyPane = (props) => {
                     }
                 }
 
+                // TODO code factorization for displaying a VL via a hook
                 if (vlId) {
                     setDisplayedVoltageLevelId(null);
                     setDisplayedSubstationId(null);

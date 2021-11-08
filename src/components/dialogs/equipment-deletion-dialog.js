@@ -43,16 +43,7 @@ const equipmentTypes = [
 const useStyles = makeStyles(() => ({
     helperText: {
         margin: 0,
-    },
-
-    dialogPaper: {
-        minWidth: '550px',
-        minHeight: '200px',
-        margin: 'auto',
-    },
-    divDialog: {
-        minWidth: '500px',
-        margin: 'auto',
+        marginTop: 4,
     },
 }));
 
@@ -152,69 +143,66 @@ const EquipmentDeletionDialog = ({ open, onClose }) => {
 
     return (
         <Dialog
-            classes={{ paper: classes.dialogPaper }}
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-delete-equipment"
+            fullWidth
         >
             <DialogTitle>
                 {intl.formatMessage({ id: 'DeleteEquipment' })}
             </DialogTitle>
             <DialogContent>
-                <div className={classes.divDialog}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6} align="start">
-                            <FormControl fullWidth>
-                                <InputLabel
-                                    id="equipment-type-label"
-                                    margin={'dense'}
-                                >
-                                    {intl.formatMessage({ id: 'Type' })}
-                                </InputLabel>
-                                <Select
-                                    id="equipment-type"
-                                    value={equipmentType}
-                                    onChange={handleChangeEquipmentType}
-                                    variant="filled"
-                                    fullWidth
-                                >
-                                    {equipmentTypes.map((item) => {
-                                        return (
-                                            <MenuItem key={item} value={item}>
-                                                {intl.formatMessage({
-                                                    id: item,
-                                                })}
-                                            </MenuItem>
-                                        );
-                                    })}
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={6} align="start">
-                            <TextField
-                                fullWidth
-                                id="equipment-id"
-                                label={intl.formatMessage({ id: 'ID' })}
+                <Grid container spacing={2}>
+                    <Grid item xs={6} align="start">
+                        <FormControl fullWidth size="small">
+                            <InputLabel
+                                id="equipment-type-label"
+                                margin={'dense'}
+                            >
+                                {intl.formatMessage({ id: 'Type' })}
+                            </InputLabel>
+                            <Select
+                                id="equipment-type"
+                                value={equipmentType}
+                                onChange={handleChangeEquipmentType}
                                 variant="filled"
-                                value={equipmentId}
-                                onChange={handleChangeEquipmentId}
-                                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                                 which is not the case when no variant is used) */
-                                FormHelperTextProps={{
-                                    className: classes.helperText,
-                                }}
-                                {...(errors.get('equipment-id')?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('equipment-id')
-                                            ?.errorMsgId,
-                                    }),
+                                fullWidth
+                            >
+                                {equipmentTypes.map((item) => {
+                                    return (
+                                        <MenuItem key={item} value={item}>
+                                            {intl.formatMessage({
+                                                id: item,
+                                            })}
+                                        </MenuItem>
+                                    );
                                 })}
-                            />
-                        </Grid>
+                            </Select>
+                        </FormControl>
                     </Grid>
-                    <br />
-                </div>
+                    <Grid item xs={6} align="start">
+                        <TextField
+                            size="small"
+                            fullWidth
+                            id="equipment-id"
+                            label={intl.formatMessage({ id: 'ID' })}
+                            variant="filled"
+                            value={equipmentId}
+                            onChange={handleChangeEquipmentId}
+                            /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
+                                which is not the case when no variant is used) */
+                            FormHelperTextProps={{
+                                className: classes.helperText,
+                            }}
+                            {...(errors.get('equipment-id')?.error && {
+                                error: true,
+                                helperText: intl.formatMessage({
+                                    id: errors.get('equipment-id')?.errorMsgId,
+                                }),
+                            })}
+                        />
+                    </Grid>
+                </Grid>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCloseAndClear} variant="text">
