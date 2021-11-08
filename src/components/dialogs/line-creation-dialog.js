@@ -73,11 +73,13 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
     const [shuntSusceptance1, setShuntSusceptance1] = useState('');
     const [voltageLevel1, setVoltageLevel1] = useState(null);
     const [busOrBusbarSection1, setBusOrBusbarSection1] = useState(null);
+    const [permanentCurrentLimit1, setPermanentCurrentLimit1] = useState('');
 
     const [shuntConductance2, setShuntConductance2] = useState('');
     const [shuntSusceptance2, setShuntSusceptance2] = useState('');
     const [voltageLevel2, setVoltageLevel2] = useState(null);
     const [busOrBusbarSection2, setBusOrBusbarSection2] = useState(null);
+    const [permanentCurrentLimit2, setPermanentCurrentLimit2] = useState('');
 
     const [errors, setErrors] = useState(new Map());
 
@@ -105,12 +107,20 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         setShuntSusceptance1(event.target.value?.replace(',', '.'));
     };
 
+    const handleChangePermanentCurrentLimit1 = (event) => {
+        setPermanentCurrentLimit1(event.target.value?.replace(',', '.'));
+    };
+
     const handleChangeShuntConductance2 = (event) => {
         setShuntConductance2(event.target.value?.replace(',', '.'));
     };
 
     const handleChangeShuntSusceptance2 = (event) => {
         setShuntSusceptance2(event.target.value?.replace(',', '.'));
+    };
+
+    const handleChangePermanentCurrentLimit2 = (event) => {
+        setPermanentCurrentLimit2(event.target.value?.replace(',', '.'));
     };
 
     const handleSave = () => {
@@ -170,6 +180,16 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         );
 
         tmpErrors.set(
+            'permanent-current-limit-side1',
+            validateField(permanentCurrentLimit1, {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+                isValueGreaterThan: '0',
+                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
+            })
+        );
+
+        tmpErrors.set(
             'shunt-conductance-side2',
             validateField(shuntConductance2, {
                 isFieldRequired: false,
@@ -199,6 +219,16 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
             })
         );
 
+        tmpErrors.set(
+            'permanent-current-limit-side2',
+            validateField(permanentCurrentLimit2, {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+                isValueGreaterThan: '0',
+                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
+            })
+        );
+
         setErrors(tmpErrors);
 
         // Check if error list contains an error
@@ -219,7 +249,9 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                 voltageLevel1.id,
                 busOrBusbarSection1.id,
                 voltageLevel2.id,
-                busOrBusbarSection2.id
+                busOrBusbarSection2.id,
+                permanentCurrentLimit1,
+                permanentCurrentLimit2
             )
                 .then(() => {
                     handleCloseAndClear();
@@ -247,11 +279,13 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         setShuntSusceptance1('');
         setVoltageLevel1(null);
         setBusOrBusbarSection1(null);
+        setPermanentCurrentLimit1('');
 
         setShuntConductance2('');
         setShuntSusceptance2('');
         setVoltageLevel2(null);
         setBusOrBusbarSection2(null);
+        setPermanentCurrentLimit2('');
     };
 
     const handleCloseAndClear = () => {
@@ -505,7 +539,99 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                         </Grid>
                     </Grid>
                 </Grid>
-                {/* <br /> */}
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <h3 className={classes.h3}>
+                            <FormattedMessage id="Limits" />
+                        </h3>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side1" />
+                        </h4>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <h4 className={classes.h4}>
+                            <FormattedMessage id="Side2" />
+                        </h4>
+                    </Grid>
+                </Grid>
+                <Grid container spacing={2}>
+                    <Grid item container xs={6} direction="column">
+                        <Grid container direction="column" spacing={2}>
+                            <Grid item align="start">
+                                <TextFieldWithAdornment
+                                    size="small"
+                                    fullWidth
+                                    id="permanent-current-limit-side1"
+                                    label={
+                                        intl.formatMessage({
+                                            id: 'PermanentCurrentLimitText',
+                                        }) +
+                                        ' ' +
+                                        intl.formatMessage({
+                                            id: 'Optional',
+                                        })
+                                    }
+                                    adornmentPosition={'end'}
+                                    adornmentText={'A'}
+                                    value={permanentCurrentLimit1}
+                                    onChange={
+                                        handleChangePermanentCurrentLimit1
+                                    }
+                                    {...(errors.get(
+                                        'permanent-current-limit-side1'
+                                    )?.error && {
+                                        error: true,
+                                        helperText: intl.formatMessage({
+                                            id: errors.get(
+                                                'permanent-current-limit-side1'
+                                            )?.errorMsgId,
+                                        }),
+                                    })}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item container direction="column" xs={6}>
+                        <Grid container direction="column" spacing={2}>
+                            <Grid item align="start">
+                                <TextFieldWithAdornment
+                                    size="small"
+                                    fullWidth
+                                    id="permanent-current-limit-side2"
+                                    label={
+                                        intl.formatMessage({
+                                            id: 'PermanentCurrentLimitText',
+                                        }) +
+                                        ' ' +
+                                        intl.formatMessage({
+                                            id: 'Optional',
+                                        })
+                                    }
+                                    adornmentPosition={'end'}
+                                    adornmentText={'A'}
+                                    value={permanentCurrentLimit2}
+                                    onChange={
+                                        handleChangePermanentCurrentLimit2
+                                    }
+                                    {...(errors.get(
+                                        'permanent-current-limit-side2'
+                                    )?.error && {
+                                        error: true,
+                                        helperText: intl.formatMessage({
+                                            id: errors.get(
+                                                'permanent-current-limit-side2'
+                                            )?.errorMsgId,
+                                        }),
+                                    })}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <h3 className={classes.h3}>
