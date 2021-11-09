@@ -35,17 +35,9 @@ const NetworkModificationTree = (props) => {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const style = {
-        width: '100%',
-        height: '100%',
-    };
-
-    const stylePointerGrab = {
-        cursor: 'grab',
-    };
-
-    const stylePointerGrabbing = {
-        cursor: 'grabbing',
+    const styles = {
+        container: { width: '100%', height: '100%' },
+        flow: { cursor: isMoving ? 'grabbing' : 'grab' },
     };
 
     const onSelectionChange = useCallback((selectedElements) => {
@@ -123,12 +115,10 @@ const NetworkModificationTree = (props) => {
 
     return (
         <>
-            <Box style={style} display="flex" flexDirection="row">
+            <Box style={styles.container} display="flex" flexDirection="row">
                 <Box flexGrow={1}>
                     <ReactFlow
-                        style={
-                            isMoving ? stylePointerGrabbing : stylePointerGrab
-                        }
+                        style={styles.flow}
                         elements={
                             props.treeModel ? props.treeModel.treeElements : []
                         }
