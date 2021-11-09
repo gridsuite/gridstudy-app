@@ -870,8 +870,12 @@ export function createLine(
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            permanentCurrentLimit1: permanentCurrentLimit1,
-            permanentCurrentLimit2: permanentCurrentLimit2,
+            currentLimits1: {
+                permanentLimit: permanentCurrentLimit1,
+            },
+            currentLimits2: {
+                permanentLimit: permanentCurrentLimit2,
+            },
         }),
     }).then((response) =>
         response.ok
