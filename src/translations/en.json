@@ -326,5 +326,15 @@
     "Side1": "Side 1",
     "Side2": "Side 2",
     "ShuntConductanceText": "Shunt conductance",
-    "ShuntSusceptanceText": "Shunt susceptance"
+    "ShuntSusceptanceText": "Shunt susceptance",
+    
+    "PermanentCurrentLimitText": "Permanent current limit",
+    "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
+
+    "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
+    "MagnetizingConductance": "Magnetizing conductance",
+    "MagnetizingSusceptance": "Magnetizing susceptance",
+    "RatedVoltage": "Rated voltage",
+    "TwoWindingsTransformerCreationError": "Error while creating a 2 windings transformer"
+
 }

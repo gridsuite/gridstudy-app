@@ -326,5 +326,16 @@
     "SeriesResistanceText": "Résistance série",
     "SeriesReactanceText": "Réactance série",
     "ShuntConductanceText": "Conductance parallèle",
-    "ShuntSusceptanceText": "Susceptance parallèle"
+    "ShuntSusceptanceText": "Susceptance parallèle",
+
+    "PermanentCurrentLimitText": "IST",
+    "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
+
+    "CreateTwoWindingsTransformer": "Créer un transformateur à 2 enroulements",
+    "MagnetizingConductance": "Conductance magnétisante",
+    "MagnetizingSusceptance": "Susceptance magnétisante",
+    "RatedVoltage": "Tension nominale",
+    "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements"
+
+
 }
