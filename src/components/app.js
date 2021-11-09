@@ -37,6 +37,7 @@ import {
     selectComponentLibrary,
     selectTheme,
     selectUseName,
+    selectFavoriteContingencyLists,
 } from '../redux/actions';
 
 import {
@@ -61,6 +62,7 @@ import {
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
     PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_LANGUAGE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
@@ -171,6 +173,13 @@ const App = () => {
                         break;
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));
+                        break;
+                    case PARAM_FAVORITE_CONTINGENCY_LISTS:
+                        dispatch(
+                            selectFavoriteContingencyLists(
+                                param.value.split(',')
+                            )
+                        );
                         break;
                     default:
                         if (

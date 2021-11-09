@@ -24,6 +24,7 @@
     "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
     "studyDeletedSuccessMsg": "Étude supprimée",
     "deleteStudyError": "Vous ne pouvez pas supprimer une étude dont vous n'êtes pas propriétaire",
+    "equipmentsSearchingError": "Une erreur est survenue lors de la recherche des équipements",
 
     "renameStudyMsg": "Nouveau nom de l'étude : ",
     "renameStudy": "Renommer l'étude",
@@ -137,7 +138,10 @@
     "SecurityAnalysis": "Analyse de sécurité",
 
     "ContingencyListsSelection": "Sélection des listes de contingences",
-    "Start": "Démarrer",
+    "Execute": "Exécuter",
+    "AddContingencyList": "Ajouter",
+    "DeleteContingencyList": "Supprimer",
+    "getContingencyListError": "Impossible de récuperer les listes de contingences",
     "xContingenciesWillBeSimulated": "{x} contingences seront simulées",
 
     "LimitType": "Type de limite",

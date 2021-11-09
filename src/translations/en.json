@@ -24,6 +24,7 @@
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
     "studyDeletedSuccessMsg": "Study deleted",
     "deleteStudyError": "Cannot remove the study if you are not the owner",
+    "equipmentsSearchingError": "An error occurred while searching the equipments",
 
     "renameStudyMsg": "New study name:",
     "renameStudy": "Rename study",
@@ -137,7 +138,10 @@
     "SecurityAnalysis": "Security analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
-    "Start": "Start",
+    "Execute": "Execute",
+    "AddContingencyList": "Add",
+    "DeleteContingencyList": "Delete",
+    "getContingencyListError": "can't fetch contingencies lists",
     "xContingenciesWillBeSimulated": "{x} contingencies will be simulated",
 
     "LimitType": "Limit type",

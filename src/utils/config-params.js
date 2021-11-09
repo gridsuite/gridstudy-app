@@ -22,6 +22,8 @@ export const PARAM_SUBSTATION_LAYOUT = 'substationLayout';
 export const PARAM_COMPONENT_LIBRARY = 'componentLibrary';
 export const PARAM_LANGUAGE = 'language';
 
+export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
+
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 
 export function getAppName(paramName) {

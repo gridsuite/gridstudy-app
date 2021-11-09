@@ -4,30 +4,33 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
+import ListItemWithDeleteButton from './list-item-with-delete-button';
 
 const CheckboxList = (props) => {
-    const [checked, setChecked] = useState([]);
+    const [checked, setChecked] = useState(new Set(props.initialSelection));
 
-    const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
+    /* remove non absent selected items */
+    useEffect(() => {
+        const existingValues = new Set(props.values.map(props.id));
+        const newChecked = new Set(
+            [...checked].filter((id) => existingValues.has(id))
+        );
+        if (newChecked.size !== checked.size) {
+            setChecked(newChecked);
         }
+    }, [props.values, props.id, checked, setChecked]);
 
+    const handleToggle = (value) => {
+        const newChecked = new Set(checked);
+        if (!newChecked.delete(value)) {
+            newChecked.add(value);
+        }
         setChecked(newChecked);
 
         if (props.onChecked) {
-            props.onChecked(newChecked);
+            props.onChecked([...newChecked]);
         }
     };
 
@@ -35,24 +38,21 @@ const CheckboxList = (props) => {
         <List>
             {props.values.map((item) => {
                 return (
-                    <ListItem
+                    <ListItemWithDeleteButton
                         key={props.id(item)}
-                        role={undefined}
-                        dense
-                        button
-                        onClick={handleToggle(props.id(item))}
-                    >
-                        <ListItemIcon>
-                            <Checkbox
-                                color={'primary'}
-                                edge="start"
-                                checked={checked.indexOf(props.id(item)) !== -1}
-                                tabIndex={-1}
-                                disableRipple
-                            />
-                        </ListItemIcon>
-                        <ListItemText primary={props.label(item)} />
-                    </ListItem>
+                        onClick={() => handleToggle(props.id(item), false)}
+                        set={checked}
+                        value={props.id(item)}
+                        primary={props.label(item)}
+                        removeFromList={
+                            props.removeFromList
+                                ? (e) => {
+                                      e.stopPropagation();
+                                      props.removeFromList(props.id(item));
+                                  }
+                                : undefined
+                        }
+                    />
                 );
             })}
         </List>
