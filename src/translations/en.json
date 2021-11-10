@@ -287,22 +287,22 @@
     "CreateGenerator": "Create generator",
     "GeneratorCreationError": "Error while creating generator",
     "EnergySourceOptional": "Energy source (optional)",
-    "Hydro" : "Hydro",
-    "Nuclear" : "Nuclear",
-    "Wind" : "Wind",
-    "Thermal" : "Thermal",
-    "Solar" : "Solar",
-    "Other" : "Other",
-    "MinimumActivePowerText" : "Minimum active power",
-    "MaximumActivePowerText" : "Maximum active power",
-    "RatedNominalPowerText" : "Rated nominal power",
-    "VoltageRegulationText" : "Voltage regulation",
-    "VoltageText" : "Voltage",
-    "Limits" : "Limits",
-    "MinActivePowerLessThanMaxActivePower" : "Minimum active power value must be less or equal than maximum active power value",
+    "Hydro": "Hydro",
+    "Nuclear": "Nuclear",
+    "Wind": "Wind",
+    "Thermal": "Thermal",
+    "Solar": "Solar",
+    "Other": "Other",
+    "MinimumActivePowerText": "Minimum active power",
+    "MaximumActivePowerText": "Maximum active power",
+    "RatedNominalPowerText": "Rated nominal power",
+    "VoltageRegulationText": "Voltage regulation",
+    "VoltageText": "Voltage",
+    "Limits": "Limits",
+    "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
-    "VoltageGreaterThanZero" : "The voltage value must be strictly positive",
-    
+    "VoltageGreaterThanZero": "The voltage value must be strictly positive",
+
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",
     "SeriesResistanceText": "Series resistance",
@@ -313,5 +313,12 @@
     "ShuntSusceptanceText": "Shunt susceptance",
     
     "PermanentCurrentLimitText": "Permanent current limit",
-    "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive"
+    "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
+
+    "CreateTwoWindingsTransformer": "Create a 2 windings transformer",
+    "MagnetizingConductance": "Magnetizing conductance",
+    "MagnetizingSusceptance": "Magnetizing susceptance",
+    "RatedVoltage": "Rated voltage",
+    "TwoWindingsTransformerCreationError": "Error while creating a 2 windings transformer"
+
 }

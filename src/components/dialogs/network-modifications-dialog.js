@@ -20,6 +20,7 @@ import LoadCreationDialog from './load-creation-dialog';
 import GeneratorCreationDialog from './generator-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
 import LineCreationDialog from './line-creation-dialog';
+import TwoWindingsTransformerCreationDialog from './two-windings-transformer-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -43,6 +44,11 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
         useState(false);
 
     const [openCreateLineDialog, setOpenCreateLineDialog] = useState(false);
+
+    const [
+        openTwoWindingsTransformerDialog,
+        setOpenTwoWindingsTransformerDialog,
+    ] = useState(false);
 
     const handleClose = () => {
         onClose();
@@ -78,6 +84,14 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
 
     const closeCreateLineDialog = () => {
         setOpenCreateLineDialog(false);
+    };
+
+    const handleCreateTwoWindingsTransformer = () => {
+        setOpenTwoWindingsTransformerDialog(true);
+    };
+
+    const closeCreateTwoWindingsTransformerDialog = () => {
+        setOpenTwoWindingsTransformerDialog(false);
     };
 
     return (
@@ -134,6 +148,19 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
                                 fullWidth
                                 className={classes.button}
                                 variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateTwoWindingsTransformer}
+                            >
+                                {intl.formatMessage({
+                                    id: 'CreateTwoWindingsTransformer',
+                                })}
+                            </Button>
+                        </Grid>
+                        <Grid item>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
                                 startIcon={<DeleteIcon />}
                                 onClick={handleDeleteEquipment}
                             >
@@ -163,6 +190,11 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
             <LineCreationDialog
                 open={openCreateLineDialog}
                 onClose={closeCreateLineDialog}
+                voltageLevelOptions={network?.voltageLevels}
+            />
+            <TwoWindingsTransformerCreationDialog
+                open={openTwoWindingsTransformerDialog}
+                onClose={closeCreateTwoWindingsTransformerDialog}
                 voltageLevelOptions={network?.voltageLevels}
             />
             <EquipmentDeletionDialog
