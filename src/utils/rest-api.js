@@ -1075,6 +1075,52 @@ export function createLine(
     );
 }
 
+export function createTwoWindingsTransformer(
+    studyUuid,
+    twoWindingsTransformerId,
+    twoWindingsTransformerName,
+    seriesResistance,
+    seriesReactance,
+    magnetizingConductance,
+    magnetizingSusceptance,
+    ratedVoltage1,
+    ratedVoltage2,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2
+) {
+    console.info('Creating two windings transformer ');
+    const createTwoWindingsTransformerUrl =
+        getStudyUrl(studyUuid) +
+        '/network-modification/two-windings-transformer';
+    return backendFetch(createTwoWindingsTransformerUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: twoWindingsTransformerId,
+            equipmentName: twoWindingsTransformerName,
+            seriesResistance: seriesResistance,
+            seriesReactance: seriesReactance,
+            magnetizingConductance: magnetizingConductance,
+            magnetizingSusceptance: magnetizingSusceptance,
+            ratedVoltage1: ratedVoltage1,
+            ratedVoltage2: ratedVoltage2,
+            voltageLevelId1: voltageLevelId1,
+            busOrBusbarSectionId1: busOrBusbarSectionId1,
+            voltageLevelId2: voltageLevelId2,
+            busOrBusbarSectionId2: busOrBusbarSectionId2,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =

@@ -303,22 +303,22 @@
     "CreateGenerator": "Créer un groupe",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
     "EnergySourceOptional": "Source d'énergie (optionnel)",
-    "Hydro" : "Hydraulique",
-    "Nuclear" : "Nucléaire",
-    "Wind" : "Eolien",
-    "Thermal" : "Thermique",
-    "Solar" : "Solaire",
-    "Other" : "Autre",
-    "MinimumActivePowerText" : "Puissance active min",
-    "MaximumActivePowerText" : "Puissance active max",
-    "RatedNominalPowerText" : "Puissance nominale",
-    "VoltageRegulationText" : "Réglage tension",
-    "VoltageText" : "Tension",
-    "Limits" : "Limites",
-    "MinActivePowerLessThanMaxActivePower" : "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
+    "Hydro": "Hydraulique",
+    "Nuclear": "Nucléaire",
+    "Wind": "Eolien",
+    "Thermal": "Thermique",
+    "Solar": "Solaire",
+    "Other": "Autre",
+    "MinimumActivePowerText": "Puissance active min",
+    "MaximumActivePowerText": "Puissance active max",
+    "RatedNominalPowerText": "Puissance nominale",
+    "VoltageRegulationText": "Réglage tension",
+    "VoltageText": "Tension",
+    "Limits": "Limites",
+    "MinActivePowerLessThanMaxActivePower": "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
     "RatedNominalPowerGreaterThanZero": "La valeur de la puissance nominale doit être strictement positive",
-    "VoltageGreaterThanZero" : "La valeur de la tension doit être strictement positive",
-    
+    "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
+
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",
     "Side1": "Côté 1",
@@ -329,5 +329,13 @@
     "ShuntSusceptanceText": "Susceptance parallèle",
 
     "PermanentCurrentLimitText": "IST",
-    "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive"
+    "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
+
+    "CreateTwoWindingsTransformer": "Créer un transformateur à 2 enroulements",
+    "MagnetizingConductance": "Conductance magnétisante",
+    "MagnetizingSusceptance": "Susceptance magnétisante",
+    "RatedVoltage": "Tension nominale",
+    "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements"
+
+
 }
