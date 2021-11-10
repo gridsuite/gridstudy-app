@@ -116,12 +116,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             let substationOrVlId;
             let requestParam;
             if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
-                substationOrVlId = optionInfos.label;
-                requestParam = { substationId: optionInfos.label };
+                substationOrVlId = optionInfos.id;
+                requestParam = { substationId: substationOrVlId };
             } else {
                 substationOrVlId = optionInfos.voltageLevelId;
                 requestParam = {
-                    voltageLevelId: optionInfos.voltageLevelId,
+                    voltageLevelId: substationOrVlId,
                 };
             }
             dispatch(selectItemNetwork(substationOrVlId));
