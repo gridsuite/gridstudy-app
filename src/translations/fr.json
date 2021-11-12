@@ -55,7 +55,7 @@
     "topologicalColoring": "Coloration topologique",
     "SingleLineDiagram": "Schéma unifilaire",
 
-    "studyNotFound": "L'étude \"{studyName}\" n'a pas été trouvée",
+    "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
 
     "parameters": "Paramètres",
