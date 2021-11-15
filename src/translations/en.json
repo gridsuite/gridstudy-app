@@ -39,7 +39,7 @@
     "topologicalColoring": "Topological coloring",
     "SingleLineDiagram": "Single line diagram",
 
-    "studyNotFound": "Study \"{studyName}\" has not been found",
+    "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl} ",
 
     "parameters": "Parameters",
