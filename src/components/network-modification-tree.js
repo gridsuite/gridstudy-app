@@ -29,13 +29,15 @@ const snapGrid = [15, 15];
 const NetworkModificationTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
 
+    const [isMoving, setIsMoving] = useState(false);
+
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const style = {
-        width: '100%',
-        height: '100%',
+    const styles = {
+        container: { width: '100%', height: '100%' },
+        flow: { cursor: isMoving ? 'grabbing' : 'grab' },
     };
 
     const onSelectionChange = useCallback((selectedElements) => {
@@ -46,6 +48,14 @@ const NetworkModificationTree = (props) => {
 
     const onPaneClick = useCallback(() => {
         setSelectedNode(undefined);
+    }, []);
+
+    const onMove = useCallback((flowTransform) => {
+        setIsMoving(true);
+    }, []);
+
+    const onMoveEnd = useCallback((flowTransform) => {
+        setIsMoving(false);
     }, []);
 
     const handleCreateNode = useCallback(
@@ -105,15 +115,18 @@ const NetworkModificationTree = (props) => {
 
     return (
         <>
-            <Box style={style} display="flex" flexDirection="row">
+            <Box style={styles.container} display="flex" flexDirection="row">
                 <Box flexGrow={1}>
                     <ReactFlow
+                        style={styles.flow}
                         elements={
                             props.treeModel ? props.treeModel.treeElements : []
                         }
                         onNodeContextMenu={onNodeContextMenu}
                         onSelectionChange={onSelectionChange}
                         onPaneClick={onPaneClick}
+                        onMove={onMove}
+                        onMoveEnd={onMoveEnd}
                         elementsSelectable
                         selectNodesOnDrag={false}
                         nodeTypes={nodeTypes}
