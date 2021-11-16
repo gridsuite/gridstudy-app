@@ -246,10 +246,7 @@ const ContingencyListSelector = (props) => {
             <DirectoryItemSelector
                 open={favoriteSelectorOpen}
                 onClose={addFavorites}
-                types={[
-                    elementType.FILTERS_CONTINGENCY_LIST,
-                    elementType.SCRIPT_CONTINGENCY_LIST,
-                ]}
+                types={[elementType.CONTINGENCY_LIST]}
                 title={<FormattedMessage id={'ContingencyListsSelection'} />}
             />
         </>
