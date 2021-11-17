@@ -1,22 +1,6 @@
 {
-    "addNewStudy": "Add new study",
-    "addNewStudyDescription": "To add a new study, you should enter the following information:",
-    "caseExist": "Does the case already exist?",
-    "studyName": "study name",
-    "studyNameProperty": "Study name: ",
-    "studyDescription": "study description",
-    "studyDescriptionProperty": "Study description: ",
-    "owner": "Owner: ",
-    "caseName": "case name",
-    "uploadCase": "Upload case",
-    "public": "public",
-    "private": "private",
-
-    "uploadMessage": " No file selected",
     "cancel": "CANCEL",
     "create": "CREATE",
-    "rename": "Rename",
-    "delete": "Delete",
     "filter": "Filter",
 
     "deleteStudy": "Delete Study",

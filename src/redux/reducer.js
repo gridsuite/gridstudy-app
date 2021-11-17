@@ -16,17 +16,10 @@ import {
     LINE_FLOW_ALERT_THRESHOLD,
     LINE_FULL_PATH,
     LINE_PARALLEL_PATH,
-    LOAD_CASES_SUCCESS,
     LOAD_GEO_DATA_SUCCESS,
     NETWORK_CREATED,
     NETWORK_EQUIPMENT_LOADED,
-    LOAD_STUDIES_SUCCESS,
-    LOAD_TEMPORARY_STUDIES,
     OPEN_STUDY,
-    REMOVE_SELECTED_CASE,
-    REMOVE_SELECTED_FILE,
-    SELECT_CASE,
-    SELECT_FILE,
     SELECT_THEME,
     USE_NAME,
     SELECT_LANGUAGE,
@@ -95,15 +88,10 @@ const paramsInitialState = {
 };
 
 const initialState = {
-    studies: [],
-    temporaryStudies: [],
     studyUuid: null,
     network: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
-    cases: [],
-    selectedCase: null,
-    selectedFile: null,
     computedLanguage: getLocalStorageComputedLanguage(),
     user: null,
     signInCallbackError: null,
@@ -118,18 +106,6 @@ const initialState = {
 };
 
 export const reducer = createReducer(initialState, {
-    [LOAD_STUDIES_SUCCESS]: (state, action) => {
-        state.studies = action.studies;
-    },
-
-    [LOAD_TEMPORARY_STUDIES]: (state, action) => {
-        state.temporaryStudies = action.temporaryStudies;
-    },
-
-    [LOAD_CASES_SUCCESS]: (state, action) => {
-        state.cases = action.cases;
-    },
-
     [OPEN_STUDY]: (state, action) => {
         state.studyUuid = action.studyRef[0];
     },
@@ -212,21 +188,6 @@ export const reducer = createReducer(initialState, {
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
         state.computedLanguage = action.computedLanguage;
-    },
-    [SELECT_CASE]: (state, action) => {
-        state.selectedCase = action.selectedCase;
-    },
-
-    [REMOVE_SELECTED_CASE]: (state) => {
-        state.selectedCase = null;
-    },
-
-    [SELECT_FILE]: (state, action) => {
-        state.selectedFile = action.selectedFile;
-    },
-
-    [REMOVE_SELECTED_FILE]: (state) => {
-        state.selectedFile = null;
     },
 
     [USE_NAME]: (state, action) => {

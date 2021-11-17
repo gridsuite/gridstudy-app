@@ -152,10 +152,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         setShowParameters(false);
     }
 
-    function onLogoClicked() {
-        history.replace('/');
-    }
-
     return (
         <>
             <TopBar
@@ -170,7 +166,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 }
                 onParametersClick={() => showParametersClicked()}
                 onLogoutClick={() => logout(dispatch, userManager.instance)}
-                onLogoClick={() => onLogoClicked()}
                 user={user}
                 appsAndUrls={appsAndUrls}
                 onThemeClick={handleChangeTheme}

@@ -1,22 +1,6 @@
 {
-    "addNewStudy": "Ajouter une nouvelle étude",
-    "addNewStudyDescription": "Pour ajouter une étude, vous devez saisir les informations suivantes : ",
-    "caseExist": "La situation existe-t-elle déjà ?",
-    "studyName": "nom de l'étude",
-    "studyNameProperty": "Nom de l'étude : ",
-    "studyDescription": "description de l'étude",
-    "studyDescriptionProperty": "Description de l'étude : ",
-    "owner": "Propriétaire : ",
-    "caseName": "nom de la situation",
-    "uploadCase": "télécharger la situation",
-    "public": "publique",
-    "private": "privée",
-
-    "uploadMessage": " Aucun fichier sélectionné",
     "cancel": "ANNULER",
     "create": "CRÉER",
-    "rename": "Renommer",
-    "delete": "Supprimer",
     "filter": "Filtre",
 
     "deleteStudy": "Supprimer l'étude",

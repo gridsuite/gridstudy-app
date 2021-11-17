@@ -18,7 +18,6 @@ import {
 } from 'react-router-dom';
 
 import StudyPane, { StudyView } from './study-pane';
-import StudyManager from './study-manager';
 import {
     changeDisplayedColumns,
     resetLoadflowNotif,
@@ -330,12 +329,6 @@ const App = () => {
         connectNotificationsUpdateConfig,
     ]);
 
-    function studyClickHandler(studyUuid) {
-        history.push('/studies/' + encodeURIComponent(studyUuid));
-        dispatch(resetLoadflowNotif());
-        dispatch(resetSANotif());
-    }
-
     const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
     }, []);
@@ -378,13 +371,6 @@ const App = () => {
             >
                 {user !== null ? (
                     <Switch>
-                        <Route exact path="/">
-                            <StudyManager
-                                onClick={(studyUuid) =>
-                                    studyClickHandler(studyUuid)
-                                }
-                            />
-                        </Route>
                         <Route exact path="/studies/:studyUuid">
                             <StudyPane
                                 view={STUDY_VIEWS[tabIndex]}
