@@ -1,19 +1,22 @@
 import CenterFocusIcon from '@material-ui/icons/CenterFocusStrong';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ControlButton, useZoomPanHelper } from 'react-flow-renderer';
 
-const CenterGraphButton = () => {
+const CenterGraphButton = ({ selectedNode }) => {
     const { setCenter } = useZoomPanHelper();
 
-    const focusNode = (x, y) => {
-        const zoom = 1.85;
+    const focusNode = useCallback(() => {
+        // if no selected node, center on Root
+        const x = selectedNode ? selectedNode.position.x : 0;
+        const y = selectedNode ? selectedNode.position.y : 0;
+        const zoom = 1;
         setCenter(x, y, zoom);
-    };
+    }, [setCenter, selectedNode]);
 
     return (
         <ControlButton
             onClick={() => {
-                focusNode(0, 0);
+                focusNode();
             }}
         >
             <CenterFocusIcon />

@@ -140,7 +140,7 @@ const NetworkModificationTree = (props) => {
                         snapGrid={snapGrid}
                     >
                         <Controls showZoom={false} showInteractive={false}>
-                            <CenterGraphButton />
+                            <CenterGraphButton selectedNode={selectedNode} />
                         </Controls>
                     </ReactFlow>
                 </Box>
