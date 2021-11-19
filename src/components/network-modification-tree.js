@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useState } from 'react';
-import ReactFlow from 'react-flow-renderer';
+import ReactFlow, { Controls } from 'react-flow-renderer';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
@@ -14,6 +14,7 @@ import { Box } from '@material-ui/core';
 import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
+import CenterGraphButton from './graph/util/center-graph-button';
 
 const nodeTypes = {
     ROOT: NetworkModificationNode,
@@ -137,7 +138,11 @@ const NetworkModificationTree = (props) => {
                         // Although snapToGrid is set to false, we have to set snapGrid constant
                         // value in order to avoid useless re-rendering
                         snapGrid={snapGrid}
-                    />
+                    >
+                        <Controls showZoom={false} showInteractive={false}>
+                            <CenterGraphButton />
+                        </Controls>
+                    </ReactFlow>
                 </Box>
                 {selectedNode && (
                     <Box>
