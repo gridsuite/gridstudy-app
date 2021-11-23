@@ -39,6 +39,13 @@ const NetworkModificationTree = (props) => {
     const styles = {
         container: { width: '100%', height: '100%' },
         flow: { cursor: isMoving ? 'grabbing' : 'grab' },
+        controls: {
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            left: 'unset',
+            bottom: 'unset',
+        },
     };
 
     const onSelectionChange = useCallback((selectedElements) => {
@@ -139,7 +146,11 @@ const NetworkModificationTree = (props) => {
                         // value in order to avoid useless re-rendering
                         snapGrid={snapGrid}
                     >
-                        <Controls showZoom={false} showInteractive={false}>
+                        <Controls
+                            style={styles.controls}
+                            showZoom={false}
+                            showInteractive={false}
+                        >
                             <CenterGraphButton selectedNode={selectedNode} />
                         </Controls>
                     </ReactFlow>
