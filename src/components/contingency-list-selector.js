@@ -97,7 +97,7 @@ const ContingencyListSelector = (props) => {
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
-        if (selectedNodeUuid !== undefined) {
+        if (selectedNodeUuid !== null) {
             fetchContingencyCount(
                 studyUuid,
                 selectedNodeUuid,

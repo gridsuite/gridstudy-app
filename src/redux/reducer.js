@@ -90,6 +90,7 @@ const paramsInitialState = {
 
 const initialState = {
     studyUuid: null,
+    selectTreeNode: null,
     network: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),

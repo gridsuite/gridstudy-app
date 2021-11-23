@@ -533,7 +533,7 @@ const StudyPane = (props) => {
                     { equipments: [equipments.lines, equipments.substations] }
                 );
             } else {
-                if (selectedNodeUuid !== undefined) {
+                if (selectedNodeUuid !== null) {
                     const network = new Network(
                         studyUuid,
                         selectedNodeUuid,
