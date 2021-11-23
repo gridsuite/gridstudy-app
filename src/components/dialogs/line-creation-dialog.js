@@ -25,6 +25,7 @@ import { createLine } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -55,6 +56,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
 
     const intl = useIntl();
     const intlRef = useIntlRef();
@@ -238,6 +240,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         if (isValid) {
             createLine(
                 studyUuid,
+                selectedNodeUuid,
                 lineId,
                 lineName,
                 seriesResistance,

@@ -26,6 +26,7 @@ import { createLoad } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -48,6 +49,7 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
 
     const intl = useIntl();
     const intlRef = useIntlRef();
@@ -143,6 +145,7 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         if (isValid) {
             createLoad(
                 studyUuid,
+                selectedNodeUuid,
                 loadId,
                 loadName ? loadName : null,
                 !loadType ? 'UNDEFINED' : loadType,

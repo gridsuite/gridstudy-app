@@ -28,6 +28,7 @@ import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
 import { makeStyles } from '@material-ui/core/styles';
 import ConnectivityEdition from './connectivity-edition';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -50,6 +51,7 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
 
     const intl = useIntl();
     const intlRef = useIntlRef();
@@ -242,6 +244,7 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         if (isValid) {
             createGenerator(
                 studyUuid,
+                selectedNodeUuid,
                 generatorId,
                 generatorName ? generatorName : null,
                 !energySource ? 'OTHER' : energySource,

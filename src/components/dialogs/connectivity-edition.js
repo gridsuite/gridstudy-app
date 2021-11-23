@@ -17,6 +17,7 @@ import {
 } from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -63,6 +64,8 @@ const ConnectivityEdition = ({
 }) => {
     const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
+
     const intl = useIntl();
 
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
@@ -87,10 +90,9 @@ const ConnectivityEdition = ({
             onChangeBusOrBusbarSection(null);
             switch (value?.topologyKind) {
                 case 'NODE_BREAKER':
-                    // TODO specify the correct network variant num
                     fetchBusbarSectionsForVoltageLevel(
                         studyUuid,
-                        0,
+                        selectedNodeUuid,
                         value.id
                     ).then((busbarSections) => {
                         setBusOrBusbarSectionOptions(busbarSections);
@@ -98,10 +100,11 @@ const ConnectivityEdition = ({
                     break;
 
                 case 'BUS_BREAKER':
-                    // TODO specify the correct network variant num
-                    fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
-                        (buses) => setBusOrBusbarSectionOptions(buses)
-                    );
+                    fetchBusesForVoltageLevel(
+                        studyUuid,
+                        selectedNodeUuid,
+                        value.id
+                    ).then((buses) => setBusOrBusbarSectionOptions(buses));
                     break;
 
                 default:

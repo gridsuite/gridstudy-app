@@ -24,6 +24,7 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
+import { useSelector } from 'react-redux';
 
 const equipmentTypes = [
     'LINE',
@@ -55,6 +56,7 @@ const useStyles = makeStyles(() => ({
  */
 const EquipmentDeletionDialog = ({ open, onClose }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
 
     const classes = useStyles();
     const intlRef = useIntlRef();
@@ -110,18 +112,21 @@ const EquipmentDeletionDialog = ({ open, onClose }) => {
             Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
 
         if (isValid) {
-            deleteEquipment(studyUuid, equipmentType, equipmentId).then(
-                (response) => {
-                    if (response.status !== 200) {
-                        handleDeleteEquipmentError(
-                            response,
-                            'UnableToDeleteEquipment'
-                        );
-                    } else {
-                        handleCloseAndClear();
-                    }
+            deleteEquipment(
+                studyUuid,
+                selectedNodeUuid,
+                equipmentType,
+                equipmentId
+            ).then((response) => {
+                if (response.status !== 200) {
+                    handleDeleteEquipmentError(
+                        response,
+                        'UnableToDeleteEquipment'
+                    );
+                } else {
+                    handleCloseAndClear();
                 }
-            );
+            });
         }
     };
 
