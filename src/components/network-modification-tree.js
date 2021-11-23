@@ -43,6 +43,7 @@ const NetworkModificationTree = (props) => {
             position: 'absolute',
             top: '10px',
             right: '10px',
+            // Unset default properties of ReactFlow controls
             left: 'unset',
             bottom: 'unset',
         },
