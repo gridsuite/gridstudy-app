@@ -394,14 +394,14 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
+export function fetchEquipmentsInfos(studyUuid, searchTerm, usesName) {
     console.info(
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
     );
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
-    urlSearchParams.append('what', useName ? 'name' : 'id');
+    urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
     return backendFetch(
         getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
     ).then((response) =>
