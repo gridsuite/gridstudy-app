@@ -264,6 +264,16 @@ const StudyPane = (props) => {
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
+    const [networkLoadingFail, setNetworkLoadingFail] = useState(false);
+
+    const [geoDataLoadingFail, setGeoDataLoadingFail] = useState(false);
+
+    const [errorMsgId, setErrorMsgId] = useState('');
+
+    const [studyExistsChecked, setStudyExistsChecked] = useState(false);
+
+    const [isNetworkLoadingDone, setIsNetworkLoadingDone] = useState(false);
+
     const [updatedLines, setUpdatedLines] = useState([]);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] =
@@ -393,6 +403,10 @@ const StudyPane = (props) => {
 
     const updateLoadFlowResult = useCallback(() => {
         fetchStudy(studyUuid).then((study) => {
+            if (study.status === 400 || study.status === 404) {
+                setStudyNotFound(true);
+            }
+            setStudyExistsChecked(true);
             setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowStatus));
             setLoadFlowResult(study.loadFlowResult);
         });
@@ -519,7 +533,7 @@ const StudyPane = (props) => {
                     studyUuid,
                     (error) => {
                         console.error(error.message);
-                        setStudyNotFound(true);
+                        setNetworkLoadingFail(true);
                     },
                     dispatch,
                     { equipments: [equipments.lines, equipments.substations] }
@@ -529,7 +543,7 @@ const StudyPane = (props) => {
                     studyUuid,
                     (error) => {
                         console.error(error.message);
-                        setStudyNotFound(true);
+                        setNetworkLoadingFail(true);
                     },
                     dispatch
                 );
@@ -537,6 +551,7 @@ const StudyPane = (props) => {
                 // lazy loading will do the job (no glitches to avoid)
                 dispatch(networkCreated(network));
             }
+            setIsNetworkLoadingDone(true);
         },
         [
             studyUuid,
@@ -586,7 +601,7 @@ const StudyPane = (props) => {
                 })
                 .catch(function (error) {
                     console.error(error.message);
-                    setStudyNotFound(true);
+                    setNetworkLoadingFail(true);
                 });
             // Note: studyUuid don't change
         },
@@ -624,7 +639,8 @@ const StudyPane = (props) => {
             })
             .catch(function (error) {
                 console.error(error.message);
-                setStudyNotFound(true);
+                setWaitingLoadGeoData(false);
+                setGeoDataLoadingFail(true);
             });
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch]);
@@ -1591,12 +1607,31 @@ const StudyPane = (props) => {
         return waitingLoadGeoData || waitingLoadReport;
     }, [waitingLoadGeoData, waitingLoadReport]);
 
-    if (studyNotFound) {
+    useEffect(() => {
+        if (!waitingLoadGeoData && studyExistsChecked && isNetworkLoadingDone) {
+            if (studyNotFound) {
+                setErrorMsgId('studyNotFound');
+            } else if (networkLoadingFail) {
+                setErrorMsgId('networkLoadingFail');
+            } else if (geoDataLoadingFail) {
+                setErrorMsgId('geoDataLoadingFail');
+            }
+        }
+    }, [
+        studyNotFound,
+        geoDataLoadingFail,
+        networkLoadingFail,
+        studyExistsChecked,
+        waitingLoadGeoData,
+        isNetworkLoadingDone,
+    ]);
+
+    if (errorMsgId) {
         return (
             <PageNotFound
                 message={
                     <FormattedMessage
-                        id="studyNotFound"
+                        id={errorMsgId}
                         values={{ studyUuid: studyUuid }}
                     />
                 }
