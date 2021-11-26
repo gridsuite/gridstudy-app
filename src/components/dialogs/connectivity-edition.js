@@ -17,7 +17,6 @@ import {
 } from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import { useSelector } from 'react-redux';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -49,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
  * @param helperTextVoltageLevel: helperText to display in cas of error for VoltageLevel input.
  * @param errorBusOrBusBarSection: If true, the BusOrBusBarSection input will be displayed in an error state.
  * @param helperTextBusOrBusBarSection: helperText to display in cas of error for BusOrBusBarSection input.
+ * @param selectedNodeUuid : the currently selected tree node
  */
 const ConnectivityEdition = ({
     voltageLevelOptions,
@@ -61,10 +61,10 @@ const ConnectivityEdition = ({
     helperTextVoltageLevel,
     errorBusOrBusBarSection,
     helperTextBusOrBusBarSection,
+    selectedNodeUuid,
 }) => {
     const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
 
     const intl = useIntl();
 
@@ -272,6 +272,7 @@ ConnectivityEdition.propTypes = {
     helperTextVoltageLevel: PropTypes.string,
     errorBusOrBusBarSection: PropTypes.bool,
     helperTextBusOrBusBarSection: PropTypes.string,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default ConnectivityEdition;

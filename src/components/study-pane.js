@@ -263,7 +263,7 @@ const StudyPane = (props) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
 
-    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
+    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
@@ -1340,6 +1340,7 @@ const StudyPane = (props) => {
                                 handleViewInSpreadsheet={
                                     handleViewInSpreadsheet
                                 }
+                                selectedNodeUuid={selectedNodeUuid}
                             />
                         )}
                     {equipmentMenu.equipment !== null &&
@@ -1509,6 +1510,7 @@ const StudyPane = (props) => {
                                 }
                                 showInSpreadsheet={showInSpreadsheet}
                                 loadFlowStatus={loadFlowStatus}
+                                selectedNodeUuid={selectedNodeUuid}
                             />
                         </div>
                     )}
@@ -1516,12 +1518,14 @@ const StudyPane = (props) => {
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
                     onStart={handleStartSecurityAnalysis}
+                    selectedNodeUuid={selectedNodeUuid}
                 />
                 {network && (
                     <NetworkModificationDialog
                         open={openNetworkModificationsDialog}
                         onClose={closeNetworkModificationConfiguration}
                         network={network}
+                        selectedNodeUuid={selectedNodeUuid}
                     />
                 )}
             </div>

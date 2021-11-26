@@ -48,13 +48,18 @@ const useStyles = makeStyles((theme) => ({
 
 const withLineMenu =
     (BaseMenu) =>
-    ({ id, position, handleClose, handleViewInSpreadsheet }) => {
+    ({
+        id,
+        position,
+        handleClose,
+        handleViewInSpreadsheet,
+        selectedNodeUuid,
+    }) => {
         const classes = useStyles();
         const intl = useIntl();
         const intlRef = useIntlRef();
 
         const studyUuid = decodeURIComponent(useParams().studyUuid);
-        const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
 
         const { enqueueSnackbar } = useSnackbar();
         const [displayUseName] = useParameterState(PARAM_USE_NAME);
@@ -293,6 +298,7 @@ withLineMenu.propTypes = {
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default withLineMenu;

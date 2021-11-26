@@ -24,7 +24,6 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
-import { useSelector } from 'react-redux';
 
 const equipmentTypes = [
     'LINE',
@@ -53,10 +52,10 @@ const useStyles = makeStyles(() => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {String} title Title of the dialog
+ * @param selectedNodeUuid : the currently selected tree node
  */
-const EquipmentDeletionDialog = ({ open, onClose }) => {
+const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
 
     const classes = useStyles();
     const intlRef = useIntlRef();
@@ -224,6 +223,7 @@ const EquipmentDeletionDialog = ({ open, onClose }) => {
 EquipmentDeletionDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default EquipmentDeletionDialog;

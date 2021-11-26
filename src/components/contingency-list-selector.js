@@ -52,8 +52,6 @@ const ContingencyListSelector = (props) => {
         (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]
     );
 
-    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
-
     const [contingencyList, setContingencyList] = useState([]);
 
     const [simulatedContingencyCount, setSimulatedContingencyCount] =
@@ -97,16 +95,16 @@ const ContingencyListSelector = (props) => {
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
-        if (selectedNodeUuid !== null) {
+        if (props.selectedNodeUuid !== null) {
             fetchContingencyCount(
                 studyUuid,
-                selectedNodeUuid,
+                props.selectedNodeUuid,
                 checkedContingencyListUuids
             ).then((contingencyCount) => {
                 setSimulatedContingencyCount(contingencyCount);
             });
         }
-    }, [studyUuid, selectedNodeUuid, checkedContingencyListUuids]);
+    }, [studyUuid, props.selectedNodeUuid, checkedContingencyListUuids]);
 
     useEffect(() => {
         if (
@@ -263,6 +261,7 @@ ContingencyListSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onStart: PropTypes.func.isRequired,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default ContingencyListSelector;

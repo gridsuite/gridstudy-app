@@ -25,7 +25,6 @@ import { createTwoWindingsTransformer } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
-import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -50,16 +49,17 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
+ * @param selectedNodeUuid : the currently selected tree node
  */
 const TwoWindingsTransformerCreationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
+    selectedNodeUuid,
 }) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const selectedNodeUuid = useSelector((state) => state.selectTreeNode);
 
     const intl = useIntl();
     const intlRef = useIntlRef();
@@ -541,6 +541,7 @@ const TwoWindingsTransformerCreationDialog = ({
                                                 ?.errorMsgId,
                                         })
                                     }
+                                    selectedNodeUuid={selectedNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -583,6 +584,7 @@ const TwoWindingsTransformerCreationDialog = ({
                                                 ?.errorMsgId,
                                         })
                                     }
+                                    selectedNodeUuid={selectedNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -605,6 +607,7 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default TwoWindingsTransformerCreationDialog;

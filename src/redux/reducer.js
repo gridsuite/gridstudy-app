@@ -90,7 +90,7 @@ const paramsInitialState = {
 
 const initialState = {
     studyUuid: null,
-    selectTreeNode: null,
+    selectedTreeNode: null,
     network: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -292,6 +292,6 @@ export const reducer = createReducer(initialState, {
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];
     },
     [SELECTED_TREE_NODE]: (state, action) => {
-        state.selectTreeNode = action.selectTreeNode;
+        state.selectedTreeNode = action.selectedTreeNode;
     },
 });

@@ -307,9 +307,9 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists) {
 
 export const SELECTED_TREE_NODE = 'SELECTED_TREE_NODE';
 
-export function selectTreeNode(selectTreeNode) {
+export function selectTreeNode(selectedTreeNode) {
     return {
         type: SELECTED_TREE_NODE,
-        selectTreeNode: selectTreeNode,
+        selectedTreeNode: selectedTreeNode,
     };
 }
