@@ -401,12 +401,17 @@ const StudyPane = (props) => {
         }
     }
 
-    const updateLoadFlowResult = useCallback(() => {
+    const checkStudyExists = useCallback(() => {
         fetchStudy(studyUuid).then((study) => {
             if (study.status === 400 || study.status === 404) {
                 setStudyNotFound(true);
             }
             setStudyExistsChecked(true);
+        });
+    }, [studyUuid]);
+
+    const updateLoadFlowResult = useCallback(() => {
+        fetchStudy(studyUuid).then((study) => {
             setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowStatus));
             setLoadFlowResult(study.loadFlowResult);
         });
@@ -705,6 +710,7 @@ const StudyPane = (props) => {
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
         dispatch(openStudy(studyUuid));
+        checkStudyExists();
         loadNetwork();
         loadGeoData();
         loadTree();
@@ -725,6 +731,7 @@ const StudyPane = (props) => {
         loadNetwork,
         loadGeoData,
         loadTree,
+        checkStudyExists,
         connectNotifications,
     ]);
 

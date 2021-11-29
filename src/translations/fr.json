@@ -42,7 +42,7 @@
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl} ",
     "networkLoadingFail": "Le réseau de l'étude avec l'identifiant \"{studyUuid}\" n'a pas pu être chargé",
-    "geoDataLoadingFail": "Les données géographiques du réseau de l'étude avec l'identifiant \"{studyUuid}\" n'ont pas pu être chargée",
+    "geoDataLoadingFail": "Les données géographiques du réseau de l'étude avec l'identifiant \"{studyUuid}\" n'ont pas pu être chargées",
 
     "parameters": "Paramètres",
     "paramsChangingError": "Une erreur est survenue lors de la modification des paramètres",
