@@ -6,18 +6,25 @@
  */
 import CenterFocusIcon from '@material-ui/icons/CenterFocusStrong';
 import React, { useCallback } from 'react';
-import { ControlButton, useZoomPanHelper } from 'react-flow-renderer';
+import {
+    ControlButton,
+    useStoreState,
+    useZoomPanHelper,
+} from 'react-flow-renderer';
 
 const CenterGraphButton = ({ selectedNode }) => {
     const { setCenter } = useZoomPanHelper();
+
+    // Use of hook useStoreState to get tree internal state and retrieve current zoom
+    // Must be used inside a child component of the ReactFlow component
+    const [, , zoom] = useStoreState((state) => state.transform);
 
     const focusNode = useCallback(() => {
         // if no selected node, center on Root
         const x = selectedNode ? selectedNode.position.x : 0;
         const y = selectedNode ? selectedNode.position.y : 0;
-        const zoom = 1;
         setCenter(x, y, zoom);
-    }, [setCenter, selectedNode]);
+    }, [setCenter, selectedNode, zoom]);
 
     return (
         <ControlButton
