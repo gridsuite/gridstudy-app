@@ -29,6 +29,7 @@ import {
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
     fetchStudy,
+    fetchStudyExists,
     fetchSubstationPositions,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
@@ -402,8 +403,8 @@ const StudyPane = (props) => {
     }
 
     const checkStudyExists = useCallback(() => {
-        fetchStudy(studyUuid).then((study) => {
-            if (study.status === 400 || study.status === 404) {
+        fetchStudyExists(studyUuid).then((response) => {
+            if (response.status === 400 || response.status === 404) {
                 setStudyNotFound(true);
             }
             setStudyExistsChecked(true);
@@ -710,10 +711,22 @@ const StudyPane = (props) => {
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
         dispatch(openStudy(studyUuid));
-        checkStudyExists();
-        loadNetwork();
-        loadGeoData();
-        loadTree();
+
+        fetchStudyExists(studyUuid).then((response) => {
+            if (response.status === 400 || response.status === 404) {
+                setStudyNotFound(true);
+                //since the study is not found no need to try to load network and geoData
+                setStudyExistsChecked(true);
+                setIsNetworkLoadingDone(true);
+                setWaitingLoadGeoData(false);
+            } else {
+                setStudyExistsChecked(true);
+                loadNetwork();
+                loadGeoData();
+                loadTree();
+            }
+        });
+
         const ws = connectNotifications(studyUuid);
 
         // study cleanup at unmount event
@@ -723,7 +736,7 @@ const StudyPane = (props) => {
             dispatch(closeStudy());
             dispatch(filteredNominalVoltagesUpdated(null));
         };
-        // Note: dispach, studyUuid, loadNetwork, loadGeoData,
+        // Note: dispach, studyUuid, loadNetwork, loadGeoData, checkStudyExists, loadTree
         // connectNotifications don't change
     }, [
         dispatch,
