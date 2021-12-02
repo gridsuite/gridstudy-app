@@ -49,11 +49,13 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
+ * @param selectedNodeUuid : the currently selected tree node
  */
 const TwoWindingsTransformerCreationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
+    selectedNodeUuid,
 }) => {
     const classes = useStyles();
 
@@ -213,6 +215,7 @@ const TwoWindingsTransformerCreationDialog = ({
         if (isValid) {
             createTwoWindingsTransformer(
                 studyUuid,
+                selectedNodeUuid,
                 twoWindingsTransformerId,
                 twoWindingsTransformerName,
                 seriesResistance,
@@ -538,6 +541,7 @@ const TwoWindingsTransformerCreationDialog = ({
                                                 ?.errorMsgId,
                                         })
                                     }
+                                    selectedNodeUuid={selectedNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -580,6 +584,7 @@ const TwoWindingsTransformerCreationDialog = ({
                                                 ?.errorMsgId,
                                         })
                                     }
+                                    selectedNodeUuid={selectedNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -602,6 +607,7 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default TwoWindingsTransformerCreationDialog;

@@ -52,8 +52,9 @@ const useStyles = makeStyles(() => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {String} title Title of the dialog
+ * @param selectedNodeUuid : the currently selected tree node
  */
-const EquipmentDeletionDialog = ({ open, onClose }) => {
+const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const classes = useStyles();
@@ -110,18 +111,21 @@ const EquipmentDeletionDialog = ({ open, onClose }) => {
             Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
 
         if (isValid) {
-            deleteEquipment(studyUuid, equipmentType, equipmentId).then(
-                (response) => {
-                    if (response.status !== 200) {
-                        handleDeleteEquipmentError(
-                            response,
-                            'UnableToDeleteEquipment'
-                        );
-                    } else {
-                        handleCloseAndClear();
-                    }
+            deleteEquipment(
+                studyUuid,
+                selectedNodeUuid,
+                equipmentType,
+                equipmentId
+            ).then((response) => {
+                if (response.status !== 200) {
+                    handleDeleteEquipmentError(
+                        response,
+                        'UnableToDeleteEquipment'
+                    );
+                } else {
+                    handleCloseAndClear();
                 }
-            );
+            });
         }
     };
 
@@ -219,6 +223,7 @@ const EquipmentDeletionDialog = ({ open, onClose }) => {
 EquipmentDeletionDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default EquipmentDeletionDialog;

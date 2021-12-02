@@ -223,6 +223,14 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const svgDraw = useRef();
     const dispatch = useDispatch();
 
+    const {
+        totalWidth,
+        totalHeight,
+        svgType,
+        loadFlowStatus,
+        selectedNodeUuid,
+    } = props;
+
     const network = useSelector((state) => state.network);
 
     const fullScreen = useSelector((state) => state.fullScreen);
@@ -289,8 +297,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [finalPaperHeight, setFinalPaperHeight] = useState();
     const [svgFinalWidth, setSvgFinalWidth] = useState();
     const [svgFinalHeight, setSvgFinalHeight] = useState();
-
-    const { totalWidth, totalHeight, svgType, loadFlowStatus } = props;
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
@@ -809,6 +815,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
+                    selectedNodeUuid={selectedNodeUuid}
                 />
             )
         );
@@ -986,6 +993,7 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default SingleLineDiagram;

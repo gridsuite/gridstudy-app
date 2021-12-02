@@ -50,8 +50,14 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
+ * @param selectedNodeUuid : the currently selected tree node
  */
-const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
+const LineCreationDialog = ({
+    open,
+    onClose,
+    voltageLevelOptions,
+    selectedNodeUuid,
+}) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -238,6 +244,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         if (isValid) {
             createLine(
                 studyUuid,
+                selectedNodeUuid,
                 lineId,
                 lineName,
                 seriesResistance,
@@ -691,6 +698,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                                 ?.errorMsgId,
                                         })
                                     }
+                                    selectedNodeUuid={selectedNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -733,6 +741,7 @@ const LineCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                                 ?.errorMsgId,
                                         })
                                     }
+                                    selectedNodeUuid={selectedNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -755,6 +764,7 @@ LineCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default LineCreationDialog;

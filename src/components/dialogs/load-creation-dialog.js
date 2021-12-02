@@ -43,8 +43,14 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
+ * @param selectedNodeUuid : the currently selected tree node
  */
-const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
+const LoadCreationDialog = ({
+    open,
+    onClose,
+    voltageLevelOptions,
+    selectedNodeUuid,
+}) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -143,6 +149,7 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         if (isValid) {
             createLoad(
                 studyUuid,
+                selectedNodeUuid,
                 loadId,
                 loadName ? loadName : null,
                 !loadType ? 'UNDEFINED' : loadType,
@@ -355,6 +362,7 @@ const LoadCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                     id: errors.get('bus-bar')?.errorMsgId,
                                 })
                             }
+                            selectedNodeUuid={selectedNodeUuid}
                         />
                     </Grid>
                 </Grid>
@@ -375,6 +383,7 @@ LoadCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default LoadCreationDialog;

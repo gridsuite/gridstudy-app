@@ -48,7 +48,13 @@ const useStyles = makeStyles((theme) => ({
 
 const withLineMenu =
     (BaseMenu) =>
-    ({ id, position, handleClose, handleViewInSpreadsheet }) => {
+    ({
+        id,
+        position,
+        handleClose,
+        handleViewInSpreadsheet,
+        selectedNodeUuid,
+    }) => {
         const classes = useStyles();
         const intl = useIntl();
         const intlRef = useIntlRef();
@@ -90,17 +96,22 @@ const withLineMenu =
         function handleLockout() {
             if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
-            lockoutLine(studyUuid, line.id).then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToLockoutLine');
+            lockoutLine(studyUuid, selectedNodeUuid, line.id).then(
+                (response) => {
+                    if (response.status !== 200) {
+                        handleLineChangesResponse(
+                            response,
+                            'UnableToLockoutLine'
+                        );
+                    }
                 }
-            });
+            );
         }
 
         function handleTrip() {
             if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
-            tripLine(studyUuid, line.id).then((response) => {
+            tripLine(studyUuid, selectedNodeUuid, line.id).then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToTripLine');
                 }
@@ -118,24 +129,31 @@ const withLineMenu =
             )
                 return;
             handleClose();
-            energiseLineEnd(studyUuid, line.id, side).then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(
-                        response,
-                        'UnableToEnergiseLineEnd'
-                    );
+            energiseLineEnd(studyUuid, selectedNodeUuid, line.id, side).then(
+                (response) => {
+                    if (response.status !== 200) {
+                        handleLineChangesResponse(
+                            response,
+                            'UnableToEnergiseLineEnd'
+                        );
+                    }
                 }
-            });
+            );
         }
 
         function handleSwitchOn() {
             if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
-            switchOnLine(studyUuid, line.id).then((response) => {
-                if (response.status !== 200) {
-                    handleLineChangesResponse(response, 'UnableToSwitchOnLine');
+            switchOnLine(studyUuid, selectedNodeUuid, line.id).then(
+                (response) => {
+                    if (response.status !== 200) {
+                        handleLineChangesResponse(
+                            response,
+                            'UnableToSwitchOnLine'
+                        );
+                    }
                 }
-            });
+            );
         }
 
         return (
@@ -280,6 +298,7 @@ withLineMenu.propTypes = {
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default withLineMenu;

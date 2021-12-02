@@ -95,12 +95,16 @@ const ContingencyListSelector = (props) => {
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
-        fetchContingencyCount(studyUuid, checkedContingencyListUuids).then(
-            (contingencyCount) => {
+        if (props.selectedNodeUuid !== null) {
+            fetchContingencyCount(
+                studyUuid,
+                props.selectedNodeUuid,
+                checkedContingencyListUuids
+            ).then((contingencyCount) => {
                 setSimulatedContingencyCount(contingencyCount);
-            }
-        );
-    }, [studyUuid, checkedContingencyListUuids]);
+            });
+        }
+    }, [studyUuid, props.selectedNodeUuid, checkedContingencyListUuids]);
 
     useEffect(() => {
         if (
@@ -257,6 +261,7 @@ ContingencyListSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onStart: PropTypes.func.isRequired,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default ContingencyListSelector;

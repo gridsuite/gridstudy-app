@@ -112,6 +112,16 @@ function getStudyUrl(studyUuid) {
     );
 }
 
+function getStudyUrlWithNodeUuid(studyUuid, nodeUuid) {
+    return (
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid)
+    );
+}
+
 export function fetchStudy(studyUuid) {
     console.info(`Fetching study '${studyUuid}' ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);
@@ -121,6 +131,7 @@ export function fetchStudy(studyUuid) {
 
 export function getVoltageLevelSingleLineDiagram(
     studyUuid,
+    selectedNodeUuid,
     voltageLevelId,
     useName,
     centerLabel,
@@ -128,10 +139,10 @@ export function getVoltageLevelSingleLineDiagram(
     componentLibrary
 ) {
     console.info(
-        `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}'...`
+        `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${selectedNodeUuid}'...`
     );
     return (
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/svg-and-metadata?' +
@@ -149,6 +160,7 @@ export function getVoltageLevelSingleLineDiagram(
 
 export function getSubstationSingleLineDiagram(
     studyUuid,
+    selectedNodeUuid,
     substationId,
     useName,
     centerLabel,
@@ -157,10 +169,10 @@ export function getSubstationSingleLineDiagram(
     componentLibrary
 ) {
     console.info(
-        `Getting url of substation diagram '${substationId}' of study '${studyUuid}'...`
+        `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${selectedNodeUuid}'...`
     );
     return (
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
         '/svg-and-metadata?' +
@@ -208,9 +220,10 @@ function getSubstationsIdsListsQueryParams(substationsIds) {
     return '';
 }
 
-export function fetchSubstations(studyUuid, substationsIds) {
+export function fetchSubstations(studyUuid, selectedNodeUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'Substations',
         'substations'
@@ -227,93 +240,148 @@ export function fetchSubstationPositions(studyUuid) {
     );
 }
 
-export function fetchLines(studyUuid, substationsIds) {
-    return fetchEquipments(studyUuid, substationsIds, 'Lines', 'lines');
-}
-
-export function fetchTwoWindingsTransformers(studyUuid, substationsIds) {
+export function fetchLines(studyUuid, selectedNodeUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
+        substationsIds,
+        'Lines',
+        'lines'
+    );
+}
+
+export function fetchTwoWindingsTransformers(
+    studyUuid,
+    selectedNodeUuid,
+    substationsIds
+) {
+    return fetchEquipments(
+        studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'Two windings transformers',
         '2-windings-transformers'
     );
 }
 
-export function fetchThreeWindingsTransformers(studyUuid, substationsIds) {
+export function fetchThreeWindingsTransformers(
+    studyUuid,
+    selectedNodeUuid,
+    substationsIds
+) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'Three windings transformers',
         '3-windings-transformers'
     );
 }
 
-export function fetchGenerators(studyUuid, substationsIds) {
+export function fetchGenerators(studyUuid, selectedNodeUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'Generators',
         'generators'
     );
 }
 
-export function fetchLoads(studyUuid, substationsIds) {
-    return fetchEquipments(studyUuid, substationsIds, 'Loads', 'loads');
-}
-
-export function fetchDanglingLines(studyUuid, substationsIds) {
+export function fetchLoads(studyUuid, selectedNodeUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
+        substationsIds,
+        'Loads',
+        'loads'
+    );
+}
+
+export function fetchDanglingLines(
+    studyUuid,
+    selectedNodeUuid,
+    substationsIds
+) {
+    return fetchEquipments(
+        studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'Dangling lines',
         'dangling-lines'
     );
 }
 
-export function fetchBatteries(studyUuid, substationsIds) {
-    return fetchEquipments(studyUuid, substationsIds, 'Batteries', 'batteries');
-}
-
-export function fetchHvdcLines(studyUuid, substationsIds) {
+export function fetchBatteries(studyUuid, selectedNodeUuid, substationsIds) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
+        substationsIds,
+        'Batteries',
+        'batteries'
+    );
+}
+
+export function fetchHvdcLines(studyUuid, selectedNodeUuid, substationsIds) {
+    return fetchEquipments(
+        studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'Hvdc lines',
         'hvdc-lines'
     );
 }
 
-export function fetchLccConverterStations(studyUuid, substationsIds) {
+export function fetchLccConverterStations(
+    studyUuid,
+    selectedNodeUuid,
+    substationsIds
+) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'LCC converter stations',
         'lcc-converter-stations'
     );
 }
 
-export function fetchVscConverterStations(studyUuid, substationsIds) {
+export function fetchVscConverterStations(
+    studyUuid,
+    selectedNodeUuid,
+    substationsIds
+) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'VSC converter stations',
         'vsc-converter-stations'
     );
 }
 
-export function fetchShuntCompensators(studyUuid, substationsIds) {
+export function fetchShuntCompensators(
+    studyUuid,
+    selectedNodeUuid,
+    substationsIds
+) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'Shunt compensators',
         'shunt-compensators'
     );
 }
 
-export function fetchStaticVarCompensators(studyUuid, substationsIds) {
+export function fetchStaticVarCompensators(
+    studyUuid,
+    selectedNodeUuid,
+    substationsIds
+) {
     return fetchEquipments(
         studyUuid,
+        selectedNodeUuid,
         substationsIds,
         'Static var compensators',
         'static-var-compensators'
@@ -342,21 +410,32 @@ export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
     );
 }
 
-export function fetchAllEquipments(studyUuid, substationsIds) {
-    return fetchEquipments(studyUuid, substationsIds, 'All', 'all');
+export function fetchAllEquipments(
+    studyUuid,
+    selectedNodeUuid,
+    substationsIds
+) {
+    return fetchEquipments(
+        studyUuid,
+        selectedNodeUuid,
+        substationsIds,
+        'All',
+        'all'
+    );
 }
 
 function fetchEquipments(
     studyUuid,
+    selectedNodeUuid,
     substationsIds,
     equipmentType,
     equipmentPath
 ) {
     console.info(
-        `Fetching equipments '${equipmentType}' of study '${studyUuid}' with substations ids '${substationsIds}'...`
+        `Fetching equipments '${equipmentType}' of study '${studyUuid}' and node '${selectedNodeUuid}' with substations ids '${substationsIds}'...`
     );
     const fetchEquipmentsUrl =
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +
         equipmentPath +
         getSubstationsIdsListsQueryParams(substationsIds);
@@ -366,17 +445,15 @@ function fetchEquipments(
 
 export function fetchBusesForVoltageLevel(
     studyUuid,
-    variantNum,
+    selectedNodeUuid,
     voltageLevelId
 ) {
     console.info(
-        `Fetching buses of study '${studyUuid}' for voltage level '${voltageLevelId}'...`
+        `Fetching buses of study '${studyUuid}' and node '${selectedNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const fetchBusesUrl =
-        getStudyUrl(studyUuid) +
-        '/network/' +
-        variantNum +
-        '/voltage-levels/' +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network/voltage-levels/' +
         voltageLevelId +
         '/buses';
     console.debug(fetchBusesUrl);
@@ -385,17 +462,15 @@ export function fetchBusesForVoltageLevel(
 
 export function fetchBusbarSectionsForVoltageLevel(
     studyUuid,
-    variantNum,
+    selectedNodeUuid,
     voltageLevelId
 ) {
     console.info(
-        `Fetching busbar sections of study '${studyUuid}' for voltage level '${voltageLevelId}'...`
+        `Fetching busbar sections of study '${studyUuid}' and node '${selectedNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const fetchBusbarSectionsUrl =
-        getStudyUrl(studyUuid) +
-        '/network/' +
-        variantNum +
-        '/voltage-levels/' +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network/voltage-levels/' +
         voltageLevelId +
         '/busbar-sections';
     console.debug(fetchBusbarSectionsUrl);
@@ -413,10 +488,10 @@ export function fetchLinePositions(studyUuid) {
     );
 }
 
-export function updateSwitchState(studyUuid, switchId, open) {
+export function updateSwitchState(studyUuid, selectedNodeUuid, switchId, open) {
     console.info('updating switch ' + switchId + ' ...');
     const updateSwitchUrl =
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/switches/' +
         encodeURIComponent(switchId) +
         '?' +
@@ -425,9 +500,16 @@ export function updateSwitchState(studyUuid, switchId, open) {
     return backendFetch(updateSwitchUrl, { method: 'put' });
 }
 
-export function startLoadFlow(studyUuid) {
-    console.info('Running loadflow on ' + studyUuid + '...');
-    const startLoadFlowUrl = getStudyUrl(studyUuid) + '/loadflow/run';
+export function startLoadFlow(studyUuid, selectedNodeUuid) {
+    console.info(
+        'Running loadflow on ' +
+            studyUuid +
+            ' and node ' +
+            selectedNodeUuid +
+            '...'
+    );
+    const startLoadFlowUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/loadflow/run';
     console.debug(startLoadFlowUrl);
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
@@ -451,10 +533,20 @@ function getContingencyListsQueryParams(contingencyListNames) {
     return '';
 }
 
-export function startSecurityAnalysis(studyUuid, contingencyListNames) {
-    console.info('Running security analysis on ' + studyUuid + '...');
+export function startSecurityAnalysis(
+    studyUuid,
+    selectedNodeUuid,
+    contingencyListNames
+) {
+    console.info(
+        'Running security analysis on ' +
+            studyUuid +
+            ' and node ' +
+            selectedNodeUuid +
+            ' ...'
+    );
     const url =
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/security-analysis/run' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
@@ -498,12 +590,16 @@ export function fetchContingencyLists(listIds) {
     );
 }
 
-export function fetchContingencyCount(studyUuid, contingencyListNames) {
+export function fetchContingencyCount(
+    studyUuid,
+    selectedNodeUuid,
+    contingencyListNames
+) {
     console.info(
-        `Fetching contingency count for ${contingencyListNames} on ' + ${studyUuid} + '...'`
+        `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${selectedNodeUuid}'...`
     );
     const url =
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/contingency-count' +
         getContingencyListsQueryParams(contingencyListNames);
     console.debug(url);
@@ -643,15 +739,6 @@ export function getAvailableExportFormats() {
     }).then((response) => response.json());
 }
 
-function getUrlWithToken(baseUrl) {
-    return baseUrl + '?access_token=' + getToken();
-}
-
-export function getExportUrl(studyUuid, exportFormat) {
-    const url = getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
-    return getUrlWithToken(url);
-}
-
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
     return fetch('env.json')
@@ -665,9 +752,15 @@ export function fetchAppsAndUrls() {
         });
 }
 
-export function requestNetworkChange(studyUuid, groovyScript) {
+export function requestNetworkChange(
+    studyUuid,
+    selectedNodeUuid,
+    groovyScript
+) {
     console.info('request network change');
-    const changeUrl = getStudyUrl(studyUuid) + '/network-modification/groovy';
+    const changeUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/groovy';
     console.debug(changeUrl);
     return backendFetch(changeUrl, {
         method: 'PUT',
@@ -713,9 +806,9 @@ export function getLoadFlowParameters(studyUuid) {
     );
 }
 
-function changeLineStatus(studyUuid, lineId, status) {
+function changeLineStatus(studyUuid, selectedNodeUuid, lineId, status) {
     const changeLineStatusUrl =
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/lines/' +
         encodeURIComponent(lineId) +
         '/status';
@@ -723,20 +816,21 @@ function changeLineStatus(studyUuid, lineId, status) {
     return backendFetch(changeLineStatusUrl, { method: 'put', body: status });
 }
 
-export function lockoutLine(studyUuid, lineId) {
+export function lockoutLine(studyUuid, selectedNodeUuid, lineId) {
     console.info('locking out line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, lineId, 'lockout');
+    return changeLineStatus(studyUuid, selectedNodeUuid, lineId, 'lockout');
 }
 
-export function tripLine(studyUuid, lineId) {
+export function tripLine(studyUuid, selectedNodeUuid, lineId) {
     console.info('tripping line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, lineId, 'trip');
+    return changeLineStatus(studyUuid, selectedNodeUuid, lineId, 'trip');
 }
 
-export function energiseLineEnd(studyUuid, lineId, lineEnd) {
+export function energiseLineEnd(studyUuid, selectedNodeUuid, lineId, lineEnd) {
     console.info('energise line ' + lineId + ' end ' + lineEnd + ' ...');
     return changeLineStatus(
         studyUuid,
+        selectedNodeUuid,
         lineId,
         lineEnd === 'ONE'
             ? 'energiseEndOne'
@@ -746,13 +840,14 @@ export function energiseLineEnd(studyUuid, lineId, lineEnd) {
     );
 }
 
-export function switchOnLine(studyUuid, lineId) {
+export function switchOnLine(studyUuid, selectedNodeUuid, lineId) {
     console.info('switching on line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, lineId, 'switchOn');
+    return changeLineStatus(studyUuid, selectedNodeUuid, lineId, 'switchOn');
 }
 
 export function createLoad(
     studyUuid,
+    selectedNodeUuid,
     id,
     name,
     loadType,
@@ -763,7 +858,8 @@ export function createLoad(
 ) {
     console.info('Creating load ');
     const createLoadUrl =
-        getStudyUrl(studyUuid) + '/network-modification/loads';
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/loads';
     return backendFetch(createLoadUrl, {
         method: 'PUT',
         headers: {
@@ -788,6 +884,7 @@ export function createLoad(
 
 export function createGenerator(
     studyUuid,
+    selectedNodeUuid,
     id,
     name,
     energySource,
@@ -803,7 +900,8 @@ export function createGenerator(
 ) {
     console.info('Creating generator ');
     const createGeneratorUrl =
-        getStudyUrl(studyUuid) + '/network-modification/generators';
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/generators';
     return backendFetch(createGeneratorUrl, {
         method: 'PUT',
         headers: {
@@ -833,6 +931,7 @@ export function createGenerator(
 
 export function createLine(
     studyUuid,
+    selectedNodeUuid,
     lineId,
     lineName,
     seriesResistance,
@@ -850,7 +949,8 @@ export function createLine(
 ) {
     console.info('Creating line ');
     const createLineUrl =
-        getStudyUrl(studyUuid) + '/network-modification/lines';
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/lines';
     return backendFetch(createLineUrl, {
         method: 'PUT',
         headers: {
@@ -886,6 +986,7 @@ export function createLine(
 
 export function createTwoWindingsTransformer(
     studyUuid,
+    selectedNodeUuid,
     twoWindingsTransformerId,
     twoWindingsTransformerName,
     seriesResistance,
@@ -901,7 +1002,7 @@ export function createTwoWindingsTransformer(
 ) {
     console.info('Creating two windings transformer ');
     const createTwoWindingsTransformerUrl =
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/two-windings-transformer';
     return backendFetch(createTwoWindingsTransformerUrl, {
         method: 'PUT',
@@ -973,7 +1074,12 @@ export function getAvailableComponentLibraries() {
     }).then((response) => response.json());
 }
 
-export function deleteEquipment(studyUuid, equipmentType, equipmentId) {
+export function deleteEquipment(
+    studyUuid,
+    selectedNodeUuid,
+    equipmentType,
+    equipmentId
+) {
     console.info(
         'deleting equipment ' +
             equipmentId +
@@ -982,7 +1088,7 @@ export function deleteEquipment(studyUuid, equipmentType, equipmentId) {
             ' ...'
     );
     const deleteEquipmentUrl =
-        getStudyUrl(studyUuid) +
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/equipments/type/' +
         encodeURIComponent(equipmentType) +
         '/id/' +

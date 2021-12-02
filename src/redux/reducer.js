@@ -43,6 +43,7 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
+    SELECTED_TREE_NODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -89,6 +90,7 @@ const paramsInitialState = {
 
 const initialState = {
     studyUuid: null,
+    selectedTreeNode: null,
     network: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -288,5 +290,8 @@ export const reducer = createReducer(initialState, {
     [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];
+    },
+    [SELECTED_TREE_NODE]: (state, action) => {
+        state.selectedTreeNode = action.selectedTreeNode;
     },
 });
