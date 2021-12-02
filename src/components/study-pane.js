@@ -28,7 +28,6 @@ import {
     fetchReport,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
-    fetchStudy,
     fetchSubstationPositions,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
@@ -36,6 +35,7 @@ import {
     startSecurityAnalysis,
     stopSecurityAnalysis,
     updateSwitchState,
+    fetchLoadFlowInfos,
 } from '../utils/rest-api';
 import {
     addLoadflowNotif,
@@ -395,11 +395,17 @@ const StudyPane = (props) => {
     }
 
     const updateLoadFlowResult = useCallback(() => {
-        fetchStudy(studyUuid).then((study) => {
-            setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowStatus));
-            setLoadFlowResult(study.loadFlowResult);
-        });
-    }, [studyUuid]);
+        if (selectedNodeUuid !== null) {
+            fetchLoadFlowInfos(studyUuid, selectedNodeUuid).then(
+                (loadflowInfos) => {
+                    setLoadFlowStatus(
+                        getLoadFlowRunningStatus(loadflowInfos.loadFlowStatus)
+                    );
+                    setLoadFlowResult(loadflowInfos.loadFlowResult);
+                }
+            );
+        }
+    }, [studyUuid, selectedNodeUuid]);
 
     function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
         switch (securityAnalysisStatus) {
@@ -415,15 +421,21 @@ const StudyPane = (props) => {
     }
 
     const updateSecurityAnalysisStatus = useCallback(() => {
-        fetchSecurityAnalysisStatus(studyUuid).then((status) => {
-            setSecurityAnalysisStatus(getSecurityAnalysisRunningStatus(status));
-        });
-    }, [studyUuid]);
+        if (selectedNodeUuid !== null) {
+            fetchSecurityAnalysisStatus(studyUuid, selectedNodeUuid).then(
+                (status) => {
+                    setSecurityAnalysisStatus(
+                        getSecurityAnalysisRunningStatus(status)
+                    );
+                }
+            );
+        }
+    }, [studyUuid, selectedNodeUuid]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
         setSecurityAnalysisResultFetcher(
             new RemoteResourceHandler(
-                () => fetchSecurityAnalysisResult(studyUuid),
+                () => fetchSecurityAnalysisResult(studyUuid, selectedNodeUuid),
                 (res) => {
                     setSecurityAnalysisResult(res);
                     setSecurityAnalysisResultFetched(true);
@@ -436,6 +448,7 @@ const StudyPane = (props) => {
         );
     }, [
         studyUuid,
+        selectedNodeUuid,
         setSecurityAnalysisResult,
         setSecurityAnalysisResultFetched,
     ]);
@@ -471,7 +484,7 @@ const StudyPane = (props) => {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (runnable) => {
             if (runnable === Runnable.SECURITY_ANALYSIS) {
-                stopSecurityAnalysis(studyUuid);
+                stopSecurityAnalysis(studyUuid, selectedNodeUuid);
                 setComputationStopped(!computationStopped);
             }
         },
