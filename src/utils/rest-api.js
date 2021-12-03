@@ -129,6 +129,13 @@ export function fetchStudy(studyUuid) {
     return backendFetch(fetchStudiesUrl).then((response) => response.json());
 }
 
+export function fetchStudyExists(studyUuid) {
+    console.info(`Fetching study '${studyUuid}' existence ...`);
+    const fetchStudiesUrl = getStudyUrl(studyUuid);
+    console.debug(fetchStudiesUrl);
+    return backendFetch(fetchStudiesUrl, { method: 'head' });
+}
+
 export function getVoltageLevelSingleLineDiagram(
     studyUuid,
     selectedNodeUuid,

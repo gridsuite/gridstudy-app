@@ -28,6 +28,7 @@ import {
     fetchReport,
     fetchSecurityAnalysisResult,
     fetchSecurityAnalysisStatus,
+    fetchStudyExists,
     fetchSubstationPositions,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
@@ -266,6 +267,16 @@ const StudyPane = (props) => {
     const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
 
     const [studyNotFound, setStudyNotFound] = useState(false);
+
+    const [networkLoadingFail, setNetworkLoadingFail] = useState(false);
+
+    const [geoDataLoadingFail, setGeoDataLoadingFail] = useState(false);
+
+    const [errorMsgId, setErrorMsgId] = useState('');
+
+    const [studyExistsChecked, setStudyExistsChecked] = useState(false);
+
+    const [isNetworkLoadingDone, setIsNetworkLoadingDone] = useState(false);
 
     const [updatedLines, setUpdatedLines] = useState([]);
 
@@ -540,7 +551,7 @@ const StudyPane = (props) => {
                     selectedNodeUuid,
                     (error) => {
                         console.error(error.message);
-                        setStudyNotFound(true);
+                        setNetworkLoadingFail(true);
                     },
                     dispatch,
                     { equipments: [equipments.lines, equipments.substations] }
@@ -552,7 +563,7 @@ const StudyPane = (props) => {
                         selectedNodeUuid,
                         (error) => {
                             console.error(error.message);
-                            setStudyNotFound(true);
+                            setNetworkLoadingFail(true);
                         },
                         dispatch
                     );
@@ -561,6 +572,7 @@ const StudyPane = (props) => {
                     dispatch(networkCreated(network));
                 }
             }
+            setIsNetworkLoadingDone(true);
         },
         [
             studyUuid,
@@ -612,7 +624,7 @@ const StudyPane = (props) => {
                 })
                 .catch(function (error) {
                     console.error(error.message);
-                    setStudyNotFound(true);
+                    setNetworkLoadingFail(true);
                 });
             // Note: studyUuid don't change
         },
@@ -650,7 +662,8 @@ const StudyPane = (props) => {
             })
             .catch(function (error) {
                 console.error(error.message);
-                setStudyNotFound(true);
+                setWaitingLoadGeoData(false);
+                setGeoDataLoadingFail(true);
             });
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, dispatch]);
@@ -717,9 +730,22 @@ const StudyPane = (props) => {
     useEffect(() => {
         websocketExpectedCloseRef.current = false;
         dispatch(openStudy(studyUuid));
-        loadNetwork();
-        loadGeoData();
-        loadTree();
+
+        fetchStudyExists(studyUuid).then((response) => {
+            if (response.status === 400 || response.status === 404) {
+                setStudyNotFound(true);
+                //since the study is not found no need to try to load network and geoData
+                setStudyExistsChecked(true);
+                setIsNetworkLoadingDone(true);
+                setWaitingLoadGeoData(false);
+            } else {
+                setStudyExistsChecked(true);
+                loadNetwork();
+                loadGeoData();
+                loadTree();
+            }
+        });
+
         const ws = connectNotifications(studyUuid);
 
         // study cleanup at unmount event
@@ -729,7 +755,7 @@ const StudyPane = (props) => {
             dispatch(closeStudy());
             dispatch(filteredNominalVoltagesUpdated(null));
         };
-        // Note: dispach, studyUuid, loadNetwork, loadGeoData,
+        // Note: dispach, studyUuid, loadNetwork, loadGeoData, loadTree
         // connectNotifications don't change
     }, [
         dispatch,
@@ -1631,12 +1657,31 @@ const StudyPane = (props) => {
         return waitingLoadGeoData || waitingLoadReport;
     }, [waitingLoadGeoData, waitingLoadReport]);
 
-    if (studyNotFound) {
+    useEffect(() => {
+        if (!waitingLoadGeoData && studyExistsChecked && isNetworkLoadingDone) {
+            if (studyNotFound) {
+                setErrorMsgId('studyNotFound');
+            } else if (networkLoadingFail) {
+                setErrorMsgId('networkLoadingFail');
+            } else if (geoDataLoadingFail) {
+                setErrorMsgId('geoDataLoadingFail');
+            }
+        }
+    }, [
+        studyNotFound,
+        geoDataLoadingFail,
+        networkLoadingFail,
+        studyExistsChecked,
+        waitingLoadGeoData,
+        isNetworkLoadingDone,
+    ]);
+
+    if (errorMsgId) {
         return (
             <PageNotFound
                 message={
                     <FormattedMessage
-                        id="studyNotFound"
+                        id={errorMsgId}
                         values={{ studyUuid: studyUuid }}
                     />
                 }
