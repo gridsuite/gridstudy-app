@@ -45,8 +45,14 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
+ * @param selectedNodeUuid : the currently selected tree node
  */
-const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
+const GeneratorCreationDialog = ({
+    open,
+    onClose,
+    voltageLevelOptions,
+    selectedNodeUuid,
+}) => {
     const classes = useStyles();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -242,6 +248,7 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
         if (isValid) {
             createGenerator(
                 studyUuid,
+                selectedNodeUuid,
                 generatorId,
                 generatorName ? generatorName : null,
                 !energySource ? 'OTHER' : energySource,
@@ -605,6 +612,7 @@ const GeneratorCreationDialog = ({ open, onClose, voltageLevelOptions }) => {
                                         id: errors.get('bus-bar')?.errorMsgId,
                                     })
                                 }
+                                selectedNodeUuid={selectedNodeUuid}
                             />
                         </Grid>
                     </Grid>
@@ -626,6 +634,7 @@ GeneratorCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default GeneratorCreationDialog;

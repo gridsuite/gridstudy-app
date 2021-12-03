@@ -32,8 +32,14 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to select network modification to create
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param selectedNodeUuid : the currently selected tree node
  */
-const NetworkModificationDialog = ({ open, onClose, network }) => {
+const NetworkModificationDialog = ({
+    open,
+    onClose,
+    network,
+    selectedNodeUuid,
+}) => {
     const classes = useStyles();
     const intl = useIntl();
 
@@ -181,25 +187,30 @@ const NetworkModificationDialog = ({ open, onClose, network }) => {
                 open={openCreateLoadDialog}
                 onClose={closeCreateLoadDialog}
                 voltageLevelOptions={network?.voltageLevels}
+                selectedNodeUuid={selectedNodeUuid}
             />
             <GeneratorCreationDialog
                 open={openCreateGeneratorDialog}
                 onClose={closeCreateGeneratorDialog}
                 voltageLevelOptions={network?.voltageLevels}
+                selectedNodeUuid={selectedNodeUuid}
             />
             <LineCreationDialog
                 open={openCreateLineDialog}
                 onClose={closeCreateLineDialog}
                 voltageLevelOptions={network?.voltageLevels}
+                selectedNodeUuid={selectedNodeUuid}
             />
             <TwoWindingsTransformerCreationDialog
                 open={openTwoWindingsTransformerDialog}
                 onClose={closeCreateTwoWindingsTransformerDialog}
                 voltageLevelOptions={network?.voltageLevels}
+                selectedNodeUuid={selectedNodeUuid}
             />
             <EquipmentDeletionDialog
                 open={openEquipmentDeletionDialog}
                 onClose={closeEquipmentDeletionDialog}
+                selectedNodeUuid={selectedNodeUuid}
             />
         </>
     );
@@ -209,6 +220,7 @@ NetworkModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     network: PropTypes.object.isRequired,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default NetworkModificationDialog;

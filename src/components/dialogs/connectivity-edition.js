@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme) => ({
  * @param helperTextVoltageLevel: helperText to display in cas of error for VoltageLevel input.
  * @param errorBusOrBusBarSection: If true, the BusOrBusBarSection input will be displayed in an error state.
  * @param helperTextBusOrBusBarSection: helperText to display in cas of error for BusOrBusBarSection input.
+ * @param selectedNodeUuid : the currently selected tree node
  */
 const ConnectivityEdition = ({
     voltageLevelOptions,
@@ -60,9 +61,11 @@ const ConnectivityEdition = ({
     helperTextVoltageLevel,
     errorBusOrBusBarSection,
     helperTextBusOrBusBarSection,
+    selectedNodeUuid,
 }) => {
     const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
+
     const intl = useIntl();
 
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
@@ -87,10 +90,9 @@ const ConnectivityEdition = ({
             onChangeBusOrBusbarSection(null);
             switch (value?.topologyKind) {
                 case 'NODE_BREAKER':
-                    // TODO specify the correct network variant num
                     fetchBusbarSectionsForVoltageLevel(
                         studyUuid,
-                        0,
+                        selectedNodeUuid,
                         value.id
                     ).then((busbarSections) => {
                         setBusOrBusbarSectionOptions(busbarSections);
@@ -98,10 +100,11 @@ const ConnectivityEdition = ({
                     break;
 
                 case 'BUS_BREAKER':
-                    // TODO specify the correct network variant num
-                    fetchBusesForVoltageLevel(studyUuid, 0, value.id).then(
-                        (buses) => setBusOrBusbarSectionOptions(buses)
-                    );
+                    fetchBusesForVoltageLevel(
+                        studyUuid,
+                        selectedNodeUuid,
+                        value.id
+                    ).then((buses) => setBusOrBusbarSectionOptions(buses));
                     break;
 
                 default:
@@ -269,6 +272,7 @@ ConnectivityEdition.propTypes = {
     helperTextVoltageLevel: PropTypes.string,
     errorBusOrBusBarSection: PropTypes.bool,
     helperTextBusOrBusBarSection: PropTypes.string,
+    selectedNodeUuid: PropTypes.string,
 };
 
 export default ConnectivityEdition;

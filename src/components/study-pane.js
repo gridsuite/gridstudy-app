@@ -53,6 +53,7 @@ import {
     resetLoadflowNotif,
     selectItemNetwork,
     studyUpdated,
+    selectTreeNode,
 } from '../redux/actions';
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
@@ -263,6 +264,8 @@ const StudyPane = (props) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
 
+    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
+
     const [studyNotFound, setStudyNotFound] = useState(false);
 
     const [networkLoadingFail, setNetworkLoadingFail] = useState(false);
@@ -455,7 +458,11 @@ const StudyPane = (props) => {
         setComputationStopped(false);
 
         // start server side security analysis
-        startSecurityAnalysis(studyUuid, contingencyListNames);
+        startSecurityAnalysis(
+            studyUuid,
+            selectedNodeUuid,
+            contingencyListNames
+        );
 
         // clean result
         setSecurityAnalysisResult(null);
@@ -463,7 +470,7 @@ const StudyPane = (props) => {
 
     const startComputation = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
-            startLoadFlow(studyUuid);
+            startLoadFlow(studyUuid, selectedNodeUuid);
             setRanLoadflow(true);
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
@@ -528,6 +535,7 @@ const StudyPane = (props) => {
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
                     studyUuid,
+                    selectedNodeUuid,
                     (error) => {
                         console.error(error.message);
                         setNetworkLoadingFail(true);
@@ -536,22 +544,26 @@ const StudyPane = (props) => {
                     { equipments: [equipments.lines, equipments.substations] }
                 );
             } else {
-                const network = new Network(
-                    studyUuid,
-                    (error) => {
-                        console.error(error.message);
-                        setNetworkLoadingFail(true);
-                    },
-                    dispatch
-                );
-                // For initial network loading, no need to initialize lines and substations at first,
-                // lazy loading will do the job (no glitches to avoid)
-                dispatch(networkCreated(network));
+                if (selectedNodeUuid !== null) {
+                    const network = new Network(
+                        studyUuid,
+                        selectedNodeUuid,
+                        (error) => {
+                            console.error(error.message);
+                            setNetworkLoadingFail(true);
+                        },
+                        dispatch
+                    );
+                    // For initial network loading, no need to initialize lines and substations at first,
+                    // lazy loading will do the job (no glitches to avoid)
+                    dispatch(networkCreated(network));
+                }
             }
             setIsNetworkLoadingDone(true);
         },
         [
             studyUuid,
+            selectedNodeUuid,
             dispatch,
             updateLoadFlowResult,
             updateSecurityAnalysisResult,
@@ -563,6 +575,7 @@ const StudyPane = (props) => {
         (substationsIds) => {
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
+                selectedNodeUuid,
                 substationsIds
             );
             console.info('network update');
@@ -602,7 +615,7 @@ const StudyPane = (props) => {
                 });
             // Note: studyUuid don't change
         },
-        [studyUuid, network]
+        [studyUuid, selectedNodeUuid, network]
     );
 
     const removeEquipmentFromNetwork = useCallback(
@@ -651,6 +664,8 @@ const StudyPane = (props) => {
 
         networkModificationTree
             .then((tree) => {
+                dispatch(selectTreeNode(tree.id));
+
                 const networkModificationTreeModel =
                     new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
@@ -857,7 +872,12 @@ const StudyPane = (props) => {
                 switchElement.classList.replace('sld-open', 'sld-closed');
             }
 
-            updateSwitchState(studyUuid, breakerId, open).then((response) => {
+            updateSwitchState(
+                studyUuid,
+                selectedNodeUuid,
+                breakerId,
+                open
+            ).then((response) => {
                 if (!response.ok) {
                     console.error(response);
                     // revert switch position change
@@ -878,7 +898,7 @@ const StudyPane = (props) => {
                 }
             });
         },
-        [studyUuid]
+        [studyUuid, selectedNodeUuid]
     );
 
     const updateSld = () => {
@@ -1180,6 +1200,7 @@ const StudyPane = (props) => {
 
             svgUrl = getVoltageLevelSingleLineDiagram(
                 studyUuid,
+                selectedNodeUuid,
                 displayedVoltageLevelId,
                 useName,
                 centerName,
@@ -1201,6 +1222,7 @@ const StudyPane = (props) => {
 
             svgUrl = getSubstationSingleLineDiagram(
                 studyUuid,
+                selectedNodeUuid,
                 displayedSubstationId,
                 useName,
                 centerName,
@@ -1344,6 +1366,7 @@ const StudyPane = (props) => {
                                 handleViewInSpreadsheet={
                                     handleViewInSpreadsheet
                                 }
+                                selectedNodeUuid={selectedNodeUuid}
                             />
                         )}
                     {equipmentMenu.equipment !== null &&
@@ -1513,6 +1536,7 @@ const StudyPane = (props) => {
                                 }
                                 showInSpreadsheet={showInSpreadsheet}
                                 loadFlowStatus={loadFlowStatus}
+                                selectedNodeUuid={selectedNodeUuid}
                             />
                         </div>
                     )}
@@ -1520,12 +1544,14 @@ const StudyPane = (props) => {
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
                     onStart={handleStartSecurityAnalysis}
+                    selectedNodeUuid={selectedNodeUuid}
                 />
                 {network && (
                     <NetworkModificationDialog
                         open={openNetworkModificationsDialog}
                         onClose={closeNetworkModificationConfiguration}
                         network={network}
+                        selectedNodeUuid={selectedNodeUuid}
                     />
                 )}
             </div>
@@ -1539,6 +1565,7 @@ const StudyPane = (props) => {
                     <NetworkTable
                         network={network}
                         studyUuid={studyUuid}
+                        selectedNodeUuid={selectedNodeUuid}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}

@@ -304,3 +304,12 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists) {
         [PARAM_FAVORITE_CONTINGENCY_LISTS]: favoriteContingencyLists,
     };
 }
+
+export const SELECTED_TREE_NODE = 'SELECTED_TREE_NODE';
+
+export function selectTreeNode(selectedTreeNode) {
+    return {
+        type: SELECTED_TREE_NODE,
+        selectedTreeNode: selectedTreeNode,
+    };
+}

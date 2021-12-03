@@ -37,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 export const EquipmentTable = ({
     fetched,
     studyUuid,
+    selectedNodeUuid,
     rows,
     selectedColumnsNames,
     tableDefinition,
@@ -76,20 +77,22 @@ export const EquipmentTable = ({
         Object.values(lineEdit.newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(studyUuid, groovyCr).then((response) => {
-            if (response.ok) {
-                Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
-                    rowData[key] = cr.value;
-                });
-            } else {
-                Object.entries(lineEdit.oldValues).forEach(
-                    ([key, oldValue]) => {
-                        rowData[key] = oldValue;
-                    }
-                );
+        requestNetworkChange(studyUuid, selectedNodeUuid, groovyCr).then(
+            (response) => {
+                if (response.ok) {
+                    Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
+                        rowData[key] = cr.value;
+                    });
+                } else {
+                    Object.entries(lineEdit.oldValues).forEach(
+                        ([key, oldValue]) => {
+                            rowData[key] = oldValue;
+                        }
+                    );
+                }
+                setLineEdit({});
             }
-            setLineEdit({});
-        });
+        );
     }
 
     function resetChanges(rowData) {
