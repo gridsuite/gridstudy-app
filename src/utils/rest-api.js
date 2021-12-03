@@ -120,7 +120,7 @@ export function fetchStudy(studyUuid) {
 }
 
 export function fetchStudyExists(studyUuid) {
-    console.info(`Fetching study '${studyUuid}' ...`);
+    console.info(`Fetching study '${studyUuid}' existence ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl, { method: 'head' });

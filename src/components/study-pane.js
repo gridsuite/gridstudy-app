@@ -402,15 +402,6 @@ const StudyPane = (props) => {
         }
     }
 
-    const checkStudyExists = useCallback(() => {
-        fetchStudyExists(studyUuid).then((response) => {
-            if (response.status === 400 || response.status === 404) {
-                setStudyNotFound(true);
-            }
-            setStudyExistsChecked(true);
-        });
-    }, [studyUuid]);
-
     const updateLoadFlowResult = useCallback(() => {
         fetchStudy(studyUuid).then((study) => {
             setLoadFlowStatus(getLoadFlowRunningStatus(study.loadFlowStatus));
@@ -736,7 +727,7 @@ const StudyPane = (props) => {
             dispatch(closeStudy());
             dispatch(filteredNominalVoltagesUpdated(null));
         };
-        // Note: dispach, studyUuid, loadNetwork, loadGeoData, checkStudyExists, loadTree
+        // Note: dispach, studyUuid, loadNetwork, loadGeoData, loadTree
         // connectNotifications don't change
     }, [
         dispatch,
@@ -744,7 +735,6 @@ const StudyPane = (props) => {
         loadNetwork,
         loadGeoData,
         loadTree,
-        checkStudyExists,
         connectNotifications,
     ]);
 
