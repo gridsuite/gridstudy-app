@@ -162,7 +162,7 @@ export const EquipmentTable = ({
                 </TableCell>
             );
         },
-        [classes.tableCell, classes.textDiv, formatCell]
+        [classes.tableCell, formatCell]
     );
 
     const registerChangeRequest = useCallback(
