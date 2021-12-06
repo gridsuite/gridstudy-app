@@ -1102,3 +1102,16 @@ export function deleteEquipment(
         encodeURIComponent(equipmentId);
     return backendFetch(deleteEquipmentUrl, { method: 'delete' });
 }
+
+export function fetchNetworkModifications(groupUuid) {
+    console.info('Fetching network modification tree node');
+    const url =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(groupUuid) +
+        '/network/modifications';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
+        response.json()
+    );
+}

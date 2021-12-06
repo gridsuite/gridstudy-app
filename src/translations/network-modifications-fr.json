@@ -1,0 +1,7 @@
+{
+    "network_modifications/EQUIPMENT_DELETION": "suppression de\n {uuid}",
+    "network_modifications/LOAD_CREATION": "création de la charge\n {uuid}",
+    "network_modifications/GENERATOR_CREATION": "création du generateur\n {uuid}",
+    "network_modifications/LINE_CREATION": "création de la ligne\n {uuid}",
+    "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "création du transformateur 2 enroulements\n {uuid}"
+}

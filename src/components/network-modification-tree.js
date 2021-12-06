@@ -9,7 +9,6 @@ import ReactFlow from 'react-flow-renderer';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
-import NodeEditor from './graph/menus/node-editor';
 import { Box } from '@material-ui/core';
 import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
@@ -139,11 +138,6 @@ const NetworkModificationTree = (props) => {
                         snapGrid={snapGrid}
                     />
                 </Box>
-                {selectedNode && (
-                    <Box>
-                        <NodeEditor selectedNode={selectedNode}></NodeEditor>
-                    </Box>
-                )}
             </Box>
             {createNodeMenu.display && (
                 <CreateNodeMenu
