@@ -18,7 +18,7 @@ const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
 const PREFIX_NETWORK_MODIFICATION_QUERIES =
-  process.env.REACT_APP_API_GATEWAY + '/network-modification';
+    process.env.REACT_APP_API_GATEWAY + '/network-modification';
 
 function getToken() {
     const state = store.getState();
@@ -1110,7 +1110,7 @@ export function fetchNetworkModifications(groupUuid) {
     const url =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/groups/' +
-        encodeURIComponent(groupUuid)
+        encodeURIComponent(groupUuid);
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()

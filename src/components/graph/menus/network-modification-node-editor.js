@@ -88,8 +88,8 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     />
                 </ListItem>
                 <Divider />
-                {modifications?.map((item, index) => (
-                    <ModificationListItem key={index} modification={item} />
+                {modifications?.map((item) => (
+                    <ModificationListItem key={item.uuid} modification={item} />
                 ))}
             </List>
 

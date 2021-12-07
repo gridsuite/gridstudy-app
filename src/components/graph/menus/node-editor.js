@@ -80,11 +80,7 @@ const NodeEditor = ({ onClose, ...props }) => {
                     <EditableTitle
                         name={selectedNode.name}
                         onClose={onClose}
-                        onChange={
-                            selectedNode.type === 'ROOT'
-                                ? undefined
-                                : changeNodeName
-                        }
+                        onChange={changeNodeName}
                     />
                     <Paper className={classes.paper}>
                         {selectedNode && selectedNode.type !== 'MODEL' && (

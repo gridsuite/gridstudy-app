@@ -30,7 +30,6 @@ export const ModificationListItem = ({ modification, ...props }) => {
             ),
         [modification, getComputedLabel, intl]
     );
-
     return (
         <>
             <ListItem {...props}>
