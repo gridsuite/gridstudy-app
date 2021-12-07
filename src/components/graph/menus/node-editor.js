@@ -22,7 +22,6 @@ import {
 import { EditableTitle } from './editable-title';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
-import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -81,7 +80,11 @@ const NodeEditor = ({ onClose, ...props }) => {
                     <EditableTitle
                         name={selectedNode.name}
                         onClose={onClose}
-                        onChange={changeNodeName}
+                        onChange={
+                            selectedNode.type === 'ROOT'
+                                ? undefined
+                                : changeNodeName
+                        }
                     />
                     <Paper className={classes.paper}>
                         {selectedNode && selectedNode.type !== 'MODEL' && (

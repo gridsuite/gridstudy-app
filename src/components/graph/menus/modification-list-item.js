@@ -6,18 +6,37 @@
  */
 import { ListItem } from '@material-ui/core';
 import { useIntl } from 'react-intl';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
+import { useSelector } from 'react-redux';
+import { PARAM_USE_NAME } from '../../../utils/config-params';
+import Divider from '@material-ui/core/Divider';
 
 export const ModificationListItem = ({ modification, ...props }) => {
     const intl = useIntl();
-    const label = intl.formatMessage(
-      {id:'network_modifications/' + modification.type},
-        modification
+    const useName = useSelector((state) => state[PARAM_USE_NAME]);
+
+    const getComputedLabel = useCallback(() => {
+        if (useName && modification.equipmentName)
+            return modification.equipmentName;
+        return modification.equipmentId;
+    }, [modification, useName]);
+
+    const getLabel = useCallback(
+        () =>
+            intl.formatMessage(
+                { id: 'network_modifications/' + modification.type },
+                { ...modification, computedLabel: getComputedLabel() }
+            ),
+        [modification, getComputedLabel, intl]
     );
+
     return (
-        <ListItem {...props}>
-          <OverflowableText text={label} style={{ whiteSpace: "pre" }}/>
-        </ListItem>
+        <>
+            <ListItem {...props}>
+                <OverflowableText text={getLabel()} />
+            </ListItem>
+            <Divider />
+        </>
     );
 };

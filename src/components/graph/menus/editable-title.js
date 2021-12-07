@@ -10,14 +10,30 @@ import { IconButton, Typography } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
 import AskTextDialog from '../../util/ask-text-dialog';
+import { darken, makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    header: {
+        backgroundColor: darken(theme.palette.background.default, 0.2),
+    },
+}));
 
 export const EditableTitle = ({ name, onClose, onChange }) => {
     const [editTitle, setEditTitle] = useState(false);
+    const classes = useStyles();
 
     return (
         <div>
-            <Typography variant={'h5'} style={{ display: 'flex' }}>
-                <IconButton size={'small'} onClick={() => setEditTitle(true)}>
+            <Typography
+                className={classes.header}
+                variant={'h5'}
+                style={{ display: 'flex' }}
+            >
+                <IconButton
+                    size={'small'}
+                    onClick={() => setEditTitle(true)}
+                    disabled={onChange === undefined}
+                >
                     <EditIcon />
                 </IconButton>
                 <span style={{ flexGrow: '1' }}>{name}</span>

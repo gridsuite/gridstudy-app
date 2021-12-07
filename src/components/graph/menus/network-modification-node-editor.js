@@ -17,6 +17,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
+import { ListItem } from '@material-ui/core';
+import { FormattedMessage } from 'react-intl';
+import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -24,7 +27,8 @@ const useStyles = makeStyles((theme) => ({
     },
     addButton: {
         position: 'absolute',
-        bottom: 30,
+        bottom: 20,
+        right: 0,
         marginLeft: 8,
         marginRight: 8,
         marginTop: 8,
@@ -40,7 +44,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     useEffect(() => {
         if (
-            selectedNodeRef.current === selectedNode ||
+            selectedNodeRef.current !== selectedNode ||
             studyUpdatedForce.force // TODO when updatedNode is done ;) || isNodeUpdated(studyUpdateForce)
         ) {
             selectedNodeRef.current = selectedNode;
@@ -77,6 +81,13 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     return (
         <>
             <List className={classes.list}>
+                <ListItem>
+                    <FormattedMessage
+                        id={'network_modification/modificationsCount'}
+                        values={{ count: modifications?.length }}
+                    />
+                </ListItem>
+                <Divider />
                 {modifications?.map((item, index) => (
                     <ModificationListItem key={index} modification={item} />
                 ))}

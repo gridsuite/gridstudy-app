@@ -31,10 +31,7 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
         <Dialog open={show} onClose={onClose}>
             <DialogTitle id={'modal-title'}>{title}</DialogTitle>
             <DialogContent>
-                <TextField
-                    value={currentValue}
-                    onChange={handleChange}
-                />
+                <TextField value={currentValue} onChange={handleChange} />
             </DialogContent>
             <DialogActions>
                 <Button

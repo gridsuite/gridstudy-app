@@ -1,7 +1,8 @@
 {
-    "network_modifications/EQUIPMENT_DELETION": "suppression de\n {uuid}",
-    "network_modifications/LOAD_CREATION": "création de la charge\n {uuid}",
-    "network_modifications/GENERATOR_CREATION": "création du generateur\n {uuid}",
-    "network_modifications/LINE_CREATION": "création de la ligne\n {uuid}",
-    "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "création du transformateur 2 enroulements\n {uuid}"
+    "network_modification/modificationsCount": "{count, plural, =0 {aucune modification} =1 {# modification} other {# modifications}}",
+    "network_modifications/EQUIPMENT_DELETION": "Suppression de\n {computedLabel}",
+    "network_modifications/LOAD_CREATION": "Création de la charge\n {computedLabel}",
+    "network_modifications/GENERATOR_CREATION": "Création du generateur\n {computedLabel}",
+    "network_modifications/LINE_CREATION": "Création de la ligne\n {computedLabel}",
+    "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Création du transformateur 2 enroulements\n {computedLabel}"
 }
