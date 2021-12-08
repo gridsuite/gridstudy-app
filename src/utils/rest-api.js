@@ -395,7 +395,12 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
+export function fetchEquipmentsInfos(
+    studyUuid,
+    selectedNodeUuid,
+    searchTerm,
+    useName
+) {
     console.info(
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
@@ -409,7 +414,11 @@ export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
             : `equipmentId:${escapedSearchTerm}`
     );
     return backendFetch(
-        getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
+        getStudyUrl(studyUuid) +
+            '/nodes/' +
+            selectedNodeUuid +
+            '/search?' +
+            urlSearchParams.toString()
     ).then((response) =>
         response.ok
             ? response.json()
