@@ -11,6 +11,9 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
+    modelSelected: {
+        background: 'lightseagreen',
+    },
     model: {
         background: 'darkseagreen',
     },
@@ -33,7 +36,12 @@ const ModelNode = (props) => {
                 style={{ background: '#555' }}
                 isConnectable={false}
             />
-            <IconButton variant="outlined" className={classes.model}>
+            <IconButton
+                variant="outlined"
+                className={
+                    props.selected ? classes.modelSelected : classes.model
+                }
+            >
                 <PlayArrowIcon />
             </IconButton>
         </>

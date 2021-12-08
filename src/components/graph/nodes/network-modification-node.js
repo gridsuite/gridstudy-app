@@ -10,13 +10,19 @@ import { Handle } from 'react-flow-renderer';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-    networkModification: {
+    networkModificationSelected: {
+        variant: 'contained',
         background: 'steelblue',
+        textTransform: 'none',
+    },
+    networkModification: {
+        variant: 'outlined',
+        background: 'lightsteelblue',
         textTransform: 'none',
     },
 }));
 
-const NetworkModificationNode = ({ data }) => {
+const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
     return (
@@ -35,10 +41,14 @@ const NetworkModificationNode = ({ data }) => {
             />
             <Button
                 variant="outlined"
-                className={classes.networkModification}
+                className={
+                    props.selected
+                        ? classes.networkModificationSelected
+                        : classes.networkModification
+                }
                 disableElevation
             >
-                {data.label}
+                {props.data.label}
             </Button>
         </>
     );
