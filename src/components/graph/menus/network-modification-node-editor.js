@@ -45,7 +45,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     useEffect(() => {
         if (
             selectedNodeRef.current !== selectedNode ||
-            studyUpdatedForce.force // TODO when updatedNode is done ;) || isNodeUpdated(studyUpdateForce)
+            studyUpdatedForce.force
         ) {
             selectedNodeRef.current = selectedNode;
             fetchNetworkModifications(selectedNode.networkModification)
