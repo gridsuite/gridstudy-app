@@ -1110,7 +1110,8 @@ export function fetchNetworkModifications(groupUuid) {
     const url =
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/groups/' +
-        encodeURIComponent(groupUuid);
+        encodeURIComponent(groupUuid) +
+        '/modifications';
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()
