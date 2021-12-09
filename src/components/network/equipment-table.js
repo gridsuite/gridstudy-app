@@ -11,7 +11,7 @@ import LoaderWithOverlay from '../loader-with-overlay';
 import VirtualizedTable from '../util/virtualized-table';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { OverflowableText } from '../util/overflowable-text';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const ROW_HEIGHT = 50;
 
@@ -25,12 +25,6 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 0,
         height: ROW_HEIGHT + 'px',
         cursor: 'initial',
-    },
-    textDiv: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-        minWidth: '10px',
     },
 }));
 
@@ -156,7 +150,6 @@ export const EquipmentTable = ({
     const defaultCellRender = useCallback(
         (cellData, numeric, fractionDigit) => {
             const text = formatCell(cellData, numeric, fractionDigit);
-            const ref = React.createRef();
             return (
                 <TableCell
                     component="div"
@@ -165,23 +158,11 @@ export const EquipmentTable = ({
                     className={classes.tableCell}
                     align={numeric ? 'right' : 'left'}
                 >
-                    {
-                        <OverflowableText text={text} childRef={ref}>
-                            <div
-                                ref={ref}
-                                style={{
-                                    textAlign: numeric ? 'right' : 'left',
-                                }}
-                                className={classes.textDiv}
-                            >
-                                {text}
-                            </div>
-                        </OverflowableText>
-                    }
+                    <OverflowableText text={text} />
                 </TableCell>
             );
         },
-        [classes.tableCell, classes.textDiv, formatCell]
+        [classes.tableCell, formatCell]
     );
 
     const registerChangeRequest = useCallback(
