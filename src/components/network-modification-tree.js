@@ -27,6 +27,8 @@ const nodeTypes = {
 const snapGrid = [15, 15];
 
 const NetworkModificationTree = (props) => {
+    const [selectedNode, setSelectedNode] = useState(null);
+
     const [isMoving, setIsMoving] = useState(false);
 
     const intlRef = useIntlRef();
@@ -48,12 +50,12 @@ const NetworkModificationTree = (props) => {
 
     const onSelectionChange = useCallback((selectedElements) => {
         if (selectedElements?.length > 0) {
-            console.debug('select:' + selectedElements[0]);
+            setSelectedNode(selectedElements[0]);
         }
     }, []);
 
     const onPaneClick = useCallback(() => {
-        console.debug('unselect:');
+        setSelectedNode(undefined);
     }, []);
 
     const onMove = useCallback((flowTransform) => {
