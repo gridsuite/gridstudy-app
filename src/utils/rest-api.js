@@ -521,10 +521,17 @@ export function startLoadFlow(studyUuid, selectedNodeUuid) {
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
-export function stopSecurityAnalysis(studyUuid) {
-    console.info('Stopping security analysis on ' + studyUuid + '...');
+export function stopSecurityAnalysis(studyUuid, selectedNodeUuid) {
+    console.info(
+        'Stopping security analysis on ' +
+            studyUuid +
+            ' and node ' +
+            selectedNodeUuid +
+            ' ...'
+    );
     const stopSecurityAnalysisUrl =
-        getStudyUrl(studyUuid) + '/security-analysis/stop';
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/security-analysis/stop';
     console.debug(stopSecurityAnalysisUrl);
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
@@ -560,9 +567,17 @@ export function startSecurityAnalysis(
     return backendFetch(url, { method: 'post' });
 }
 
-export function fetchSecurityAnalysisResult(studyUuid) {
-    console.info('Fetching security analysis on ' + studyUuid + '...');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/result';
+export function fetchSecurityAnalysisResult(studyUuid, selectedNodeUuid) {
+    console.info(
+        'Fetching security analysis on ' +
+            studyUuid +
+            ' and node ' +
+            selectedNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/security-analysis/result';
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) => {
         if (response.ok) return response.json();
@@ -570,9 +585,17 @@ export function fetchSecurityAnalysisResult(studyUuid) {
     });
 }
 
-export function fetchSecurityAnalysisStatus(studyUuid) {
-    console.info('Fetching security analysis status on ' + studyUuid + '...');
-    const url = getStudyUrl(studyUuid) + '/security-analysis/status';
+export function fetchSecurityAnalysisStatus(studyUuid, selectedNodeUuid) {
+    console.info(
+        'Fetching security analysis status on ' +
+            studyUuid +
+            ' and node ' +
+            selectedNodeUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/security-analysis/status';
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then(function (response) {
         if (response.ok) {
@@ -1101,4 +1124,16 @@ export function deleteEquipment(
         '/id/' +
         encodeURIComponent(equipmentId);
     return backendFetch(deleteEquipmentUrl, { method: 'delete' });
+}
+
+export function fetchLoadFlowInfos(studyUuid, selectedNodeUuid) {
+    console.info(
+        `Fetching loadflow infos (status and result) for '${studyUuid}' and node '${selectedNodeUuid}' ...`
+    );
+    const fetchLoadFlowInfosUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/loadflow/infos';
+    return backendFetch(fetchLoadFlowInfosUrl).then((response) =>
+        response.json()
+    );
 }
