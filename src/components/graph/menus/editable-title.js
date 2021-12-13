@@ -12,7 +12,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import AskTextDialog from '../../util/ask-text-dialog';
 import { darken, makeStyles } from '@material-ui/core/styles';
 import { useIntl } from 'react-intl';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     header: {
@@ -54,7 +54,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
 };
 
 EditableTitle.propTypes = {
-  name: PropTypes.string,
-  onChange: PropTypes.func,
-  onClose: PropTypes.func
-}
+    name: PropTypes.string,
+    onChange: PropTypes.func,
+    onClose: PropTypes.func,
+};
