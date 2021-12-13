@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NodeEditor = ({ onClose, ...props }) => {
+const NodeEditor = ({ onClose, className }) => {
     const classes = useStyles();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
@@ -72,7 +72,7 @@ const NodeEditor = ({ onClose, ...props }) => {
     };
 
     return (
-        <div {...props}>
+        <div className={className}>
             {selectedNode !== undefined && (
                 <>
                     <EditableTitle
@@ -98,6 +98,7 @@ const NodeEditor = ({ onClose, ...props }) => {
 
 NodeEditor.propTypes = {
     onClose: PropTypes.func,
+    className: PropTypes.string,
 };
 
 export default NodeEditor;
