@@ -11,6 +11,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import CloseIcon from '@material-ui/icons/Close';
 import AskTextDialog from '../../util/ask-text-dialog';
 import { darken, makeStyles } from '@material-ui/core/styles';
+import { useIntl } from 'react-intl';
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
     header: {
@@ -19,37 +21,40 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const EditableTitle = ({ name, onClose, onChange }) => {
-    const [editTitle, setEditTitle] = useState(false);
+    const [openEditTitle, setOpenEditTitle] = useState(false);
     const classes = useStyles();
+    const intl = useIntl();
 
     return (
-        <div>
-            <Typography
-                className={classes.header}
-                variant={'h5'}
-                style={{ display: 'flex' }}
+        <div style={{ display: 'flex' }} className={classes.header}>
+            <IconButton
+                size={'small'}
+                onClick={() => setOpenEditTitle(true)}
+                disabled={onChange === undefined}
             >
-                <IconButton
-                    size={'small'}
-                    onClick={() => setEditTitle(true)}
-                    disabled={onChange === undefined}
-                >
-                    <EditIcon />
-                </IconButton>
-                <span style={{ flexGrow: '1' }}>{name}</span>
-                <IconButton size={'small'} onClick={onClose}>
-                    <CloseIcon />
-                </IconButton>
+                <EditIcon />
+            </IconButton>
+            <Typography variant={'h5'} style={{ flexGrow: '1' }}>
+                {name}
             </Typography>
+            <IconButton size={'small'} onClick={onClose}>
+                <CloseIcon />
+            </IconButton>
             <AskTextDialog
-                show={editTitle}
-                title={'changeName'}
+                show={openEditTitle}
+                title={intl.formatMessage({ id: 'NewName' })}
                 value={name}
                 onValidate={(e) => {
                     onChange(e);
                 }}
-                onClose={() => setEditTitle(false)}
+                onClose={() => setOpenEditTitle(false)}
             />
         </div>
     );
 };
+
+EditableTitle.propTypes = {
+  name: PropTypes.string,
+  onChange: PropTypes.func,
+  onClose: PropTypes.func
+}

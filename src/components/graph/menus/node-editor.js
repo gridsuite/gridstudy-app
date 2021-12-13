@@ -24,9 +24,6 @@ import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-    },
     paper: {
         height: 'max-content',
         display: 'flex',
@@ -57,9 +54,10 @@ const NodeEditor = ({ onClose, ...props }) => {
     }, [setSelectedNode, enqueueSnackbar, selectedNodeUuid]);
 
     const changeNodeName = (newName) => {
+        if (!selectedNode) return;
         updateTreeNode({
-            id: selectedNode?.id,
-            type: selectedNode?.type,
+            id: selectedNode.id,
+            type: selectedNode.type,
             name: newName,
         }).catch((errorMessage) => {
             displayErrorMessageWithSnackbar({

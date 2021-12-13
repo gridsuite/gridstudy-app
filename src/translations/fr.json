@@ -321,5 +321,6 @@
     "MagnetizingConductance": "Conductance magnétisante",
     "MagnetizingSusceptance": "Susceptance magnétisante",
     "RatedVoltage": "Tension nominale",
-    "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements"
+    "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
+    "NewName": "Nouveau nom"
 }

@@ -17,9 +17,9 @@ export const ModificationListItem = ({ modification, ...props }) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const getComputedLabel = useCallback(() => {
-        if (useName && modification.equipmentName)
-            return modification.equipmentName;
-        return modification.equipmentId;
+        return useName && modification.equipmentName
+            ? modification.equipmentName
+            : modification.equipmentId;
     }, [modification, useName]);
 
     const getLabel = useCallback(
@@ -38,4 +38,8 @@ export const ModificationListItem = ({ modification, ...props }) => {
             <Divider />
         </>
     );
+};
+
+ModificationListItem.propTypes = {
+    modification: PropTypes.object,
 };

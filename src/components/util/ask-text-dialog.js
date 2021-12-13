@@ -14,7 +14,18 @@ import {
     TextField,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 
+/**
+ * Display a modal window asking for a single string
+ * @param title : string title of the modal box
+ * @param value : string initial value
+ * @param show : boolean modal showing
+ * @param onValidate : function called when validate button is pressed with the new string as parameter
+ * @param onClose : function called when exiting the box (and after onValidate)
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
     const [currentValue, setCurrentValue] = useState(value);
     const intl = useIntl();
@@ -50,3 +61,11 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
 };
 
 export default AskTextDialog;
+
+AskTextDialog.propTypes = {
+    onClose: PropTypes.func.isRequired,
+    onValidate: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired,
+    title: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+};
