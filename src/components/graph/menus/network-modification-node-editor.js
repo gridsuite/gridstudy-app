@@ -39,31 +39,27 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
     const [modifications, setModifications] = useState(undefined);
     const { enqueueSnackbar } = useSnackbar();
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const selectedNodeRef = useRef(); // initial empty to get first update
 
     useEffect(() => {
-        if (
-            selectedNodeRef.current !== selectedNode ||
-            studyUpdatedForce.force
-        ) {
+        if (selectedNode.current !== selectedNodeRef) {
             selectedNodeRef.current = selectedNode;
-            fetchNetworkModifications(selectedNode.networkModification)
-                .then((res) => setModifications(res.status ? [] : res))
-                .catch((err) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: err.message,
-                        enqueueSnackbar,
+            if (!selectedNode.networkModification) setModifications([]);
+            else {
+                fetchNetworkModifications(selectedNode.networkModification)
+                    .then((res) => {
+                        if (selectedNodeRef.current === selectedNode)
+                            setModifications(res.status ? [] : res);
                     })
-                );
+                    .catch((err) =>
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: err.message,
+                            enqueueSnackbar,
+                        })
+                    );
+            }
         }
-    }, [
-        selectedNode,
-        setModifications,
-        enqueueSnackbar,
-        studyUpdatedForce,
-        selectedNodeRef,
-    ]);
+    }, [selectedNode, setModifications, enqueueSnackbar, selectedNodeRef]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Paper } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -39,19 +39,37 @@ const NodeEditor = ({ onClose, className }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [selectedNode, setSelectedNode] = useState();
 
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
+    const selectedNodeUuidRef = useRef();
 
     useEffect(() => {
         if (!selectedNodeUuid) return;
-        fetchNetworkModificationTreeNode(selectedNodeUuid)
-            .then((res) => setSelectedNode(res))
-            .catch((err) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: err.message,
-                    enqueueSnackbar,
+        if (
+            !selectedNode ||
+            (studyUpdatedForce?.eventData?.headers?.node === selectedNodeUuid &&
+                studyUpdatedForce?.eventData?.headers?.updateType === 'study')
+        ) {
+            selectedNodeUuidRef.current = selectedNodeUuid;
+            fetchNetworkModificationTreeNode(selectedNodeUuid)
+                .then((res) => {
+                    if (selectedNodeUuid === selectedNodeUuidRef.current)
+                        setSelectedNode(res);
                 })
-            );
-    }, [setSelectedNode, enqueueSnackbar, selectedNodeUuid]);
+                .catch((err) =>
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: err.message,
+                        enqueueSnackbar,
+                    })
+                );
+        }
+    }, [
+        setSelectedNode,
+        enqueueSnackbar,
+        selectedNodeUuid,
+        selectedNodeUuidRef,
+        studyUpdatedForce,
+    ]);
 
     const changeNodeName = (newName) => {
         if (!selectedNode) return;
