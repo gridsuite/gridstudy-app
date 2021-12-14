@@ -77,7 +77,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     return (
         <>
             <List className={classes.list}>
-                <ListItem>
+                <ListItem key={'NodeEditorModificationsCount'}>
                     <FormattedMessage
                         id={'network_modification/modificationsCount'}
                         values={{ count: modifications?.length }}
