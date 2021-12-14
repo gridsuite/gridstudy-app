@@ -46,7 +46,7 @@ const NodeEditor = ({ onClose, className }) => {
     useEffect(() => {
         if (!selectedNodeUuid) return;
         if (
-            !selectedNode ||
+            !selectedNodeUuidRef.current ||
             (studyUpdatedForce?.eventData?.headers?.node === selectedNodeUuid &&
                 studyUpdatedForce?.eventData?.headers?.updateType === 'study')
         ) {
