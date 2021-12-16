@@ -79,7 +79,7 @@ export function fetchDirectoryContent(directoryUuid) {
     console.info("Fetching Folder content '%s'", directoryUuid);
     const fetchDirectoryContentUrl =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        `/v1/directories/${directoryUuid}/content`;
+        `/v1/directories/${directoryUuid}/elements`;
     return backendFetch(fetchDirectoryContentUrl).then((response) =>
         response.ok
             ? response.json()
@@ -610,7 +610,7 @@ export function fetchContingencyLists(listIds) {
     console.info('Fetching contingency lists');
     const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        '/v1/directories/elements?id=' +
+        '/v1/elements?id=' +
         listIds
             .filter((e) => e != null && e !== '') // filter empty element
             .join('&id=');
