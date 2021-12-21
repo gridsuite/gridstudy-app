@@ -1,5 +1,5 @@
 import RunButton from './run-button';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     startLoadFlow,
@@ -12,8 +12,10 @@ import DoneIcon from '@material-ui/icons/Done';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import PlayIcon from '@material-ui/icons/PlayArrow';
 import ContingencyListSelector from './contingency-list-selector';
-import { useIntl } from 'react-intl';
 import { makeStyles } from '@material-ui/core/styles';
+import { addLoadflowNotif, addSANotif } from '../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { useIntl } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -24,32 +26,46 @@ const useStyles = makeStyles((theme) => ({
 export function RunButtonContainer({
     studyUuid,
     selectedNodeUuid,
-    setSecurityAnalysisResult,
-    setRanLoadflow,
-    setRanSA,
     loadFlowStatus,
     securityAnalysisStatus,
     setIsComputationRunning,
+    runnable,
 }) {
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+
     const [showContingencyListSelector, setShowContingencyListSelector] =
         useState(false);
     const [computationStopped, setComputationStopped] = useState(false);
+
+    const [ranLoadflow, setRanLoadflow] = useState(false);
+
+    const [ranSA, setRanSA] = useState(false);
 
     const intl = useIntl();
 
     const classes = useStyles();
 
-    const Runnable = {
-        LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
-        SECURITY_ANALYSIS: intl.formatMessage({ id: 'SecurityAnalysis' }),
-    };
+    const dispatch = useDispatch();
 
-    const RUNNABLES = [Runnable.LOADFLOW, Runnable.SECURITY_ANALYSIS];
+    useEffect(() => {
+        if (
+            ranLoadflow &&
+            studyUpdatedForce?.eventData?.headers?.updateType === 'loadflow'
+        ) {
+            dispatch(addLoadflowNotif());
+        } else if (
+            ranSA &&
+            studyUpdatedForce?.eventData?.headers?.updateType ===
+                'securityAnalysisResult'
+        ) {
+            dispatch(addSANotif());
+        }
+    }, [dispatch, studyUpdatedForce, ranSA, ranLoadflow]);
 
     const ACTION_ON_RUNNABLES = {
         text: intl.formatMessage({ id: 'StopComputation' }),
-        action: (runnable) => {
-            if (runnable === Runnable.SECURITY_ANALYSIS) {
+        action: (action) => {
+            if (action === runnable.SECURITY_ANALYSIS) {
                 stopSecurityAnalysis(studyUuid, selectedNodeUuid);
                 setComputationStopped(!computationStopped);
             }
@@ -68,30 +84,33 @@ export function RunButtonContainer({
             selectedNodeUuid,
             contingencyListNames
         );
-
-        // clean result
-        setSecurityAnalysisResult(null);
     };
 
-    const startComputation = (runnable) => {
-        if (runnable === Runnable.LOADFLOW) {
+    const startComputation = (action) => {
+        if (action === runnable.LOADFLOW) {
             startLoadFlow(studyUuid, selectedNodeUuid);
             setRanLoadflow(true);
-        } else if (runnable === Runnable.SECURITY_ANALYSIS) {
+        } else if (action === runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
             setRanSA(true);
         }
     };
 
     const getRunningStatus = useCallback(
-        (runnable) => {
-            if (runnable === Runnable.LOADFLOW) {
+        (runnableType) => {
+            console.info(
+                'jbo run',
+                runnableType,
+                runnable,
+                securityAnalysisStatus
+            );
+            if (runnableType === runnable.LOADFLOW) {
                 return loadFlowStatus;
-            } else if (runnable === Runnable.SECURITY_ANALYSIS) {
+            } else if (runnableType === runnable.SECURITY_ANALYSIS) {
                 return securityAnalysisStatus;
             }
         },
-        [loadFlowStatus, securityAnalysisStatus]
+        [loadFlowStatus, securityAnalysisStatus, runnable]
     );
 
     const getRunningText = (runnable, status) => {
@@ -112,13 +131,18 @@ export function RunButtonContainer({
         }
     };
 
+    const RUNNABLES = useMemo(
+        () => [runnable.LOADFLOW, runnable.SECURITY_ANALYSIS],
+        [runnable]
+    );
+
     useEffect(() => {
         setIsComputationRunning(
             RUNNABLES.some(function (runnable) {
                 return getRunningStatus(runnable) === RunningStatus.RUNNING;
             })
         );
-    }, [setIsComputationRunning, getRunningStatus]);
+    }, [setIsComputationRunning, getRunningStatus, RUNNABLES]);
 
     return (
         <>
@@ -140,6 +164,7 @@ export function RunButtonContainer({
         </>
     );
 }
+
 RunButtonContainer.propTypes = {
     runnables: PropTypes.arrayOf(PropTypes.string),
     actionOnRunnable: PropTypes.shape({

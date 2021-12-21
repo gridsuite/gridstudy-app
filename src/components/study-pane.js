@@ -9,55 +9,26 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { useHistory, useLocation, useParams } from 'react-router-dom';
-
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { parse, stringify } from 'qs';
 import { makeStyles } from '@material-ui/core/styles';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import {
-    connectNotificationsWebsocket,
-    fetchAllEquipments,
-    fetchLoadFlowInfos,
-    fetchNetworkModificationTree,
-    fetchNetworkModificationTreeNode,
-    fetchSecurityAnalysisResult,
-    fetchSecurityAnalysisStatus,
-    fetchStudyExists,
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     updateSwitchState,
 } from '../utils/rest-api';
 import {
-    addLoadflowNotif,
-    addSANotif,
-    closeStudy,
     filteredNominalVoltagesUpdated,
-    loadNetworkModificationTreeSuccess,
-    networkCreated,
-    networkModificationTreeNodeAdded,
-    networkModificationTreeNodesRemoved,
-    networkModificationTreeNodesUpdated,
-    openStudy,
-    resetLoadflowNotif,
     selectItemNetwork,
-    selectTreeNode,
-    studyUpdated,
 } from '../redux/actions';
-import Network from './network/network';
 import { equipments } from './network/network-equipments';
 import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import PageNotFound from './page-not-found';
 import PropTypes from 'prop-types';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
-import SecurityAnalysisResult from './security-analysis-result';
-import LoadFlowResult from './loadflow-result';
 import clsx from 'clsx';
-import { RemoteResourceHandler } from './util/remote-resource-handler';
 import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
@@ -71,24 +42,18 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import { RunningStatus } from './util/running-status';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useSnackbar } from 'notistack';
-import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { NetworkMapContainer } from './network-map-container';
 import { StudyLateralToolBar } from './study-lateral-tool-bar';
 import { RunButtonContainer } from './run-button-container';
 import { ReportViewerController } from '../controller/report-viewer-controller';
+import { ResultViewController } from '../controller/result-view-controller';
+import { getLoadFlowRunningStatus } from './util/running-status';
 
 const useStyles = makeStyles((theme) => ({
     map: {
         display: 'flex',
         flexDirection: 'row',
-    },
-    table: {
-        display: 'flex',
-        flexDirection: 'column',
     },
     error: {
         padding: theme.spacing(2),
@@ -132,6 +97,10 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 8,
         marginTop: 8,
     },
+    table: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
 }));
 
 export const StudyView = {
@@ -141,15 +110,16 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-const StudyPane = (props) => {
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
-
-    const network = useSelector((state) => state.network);
-
-    const networkModificationTreeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
-
+const StudyPane = ({
+    studyUuid,
+    network,
+    selectedNodeUuid,
+    updatedLines,
+    loadFlowInfos,
+    securityAnalysisStatus,
+    runnable,
+    ...props
+}) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
 
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
@@ -176,8 +146,6 @@ const StudyPane = (props) => {
         (state) => state[PARAM_SUBSTATION_LAYOUT]
     );
 
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
@@ -185,20 +153,6 @@ const StudyPane = (props) => {
     const componentLibrary = useSelector(
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
-
-    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
-
-    const [studyNotFound, setStudyNotFound] = useState(false);
-
-    const [networkLoadingFail, setNetworkLoadingFail] = useState(false);
-
-    const [errorMsgId, setErrorMsgId] = useState('');
-
-    const [studyExistsChecked, setStudyExistsChecked] = useState(false);
-
-    const [isNetworkLoadingDone, setIsNetworkLoadingDone] = useState(false);
-
-    const [updatedLines, setUpdatedLines] = useState([]);
 
     const [displayedVoltageLevelId, setDisplayedVoltageLevelId] =
         useState(null);
@@ -209,28 +163,8 @@ const StudyPane = (props) => {
 
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
 
-    const [loadFlowStatus, setLoadFlowStatus] = useState(RunningStatus.IDLE);
-
-    const [loadFlowResult, setLoadFlowResult] = useState(null);
-
-    const [ranLoadflow, setRanLoadflow] = useState(false);
-
-    const [ranSA, setRanSA] = useState(false);
-
-    const [securityAnalysisStatus, setSecurityAnalysisStatus] = useState(
-        RunningStatus.IDLE
-    );
-
-    const [securityAnalysisResultFetcher, setSecurityAnalysisResultFetcher] =
-        useState(null);
-    const [securityAnalysisResult, setSecurityAnalysisResult] = useState(null);
-    const [securityAnalysisResultFetched, setSecurityAnalysisResultFetched] =
-        useState(false);
-
     const [isComputationRunning, setIsComputationRunning] = useState(false);
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
-
-    const [tabIndex, setTabIndex] = React.useState(0);
 
     const [visibleSubstation, setVisibleSubstation] = useState(null);
 
@@ -250,285 +184,7 @@ const StudyPane = (props) => {
 
     const history = useHistory();
 
-    const websocketExpectedCloseRef = useRef();
-
-    const intl = useIntl();
-
-    const intlRef = useIntlRef();
-
     const [drawerShift, setDrawerShift] = useState();
-
-    function getLoadFlowRunningStatus(lfStatus) {
-        switch (lfStatus) {
-            case 'CONVERGED':
-                return RunningStatus.SUCCEED;
-            case 'DIVERGED':
-                return RunningStatus.FAILED;
-            case 'RUNNING':
-                return RunningStatus.RUNNING;
-            case 'NOT_DONE':
-                return RunningStatus.IDLE;
-            default:
-                return RunningStatus.IDLE;
-        }
-    }
-
-    const updateLoadFlowResult = useCallback(() => {
-        if (selectedNodeUuid !== null) {
-            fetchLoadFlowInfos(studyUuid, selectedNodeUuid).then(
-                (loadflowInfos) => {
-                    setLoadFlowStatus(
-                        getLoadFlowRunningStatus(loadflowInfos.loadFlowStatus)
-                    );
-                    setLoadFlowResult(loadflowInfos.loadFlowResult);
-                }
-            );
-        }
-    }, [studyUuid, selectedNodeUuid]);
-
-    function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
-        switch (securityAnalysisStatus) {
-            case 'COMPLETED':
-                return RunningStatus.SUCCEED;
-            case 'RUNNING':
-                return RunningStatus.RUNNING;
-            case 'NOT_DONE':
-                return RunningStatus.IDLE;
-            default:
-                return RunningStatus.IDLE;
-        }
-    }
-
-    const updateSecurityAnalysisStatus = useCallback(() => {
-        if (selectedNodeUuid !== null) {
-            fetchSecurityAnalysisStatus(studyUuid, selectedNodeUuid).then(
-                (status) => {
-                    setSecurityAnalysisStatus(
-                        getSecurityAnalysisRunningStatus(status)
-                    );
-                }
-            );
-        }
-    }, [studyUuid, selectedNodeUuid]);
-
-    const updateSecurityAnalysisResult = useCallback(() => {
-        setSecurityAnalysisResultFetcher(
-            new RemoteResourceHandler(
-                () => fetchSecurityAnalysisResult(studyUuid, selectedNodeUuid),
-                (res) => {
-                    setSecurityAnalysisResult(res);
-                    setSecurityAnalysisResultFetched(true);
-                },
-                (e) => {
-                    // produces 404 error when missing in the normal case, don't crash. TODO deal with other errors
-                    setSecurityAnalysisResultFetched(true);
-                }
-            )
-        );
-    }, [
-        studyUuid,
-        selectedNodeUuid,
-        setSecurityAnalysisResult,
-        setSecurityAnalysisResultFetched,
-    ]);
-
-    const loadNetwork = useCallback(
-        (isUpdate) => {
-            console.info(`Loading network of study '${studyUuid}'...`);
-            updateLoadFlowResult();
-            updateSecurityAnalysisResult();
-            updateSecurityAnalysisStatus();
-            if (isUpdate) {
-                // After a load flow, network has to be recreated.
-                // In order to avoid glitches during sld and map rendering,
-                // lines and substations have to be prefetched and set before network creation event is dispatched
-                // Network creation event is dispatched directly in the network constructor
-                new Network(
-                    studyUuid,
-                    selectedNodeUuid,
-                    (error) => {
-                        console.error(error.message);
-                        setNetworkLoadingFail(true);
-                    },
-                    dispatch,
-                    { equipments: [equipments.lines, equipments.substations] }
-                );
-            } else {
-                if (selectedNodeUuid !== null) {
-                    const network = new Network(
-                        studyUuid,
-                        selectedNodeUuid,
-                        (error) => {
-                            console.error(error.message);
-                            setNetworkLoadingFail(true);
-                        },
-                        dispatch
-                    );
-                    // For initial network loading, no need to initialize lines and substations at first,
-                    // lazy loading will do the job (no glitches to avoid)
-                    dispatch(networkCreated(network));
-                }
-            }
-            setIsNetworkLoadingDone(true);
-        },
-        [
-            studyUuid,
-            selectedNodeUuid,
-            dispatch,
-            updateLoadFlowResult,
-            updateSecurityAnalysisResult,
-            updateSecurityAnalysisStatus,
-        ]
-    );
-
-    const updateNetwork = useCallback(
-        (substationsIds) => {
-            const updatedEquipments = fetchAllEquipments(
-                studyUuid,
-                selectedNodeUuid,
-                substationsIds
-            );
-            console.info('network update');
-            Promise.all([updatedEquipments])
-                .then((values) => {
-                    network.updateSubstations(values[0].substations);
-                    network.updateLines(values[0].lines);
-                    network.updateTwoWindingsTransformers(
-                        values[0].twoWindingsTransformers
-                    );
-                    network.updateThreeWindingsTransformers(
-                        values[0].threeWindingsTransformers
-                    );
-                    network.updateGenerators(values[0].generators);
-                    network.updateLoads(values[0].loads);
-                    network.updateBatteries(values[0].batteries);
-                    network.updateDanglingLines(values[0].danglingLines);
-                    network.updateLccConverterStations(
-                        values[0].lccConverterStations
-                    );
-                    network.updateVscConverterStations(
-                        values[0].vscConverterStations
-                    );
-                    network.updateHvdcLines(values[0].hvdcLines);
-                    network.updateShuntCompensators(
-                        values[0].shuntCompensators
-                    );
-                    network.updateStaticVarCompensators(
-                        values[0].staticVarCompensators
-                    );
-
-                    setUpdatedLines(values[0].lines);
-                })
-                .catch(function (error) {
-                    console.error(error.message);
-                    setNetworkLoadingFail(true);
-                });
-            // Note: studyUuid don't change
-        },
-        [studyUuid, selectedNodeUuid, network]
-    );
-
-    const removeEquipmentFromNetwork = useCallback(
-        (equipmentType, equipmentId) => {
-            console.info(
-                'removing equipment with id=',
-                equipmentId,
-                ' and type=',
-                equipmentType,
-                ' from the network'
-            );
-            network.removeEquipment(equipmentType, equipmentId);
-        },
-        [network]
-    );
-
-    const loadTree = useCallback(() => {
-        console.info(
-            `Loading network modification tree of study '${studyUuid}'...`
-        );
-
-        const networkModificationTree = fetchNetworkModificationTree(studyUuid);
-
-        networkModificationTree
-            .then((tree) => {
-                dispatch(selectTreeNode(tree.id));
-
-                const networkModificationTreeModel =
-                    new NetworkModificationTreeModel();
-                networkModificationTreeModel.setTreeElements(tree);
-                networkModificationTreeModel.updateLayout();
-                dispatch(
-                    loadNetworkModificationTreeSuccess(
-                        networkModificationTreeModel
-                    )
-                );
-            })
-            .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NetworkModificationTreeLoadError',
-                        intlRef: intlRef,
-                    },
-                })
-            )
-            .finally(() =>
-                console.debug('Network modification tree loading finished')
-            );
-        // Note: studyUuid and dispatch don't change
-    }, [studyUuid, enqueueSnackbar, intlRef, dispatch]);
-
-    const connectNotifications = useCallback(
-        (studyUuid) => {
-            console.info(`Connecting to notifications '${studyUuid}'...`);
-
-            const ws = connectNotificationsWebsocket(studyUuid);
-            ws.onmessage = function (event) {
-                dispatch(studyUpdated(JSON.parse(event.data)));
-            };
-            ws.onclose = function (event) {
-                if (!websocketExpectedCloseRef.current) {
-                    console.error('Unexpected Notification WebSocket closed');
-                }
-            };
-            ws.onerror = function (event) {
-                console.error('Unexpected Notification WebSocket error', event);
-            };
-            return ws;
-        },
-        // Note: dispatch doesn't change
-        [dispatch]
-    );
-
-    useEffect(() => {
-        websocketExpectedCloseRef.current = false;
-        dispatch(openStudy(studyUuid));
-
-        fetchStudyExists(studyUuid).then((response) => {
-            if (response.status === 400 || response.status === 404) {
-                setStudyNotFound(true);
-                setStudyExistsChecked(true);
-                setIsNetworkLoadingDone(true);
-            } else {
-                setStudyExistsChecked(true);
-                loadNetwork();
-                loadTree();
-            }
-        });
-
-        const ws = connectNotifications(studyUuid);
-
-        // study cleanup at unmount event
-        return function () {
-            websocketExpectedCloseRef.current = true;
-            ws.close();
-            dispatch(closeStudy());
-            dispatch(filteredNominalVoltagesUpdated(null));
-        };
-        // Note: dispach, studyUuid, loadNetwork, loadGeoData, loadTree
-        // connectNotifications don't change
-    }, [dispatch, studyUuid, loadNetwork, loadTree, connectNotifications]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
@@ -636,171 +292,16 @@ const StudyPane = (props) => {
         }
     };
 
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
-            ) {
-                //TODO reload data more intelligently
-                updateSld();
-                loadNetwork(true);
-                //add the loadflow notif (only if the user clicked on run loadflow)
-                if (ranLoadflow) {
-                    dispatch(addLoadflowNotif());
-                }
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'loadflow_status'
-            ) {
-                updateLoadFlowResult();
-                //we reset the notif when the previous loadflow results are removed
-                dispatch(resetLoadflowNotif());
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'securityAnalysis_status'
-            ) {
-                updateSecurityAnalysisStatus();
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'securityAnalysisResult'
-            ) {
-                updateSecurityAnalysisResult();
-                //add the SA notif (only if the user clicked on run SA)
-                if (ranSA) {
-                    dispatch(addSANotif());
-                }
-                // update badge
-            }
-        }
-        // Note: studyUuid, and loadNetwork don't change
-    }, [
-        studyUpdatedForce,
-        studyUuid,
-        loadNetwork,
-        updateLoadFlowResult,
-        updateSecurityAnalysisStatus,
-        updateSecurityAnalysisResult,
-        ranLoadflow,
-        ranSA,
-        dispatch,
-    ]);
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
-                updateSld();
-
-                // study partial update :
-                // loading equipments involved in the study modification and updating the network
-                const substationsIds =
-                    studyUpdatedForce.eventData.headers['substationsIds'];
-                const tmp = substationsIds.substring(
-                    1,
-                    substationsIds.length - 1
-                ); // removing square brackets
-                if (tmp && tmp.length > 0) {
-                    updateNetwork(tmp.split(', '));
-                }
-
-                // removing deleted equipment from the network
-                const deletedEquipmentId =
-                    studyUpdatedForce.eventData.headers['deletedEquipmentId'];
-                const deletedEquipmentType =
-                    studyUpdatedForce.eventData.headers['deletedEquipmentType'];
-                if (deletedEquipmentId && deletedEquipmentType) {
-                    removeEquipmentFromNetwork(
-                        deletedEquipmentType,
-                        deletedEquipmentId
-                    );
-                }
-            }
-        }
-    }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
-
-    const updateNodes = useCallback(
-        (updatedNodesIds) => {
-            Promise.all(
-                updatedNodesIds.map(fetchNetworkModificationTreeNode)
-            ).then((values) => {
-                dispatch(networkModificationTreeNodesUpdated(values));
-            });
-        },
-        [dispatch]
-    );
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'nodeCreated'
-            ) {
-                fetchNetworkModificationTreeNode(
-                    studyUpdatedForce.eventData.headers['newNode']
-                ).then((node) => {
-                    dispatch(
-                        networkModificationTreeNodeAdded(
-                            node,
-                            studyUpdatedForce.eventData.headers['node']
-                        )
-                    );
-                });
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'nodeDeleted'
-            ) {
-                dispatch(
-                    networkModificationTreeNodesRemoved(
-                        studyUpdatedForce.eventData.headers['nodes']
-                    )
-                );
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'nodeUpdated'
-            ) {
-                updateNodes(studyUpdatedForce.eventData.headers['nodes']);
-            }
-        }
-    }, [studyUpdatedForce, updateNodes, dispatch]);
-
-    function onClickNmKConstraint(row, column) {
-        if (network) {
-            if (column.dataKey === 'subjectId') {
-                let vlId;
-                let substationId;
-
-                let equipment = network.getLineOrTransformer(row.subjectId);
-                if (equipment) {
-                    if (row.side) {
-                        vlId =
-                            row.side === 'ONE'
-                                ? equipment.voltageLevelId1
-                                : row.side === 'TWO'
-                                ? equipment.voltageLevelId2
-                                : equipment.voltageLevelId3;
-                    } else {
-                        vlId = equipment.voltageLevelId1;
-                    }
-                    const vl = network.getVoltageLevel(vlId);
-                    substationId = vl.substationId;
-                } else {
-                    equipment = network.getVoltageLevel(row.subjectId);
-                    if (equipment) {
-                        vlId = equipment.id;
-                        substationId = equipment.substationId;
-                    }
-                }
-
-                // TODO code factorization for displaying a VL via a hook
-                if (vlId) {
-                    setDisplayedVoltageLevelId(null);
-                    setDisplayedSubstationId(null);
-                    dispatch(selectItemNetwork(vlId));
-                    props.onChangeTab(0); // switch to map view
-                    showVoltageLevelDiagram(vlId); // show voltage level
-                    setVisibleSubstation(substationId);
-                    setDisplayedVoltageLevelId(vlId);
-                }
-            }
+    function openVoltageLevelDiagram(vlId, substationId) {
+        // TODO code factorization for displaying a VL via a hook
+        if (vlId) {
+            setDisplayedVoltageLevelId(null);
+            setDisplayedSubstationId(null);
+            dispatch(selectItemNetwork(vlId));
+            props.onChangeTab(0); // switch to map view
+            showVoltageLevelDiagram(vlId); // show voltage level
+            setVisibleSubstation(substationId);
+            setDisplayedVoltageLevelId(vlId);
         }
     }
 
@@ -936,7 +437,7 @@ const StudyPane = (props) => {
                         lineFlowMode={lineFlowMode}
                         lineFlowColorMode={lineFlowColorMode}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        loadFlowStatus={loadFlowStatus}
+                        loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
                         filteredNominalVoltages={filteredNominalVoltages}
                         openVoltageLevel={openVoltageLevel}
                         centerOnSubstation={centerOnSubstation}
@@ -945,7 +446,7 @@ const StudyPane = (props) => {
                         onChangeTab={props.onChangeTab}
                         showInSpreadsheet={showInSpreadsheet}
                     />
-                    {network && displayOverloadTable && linesNearOverload() && (
+                    {displayOverloadTable && linesNearOverload() && (
                         <div className={classes.divOverloadedLineView}>
                             <OverloadedLinesView
                                 lines={network.lines}
@@ -958,14 +459,12 @@ const StudyPane = (props) => {
                         <RunButtonContainer
                             studyUuid={studyUuid}
                             selectedNodeUuid={selectedNodeUuid}
-                            setSecurityAnalysisResult={
-                                setSecurityAnalysisResult
-                            }
-                            setRanLoadflow={setRanLoadflow}
-                            setRanSA={setRanSA}
-                            loadFlowStatus={loadFlowStatus}
+                            loadFlowStatus={getLoadFlowRunningStatus(
+                                loadFlowInfos
+                            )}
                             securityAnalysisStatus={securityAnalysisStatus}
                             setIsComputationRunning={setIsComputationRunning}
+                            runnable={runnable}
                         />
                     </div>
                 </div>
@@ -976,8 +475,8 @@ const StudyPane = (props) => {
                     onSubstationFocus={setCenterOnSubstation}
                     visibleSubstation={visibleSubstation}
                     isMap={props.view === StudyView.MAP}
-                    treeModel={networkModificationTreeModel}
                     setLateralShift={setDrawerShift}
+                    studyUuid={studyUuid}
                 />
 
                 {/*
@@ -1010,7 +509,9 @@ const StudyPane = (props) => {
                                         : SvgType.SUBSTATION
                                 }
                                 showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={loadFlowStatus}
+                                loadFlowStatus={getLoadFlowRunningStatus(
+                                    loadFlowInfos
+                                )}
                                 selectedNodeUuid={selectedNodeUuid}
                             />
                         </div>
@@ -1021,145 +522,66 @@ const StudyPane = (props) => {
 
     function renderTableView() {
         return (
-            network && (
-                <Paper className={clsx('singlestretch-child', classes.table)}>
-                    <NetworkTable
-                        network={network}
-                        studyUuid={studyUuid}
-                        selectedNodeUuid={selectedNodeUuid}
-                        equipmentId={tableEquipment.id}
-                        equipmentType={tableEquipment.type}
-                        equipmentChanged={tableEquipment.changed}
-                    />
-                </Paper>
-            )
-        );
-    }
-
-    useEffect(() => {
-        if (tabIndex === 1) securityAnalysisResultFetcher.fetch();
-    }, [tabIndex, securityAnalysisResultFetcher]);
-
-    function renderResultsView() {
-        return (
-            <div className={clsx('singlestretch-child', classes.table)}>
-                <Tabs
-                    value={tabIndex}
-                    indicatorColor="primary"
-                    onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
-                >
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'loadFlowResults',
-                        })}
-                    />
-                    <Tab
-                        label={intl.formatMessage({
-                            id: 'securityAnalysisResults',
-                        })}
-                    />
-                </Tabs>
-                {tabIndex === 0 && renderLoadFlowResult()}
-                {tabIndex === 1 && renderSecurityAnalysisResult()}
-            </div>
-        );
-    }
-
-    function renderSecurityAnalysisResult() {
-        return (
-            <Paper
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flexGrow: 1,
-                }}
-            >
-                <SecurityAnalysisResult
-                    result={securityAnalysisResult}
-                    fetched={securityAnalysisResultFetched}
-                    onClickNmKConstraint={onClickNmKConstraint}
+            <Paper className={clsx('singlestretch-child', classes.table)}>
+                <NetworkTable
+                    network={network}
+                    studyUuid={studyUuid}
+                    selectedNodeUuid={selectedNodeUuid}
+                    equipmentId={tableEquipment.id}
+                    equipmentType={tableEquipment.type}
+                    equipmentChanged={tableEquipment.changed}
                 />
             </Paper>
         );
     }
 
-    function renderLoadFlowResult() {
-        return (
-            <Paper style={{ flexGrow: 1 }} className={classes.table}>
-                <LoadFlowResult result={loadFlowResult} />
-            </Paper>
-        );
-    }
-
-    useEffect(() => {
-        if (studyExistsChecked && isNetworkLoadingDone) {
-            if (studyNotFound) {
-                setErrorMsgId('studyNotFound');
-            } else if (networkLoadingFail) {
-                setErrorMsgId('networkLoadingFail');
-            }
-        }
-    }, [
-        studyNotFound,
-        networkLoadingFail,
-        studyExistsChecked,
-        isNetworkLoadingDone,
-    ]);
-
-    if (errorMsgId) {
-        return (
-            <PageNotFound
-                message={
-                    <FormattedMessage
-                        id={errorMsgId}
-                        values={{ studyUuid: studyUuid }}
-                    />
-                }
-            />
-        );
-    } else {
-        return (
-            <>
-                {/*Rendering the map is slow, do it once and keep it display:none*/}
-                <div
-                    className="singlestretch-parent singlestretch-child"
-                    style={{
-                        display: props.view === StudyView.MAP ? null : 'none',
-                    }}
-                >
-                    {renderMapView()}
-                </div>
-                <div
-                    className="singlestretch-parent singlestretch-child"
-                    style={{
-                        display:
-                            props.view === StudyView.SPREADSHEET
-                                ? null
-                                : 'none',
-                    }}
-                >
-                    {renderTableView()}
-                </div>
-                <div
-                    className="singlestretch-parent singlestretch-child"
-                    style={{
-                        display:
-                            props.view === StudyView.RESULTS ? null : 'none',
-                    }}
-                >
-                    {renderResultsView()}
-                </div>
-                <div
-                    className="singlestretch-parent singlestretch-child"
-                    style={{
-                        display: props.view === StudyView.LOGS ? null : 'none',
-                    }}
-                >
-                    <ReportViewerController reportId={studyUuid} />
-                </div>
-            </>
-        );
-    }
+    return (
+        <>
+            {/*Rendering the map is slow, do it once and keep it display:none*/}
+            <div
+                className="singlestretch-parent singlestretch-child"
+                style={{
+                    display: props.view === StudyView.MAP ? null : 'none',
+                }}
+            >
+                {renderMapView()}
+            </div>
+            <div
+                className="singlestretch-parent singlestretch-child"
+                style={{
+                    display:
+                        props.view === StudyView.SPREADSHEET ? null : 'none',
+                }}
+            >
+                {renderTableView()}
+            </div>
+            <div
+                className="singlestretch-parent singlestretch-child"
+                style={{
+                    display: props.view === StudyView.RESULTS ? null : 'none',
+                }}
+            >
+                <ResultViewController
+                    studyUuid={studyUuid}
+                    selectedNodeUuid={selectedNodeUuid}
+                    loadFlowInfos={loadFlowInfos}
+                    network={network}
+                    openVoltageLevelDiagram={openVoltageLevelDiagram}
+                />
+            </div>
+            <div
+                className="singlestretch-parent singlestretch-child"
+                style={{
+                    display: props.view === StudyView.LOGS ? null : 'none',
+                }}
+            >
+                <ReportViewerController
+                    reportId={studyUuid}
+                    visible={props.view === StudyView.LOGS}
+                />
+            </div>
+        </>
+    );
 };
 
 StudyPane.defaultProps = {

@@ -97,6 +97,7 @@ const RunButton = (props) => {
     }
 
     function getOptions(runningStatus, runnables, actionOnRunnable) {
+        console.info('jbo st', runningStatus, runnables, actionOnRunnable);
         switch (runningStatus) {
             case RunningStatus.SUCCEED:
             case RunningStatus.FAILED:
@@ -135,6 +136,7 @@ const RunButton = (props) => {
         props.actionOnRunnable.action(getRunnable());
     }
 
+    console.info('jbo select', selectedIndex, props.runnables, props);
     return (
         <SplitButton
             options={getOptions(

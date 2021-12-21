@@ -51,6 +51,7 @@ export const ReportViewerController = ({ reportId, visible }) => {
                 />
             );
         }
+        return <></>;
     }
 
     return renderLogsView();

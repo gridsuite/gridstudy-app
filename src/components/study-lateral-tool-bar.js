@@ -1,11 +1,11 @@
 import LateralToolbar from './lateral-toolbar';
 import NetworkExplorer from './network/network-explorer';
-import NetworkModificationTree from './network-modification-tree';
 import NodeEditor from './graph/menus/node-editor';
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { StudyDrawer, ToolDrawer } from './study-drawer';
+import NetworkModificationTreeController from '../controller/network-modification-tree-controller';
 
 export const drawerExplorerWidth = 300;
 export const nodeEditorWidth = 400;
@@ -75,7 +75,7 @@ export function StudyLateralToolBar({
     onSubstationFocus,
     visibleSubstation,
     isMap,
-    treeModel,
+    studyUuid,
     setLateralShift,
 }) {
     const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
@@ -164,7 +164,7 @@ export function StudyLateralToolBar({
                     classes.drawerNetworkModificationTreeShift
                 }
             >
-                <NetworkModificationTree treeModel={treeModel} />
+                <NetworkModificationTreeController studyUuid={studyUuid} />
             </StudyDrawer>
             <StudyDrawer
                 open={networkModificationsPaneOpen}

@@ -17,15 +17,17 @@ import {
     useLocation,
 } from 'react-router-dom';
 
-import StudyPane, { StudyView } from './study-pane';
+import { StudyView } from './study-pane';
 import {
     changeDisplayedColumns,
     resetLoadflowNotif,
     resetSANotif,
     selectCenterLabelState,
+    selectComponentLibrary,
     selectComputedLanguage,
     selectDiagonalLabelState,
     selectDisplayOverloadTableState,
+    selectFavoriteContingencyLists,
     selectLanguage,
     selectLineFlowAlertThreshold,
     selectLineFlowColorMode,
@@ -33,10 +35,8 @@ import {
     selectLineFullPathState,
     selectLineParallelPathState,
     selectSubstationLayout,
-    selectComponentLibrary,
     selectTheme,
     selectUseName,
-    selectFavoriteContingencyLists,
 } from '../redux/actions';
 
 import {
@@ -80,6 +80,7 @@ import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { useSnackbar } from 'notistack';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { StudyController } from '../controller/study-controller';
 
 const noUserManager = { instance: null, error: null };
 
@@ -372,7 +373,7 @@ const App = () => {
                 {user !== null ? (
                     <Switch>
                         <Route exact path="/studies/:studyUuid">
-                            <StudyPane
+                            <StudyController
                                 view={STUDY_VIEWS[tabIndex]}
                                 onChangeTab={onChangeTab}
                             />

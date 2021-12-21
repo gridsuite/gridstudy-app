@@ -94,7 +94,10 @@ const SplitButton = (props) => {
     };
 
     const breakText = (text) => {
-        return text.split('\n').map((text, i) => (i ? [<br />, text] : text));
+        return (
+            text &&
+            text.split('\n').map((text, i) => (i ? [<br />, text] : text))
+        );
     };
 
     const disabledOption = props.isRunning && props.computationStopped;

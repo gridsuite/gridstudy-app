@@ -69,54 +69,52 @@ const LoadFlowResult = ({ result }) => {
 
     function renderLoadFlowResult() {
         return (
-            <>
-                <Paper className={classes.tablePaper}>
-                    <VirtualizedTable
-                        rows={result.componentResults}
-                        sortable={true}
-                        columns={[
-                            {
-                                label: intl.formatMessage({
-                                    id: 'connectedComponentNum',
-                                }),
-                                dataKey: 'connectedComponentNum',
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'synchronousComponentNum',
-                                }),
-                                dataKey: 'synchronousComponentNum',
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'status',
-                                }),
-                                dataKey: 'status',
-                                cellRenderer: StatusCellRender,
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'iterationCount',
-                                }),
-                                dataKey: 'iterationCount',
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'slackBusId',
-                                }),
-                                dataKey: 'slackBusId',
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'slackBusActivePowerMismatch',
-                                }),
-                                dataKey: 'slackBusActivePowerMismatch',
-                                cellRenderer: NumberRenderer,
-                            },
-                        ]}
-                    />
-                </Paper>
-            </>
+            <Paper className={classes.tablePaper}>
+                <VirtualizedTable
+                    rows={result.componentResults}
+                    sortable={true}
+                    columns={[
+                        {
+                            label: intl.formatMessage({
+                                id: 'connectedComponentNum',
+                            }),
+                            dataKey: 'connectedComponentNum',
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'synchronousComponentNum',
+                            }),
+                            dataKey: 'synchronousComponentNum',
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'status',
+                            }),
+                            dataKey: 'status',
+                            cellRenderer: StatusCellRender,
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'iterationCount',
+                            }),
+                            dataKey: 'iterationCount',
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'slackBusId',
+                            }),
+                            dataKey: 'slackBusId',
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'slackBusActivePowerMismatch',
+                            }),
+                            dataKey: 'slackBusActivePowerMismatch',
+                            cellRenderer: NumberRenderer,
+                        },
+                    ]}
+                />
+            </Paper>
         );
     }
 
