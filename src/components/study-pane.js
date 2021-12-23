@@ -1097,6 +1097,19 @@ const StudyPane = (props) => {
         }
     }, [studyUpdatedForce, updateNodes, dispatch]);
 
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'realizationCompleted'
+            ) {
+                updateNodes(
+                    new Array(studyUpdatedForce.eventData.headers['node'])
+                );
+            }
+        }
+    }, [studyUpdatedForce, updateNodes, dispatch]);
+
     const mapRef = useRef();
     const centerSubstation = useCallback(
         (id) => {

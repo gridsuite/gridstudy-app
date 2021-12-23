@@ -6,11 +6,12 @@
  */
 import React, { useCallback, useState } from 'react';
 import ReactFlow, { Controls } from 'react-flow-renderer';
+import { useParams } from 'react-router-dom';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { Box } from '@material-ui/core';
-import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
+import { createTreeNode, deleteTreeNode, realizeNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import CenterGraphButton from './graph/util/center-graph-button';
@@ -27,6 +28,8 @@ const nodeTypes = {
 const snapGrid = [15, 15];
 
 const NetworkModificationTree = (props) => {
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+
     const [selectedNode, setSelectedNode] = useState(null);
 
     const [isMoving, setIsMoving] = useState(false);
@@ -53,6 +56,15 @@ const NetworkModificationTree = (props) => {
             setSelectedNode(selectedElements[0]);
         }
     }, []);
+
+    const onNodeDoubleClick = useCallback(
+        (event, node) => {
+            if (node.type === 'NETWORK_MODIFICATION') {
+                realizeNode(studyUuid, node.id).then();
+            }
+        },
+        [studyUuid]
+    );
 
     const onPaneClick = useCallback(() => {
         setSelectedNode(undefined);
@@ -132,6 +144,7 @@ const NetworkModificationTree = (props) => {
                         }
                         onNodeContextMenu={onNodeContextMenu}
                         onSelectionChange={onSelectionChange}
+                        onNodeDoubleClick={onNodeDoubleClick}
                         onPaneClick={onPaneClick}
                         onMove={onMove}
                         onMoveEnd={onMoveEnd}

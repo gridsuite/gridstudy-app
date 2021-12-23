@@ -1187,12 +1187,26 @@ export function fetchLoadFlowInfos(studyUuid, selectedNodeUuid) {
 export function fetchNetworkModifications(groupUuid) {
     console.info('Fetching network modification tree node');
     const url =
-        PREFIX_NETWORK_MODIFICATION_QUERIES +
-        '/v1/groups/' +
-        encodeURIComponent(groupUuid) +
-        '/modifications';
+      PREFIX_NETWORK_MODIFICATION_QUERIES +
+      '/v1/groups/' +
+      encodeURIComponent(groupUuid) +
+      '/modifications';
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
-        response.json()
+      response.json()
+    );
+}
+
+export function realizeNode(studyUuid, selectedNodeUuid) {
+    console.info(
+        'Realize node ' + selectedNodeUuid + ' of study ' + studyUuid + ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/realization';
+    console.debug(url);
+    return backendFetch(url, { method: 'post' }).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
     );
 }
