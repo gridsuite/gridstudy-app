@@ -118,6 +118,9 @@ const StudyPane = ({
     loadFlowInfos,
     securityAnalysisStatus,
     runnable,
+    sldRef,
+    setUpdateSwitchMsg,
+    updateSwitchMsg,
     ...props
 }) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -164,7 +167,6 @@ const StudyPane = ({
     const [displayedSubstationId, setDisplayedSubstationId] = useState(null);
 
     const [isComputationRunning, setIsComputationRunning] = useState(false);
-    const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [visibleSubstation, setVisibleSubstation] = useState(null);
 
@@ -247,7 +249,6 @@ const StudyPane = ({
         history.replace('/studies/' + encodeURIComponent(studyUuid));
     }
 
-    const sldRef = useRef();
     const handleUpdateSwitchState = useCallback(
         (breakerId, open, switchElement) => {
             if (open) {
@@ -284,13 +285,6 @@ const StudyPane = ({
         },
         [studyUuid, selectedNodeUuid]
     );
-
-    const updateSld = () => {
-        if (sldRef.current) {
-            setUpdateSwitchMsg('');
-            sldRef.current.reloadSvg();
-        }
-    };
 
     function openVoltageLevelDiagram(vlId, substationId) {
         // TODO code factorization for displaying a VL via a hook

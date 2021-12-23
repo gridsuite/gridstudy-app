@@ -7,6 +7,7 @@
 
 import LoaderWithOverlay from '../loader-with-overlay';
 import PageNotFound from '../page-not-found';
+import PropTypes from 'prop-types';
 
 const WaitingLoader = ({ loading, message, errMessage, children }) => {
     if (errMessage !== undefined) {
@@ -24,3 +25,10 @@ const WaitingLoader = ({ loading, message, errMessage, children }) => {
 };
 
 export default WaitingLoader;
+
+WaitingLoader.propTypes = {
+    children: PropTypes.node.isRequired,
+    errMessage: PropTypes.string,
+    loading: PropTypes.bool.isRequired,
+    message: PropTypes.string,
+};

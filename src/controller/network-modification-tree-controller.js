@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useCallback, useEffect } from 'react';
 import {
     fetchNetworkModificationTree,
@@ -15,6 +22,7 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import NetworkModificationTree from '../components/network-modification-tree';
+import PropTypes from 'prop-types';
 
 export const NetworkModificationTreeController = ({ studyUuid }) => {
     const networkModificationTreeModel = useSelector(
@@ -112,3 +120,7 @@ export const NetworkModificationTreeController = ({ studyUuid }) => {
 };
 
 export default NetworkModificationTreeController;
+
+NetworkModificationTreeController.propTypes = {
+    studyUuid: PropTypes.string.isRequired,
+};

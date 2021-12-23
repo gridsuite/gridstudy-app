@@ -39,7 +39,6 @@ import WaitingLoader from '../components/util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { useSnackbar } from 'notistack';
-import { useIntl } from 'react-intl';
 import {
     getSecurityAnalysisRunningStatus,
     RunningStatus,
@@ -137,7 +136,6 @@ function useStudy(studyUuidRequest) {
 
 export function StudyController({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
-    const intl = useIntl();
 
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
         decodeURIComponent(useParams().studyUuid)
@@ -147,7 +145,6 @@ export function StudyController({ view, onChangeTab }) {
 
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
-    const [isNetworkPending, setIsNetworkPending] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -169,6 +166,8 @@ export function StudyController({ view, onChangeTab }) {
         getSecurityAnalysisRunningStatus
     );
 
+    const sldRef = useRef();
+
     const [updatedLines, setUpdatedLines] = useState([]);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -178,6 +177,8 @@ export function StudyController({ view, onChangeTab }) {
     const { enqueueSnackbar } = useSnackbar();
 
     const intlRef = useIntlRef();
+
+    const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const connectNotifications = useCallback(
         (studyUuid) => {
@@ -373,13 +374,20 @@ export function StudyController({ view, onChangeTab }) {
         [studyUuid, selectedNodeUuid, network]
     );
 
+    const updateSld = () => {
+        if (sldRef.current) {
+            setUpdateSwitchMsg('');
+            sldRef.current.reloadSvg();
+        }
+    };
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                // TODO : updateSld();
+                updateSld();
                 loadNetwork(true);
             }
         }
@@ -387,19 +395,19 @@ export function StudyController({ view, onChangeTab }) {
     }, [studyUpdatedForce, studyUuid, loadNetwork, dispatch]);
 
     const runnable = useMemo(() => {
-        if (!intl) return;
+        if (!intlRef?.current) return;
         return {
-            LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
-            SECURITY_ANALYSIS: intl.formatMessage({
+            LOADFLOW: intlRef.current.formatMessage({ id: 'LoadFlow' }),
+            SECURITY_ANALYSIS: intlRef.current.formatMessage({
                 id: 'SecurityAnalysis',
             }),
         };
-    }, [intl]);
+    }, [intlRef]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
-                // TODO : updateSld();
+                updateSld();
 
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
@@ -428,10 +436,6 @@ export function StudyController({ view, onChangeTab }) {
         }
     }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
 
-    /*
-     *                 setErrorMsgId('studyNotFound');
-     * setErrorMsgId('networkLoadingFail');
-     * */
     return (
         <WaitingLoader
             errMessage={studyErrorMessage || networkLoadingFailMessage}
@@ -448,6 +452,9 @@ export function StudyController({ view, onChangeTab }) {
                 loadFlowInfos={loadFlowInfos}
                 securityAnalysisStatus={securityAnalysisStatus}
                 runnable={runnable}
+                sldRef={sldRef}
+                setUpdateSwitchMsg={setUpdateSwitchMsg}
+                updateSwitchMsg={updateSwitchMsg}
             />
         </WaitingLoader>
     );

@@ -10,6 +10,7 @@ import { useIntl } from 'react-intl';
 import { useNodeData } from './study-controller';
 import WaitingLoader from '../components/util/waiting-loader';
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 
 const SecurityAnalysisResultContainer = ({
     studyUuid,
@@ -73,13 +74,23 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export function ResultViewController({
+/**
+ * control results views
+ * @param studyUuid : string uuid of study
+ * @param selectedNodeUuid : string uuid of selected node
+ * @param loadFlowInfos : object result of load flow
+ * @param network : object network
+ * @param openVoltageLevelDiagram : function
+ * @returns {JSX.Element}
+ * @constructor
+ */
+export const ResultViewController = ({
     studyUuid,
     selectedNodeUuid,
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
-}) {
+}) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const classes = useStyles();
@@ -135,4 +146,12 @@ export function ResultViewController({
             {tabIndex === 1 && renderSecurityAnalysisResult()}
         </div>
     );
-}
+};
+
+ResultViewController.propTypes = {
+    loadFlowInfos: PropTypes.object.isRequired,
+    network: PropTypes.object.isRequired,
+    openVoltageLevelDiagram: PropTypes.func.isRequired,
+    selectedNodeUuid: PropTypes.string.isRequired,
+    studyUuid: PropTypes.string.isRequired,
+};
