@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -225,7 +225,7 @@ const StudyPane = ({
             );
         },
         // Note: studyUuid and history don't change
-        [studyUuid, history]
+        [setUpdateSwitchMsg, history, studyUuid]
     );
 
     const showSubstationDiagram = useCallback(
@@ -242,7 +242,7 @@ const StudyPane = ({
             );
         },
         // Note: studyUuid and history don't change
-        [studyUuid, history, dispatch]
+        [dispatch, setUpdateSwitchMsg, history, studyUuid]
     );
 
     function closeVoltageLevelDiagram() {
@@ -283,7 +283,7 @@ const StudyPane = ({
                 }
             });
         },
-        [studyUuid, selectedNodeUuid]
+        [studyUuid, selectedNodeUuid, setUpdateSwitchMsg]
     );
 
     function openVoltageLevelDiagram(vlId, substationId) {
