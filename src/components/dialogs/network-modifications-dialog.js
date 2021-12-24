@@ -21,6 +21,7 @@ import GeneratorCreationDialog from './generator-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
 import LineCreationDialog from './line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from './two-windings-transformer-creation-dialog';
+import SubstationCreationDialog from './substation-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -55,6 +56,9 @@ const NetworkModificationDialog = ({
         openTwoWindingsTransformerDialog,
         setOpenTwoWindingsTransformerDialog,
     ] = useState(false);
+
+    const [openCreateSubstationDialog, setOpenCreateSubstationDialog] =
+        useState(false);
 
     const handleClose = () => {
         onClose();
@@ -98,6 +102,14 @@ const NetworkModificationDialog = ({
 
     const closeCreateTwoWindingsTransformerDialog = () => {
         setOpenTwoWindingsTransformerDialog(false);
+    };
+
+    const handleCreateSubstation = () => {
+        setOpenCreateSubstationDialog(true);
+    };
+
+    const closeCreateSubstationDialog = () => {
+        setOpenCreateSubstationDialog(false);
     };
 
     return (
@@ -167,6 +179,19 @@ const NetworkModificationDialog = ({
                                 fullWidth
                                 className={classes.button}
                                 variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateSubstation}
+                            >
+                                {intl.formatMessage({
+                                    id: 'CreateSubstation',
+                                })}
+                            </Button>
+                        </Grid>
+                        <Grid item>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
                                 startIcon={<DeleteIcon />}
                                 onClick={handleDeleteEquipment}
                             >
@@ -205,6 +230,11 @@ const NetworkModificationDialog = ({
                 open={openTwoWindingsTransformerDialog}
                 onClose={closeCreateTwoWindingsTransformerDialog}
                 voltageLevelOptions={network?.voltageLevels}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+            <SubstationCreationDialog
+                open={openCreateSubstationDialog}
+                onClose={closeCreateSubstationDialog}
                 selectedNodeUuid={selectedNodeUuid}
             />
             <EquipmentDeletionDialog
