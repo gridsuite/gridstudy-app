@@ -4,5 +4,6 @@
     "network_modifications/LOAD_CREATION": "Creating load {computedLabel}",
     "network_modifications/GENERATOR_CREATION": "Creating generator {computedLabel}",
     "network_modifications/LINE_CREATION": "Creating line {computedLabel}",
-    "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Creating 2 windings transformer {computedLabel}"
+    "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Creating 2 windings transformer {computedLabel}",
+    "network_modifications/BRANCH_STATUS": "Modification status line {computedLabel}"
 }
