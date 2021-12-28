@@ -6,7 +6,10 @@
  */
 import React, { useCallback, useState } from 'react';
 import ReactFlow, { Controls } from 'react-flow-renderer';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { selectTreeNode } from '../redux/actions';
+import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
@@ -28,6 +31,8 @@ const nodeTypes = {
 const snapGrid = [15, 15];
 
 const NetworkModificationTree = (props) => {
+    const dispatch = useDispatch();
+
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const [selectedNode, setSelectedNode] = useState(null);
@@ -51,11 +56,13 @@ const NetworkModificationTree = (props) => {
         },
     };
 
-    const onSelectionChange = useCallback((selectedElements) => {
-        if (selectedElements?.length > 0) {
-            setSelectedNode(selectedElements[0]);
-        }
-    }, []);
+    const onElementClick = useCallback(
+        (event, element) => {
+            setSelectedNode(element);
+            dispatch(selectTreeNode(element.id));
+        },
+        [dispatch]
+    );
 
     const onNodeDoubleClick = useCallback(
         (event, node) => {
@@ -64,6 +71,11 @@ const NetworkModificationTree = (props) => {
             }
         },
         [studyUuid]
+    );
+
+    const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
+        onElementClick,
+        onNodeDoubleClick
     );
 
     const onPaneClick = useCallback(() => {
@@ -143,8 +155,7 @@ const NetworkModificationTree = (props) => {
                             props.treeModel ? props.treeModel.treeElements : []
                         }
                         onNodeContextMenu={onNodeContextMenu}
-                        onSelectionChange={onSelectionChange}
-                        onNodeDoubleClick={onNodeDoubleClick}
+                        onElementClick={nodeSingleOrDoubleClick}
                         onPaneClick={onPaneClick}
                         onMove={onMove}
                         onMoveEnd={onMoveEnd}
