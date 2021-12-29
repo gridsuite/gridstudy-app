@@ -753,9 +753,6 @@ const StudyPane = (props) => {
                 setWaitingLoadGeoData(false);
             } else {
                 setStudyExistsChecked(true);
-                loadNetwork();
-                loadGeoData();
-                loadTree();
             }
         });
 
@@ -773,11 +770,26 @@ const StudyPane = (props) => {
     }, [
         dispatch,
         studyUuid,
-        loadNetwork,
-        loadGeoData,
-        loadTree,
         connectNotifications,
     ]);
+
+    useEffect(() => {
+        if (studyExistsChecked && studyNotFound === false) {
+            loadNetwork();
+        }
+    }, [studyExistsChecked, loadNetwork, studyNotFound]);
+
+    useEffect(() => {
+        if (studyExistsChecked && studyNotFound === false) {
+            loadGeoData();
+        }
+    }, [studyExistsChecked, loadGeoData, studyNotFound]);
+
+    useEffect(() => {
+        if (studyExistsChecked && studyNotFound === false) {
+            loadTree();
+        }
+    }, [studyExistsChecked, loadTree, studyNotFound]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
