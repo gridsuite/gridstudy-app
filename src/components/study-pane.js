@@ -767,11 +767,7 @@ const StudyPane = (props) => {
         };
         // Note: dispach, studyUuid, loadNetwork, loadGeoData, loadTree
         // connectNotifications don't change
-    }, [
-        dispatch,
-        studyUuid,
-        connectNotifications,
-    ]);
+    }, [dispatch, studyUuid, connectNotifications]);
 
     useEffect(() => {
         if (studyExistsChecked && studyNotFound === false) {
