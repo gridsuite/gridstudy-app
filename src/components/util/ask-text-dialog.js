@@ -46,13 +46,13 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
             </DialogContent>
             <DialogActions>
                 <Button
-                    color={'primary'}
+                    //color={''}
                     variant={'outlined'}
                     onClick={handleValidate}
                 >
                     {intl.formatMessage({ id: 'validate' })}
                 </Button>
-                <Button color={'primary'} onClick={onClose}>
+                <Button /*color={'primary'}*/ onClick={onClose}>
                     {intl.formatMessage({ id: 'cancel' })}
                 </Button>
             </DialogActions>
