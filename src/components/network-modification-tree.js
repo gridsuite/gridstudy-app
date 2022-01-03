@@ -58,8 +58,14 @@ const NetworkModificationTree = (props) => {
 
     const onElementClick = useCallback(
         (event, element) => {
-            setSelectedNode(element);
-            dispatch(selectTreeNode(element.id));
+            if (
+                element.type === 'ROOT' ||
+                (element.type === 'NETWORK_MODIFICATION' &&
+                    element.data.realized)
+            ) {
+                setSelectedNode(element);
+                dispatch(selectTreeNode(element.id));
+            }
         },
         [dispatch]
     );
