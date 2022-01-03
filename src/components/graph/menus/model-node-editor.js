@@ -17,10 +17,13 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../../utils/messages';
+import { useParams } from 'react-router-dom';
 
 const ModelNodeEditor = ({ selectedNode }) => {
     const intl = useIntl();
     const intlRef = useIntlRef();
+
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -36,7 +39,7 @@ const ModelNodeEditor = ({ selectedNode }) => {
     };
 
     const handleValidate = (event) => {
-        updateTreeNode({
+        updateTreeNode(studyUuid, {
             id: selectedNode.id,
             type: selectedNode.type,
             name: nameValue,
