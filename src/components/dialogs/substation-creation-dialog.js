@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { InputBase, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
@@ -46,23 +46,6 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 0,
     },
 }));
-
-const BootstrapInput = withStyles(() => ({
-    input: {
-        minWidth: '223px',
-        minHeight: '19px',
-        color: 'white',
-        borderColor: 'grey',
-        borderRadius: 4,
-        position: 'relative',
-        border: '1px solid',
-        fontSize: 16,
-        paddingLeft: 14,
-        paddingRight: 14,
-        paddingTop: 18.5,
-        paddingBottom: 18.5,
-    },
-}))(InputBase);
 
 /**
  * Dialog to create a substation in the network
@@ -231,14 +214,13 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
                             onChange={(event, newValue) => {
                                 handleChangeCountry(newValue);
                             }}
-                            input={<BootstrapInput />}
                             options={Object.keys(countriesList.object())}
-                            style={BootstrapInput.input}
                             getOptionLabel={(code) => countriesList.get(code)}
                             renderInput={(props) => (
                                 <TextField
                                     {...props}
-                                    variant="outlined"
+                                    variant="filled"
+                                    size="small"
                                     label={
                                         intl.formatMessage({ id: 'Country' }) +
                                         ' ' +
