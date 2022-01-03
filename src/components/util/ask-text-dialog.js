@@ -34,7 +34,7 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
     };
 
     const handleValidate = (e) => {
-        onValidate(e.target.value);
+        onValidate(currentValue);
         onClose();
     };
 
