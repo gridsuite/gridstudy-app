@@ -314,6 +314,9 @@
     "ShuntConductanceText": "Shunt conductance",
     "ShuntSusceptanceText": "Shunt susceptance",
 
+    "CreateSubstation": "Create substation",
+    "SubstationCreationError": "Error while creating substation",
+
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
 
