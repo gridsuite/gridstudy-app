@@ -1055,6 +1055,37 @@ export function createTwoWindingsTransformer(
     );
 }
 
+export function createSubstation(
+    studyUuid,
+    selectedNodeUuid,
+    substationId,
+    substationName,
+    substationCountry
+) {
+    console.info('Creating substation ');
+    const createSubstationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/substations';
+
+    return backendFetch(createSubstationUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: substationId,
+            equipmentName: substationName,
+            substationCountry:
+                substationCountry === '' ? null : substationCountry,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =
