@@ -7,7 +7,6 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
-import luceneEscapeQuery from 'lucene-escape-query';
 
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_NOTIFICATION_WS =
@@ -397,19 +396,14 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(studyUuid, searchTerm, useName) {
+export function fetchEquipmentsInfos(studyUuid, searchTerm, usesName) {
     console.info(
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
     );
-    let escapedSearchTerm = '*' + luceneEscapeQuery.escape(searchTerm) + '*';
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append(
-        'q',
-        useName
-            ? `equipmentName:${escapedSearchTerm}`
-            : `equipmentId:${escapedSearchTerm}`
-    );
+    urlSearchParams.append('userInput', searchTerm);
+    urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
     return backendFetch(
         getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
     ).then((response) =>
@@ -1055,6 +1049,37 @@ export function createTwoWindingsTransformer(
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function createSubstation(
+    studyUuid,
+    selectedNodeUuid,
+    substationId,
+    substationName,
+    substationCountry
+) {
+    console.info('Creating substation ');
+    const createSubstationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/substations';
+
+    return backendFetch(createSubstationUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: substationId,
+            equipmentName: substationName,
+            substationCountry:
+                substationCountry === '' ? null : substationCountry,
         }),
     }).then((response) =>
         response.ok
