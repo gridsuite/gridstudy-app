@@ -1187,13 +1187,13 @@ export function fetchLoadFlowInfos(studyUuid, selectedNodeUuid) {
 export function fetchNetworkModifications(groupUuid) {
     console.info('Fetching network modification tree node');
     const url =
-      PREFIX_NETWORK_MODIFICATION_QUERIES +
-      '/v1/groups/' +
-      encodeURIComponent(groupUuid) +
-      '/modifications';
+        PREFIX_NETWORK_MODIFICATION_QUERIES +
+        '/v1/groups/' +
+        encodeURIComponent(groupUuid) +
+        '/modifications';
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
-      response.json()
+        response.json()
     );
 }
 
