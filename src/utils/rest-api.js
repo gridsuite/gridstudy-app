@@ -16,6 +16,8 @@ const PREFIX_CONFIG_NOTIFICATION_WS =
 const PREFIX_CONFIG_QUERIES = process.env.REACT_APP_API_GATEWAY + '/config';
 const PREFIX_DIRECTORY_SERVER_QUERIES =
     process.env.REACT_APP_API_GATEWAY + '/directory';
+const PREFIX_NETWORK_MODIFICATION_QUERIES =
+    process.env.REACT_APP_API_GATEWAY + '/network-modification';
 
 function getToken() {
     const state = store.getState();
@@ -1159,6 +1161,19 @@ export function fetchLoadFlowInfos(studyUuid, selectedNodeUuid) {
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/loadflow/infos';
     return backendFetch(fetchLoadFlowInfosUrl).then((response) =>
+        response.json()
+    );
+}
+
+export function fetchNetworkModifications(groupUuid) {
+    console.info('Fetching network modification tree node');
+    const url =
+        PREFIX_NETWORK_MODIFICATION_QUERIES +
+        '/v1/groups/' +
+        encodeURIComponent(groupUuid) +
+        '/modifications';
+    console.debug(url);
+    return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()
     );
 }

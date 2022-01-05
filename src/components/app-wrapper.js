@@ -31,6 +31,8 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
+import networkModification_en from '../translations/network-modifications-en.json';
+import networkModification_fr from '../translations/network-modifications-fr.json';
 import { store } from '../redux/store';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
@@ -67,6 +69,7 @@ const messages = {
     en: {
         ...treeview_finder_en,
         ...messages_en,
+        ...networkModification_en,
         ...report_viewer_en,
         ...login_en,
         ...top_bar_en,
@@ -77,6 +80,7 @@ const messages = {
     fr: {
         ...treeview_finder_fr,
         ...messages_fr,
+        ...networkModification_fr,
         ...report_viewer_fr,
         ...login_fr,
         ...top_bar_fr,
