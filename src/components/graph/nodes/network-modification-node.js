@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         background: 'lightsteelblue',
         textTransform: 'none',
     },
-    realized: {
+    buildStatus: {
         color: 'green',
     },
 }));
@@ -51,8 +51,8 @@ const NetworkModificationNode = (props) => {
                         : classes.networkModification
                 }
                 startIcon={
-                    props.data.realized && (
-                        <CheckCircleIcon className={classes.realized} />
+                    props.data.buildStatus === 'BUILT' && (
+                        <CheckCircleIcon className={classes.buildStatus} />
                     )
                 }
                 disableElevation

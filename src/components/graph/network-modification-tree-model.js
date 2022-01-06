@@ -22,7 +22,7 @@ export default class NetworkModificationTreeModel {
             data: {
                 label: element.name,
                 description: element.description,
-                realized: element.realized,
+                buildStatus: element.buildStatus,
             },
         });
         // Add edge between node and its parent
@@ -92,7 +92,7 @@ export default class NetworkModificationTreeModel {
                 this.treeElements[indexModifiedNode].data = {
                     ...this.treeElements[indexModifiedNode].data,
                     label: node.name,
-                    realized: node.realized,
+                    buildStatus: node.buildStatus,
                 };
             }
         });
@@ -107,7 +107,7 @@ export default class NetworkModificationTreeModel {
             data: {
                 label: elements.name,
                 description: elements.description,
-                realized: elements.realized,
+                buildStatus: elements.buildStatus,
             },
         });
         // handle root children

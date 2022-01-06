@@ -48,7 +48,7 @@ const NodeEditor = ({ onClose, className }) => {
         const headers = studyUpdatedForce?.eventData?.headers;
         const updateType = headers?.updateType;
         if (
-            !selectedNodeUuidRef.current ||
+            selectedNodeUuidRef.current !== selectedNodeUuid ||
             (updateType === 'nodeUpdated' &&
                 headers.nodes.indexOf(selectedNodeUuid) !== -1) ||
             (updateType === 'study' && headers.node === selectedNodeUuid)

@@ -1197,12 +1197,11 @@ export function fetchNetworkModifications(groupUuid) {
     );
 }
 
-export function realizeNode(studyUuid, selectedNodeUuid) {
+export function buildNode(studyUuid, selectedNodeUuid) {
     console.info(
-        'Realize node ' + selectedNodeUuid + ' of study ' + studyUuid + ' ...'
+        'Build node ' + selectedNodeUuid + ' of study ' + studyUuid + ' ...'
     );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/realization';
+    const url = getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/build';
     console.debug(url);
     return backendFetch(url, { method: 'post' }).then((response) =>
         response.ok

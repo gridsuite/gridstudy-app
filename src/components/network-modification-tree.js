@@ -14,7 +14,7 @@ import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { Box } from '@material-ui/core';
-import { createTreeNode, deleteTreeNode, realizeNode } from '../utils/rest-api';
+import { createTreeNode, deleteTreeNode, buildNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import CenterGraphButton from './graph/util/center-graph-button';
@@ -61,7 +61,7 @@ const NetworkModificationTree = (props) => {
             if (
                 element.type === 'ROOT' ||
                 (element.type === 'NETWORK_MODIFICATION' &&
-                    element.data.realized)
+                    element.data.buildStatus === 'BUILT')
             ) {
                 setSelectedNode(element);
                 dispatch(selectTreeNode(element.id));
@@ -73,7 +73,7 @@ const NetworkModificationTree = (props) => {
     const onNodeDoubleClick = useCallback(
         (event, node) => {
             if (node.type === 'NETWORK_MODIFICATION') {
-                realizeNode(studyUuid, node.id).then();
+                buildNode(studyUuid, node.id).then();
             }
         },
         [studyUuid]
@@ -98,18 +98,20 @@ const NetworkModificationTree = (props) => {
 
     const handleCreateNode = useCallback(
         (element, type) => {
-            createTreeNode(element.id, { name: 'New node', type: type }).catch(
-                (errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeCreateError',
-                            intlRef: intlRef,
-                        },
-                    });
-                }
-            );
+            createTreeNode(element.id, {
+                name: 'New node',
+                type: type,
+                buildStatus: 'NOT_BUILT',
+            }).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeCreateError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
         },
         [enqueueSnackbar, intlRef]
     );
