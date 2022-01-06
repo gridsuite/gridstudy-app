@@ -34,7 +34,7 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
     };
 
     const handleValidate = (e) => {
-        onValidate(e.target.value);
+        onValidate(currentValue);
         onClose();
     };
 
@@ -45,14 +45,10 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
                 <TextField value={currentValue} onChange={handleChange} />
             </DialogContent>
             <DialogActions>
-                <Button
-                    color={'primary'}
-                    variant={'outlined'}
-                    onClick={handleValidate}
-                >
+                <Button variant={'outlined'} onClick={handleValidate}>
                     {intl.formatMessage({ id: 'validate' })}
                 </Button>
-                <Button color={'primary'} onClick={onClose}>
+                <Button onClick={onClose}>
                     {intl.formatMessage({ id: 'cancel' })}
                 </Button>
             </DialogActions>

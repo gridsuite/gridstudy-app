@@ -14,6 +14,12 @@ import VoltageLevelChoice from './voltage-level-choice';
 import LoaderWithOverlay from './loader-with-overlay';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import { makeStyles } from '@material-ui/core/styles';
+import OverloadedLinesView from './network/overloaded-lines-view';
+import { RunButtonContainer } from './run-button-container';
+import { getLoadFlowRunningStatus } from './util/running-status';
+import { useSelector } from 'react-redux';
+import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
+import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -23,13 +29,35 @@ const useStyles = makeStyles((theme) => ({
         right: 10,
         bottom: 30,
     },
+    divRunButton: {
+        position: 'absolute',
+        right: 100,
+        bottom: 30,
+        marginLeft: 8,
+        marginRight: 8,
+        marginTop: 8,
+    },
+    divOverloadedLineView: {
+        right: 45,
+        top: 10,
+        minWidth: '500px',
+        position: 'absolute',
+        height: '70%',
+        opacity: '1',
+        flex: 1,
+        pointerEvents: 'none',
+    },
 }));
 
-export const NetworkMapContainer = ({
+export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     network,
     selectedNodeUuid,
+    /* results*/
+    securityAnalysisStatus,
+    runnable,
+    loadFlowInfos,
     /* visual*/
     visible,
     useName,
@@ -38,10 +66,10 @@ export const NetworkMapContainer = ({
     lineFlowMode,
     lineFlowColorMode,
     lineFlowAlertThreshold,
-    loadFlowStatus,
     updatedLines,
     /* callbacks */
     openVoltageLevel,
+    setIsComputationRunning,
     filteredNominalVoltages,
     centerOnSubstation,
     showInSpreadsheet,
@@ -49,6 +77,10 @@ export const NetworkMapContainer = ({
     const [geoDataLoadingFail, setGeoDataLoadingFail] = useState(false);
 
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
+
+    const displayOverloadTable = useSelector(
+        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
+    );
 
     const [geoData, setGeoData] = useState();
 
@@ -173,11 +205,6 @@ export const NetworkMapContainer = ({
         []
     );
 
-    /*
-* else if (geoDataLoadingFail) {
-                setErrorMsgId('geoDataLoadingFail');
-            }
-* */
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
         choiceVoltageLevelsSubstation = network?.getSubstation(
@@ -222,6 +249,19 @@ export const NetworkMapContainer = ({
         />
     );
 
+    const linesNearOverload = useCallback(() => {
+        if (network) {
+            return network.lines.some((l) => {
+                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
+                return (
+                    zone === LineLoadingZone.WARNING ||
+                    zone === LineLoadingZone.OVERLOAD
+                );
+            });
+        }
+        return false;
+    }, [network, lineFlowAlertThreshold]);
+
     const renderMap = () => (
         <NetworkMap
             network={network}
@@ -240,7 +280,7 @@ export const NetworkMapContainer = ({
             lineFlowMode={lineFlowMode}
             lineFlowColorMode={lineFlowColorMode}
             lineFlowAlertThreshold={lineFlowAlertThreshold}
-            loadFlowStatus={loadFlowStatus}
+            loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
             ref={mapRef}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
@@ -272,11 +312,31 @@ export const NetworkMapContainer = ({
             {renderEquipmentMenu()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
             {network?.substations?.length > 0 && renderNominalVoltageFilter()}
+
+            {displayOverloadTable && linesNearOverload() && (
+                <div className={classes.divOverloadedLineView}>
+                    <OverloadedLinesView
+                        lines={network.lines}
+                        lineFlowAlertThreshold={lineFlowAlertThreshold}
+                        network={network}
+                    />
+                </div>
+            )}
+            <div className={classes.divRunButton}>
+                <RunButtonContainer
+                    studyUuid={studyUuid}
+                    selectedNodeUuid={selectedNodeUuid}
+                    loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
+                    securityAnalysisStatus={securityAnalysisStatus}
+                    setIsComputationRunning={setIsComputationRunning}
+                    runnable={runnable}
+                />
+            </div>
         </>
     );
 };
 
-NetworkMapContainer.propTypes = {
+NetworkMapTab.propTypes = {
     updatedLines: PropTypes.arrayOf(PropTypes.any),
     useName: PropTypes.any,
     filteredNominalVoltages: PropTypes.any,
@@ -291,4 +351,4 @@ NetworkMapContainer.propTypes = {
     onSubstationMenuClick: PropTypes.func,
 };
 
-export default NetworkMapContainer;
+export default NetworkMapTab;

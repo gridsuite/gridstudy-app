@@ -10,7 +10,7 @@ import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
 import { ReportViewer } from '@gridsuite/commons-ui';
-import LoaderWithOverlay from '../components/loader-with-overlay';
+import LoaderWithOverlay from './loader-with-overlay';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 
@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
  * @returns {*} node
  * @constructor
  */
-export const ReportViewerController = ({ reportId, visible }) => {
+export const ReportViewerTab = ({ reportId, visible }) => {
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
@@ -71,7 +71,7 @@ export const ReportViewerController = ({ reportId, visible }) => {
     return renderLogsView();
 };
 
-ReportViewerController.propTypes = {
+ReportViewerTab.propTypes = {
     reportId: PropTypes.string,
     visible: PropTypes.bool,
 };

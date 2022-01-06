@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import StudyPane from '../components/study-pane';
+import StudyPane from './study-pane';
 import React, {
     useCallback,
     useEffect,
@@ -33,16 +33,16 @@ import {
     selectTreeNode,
     studyUpdated,
 } from '../redux/actions';
-import Network from '../components/network/network';
-import { equipments } from '../components/network/network-equipments';
-import WaitingLoader from '../components/util/waiting-loader';
+import Network from './network/network';
+import { equipments } from './network/network-equipments';
+import WaitingLoader from './util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
+import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
     RunningStatus,
-} from '../components/util/running-status';
+} from './util/running-status';
 
 export function useNodeData(
     studyUuid,
@@ -134,7 +134,7 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
-export function StudyController({ view, onChangeTab }) {
+export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
 
     const [studyUuid, studyPending, studyErrorMessage] = useStudy(
@@ -460,7 +460,7 @@ export function StudyController({ view, onChangeTab }) {
     );
 }
 
-StudyController.propTypes = {
+StudyContainer.propTypes = {
     view: PropTypes.any,
     onChangeTab: PropTypes.func,
 };

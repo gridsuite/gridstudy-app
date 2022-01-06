@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NodeEditor = ({ onClose }) => {
+const NodeEditor = ({ onClose, className }) => {
     const classes = useStyles();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
@@ -90,25 +90,27 @@ const NodeEditor = ({ onClose }) => {
     };
 
     return (
-        selectedNode !== undefined && (
-            <>
-                <EditableTitle
-                    name={selectedNode.name}
-                    onClose={onClose}
-                    onChange={changeNodeName}
-                />
-                <Paper className={classes.paper}>
-                    {selectedNode && selectedNode.type !== 'MODEL' && (
-                        <NetworkModificationNodeEditor
-                            selectedNode={selectedNode}
-                        />
-                    )}
-                    {selectedNode && selectedNode.type === 'MODEL' && (
-                        <ModelNodeEditor selectedNode={selectedNode} />
-                    )}
-                </Paper>
-            </>
-        )
+        <div className={className}>
+            {selectedNode !== undefined && (
+                <>
+                    <EditableTitle
+                        name={selectedNode.name}
+                        onClose={onClose}
+                        onChange={changeNodeName}
+                    />
+                    <Paper className={classes.paper}>
+                        {selectedNode && selectedNode.type !== 'MODEL' && (
+                            <NetworkModificationNodeEditor
+                                selectedNode={selectedNode}
+                            />
+                        )}
+                        {selectedNode && selectedNode.type === 'MODEL' && (
+                            <ModelNodeEditor selectedNode={selectedNode} />
+                        )}
+                    </Paper>
+                </>
+            )}
+        </div>
     );
 };
 

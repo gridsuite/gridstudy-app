@@ -80,7 +80,7 @@ import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { useSnackbar } from 'notistack';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { StudyController } from '../controller/study-controller';
+import { StudyContainer } from './study-container';
 
 const noUserManager = { instance: null, error: null };
 
@@ -373,7 +373,7 @@ const App = () => {
                 {user !== null ? (
                     <Switch>
                         <Route exact path="/studies/:studyUuid">
-                            <StudyController
+                            <StudyContainer
                                 view={STUDY_VIEWS[tabIndex]}
                                 onChangeTab={onChangeTab}
                             />

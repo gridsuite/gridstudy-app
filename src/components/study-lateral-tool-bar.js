@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { StudyDrawer, ToolDrawer } from './study-drawer';
-import NetworkModificationTreeController from '../controller/network-modification-tree-controller';
+import NetworkModificationTreePane from './network-modification-tree-pane';
 
 export const drawerExplorerWidth = 300;
 export const nodeEditorWidth = 400;
@@ -164,7 +164,7 @@ export function StudyLateralToolBar({
                     classes.drawerNetworkModificationTreeShift
                 }
             >
-                <NetworkModificationTreeController studyUuid={studyUuid} />
+                <NetworkModificationTreePane studyUuid={studyUuid} />
             </StudyDrawer>
             <StudyDrawer
                 open={networkModificationsPaneOpen}

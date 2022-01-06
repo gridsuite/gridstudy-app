@@ -2,13 +2,13 @@ import clsx from 'clsx';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
-import SecurityAnalysisResult from '../components/security-analysis-result';
-import LoadFlowResult from '../components/loadflow-result';
+import SecurityAnalysisResult from './security-analysis-result';
+import LoadFlowResult from './loadflow-result';
 import { fetchSecurityAnalysisResult } from '../utils/rest-api';
 import { makeStyles } from '@material-ui/core/styles';
 import { useIntl } from 'react-intl';
-import { useNodeData } from './study-controller';
-import WaitingLoader from '../components/util/waiting-loader';
+import { useNodeData } from './study-container';
+import WaitingLoader from './util/waiting-loader';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX.Element}
  * @constructor
  */
-export const ResultViewController = ({
+export const ResultViewTab = ({
     studyUuid,
     selectedNodeUuid,
     loadFlowInfos,
@@ -148,7 +148,7 @@ export const ResultViewController = ({
     );
 };
 
-ResultViewController.propTypes = {
+ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object.isRequired,
     network: PropTypes.object.isRequired,
     openVoltageLevelDiagram: PropTypes.func.isRequired,

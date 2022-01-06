@@ -26,14 +26,12 @@ import {
 import { equipments } from './network/network-equipments';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
-import OverloadedLinesView from './network/overloaded-lines-view';
 import NetworkTable from './network/network-table';
 import clsx from 'clsx';
 import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
-    PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -42,13 +40,11 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../utils/config-params';
-import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
-import { NetworkMapContainer } from './network-map-container';
-import { StudyLateralToolBar } from './study-lateral-tool-bar';
-import { RunButtonContainer } from './run-button-container';
-import { ReportViewerController } from '../controller/report-viewer-controller';
-import { ResultViewController } from '../controller/result-view-controller';
 import { getLoadFlowRunningStatus } from './util/running-status';
+import NetworkMapTab from './network-map-tab';
+import { StudyLateralToolBar } from './study-lateral-tool-bar';
+import { ReportViewerTab } from './report-viewer-tab';
+import { ResultViewTab } from './result-view-tab';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -78,24 +74,6 @@ const useStyles = makeStyles((theme) => ({
                 duration: theme.transitions.duration.leavingScreen,
             }),
         },
-    },
-    divOverloadedLineView: {
-        right: 45,
-        top: 10,
-        minWidth: '500px',
-        position: 'absolute',
-        height: '70%',
-        opacity: '1',
-        flex: 1,
-        pointerEvents: 'none',
-    },
-    divRunButton: {
-        position: 'absolute',
-        right: 100,
-        bottom: 30,
-        marginLeft: 8,
-        marginRight: 8,
-        marginTop: 8,
     },
     table: {
         display: 'flex',
@@ -147,10 +125,6 @@ const StudyPane = ({
 
     const substationLayout = useSelector(
         (state) => state[PARAM_SUBSTATION_LAYOUT]
-    );
-
-    const displayOverloadTable = useSelector(
-        (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
 
     const componentLibrary = useSelector(
@@ -299,19 +273,6 @@ const StudyPane = ({
         }
     }
 
-    const linesNearOverload = useCallback(() => {
-        if (network) {
-            return network.lines.some((l) => {
-                const zone = getLineLoadingZone(l, lineFlowAlertThreshold);
-                return (
-                    zone === LineLoadingZone.WARNING ||
-                    zone === LineLoadingZone.OVERLOAD
-                );
-            });
-        }
-        return false;
-    }, [network, lineFlowAlertThreshold]);
-
     const openVoltageLevel = useCallback(
         (vlId) => {
             if (!network) return;
@@ -419,7 +380,7 @@ const StudyPane = ({
                     }}
                 >
                     {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
-                    <NetworkMapContainer
+                    <NetworkMapTab
                         /* TODO do we move redux param to container */
                         studyUuid={studyUuid}
                         network={network}
@@ -431,7 +392,6 @@ const StudyPane = ({
                         lineFlowMode={lineFlowMode}
                         lineFlowColorMode={lineFlowColorMode}
                         lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
                         filteredNominalVoltages={filteredNominalVoltages}
                         openVoltageLevel={openVoltageLevel}
                         centerOnSubstation={centerOnSubstation}
@@ -439,28 +399,11 @@ const StudyPane = ({
                         selectedNodeUuid={selectedNodeUuid}
                         onChangeTab={props.onChangeTab}
                         showInSpreadsheet={showInSpreadsheet}
+                        loadFlowInfos={loadFlowInfos}
+                        securityAnalysisStatus={securityAnalysisStatus}
+                        setIsComputationRunning={setIsComputationRunning}
+                        runnable={runnable}
                     />
-                    {displayOverloadTable && linesNearOverload() && (
-                        <div className={classes.divOverloadedLineView}>
-                            <OverloadedLinesView
-                                lines={network.lines}
-                                lineFlowAlertThreshold={lineFlowAlertThreshold}
-                                network={network}
-                            />
-                        </div>
-                    )}
-                    <div className={classes.divRunButton}>
-                        <RunButtonContainer
-                            studyUuid={studyUuid}
-                            selectedNodeUuid={selectedNodeUuid}
-                            loadFlowStatus={getLoadFlowRunningStatus(
-                                loadFlowInfos
-                            )}
-                            securityAnalysisStatus={securityAnalysisStatus}
-                            setIsComputationRunning={setIsComputationRunning}
-                            runnable={runnable}
-                        />
-                    </div>
                 </div>
                 <StudyLateralToolBar
                     network={network}
@@ -555,7 +498,7 @@ const StudyPane = ({
                     display: props.view === StudyView.RESULTS ? null : 'none',
                 }}
             >
-                <ResultViewController
+                <ResultViewTab
                     studyUuid={studyUuid}
                     selectedNodeUuid={selectedNodeUuid}
                     loadFlowInfos={loadFlowInfos}
@@ -569,7 +512,7 @@ const StudyPane = ({
                     display: props.view === StudyView.LOGS ? null : 'none',
                 }}
             >
-                <ReportViewerController
+                <ReportViewerTab
                     reportId={studyUuid}
                     visible={props.view === StudyView.LOGS}
                 />

@@ -17,15 +17,15 @@ import {
     networkModificationTreeNodesUpdated,
     selectTreeNode,
 } from '../redux/actions';
-import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
+import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
-import NetworkModificationTree from '../components/network-modification-tree';
+import NetworkModificationTree from './network-modification-tree';
 import PropTypes from 'prop-types';
 
-export const NetworkModificationTreeController = ({ studyUuid }) => {
-    const networkModificationTreeModel = useSelector(
+export const NetworkModificationTreePane = ({ studyUuid }) => {
+    const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
 
@@ -116,11 +116,11 @@ export const NetworkModificationTreeController = ({ studyUuid }) => {
         }
     }, [studyUpdatedForce, updateNodes, dispatch]);
 
-    return <NetworkModificationTree treeModel={networkModificationTreeModel} />;
+    return <NetworkModificationTree treeModel={treeModel} />;
 };
 
-export default NetworkModificationTreeController;
+export default NetworkModificationTreePane;
 
-NetworkModificationTreeController.propTypes = {
+NetworkModificationTreePane.propTypes = {
     studyUuid: PropTypes.string.isRequired,
 };
