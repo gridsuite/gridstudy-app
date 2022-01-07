@@ -54,6 +54,7 @@ import {
     selectItemNetwork,
     studyUpdated,
     selectTreeNode,
+    workingTreeNode,
 } from '../redux/actions';
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
@@ -687,6 +688,7 @@ const StudyPane = (props) => {
         networkModificationTree
             .then((tree) => {
                 dispatch(selectTreeNode(tree.id));
+                dispatch(workingTreeNode(tree.id));
 
                 const networkModificationTreeModel =
                     new NetworkModificationTreeModel();
