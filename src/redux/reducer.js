@@ -44,6 +44,7 @@ import {
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     SELECTED_TREE_NODE,
+    WORKING_TREE_NODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -91,6 +92,7 @@ const paramsInitialState = {
 const initialState = {
     studyUuid: null,
     selectedTreeNode: null,
+    workingTreeNode: null,
     network: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -293,5 +295,8 @@ export const reducer = createReducer(initialState, {
     },
     [SELECTED_TREE_NODE]: (state, action) => {
         state.selectedTreeNode = action.selectedTreeNode;
+    },
+    [WORKING_TREE_NODE]: (state, action) => {
+        state.workingTreeNode = action.workingTreeNode;
     },
 });

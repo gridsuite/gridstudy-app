@@ -44,6 +44,7 @@ const NodeEditor = ({ onClose, className }) => {
     const selectedNodeUuidRef = useRef();
 
     useEffect(() => {
+        console.log('NNO', selectedNodeUuid);
         if (!selectedNodeUuid) return;
         const headers = studyUpdatedForce?.eventData?.headers;
         const updateType = headers?.updateType;

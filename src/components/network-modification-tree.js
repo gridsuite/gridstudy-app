@@ -8,7 +8,7 @@ import React, { useCallback, useState } from 'react';
 import ReactFlow, { Controls } from 'react-flow-renderer';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { selectTreeNode } from '../redux/actions';
+import { workingTreeNode, selectTreeNode } from '../redux/actions';
 import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
@@ -58,13 +58,14 @@ const NetworkModificationTree = (props) => {
 
     const onElementClick = useCallback(
         (event, element) => {
+            setSelectedNode(element);
+            dispatch(selectTreeNode(element.id));
             if (
                 element.type === 'ROOT' ||
                 (element.type === 'NETWORK_MODIFICATION' &&
                     element.data.buildStatus === 'BUILT')
             ) {
-                setSelectedNode(element);
-                dispatch(selectTreeNode(element.id));
+                dispatch(workingTreeNode(element.id));
             }
         },
         [dispatch]
@@ -73,10 +74,13 @@ const NetworkModificationTree = (props) => {
     const onNodeDoubleClick = useCallback(
         (event, node) => {
             if (node.type === 'NETWORK_MODIFICATION') {
-                buildNode(studyUuid, node.id).then();
+                buildNode(studyUuid, node.id).then((response) => {
+                    dispatch(selectTreeNode(node.id));
+                    dispatch(workingTreeNode(node.id));
+                });
             }
         },
-        [studyUuid]
+        [dispatch, studyUuid]
     );
 
     const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(

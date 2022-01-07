@@ -265,7 +265,7 @@ const StudyPane = (props) => {
         (state) => state[PARAM_COMPONENT_LIBRARY]
     );
 
-    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
+    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
 
     const [studyNotFound, setStudyNotFound] = useState(false);
 
@@ -419,8 +419,8 @@ const StudyPane = (props) => {
     }
 
     const updateLoadFlowResult = useCallback(() => {
-        if (selectedNodeUuid !== null) {
-            fetchLoadFlowInfos(studyUuid, selectedNodeUuid).then(
+        if (workingNodeUuid !== null) {
+            fetchLoadFlowInfos(studyUuid, workingNodeUuid).then(
                 (loadflowInfos) => {
                     setLoadFlowStatus(
                         getLoadFlowRunningStatus(loadflowInfos.loadFlowStatus)
@@ -429,7 +429,7 @@ const StudyPane = (props) => {
                 }
             );
         }
-    }, [studyUuid, selectedNodeUuid]);
+    }, [studyUuid, workingNodeUuid]);
 
     function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
         switch (securityAnalysisStatus) {
@@ -445,8 +445,8 @@ const StudyPane = (props) => {
     }
 
     const updateSecurityAnalysisStatus = useCallback(() => {
-        if (selectedNodeUuid !== null) {
-            fetchSecurityAnalysisStatus(studyUuid, selectedNodeUuid).then(
+        if (workingNodeUuid !== null) {
+            fetchSecurityAnalysisStatus(studyUuid, workingNodeUuid).then(
                 (status) => {
                     setSecurityAnalysisStatus(
                         getSecurityAnalysisRunningStatus(status)
@@ -454,12 +454,12 @@ const StudyPane = (props) => {
                 }
             );
         }
-    }, [studyUuid, selectedNodeUuid]);
+    }, [studyUuid, workingNodeUuid]);
 
     const updateSecurityAnalysisResult = useCallback(() => {
         setSecurityAnalysisResultFetcher(
             new RemoteResourceHandler(
-                () => fetchSecurityAnalysisResult(studyUuid, selectedNodeUuid),
+                () => fetchSecurityAnalysisResult(studyUuid, workingNodeUuid),
                 (res) => {
                     setSecurityAnalysisResult(res);
                     setSecurityAnalysisResultFetched(true);
@@ -472,7 +472,7 @@ const StudyPane = (props) => {
         );
     }, [
         studyUuid,
-        selectedNodeUuid,
+        workingNodeUuid,
         setSecurityAnalysisResult,
         setSecurityAnalysisResultFetched,
     ]);
@@ -484,11 +484,7 @@ const StudyPane = (props) => {
         setComputationStopped(false);
 
         // start server side security analysis
-        startSecurityAnalysis(
-            studyUuid,
-            selectedNodeUuid,
-            contingencyListNames
-        );
+        startSecurityAnalysis(studyUuid, workingNodeUuid, contingencyListNames);
 
         // clean result
         setSecurityAnalysisResult(null);
@@ -496,7 +492,7 @@ const StudyPane = (props) => {
 
     const startComputation = (runnable) => {
         if (runnable === Runnable.LOADFLOW) {
-            startLoadFlow(studyUuid, selectedNodeUuid);
+            startLoadFlow(studyUuid, workingNodeUuid);
             setRanLoadflow(true);
         } else if (runnable === Runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
@@ -508,7 +504,7 @@ const StudyPane = (props) => {
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (runnable) => {
             if (runnable === Runnable.SECURITY_ANALYSIS) {
-                stopSecurityAnalysis(studyUuid, selectedNodeUuid);
+                stopSecurityAnalysis(studyUuid, workingNodeUuid);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -561,7 +557,7 @@ const StudyPane = (props) => {
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
                     studyUuid,
-                    selectedNodeUuid,
+                    workingNodeUuid,
                     (error) => {
                         console.error(error.message);
                         setNetworkLoadingFail(true);
@@ -570,10 +566,10 @@ const StudyPane = (props) => {
                     { equipments: [equipments.lines, equipments.substations] }
                 );
             } else {
-                if (selectedNodeUuid !== null) {
+                if (workingNodeUuid !== null) {
                     const network = new Network(
                         studyUuid,
-                        selectedNodeUuid,
+                        workingNodeUuid,
                         (error) => {
                             console.error(error.message);
                             setNetworkLoadingFail(true);
@@ -589,7 +585,7 @@ const StudyPane = (props) => {
         },
         [
             studyUuid,
-            selectedNodeUuid,
+            workingNodeUuid,
             dispatch,
             updateLoadFlowResult,
             updateSecurityAnalysisResult,
@@ -601,7 +597,7 @@ const StudyPane = (props) => {
         (substationsIds) => {
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
-                selectedNodeUuid,
+                workingNodeUuid,
                 substationsIds
             );
             console.info('network update');
@@ -641,7 +637,7 @@ const StudyPane = (props) => {
                 });
             // Note: studyUuid don't change
         },
-        [studyUuid, selectedNodeUuid, network]
+        [studyUuid, workingNodeUuid, network]
     );
 
     const removeEquipmentFromNetwork = useCallback(
@@ -906,33 +902,30 @@ const StudyPane = (props) => {
                 switchElement.classList.replace('sld-open', 'sld-closed');
             }
 
-            updateSwitchState(
-                studyUuid,
-                selectedNodeUuid,
-                breakerId,
-                open
-            ).then((response) => {
-                if (!response.ok) {
-                    console.error(response);
-                    // revert switch position change
-                    if (open) {
-                        switchElement.classList.replace(
-                            'sld-open',
-                            'sld-closed'
-                        );
-                    } else {
-                        switchElement.classList.replace(
-                            'sld-closed',
-                            'sld-open'
+            updateSwitchState(studyUuid, workingNodeUuid, breakerId, open).then(
+                (response) => {
+                    if (!response.ok) {
+                        console.error(response);
+                        // revert switch position change
+                        if (open) {
+                            switchElement.classList.replace(
+                                'sld-open',
+                                'sld-closed'
+                            );
+                        } else {
+                            switchElement.classList.replace(
+                                'sld-closed',
+                                'sld-open'
+                            );
+                        }
+                        setUpdateSwitchMsg(
+                            response.status + ' : ' + response.statusText
                         );
                     }
-                    setUpdateSwitchMsg(
-                        response.status + ' : ' + response.statusText
-                    );
                 }
-            });
+            );
         },
-        [studyUuid, selectedNodeUuid]
+        [studyUuid, workingNodeUuid]
     );
 
     const updateSld = () => {
@@ -1284,7 +1277,7 @@ const StudyPane = (props) => {
 
             svgUrl = getVoltageLevelSingleLineDiagram(
                 studyUuid,
-                selectedNodeUuid,
+                workingNodeUuid,
                 displayedVoltageLevelId,
                 useName,
                 centerName,
@@ -1306,7 +1299,7 @@ const StudyPane = (props) => {
 
             svgUrl = getSubstationSingleLineDiagram(
                 studyUuid,
-                selectedNodeUuid,
+                workingNodeUuid,
                 displayedSubstationId,
                 useName,
                 centerName,
@@ -1454,7 +1447,7 @@ const StudyPane = (props) => {
                                 handleViewInSpreadsheet={
                                     handleViewInSpreadsheet
                                 }
-                                selectedNodeUuid={selectedNodeUuid}
+                                selectedNodeUuid={workingNodeUuid}
                             />
                         )}
                     {equipmentMenu.equipment !== null &&
@@ -1648,7 +1641,7 @@ const StudyPane = (props) => {
                                 }
                                 showInSpreadsheet={showInSpreadsheet}
                                 loadFlowStatus={loadFlowStatus}
-                                selectedNodeUuid={selectedNodeUuid}
+                                selectedNodeUuid={workingNodeUuid}
                             />
                         </div>
                     )}
@@ -1656,7 +1649,7 @@ const StudyPane = (props) => {
                     open={showContingencyListSelector}
                     onClose={() => setShowContingencyListSelector(false)}
                     onStart={handleStartSecurityAnalysis}
-                    selectedNodeUuid={selectedNodeUuid}
+                    selectedNodeUuid={workingNodeUuid}
                 />
             </div>
         );
@@ -1669,7 +1662,7 @@ const StudyPane = (props) => {
                     <NetworkTable
                         network={network}
                         studyUuid={studyUuid}
-                        selectedNodeUuid={selectedNodeUuid}
+                        selectedNodeUuid={workingNodeUuid}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
