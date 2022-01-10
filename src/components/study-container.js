@@ -43,6 +43,7 @@ import {
     getSecurityAnalysisRunningStatus,
     RunningStatus,
 } from './util/running-status';
+import { useIntl } from 'react-intl';
 
 export function useNodeData(
     studyUuid,
@@ -177,6 +178,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const { enqueueSnackbar } = useSnackbar();
 
     const intlRef = useIntlRef();
+    const intl = useIntl();
 
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
@@ -395,14 +397,13 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUpdatedForce, studyUuid, loadNetwork, dispatch]);
 
     const runnable = useMemo(() => {
-        if (!intlRef?.current) return;
         return {
-            LOADFLOW: intlRef.current.formatMessage({ id: 'LoadFlow' }),
-            SECURITY_ANALYSIS: intlRef.current.formatMessage({
+            LOADFLOW: intl.formatMessage({ id: 'LoadFlow' }),
+            SECURITY_ANALYSIS: intl.formatMessage({
                 id: 'SecurityAnalysis',
             }),
         };
-    }, [intlRef]);
+    }, [intl]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {

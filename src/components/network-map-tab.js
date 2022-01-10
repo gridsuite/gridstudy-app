@@ -107,8 +107,6 @@ export const NetworkMapTab = ({
 
     const classes = useStyles();
 
-    console.info('jbo', waitingLoadGeoData, geoDataLoadingFail);
-
     function withEquipment(Menu, ...props) {
         return (
             <Menu
