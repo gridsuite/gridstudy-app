@@ -38,6 +38,8 @@ const equipmentTypes = [
     'VSC_CONVERTER_STATION',
     'SHUNT_COMPENSATOR',
     'STATIC_VAR_COMPENSATOR',
+    'SUBSTATION',
+    'VOLTAGE_LEVEL',
 ];
 
 const useStyles = makeStyles(() => ({

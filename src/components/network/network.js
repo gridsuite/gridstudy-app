@@ -58,6 +58,8 @@ export default class Network {
 
     lazyLoaders = new Map();
 
+    voltageLevels = [];
+
     voltageLevelsByNominalVoltage = new Map();
 
     voltageLevelsById = new Map();
@@ -83,13 +85,15 @@ export default class Network {
                     voltageLevel1.nominalVoltage - voltageLevel2.nominalVoltage
             );
 
+            this.substationsById.set(substation.id, substation);
+
             substation.voltageLevels.forEach((voltageLevel, index) => {
                 // add substation id and name
                 voltageLevel.substationId = substation.id;
                 voltageLevel.substationName = substation.name;
 
                 // add the current item into the VL map by id
-                this.substationsById.set(substation.id, substation);
+                this.voltageLevelsById.set(voltageLevel.id, voltageLevel);
 
                 nominalVoltagesSet.add(voltageLevel.nominalVoltage);
             });
@@ -119,7 +123,6 @@ export default class Network {
         });
 
         // add newly created equipments
-        let equipmentsAdded = false;
         if (this.isResourceFetched(equipmentType)) {
             newEquipements.forEach((equipment1) => {
                 const found = currentEquipments.find(
@@ -127,14 +130,11 @@ export default class Network {
                 );
                 if (found === undefined) {
                     currentEquipments.push(equipment1);
-                    equipmentsAdded = true;
                 }
             });
         }
 
-        return equipmentsAdded === true
-            ? [...currentEquipments]
-            : currentEquipments;
+        return [...currentEquipments];
     }
 
     updateSubstations(substations) {
@@ -268,6 +268,24 @@ export default class Network {
             this.vscConverterStations,
             vscConverterStations,
             equipments.vscConverterStations
+        );
+    }
+
+    updateVoltageLevels(voltageLevels) {
+        this.voltagelevels = this.updateEquipments(
+            this.voltagelevels,
+            voltageLevels,
+            equipments.voltageLevels
+        );
+
+        // add more infos
+        this.completeVoltageLevelsInfos();
+    }
+
+    completeVoltageLevelsInfos() {
+        this.voltageLevelsById = this.voltageLevels.reduce(
+            elementIdIndexer,
+            new Map()
         );
     }
 
@@ -500,6 +518,25 @@ export default class Network {
                 this.staticVarCompensators = this.staticVarCompensators.filter(
                     (l) => l.id !== equipmentId
                 );
+                break;
+            case 'VOLTAGE_LEVEL':
+                const substationId =
+                    this.voltageLevelsById.get(equipmentId).substationId;
+                let voltageLevelsOfSubstation =
+                    this.substationsById.get(substationId).voltageLevels;
+                voltageLevelsOfSubstation = voltageLevelsOfSubstation.filter(
+                    (l) => l.id !== equipmentId
+                );
+                this.substationsById.get(substationId).voltageLevels =
+                    voltageLevelsOfSubstation;
+
+                break;
+            case 'SUBSTATION':
+                this.substations = this.substations.filter(
+                    (l) => l.id !== equipmentId
+                );
+                this.substationsById.delete(equipmentId);
+                this.completeSubstationsInfos();
                 break;
             default:
         }
