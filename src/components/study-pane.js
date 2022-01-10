@@ -104,11 +104,12 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import NetworkModificationTree from './network-modification-tree';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import NetworkModificationDialog from './dialogs/network-modifications-dialog';
+import NodeEditor from './graph/menus/node-editor';
 
 const drawerExplorerWidth = 300;
+const nodeEditorWidth = 400;
 const drawerToolbarWidth = 48;
-const drawerNetworkModificationTreeWidth = 800;
+const drawerNetworkModificationTreeWidth = 400;
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -146,6 +147,17 @@ const useStyles = makeStyles((theme) => ({
         // to be taken into account correctly
         zIndex: 51,
     },
+    nodeEditor: {
+        width: nodeEditorWidth,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        // zIndex set to be below the loader with overlay
+        // and above the network explorer, for mouse events on network modification tree
+        // to be taken into account correctly
+        zIndex: 51,
+    },
     drawerToolbar: {
         width: drawerToolbarWidth,
         // zIndex set to be below the loader with overlay
@@ -172,6 +184,14 @@ const useStyles = makeStyles((theme) => ({
         }),
         marginLeft: -drawerExplorerWidth,
     },
+    nodeEditorShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        pointerEvents: 'none',
+        marginLeft: -nodeEditorWidth,
+    },
     drawerNetworkModificationTreeShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
@@ -185,25 +205,6 @@ const useStyles = makeStyles((theme) => ({
                 easing: theme.transitions.easing.sharp,
                 duration: theme.transitions.duration.leavingScreen,
             }),
-            left: drawerToolbarWidth,
-        },
-    },
-    mapCtrlBottomLeftExplorerShift: {
-        '& .mapboxgl-ctrl-bottom-left': {
-            transition: theme.transitions.create('left', {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-            left: drawerExplorerWidth + drawerToolbarWidth,
-        },
-    },
-    mapCtrlBottomLeftNetworkModificationTreeShift: {
-        '& .mapboxgl-ctrl-bottom-left': {
-            transition: theme.transitions.create('left', {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-            left: drawerNetworkModificationTreeWidth + drawerToolbarWidth,
         },
     },
 }));
@@ -326,7 +327,7 @@ const StudyPane = (props) => {
         setDrawerNetworkModificationTreeOpen,
     ] = useState(false);
 
-    const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
+    const [networkModificationsPaneOpen, setNetworkModificationsPaneOpen] =
         useState(false);
 
     const [
@@ -868,12 +869,12 @@ const StudyPane = (props) => {
         setDrawerExplorerOpen(false);
     };
 
-    const openNetworkModificationConfiguration = () => {
-        setOpenNetworkModificationsDialog(true);
+    const toggleNetworkModificationConfiguration = () => {
+        setNetworkModificationsPaneOpen(!networkModificationsPaneOpen);
     };
 
     const closeNetworkModificationConfiguration = () => {
-        setOpenNetworkModificationsDialog(false);
+        setNetworkModificationsPaneOpen(false);
     };
 
     const sldRef = useRef();
@@ -1286,21 +1287,25 @@ const StudyPane = (props) => {
             );
         }
 
+        function calculateShift() {
+            let shift = drawerToolbarWidth;
+            if (drawerExplorerOpen) shift += drawerExplorerWidth;
+            if (drawerNetworkModificationTreeOpen)
+                shift += drawerNetworkModificationTreeWidth;
+            if (networkModificationsPaneOpen) {
+                shift += nodeEditorWidth;
+            }
+            return shift;
+        }
         return (
             <div className={clsx('relative singlestretch-child', classes.map)}>
                 <div
-                    className={
-                        drawerExplorerOpen
-                            ? classes.mapCtrlBottomLeftExplorerShift
-                            : drawerNetworkModificationTreeOpen
-                            ? classes.mapCtrlBottomLeftNetworkModificationTreeShift
-                            : classes.mapCtrlBottomLeft
-                    }
+                    className={classes.mapCtrlBottomLeft}
                     style={{
                         position: 'absolute',
                         top: 0,
                         bottom: 0,
-                        left: 0,
+                        left: calculateShift(),
                         right: 0,
                     }}
                 >
@@ -1488,7 +1493,7 @@ const StudyPane = (props) => {
                                 drawerNetworkModificationTreeOpen
                             }
                             handleOpenNetworkModificationConfiguration={
-                                openNetworkModificationConfiguration
+                                toggleNetworkModificationConfiguration
                             }
                         />
                     </div>
@@ -1559,6 +1564,30 @@ const StudyPane = (props) => {
                         />
                     </div>
                 </Drawer>
+                <Drawer
+                    variant={'persistent'}
+                    className={clsx(classes.nodeEditor, {
+                        [classes.nodeEditorShift]:
+                            !networkModificationsPaneOpen,
+                    })}
+                    anchor="left"
+                    style={{
+                        position: 'relative',
+                        flexShrink: 1,
+                        overflowY: 'hidden',
+                        overflowX: 'hidden',
+                    }}
+                    open={networkModificationsPaneOpen}
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <NodeEditor
+                        className={classes.drawerPaper}
+                        onClose={closeNetworkModificationConfiguration}
+                    />
+                </Drawer>
+
                 {/*
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
@@ -1600,14 +1629,6 @@ const StudyPane = (props) => {
                     onStart={handleStartSecurityAnalysis}
                     selectedNodeUuid={selectedNodeUuid}
                 />
-                {network && (
-                    <NetworkModificationDialog
-                        open={openNetworkModificationsDialog}
-                        onClose={closeNetworkModificationConfiguration}
-                        network={network}
-                        selectedNodeUuid={selectedNodeUuid}
-                    />
-                )}
             </div>
         );
     }

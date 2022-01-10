@@ -314,6 +314,9 @@
     "ShuntConductanceText": "Conductance parallèle",
     "ShuntSusceptanceText": "Susceptance parallèle",
 
+    "CreateSubstation": "Créer un site",
+    "SubstationCreationError": "Erreur lors de la création d'un site",
+
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
 
@@ -321,5 +324,6 @@
     "MagnetizingConductance": "Conductance magnétisante",
     "MagnetizingSusceptance": "Susceptance magnétisante",
     "RatedVoltage": "Tension nominale",
-    "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements"
+    "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
+    "NewName": "Nouveau nom"
 }
