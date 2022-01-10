@@ -50,9 +50,10 @@ export const NumericalField = ({
                 setter(newVal);
             } else {
                 setError(true);
+                setter(defaultValue);
             }
         },
-        [setError, min, max, setter]
+        [setError, min, max, setter, defaultValue]
     );
 
     return (
