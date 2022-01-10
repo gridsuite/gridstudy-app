@@ -99,6 +99,7 @@ const StudyPane = ({
     sldRef,
     setUpdateSwitchMsg,
     updateSwitchMsg,
+    setErrorMessage,
     ...props
 }) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -403,6 +404,7 @@ const StudyPane = ({
                         securityAnalysisStatus={securityAnalysisStatus}
                         setIsComputationRunning={setIsComputationRunning}
                         runnable={runnable}
+                        setErrorMessage={setErrorMessage}
                     />
                 </div>
                 <StudyLateralToolBar

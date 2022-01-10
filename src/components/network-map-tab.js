@@ -73,9 +73,8 @@ export const NetworkMapTab = ({
     filteredNominalVoltages,
     centerOnSubstation,
     showInSpreadsheet,
+    setErrorMessage,
 }) => {
-    const [geoDataLoadingFail, setGeoDataLoadingFail] = useState(false);
-
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const displayOverloadTable = useSelector(
@@ -190,10 +189,10 @@ export const NetworkMapTab = ({
             .catch(function (error) {
                 console.error(error.message);
                 setWaitingLoadGeoData(false);
-                setGeoDataLoadingFail(true);
+                setErrorMessage('geoDataLoadingFail');
             });
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, setWaitingLoadGeoData, setGeoDataLoadingFail, setGeoData]);
+    }, [studyUuid, setWaitingLoadGeoData, setErrorMessage, setGeoData]);
 
     const chooseVoltageLevelForSubstation = useCallback(
         (idSubstation, x, y) => {

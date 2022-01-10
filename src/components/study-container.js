@@ -147,6 +147,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const [networkLoadingFailMessage, setNetworkLoadingFailMessage] =
         useState(undefined);
 
+    const [errorMessage, setErrorMessage] = useState(undefined);
+
     const dispatch = useDispatch();
 
     const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
@@ -439,7 +441,9 @@ export function StudyContainer({ view, onChangeTab }) {
 
     return (
         <WaitingLoader
-            errMessage={studyErrorMessage || networkLoadingFailMessage}
+            errMessage={
+                studyErrorMessage || networkLoadingFailMessage || errorMessage
+            }
             loading={studyPending || !network}
             message={'LoadingRemoteData'}
         >
@@ -456,6 +460,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 sldRef={sldRef}
                 setUpdateSwitchMsg={setUpdateSwitchMsg}
                 updateSwitchMsg={updateSwitchMsg}
+                setErrorMessage={setErrorMessage}
             />
         </WaitingLoader>
     );
