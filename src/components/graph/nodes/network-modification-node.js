@@ -6,6 +6,7 @@
  */
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import { Handle } from 'react-flow-renderer';
@@ -58,14 +59,18 @@ const NetworkModificationNode = (props) => {
                         : classes.networkModification
                 }
                 startIcon={
-                    props.data.buildStatus !== 'NOT_BUILT' && (
-                        <CheckCircleIcon
-                            className={
-                                props.data.buildStatus === 'BUILT'
-                                    ? classes.buildStatusOk
-                                    : classes.buildStatusInvalid
-                            }
-                        />
+                    props.data.buildStatus === 'BUILDING' ? (
+                        <CircularProgress size={14} />
+                    ) : (
+                        props.data.buildStatus !== 'NOT_BUILT' && (
+                            <CheckCircleIcon
+                                className={
+                                    props.data.buildStatus === 'BUILT'
+                                        ? classes.buildStatusOk
+                                        : classes.buildStatusInvalid
+                                }
+                            />
+                        )
                     )
                 }
                 endIcon={props.id === workingNodeUuid && <ArrowForwardIcon />}

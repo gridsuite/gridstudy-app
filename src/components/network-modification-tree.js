@@ -75,16 +75,20 @@ const NetworkModificationTree = (props) => {
     const onNodeDoubleClick = useCallback(
         (event, node) => {
             if (node.type === 'NETWORK_MODIFICATION') {
-                buildNode(studyUuid, node.id).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeCreateError',
-                            intlRef: intlRef,
-                        },
+                buildNode(studyUuid, node.id)
+                    .then((resp) => {
+                        node.data.buildStatus = 'BUILDING';
+                    })
+                    .catch((errorMessage) => {
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'NodeCreateError',
+                                intlRef: intlRef,
+                            },
+                        });
                     });
-                });
             }
         },
         [studyUuid, enqueueSnackbar, intlRef]
