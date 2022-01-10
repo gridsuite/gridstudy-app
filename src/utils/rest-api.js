@@ -1205,7 +1205,7 @@ export function buildNode(studyUuid, selectedNodeUuid) {
     console.debug(url);
     return backendFetch(url, { method: 'post' }).then((response) =>
         response.ok
-            ? response.json()
+            ? response.text()
             : response.text().then((text) => Promise.reject(text))
     );
 }

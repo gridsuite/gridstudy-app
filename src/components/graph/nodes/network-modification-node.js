@@ -23,8 +23,11 @@ const useStyles = makeStyles((theme) => ({
         background: 'lightsteelblue',
         textTransform: 'none',
     },
-    buildStatus: {
+    buildStatusOk: {
         color: 'green',
+    },
+    buildStatusInvalid: {
+        color: 'red',
     },
 }));
 
@@ -55,8 +58,14 @@ const NetworkModificationNode = (props) => {
                         : classes.networkModification
                 }
                 startIcon={
-                    props.data.buildStatus === 'BUILT' && (
-                        <CheckCircleIcon className={classes.buildStatus} />
+                    props.data.buildStatus !== 'NOT_BUILT' && (
+                        <CheckCircleIcon
+                            className={
+                                props.data.buildStatus === 'BUILT'
+                                    ? classes.buildStatusOk
+                                    : classes.buildStatusInvalid
+                            }
+                        />
                     )
                 }
                 endIcon={props.id === workingNodeUuid && <ArrowForwardIcon />}

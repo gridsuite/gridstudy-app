@@ -58,6 +58,7 @@ const NetworkModificationTree = (props) => {
 
     const onElementClick = useCallback(
         (event, element) => {
+            console.log('NNO avant single', element.id);
             setSelectedNode(element);
             dispatch(selectTreeNode(element.id));
             if (
@@ -74,13 +75,19 @@ const NetworkModificationTree = (props) => {
     const onNodeDoubleClick = useCallback(
         (event, node) => {
             if (node.type === 'NETWORK_MODIFICATION') {
-                buildNode(studyUuid, node.id).then((response) => {
-                    dispatch(selectTreeNode(node.id));
-                    dispatch(workingTreeNode(node.id));
+                buildNode(studyUuid, node.id).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NodeCreateError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
             }
         },
-        [dispatch, studyUuid]
+        [studyUuid, enqueueSnackbar, intlRef]
     );
 
     const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(

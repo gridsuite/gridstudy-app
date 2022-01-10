@@ -1104,7 +1104,9 @@ const StudyPane = (props) => {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'realizationCompleted'
+                    'buildCompleted' ||
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'buildCancelled'
             ) {
                 updateNodes(
                     new Array(studyUpdatedForce.eventData.headers['node'])
