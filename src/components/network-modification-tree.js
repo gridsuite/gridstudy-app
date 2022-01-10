@@ -74,7 +74,10 @@ const NetworkModificationTree = (props) => {
 
     const onNodeDoubleClick = useCallback(
         (event, node) => {
-            if (node.type === 'NETWORK_MODIFICATION') {
+            if (
+                node.type === 'NETWORK_MODIFICATION' &&
+                node.data.buildStatus !== 'BUILT'
+            ) {
                 buildNode(studyUuid, node.id)
                     .then((resp) => {
                         node.data.buildStatus = 'BUILDING';
