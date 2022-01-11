@@ -378,6 +378,21 @@ const StudyPane = (props) => {
 
     const { enqueueSnackbar } = useSnackbar();
 
+    const networkRef = useRef();
+    networkRef.current = network;
+
+    const historyRef = useRef();
+    historyRef.current = history;
+
+    const studyUuidRef = useRef();
+    studyUuidRef.current = studyUuid;
+
+    const displayedSubstationIdRef = useRef();
+    displayedSubstationIdRef.current = displayedSubstationId;
+
+    const displayedVoltageLevelIdRef = useRef();
+    displayedVoltageLevelIdRef.current = displayedVoltageLevelId;
+
     /**
      * Report dialog
      */
@@ -976,32 +991,32 @@ const StudyPane = (props) => {
             if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
                 if (
                     //If the SLD of the deleted substation is open, we close it
-                    displayedSubstationId &&
-                    displayedSubstationId ===
+                    displayedSubstationIdRef.current &&
+                    displayedSubstationIdRef.current ===
                         studyUpdatedForce.eventData.headers[
                             'deletedEquipmentId'
                         ]
                 ) {
-                    history.replace(
-                        '/studies/' + encodeURIComponent(studyUuid)
+                    historyRef.current.replace(
+                        '/studies/' + encodeURIComponent(studyUuidRef.current)
                     );
                     setDisplayedSubstationId(null);
-                    setVisibleSubstation(null);
                 } else if (
                     //If the SLD of the deleted voltage level or the SLD of its substation is open, we close it
-                    displayedVoltageLevelId &&
-                    (displayedVoltageLevelId ===
+                    displayedVoltageLevelIdRef.current &&
+                    (displayedVoltageLevelIdRef.current ===
                         studyUpdatedForce.eventData.headers[
                             'deletedEquipmentId'
                         ] ||
-                        network.voltageLevelsById.get(displayedVoltageLevelId)
-                            .substationId ===
+                        networkRef.current.voltageLevelsById.get(
+                            displayedVoltageLevelIdRef.current
+                        ).substationId ===
                             studyUpdatedForce.eventData.headers[
                                 'deletedEquipmentId'
                             ])
                 ) {
-                    history.replace(
-                        '/studies/' + encodeURIComponent(studyUuid)
+                    historyRef.current.replace(
+                        '/studies/' + encodeURIComponent(studyUuidRef.current)
                     );
                     setDisplayedVoltageLevelId(null);
                 } else {
@@ -1033,16 +1048,7 @@ const StudyPane = (props) => {
                 }
             }
         }
-    }, [
-        history,
-        studyUuid,
-        studyUpdatedForce,
-        updateNetwork,
-        network,
-        removeEquipmentFromNetwork,
-        displayedSubstationId,
-        displayedVoltageLevelId,
-    ]);
+    }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
