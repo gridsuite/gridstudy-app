@@ -78,6 +78,7 @@ export default class Network {
 
     completeSubstationsInfos() {
         const nominalVoltagesSet = new Set();
+        this.substationsById = new Map();
         this.substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
@@ -123,6 +124,7 @@ export default class Network {
         });
 
         // add newly created equipments
+        let equipmentsAdded = false;
         if (this.isResourceFetched(equipmentType)) {
             newEquipements.forEach((equipment1) => {
                 const found = currentEquipments.find(
@@ -130,11 +132,14 @@ export default class Network {
                 );
                 if (found === undefined) {
                     currentEquipments.push(equipment1);
+                    equipmentsAdded = true;
                 }
             });
         }
 
-        return [...currentEquipments];
+        return equipmentsAdded === true
+            ? [...currentEquipments]
+            : currentEquipments;
     }
 
     updateSubstations(substations) {
@@ -455,6 +460,20 @@ export default class Network {
         }
     }
 
+    removeInjectionOfVoltageLevel(injectionsList, voltageLevelId) {
+        return injectionsList.filter(
+            (l) => l.voltageLevelId !== voltageLevelId
+        );
+    }
+
+    removeBranchesOfVoltageLevel(branchesList, voltageLevelId) {
+        return branchesList.filter(
+            (l) =>
+                l.voltageLevelId1 !== voltageLevelId &&
+                l.voltageLevelId2 !== voltageLevelId
+        );
+    }
+
     removeEquipment(equipmentType, equipmentId) {
         switch (equipmentType) {
             case 'LINE':
@@ -527,15 +546,74 @@ export default class Network {
                 voltageLevelsOfSubstation = voltageLevelsOfSubstation.filter(
                     (l) => l.id !== equipmentId
                 );
+
                 this.substationsById.get(substationId).voltageLevels =
                     voltageLevelsOfSubstation;
 
+                this.generators = this.removeInjectionOfVoltageLevel(
+                    this.generators,
+                    equipmentId
+                );
+                this.completeGeneratorsInfos();
+                this.loads = this.removeInjectionOfVoltageLevel(
+                    this.loads,
+                    equipmentId
+                );
+                this.batteries = this.removeInjectionOfVoltageLevel(
+                    this.batteries,
+                    equipmentId
+                );
+                this.shuntCompensators = this.removeInjectionOfVoltageLevel(
+                    this.shuntCompensators,
+                    equipmentId
+                );
+                this.lccConverterStations = this.removeInjectionOfVoltageLevel(
+                    this.lccConverterStations,
+                    equipmentId
+                );
+                this.vscConverterStations = this.removeInjectionOfVoltageLevel(
+                    this.vscConverterStations,
+                    equipmentId
+                );
+                this.staticVarCompensators = this.removeInjectionOfVoltageLevel(
+                    this.staticVarCompensators,
+                    equipmentId
+                );
+                this.danglingLines = this.removeInjectionOfVoltageLevel(
+                    this.danglingLines,
+                    equipmentId
+                );
+
+                this.removeBranchesOfVoltageLevel(this.hvdcLines, equipmentId);
+
+                this.removeBranchesOfVoltageLevel(this.lines, equipmentId);
+                this.completeLinesInfos();
+
+                this.removeBranchesOfVoltageLevel(
+                    this.twoWindingsTransformers,
+                    equipmentId
+                );
+                this.completeTwoWindingsTransformersInfos();
+
+                this.threeWindingsTransformers =
+                    this.threeWindingsTransformers.filter(
+                        (l) =>
+                            l.voltageLevelId1 !== equipmentId &&
+                            l.voltageLevelId2 !== equipmentId &&
+                            l.voltageLevelId3 !== equipmentId
+                    );
+                this.completeThreeWindingsTransformersInfos();
                 break;
             case 'SUBSTATION':
                 this.substations = this.substations.filter(
                     (l) => l.id !== equipmentId
                 );
-                this.substationsById.delete(equipmentId);
+
+                this.substationsById
+                    .get(equipmentId)
+                    .voltageLevels.map((vl) =>
+                        this.removeEquipment('VOLTAGE_LEVEL', vl.id)
+                    );
                 this.completeSubstationsInfos();
                 break;
             default:
