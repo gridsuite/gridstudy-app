@@ -58,8 +58,6 @@ export default class Network {
 
     lazyLoaders = new Map();
 
-    voltageLevels = [];
-
     voltageLevelsByNominalVoltage = new Map();
 
     voltageLevelsById = new Map();
@@ -100,11 +98,11 @@ export default class Network {
             });
         });
 
-        this.voltageLevels = this.substations.flatMap(
+        const voltageLevels = this.substations.flatMap(
             (substation) => substation.voltageLevels
         );
 
-        this.voltageLevelsById = this.voltageLevels.reduce(
+        this.voltageLevelsById = voltageLevels.reduce(
             elementIdIndexer,
             new Map()
         );
