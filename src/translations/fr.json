@@ -317,6 +317,14 @@
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
 
+    "CreateVoltageLevel": "Créer un poste",
+    "Substation": "Site",
+    "BusBarSections": "Sections de jeu de barre",
+    "BusBarSectionID" : "ID SJB",
+    "BusBarSectionName" : "Nom de la section (optionnel)",
+    "CreateBusBarSection": "Créer une section de jeu de barre",
+    "CreateLink": "Ajouter un lien",
+
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
 

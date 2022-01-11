@@ -1,6 +1,7 @@
 {
     "network_modification/modificationsCount": "{count, plural, =0 {aucune modification} =1 {# modification} other {# modifications}}",
     "network_modifications/EQUIPMENT_DELETION": "Suppression de {computedLabel}",
+    "network_modifications/SUBSTATION_CREATION": "Création du site {computedLabel}",
     "network_modifications/LOAD_CREATION": "Création de la charge {computedLabel}",
     "network_modifications/GENERATOR_CREATION": "Création du générateur {computedLabel}",
     "network_modifications/LINE_CREATION": "Création de la ligne {computedLabel}",

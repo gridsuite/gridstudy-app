@@ -317,6 +317,14 @@
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
 
+    "CreateVoltageLevel": "Create a voltage level",
+    "Substation": "Substation",
+    "BusBarSections" : "Bus bar sections",
+    "BusBarSectionID" : "Bus bar section ID",
+    "BusBarSectionName" : "section name (optional)",
+    "CreateBusBarSection": "Add bus bar section",
+    "CreateLink": "Create a link",
+
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
 
@@ -326,4 +334,5 @@
     "RatedVoltage": "Rated voltage",
     "TwoWindingsTransformerCreationError": "Error while creating a 2 windings transformer",
     "NewName": "New name"
+
 }

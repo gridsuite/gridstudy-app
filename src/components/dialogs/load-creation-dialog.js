@@ -24,7 +24,7 @@ import {
 } from '../../utils/messages';
 import { createLoad } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
-import { validateField } from '../util/validation-functions';
+import { makeErrorHelper, validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
@@ -348,19 +348,21 @@ const LoadCreationDialog = ({
                                 errors.get('voltage-level')?.error
                             }
                             helperTextVoltageLevel={
-                                errors.get('voltage-level')?.error &&
-                                intl.formatMessage({
-                                    id: errors.get('voltage-level')?.errorMsgId,
-                                })
+                                makeErrorHelper(errors, intl, 'voltage-level')
+                                // errors.get('voltage-level')?.error &&
+                                // intl.formatMessage({
+                                //     id: errors.get('voltage-level')?.errorMsgId,
+                                // })
                             }
                             errorBusOrBusBarSection={
                                 errors.get('bus-bar')?.error
                             }
                             helperTextBusOrBusBarSection={
-                                errors.get('bus-bar')?.error &&
-                                intl.formatMessage({
-                                    id: errors.get('bus-bar')?.errorMsgId,
-                                })
+                                makeErrorHelper(errors, intl, 'bus-bar-level')
+                                // errors.get('bus-bar')?.error &&
+                                // intl.formatMessage({
+                                //     id: errors.get('bus-bar')?.errorMsgId,
+                                // })
                             }
                             selectedNodeUuid={selectedNodeUuid}
                         />

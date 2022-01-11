@@ -71,3 +71,11 @@ export function validateField(value, toValidate) {
         errorMsgId: '',
     };
 }
+
+export function makeErrorHelper(errors, intl, fieldId) {
+    let errEntry = errors.get(fieldId);
+    if (!errEntry || !errEntry.error) return '';
+    return intl.formatMessage({
+        id: errEntry.errorMsgId,
+    });
+}

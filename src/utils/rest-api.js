@@ -889,6 +889,17 @@ export function switchOnLine(studyUuid, selectedNodeUuid, lineId) {
     return changeLineStatus(studyUuid, selectedNodeUuid, lineId, 'switch_on');
 }
 
+export function createVoltageLevel(
+    studyUuid,
+    selectedNodeUuid,
+    id,
+    name,
+    busBarSections
+) {
+    console.info('Creating voltage level (stub) ');
+    return Promise.reject('Creating voltage level (stub)');
+}
+
 export function createLoad(
     studyUuid,
     selectedNodeUuid,
