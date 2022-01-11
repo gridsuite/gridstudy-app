@@ -6,7 +6,6 @@
  */
 import { IconButton, ListItem } from '@material-ui/core';
 import { useIntl } from 'react-intl';
-import ListItemText from '@material-ui/core/ListItemText';
 import React, { useCallback } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import { useSelector } from 'react-redux';
