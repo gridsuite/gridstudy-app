@@ -47,8 +47,11 @@ const NodeEditor = ({ onClose, className }) => {
         if (!selectedNodeUuid) return;
         if (
             !selectedNodeUuidRef.current ||
-            (studyUpdatedForce?.eventData?.headers?.node === selectedNodeUuid &&
-                studyUpdatedForce?.eventData?.headers?.updateType === 'study')
+            (studyUpdatedForce?.eventData?.headers?.updateType ===
+                'nodeUpdated' &&
+                studyUpdatedForce.eventData.headers.nodes.find(
+                    (s) => s === selectedNodeUuid
+                ) !== -1)
         ) {
             selectedNodeUuidRef.current = selectedNodeUuid;
             fetchNetworkModificationTreeNode(selectedNodeUuid)

@@ -23,6 +23,7 @@ import { ModificationListItem } from './modification-list-item';
 import { ListItem } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import Divider from '@material-ui/core/Divider';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -40,6 +41,8 @@ const useStyles = makeStyles((theme) => ({
 
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+
     const [modifications, setModifications] = useState(undefined);
     const { enqueueSnackbar } = useSnackbar();
     const selectedNodeRef = useRef(); // initial empty to get first update
@@ -78,7 +81,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     };
 
     const doDeleteModification = (uuid) => {
-        deleteModification(selectedNode, uuid);
+        deleteModification(studyUuid, selectedNode, uuid);
     };
 
     return (
