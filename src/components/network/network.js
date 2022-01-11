@@ -276,24 +276,6 @@ export default class Network {
         );
     }
 
-    updateVoltageLevels(voltageLevels) {
-        this.voltagelevels = this.updateEquipments(
-            this.voltagelevels,
-            voltageLevels,
-            equipments.voltageLevels
-        );
-
-        // add more infos
-        this.completeVoltageLevelsInfos();
-    }
-
-    completeVoltageLevelsInfos() {
-        this.voltageLevelsById = this.voltageLevels.reduce(
-            elementIdIndexer,
-            new Map()
-        );
-    }
-
     getVoltageLevels() {
         return Array.from(this.voltageLevelsById.values());
     }
