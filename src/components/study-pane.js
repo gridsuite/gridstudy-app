@@ -384,9 +384,6 @@ const StudyPane = (props) => {
     const historyRef = useRef();
     historyRef.current = history;
 
-    const studyUuidRef = useRef();
-    studyUuidRef.current = studyUuid;
-
     const displayedSubstationIdRef = useRef();
     displayedSubstationIdRef.current = displayedSubstationId;
 
@@ -998,7 +995,7 @@ const StudyPane = (props) => {
                         ]
                 ) {
                     historyRef.current.replace(
-                        '/studies/' + encodeURIComponent(studyUuidRef.current)
+                        '/studies/' + encodeURIComponent(studyUuid)
                     );
                     setDisplayedSubstationId(null);
                 } else if (
@@ -1016,7 +1013,7 @@ const StudyPane = (props) => {
                             ])
                 ) {
                     historyRef.current.replace(
-                        '/studies/' + encodeURIComponent(studyUuidRef.current)
+                        '/studies/' + encodeURIComponent(studyUuid)
                     );
                     setDisplayedVoltageLevelId(null);
                 } else {
@@ -1048,7 +1045,12 @@ const StudyPane = (props) => {
                 }
             }
         }
-    }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
+    }, [
+        studyUuid,
+        studyUpdatedForce,
+        updateNetwork,
+        removeEquipmentFromNetwork,
+    ]);
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
