@@ -86,7 +86,7 @@ const NetworkModificationTree = (props) => {
                             errorMessage: errorMessage,
                             enqueueSnackbar: enqueueSnackbar,
                             headerMessage: {
-                                headerMessageId: 'NodeCreateError',
+                                headerMessageId: 'NodeBuildingError',
                                 intlRef: intlRef,
                             },
                         });
