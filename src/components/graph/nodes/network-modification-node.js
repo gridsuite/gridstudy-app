@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import React from 'react';
@@ -73,7 +73,7 @@ const NetworkModificationNode = (props) => {
                         )
                     )
                 }
-                endIcon={props.id === workingNodeUuid && <ArrowForwardIcon />}
+                endIcon={props.id === workingNodeUuid && <VisibilityIcon />}
                 disableElevation
             >
                 {props.data.label}

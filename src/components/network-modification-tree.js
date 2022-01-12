@@ -58,7 +58,6 @@ const NetworkModificationTree = (props) => {
 
     const onElementClick = useCallback(
         (event, element) => {
-            console.log('NNO avant single', element.id);
             setSelectedNode(element);
             dispatch(selectTreeNode(element.id));
             if (
