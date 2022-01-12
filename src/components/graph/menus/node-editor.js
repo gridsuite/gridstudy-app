@@ -45,13 +45,13 @@ const NodeEditor = ({ onClose, className }) => {
 
     useEffect(() => {
         if (!selectedNodeUuid) return;
+        const headers = studyUpdatedForce?.eventData?.headers;
+        const updateType = headers?.updateType;
         if (
             !selectedNodeUuidRef.current ||
-            (studyUpdatedForce?.eventData?.headers?.updateType ===
-                'nodeUpdated' &&
-                studyUpdatedForce.eventData.headers.nodes.find(
-                    (s) => s === selectedNodeUuid
-                ) !== -1)
+            (updateType === 'nodeUpdated' &&
+                headers.nodes.indexOf(selectedNodeUuid) !== -1) ||
+            (updateType === 'study' && headers.node === selectedNodeUuid)
         ) {
             selectedNodeUuidRef.current = selectedNodeUuid;
             fetchNetworkModificationTreeNode(selectedNodeUuid)

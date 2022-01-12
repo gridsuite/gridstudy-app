@@ -714,7 +714,7 @@ export function deleteModification(studyUuid, node, modificationUuid) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
-        studyUuid +
+        encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(node.id) +
         '/network-modification/' +

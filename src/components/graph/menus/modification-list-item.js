@@ -13,10 +13,21 @@ import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from 'prop-types';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+    listItem: {
+        paddingRight: theme.spacing(1),
+    },
+    label: {
+        flexGrow: '1',
+    },
+}));
 
 export const ModificationListItem = ({ modification, onDelete, ...props }) => {
     const intl = useIntl();
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
+    const classes = useStyles();
 
     const getComputedLabel = useCallback(() => {
         return useName && modification.equipmentName
@@ -28,24 +39,22 @@ export const ModificationListItem = ({ modification, onDelete, ...props }) => {
         () =>
             intl.formatMessage(
                 { id: 'network_modifications/' + modification.type },
-                { ...modification, computedLabel: getComputedLabel() }
+                {
+                    ...modification,
+                    computedLabel: <strong>{getComputedLabel()}</strong>,
+                }
             ),
         [modification, getComputedLabel, intl]
     );
     return (
         <>
-            <ListItem {...props}>
-                <OverflowableText style={{ flexGrow: '1' }} text={getLabel()} />
+            <ListItem {...props} className={classes.listItem}>
+                <OverflowableText className={classes.label} text={getLabel()} />
                 <IconButton
                     onClick={() => onDelete(modification.uuid)}
                     size={'small'}
-                    style={{ alignSelf: 'right' }}
                 >
-                    <DeleteIcon
-                        style={{
-                            alignItems: 'end',
-                        }}
-                    />
+                    <DeleteIcon />
                 </IconButton>
             </ListItem>
             <Divider />
