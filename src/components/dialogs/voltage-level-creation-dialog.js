@@ -111,46 +111,6 @@ const VoltageLevelCreationDialog = ({
         setVoltageLevelName(event.target.value);
     };
 
-    const onBusBarIdChange = (idx, event) => {
-        let newId = event.target.value;
-
-        let indexIn = busBarSections.findIndex((v, i) => v.idx === idx);
-        let prevBbs = busBarSections[indexIn];
-        let nextBbs = { ...prevBbs, id: newId };
-
-        let next = [...busBarSections];
-        next[indexIn] = nextBbs;
-        console.log(
-            'onBusBarIdChange ' +
-                JSON.stringify(nextBbs) +
-                ' :\n ' +
-                JSON.stringify(busBarSections) +
-                '\n->\n' +
-                JSON.stringify(next)
-        );
-        setBusBarSections(next);
-    };
-
-    const onBusBarNameChange = (idx, event) => {
-        let newName = event.target.value;
-
-        let indexIn = busBarSections.findIndex((v, i) => v.idx === idx);
-        let prevBbs = busBarSections[indexIn];
-        let nextBbs = { ...prevBbs, name: newName };
-
-        let next = [...busBarSections];
-        next[indexIn] = nextBbs;
-        console.log(
-            'onBusBarNameChange ' +
-                JSON.stringify(nextBbs) +
-                ' :\n ' +
-                JSON.stringify(busBarSections) +
-                '\n->\n' +
-                JSON.stringify(next)
-        );
-        setBusBarSections(next);
-    };
-
     const onBusBarFieldChange = (idx, event, fieldName) => {
         let newFieldValue = event.target.value;
 
@@ -187,7 +147,7 @@ const VoltageLevelCreationDialog = ({
             busBarSections.length === 0
                 ? 0
                 : busBarSections[busBarSections.length - 1].idx + 1;
-        let nextBbs = { idx: idx, id: '', name: '', vertPos: -1, horizPos: -1 };
+        let nextBbs = { idx: idx, id: '', name: '', vertPos: 1, horizPos: 1 };
         let next = [...busBarSections, nextBbs];
         console.log(
             'Would have added a bus bar section ' +
@@ -214,7 +174,7 @@ const VoltageLevelCreationDialog = ({
     };
 
     const handleCreateConnection = () => {
-        let idx = busBarSections.length;
+        let idx = connections.length;
         let next = [
             ...connections,
             { idx: idx, fromBBS: null, toBBS: null, cnxType: 'Breaker' },
@@ -224,7 +184,16 @@ const VoltageLevelCreationDialog = ({
     };
 
     const handleDeleteConnection = (cnx) => {
-        console.log('Would have deleted connection ' + cnx);
+        let next = connections.filter((v, i, arr) => v.idx !== cnx.idx);
+        console.log(
+            'Deletes connection ' +
+                JSON.stringify(cnx) +
+                ' :\n ' +
+                JSON.stringify(busBarSections) +
+                '\n->\n' +
+                JSON.stringify(next)
+        );
+        setConnections(next);
     };
 
     const FittingPopper = (props) => {
@@ -238,15 +207,28 @@ const VoltageLevelCreationDialog = ({
     };
 
     const collectErrors = () => {
-        let tmpErrors = new Map(errors);
+        let tmpErrors = new Map();
 
         addCheckToBlock(tmpErrors, { voltageLevelId });
         addCheckToBlock(tmpErrors, { nominalVoltage }, true, true);
         addCheckToBlock(tmpErrors, { substation });
 
+        let bbs;
+        for (bbs of busBarSections) {
+            addCheckToBlock(tmpErrors, makeBlock('bbs_id.' + bbs.idx, bbs.id));
+            addCheckToBlock(
+                tmpErrors,
+                makeBlock('bbs_hpos.' + bbs.idx, bbs.horizPos)
+            );
+            addCheckToBlock(
+                tmpErrors,
+                makeBlock('bbs_vpos.' + bbs.idx, bbs.vertPos)
+            );
+        }
+
         console.log(
             'errors:' +
-                JSON.stringify(errors, (key, value) =>
+                JSON.stringify(tmpErrors, (key, value) =>
                     value instanceof Map ? [...value] : value
                 )
         );
@@ -309,11 +291,135 @@ const VoltageLevelCreationDialog = ({
         onClose();
     };
 
-    function makeGridCells() {
+    return (
+        <Dialog
+            fullWidth
+            maxWidth="md" // 3 columns
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="dialog-create-voltage-level"
+        >
+            <DialogTitle>
+                {intl.formatMessage({ id: 'CreateVoltageLevel' })}
+            </DialogTitle>
+            <DialogContent>
+                <div>
+                    <Grid container spacing={2}>
+                        {makeLevelLevelRow()}
+                    </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <h3 className={classes.h3}>
+                                <FormattedMessage id="BusBarSections" />
+                            </h3>
+                        </Grid>
+                    </Grid>
+                    {busBarSections.map((p) => makeBusbarSectionRow(p))}
+                    <Grid container spacing={2}>
+                        <Grid item xs={3}>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateBusBarSection}
+                            >
+                                {intl.formatMessage({
+                                    id: 'CreateBusBarSection',
+                                })}
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <h3 className={classes.h3}>
+                                <FormattedMessage id="Connectivity" />
+                            </h3>
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
+                        {connections.map((p) => makeConnectionRow(p))}
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Button
+                            fullWidth
+                            className={classes.button}
+                            variant="outlined"
+                            startIcon={<AddIcon />}
+                            onClick={handleCreateConnection}
+                        >
+                            {intl.formatMessage({ id: 'CreateLink' })}
+                        </Button>
+                    </Grid>
+                </div>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCloseAndClear} variant="text">
+                    <FormattedMessage id="close" />
+                </Button>
+                <Button onClick={handleSave} variant="text">
+                    <FormattedMessage id="save" />
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+
+    function makeTFld(
+        fieldVarInBlock,
+        onChangeCb,
+        labelId,
+        af = false,
+        filled = false,
+        numerical = false
+    ) {
+        let fieldName = Object.keys(fieldVarInBlock)[0];
+        let value = fieldVarInBlock[fieldName];
+        console.log(
+            "Field name '" +
+                fieldName +
+                "' = '" +
+                value +
+                "' : " +
+                JSON.stringify(fieldVarInBlock)
+        );
+        return (
+            <TextField
+                autoFocus={af}
+                size="small"
+                fullWidth
+                id={fieldName}
+                label={intl.formatMessage({ id: labelId })}
+                {...(filled ? { variant: 'filled' } : undefined)}
+                {...(numerical
+                    ? {
+                          type: 'number',
+                          inputProps: { min: 0, style: { textAlign: 'right' } },
+                      }
+                    : undefined)}
+                key={fieldName}
+                value={value}
+                onChange={onChangeCb}
+                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
+       which is not the case when no variant is used) */
+                FormHelperTextProps={{
+                    className: classes.helperText,
+                }}
+                {...makeErrorIf(errors, intl, fieldVarInBlock)}
+            />
+        );
+    }
+
+    function makeLevelLevelRow() {
         return (
             <>
                 <Grid item xs={3} align="start">
-                    {makeTFld({ voltageLevelId }, onIdChange, 'ID', true, true)}
+                    {makeTFld(
+                        { voltageLevelId },
+                        onIdChange,
+                        'ID',
+                        !voltageLevelId,
+                        true
+                    )}
                 </Grid>
                 <Grid item xs={3} align="start">
                     {makeTFld(
@@ -337,6 +443,9 @@ const VoltageLevelCreationDialog = ({
                         adornmentText={'kV'}
                         value={nominalVoltage}
                         onChange={handleChangeNominalVoltage}
+                        FormHelperTextProps={{
+                            className: classes.helperText,
+                        }}
                         {...(errors.get('nominalVoltage')?.error && {
                             error: true,
                             helperText: intl.formatMessage({
@@ -405,116 +514,10 @@ const VoltageLevelCreationDialog = ({
         );
     }
 
-    return (
-        <Dialog
-            fullWidth
-            maxWidth="md" // 3 columns
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-voltage-level"
-        >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'CreateVoltageLevel' })}
-            </DialogTitle>
-            <DialogContent>
-                <div>
-                    <Grid container spacing={2}>
-                        {makeGridCells()}
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="BusBarSections" />
-                            </h3>
-                        </Grid>
-                    </Grid>
-                    {busBarSections.map((p) => makeBusbarSectionRow(p))}
-                    <Grid container spacing={2}>
-                        <Grid item xs={3}>
-                            <Button
-                                fullWidth
-                                className={classes.button}
-                                variant="outlined"
-                                startIcon={<AddIcon />}
-                                onClick={handleCreateBusBarSection}
-                            >
-                                {intl.formatMessage({
-                                    id: 'CreateBusBarSection',
-                                })}
-                            </Button>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Connectivity" />
-                            </h3>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        {connections.map((p) => makeConnectionRow(p))}
-                    </Grid>
-                    <Grid item xs={3}>
-                        <Button
-                            fullWidth
-                            className={classes.button}
-                            variant="outlined"
-                            startIcon={<AddIcon />}
-                            onClick={handleCreateConnection}
-                        >
-                            {intl.formatMessage({ id: 'CreateLink' })}
-                        </Button>
-                    </Grid>
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
-
-    function makeTFld(
-        fieldVarInBlock,
-        onChangeCb,
-        labelId,
-        af = false,
-        filled = false
-    ) {
-        let fieldName = Object.keys(fieldVarInBlock)[0];
-        // let value = fieldVarInBlock[0];
-        let value = fieldVarInBlock[fieldName];
-        console.log(
-            "Field name '" +
-                fieldName +
-                "' = '" +
-                value +
-                "' : " +
-                JSON.stringify(fieldVarInBlock)
-        );
-        return (
-            <TextField
-                autoFocus={af}
-                size="small"
-                fullWidth
-                id={fieldName}
-                label={intl.formatMessage({ id: labelId })}
-                {...(filled ? { variant: 'filled' } : undefined)}
-                key={fieldName}
-                value={value}
-                onChange={onChangeCb}
-                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-       which is not the case when no variant is used) */
-                FormHelperTextProps={{
-                    className: classes.helperText,
-                }}
-                {...makeErrorIf(errors, intl, fieldVarInBlock)}
-            />
-        );
+    function makeBlock(prefix, value) {
+        let block = {};
+        block[prefix] = value;
+        return block;
     }
 
     function makeBusbarSectionRow(bbs) {
@@ -522,27 +525,55 @@ const VoltageLevelCreationDialog = ({
             console.error('suspicious bbs ' + bbs);
             return undefined;
         }
-        let idBlock = {};
-        idBlock['bbs_id.' + bbs.idx] = bbs.id;
+
+        let idBlock = makeBlock('bbs_id.' + bbs.idx, bbs.id);
         let idCb = (event) => {
-            onBusBarIdChange(bbs.idx, event);
+            onBusBarFieldChange(bbs.idx, event, 'id');
         };
 
-        let nameBlock = {};
-        nameBlock['bbs_name.' + bbs.idx] = bbs.name;
+        let nameBlock = makeBlock('bbs_name.' + bbs.idx, bbs.name);
         let nameCb = (event) => {
-            //onBusBarNameChange(bbs.idx, event);
             onBusBarFieldChange(bbs.idx, event, 'name');
+        };
+
+        let horizPosBlock = makeBlock('bbs_hpos.' + bbs.idx, bbs.horizPos);
+        let hposCb = (event) => {
+            onBusBarFieldChange(bbs.idx, event, 'horizPos');
+        };
+
+        let vertPosBlock = makeBlock('bbs_vpos.' + bbs.idx, bbs.vertPos);
+        let vposCb = (event) => {
+            onBusBarFieldChange(bbs.idx, event, 'vertPos');
         };
 
         return (
             <>
                 <Grid container spacing={2} key={'bbs_id.' + bbs.idx}>
                     <Grid item xs={3}>
-                        {makeTFld(idBlock, idCb, 'BusBarSectionID')}
+                        {makeTFld(idBlock, idCb, 'BusBarSectionID', !bbs.id)}
                     </Grid>
                     <Grid item xs={3}>
                         {makeTFld(nameBlock, nameCb, 'BusBarSectionName')}
+                    </Grid>
+                    <Grid item xs={3}>
+                        {makeTFld(
+                            horizPosBlock,
+                            hposCb,
+                            'BusBarHorizPos',
+                            false,
+                            false,
+                            true
+                        )}
+                    </Grid>
+                    <Grid item xs={2}>
+                        {makeTFld(
+                            vertPosBlock,
+                            vposCb,
+                            'BusBarVertPos',
+                            false,
+                            false,
+                            true
+                        )}
                     </Grid>
                     <IconButton
                         className={classes.icon}
@@ -557,12 +588,20 @@ const VoltageLevelCreationDialog = ({
     }
 
     function makeConnectionRow(cnx) {
-        <IconButton
-            className={classes.icon}
-            onClick={() => handleDeleteConnection(cnx)}
-        >
-            <DeleteIcon />
-        </IconButton>;
+        if (!cnx) return undefined;
+
+        return (
+            <>
+                <Grid container spacing={2} key={'cnx_id.' + cnx.idx}>
+                    <IconButton
+                        className={classes.icon}
+                        onClick={() => handleDeleteConnection(cnx)}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                </Grid>
+            </>
+        );
     }
 };
 

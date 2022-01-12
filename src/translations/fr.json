@@ -322,8 +322,11 @@
     "BusBarSections": "Sections de jeu de barre",
     "BusBarSectionID" : "ID SJB",
     "BusBarSectionName" : "Nom de la section (optionnel)",
+    "BusBarHorizPos" : "Position horizontale de la section",
+    "BusBarVertPos" : "Position verticale de la section",
     "CreateBusBarSection": "Créer une section de jeu de barre",
     "CreateLink": "Ajouter un lien",
+    "VoltageLevelCreationError": "Erreur à la création d'un poste",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
