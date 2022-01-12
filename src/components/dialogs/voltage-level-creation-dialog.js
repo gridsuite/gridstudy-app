@@ -121,17 +121,40 @@ const VoltageLevelCreationDialog = ({
 
         let next = [...busBarSections];
         next[indexIn] = nextBbs;
+        // console.log(
+        //     'onBusBarNameChange ' +
+        //         fieldName +
+        //         ' ' +
+        //         JSON.stringify(nextBbs) +
+        //         ' :\n ' +
+        //         JSON.stringify(busBarSections) +
+        //         '\n->\n' +
+        //         JSON.stringify(next)
+        // );
+        setBusBarSections(next);
+    };
+
+    const onConnectivityChange = (idx, value, fieldName) => {
+        //let newFieldValue = event.target.value;
+        //console.log('v : ' + JSON.stringify(newFieldValue));
+
+        let indexIn = connections.findIndex((v, i) => v.idx === idx);
+        let prevCnx = connections[indexIn];
+        let nextCnx = { ...prevCnx };
+        nextCnx[fieldName] = value;
+        let next = [...connections];
+        next[indexIn] = nextCnx;
         console.log(
-            'onBusBarNameChange ' +
+            'onConnectivityChange ' +
                 fieldName +
                 ' ' +
-                JSON.stringify(nextBbs) +
+                JSON.stringify(nextCnx) +
                 ' :\n ' +
-                JSON.stringify(busBarSections) +
+                JSON.stringify(connections) +
                 '\n->\n' +
                 JSON.stringify(next)
         );
-        setBusBarSections(next);
+        setConnections(next);
     };
 
     const handleChangeNominalVoltage = (event) => {
@@ -177,7 +200,12 @@ const VoltageLevelCreationDialog = ({
         let idx = connections.length;
         let next = [
             ...connections,
-            { idx: idx, fromBBS: null, toBBS: null, cnxType: 'Breaker' },
+            {
+                idx: idx,
+                fromBBS: null,
+                toBBS: null,
+                cnxType: 'Breaker',
+            },
         ];
         setConnections(next);
         console.log('Would have added a connection');
@@ -213,8 +241,7 @@ const VoltageLevelCreationDialog = ({
         addCheckToBlock(tmpErrors, { nominalVoltage }, true, true);
         addCheckToBlock(tmpErrors, { substation });
 
-        let bbs;
-        for (bbs of busBarSections) {
+        for (let bbs of busBarSections) {
             addCheckToBlock(tmpErrors, makeBlock('bbs_id.' + bbs.idx, bbs.id));
             addCheckToBlock(
                 tmpErrors,
@@ -223,6 +250,17 @@ const VoltageLevelCreationDialog = ({
             addCheckToBlock(
                 tmpErrors,
                 makeBlock('bbs_vpos.' + bbs.idx, bbs.vertPos)
+            );
+        }
+
+        for (let cnx of connections) {
+            addCheckToBlock(
+                tmpErrors,
+                makeBlock('cnx_fromBBS.' + cnx.idx, cnx.fromBBS)
+            );
+            addCheckToBlock(
+                tmpErrors,
+                makeBlock('cnx_toBBS.' + cnx.idx, cnx.toBBS)
             );
         }
 
@@ -337,9 +375,7 @@ const VoltageLevelCreationDialog = ({
                             </h3>
                         </Grid>
                     </Grid>
-                    <Grid container spacing={2}>
-                        {connections.map((p) => makeConnectionRow(p))}
-                    </Grid>
+                    {connections.map((p) => makeConnectionRow(p))}
                     <Grid item xs={3}>
                         <Button
                             fullWidth
@@ -374,14 +410,14 @@ const VoltageLevelCreationDialog = ({
     ) {
         let fieldName = Object.keys(fieldVarInBlock)[0];
         let value = fieldVarInBlock[fieldName];
-        console.log(
-            "Field name '" +
-                fieldName +
-                "' = '" +
-                value +
-                "' : " +
-                JSON.stringify(fieldVarInBlock)
-        );
+        // console.log(
+        //     "Field name '" +
+        //         fieldName +
+        //         "' = '" +
+        //         value +
+        //         "' : " +
+        //         JSON.stringify(fieldVarInBlock)
+        // );
         return (
             <TextField
                 autoFocus={af}
@@ -587,12 +623,72 @@ const VoltageLevelCreationDialog = ({
         );
     }
 
+    function makeBusBarSelector(cnx, isFrom) {
+        let fieldName = isFrom ? 'fromBBS' : 'toBBS';
+        let prefix = 'cnx_' + fieldName + '.' + cnx.idx;
+        let value = cnx[fieldName];
+        let sideBlock = makeBlock(prefix, value);
+        let bbsCb = (event, value, reason) => {
+            console.log('cnxcb:' + JSON.stringify(value));
+            onConnectivityChange(cnx.idx, value, fieldName);
+        };
+        let bbs = isFrom ? cnx.fromBBS : cnx.toBBS;
+        let bbsId = !bbs ? '' : bbs.id;
+
+        console.log(
+            "Field name '" +
+                prefix +
+                "' = '" +
+                value +
+                "' : " +
+                JSON.stringify(sideBlock)
+        );
+
+        return (
+            <Autocomplete
+                size="small"
+                freeSolo
+                forcePopupIcon
+                autoHighlight
+                selectOnFocus
+                //id={fieldName}
+                key={fieldName}
+                options={busBarSections.filter((x) => !!x)}
+                getOptionLabel={(ss) => {
+                    return !ss ? '' : ss.id ? ss.id : '';
+                }}
+                value={bbs}
+                onChange={bbsCb}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        fullWidth
+                        label={intl.formatMessage({
+                            id: 'BusBarSection',
+                        })}
+                        FormHelperTextProps={{
+                            className: classes.helperText,
+                        }}
+                        {...makeErrorIf(errors, intl, sideBlock)}
+                    />
+                )}
+                PopperComponent={FittingPopper}
+            />
+        );
+    }
+
     function makeConnectionRow(cnx) {
         if (!cnx) return undefined;
 
         return (
             <>
                 <Grid container spacing={2} key={'cnx_id.' + cnx.idx}>
+                    <Grid item xs={3}>
+                        {makeBusBarSelector(cnx, true)}
+                    </Grid>
+                    <Grid item xs={3}>
+                        {makeBusBarSelector(cnx, false)}
+                    </Grid>
                     <IconButton
                         className={classes.icon}
                         onClick={() => handleDeleteConnection(cnx)}

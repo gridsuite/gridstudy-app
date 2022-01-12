@@ -326,6 +326,7 @@
     "BusBarVertPos" : "Vertical position",
     "CreateBusBarSection": "Add bus bar section",
     "CreateLink": "Create a link",
+    "BusBarSection" : "Bus bar section",
     "VoltageLevelCreationError": "Voltage level creation error",
 
     "PermanentCurrentLimitText": "Permanent current limit",

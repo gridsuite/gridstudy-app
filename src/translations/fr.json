@@ -326,6 +326,7 @@
     "BusBarVertPos" : "Position verticale de la section",
     "CreateBusBarSection": "Créer une section de jeu de barre",
     "CreateLink": "Ajouter un lien",
+    "BusBarSection" : "Bus bar section",
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
 
     "PermanentCurrentLimitText": "IST",
