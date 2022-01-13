@@ -169,8 +169,6 @@ export function StudyContainer({ view, onChangeTab }) {
         getSecurityAnalysisRunningStatus
     );
 
-    const sldRef = useRef();
-
     const [updatedLines, setUpdatedLines] = useState([]);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -181,8 +179,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const intlRef = useIntlRef();
     const intl = useIntl();
-
-    const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const connectNotifications = useCallback(
         (studyUuid) => {
@@ -378,20 +374,12 @@ export function StudyContainer({ view, onChangeTab }) {
         [studyUuid, selectedNodeUuid, network]
     );
 
-    const updateSld = () => {
-        if (sldRef.current) {
-            setUpdateSwitchMsg('');
-            sldRef.current.reloadSvg();
-        }
-    };
-
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
                 //TODO reload data more intelligently
-                updateSld();
                 loadNetwork(true);
             }
         }
@@ -410,8 +398,6 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
-                updateSld();
-
                 // study partial update :
                 // loading equipments involved in the study modification and updating the network
                 const substationsIds =
@@ -457,9 +443,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 loadFlowInfos={loadFlowInfos}
                 securityAnalysisStatus={securityAnalysisStatus}
                 runnable={runnable}
-                sldRef={sldRef}
-                setUpdateSwitchMsg={setUpdateSwitchMsg}
-                updateSwitchMsg={updateSwitchMsg}
                 setErrorMessage={setErrorMessage}
             />
         </WaitingLoader>

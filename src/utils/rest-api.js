@@ -859,16 +859,16 @@ export function energiseLineEnd(studyUuid, selectedNodeUuid, lineId, lineEnd) {
         selectedNodeUuid,
         lineId,
         lineEnd === 'ONE'
-            ? 'energiseEndOne'
+            ? 'energise_end_one'
             : lineEnd === 'TWO'
-            ? 'energiseEndTwo'
+            ? 'energise_end_two'
             : null
     );
 }
 
 export function switchOnLine(studyUuid, selectedNodeUuid, lineId) {
     console.info('switching on line ' + lineId + ' ...');
-    return changeLineStatus(studyUuid, selectedNodeUuid, lineId, 'switchOn');
+    return changeLineStatus(studyUuid, selectedNodeUuid, lineId, 'switch_on');
 }
 
 export function createLoad(
