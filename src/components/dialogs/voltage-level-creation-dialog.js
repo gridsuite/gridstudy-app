@@ -15,7 +15,13 @@ import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/ControlPoint';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PropTypes from 'prop-types';
-import { Popper, TextField } from '@material-ui/core';
+import {
+    InputLabel,
+    MenuItem,
+    Popper,
+    Select,
+    TextField,
+} from '@material-ui/core';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { useParams } from 'react-router-dom';
 import { createVoltageLevel } from '../../utils/rest-api';
@@ -28,6 +34,7 @@ import { validateField } from '../util/validation-functions';
 import { makeStyles } from '@material-ui/core/styles';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import IconButton from '@material-ui/core/IconButton';
+import FormControl from '@material-ui/core/FormControl';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -57,7 +64,7 @@ const filter = createFilterOptions();
 function addCheckToBlock(sink, fieldVarInBlock, isReq = true, isNum = false) {
     let fieldVarName = Object.keys(fieldVarInBlock)[0];
     let fieldValue = fieldVarInBlock[fieldVarName];
-    console.log('checking "' + fieldVarName + '" ' + isReq + ' ' + isNum);
+
     sink.set(
         fieldVarName,
         validateField(fieldValue, {
@@ -121,39 +128,16 @@ const VoltageLevelCreationDialog = ({
 
         let next = [...busBarSections];
         next[indexIn] = nextBbs;
-        // console.log(
-        //     'onBusBarNameChange ' +
-        //         fieldName +
-        //         ' ' +
-        //         JSON.stringify(nextBbs) +
-        //         ' :\n ' +
-        //         JSON.stringify(busBarSections) +
-        //         '\n->\n' +
-        //         JSON.stringify(next)
-        // );
         setBusBarSections(next);
     };
 
     const onConnectivityChange = (idx, value, fieldName) => {
-        //let newFieldValue = event.target.value;
-        //console.log('v : ' + JSON.stringify(newFieldValue));
-
         let indexIn = connections.findIndex((v, i) => v.idx === idx);
         let prevCnx = connections[indexIn];
         let nextCnx = { ...prevCnx };
         nextCnx[fieldName] = value;
         let next = [...connections];
         next[indexIn] = nextCnx;
-        console.log(
-            'onConnectivityChange ' +
-                fieldName +
-                ' ' +
-                JSON.stringify(nextCnx) +
-                ' :\n ' +
-                JSON.stringify(connections) +
-                '\n->\n' +
-                JSON.stringify(next)
-        );
         setConnections(next);
     };
 
@@ -204,11 +188,13 @@ const VoltageLevelCreationDialog = ({
                 idx: idx,
                 fromBBS: null,
                 toBBS: null,
-                cnxType: 'Breaker',
+                cnxType: 'BREAKER',
             },
         ];
+        console.log(
+            'About to add a connection ' + JSON.stringify(next[next.length - 1])
+        );
         setConnections(next);
-        console.log('Would have added a connection');
     };
 
     const handleDeleteConnection = (cnx) => {
@@ -264,12 +250,6 @@ const VoltageLevelCreationDialog = ({
             );
         }
 
-        console.log(
-            'errors:' +
-                JSON.stringify(tmpErrors, (key, value) =>
-                    value instanceof Map ? [...value] : value
-                )
-        );
         return tmpErrors;
     };
 
@@ -410,14 +390,6 @@ const VoltageLevelCreationDialog = ({
     ) {
         let fieldName = Object.keys(fieldVarInBlock)[0];
         let value = fieldVarInBlock[fieldName];
-        // console.log(
-        //     "Field name '" +
-        //         fieldName +
-        //         "' = '" +
-        //         value +
-        //         "' : " +
-        //         JSON.stringify(fieldVarInBlock)
-        // );
         return (
             <TextField
                 autoFocus={af}
@@ -628,21 +600,11 @@ const VoltageLevelCreationDialog = ({
         let prefix = 'cnx_' + fieldName + '.' + cnx.idx;
         let value = cnx[fieldName];
         let sideBlock = makeBlock(prefix, value);
-        let bbsCb = (event, value, reason) => {
-            console.log('cnxcb:' + JSON.stringify(value));
+        let bbsCb = (event, value) => {
             onConnectivityChange(cnx.idx, value, fieldName);
         };
         let bbs = isFrom ? cnx.fromBBS : cnx.toBBS;
-        let bbsId = !bbs ? '' : bbs.id;
-
-        console.log(
-            "Field name '" +
-                prefix +
-                "' = '" +
-                value +
-                "' : " +
-                JSON.stringify(sideBlock)
-        );
+        let af = isFrom && !cnx.fromBBS;
 
         return (
             <Autocomplete
@@ -651,7 +613,6 @@ const VoltageLevelCreationDialog = ({
                 forcePopupIcon
                 autoHighlight
                 selectOnFocus
-                //id={fieldName}
                 key={fieldName}
                 options={busBarSections.filter((x) => !!x)}
                 getOptionLabel={(ss) => {
@@ -662,6 +623,7 @@ const VoltageLevelCreationDialog = ({
                 renderInput={(params) => (
                     <TextField
                         {...params}
+                        autoFocus={af}
                         fullWidth
                         label={intl.formatMessage({
                             id: 'BusBarSection',
@@ -680,6 +642,11 @@ const VoltageLevelCreationDialog = ({
     function makeConnectionRow(cnx) {
         if (!cnx) return undefined;
 
+        let onTypeChange = (event) => {
+            let value = event.target.value;
+            onConnectivityChange(cnx.idx, value, 'cnxType');
+        };
+
         return (
             <>
                 <Grid container spacing={2} key={'cnx_id.' + cnx.idx}>
@@ -688,6 +655,37 @@ const VoltageLevelCreationDialog = ({
                     </Grid>
                     <Grid item xs={3}>
                         {makeBusBarSelector(cnx, false)}
+                    </Grid>
+                    <Grid item xs={3}>
+                        <FormControl fullWidth size="small">
+                            {/*This InputLabel is necessary in order to display
+                            the label describing the content of the Select*/}
+                            <InputLabel
+                                key={'cnx-type' + cnx.idx}
+                                variant={'filled'}
+                            >
+                                {intl.formatMessage({ id: 'TypeOptional' })}
+                            </InputLabel>
+                            <Select
+                                key={'cnx-type-sel' + cnx.idx}
+                                value={cnx.cnxType}
+                                onChange={onTypeChange}
+                                variant="filled"
+                                fullWidth
+                            >
+                                <MenuItem value="">
+                                    <em>
+                                        {intl.formatMessage({ id: 'None' })}
+                                    </em>
+                                </MenuItem>
+                                <MenuItem value={'BREAKER'}>
+                                    {intl.formatMessage({ id: 'Breaker' })}
+                                </MenuItem>
+                                <MenuItem value={'DISCONNECTOR'}>
+                                    {intl.formatMessage({ id: 'Disconnector' })}
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <IconButton
                         className={classes.icon}

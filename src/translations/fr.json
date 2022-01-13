@@ -328,6 +328,8 @@
     "CreateLink": "Ajouter un lien",
     "BusBarSection" : "Bus bar section",
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
+    "Breaker": "Breaker",
+    "Disconnector": "Disconnector",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",

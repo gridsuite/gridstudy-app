@@ -328,6 +328,8 @@
     "CreateLink": "Create a link",
     "BusBarSection" : "Bus bar section",
     "VoltageLevelCreationError": "Voltage level creation error",
+    "Breaker": "Breaker",
+    "Disconnector": "Disconnector",
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
