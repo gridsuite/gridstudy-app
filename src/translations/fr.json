@@ -330,6 +330,7 @@
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
     "Breaker": "Breaker",
     "Disconnector": "Disconnector",
+    "SameHorizAndVertPos": "Au moins deux SJBs ont mêmes positions horizontale et verticale",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",

@@ -330,6 +330,7 @@
     "VoltageLevelCreationError": "Voltage level creation error",
     "Breaker": "Breaker",
     "Disconnector": "Disconnector",
+    "SameHorizAndVertPos": "At least two bus bar sections have same horizontal and vertical position",
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",

@@ -30,7 +30,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
-import { validateField } from '../util/validation-functions';
+import { makeErrorRecord, validateField } from '../util/validation-functions';
 import { makeStyles } from '@material-ui/core/styles';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import IconButton from '@material-ui/core/IconButton';
@@ -220,6 +220,39 @@ const VoltageLevelCreationDialog = ({
         );
     };
 
+    const buildByHPosVPos = () => {
+        let byHorizVert = new Map();
+        for (let bbs of busBarSections) {
+            let hpos;
+            let vpos;
+            if (
+                typeof bbs.horizPos === String &&
+                bbs.horizPos &&
+                typeof bbs.vertPos === String &&
+                bbs.vertPos
+            ) {
+                hpos = Number(bbs.horizPos.replace(',', '.'));
+                vpos = Number(bbs.vertPos.replace(',', '.'));
+            } else {
+                hpos = bbs.horizPos;
+                vpos = bbs.vertPos;
+            }
+
+            if (!isNaN(hpos && !isNaN(vpos))) {
+                let k = '' + hpos + ',' + vpos;
+                //let p = { hpos, vpos };
+                let others = byHorizVert.get(k);
+                if (!others) {
+                    others = [];
+                    byHorizVert.set(k, others);
+                }
+                others.push(bbs.idx);
+            }
+        }
+
+        return byHorizVert;
+    };
+
     const collectErrors = () => {
         let tmpErrors = new Map();
 
@@ -237,6 +270,18 @@ const VoltageLevelCreationDialog = ({
                 tmpErrors,
                 makeBlock('bbs_vpos.' + bbs.idx, bbs.vertPos)
             );
+        }
+
+        let byHorizVert = buildByHPosVPos();
+        for (let p of byHorizVert) {
+            let indices = p[1];
+            if (indices.length > 1) {
+                let msgId = 'SameHorizAndVertPos';
+                for (let idx of indices) {
+                    tmpErrors.set('bbs_hpos.' + idx, makeErrorRecord(msgId));
+                    tmpErrors.set('bbs_vpos.' + idx, makeErrorRecord(msgId));
+                }
+            }
         }
 
         for (let cnx of connections) {
