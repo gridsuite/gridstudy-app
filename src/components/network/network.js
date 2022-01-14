@@ -583,6 +583,9 @@ export default class Network {
                             l.voltageLevelId3 !== equipmentId
                     );
                 this.completeThreeWindingsTransformersInfos();
+
+                //New reference on substations to trigger reload of NetworkExplorer and NetworkMap
+                this.substations = [...this.substations];
                 break;
             case 'SUBSTATION':
                 this.substations = this.substations.filter(
