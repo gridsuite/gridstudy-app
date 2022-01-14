@@ -85,13 +85,20 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
+    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
+
     const [showParameters, setShowParameters] = useState(false);
 
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
-            fetchEquipmentsInfos(studyUuid, searchTerm, useNameLocal)
+            fetchEquipmentsInfos(
+                studyUuid,
+                selectedNodeUuid,
+                searchTerm,
+                useNameLocal
+            )
                 .then((infos) =>
                     setEquipmentsFound(
                         getEquipmentsInfosForSearchBar(infos, useNameLocal)
@@ -108,7 +115,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     })
                 );
         },
-        [studyUuid, useNameLocal, enqueueSnackbar, intlRef]
+        [studyUuid, selectedNodeUuid, useNameLocal, enqueueSnackbar, intlRef]
     );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
