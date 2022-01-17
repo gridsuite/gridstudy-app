@@ -14,7 +14,6 @@ import {
     updateSwitchState,
 } from '../utils/rest-api';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
-import { getLoadFlowRunningStatus } from './util/running-status';
 import PropTypes from 'prop-types';
 import { parse, stringify } from 'qs';
 import { selectItemNetwork } from '../redux/actions';
