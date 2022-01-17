@@ -70,7 +70,6 @@ export const useSingleLineDiagram = (studyUuid) => {
 export function SingleLineDiagramPane({
     studyUuid,
     network,
-    closeVoltageLevelDiagram,
     openVoltageLevel,
     isComputationRunning,
     showInSpreadsheet,
@@ -113,6 +112,7 @@ export function SingleLineDiagramPane({
     const displayedVoltageLevelIdRef = useRef();
     displayedVoltageLevelIdRef.current = displayedVoltageLevelId;
 
+    const [closeSingleLineDiagram] = useSingleLineDiagram(studyUuid);
     const updateSld = () => {
         if (sldRef.current) {
             setUpdateSwitchMsg('');
@@ -291,7 +291,7 @@ export function SingleLineDiagramPane({
                 }}
             >
                 <SingleLineDiagram
-                    onClose={() => closeVoltageLevelDiagram()}
+                    onClose={closeSingleLineDiagram}
                     onNextVoltageLevelClick={openVoltageLevel}
                     onBreakerClick={handleUpdateSwitchState}
                     diagramTitle={sldTitle}
