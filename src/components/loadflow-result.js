@@ -45,7 +45,11 @@ const LoadFlowResult = ({ result }) => {
         const status = cellData.rowData[cellData.dataKey];
         const color = status === 'CONVERGED' ? classes.succeed : classes.fail;
         return (
-            <TableCell id={cellData.dataKey} className={classes.cell}>
+            <TableCell
+                component={'div'}
+                id={cellData.dataKey}
+                className={classes.cell}
+            >
                 <Grid container direction="row" spacing={4} alignItems="center">
                     <Grid item xs={1}>
                         <Lens fontSize={'medium'} className={color} />

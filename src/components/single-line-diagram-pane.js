@@ -73,7 +73,7 @@ export function SingleLineDiagramPane({
     openVoltageLevel,
     isComputationRunning,
     showInSpreadsheet,
-    loadFlowInfos,
+    loadFlowStatus,
     selectedNodeUuid,
 }) {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
@@ -305,7 +305,7 @@ export function SingleLineDiagramPane({
                             : SvgType.SUBSTATION
                     }
                     showInSpreadsheet={showInSpreadsheet}
-                    loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
+                    loadFlowStatus={loadFlowStatus}
                     selectedNodeUuid={selectedNodeUuid}
                 />
             </div>
