@@ -335,10 +335,12 @@ const App = () => {
     }, []);
 
     // if result tab is displayed, clean badge
-    if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
-        dispatch(resetSANotif());
-        dispatch(resetLoadflowNotif());
-    }
+    useEffect(() => {
+        if (STUDY_VIEWS[tabIndex] === StudyView.RESULTS) {
+            dispatch(resetSANotif());
+            dispatch(resetLoadflowNotif());
+        }
+    }, [tabIndex]);
 
     return (
         <div

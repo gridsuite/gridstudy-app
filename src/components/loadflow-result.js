@@ -65,7 +65,11 @@ const LoadFlowResult = ({ result }) => {
     function NumberRenderer(cellData) {
         const value = cellData.rowData[cellData.dataKey];
         return (
-            <TableCell id={cellData.dataKey} className={classes.cell}>
+            <TableCell
+                component={'div'}
+                id={cellData.dataKey}
+                className={classes.cell}
+            >
                 {!isNaN(value) ? value.toFixed(1) : ''}
             </TableCell>
         );
