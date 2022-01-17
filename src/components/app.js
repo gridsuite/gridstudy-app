@@ -340,7 +340,7 @@ const App = () => {
             dispatch(resetSANotif());
             dispatch(resetLoadflowNotif());
         }
-    }, [tabIndex]);
+    }, [tabIndex, dispatch]);
 
     return (
         <div
