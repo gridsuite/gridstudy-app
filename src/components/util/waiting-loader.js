@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import LoaderWithOverlay from '../loader-with-overlay';
+import LoaderWithOverlay from './loader-with-overlay';
 import PageNotFound from '../page-not-found';
 import PropTypes from 'prop-types';
 

@@ -16,9 +16,9 @@ import TableChartIcon from '@material-ui/icons/TableChart';
 import NestedMenuItem from 'material-ui-nested-menu-item';
 
 import { useIntl } from 'react-intl';
-import { equipments } from './network/network-equipments';
+import { equipments } from '../network/network-equipments';
 import { useSelector } from 'react-redux';
-import { PARAM_USE_NAME } from '../utils/config-params';
+import { PARAM_USE_NAME } from '../../utils/config-params';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {

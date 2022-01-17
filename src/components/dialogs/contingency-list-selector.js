@@ -14,20 +14,23 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
-import CheckboxList from './util/checkbox-list';
+import CheckboxList from '../util/checkbox-list';
 import {
     fetchContingencyCount,
     fetchContingencyLists,
     updateConfigParameter,
-} from '../utils/rest-api';
+} from '../../utils/rest-api';
 import Button from '@material-ui/core/Button';
 import Alert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
-import DirectoryItemSelector from './directory-item-selector';
-import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../utils/config-params';
+import DirectoryItemSelector from '../directory-item-selector';
+import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { elementType } from '@gridsuite/commons-ui';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 
 function makeButton(onClick, message, disabled) {

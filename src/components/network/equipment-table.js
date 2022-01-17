@@ -7,7 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import TableCell from '@material-ui/core/TableCell';
-import LoaderWithOverlay from '../loader-with-overlay';
+import LoaderWithOverlay from '../util/loader-with-overlay';
 import VirtualizedTable from '../util/virtualized-table';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';

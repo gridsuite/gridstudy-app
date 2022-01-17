@@ -10,7 +10,7 @@ import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
 import { ReportViewer } from '@gridsuite/commons-ui';
-import LoaderWithOverlay from './loader-with-overlay';
+import LoaderWithOverlay from './util/loader-with-overlay';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 

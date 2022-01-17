@@ -7,11 +7,11 @@ import {
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
-import withLineMenu from './line-menu';
-import BaseEquipmentMenu from './base-equipment-menu';
-import withEquipmentMenu from './equipment-menu';
+import withLineMenu from './menu/line-menu';
+import BaseEquipmentMenu from './menu/base-equipment-menu';
+import withEquipmentMenu from './menu/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
-import LoaderWithOverlay from './loader-with-overlay';
+import LoaderWithOverlay from './util/loader-with-overlay';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import { makeStyles } from '@material-ui/core/styles';
 import OverloadedLinesView from './network/overloaded-lines-view';

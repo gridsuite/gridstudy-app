@@ -42,9 +42,9 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
-import BaseEquipmentMenu from './base-equipment-menu';
-import withEquipmentMenu from './equipment-menu';
-import withLineMenu from './line-menu';
+import BaseEquipmentMenu from './menu/base-equipment-menu';
+import withEquipmentMenu from './menu/equipment-menu';
+import withLineMenu from './menu/line-menu';
 
 import { equipments } from './network/network-equipments';
 import { RunningStatus } from './util/running-status';

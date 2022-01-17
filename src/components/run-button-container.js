@@ -11,7 +11,7 @@ import LoopIcon from '@material-ui/icons/Loop';
 import DoneIcon from '@material-ui/icons/Done';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import PlayIcon from '@material-ui/icons/PlayArrow';
-import ContingencyListSelector from './contingency-list-selector';
+import ContingencyListSelector from './dialogs/contingency-list-selector';
 import { makeStyles } from '@material-ui/core/styles';
 import { addLoadflowNotif, addSANotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -98,12 +98,6 @@ export function RunButtonContainer({
 
     const getRunningStatus = useCallback(
         (runnableType) => {
-            console.info(
-                'jbo run',
-                runnableType,
-                runnable,
-                securityAnalysisStatus
-            );
             if (runnableType === runnable.LOADFLOW) {
                 return loadFlowStatus;
             } else if (runnableType === runnable.SECURITY_ANALYSIS) {
