@@ -889,17 +889,6 @@ export function switchOnLine(studyUuid, selectedNodeUuid, lineId) {
     return changeLineStatus(studyUuid, selectedNodeUuid, lineId, 'switch_on');
 }
 
-export function createVoltageLevel(
-    studyUuid,
-    selectedNodeUuid,
-    id,
-    name,
-    busBarSections
-) {
-    console.info('Creating voltage level (stub) ');
-    return Promise.reject('Creating voltage level (stub)');
-}
-
 export function createLoad(
     studyUuid,
     selectedNodeUuid,
@@ -1109,6 +1098,50 @@ export function createSubstation(
             equipmentName: substationName,
             substationCountry:
                 substationCountry === '' ? null : substationCountry,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function createVoltageLevel(
+    studyUuid,
+    selectedNodeUuid,
+    voltageLevelId,
+    name,
+    nominalVoltage,
+    substationId,
+    busBarSections,
+    connections
+) {
+    console.info('Creating voltage level (stub) ');
+    const createVoltageLevelUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/voltage-levels';
+
+    let busBarConnections = connections.map((c) => {
+        return {
+            fromBBS: c.fromBBS.id,
+            toBBS: c.toBBS.id,
+            switchKind: c.switchKind,
+        };
+    });
+
+    return backendFetch(createVoltageLevelUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: voltageLevelId,
+            equipmentName: name,
+            nominalVoltage: nominalVoltage,
+            substationId: substationId,
+            busbarSections: busBarSections,
+            busbarConnections: busBarConnections,
         }),
     }).then((response) =>
         response.ok

@@ -188,7 +188,7 @@ const VoltageLevelCreationDialog = ({
                 idx: idx,
                 fromBBS: null,
                 toBBS: null,
-                cnxType: 'BREAKER',
+                switchKind: 'BREAKER',
             },
         ];
         console.log(
@@ -318,7 +318,11 @@ const VoltageLevelCreationDialog = ({
                 studyUuid,
                 selectedNodeUuid,
                 voltageLevelId,
-                voltageLevelName ? voltageLevelName : null
+                voltageLevelName ? voltageLevelName : null,
+                nominalVoltage,
+                substation.id,
+                busBarSections,
+                connections
             )
                 .then(() => {
                     handleCloseAndClear();
@@ -519,7 +523,7 @@ const VoltageLevelCreationDialog = ({
                         autoHighlight
                         selectOnFocus
                         id="substation"
-                        options={substationOptions.filter((x) => !!x)}
+                        options={substationOptions?.filter((x) => !!x)}
                         getOptionLabel={(ss) => {
                             return !ss ? '' : ss.id ? ss.id : '';
                         }}
@@ -689,7 +693,7 @@ const VoltageLevelCreationDialog = ({
 
         let onTypeChange = (event) => {
             let value = event.target.value;
-            onConnectivityChange(cnx.idx, value, 'cnxType');
+            onConnectivityChange(cnx.idx, value, 'switchKind');
         };
 
         return (
@@ -713,7 +717,7 @@ const VoltageLevelCreationDialog = ({
                             </InputLabel>
                             <Select
                                 key={'cnx-type-sel' + cnx.idx}
-                                value={cnx.cnxType}
+                                value={cnx.switchKind}
                                 onChange={onTypeChange}
                                 variant="filled"
                                 fullWidth
