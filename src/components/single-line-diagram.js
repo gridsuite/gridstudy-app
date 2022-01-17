@@ -859,7 +859,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         <Paper
             elevation={1}
             variant="outlined"
-            square="true"
+            square={true}
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,

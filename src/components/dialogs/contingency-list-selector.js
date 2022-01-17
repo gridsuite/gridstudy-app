@@ -9,7 +9,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -68,6 +68,7 @@ const ContingencyListSelector = (props) => {
     const { enqueueSnackbar } = useSnackbar();
 
     const intlRef = useIntlRef();
+    const intl = useIntl();
 
     const handleClose = () => {
         props.onClose();
@@ -254,7 +255,10 @@ const ContingencyListSelector = (props) => {
                 open={favoriteSelectorOpen}
                 onClose={addFavorites}
                 types={[elementType.CONTINGENCY_LIST]}
-                title={<FormattedMessage id={'ContingencyListsSelection'} />}
+                title={
+                    intl?.formatMessage({ id: 'ContingencyListsSelection' }) ||
+                    ''
+                }
             />
         </>
     );

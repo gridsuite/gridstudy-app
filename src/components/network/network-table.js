@@ -144,7 +144,6 @@ const NetworkTable = (props) => {
     function renderTable() {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
         const rows = getRows(tabIndex);
-        console.info('jborow', rows);
         return (
             <EquipmentTable
                 studyUuid={props.studyUuid}

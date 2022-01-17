@@ -231,8 +231,8 @@ export function SingleLineDiagramPane({
         }
     }
 
-    let sldTitle;
-    let svgUrl;
+    let sldTitle = '';
+    let svgUrl = '';
     if (displayedVoltageLevel) {
         sldTitle = useName
             ? displayedVoltageLevel.name
