@@ -240,22 +240,18 @@ export const reducer = createReducer(initialState, {
 
     [ADD_LOADFLOW_NOTIF]: (state) => {
         state.loadflowNotif = true;
-        console.log('LOADFLOW TRUE');
     },
 
     [RESET_LOADFLOW_NOTIF]: (state) => {
         state.loadflowNotif = false;
-        console.log('LOADFLOW RESET');
     },
 
     [ADD_SA_NOTIF]: (state) => {
         state.saNotif = true;
-        console.log('SA TRUE');
     },
 
     [RESET_SA_NOTIF]: (state) => {
         state.saNotif = false;
-        console.log('SA RESET');
     },
 
     [FILTERED_NOMINAL_VOLTAGES_UPDATED]: (state, action) => {
