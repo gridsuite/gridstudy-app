@@ -100,7 +100,7 @@ export default class Network {
             });
         });
 
-        this.voltageLevels = Array.from(this.voltageLevelsById);
+        this.voltageLevels = Array.from(this.voltageLevelsById.values());
 
         this.nominalVoltages = Array.from(nominalVoltagesSet).sort(
             (a, b) => b - a
