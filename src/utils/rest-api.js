@@ -710,6 +710,25 @@ export function updateTreeNode(node) {
     );
 }
 
+export function deleteModification(studyUuid, node, modificationUuid) {
+    const modificationDeleteUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(node.id) +
+        '/network-modification/' +
+        encodeURIComponent(modificationUuid);
+    console.debug(modificationDeleteUrl);
+    return backendFetch(modificationDeleteUrl, {
+        method: 'delete',
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function connectNotificationsWebsocket(studyUuid) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
