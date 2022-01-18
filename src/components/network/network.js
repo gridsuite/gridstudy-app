@@ -100,14 +100,7 @@ export default class Network {
             });
         });
 
-        this.voltageLevels = this.substations.flatMap(
-            (substation) => substation.voltageLevels
-        );
-
-        this.voltageLevelsById = this.voltageLevels.reduce(
-            elementIdIndexer,
-            new Map()
-        );
+        this.voltageLevels = Array.from(this.voltageLevelsById);
 
         this.nominalVoltages = Array.from(nominalVoltagesSet).sort(
             (a, b) => b - a
