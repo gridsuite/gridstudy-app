@@ -501,9 +501,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         }
 
         function addNavigationArrow(svg) {
-            let navigable = svg.metadata.nodes.filter(
-                (el) => el.nextVId
-            );
+            let navigable = svg.metadata.nodes.filter((el) => el.nextVId);
 
             let vlList = svg.metadata.nodes.map((element) => element.vid);
             vlList = vlList.filter(
