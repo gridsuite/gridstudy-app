@@ -277,7 +277,7 @@ export default class Network {
     }
 
     getVoltageLevels() {
-        return Array.from(this.voltageLevelsById.values());
+        return this.voltageLevels;
     }
 
     getVoltageLevel(id) {
