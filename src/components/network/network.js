@@ -62,6 +62,8 @@ export default class Network {
 
     voltageLevelsById = new Map();
 
+    voltageLevels = [];
+
     substationsById = new Map();
 
     linesById = new Map();
@@ -98,11 +100,11 @@ export default class Network {
             });
         });
 
-        const voltageLevels = this.substations.flatMap(
+        this.voltageLevels = this.substations.flatMap(
             (substation) => substation.voltageLevels
         );
 
-        this.voltageLevelsById = voltageLevels.reduce(
+        this.voltageLevelsById = this.voltageLevels.reduce(
             elementIdIndexer,
             new Map()
         );
