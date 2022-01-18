@@ -79,6 +79,7 @@ export default class Network {
     completeSubstationsInfos() {
         const nominalVoltagesSet = new Set();
         this.substationsById = new Map();
+        this.voltageLevelsById = new Map();
         this.substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
