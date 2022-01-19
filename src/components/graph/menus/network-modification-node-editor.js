@@ -8,7 +8,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
-import { fetchNetworkModifications } from '../../../utils/rest-api';
+import {
+    fetchNetworkModifications,
+    deleteModification,
+} from '../../../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
@@ -20,6 +23,7 @@ import { ModificationListItem } from './modification-list-item';
 import { ListItem } from '@material-ui/core';
 import { FormattedMessage } from 'react-intl';
 import Divider from '@material-ui/core/Divider';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -37,12 +41,14 @@ const useStyles = makeStyles((theme) => ({
 
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+
     const [modifications, setModifications] = useState(undefined);
     const { enqueueSnackbar } = useSnackbar();
     const selectedNodeRef = useRef(); // initial empty to get first update
 
     useEffect(() => {
-        if (selectedNode.current !== selectedNodeRef) {
+        if (selectedNode !== selectedNodeRef.current) {
             selectedNodeRef.current = selectedNode;
             if (!selectedNode.networkModification) setModifications([]);
             else {
@@ -74,6 +80,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         setOpenNetworkModificationsDialog(false);
     };
 
+    const doDeleteModification = (uuid) => {
+        deleteModification(studyUuid, selectedNode, uuid);
+    };
+
     return (
         <>
             <List className={classes.list}>
@@ -85,7 +95,11 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 </ListItem>
                 <Divider />
                 {modifications?.map((item) => (
-                    <ModificationListItem key={item.uuid} modification={item} />
+                    <ModificationListItem
+                        key={item.uuid}
+                        modification={item}
+                        onDelete={doDeleteModification}
+                    />
                 ))}
             </List>
 
