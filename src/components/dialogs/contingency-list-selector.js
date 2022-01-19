@@ -255,10 +255,7 @@ const ContingencyListSelector = (props) => {
                 open={favoriteSelectorOpen}
                 onClose={addFavorites}
                 types={[elementType.CONTINGENCY_LIST]}
-                title={
-                    intl?.formatMessage({ id: 'ContingencyListsSelection' }) ||
-                    ''
-                }
+                title={intl.formatMessage({ id: 'ContingencyListsSelection' })}
             />
         </>
     );

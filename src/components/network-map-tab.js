@@ -16,7 +16,6 @@ import NominalVoltageFilter from './network/nominal-voltage-filter';
 import { makeStyles } from '@material-ui/core/styles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
-import { getLoadFlowRunningStatus } from './util/running-status';
 import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
@@ -57,7 +56,7 @@ export const NetworkMapTab = ({
     /* results*/
     securityAnalysisStatus,
     runnable,
-    loadFlowInfos,
+    loadFlowStatus,
     /* visual*/
     visible,
     useName,
@@ -277,7 +276,7 @@ export const NetworkMapTab = ({
             lineFlowMode={lineFlowMode}
             lineFlowColorMode={lineFlowColorMode}
             lineFlowAlertThreshold={lineFlowAlertThreshold}
-            loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
+            loadFlowStatus={loadFlowStatus}
             ref={mapRef}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
@@ -323,7 +322,7 @@ export const NetworkMapTab = ({
                 <RunButtonContainer
                     studyUuid={studyUuid}
                     selectedNodeUuid={selectedNodeUuid}
-                    loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
+                    loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}
                     runnable={runnable}

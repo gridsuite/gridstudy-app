@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
+const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -509,11 +509,11 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
 };
 
 SecurityAnalysisResult.defaultProps = {
-    resultFetcher: null,
+    result: null,
 };
 
 SecurityAnalysisResult.propTypes = {
-    resultFetcher: PropTypes.object,
+    result: PropTypes.object,
     onClickNmKConstraint: PropTypes.func,
 };
 

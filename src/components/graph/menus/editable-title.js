@@ -43,7 +43,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
             <AskTextDialog
                 show={openEditTitle}
                 title={intl.formatMessage({ id: 'NewName' })}
-                value={name || ''}
+                value={name}
                 onValidate={(e) => {
                     onChange(e);
                 }}
