@@ -10,9 +10,9 @@ import { displayErrorMessageWithSnackbar } from '../utils/messages';
 import Paper from '@material-ui/core/Paper';
 import clsx from 'clsx';
 import { ReportViewer } from '@gridsuite/commons-ui';
-import LoaderWithOverlay from './util/loader-with-overlay';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
+import WaitingLoader from './util/waiting-loader';
 
 /**
  * control the ReportViewer (fetch and waiting)
@@ -33,8 +33,10 @@ export const ReportViewerTab = ({ reportId, visible }) => {
             setWaitingLoadReport(true);
             reportIdRef.current = reportId;
             fetchReport(reportId)
-                .then((report) => {
-                    if (reportIdRef.current === reportId) setReport(report);
+                .then((fetchedReport) => {
+                    if (reportIdRef.current === reportId)
+                        // set the report only if it's the last expected/fetched report
+                        setReport(fetchedReport);
                 })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
@@ -46,29 +48,17 @@ export const ReportViewerTab = ({ reportId, visible }) => {
                     setWaitingLoadReport(false);
                 });
         }
-    }, [visible, reportIdRef, reportId, enqueueSnackbar, setWaitingLoadReport]);
+    }, [visible, reportId, enqueueSnackbar]);
 
-    function renderLogsView() {
-        if (report)
-            return (
+    return (
+        <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
+            {report && (
                 <Paper className={clsx('singlestretch-child')}>
                     <ReportViewer jsonReport={report} />
                 </Paper>
-            );
-        else if (waitingLoadReport) {
-            return (
-                <LoaderWithOverlay
-                    color="inherit"
-                    loaderSize={70}
-                    isFixed={true}
-                    loadingMessageText={'loadingReport'}
-                />
-            );
-        }
-        return <></>;
-    }
-
-    return renderLogsView();
+            )}
+        </WaitingLoader>
+    );
 };
 
 ReportViewerTab.propTypes = {

@@ -7,9 +7,9 @@ import {
 } from '../utils/rest-api';
 import GeoData from './network/geo-data';
 import { equipments } from './network/network-equipments';
-import withLineMenu from './menu/line-menu';
-import BaseEquipmentMenu from './menu/base-equipment-menu';
-import withEquipmentMenu from './menu/equipment-menu';
+import withLineMenu from './menus/line-menu';
+import BaseEquipmentMenu from './menus/base-equipment-menu';
+import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import LoaderWithOverlay from './util/loader-with-overlay';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
@@ -124,13 +124,13 @@ export const NetworkMapTab = ({
 
     const MenuSubstation = withEquipmentMenu(
         BaseEquipmentMenu,
-        'substation-menu',
+        'substation-menus',
         equipments.substations
     );
 
     const MenuVoltageLevel = withEquipmentMenu(
         BaseEquipmentMenu,
-        'voltage-level-menu',
+        'voltage-level-menus',
         equipments.voltageLevels
     );
 

@@ -39,9 +39,7 @@ export const NetworkModificationTreePane = ({ studyUuid }) => {
             `Loading network modification tree of study '${studyUuid}'...`
         );
 
-        const networkModificationTree = fetchNetworkModificationTree(studyUuid);
-
-        networkModificationTree
+        fetchNetworkModificationTree(studyUuid)
             .then((tree) => {
                 dispatch(selectTreeNode(tree.id));
 

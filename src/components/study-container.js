@@ -70,16 +70,7 @@ export function useNodeData(
             })
             .catch((err) => setErrorMessage(err.message))
             .finally(() => setIsPending(false));
-    }, [
-        selectedNodeUuid,
-        studyUuid,
-        setResult,
-        setErrorMessage,
-        setIsPending,
-        selectedNodeUuidRef,
-        fetcher,
-        resultConversion,
-    ]);
+    }, [selectedNodeUuid, studyUuid, fetcher, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {
@@ -96,14 +87,7 @@ export function useNodeData(
         if (selectedNodeUuidRef.current !== selectedNodeUuid || isUpdateForUs) {
             update();
         }
-    }, [
-        update,
-        selectedNodeUuidRef,
-        selectedNodeUuid,
-        invalidations,
-        studyUpdatedForce,
-        studyUuid,
-    ]);
+    }, [update, selectedNodeUuid, invalidations, studyUpdatedForce, studyUuid]);
 
     return [result, isPending, errorMessage, update];
 }
@@ -130,7 +114,7 @@ function useStudy(studyUuidRequest) {
             })
             .catch((e) => setErrMessage(e.message))
             .finally(() => setPending(false));
-    }, [studyUuidRequest, setPending, setStudyUuid, intlRef]);
+    }, [studyUuidRequest]);
 
     return [studyUuid, pending, errMessage];
 }
@@ -293,7 +277,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 console.debug('Network modification tree loading finished')
             );
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, enqueueSnackbar, intlRef, dispatch]);
+    }, [studyUuid, enqueueSnackbar, dispatch]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -324,7 +308,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         // Note: dispach, loadNetworkRef, loadGeoData
         // connectNotifications don't change
-    }, [dispatch, studyUuid, loadNetworkRef, connectNotifications]);
+    }, [dispatch, studyUuid, connectNotifications]);
 
     const updateNetwork = useCallback(
         (substationsIds) => {
@@ -384,7 +368,7 @@ export function StudyContainer({ view, onChangeTab }) {
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, studyUuid, loadNetwork, dispatch]);
+    }, [studyUpdatedForce, loadNetwork, dispatch]);
 
     const runnable = useMemo(() => {
         return {

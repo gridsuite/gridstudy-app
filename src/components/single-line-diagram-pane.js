@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_CENTER_LABEL,
@@ -18,7 +25,6 @@ import PropTypes from 'prop-types';
 import { parse, stringify } from 'qs';
 import { selectItemNetwork } from '../redux/actions';
 
-//            setUpdateSwitchMsg('');
 export const useSingleLineDiagram = (studyUuid) => {
     const history = useHistory();
     const dispatch = useDispatch();
