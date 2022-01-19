@@ -98,11 +98,6 @@ export const NetworkMapTab = ({
 
     const [position, setPosition] = useState([-1, -1]);
 
-    useEffect(() => {
-        if (centerOnSubstation)
-            mapRef.current.centerSubstation(centerOnSubstation);
-    }, [mapRef, centerOnSubstation]);
-
     const classes = useStyles();
 
     function withEquipment(Menu, ...props) {
@@ -170,6 +165,19 @@ export const NetworkMapTab = ({
         showEquipmentMenu(equipment, x, y, equipments.voltageLevels);
     };
 
+    const chooseVoltageLevelForSubstation = useCallback(
+        (idSubstation, x, y) => {
+            setChoiceVoltageLevelsSubstationId(idSubstation);
+            setPosition([x, y]);
+        },
+        []
+    );
+
+    useEffect(() => {
+        if (centerOnSubstation)
+            mapRef.current.centerSubstation(centerOnSubstation);
+    }, [mapRef, centerOnSubstation]);
+
     useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
 
@@ -192,14 +200,6 @@ export const NetworkMapTab = ({
             });
         // Note: studyUuid and dispatch don't change
     }, [studyUuid, setWaitingLoadGeoData, setErrorMessage, setGeoData]);
-
-    const chooseVoltageLevelForSubstation = useCallback(
-        (idSubstation, x, y) => {
-            setChoiceVoltageLevelsSubstationId(idSubstation);
-            setPosition([x, y]);
-        },
-        []
-    );
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
