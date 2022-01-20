@@ -1055,12 +1055,14 @@ const StudyPane = (props) => {
     const updateNodes = useCallback(
         (updatedNodesIds) => {
             Promise.all(
-                updatedNodesIds.map(fetchNetworkModificationTreeNode)
+                updatedNodesIds.map((nodeId) =>
+                    fetchNetworkModificationTreeNode(studyUuid, nodeId)
+                )
             ).then((values) => {
                 dispatch(networkModificationTreeNodesUpdated(values));
             });
         },
-        [dispatch]
+        [studyUuid, dispatch]
     );
 
     useEffect(() => {
@@ -1070,6 +1072,7 @@ const StudyPane = (props) => {
                 'nodeCreated'
             ) {
                 fetchNetworkModificationTreeNode(
+                    studyUuid,
                     studyUpdatedForce.eventData.headers['newNode']
                 ).then((node) => {
                     dispatch(
@@ -1095,7 +1098,7 @@ const StudyPane = (props) => {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
             }
         }
-    }, [studyUpdatedForce, updateNodes, dispatch]);
+    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
 
     const mapRef = useRef();
     const centerSubstation = useCallback(

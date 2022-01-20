@@ -14,6 +14,7 @@ import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import CenterGraphButton from './graph/util/center-graph-button';
+import { useParams } from 'react-router-dom';
 
 const nodeTypes = {
     ROOT: NetworkModificationNode,
@@ -34,6 +35,8 @@ const NetworkModificationTree = (props) => {
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
+
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const styles = {
         container: { width: '100%', height: '100%' },
@@ -68,25 +71,26 @@ const NetworkModificationTree = (props) => {
 
     const handleCreateNode = useCallback(
         (element, type) => {
-            createTreeNode(element.id, { name: 'New node', type: type }).catch(
-                (errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeCreateError',
-                            intlRef: intlRef,
-                        },
-                    });
-                }
-            );
+            createTreeNode(studyUuid, element.id, {
+                name: 'New node',
+                type: type,
+            }).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeCreateError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
         },
-        [enqueueSnackbar, intlRef]
+        [studyUuid, enqueueSnackbar, intlRef]
     );
 
     const handleRemoveNode = useCallback(
         (element) => {
-            deleteTreeNode(element.id).catch((errorMessage) => {
+            deleteTreeNode(studyUuid, element.id).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,
@@ -97,7 +101,7 @@ const NetworkModificationTree = (props) => {
                 });
             });
         },
-        [enqueueSnackbar, intlRef]
+        [studyUuid, enqueueSnackbar, intlRef]
     );
 
     const [createNodeMenu, setCreateNodeMenu] = useState({
