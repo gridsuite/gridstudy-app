@@ -212,7 +212,9 @@ const StudyPane = ({
                         selectedNodeUuid={selectedNodeUuid}
                         onChangeTab={props.onChangeTab}
                         showInSpreadsheet={showInSpreadsheet}
-                        loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
+                        loadFlowStatus={getLoadFlowRunningStatus(
+                            loadFlowInfos?.loadFlowStatus
+                        )}
                         securityAnalysisStatus={securityAnalysisStatus}
                         setIsComputationRunning={setIsComputationRunning}
                         runnable={runnable}
@@ -242,7 +244,9 @@ const StudyPane = ({
                         openVoltageLevel={openVoltageLevel}
                         isComputationRunning={isComputationRunning}
                         showInSpreadsheet={showInSpreadsheet}
-                        loadFlowStatus={getLoadFlowRunningStatus(loadFlowInfos)}
+                        loadFlowStatus={getLoadFlowRunningStatus(
+                            loadFlowInfos?.loadFlowStatus
+                        )}
                         selectedNodeUuid={selectedNodeUuid}
                     />
                 )}

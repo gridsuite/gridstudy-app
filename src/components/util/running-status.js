@@ -12,8 +12,8 @@ export const RunningStatus = {
     RUNNING: 'RUNNING',
 };
 
-export function getLoadFlowRunningStatus(loadFlowInfos) {
-    switch (loadFlowInfos?.loadFlowStatus) {
+export function getLoadFlowRunningStatus(status) {
+    switch (status) {
         case 'CONVERGED':
             return RunningStatus.SUCCEED;
         case 'DIVERGED':
