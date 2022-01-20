@@ -114,7 +114,7 @@ function useStudy(studyUuidRequest) {
             })
             .catch((e) => setErrMessage(e.message))
             .finally(() => setPending(false));
-    }, [studyUuidRequest]);
+    }, [studyUuidRequest, intlRef]);
 
     return [studyUuid, pending, errMessage];
 }
@@ -277,7 +277,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 console.debug('Network modification tree loading finished')
             );
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, enqueueSnackbar, dispatch]);
+    }, [studyUuid, enqueueSnackbar, intlRef, dispatch]);
 
     useEffect(() => {
         if (studyUuid) {
