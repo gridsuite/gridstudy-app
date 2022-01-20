@@ -62,6 +62,8 @@ export default class Network {
 
     voltageLevelsById = new Map();
 
+    voltageLevels = [];
+
     substationsById = new Map();
 
     linesById = new Map();
@@ -77,6 +79,7 @@ export default class Network {
     completeSubstationsInfos() {
         const nominalVoltagesSet = new Set();
         this.substationsById = new Map();
+        this.voltageLevelsById = new Map();
         this.substations.forEach((substation) => {
             // sort voltage levels inside substations by nominal voltage
             substation.voltageLevels = substation.voltageLevels.sort(
@@ -98,14 +101,7 @@ export default class Network {
             });
         });
 
-        const voltageLevels = this.substations.flatMap(
-            (substation) => substation.voltageLevels
-        );
-
-        this.voltageLevelsById = voltageLevels.reduce(
-            elementIdIndexer,
-            new Map()
-        );
+        this.voltageLevels = Array.from(this.voltageLevelsById.values());
 
         this.nominalVoltages = Array.from(nominalVoltagesSet).sort(
             (a, b) => b - a
@@ -275,7 +271,7 @@ export default class Network {
     }
 
     getVoltageLevels() {
-        return Array.from(this.voltageLevelsById.values());
+        return this.voltageLevels;
     }
 
     getVoltageLevel(id) {
@@ -583,6 +579,9 @@ export default class Network {
                             l.voltageLevelId3 !== equipmentId
                     );
                 this.completeThreeWindingsTransformersInfos();
+
+                //New reference on substations to trigger reload of NetworkExplorer and NetworkMap
+                this.substations = [...this.substations];
                 break;
             case 'SUBSTATION':
                 this.substations = this.substations.filter(
