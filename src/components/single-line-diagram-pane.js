@@ -218,8 +218,6 @@ export function SingleLineDiagramPane({
         // Note: studyUuid, and loadNetwork don't change
     }, [studyUpdatedForce, dispatch, studyUuid]);
 
-    useEffect(() => {});
-
     let displayedVoltageLevel;
     if (network) {
         if (displayedVoltageLevelId) {

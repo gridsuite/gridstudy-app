@@ -2,70 +2,12 @@ import clsx from 'clsx';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
-import SecurityAnalysisResult from './security-analysis-result';
 import LoadFlowResult from './loadflow-result';
-import { fetchSecurityAnalysisResult } from '../utils/rest-api';
 import { makeStyles } from '@material-ui/core/styles';
 import { useIntl } from 'react-intl';
-import { useNodeData } from './study-container';
-import WaitingLoader from './util/waiting-loader';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-
-const SecurityAnalysisResultContainer = ({
-    studyUuid,
-    nodeUuid,
-    network,
-    openVoltageLevelDiagram,
-}) => {
-    const [securityAnalysisResult, isWaiting] = useNodeData(
-        studyUuid,
-        nodeUuid,
-        fetchSecurityAnalysisResult,
-        ['securityAnalysisResult']
-    );
-
-    function onClickNmKConstraint(row, column) {
-        if (network) {
-            if (column.dataKey === 'subjectId') {
-                let vlId;
-                let substationId;
-
-                let equipment = network.getLineOrTransformer(row.subjectId);
-                if (equipment) {
-                    if (row.side) {
-                        vlId =
-                            row.side === 'ONE'
-                                ? equipment.voltageLevelId1
-                                : row.side === 'TWO'
-                                ? equipment.voltageLevelId2
-                                : equipment.voltageLevelId3;
-                    } else {
-                        vlId = equipment.voltageLevelId1;
-                    }
-                    const vl = network.getVoltageLevel(vlId);
-                    substationId = vl.substationId;
-                } else {
-                    equipment = network.getVoltageLevel(row.subjectId);
-                    if (equipment) {
-                        vlId = equipment.id;
-                        substationId = equipment.substationId;
-                    }
-                }
-                openVoltageLevelDiagram(vlId, substationId);
-            }
-        }
-    }
-
-    return (
-        <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
-            <SecurityAnalysisResult
-                result={securityAnalysisResult}
-                onClickNmKConstraint={onClickNmKConstraint}
-            />
-        </WaitingLoader>
-    );
-};
+import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
 
 const useStyles = makeStyles((theme) => ({
     table: {
@@ -114,7 +56,7 @@ export const ResultViewTab = ({
                     flexGrow: 1,
                 }}
             >
-                <SecurityAnalysisResultContainer
+                <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={selectedNodeUuid}
                     network={network}
