@@ -606,7 +606,7 @@ export function fetchContingencyLists(listIds) {
     console.info('Fetching contingency lists');
     const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        '/v1/elements?id=' +
+        '/v1/elements?strictMode=false&id=' +
         listIds
             .filter((e) => e != null && e !== '') // filter empty element
             .join('&id=');
