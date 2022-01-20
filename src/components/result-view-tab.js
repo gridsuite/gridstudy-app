@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
     table: {
         display: 'flex',
         flexDirection: 'column',
+        flexGrow: 1,
     },
 }));
 
@@ -41,7 +42,7 @@ export const ResultViewTab = ({
 
     function renderLoadFlowResult() {
         return (
-            <Paper style={{ flexGrow: 1 }} className={classes.table}>
+            <Paper className={classes.table}>
                 <LoadFlowResult result={loadFlowInfos?.loadFlowResult} />
             </Paper>
         );
@@ -49,13 +50,7 @@ export const ResultViewTab = ({
 
     function renderSecurityAnalysisResult() {
         return (
-            <Paper
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flexGrow: 1,
-                }}
-            >
+            <Paper className={classes.table}>
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={selectedNodeUuid}
