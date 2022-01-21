@@ -606,10 +606,10 @@ export function fetchContingencyLists(listIds) {
     console.info('Fetching contingency lists');
     const url =
         PREFIX_DIRECTORY_SERVER_QUERIES +
-        '/v1/elements?strictMode=false&id=' +
+        '/v1/elements?strictMode=false&ids=' +
         listIds
             .filter((e) => e != null && e !== '') // filter empty element
-            .join('&id=');
+            .join('&ids=');
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()
