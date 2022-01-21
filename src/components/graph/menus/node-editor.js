@@ -22,6 +22,7 @@ import {
 import { EditableTitle } from './editable-title';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -42,6 +43,8 @@ const NodeEditor = ({ onClose, className }) => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
     const selectedNodeUuidRef = useRef();
+
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     useEffect(() => {
         if (!selectedNodeUuid) return;
@@ -76,7 +79,7 @@ const NodeEditor = ({ onClose, className }) => {
 
     const changeNodeName = (newName) => {
         if (!selectedNode) return;
-        updateTreeNode({
+        updateTreeNode(studyUuid, {
             id: selectedNode.id,
             type: selectedNode.type,
             name: newName,

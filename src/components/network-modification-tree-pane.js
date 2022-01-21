@@ -72,12 +72,14 @@ export const NetworkModificationTreePane = ({ studyUuid }) => {
     const updateNodes = useCallback(
         (updatedNodesIds) => {
             Promise.all(
-                updatedNodesIds.map(fetchNetworkModificationTreeNode)
+                updatedNodesIds.map((nodeId) =>
+                    fetchNetworkModificationTreeNode(studyUuid, nodeId)
+                )
             ).then((values) => {
                 dispatch(networkModificationTreeNodesUpdated(values));
             });
         },
-        [dispatch]
+        [studyUuid, dispatch]
     );
 
     useEffect(() => {
@@ -87,6 +89,7 @@ export const NetworkModificationTreePane = ({ studyUuid }) => {
                 'nodeCreated'
             ) {
                 fetchNetworkModificationTreeNode(
+                    studyUuid,
                     studyUpdatedForce.eventData.headers['newNode']
                 ).then((node) => {
                     dispatch(
@@ -112,7 +115,7 @@ export const NetworkModificationTreePane = ({ studyUuid }) => {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
             }
         }
-    }, [studyUpdatedForce, updateNodes, dispatch]);
+    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
 
     return <NetworkModificationTree treeModel={treeModel} />;
 };
