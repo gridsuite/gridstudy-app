@@ -195,7 +195,7 @@ export const EquipmentTable = ({
                     <Editor
                         key={cellData.dataKey + cellData.rowData.id}
                         className={classes.tableCell}
-                        equipment={rows[lineEdit.line]}
+                        equipment={cellData.rowData}
                         defaultValue={formatCell(
                             cellData,
                             numeric,
@@ -228,8 +228,6 @@ export const EquipmentTable = ({
             defaultCellRender,
             isLineOnEditMode,
             registerChangeRequest,
-            lineEdit,
-            rows,
             formatCell,
         ]
     );
