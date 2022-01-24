@@ -124,7 +124,6 @@ const VoltageLevelCreationDialog = ({
         let indexIn = busBarSections.findIndex((v, i) => v.idx === idx);
         let prevBbs = busBarSections[indexIn];
         let nextBbs = { ...prevBbs };
-        //prevBbs[fieldName] = newFieldValue;
         nextBbs[fieldName] = newFieldValue;
 
         let next = [...busBarSections];
@@ -172,27 +171,11 @@ const VoltageLevelCreationDialog = ({
                 : busBarSections[busBarSections.length - 1].idx + 1;
         let nextBbs = { idx: idx, id: '', name: '', vertPos: 1, horizPos: 1 };
         let next = [...busBarSections, nextBbs];
-        console.log(
-            'Would have added a bus bar section ' +
-                JSON.stringify(nextBbs) +
-                ' :\n ' +
-                JSON.stringify(busBarSections) +
-                '\n->\n' +
-                JSON.stringify(next)
-        );
         setBusBarSections(next);
     };
 
     const handleDeleteBusBarSection = (bbs) => {
         let next = busBarSections.filter((v, i, arr) => v.idx !== bbs.idx);
-        console.log(
-            'Deletes bus bar section ' +
-                JSON.stringify(bbs) +
-                ' :\n ' +
-                JSON.stringify(busBarSections) +
-                '\n->\n' +
-                JSON.stringify(next)
-        );
         setBusBarSections(next);
     };
 
@@ -207,22 +190,11 @@ const VoltageLevelCreationDialog = ({
                 switchKind: 'BREAKER',
             },
         ];
-        console.log(
-            'About to add a connection ' + JSON.stringify(next[next.length - 1])
-        );
         setConnections(next);
     };
 
     const handleDeleteConnection = (cnx) => {
         let next = connections.filter((v, i, arr) => v.idx !== cnx.idx);
-        console.log(
-            'Deletes connection ' +
-                JSON.stringify(cnx) +
-                ' :\n ' +
-                JSON.stringify(busBarSections) +
-                '\n->\n' +
-                JSON.stringify(next)
-        );
         setConnections(next);
     };
 
@@ -256,7 +228,6 @@ const VoltageLevelCreationDialog = ({
 
             if (!isNaN(hpos && !isNaN(vpos))) {
                 let k = '' + hpos + ',' + vpos;
-                //let p = { hpos, vpos };
                 let others = byHorizVert.get(k);
                 if (!others) {
                     others = [];
@@ -684,9 +655,7 @@ const VoltageLevelCreationDialog = ({
                 getOptionLabel={(ss) => {
                     return !ss ? '' : ss.id ? ss.id : '';
                 }}
-                //getOptionSelected={(o, v) => o.idx === v.idx}
                 value={bbs}
-                //inputValue={bbs ? bbs.id : ''}
                 onChange={bbsCb}
                 renderInput={(params) => (
                     <TextField
