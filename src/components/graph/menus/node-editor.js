@@ -57,7 +57,7 @@ const NodeEditor = ({ onClose, className }) => {
             (updateType === 'study' && headers.node === selectedNodeUuid)
         ) {
             selectedNodeUuidRef.current = selectedNodeUuid;
-            fetchNetworkModificationTreeNode(selectedNodeUuid)
+            fetchNetworkModificationTreeNode(studyUuid, selectedNodeUuid)
                 .then((res) => {
                     if (selectedNodeUuid === selectedNodeUuidRef.current)
                         setSelectedNode(res);
@@ -75,6 +75,7 @@ const NodeEditor = ({ onClose, className }) => {
         selectedNodeUuid,
         selectedNodeUuidRef,
         studyUpdatedForce,
+        studyUuid,
     ]);
 
     const changeNodeName = (newName) => {
