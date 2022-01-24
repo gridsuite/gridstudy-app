@@ -124,10 +124,26 @@ const VoltageLevelCreationDialog = ({
         let indexIn = busBarSections.findIndex((v, i) => v.idx === idx);
         let prevBbs = busBarSections[indexIn];
         let nextBbs = { ...prevBbs };
+        //prevBbs[fieldName] = newFieldValue;
         nextBbs[fieldName] = newFieldValue;
 
         let next = [...busBarSections];
         next[indexIn] = nextBbs;
+
+        let newConnections = [];
+        let nbUnchanged = 0;
+        for (let cnx of connections) {
+            if (cnx.fromBBS === prevBbs)
+                newConnections.push({ ...cnx, fromBBS: nextBbs });
+            else if (cnx.toBBS === prevBbs)
+                newConnections.push({ ...cnx, toBBS: nextBbs });
+            else {
+                newConnections.push(cnx);
+                nbUnchanged += 1;
+            }
+        }
+        if (nbUnchanged !== connections.length) setConnections(newConnections);
+
         setBusBarSections(next);
     };
 
@@ -662,12 +678,15 @@ const VoltageLevelCreationDialog = ({
                 forcePopupIcon
                 autoHighlight
                 selectOnFocus
-                key={fieldName}
+                //autoSelect
+                key={fieldName + cnx.idx + isFrom}
                 options={busBarSections.filter((x) => !!x)}
                 getOptionLabel={(ss) => {
                     return !ss ? '' : ss.id ? ss.id : '';
                 }}
+                //getOptionSelected={(o, v) => o.idx === v.idx}
                 value={bbs}
+                //inputValue={bbs ? bbs.id : ''}
                 onChange={bbsCb}
                 renderInput={(params) => (
                     <TextField
