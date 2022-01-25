@@ -250,6 +250,7 @@
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
     "NodeUpdateError": "An error occured while updating node",
+    "NodeBuildingError": "An error occured while building node",
     "NetworkModifications": "Network modifications",
     "CreateLoad": "Create load",
     "NameOptional": "Name (optional)",

@@ -6,11 +6,14 @@
  */
 import React, { useCallback, useState } from 'react';
 import ReactFlow, { Controls } from 'react-flow-renderer';
+import { useDispatch } from 'react-redux';
+import { workingTreeNode, selectTreeNode } from '../redux/actions';
+import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { Box } from '@material-ui/core';
-import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
+import { createTreeNode, deleteTreeNode, buildNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import CenterGraphButton from './graph/util/center-graph-button';
@@ -28,6 +31,8 @@ const nodeTypes = {
 const snapGrid = [15, 15];
 
 const NetworkModificationTree = (props) => {
+    const dispatch = useDispatch();
+
     const [selectedNode, setSelectedNode] = useState(null);
 
     const [isMoving, setIsMoving] = useState(false);
@@ -51,11 +56,50 @@ const NetworkModificationTree = (props) => {
         },
     };
 
-    const onSelectionChange = useCallback((selectedElements) => {
-        if (selectedElements?.length > 0) {
-            setSelectedNode(selectedElements[0]);
-        }
-    }, []);
+    const onElementClick = useCallback(
+        (event, element) => {
+            setSelectedNode(element);
+            dispatch(selectTreeNode(element.id));
+            if (
+                element.type === 'ROOT' ||
+                (element.type === 'NETWORK_MODIFICATION' &&
+                    element.data.buildStatus === 'BUILT')
+            ) {
+                dispatch(workingTreeNode(element.id));
+            }
+        },
+        [dispatch]
+    );
+
+    const onNodeDoubleClick = useCallback(
+        (event, node) => {
+            if (
+                node.type === 'NETWORK_MODIFICATION' &&
+                node.data.buildStatus !== 'BUILT'
+            ) {
+                buildNode(studyUuid, node.id)
+                    .then((resp) => {
+                        node.data.buildStatus = 'BUILDING';
+                    })
+                    .catch((errorMessage) => {
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'NodeBuildingError',
+                                intlRef: intlRef,
+                            },
+                        });
+                    });
+            }
+        },
+        [studyUuid, enqueueSnackbar, intlRef]
+    );
+
+    const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
+        onElementClick,
+        onNodeDoubleClick
+    );
 
     const onPaneClick = useCallback(() => {
         setSelectedNode(undefined);
@@ -74,6 +118,7 @@ const NetworkModificationTree = (props) => {
             createTreeNode(studyUuid, element.id, {
                 name: 'New node',
                 type: type,
+                buildStatus: 'NOT_BUILT',
             }).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -135,7 +180,7 @@ const NetworkModificationTree = (props) => {
                             props.treeModel ? props.treeModel.treeElements : []
                         }
                         onNodeContextMenu={onNodeContextMenu}
-                        onSelectionChange={onSelectionChange}
+                        onElementClick={nodeSingleOrDoubleClick}
                         onPaneClick={onPaneClick}
                         onMove={onMove}
                         onMoveEnd={onMoveEnd}
