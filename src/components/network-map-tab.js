@@ -100,7 +100,7 @@ export const NetworkMapTab = ({
 
     const classes = useStyles();
 
-    function withEquipment(Menu, ...props) {
+    function withEquipment(Menu, props) {
         return (
             <Menu
                 id={equipmentMenu.equipment.id}
@@ -214,13 +214,13 @@ export const NetworkMapTab = ({
         return (
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
-                    withEquipment(
-                        <MenuLine selectedNodeUuid={selectedNodeUuid} />
-                    )}
+                    withEquipment(MenuLine, {
+                        selectedNodeUuid: selectedNodeUuid,
+                    })}
                 {equipmentMenu.equipmentType === equipments.substations &&
-                    withEquipment(<MenuSubstation />)}
+                    withEquipment(MenuSubstation)}
                 {equipmentMenu.equipmentType === equipments.voltageLevels &&
-                    withEquipment(<MenuVoltageLevel />)}
+                    withEquipment(MenuVoltageLevel)}
             </>
         );
     };
