@@ -30,8 +30,8 @@ import {
     loadNetworkModificationTreeSuccess,
     networkCreated,
     openStudy,
-    selectTreeNode,
     studyUpdated,
+    workingTreeNode,
 } from '../redux/actions';
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
@@ -47,7 +47,7 @@ import { useIntl } from 'react-intl';
 
 export function useNodeData(
     studyUuid,
-    selectedNodeUuid,
+    nodeUuid,
     fetcher,
     invalidations,
     defaultValue,
@@ -56,38 +56,38 @@ export function useNodeData(
     const [result, setResult] = useState(defaultValue);
     const [isPending, setIsPending] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
-    const selectedNodeUuidRef = useRef();
+    const nodeUuidRef = useRef();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const lastUpdateRef = useRef();
 
     const update = useCallback(() => {
-        selectedNodeUuidRef.current = selectedNodeUuid;
+        nodeUuidRef.current = nodeUuid;
         setIsPending(true);
-        fetcher(studyUuid, selectedNodeUuid)
+        fetcher(studyUuid, nodeUuid)
             .then((res) => {
-                if (selectedNodeUuidRef.current === selectedNodeUuid)
+                if (nodeUuidRef.current === nodeUuid)
                     setResult(resultConversion ? resultConversion(res) : res);
             })
             .catch((err) => setErrorMessage(err.message))
             .finally(() => setIsPending(false));
-    }, [selectedNodeUuid, studyUuid, fetcher, resultConversion]);
+    }, [nodeUuid, studyUuid, fetcher, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !selectedNodeUuid) return;
+        if (!studyUuid || !nodeUuid) return;
         const headers = studyUpdatedForce?.eventData?.headers;
         const updateType = headers && headers['updateType'];
         const node = headers && headers['node'];
         const isUpdateForUs =
             lastUpdateRef.current !== studyUpdatedForce &&
             updateType &&
-            node === selectedNodeUuid &&
+            node === nodeUuid &&
             invalidations.find((e) => updateType === e) !== -1;
         lastUpdateRef.current = studyUpdatedForce;
-        if (selectedNodeUuidRef.current !== selectedNodeUuid || isUpdateForUs) {
+        if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
             update();
         }
-    }, [update, selectedNodeUuid, invalidations, studyUpdatedForce, studyUuid]);
+    }, [update, nodeUuid, invalidations, studyUpdatedForce, studyUuid]);
 
     return [result, isPending, errorMessage, update];
 }
@@ -135,18 +135,18 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const dispatch = useDispatch();
 
-    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
+    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
 
     const [loadFlowInfos] = useNodeData(
         studyUuid,
-        selectedNodeUuid,
+        workingNodeUuid,
         fetchLoadFlowInfos,
         ['loadflow_status']
     );
 
     const [securityAnalysisStatus] = useNodeData(
         studyUuid,
-        selectedNodeUuid,
+        workingNodeUuid,
         fetchSecurityAnalysisStatus,
         ['securityAnalysis_status'],
         RunningStatus.IDLE,
@@ -197,7 +197,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
                     studyUuid,
-                    selectedNodeUuid,
+                    workingNodeUuid,
                     (error) => {
                         console.error(error.message);
                         setNetworkLoadingFailMessage(error.message);
@@ -207,10 +207,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     { equipments: [equipments.lines, equipments.substations] }
                 );
             } else {
-                if (selectedNodeUuid !== null) {
+                if (workingNodeUuid !== null) {
                     const network = new Network(
                         studyUuid,
-                        selectedNodeUuid,
+                        workingNodeUuid,
                         (error) => {
                             console.error(error.message);
                             setNetworkLoadingFailMessage(error.message);
@@ -224,7 +224,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         },
-        [studyUuid, selectedNodeUuid, dispatch]
+        [studyUuid, workingNodeUuid, dispatch]
     );
     loadNetworkRef.current = loadNetwork;
 
@@ -251,7 +251,7 @@ export function StudyContainer({ view, onChangeTab }) {
 
         networkModificationTree
             .then((tree) => {
-                dispatch(selectTreeNode(tree.id));
+                dispatch(workingTreeNode(tree.id));
 
                 const networkModificationTreeModel =
                     new NetworkModificationTreeModel();
@@ -283,11 +283,11 @@ export function StudyContainer({ view, onChangeTab }) {
         if (studyUuid) {
             loadTree();
         }
-    }, [studyUuid, selectedNodeUuid, loadNetwork, loadTree]);
+    }, [studyUuid, loadTree]);
 
     useEffect(() => {
         loadNetwork();
-    }, [selectedNodeUuid, loadNetwork]);
+    }, [loadNetwork]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -314,7 +314,7 @@ export function StudyContainer({ view, onChangeTab }) {
         (substationsIds) => {
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
-                selectedNodeUuid,
+                workingNodeUuid,
                 substationsIds
             );
             console.info('network update');
@@ -355,7 +355,7 @@ export function StudyContainer({ view, onChangeTab }) {
             //.finally(() => setIsNetworkPending(false));
             // Note: studyUuid don't change
         },
-        [studyUuid, selectedNodeUuid, network]
+        [studyUuid, workingNodeUuid, network]
     );
 
     useEffect(() => {
@@ -420,7 +420,7 @@ export function StudyContainer({ view, onChangeTab }) {
             <StudyPane
                 studyUuid={studyUuid}
                 network={network}
-                selectedNodeUuid={selectedNodeUuid}
+                workingNodeUuid={workingNodeUuid}
                 view={view}
                 onChangeTab={onChangeTab}
                 updatedLines={updatedLines}
