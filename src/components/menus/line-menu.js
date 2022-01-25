@@ -19,8 +19,8 @@ import OfflineBoltOutlinedIcon from '@material-ui/icons/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@material-ui/icons/LastPage';
 import EnergiseOtherSideIcon from '@material-ui/icons/FirstPage';
 import { useIntl } from 'react-intl';
-import { useParameterState } from './parameters';
-import { PARAM_USE_NAME } from '../utils/config-params';
+import { useParameterState } from '../parameters';
+import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';
 import {
@@ -28,11 +28,14 @@ import {
     lockoutLine,
     switchOnLine,
     tripLine,
-} from '../utils/rest-api';
+} from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { displayInfoMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { equipments } from './network/network-equipments';
+import {
+    displayInfoMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
+import { equipments } from '../network/network-equipments';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {

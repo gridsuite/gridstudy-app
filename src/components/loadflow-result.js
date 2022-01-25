@@ -45,7 +45,11 @@ const LoadFlowResult = ({ result }) => {
         const status = cellData.rowData[cellData.dataKey];
         const color = status === 'CONVERGED' ? classes.succeed : classes.fail;
         return (
-            <TableCell id={cellData.dataKey} className={classes.cell}>
+            <TableCell
+                component={'div'}
+                id={cellData.dataKey}
+                className={classes.cell}
+            >
                 <Grid container direction="row" spacing={4} alignItems="center">
                     <Grid item xs={1}>
                         <Lens fontSize={'medium'} className={color} />
@@ -61,7 +65,11 @@ const LoadFlowResult = ({ result }) => {
     function NumberRenderer(cellData) {
         const value = cellData.rowData[cellData.dataKey];
         return (
-            <TableCell id={cellData.dataKey} className={classes.cell}>
+            <TableCell
+                component={'div'}
+                id={cellData.dataKey}
+                className={classes.cell}
+            >
                 {!isNaN(value) ? value.toFixed(1) : ''}
             </TableCell>
         );
@@ -69,54 +77,52 @@ const LoadFlowResult = ({ result }) => {
 
     function renderLoadFlowResult() {
         return (
-            <>
-                <Paper className={classes.tablePaper}>
-                    <VirtualizedTable
-                        rows={result.componentResults}
-                        sortable={true}
-                        columns={[
-                            {
-                                label: intl.formatMessage({
-                                    id: 'connectedComponentNum',
-                                }),
-                                dataKey: 'connectedComponentNum',
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'synchronousComponentNum',
-                                }),
-                                dataKey: 'synchronousComponentNum',
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'status',
-                                }),
-                                dataKey: 'status',
-                                cellRenderer: StatusCellRender,
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'iterationCount',
-                                }),
-                                dataKey: 'iterationCount',
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'slackBusId',
-                                }),
-                                dataKey: 'slackBusId',
-                            },
-                            {
-                                label: intl.formatMessage({
-                                    id: 'slackBusActivePowerMismatch',
-                                }),
-                                dataKey: 'slackBusActivePowerMismatch',
-                                cellRenderer: NumberRenderer,
-                            },
-                        ]}
-                    />
-                </Paper>
-            </>
+            <Paper className={classes.tablePaper}>
+                <VirtualizedTable
+                    rows={result.componentResults}
+                    sortable={true}
+                    columns={[
+                        {
+                            label: intl.formatMessage({
+                                id: 'connectedComponentNum',
+                            }),
+                            dataKey: 'connectedComponentNum',
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'synchronousComponentNum',
+                            }),
+                            dataKey: 'synchronousComponentNum',
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'status',
+                            }),
+                            dataKey: 'status',
+                            cellRenderer: StatusCellRender,
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'iterationCount',
+                            }),
+                            dataKey: 'iterationCount',
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'slackBusId',
+                            }),
+                            dataKey: 'slackBusId',
+                        },
+                        {
+                            label: intl.formatMessage({
+                                id: 'slackBusActivePowerMismatch',
+                            }),
+                            dataKey: 'slackBusActivePowerMismatch',
+                            cellRenderer: NumberRenderer,
+                        },
+                    ]}
+                />
+            </Paper>
         );
     }
 

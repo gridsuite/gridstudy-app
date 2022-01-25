@@ -13,7 +13,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
-import LoaderWithOverlay from './loader-with-overlay';
 
 export const NMK_TYPE_RESULT = {
     CONSTRAINTS_FROM_CONTINGENCIES: 'constraints-from-contingencies',
@@ -37,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
+const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
     const classes = useStyles();
 
     const [tabIndex, setTabIndex] = React.useState(0);
@@ -506,26 +505,15 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, fetched, result }) => {
         );
     }
 
-    return (
-        <>
-            {!fetched && (
-                <LoaderWithOverlay
-                    color="inherit"
-                    loaderSize={70}
-                    loadingMessageText={'LoadingRemoteData'}
-                />
-            )}
-            {renderTabs()}
-        </>
-    );
+    return renderTabs();
 };
 
 SecurityAnalysisResult.defaultProps = {
-    resultFetcher: null,
+    result: null,
 };
 
 SecurityAnalysisResult.propTypes = {
-    resultFetcher: PropTypes.object,
+    result: PropTypes.object,
     onClickNmKConstraint: PropTypes.func,
 };
 
