@@ -358,9 +358,7 @@ const VoltageLevelCreationDialog = ({
             </DialogTitle>
             <DialogContent>
                 <div>
-                    <Grid container spacing={2}>
-                        {makeLevelLevelRow()}
-                    </Grid>
+                    {makeLevelLevelRow()}
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <h3 className={classes.h3}>
@@ -455,7 +453,7 @@ const VoltageLevelCreationDialog = ({
 
     function makeLevelLevelRow() {
         return (
-            <>
+            <Grid container spacing={2}>
                 <Grid item xs={3} align="start">
                     {makeTFld(
                         { voltageLevelId },
@@ -554,7 +552,7 @@ const VoltageLevelCreationDialog = ({
                         PopperComponent={FittingPopper}
                     />
                 </Grid>
-            </>
+            </Grid>
         );
     }
 
@@ -591,43 +589,41 @@ const VoltageLevelCreationDialog = ({
         };
 
         return (
-            <>
-                <Grid container spacing={2} key={'bbs_id.' + bbs.idx}>
-                    <Grid item xs={3}>
-                        {makeTFld(idBlock, idCb, 'BusBarSectionID', !bbs.id)}
-                    </Grid>
-                    <Grid item xs={3}>
-                        {makeTFld(nameBlock, nameCb, 'BusBarSectionName')}
-                    </Grid>
-                    <Grid item xs={3}>
-                        {makeTFld(
-                            horizPosBlock,
-                            hposCb,
-                            'BusBarHorizPos',
-                            false,
-                            false,
-                            true
-                        )}
-                    </Grid>
-                    <Grid item xs={2}>
-                        {makeTFld(
-                            vertPosBlock,
-                            vposCb,
-                            'BusBarVertPos',
-                            false,
-                            false,
-                            true
-                        )}
-                    </Grid>
-                    <IconButton
-                        className={classes.icon}
-                        key={'bbs_del' + bbs.idx}
-                        onClick={() => handleDeleteBusBarSection(bbs)}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
+            <Grid container spacing={2} key={'bbs_id.' + bbs.idx}>
+                <Grid item xs={3}>
+                    {makeTFld(idBlock, idCb, 'BusBarSectionID', !bbs.id)}
                 </Grid>
-            </>
+                <Grid item xs={3}>
+                    {makeTFld(nameBlock, nameCb, 'BusBarSectionName')}
+                </Grid>
+                <Grid item xs={3}>
+                    {makeTFld(
+                        horizPosBlock,
+                        hposCb,
+                        'BusBarHorizPos',
+                        false,
+                        false,
+                        true
+                    )}
+                </Grid>
+                <Grid item xs={2}>
+                    {makeTFld(
+                        vertPosBlock,
+                        vposCb,
+                        'BusBarVertPos',
+                        false,
+                        false,
+                        true
+                    )}
+                </Grid>
+                <IconButton
+                    className={classes.icon}
+                    key={'bbs_del' + bbs.idx}
+                    onClick={() => handleDeleteBusBarSection(bbs)}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </Grid>
         );
     }
 
@@ -685,53 +681,49 @@ const VoltageLevelCreationDialog = ({
         };
 
         return (
-            <>
-                <Grid container spacing={2} key={'cnx_id.' + cnx.idx}>
-                    <Grid item xs={3}>
-                        {makeBusBarSelector(cnx, true)}
-                    </Grid>
-                    <Grid item xs={3}>
-                        {makeBusBarSelector(cnx, false)}
-                    </Grid>
-                    <Grid item xs={3}>
-                        <FormControl fullWidth size="small">
-                            {/*This InputLabel is necessary in order to display
-                            the label describing the content of the Select*/}
-                            <InputLabel
-                                key={'cnx-type' + cnx.idx}
-                                variant={'filled'}
-                            >
-                                {intl.formatMessage({ id: 'TypeOptional' })}
-                            </InputLabel>
-                            <Select
-                                key={'cnx-type-sel' + cnx.idx}
-                                value={cnx.switchKind}
-                                onChange={onTypeChange}
-                                variant="filled"
-                                fullWidth
-                            >
-                                <MenuItem value="">
-                                    <em>
-                                        {intl.formatMessage({ id: 'None' })}
-                                    </em>
-                                </MenuItem>
-                                <MenuItem value={'BREAKER'}>
-                                    {intl.formatMessage({ id: 'Breaker' })}
-                                </MenuItem>
-                                <MenuItem value={'DISCONNECTOR'}>
-                                    {intl.formatMessage({ id: 'Disconnector' })}
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <IconButton
-                        className={classes.icon}
-                        onClick={() => handleDeleteConnection(cnx)}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
+            <Grid container spacing={2} key={'cnx_id.' + cnx.idx}>
+                <Grid item xs={3}>
+                    {makeBusBarSelector(cnx, true)}
                 </Grid>
-            </>
+                <Grid item xs={3}>
+                    {makeBusBarSelector(cnx, false)}
+                </Grid>
+                <Grid item xs={3}>
+                    <FormControl fullWidth size="small">
+                        {/*This InputLabel is necessary in order to display
+                            the label describing the content of the Select*/}
+                        <InputLabel
+                            key={'cnx-type' + cnx.idx}
+                            variant={'filled'}
+                        >
+                            {intl.formatMessage({ id: 'TypeOptional' })}
+                        </InputLabel>
+                        <Select
+                            key={'cnx-type-sel' + cnx.idx}
+                            value={cnx.switchKind}
+                            onChange={onTypeChange}
+                            variant="filled"
+                            fullWidth
+                        >
+                            <MenuItem value="">
+                                <em>{intl.formatMessage({ id: 'None' })}</em>
+                            </MenuItem>
+                            <MenuItem value={'BREAKER'}>
+                                {intl.formatMessage({ id: 'Breaker' })}
+                            </MenuItem>
+                            <MenuItem value={'DISCONNECTOR'}>
+                                {intl.formatMessage({ id: 'Disconnector' })}
+                            </MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                <IconButton
+                    className={classes.icon}
+                    onClick={() => handleDeleteConnection(cnx)}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </Grid>
         );
     }
 };
