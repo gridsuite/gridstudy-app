@@ -30,11 +30,11 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
     const [currentValue, setCurrentValue] = useState(value);
     const intl = useIntl();
     const handleChange = (e) => {
-        setCurrentValue(e.target.value);
+        setCurrentValue(e.target.value || '');
     };
 
     const handleValidate = (e) => {
-        onValidate(currentValue);
+        onValidate(currentValue || '');
         onClose();
     };
 
@@ -63,5 +63,5 @@ AskTextDialog.propTypes = {
     onValidate: PropTypes.func.isRequired,
     show: PropTypes.bool.isRequired,
     title: PropTypes.string.isRequired,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.string,
 };

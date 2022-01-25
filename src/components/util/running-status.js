@@ -11,3 +11,31 @@ export const RunningStatus = {
     IDLE: 'IDLE',
     RUNNING: 'RUNNING',
 };
+
+export function getLoadFlowRunningStatus(status) {
+    switch (status) {
+        case 'CONVERGED':
+            return RunningStatus.SUCCEED;
+        case 'DIVERGED':
+            return RunningStatus.FAILED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}
+
+export function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
+    switch (securityAnalysisStatus) {
+        case 'COMPLETED':
+            return RunningStatus.SUCCEED;
+        case 'RUNNING':
+            return RunningStatus.RUNNING;
+        case 'NOT_DONE':
+            return RunningStatus.IDLE;
+        default:
+            return RunningStatus.IDLE;
+    }
+}

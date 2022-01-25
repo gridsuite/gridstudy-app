@@ -9,25 +9,28 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
-import CheckboxList from './util/checkbox-list';
+import CheckboxList from '../util/checkbox-list';
 import {
     fetchContingencyCount,
     fetchContingencyLists,
     updateConfigParameter,
-} from '../utils/rest-api';
+} from '../../utils/rest-api';
 import Button from '@material-ui/core/Button';
 import Alert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
-import DirectoryItemSelector from './directory-item-selector';
-import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../utils/config-params';
+import DirectoryItemSelector from '../directory-item-selector';
+import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { elementType } from '@gridsuite/commons-ui';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 
 function makeButton(onClick, message, disabled) {
@@ -65,6 +68,7 @@ const ContingencyListSelector = (props) => {
     const { enqueueSnackbar } = useSnackbar();
 
     const intlRef = useIntlRef();
+    const intl = useIntl();
 
     const handleClose = () => {
         props.onClose();
@@ -251,7 +255,7 @@ const ContingencyListSelector = (props) => {
                 open={favoriteSelectorOpen}
                 onClose={addFavorites}
                 types={[elementType.CONTINGENCY_LIST]}
-                title={<FormattedMessage id={'ContingencyListsSelection'} />}
+                title={intl.formatMessage({ id: 'ContingencyListsSelection' })}
             />
         </>
     );

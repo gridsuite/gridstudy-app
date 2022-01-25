@@ -42,9 +42,9 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
-import BaseEquipmentMenu from './base-equipment-menu';
-import withEquipmentMenu from './equipment-menu';
-import withLineMenu from './line-menu';
+import BaseEquipmentMenu from './menus/base-equipment-menu';
+import withEquipmentMenu from './menus/equipment-menu';
+import withLineMenu from './menus/line-menu';
 
 import { equipments } from './network/network-equipments';
 import { RunningStatus } from './util/running-status';
@@ -667,7 +667,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             });
             addNavigationArrow(svg);
 
-            // handling the right click on a feeder (menu)
+            // handling the right click on a feeder (menus)
             if (!isComputationRunning) {
                 const feeders = svg.metadata.nodes.filter((element) => {
                     return (
@@ -859,7 +859,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         <Paper
             elevation={1}
             variant="outlined"
-            square="true"
+            square={true}
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,
@@ -922,34 +922,34 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     />
                 )}
                 {displayMenuLine()}
-                {displayMenu(equipments.loads, 'load-menu')}
-                {displayMenu(equipments.batteries, 'battery-menu')}
-                {displayMenu(equipments.danglingLines, 'dangling-line-menu')}
-                {displayMenu(equipments.generators, 'generator-menu')}
+                {displayMenu(equipments.loads, 'load-menus')}
+                {displayMenu(equipments.batteries, 'battery-menus')}
+                {displayMenu(equipments.danglingLines, 'dangling-line-menus')}
+                {displayMenu(equipments.generators, 'generator-menus')}
                 {displayMenu(
                     equipments.staticVarCompensators,
-                    'static-var-compensator-menu'
+                    'static-var-compensator-menus'
                 )}
                 {displayMenu(
                     equipments.shuntCompensators,
-                    'shunt-compensator-menu'
+                    'shunt-compensator-menus'
                 )}
                 {displayMenu(
                     equipments.twoWindingsTransformers,
-                    'two-windings-transformer-menu'
+                    'two-windings-transformer-menus'
                 )}
                 {displayMenu(
                     equipments.threeWindingsTransformers,
-                    'three-windings-transformer-menu'
+                    'three-windings-transformer-menus'
                 )}
-                {displayMenu(equipments.hvdcLines, 'hvdc-line-menu')}
+                {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
                 {displayMenu(
                     equipments.lccConverterStations,
-                    'lcc-converter-station-menu'
+                    'lcc-converter-station-menus'
                 )}
                 {displayMenu(
                     equipments.vscConverterStations,
-                    'vsc-converter-station-menu'
+                    'vsc-converter-station-menus'
                 )}
 
                 {!loadingState &&
