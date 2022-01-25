@@ -258,32 +258,30 @@ export const useConnectivityValue = ({
 
     const render = useCallback(() => {
         return (
-            <Grid item xs={8} align="start">
-                <ConnectivityEdition
-                    voltageLevelOptions={voltageLevelOptions}
-                    voltageLevel={connectivity.voltageLevel}
-                    busOrBusbarSection={connectivity.busOrBusbarSection}
-                    onChangeVoltageLevel={(value) => setVoltageLevel(value)}
-                    onChangeBusOrBusbarSection={(busOrBusbarSection) =>
-                        setBusOrBusbarSection(busOrBusbarSection)
-                    }
-                    errorVoltageLevel={errorVoltageLevel}
-                    helperTextVoltageLevel={
-                        errorVoltageLevel &&
-                        intl.formatMessage({
-                            id: errorVoltageLevel,
-                        })
-                    }
-                    errorBusOrBusBarSection={errorBusBarSection}
-                    helperTextBusOrBusBarSection={
-                        errorBusBarSection &&
-                        intl.formatMessage({
-                            id: errorBusBarSection,
-                        })
-                    }
-                    selectedNodeUuid={selectedNodeUuid}
-                />
-            </Grid>
+            <ConnectivityEdition
+                voltageLevelOptions={voltageLevelOptions}
+                voltageLevel={connectivity.voltageLevel}
+                busOrBusbarSection={connectivity.busOrBusbarSection}
+                onChangeVoltageLevel={(value) => setVoltageLevel(value)}
+                onChangeBusOrBusbarSection={(busOrBusbarSection) =>
+                    setBusOrBusbarSection(busOrBusbarSection)
+                }
+                errorVoltageLevel={errorVoltageLevel}
+                helperTextVoltageLevel={
+                    errorVoltageLevel &&
+                    intl.formatMessage({
+                        id: errorVoltageLevel,
+                    })
+                }
+                errorBusOrBusBarSection={errorBusBarSection}
+                helperTextBusOrBusBarSection={
+                    errorBusBarSection &&
+                    intl.formatMessage({
+                        id: errorBusBarSection,
+                    })
+                }
+                selectedNodeUuid={selectedNodeUuid}
+            />
         );
     }, [
         connectivity.busOrBusbarSection,

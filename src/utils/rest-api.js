@@ -973,6 +973,44 @@ export function createGenerator(
     );
 }
 
+export function createShuntCompensator(
+    studyUuid,
+    selectedNodeUuid,
+    shuntCompensatorId,
+    shuntCompensatorName,
+    maximumNumberOfSections,
+    currentNumberOfSections,
+    identicalSections,
+    susceptancePerSection,
+    connectivity
+) {
+    console.info('Creating Shunt compensator ');
+    const createLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/shunt-compensators';
+    return backendFetch(createLineUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: shuntCompensatorId,
+            equipmentName: shuntCompensatorName,
+            maximumNumberOfSections: maximumNumberOfSections,
+            currentNumberOfSections: currentNumberOfSections,
+            isIdenticalSection: identicalSections,
+            susceptancePerSection: susceptancePerSection,
+            voltageLevelId: connectivity.voltageLevel.id,
+            busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function createLine(
     studyUuid,
     selectedNodeUuid,

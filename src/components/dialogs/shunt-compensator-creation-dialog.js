@@ -28,6 +28,7 @@ import {
     useIntegerValue,
     useTextValue,
 } from './input-hooks';
+import { createShuntCompensator } from '../../utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -40,10 +41,6 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function createShuntCompensator(props) {
-    console.log('jbo', props);
-    return new Promise(() => {});
-}
 /**
  * Dialog to create a shuntCompensator in the network
  * @param {Boolean} open Is the dialog open ?
@@ -87,7 +84,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const [maximumNumberOfSections, maximumNumberOfSectionsField] =
         useIntegerValue({
-            label: 'shuntMaximumNumberOfSections',
+            label: 'ShuntMaximumNumberOfSections',
             defaultValue: 1,
             validation: {
                 isValueGreaterOrEqualTo: '1',
@@ -99,7 +96,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const [currentNumberOfSections, currentNumberOfSectionsField] =
         useIntegerValue({
-            label: 'shuntCurrentNumberOfSections',
+            label: 'ShuntCurrentNumberOfSections',
             defaultValue: 0,
             validation: {
                 isValueLessOrEqualTo: maximumNumberOfSections,
@@ -118,8 +115,8 @@ const ShuntCompensatorCreationDialog = ({
         clear: clear,
     });
 
-    const [susceptencePerSection, susceptencePerSectionField] = useDoubleValue({
-        label: 'ShuntSusceptencePerSection',
+    const [susceptancePerSection, susceptancePerSectionField] = useDoubleValue({
+        label: 'ShuntSusceptancePerSection',
         defaultValue: 0,
         validation: { isFieldRequired: true },
         validationMap: validationMap,
@@ -128,7 +125,7 @@ const ShuntCompensatorCreationDialog = ({
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
-        label: 'ShuntCompensatorConnectivity',
+        label: 'Connectivity',
         validationMap: validationMap,
         voltageLevelOptions: voltageLevelOptions,
         selectedNodeUuid: selectedNodeUuid,
@@ -149,9 +146,8 @@ const ShuntCompensatorCreationDialog = ({
                 maximumNumberOfSections,
                 currentNumberOfSections,
                 identicalSections,
-                susceptencePerSection,
-                connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id
+                susceptancePerSection,
+                connectivity
             )
                 .then(() => {
                     handleCloseAndClear();
@@ -183,10 +179,29 @@ const ShuntCompensatorCreationDialog = ({
         handleClose();
     };
 
+    function gridSection(title) {
+        return (
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <h3 className={classes.h3}>
+                        <FormattedMessage id={title} />
+                    </h3>
+                </Grid>
+            </Grid>
+        );
+    }
+
+    function gridItem(field) {
+        return (
+            <Grid item xs={6} align="start">
+                {field()}
+            </Grid>
+        );
+    }
+
     return (
         <Dialog
             fullWidth
-            maxWidth="md" // 3 columns
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-create-shuntCompensator"
@@ -195,44 +210,25 @@ const ShuntCompensatorCreationDialog = ({
                 {intl.formatMessage({ id: 'CreateShuntCompensator' })}
             </DialogTitle>
             <DialogContent>
-                <div>
-                    <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
-                            {shuntCompensatorIdField()}
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            {shuntCompensatorNameField()}
-                        </Grid>
+                <Grid container spacing={2}>
+                    {gridItem(shuntCompensatorIdField)}
+                    {gridItem(shuntCompensatorNameField)}
+                </Grid>
+                {gridSection('Characteristics')}
+                <Grid container spacing={2}>
+                    {gridItem(maximumNumberOfSectionsField)}
+                    {gridItem(currentNumberOfSectionsField)}
+                </Grid>
+                <Grid container spacing={2}>
+                    {gridItem(identicalSectionsField)}
+                    {gridItem(susceptancePerSectionField)}
+                </Grid>
+                {gridSection('Characteristics')}
+                <Grid container spacing={2}>
+                    <Grid item xs={12} align="start">
+                        {connectivityField()}
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Characteristics" />
-                            </h3>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
-                            {maximumNumberOfSectionsField()}
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            {currentNumberOfSectionsField()}
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
-                            {identicalSectionsField()}
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            {susceptencePerSectionField()}
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={8} align="start">
-                            {connectivityField()}
-                        </Grid>
-                    </Grid>
-                </div>
+                </Grid>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleCloseAndClear} variant="text">

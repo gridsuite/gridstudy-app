@@ -314,6 +314,13 @@
     "ShuntConductanceText": "Shunt conductance",
     "ShuntSusceptanceText": "Shunt susceptance",
 
+    "ShuntSusceptancePerSection": "Susceptance per section",
+    "ShuntCompensatorConnectivity": "Connectivity",
+    "ShuntIdenticalSections": "Linear Shunt",
+    "ShuntCurrentNumberOfSections": "Current number of section",
+    "shuntMaximumNumberOfSections": "Maximum number of section",
+    "CreateShuntCompensator":  "Create a shunt compensator",
+
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
 
