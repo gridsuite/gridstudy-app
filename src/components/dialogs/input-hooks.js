@@ -15,10 +15,6 @@ import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import ConnectivityEdition from './connectivity-edition';
 
-const MWAdroment = {
-    position: 'end',
-    text: 'MW',
-};
 export const SusceptenceAdornment = {
     position: 'end',
     text: 'S',
@@ -76,11 +72,12 @@ export const useTextValue = ({
                 {...formProps}
             />
         );
-    }, [intl, label, value, adornment, handleChangeValue, formProps]);
+    }, [label, intl, adornment, value, handleChangeValue, error, formProps]);
 
     useEffect(() => setValue(defaultValue), [defaultValue, clear]);
     return [value, field];
 };
+
 export const useIntegerValue = ({
     label,
     tooltip,
@@ -245,7 +242,7 @@ export const useConnectivityValue = ({
             return !resVL.error && !resBBS.error;
         }
         validationMap.current.set(label, validate);
-    }, [connectivity, label, validationMap]);
+    }, [connectivity, label, validation, validationMap]);
 
     const setVoltageLevel = useCallback((newVal) => {
         setConnectivity((oldVal) => {
