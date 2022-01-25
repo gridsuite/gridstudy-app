@@ -6,6 +6,10 @@
  */
 
 export function validateField(value, toValidate) {
+    function toNumber(val) {
+        return typeof val === 'number' ? val : Number(val.replace(',', '.'));
+    }
+
     if (toValidate.isFieldRequired) {
         if (!value) {
             return {
@@ -17,7 +21,7 @@ export function validateField(value, toValidate) {
 
     if (toValidate.isFieldNumeric) {
         // TODO: remove replace when parsing behaviour will be made according to locale
-        const valueNumericVal = Number(value.replace(',', '.'));
+        const valueNumericVal = toNumber(value);
         if (isNaN(valueNumericVal)) {
             return {
                 error: true,
@@ -29,12 +33,12 @@ export function validateField(value, toValidate) {
     if (toValidate.isValueLessOrEqualTo !== undefined) {
         if (value && toValidate.isValueLessOrEqualTo) {
             // TODO: remove replace when parsing behaviour will be made according to locale
-            const maxValue = Number(
-                toValidate.isValueLessOrEqualTo.replace(',', '.')
-            );
+            const maxValue = toNumber(toValidate.isValueLessOrEqualTo);
+            console.info('jbo max', maxValue);
             if (!isNaN(maxValue)) {
+                console.info('jbo not nan ');
                 // TODO: remove replace when parsing behaviour will be made according to locale
-                const valueNumericVal = Number(value.replace(',', '.'));
+                const valueNumericVal = toNumber(value);
                 if (valueNumericVal > maxValue) {
                     return {
                         error: true,
@@ -49,12 +53,11 @@ export function validateField(value, toValidate) {
     if (toValidate.isValueGreaterThan !== undefined) {
         if (value && toValidate.isValueGreaterThan) {
             // TODO: remove replace when parsing behaviour will be made according to locale
-            const minValue = Number(
-                toValidate.isValueGreaterThan.replace(',', '.')
-            );
+            const minValue = toNumber(toValidate.isValueGreaterThan);
+
             if (!isNaN(minValue)) {
                 // TODO: remove replace when parsing behaviour will be made according to locale
-                const valueNumericVal = Number(value.replace(',', '.'));
+                const valueNumericVal = toNumber(value);
                 if (valueNumericVal <= minValue) {
                     return {
                         error: true,
