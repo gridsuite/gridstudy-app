@@ -79,7 +79,7 @@ DirectoryItemSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     types: PropTypes.array.isRequired,
-    title: PropTypes.object.isRequired,
+    title: PropTypes.string.isRequired,
 };
 
 export default DirectoryItemSelector;

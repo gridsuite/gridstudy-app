@@ -22,6 +22,7 @@ import {
 import { EditableTitle } from './editable-title';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -43,6 +44,8 @@ const NodeEditor = ({ onClose, className }) => {
     const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
     const selectedNodeUuidRef = useRef();
 
+    const studyUuid = decodeURIComponent(useParams().studyUuid);
+
     useEffect(() => {
         if (!selectedNodeUuid) return;
         const headers = studyUpdatedForce?.eventData?.headers;
@@ -54,7 +57,7 @@ const NodeEditor = ({ onClose, className }) => {
             (updateType === 'study' && headers.node === selectedNodeUuid)
         ) {
             selectedNodeUuidRef.current = selectedNodeUuid;
-            fetchNetworkModificationTreeNode(selectedNodeUuid)
+            fetchNetworkModificationTreeNode(studyUuid, selectedNodeUuid)
                 .then((res) => {
                     if (selectedNodeUuid === selectedNodeUuidRef.current)
                         setSelectedNode(res);
@@ -72,11 +75,12 @@ const NodeEditor = ({ onClose, className }) => {
         selectedNodeUuid,
         selectedNodeUuidRef,
         studyUpdatedForce,
+        studyUuid,
     ]);
 
     const changeNodeName = (newName) => {
         if (!selectedNode) return;
-        updateTreeNode({
+        updateTreeNode(studyUuid, {
             id: selectedNode.id,
             type: selectedNode.type,
             name: newName,
