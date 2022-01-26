@@ -38,6 +38,7 @@ import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
+import { getIdFirstNodeOfType } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -251,12 +252,18 @@ export function StudyContainer({ view, onChangeTab }) {
 
         networkModificationTree
             .then((tree) => {
-                dispatch(workingTreeNode(tree.id));
-
                 const networkModificationTreeModel =
                     new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
+
+                let firstModelNodeId = getIdFirstNodeOfType(tree, 'MODEL');
+                dispatch(
+                    workingTreeNode(
+                        firstModelNodeId ? firstModelNodeId : tree.id
+                    )
+                );
+
                 dispatch(
                     loadNetworkModificationTreeSuccess(
                         networkModificationTreeModel
