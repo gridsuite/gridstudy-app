@@ -55,7 +55,7 @@ const GridSection = ({ title }) => {
     );
 };
 
-const disabledChecked = { disabled: true, defaultChecked: true };
+const disabledChecked = { disabled: true };
 
 /**
  * Dialog to create a shunt compensator in the network

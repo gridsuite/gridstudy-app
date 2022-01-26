@@ -143,7 +143,7 @@ export const useIntegerValue = ({
                 label={intl.formatMessage({
                     id: label,
                 })}
-                value={value}
+                value={'' + value}
                 onChange={handleChangeValue}
                 {...(error && {
                     error: true,
