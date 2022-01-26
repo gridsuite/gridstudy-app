@@ -315,7 +315,6 @@
     "ShuntSusceptanceText": "Shunt susceptance",
 
     "ShuntSusceptancePerSection": "Susceptance per section",
-    "ShuntCompensatorConnectivity": "Connectivity",
     "ShuntIdenticalSections": "Linear Shunt",
     "ShuntCurrentNumberOfSections": "Current number of sections",
     "ShuntMaximumNumberOfSections": "Maximum number of sections",
