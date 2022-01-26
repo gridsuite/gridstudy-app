@@ -7,7 +7,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
 import {
     fetchNetworkModifications,
     deleteModification,
@@ -17,25 +16,29 @@ import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
-import { ListItem } from '@material-ui/core';
+import { Fab, Typography } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 import { FormattedMessage } from 'react-intl';
-import Divider from '@material-ui/core/Divider';
 import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     list: {
-        flexGrow: '1',
+        paddingTop: 0,
+        overflowY: 'auto',
     },
     addButton: {
         position: 'absolute',
-        bottom: 20,
+        bottom: 0,
         right: 0,
-        marginLeft: 8,
-        marginRight: 8,
-        marginTop: 8,
+        margin: theme.spacing(3),
+    },
+    modificationCount: {
+        margin: 0,
+        padding: theme.spacing(1),
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
     },
 }));
 
@@ -86,14 +89,13 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     return (
         <>
+            <Typography className={classes.modificationCount}>
+                <FormattedMessage
+                    id={'network_modification/modificationsCount'}
+                    values={{ count: modifications?.length }}
+                />
+            </Typography>
             <List className={classes.list}>
-                <ListItem key={'NodeEditorModificationsCount'}>
-                    <FormattedMessage
-                        id={'network_modification/modificationsCount'}
-                        values={{ count: modifications?.length }}
-                    />
-                </ListItem>
-                <Divider />
                 {modifications?.map((item) => (
                     <ModificationListItem
                         key={item.uuid}
@@ -103,12 +105,13 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 ))}
             </List>
 
-            <Button
+            <Fab
                 className={classes.addButton}
+                color="primary"
                 onClick={openNetworkModificationConfiguration}
             >
-                <AddCircleOutlineIcon fontSize={'large'} />
-            </Button>
+                <AddIcon />
+            </Fab>
 
             <NetworkModificationDialog
                 open={openNetworkModificationsDialog}

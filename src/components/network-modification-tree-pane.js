@@ -16,7 +16,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import NetworkModificationTree from './network-modification-tree';
 import PropTypes from 'prop-types';
 
-export const NetworkModificationTreePane = ({ studyUuid }) => {
+export const NetworkModificationTreePane = ({
+    studyUuid,
+    openModificationDrawer,
+}) => {
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
@@ -72,7 +75,12 @@ export const NetworkModificationTreePane = ({ studyUuid }) => {
         }
     }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
 
-    return <NetworkModificationTree treeModel={treeModel} />;
+    return (
+        <NetworkModificationTree
+            treeModel={treeModel}
+            openModificationDrawer={openModificationDrawer}
+        />
+    );
 };
 
 export default NetworkModificationTreePane;

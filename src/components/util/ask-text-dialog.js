@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import {
     Dialog,
@@ -29,9 +29,18 @@ import PropTypes from 'prop-types';
 export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
     const [currentValue, setCurrentValue] = useState(value);
     const intl = useIntl();
+
+    useEffect(() => {
+        setCurrentValue(value);
+    }, [value]);
+
     const handleChange = (e) => {
         setCurrentValue(e.target.value || '');
     };
+
+    useEffect(() => {
+        setCurrentValue(value);
+    }, [value, setCurrentValue]);
 
     const handleValidate = (e) => {
         onValidate(currentValue || '');
