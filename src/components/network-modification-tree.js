@@ -20,7 +20,7 @@ import CenterGraphButton from './graph/util/center-graph-button';
 import { useParams } from 'react-router-dom';
 
 const nodeTypes = {
-    ROOT: NetworkModificationNode,
+    ROOT: ModelNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
     MODEL: ModelNode,
 };
@@ -62,7 +62,7 @@ const NetworkModificationTree = (props) => {
             dispatch(selectTreeNode(element.id));
             if (
                 element.type === 'ROOT' ||
-                (element.type === 'NETWORK_MODIFICATION' &&
+                (element.type === 'MODEL' &&
                     element.data.buildStatus === 'BUILT')
             ) {
                 dispatch(workingTreeNode(element.id));
@@ -73,10 +73,7 @@ const NetworkModificationTree = (props) => {
 
     const onNodeDoubleClick = useCallback(
         (event, node) => {
-            if (
-                node.type === 'NETWORK_MODIFICATION' &&
-                node.data.buildStatus !== 'BUILT'
-            ) {
+            if (node.type === 'MODEL' && node.data.buildStatus !== 'BUILT') {
                 buildNode(studyUuid, node.id)
                     .then((resp) => {
                         node.data.buildStatus = 'BUILDING';
