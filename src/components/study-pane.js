@@ -33,6 +33,8 @@ import {
     SingleLineDiagramPane,
     useSingleLineDiagram,
 } from './single-line-diagram-pane';
+import HorizontalToolbar from './horizontal-toobar';
+import NetworkModificationTreePane from './network-modification-tree-pane';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -74,6 +76,12 @@ export const StudyView = {
     SPREADSHEET: 'Spreadsheet',
     RESULTS: 'Results',
     LOGS: 'Logs',
+};
+
+export const StudyDisplay = {
+    MAP: 'Map',
+    TREE: 'Tree',
+    HYBRID: 'Hybrid',
 };
 
 const StudyPane = ({
@@ -126,7 +134,13 @@ const StudyPane = ({
 
     const classes = useStyles();
 
-    const [drawerShift, setDrawerShift] = useState();
+    const [drawerShift, setDrawerShift] = useState(0);
+
+    const [studyDisplay, setStudyDisplay] = useState(StudyDisplay.MAP);
+
+    const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
+
+    const [drawerNodeEditorOpen, setDrawerNodeEditorOpen] = useState(false);
 
     const [
         closeVoltageLevelDiagram,
@@ -179,78 +193,145 @@ const StudyPane = ({
         props.onChangeTab(1); // switch to spreadsheet view
     }
 
+    const toggleExplorerDrawer = () => {
+        setDrawerExplorerOpen(!drawerExplorerOpen);
+    };
+
+    const toggleModificationDrawer = () => {
+        setDrawerNodeEditorOpen(!drawerNodeEditorOpen);
+    };
+
     function renderMapView() {
         return (
-            <div className={clsx('relative singlestretch-child', classes.map)}>
+            <>
                 <div
-                    className={classes.mapCtrlBottomLeft}
                     style={{
-                        position: 'absolute',
-                        top: 0,
-                        bottom: 0,
-                        left: drawerShift,
-                        right: 0,
+                        display: 'flex',
+                        flexDirection: 'row',
+                        height: '7%',
                     }}
                 >
-                    {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
-                    <NetworkMapTab
-                        /* TODO do we move redux param to container */
-                        studyUuid={studyUuid}
-                        network={network}
-                        visible={props.view === StudyView.MAP}
-                        updatedLines={updatedLines}
-                        useName={useName}
-                        lineFullPath={lineFullPath}
-                        lineParallelPath={lineParallelPath}
-                        lineFlowMode={lineFlowMode}
-                        lineFlowColorMode={lineFlowColorMode}
-                        lineFlowAlertThreshold={lineFlowAlertThreshold}
-                        filteredNominalVoltages={filteredNominalVoltages}
-                        openVoltageLevel={openVoltageLevel}
-                        centerOnSubstation={centerOnSubstation}
-                        /* TODO verif tableEquipment*/
-                        selectedNodeUuid={selectedNodeUuid}
-                        onChangeTab={props.onChangeTab}
-                        showInSpreadsheet={showInSpreadsheet}
-                        loadFlowStatus={getLoadFlowRunningStatus(
-                            loadFlowInfos?.loadFlowStatus
-                        )}
-                        securityAnalysisStatus={securityAnalysisStatus}
-                        setIsComputationRunning={setIsComputationRunning}
-                        runnable={runnable}
-                        setErrorMessage={setErrorMessage}
+                    <HorizontalToolbar
+                        setStudyDisplay={setStudyDisplay}
+                        studyDisplayMode={studyDisplay}
+                        exploreOpen={drawerExplorerOpen}
+                        modificationPaneOpen={drawerNodeEditorOpen}
+                        toggleExplorerDrawer={toggleExplorerDrawer}
+                        toggleModificationDrawer={toggleModificationDrawer}
                     />
                 </div>
-                <StudyLateralToolBar
-                    network={network}
-                    onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                    onSubstationDisplayClick={showSubstationDiagram}
-                    onSubstationFocus={setCenterOnSubstation}
-                    visibleSubstation={visibleSubstation}
-                    isMap={props.view === StudyView.MAP}
-                    setLateralShift={setDrawerShift}
-                    studyUuid={studyUuid}
-                />
+                <div
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        height: '93%',
+                    }}
+                >
+                    <div
+                        style={{
+                            display:
+                                studyDisplay === StudyDisplay.MAP
+                                    ? 'none'
+                                    : null,
+                            width:
+                                studyDisplay === StudyDisplay.HYBRID
+                                    ? '50%'
+                                    : '100%',
+                        }}
+                    >
+                        <NetworkModificationTreePane studyUuid={studyUuid} />
+                    </div>
+                    <div
+                        className={clsx(
+                            'relative singlestretch-child',
+                            classes.map
+                        )}
+                        style={{
+                            display:
+                                studyDisplay === StudyDisplay.TREE
+                                    ? 'none'
+                                    : null,
+                            width:
+                                studyDisplay === StudyDisplay.HYBRID
+                                    ? '50%'
+                                    : '100%',
+                        }}
+                    >
+                        <div
+                            className={classes.mapCtrlBottomLeft}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                bottom: 0,
+                                left: drawerShift,
+                                right: 0,
+                            }}
+                        >
+                            {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
+                            <NetworkMapTab
+                                /* TODO do we move redux param to container */
+                                studyUuid={studyUuid}
+                                network={network}
+                                visible={props.view === StudyView.MAP}
+                                updatedLines={updatedLines}
+                                useName={useName}
+                                lineFullPath={lineFullPath}
+                                lineParallelPath={lineParallelPath}
+                                lineFlowMode={lineFlowMode}
+                                lineFlowColorMode={lineFlowColorMode}
+                                lineFlowAlertThreshold={lineFlowAlertThreshold}
+                                filteredNominalVoltages={
+                                    filteredNominalVoltages
+                                }
+                                openVoltageLevel={openVoltageLevel}
+                                centerOnSubstation={centerOnSubstation}
+                                /* TODO verif tableEquipment*/
+                                selectedNodeUuid={selectedNodeUuid}
+                                onChangeTab={props.onChangeTab}
+                                showInSpreadsheet={showInSpreadsheet}
+                                loadFlowStatus={getLoadFlowRunningStatus(
+                                    loadFlowInfos?.loadFlowStatus
+                                )}
+                                securityAnalysisStatus={securityAnalysisStatus}
+                                setIsComputationRunning={
+                                    setIsComputationRunning
+                                }
+                                runnable={runnable}
+                                setErrorMessage={setErrorMessage}
+                            />
+                        </div>
+                        <StudyLateralToolBar
+                            network={network}
+                            drawerExplorerOpen={drawerExplorerOpen}
+                            drawerNodeEditorOpen={drawerNodeEditorOpen}
+                            onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+                            onSubstationDisplayClick={showSubstationDiagram}
+                            onSubstationFocus={setCenterOnSubstation}
+                            visibleSubstation={visibleSubstation}
+                            setLateralShift={setDrawerShift}
+                        />
 
-                {/*
+                        {/*
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
                 */}
-                {props.view === StudyView.MAP && (
-                    <SingleLineDiagramPane
-                        studyUuid={studyUuid}
-                        network={network}
-                        onClose={() => closeVoltageLevelDiagram()}
-                        openVoltageLevel={openVoltageLevel}
-                        isComputationRunning={isComputationRunning}
-                        showInSpreadsheet={showInSpreadsheet}
-                        loadFlowStatus={getLoadFlowRunningStatus(
-                            loadFlowInfos?.loadFlowStatus
+                        {props.view === StudyView.MAP && (
+                            <SingleLineDiagramPane
+                                studyUuid={studyUuid}
+                                network={network}
+                                onClose={() => closeVoltageLevelDiagram()}
+                                openVoltageLevel={openVoltageLevel}
+                                isComputationRunning={isComputationRunning}
+                                showInSpreadsheet={showInSpreadsheet}
+                                loadFlowStatus={getLoadFlowRunningStatus(
+                                    loadFlowInfos?.loadFlowStatus
+                                )}
+                                selectedNodeUuid={selectedNodeUuid}
+                            />
                         )}
-                        selectedNodeUuid={selectedNodeUuid}
-                    />
-                )}
-            </div>
+                    </div>
+                </div>
+            </>
         );
     }
 

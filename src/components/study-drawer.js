@@ -10,7 +10,6 @@ import clsx from 'clsx';
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import { drawerToolbarWidth } from './study-lateral-tool-bar';
 
 const useStyles = makeStyles((theme) => ({
     drawer: {
@@ -20,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
         overflowX: 'none',
     },
     drawerToolbar: {
-        width: drawerToolbarWidth,
+        width: 0,
         // zIndex set to be below the loader with overlay
         // and above the network explorer drawer
         zIndex: 60,
