@@ -754,7 +754,7 @@ function makeErrorIf(errors, intl, fieldVarInBlock) {
 VoltageLevelCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
+    substationOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
 };
 
