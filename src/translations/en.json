@@ -317,8 +317,8 @@
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntCompensatorConnectivity": "Connectivity",
     "ShuntIdenticalSections": "Linear Shunt",
-    "ShuntCurrentNumberOfSections": "Current number of section",
-    "shuntMaximumNumberOfSections": "Maximum number of section",
+    "ShuntCurrentNumberOfSections": "Current number of sections",
+    "ShuntMaximumNumberOfSections": "Maximum number of sections",
     "CreateShuntCompensator":  "Create a shunt compensator",
 
     "CreateSubstation": "Create substation",

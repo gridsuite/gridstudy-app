@@ -317,7 +317,7 @@
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Linear Shunt",
     "ShuntCurrentNumberOfSections": "Nombre de sections courant",
-    "ShuntMaximumNumberOfSections": "Nombre maximum de Sections",
+    "ShuntMaximumNumberOfSections": "Nombre maximum de sections",
     "CreateShuntCompensator":  "Créer un moyen de compensation",
 
     "CreateSubstation": "Créer un site",
