@@ -280,6 +280,15 @@ const VoltageLevelCreationDialog = ({
                 tmpErrors,
                 makeBlock('cnx_toBBS.' + cnx.idx, cnx.toBBS)
             );
+
+            if (
+                cnx.switchKind === 'DISCONNECTOR' &&
+                cnx.fromBBS === cnx.toBBS
+            ) {
+                let msgId = 'DisconnectorBetweenSameBusbar';
+                tmpErrors.set('cnx_fromBBS.' + cnx.idx, makeErrorRecord(msgId));
+                tmpErrors.set('cnx_toBBS.' + cnx.idx, makeErrorRecord(msgId));
+            }
         }
 
         return tmpErrors;

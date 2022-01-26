@@ -331,6 +331,7 @@
     "Breaker": "Breaker",
     "Disconnector": "Disconnector",
     "SameHorizAndVertPos": "At least two bus bar sections have same horizontal and vertical position",
+    "DisconnectorBetweenSameBusbar": "Forbidden to have a disconnector linking a bus bar section to itself",
 
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",

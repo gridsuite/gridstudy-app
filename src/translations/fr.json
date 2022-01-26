@@ -329,8 +329,9 @@
     "BusBarSection" : "Bus bar section",
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
     "Breaker": "Breaker",
-    "Disconnector": "Disconnector",
+    "Disconnector": "Sectionneur",
     "SameHorizAndVertPos": "Au moins deux SJBs ont mêmes positions horizontale et verticale",
+    "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
