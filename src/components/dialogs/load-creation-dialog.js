@@ -347,23 +347,19 @@ const LoadCreationDialog = ({
                             errorVoltageLevel={
                                 errors.get('voltage-level')?.error
                             }
-                            helperTextVoltageLevel={
-                                makeErrorHelper(errors, intl, 'voltage-level')
-                                // errors.get('voltage-level')?.error &&
-                                // intl.formatMessage({
-                                //     id: errors.get('voltage-level')?.errorMsgId,
-                                // })
-                            }
+                            helperTextVoltageLevel={makeErrorHelper(
+                                errors,
+                                intl,
+                                'voltage-level'
+                            )}
                             errorBusOrBusBarSection={
                                 errors.get('bus-bar')?.error
                             }
-                            helperTextBusOrBusBarSection={
-                                makeErrorHelper(errors, intl, 'bus-bar-level')
-                                // errors.get('bus-bar')?.error &&
-                                // intl.formatMessage({
-                                //     id: errors.get('bus-bar')?.errorMsgId,
-                                // })
-                            }
+                            helperTextBusOrBusBarSection={makeErrorHelper(
+                                errors,
+                                intl,
+                                'bus-bar-level'
+                            )}
                             selectedNodeUuid={selectedNodeUuid}
                         />
                     </Grid>

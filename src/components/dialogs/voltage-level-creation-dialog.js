@@ -427,7 +427,7 @@ const VoltageLevelCreationDialog = ({
         fieldVarInBlock,
         onChangeCb,
         labelId,
-        af = false,
+        autoFocus = false,
         filled = false,
         numerical = false
     ) {
@@ -435,7 +435,7 @@ const VoltageLevelCreationDialog = ({
         let value = fieldVarInBlock[fieldName];
         return (
             <TextField
-                autoFocus={af}
+                autoFocus={autoFocus}
                 size="small"
                 fullWidth
                 id={fieldName}
@@ -645,7 +645,7 @@ const VoltageLevelCreationDialog = ({
             onConnectivityChange(cnx.idx, value, fieldName);
         };
         let bbs = isFrom ? cnx.fromBBS : cnx.toBBS;
-        let af = isFrom && !cnx.fromBBS;
+        let autoFocus = isFrom && !cnx.fromBBS;
 
         return (
             <Autocomplete
@@ -665,7 +665,7 @@ const VoltageLevelCreationDialog = ({
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        autoFocus={af}
+                        autoFocus={autoFocus}
                         fullWidth
                         label={intl.formatMessage({
                             id: 'BusBarSection',
