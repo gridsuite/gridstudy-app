@@ -55,40 +55,59 @@ const NetworkModificationDialog = ({
         setDialogOpen(dialogId);
     };
 
+    function withDefaultParams(Dialog, props) {
+        return (
+            <Dialog
+                open={true}
+                onClose={closeDialog}
+                selectedNodeUuid={selectedNodeUuid}
+                {...props}
+            />
+        );
+    }
+
+    function withVoltageLevel(Dialog, props) {
+        return withDefaultParams(Dialog, {
+            ...props,
+            voltageLevelOptions: network?.voltageLevels,
+        });
+    }
+
     const dialogs = {
         createLoad: {
             label: 'CreateLoad',
-            dialog: LoadCreationDialog,
+            dialog: () => withVoltageLevel(LoadCreationDialog),
             icon: <AddIcon />,
         },
         createGenerator: {
             label: 'CreateGenerator',
-            dialog: GeneratorCreationDialog,
+            dialog: () => withVoltageLevel(GeneratorCreationDialog),
             icon: <AddIcon />,
         },
         createShuntCompensator: {
             label: 'CreateShuntCompensator',
-            dialog: ShuntCompensatorCreationDialog,
+            dialog: () => withVoltageLevel(ShuntCompensatorCreationDialog),
             icon: <AddIcon />,
         },
         createLine: {
             label: 'CreateLine',
-            dialog: LineCreationDialog,
+            dialog: () => withVoltageLevel(LineCreationDialog),
             icon: <AddIcon />,
         },
         createTwoWindingTransformer: {
             label: 'CreateTwoWindingsTransformer',
-            dialog: TwoWindingsTransformerCreationDialog,
+            dialog: () =>
+                withVoltageLevel(TwoWindingsTransformerCreationDialog),
             icon: <AddIcon />,
         },
         substationCreation: {
             label: 'CreateSubstation',
-            dialog: SubstationCreationDialog,
+            dialog: () => withVoltageLevel(SubstationCreationDialog),
             icon: <AddIcon />,
         },
         deleteEquipment: {
             label: 'DeleteEquipment',
-            dialog: EquipmentDeletionDialog,
+            dialog: () => withDefaultParams(EquipmentDeletionDialog),
             icon: <DeleteIcon />,
         },
     };
@@ -98,12 +117,7 @@ const NetworkModificationDialog = ({
     };
 
     const RenderDialog = () => {
-        return dialogs[dialogOpen].dialog({
-            open: true,
-            onClose: closeDialog,
-            voltageLevelOptions: network?.voltageLevels,
-            selectedNodeUuid: selectedNodeUuid,
-        });
+        return dialogs[dialogOpen].dialog();
     };
 
     return (
