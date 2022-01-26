@@ -55,6 +55,8 @@ const GridSection = ({ title }) => {
     );
 };
 
+const disabledChecked = { disabled: true, defaultChecked: true };
+
 /**
  * Dialog to create a shunt compensator in the network
  * @param {Boolean} open Is the dialog open ?
@@ -123,7 +125,7 @@ const ShuntCompensatorCreationDialog = ({
         defaultValue: true,
         validation: { isFieldRequired: true },
         validationMap: validationMap,
-        disabled: true,
+        formProps: disabledChecked,
         clear: clear,
     });
 

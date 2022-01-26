@@ -167,12 +167,11 @@ export const useIntegerValue = ({
 
 export const useBooleanValue = ({
     label,
-    tooltip,
     defaultValue,
     validation = {},
     validationMap,
     clear,
-    ...formProps
+    formProps,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const intl = useIntl();
