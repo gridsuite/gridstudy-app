@@ -6,5 +6,5 @@
     "network_modifications/LINE_CREATION": "Création de la ligne {computedLabel}",
     "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Création du transformateur à 2 enroulements {computedLabel}",
     "network_modifications/BRANCH_STATUS": "Modification du statut de la ligne {computedLabel}",
-    "network_modifications/SHUNT_COMPENSATOR_CREATION": "Création du shunt compensator {computedLabel}"
+    "network_modifications/SHUNT_COMPENSATOR_CREATION": "Création d'un moyen de compensation {computedLabel}"
 }

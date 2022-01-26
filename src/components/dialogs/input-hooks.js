@@ -5,43 +5,57 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useIntl } from 'react-intl';
 import { validateField } from '../util/validation-functions';
 import { TextField } from '@material-ui/core';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import Grid from '@material-ui/core/Grid';
 import ConnectivityEdition from './connectivity-edition';
 
 export const SusceptenceAdornment = {
     position: 'end',
     text: 'S',
 };
+
+export const filledTextField = {
+    variant: 'filled',
+};
+
+const func_identity = (e) => e;
+
 export const useTextValue = ({
     label,
-    tooltip,
     defaultValue = '',
     validation = {},
     validationMap,
     adornment,
-    transformValue = (e) => e,
+    transformValue = func_identity,
     clear,
-    ...formProps
+    formProps,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const intl = useIntl();
     const [error, setError] = useState();
 
+    const validationRef = useRef();
+    validationRef.current = validation;
+
     useEffect(() => {
         function validate() {
-            const res = validateField(value, validation);
+            const res = validateField(value, validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
         validationMap.current.set(label, validate);
-    }, [label, validation, validationMap, value]);
+    }, [label, validationMap, value]);
 
     const handleChangeValue = useCallback(
         (event) => {
@@ -50,17 +64,21 @@ export const useTextValue = ({
         [transformValue]
     );
 
-    const field = useCallback(() => {
+    const field = useMemo(() => {
+        const Field = adornment ? TextFieldWithAdornment : TextField;
         return (
-            <TextField
+            <Field
+                key={label}
                 size="small"
                 fullWidth
                 id={label}
                 label={intl.formatMessage({
                     id: label,
                 })}
-                adornmentPosition={adornment?.position}
-                adornmentText={adornment?.text}
+                {...(adornment && {
+                    adornmentPosition: adornment.position,
+                    adornmentText: adornment?.text,
+                })}
                 value={value}
                 onChange={handleChangeValue}
                 {...(error && {
@@ -78,33 +96,34 @@ export const useTextValue = ({
     return [value, field];
 };
 
+function toIntValue(val) {
+    if (val === '-') return val;
+    return parseInt(val) || 0;
+}
 export const useIntegerValue = ({
     label,
-    tooltip,
     defaultValue,
     validation = {},
     validationMap,
     adornment,
-    transformValue = (e) => e,
+    transformValue = toIntValue,
     clear,
-    dependencies,
-    ...formProps
+    formProps,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const intl = useIntl();
     const [error, setError] = useState();
+    const validationRef = useRef();
+    validationRef.current = { isFieldNumeric: true, ...validation };
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value, {
-                isFieldNumeric: true,
-                ...validation,
-            });
+            const res = validateField(value, validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
         validationMap.current.set(label, validate);
-    }, [label, validation, validationMap, value]);
+    }, [label, validationMap, value]);
 
     const handleChangeValue = useCallback(
         (event) => {
@@ -114,17 +133,16 @@ export const useIntegerValue = ({
         [transformValue]
     );
 
-    const field = useCallback(() => {
+    const field = useMemo(() => {
+        const Field = adornment ? TextFieldWithAdornment : TextField;
         return (
-            <TextFieldWithAdornment
+            <Field
                 size="small"
                 fullWidth
                 id={label}
                 label={intl.formatMessage({
                     id: label,
                 })}
-                adornmentPosition={adornment?.position}
-                adornmentText={adornment?.text}
                 value={value}
                 onChange={handleChangeValue}
                 {...(error && {
@@ -132,6 +150,10 @@ export const useIntegerValue = ({
                     helperText: intl.formatMessage({
                         id: error,
                     }),
+                })}
+                {...(adornment && {
+                    adornmentPosition: adornment.position,
+                    adornmentText: adornment?.text,
                 })}
                 {...formProps}
             />
@@ -166,7 +188,7 @@ export const useBooleanValue = ({
         setValue(event.target.checked);
     }, []);
 
-    const field = useCallback(() => {
+    const field = useMemo(() => {
         return (
             <FormControlLabel
                 id={label}
@@ -256,7 +278,7 @@ export const useConnectivityValue = ({
         });
     }, []);
 
-    const render = useCallback(() => {
+    const render = useMemo(() => {
         return (
             <ConnectivityEdition
                 voltageLevelOptions={voltageLevelOptions}
@@ -284,8 +306,7 @@ export const useConnectivityValue = ({
             />
         );
     }, [
-        connectivity.busOrBusbarSection,
-        connectivity.voltageLevel,
+        connectivity,
         errorBusBarSection,
         errorVoltageLevel,
         intl,

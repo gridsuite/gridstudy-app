@@ -21,6 +21,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import {
+    filledTextField,
     SusceptenceAdornment,
     useBooleanValue,
     useConnectivityValue,
@@ -41,8 +42,21 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const GridSection = ({ title }) => {
+    const classes = useStyles();
+    return (
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <h3 className={classes.h3}>
+                    <FormattedMessage id={title} />
+                </h3>
+            </Grid>
+        </Grid>
+    );
+};
+
 /**
- * Dialog to create a shuntCompensator in the network
+ * Dialog to create a shunt compensator in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
@@ -54,8 +68,6 @@ const ShuntCompensatorCreationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
 }) => {
-    const classes = useStyles();
-
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const intl = useIntl();
@@ -72,14 +84,14 @@ const ShuntCompensatorCreationDialog = ({
         validation: { isFieldRequired: true },
         validationMap: validationMap,
         clear: clear,
-        variant: 'filled',
+        formProps: filledTextField,
     });
 
     const [shuntCompensatorName, shuntCompensatorNameField] = useTextValue({
-        label: 'nameOptional',
+        label: 'NameOptional',
         validationMap: validationMap,
         clear: clear,
-        variant: 'filled',
+        formProps: filledTextField,
     });
 
     const [maximumNumberOfSections, maximumNumberOfSectionsField] =
@@ -179,22 +191,10 @@ const ShuntCompensatorCreationDialog = ({
         handleClose();
     };
 
-    function gridSection(title) {
+    function gridItem(field, size = 6) {
         return (
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <h3 className={classes.h3}>
-                        <FormattedMessage id={title} />
-                    </h3>
-                </Grid>
-            </Grid>
-        );
-    }
-
-    function gridItem(field) {
-        return (
-            <Grid item xs={6} align="start">
-                {field()}
+            <Grid item xs={size} align="start">
+                {field}
             </Grid>
         );
     }
@@ -214,7 +214,7 @@ const ShuntCompensatorCreationDialog = ({
                     {gridItem(shuntCompensatorIdField)}
                     {gridItem(shuntCompensatorNameField)}
                 </Grid>
-                {gridSection('Characteristics')}
+                <GridSection title="Characteristics" />
                 <Grid container spacing={2}>
                     {gridItem(maximumNumberOfSectionsField)}
                     {gridItem(currentNumberOfSectionsField)}
@@ -223,11 +223,9 @@ const ShuntCompensatorCreationDialog = ({
                     {gridItem(identicalSectionsField)}
                     {gridItem(susceptancePerSectionField)}
                 </Grid>
-                {gridSection('Characteristics')}
+                <GridSection title="Connectivity" />
                 <Grid container spacing={2}>
-                    <Grid item xs={12} align="start">
-                        {connectivityField()}
-                    </Grid>
+                    {gridItem(connectivityField, 12)}
                 </Grid>
             </DialogContent>
             <DialogActions>

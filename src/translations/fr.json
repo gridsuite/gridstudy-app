@@ -314,11 +314,11 @@
     "ShuntConductanceText": "Conductance parallèle",
     "ShuntSusceptanceText": "Susceptance parallèle",
 
-    "ShuntSusceptancePerSection": "Shunt susceptance par section",
+    "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Linear Shunt",
     "ShuntCurrentNumberOfSections": "Nombre de sections courant",
     "ShuntMaximumNumberOfSections": "Nombre maximum de Sections",
-    "CreateShuntCompensator":  "Créer un shunt compensator",
+    "CreateShuntCompensator":  "Créer un moyen de compensation",
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
