@@ -9,7 +9,7 @@ import { equipments } from './network-equipments';
 import { NumericalField, TapChangerSelector } from './equipment-table-editors';
 
 const nominalVoltage = (network, voltageLevelId) => {
-    return network.getVoltageLevel(voltageLevelId).nominalVoltage;
+    return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
 };
 
 export const TABLES_DEFINITIONS = {
