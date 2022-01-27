@@ -24,7 +24,11 @@ import { useSnackbar } from 'notistack';
 import NetworkModificationTree from './network-modification-tree';
 import PropTypes from 'prop-types';
 
-export const NetworkModificationTreePane = ({ studyUuid }) => {
+export const NetworkModificationTreePane = ({
+    studyUuid,
+    closeDrawerNodeEditor,
+    drawerNodeEditorOpen,
+}) => {
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
@@ -117,11 +121,19 @@ export const NetworkModificationTreePane = ({ studyUuid }) => {
         }
     }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
 
-    return <NetworkModificationTree treeModel={treeModel} />;
+    return (
+        <NetworkModificationTree
+            treeModel={treeModel}
+            closeDrawerNodeEditor={closeDrawerNodeEditor}
+            drawerNodeEditorOpen={drawerNodeEditorOpen}
+        />
+    );
 };
 
 export default NetworkModificationTreePane;
 
 NetworkModificationTreePane.propTypes = {
     studyUuid: PropTypes.string.isRequired,
+    drawerNodeEditorOpen: PropTypes.bool.isRequired,
+    closeDrawerNodeEditor: PropTypes.func.isRequired,
 };

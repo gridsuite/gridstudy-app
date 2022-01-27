@@ -1,5 +1,5 @@
 import NetworkExplorer from './network/network-explorer';
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { StudyDrawer } from './study-drawer';
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export function StudyLateralToolBar({
+export function MapLateralDrawers({
     network,
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
@@ -53,14 +53,8 @@ export function StudyLateralToolBar({
     setLateralShift,
     drawerExplorerOpen,
     drawerNodeEditorOpen,
+    closeDrawerNodeEditor,
 }) {
-
-    useEffect(() => {
-        let shift = 0;
-        if (drawerExplorerOpen) shift += drawerExplorerWidth;
-        setLateralShift(shift);
-    }, [setLateralShift, drawerExplorerOpen]);
-
     const classes = useStyles();
     return (
         <>
@@ -69,7 +63,7 @@ export function StudyLateralToolBar({
                 drawerClassName={classes.nodeEditor}
                 drawerShiftClassName={classes.nodeEditorShift}
             >
-                <NodeEditor onClose={null} />
+                <NodeEditor onClose={closeDrawerNodeEditor} />
             </StudyDrawer>
             <StudyDrawer
                 open={drawerExplorerOpen}
@@ -87,7 +81,7 @@ export function StudyLateralToolBar({
         </>
     );
 }
-StudyLateralToolBar.propTypes = {
+MapLateralDrawers.propTypes = {
     classes: PropTypes.any,
     drawerExplorerOpen: PropTypes.bool,
     drawerNodeEditorOpen: PropTypes.bool,
@@ -95,6 +89,7 @@ StudyLateralToolBar.propTypes = {
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,
+    closeDrawerNodeEditor: PropTypes.func,
     visibleSubstation: PropTypes.any,
     onClose: PropTypes.func,
 };

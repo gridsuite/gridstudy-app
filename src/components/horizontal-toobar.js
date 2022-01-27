@@ -11,7 +11,7 @@ import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import PublicIcon from '@material-ui/icons/Public';
 import IconButton from '@material-ui/core/IconButton';
-import BuildIcon from '@material-ui/icons/Build';
+import ListIcon from '@material-ui/icons/List';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -110,7 +110,7 @@ export function HorizontalToolbar({
                     }
                     onClick={toggleModificationDrawer}
                 >
-                    <BuildIcon />
+                    <ListIcon />
                 </IconButton>
             </Tooltip>
             <Divider orientation="vertical" flexItem />

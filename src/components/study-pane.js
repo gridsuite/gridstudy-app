@@ -26,7 +26,7 @@ import {
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
-import { StudyLateralToolBar } from './study-lateral-tool-bar';
+import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import {
@@ -201,6 +201,10 @@ const StudyPane = ({
         setDrawerNodeEditorOpen(!drawerNodeEditorOpen);
     };
 
+    const closeDrawerNodeEditor = () => {
+        setDrawerNodeEditorOpen(false);
+    };
+
     function renderMapView() {
         return (
             <>
@@ -239,7 +243,11 @@ const StudyPane = ({
                                     : '100%',
                         }}
                     >
-                        <NetworkModificationTreePane studyUuid={studyUuid} />
+                        <NetworkModificationTreePane
+                            studyUuid={studyUuid}
+                            closeDrawerNodeEditor={closeDrawerNodeEditor}
+                            drawerNodeEditorOpen={drawerNodeEditorOpen}
+                        />
                     </div>
                     <div
                         className={clsx(
@@ -300,15 +308,19 @@ const StudyPane = ({
                                 setErrorMessage={setErrorMessage}
                             />
                         </div>
-                        <StudyLateralToolBar
+                        <MapLateralDrawers
                             network={network}
                             drawerExplorerOpen={drawerExplorerOpen}
-                            drawerNodeEditorOpen={drawerNodeEditorOpen}
+                            drawerNodeEditorOpen={
+                                drawerNodeEditorOpen &&
+                                studyDisplay === StudyDisplay.MAP
+                            }
                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                             onSubstationDisplayClick={showSubstationDiagram}
                             onSubstationFocus={setCenterOnSubstation}
                             visibleSubstation={visibleSubstation}
                             setLateralShift={setDrawerShift}
+                            closeDrawerNodeEditor={closeDrawerNodeEditor}
                         />
 
                         {/*

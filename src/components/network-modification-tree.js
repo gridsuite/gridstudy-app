@@ -15,6 +15,10 @@ import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import CenterGraphButton from './graph/util/center-graph-button';
 import { useParams } from 'react-router-dom';
+import NodeEditor from './graph/menus/node-editor';
+import { StudyDrawer } from './study-drawer';
+import { makeStyles } from '@material-ui/core/styles';
+import { nodeEditorWidth } from './map-lateral-drawers';
 
 const nodeTypes = {
     ROOT: NetworkModificationNode,
@@ -26,6 +30,28 @@ const nodeTypes = {
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
 const snapGrid = [15, 15];
+
+const useStyles = makeStyles((theme) => ({
+    nodeEditor: {
+        width: nodeEditorWidth,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        // zIndex set to be below the loader with overlay
+        // and above the network explorer, for mouse events on network modification tree
+        // to be taken into account correctly
+        zIndex: 51,
+    },
+    nodeEditorShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        pointerEvents: 'none',
+        marginLeft: -nodeEditorWidth,
+    },
+}));
 
 const NetworkModificationTree = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
@@ -50,6 +76,8 @@ const NetworkModificationTree = (props) => {
             bottom: 'unset',
         },
     };
+
+    const classes = useStyles();
 
     const onSelectionChange = useCallback((selectedElements) => {
         if (selectedElements?.length > 0) {
@@ -159,6 +187,13 @@ const NetworkModificationTree = (props) => {
                         </Controls>
                     </ReactFlow>
                 </Box>
+                <StudyDrawer
+                    open={props.drawerNodeEditorOpen}
+                    drawerClassName={classes.nodeEditor}
+                    drawerShiftClassName={classes.nodeEditorShift}
+                >
+                    <NodeEditor onClose={props.closeDrawerNodeEditor} />
+                </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
                 <CreateNodeMenu
