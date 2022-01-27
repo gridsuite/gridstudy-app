@@ -79,7 +79,7 @@ export const useTextValue = ({
                     adornmentPosition: adornment.position,
                     adornmentText: adornment?.text,
                 })}
-                value={value}
+                value={'' + value} // handle numerical value
                 onChange={handleChangeValue}
                 {...(error && {
                     error: true,
@@ -100,69 +100,41 @@ function toIntValue(val) {
     if (val === '-') return val;
     return parseInt(val) || 0;
 }
+
+export function toPositiveIntValue(val) {
+    val.replace('-', '');
+    return parseInt(val) || 0;
+}
+
 export const useIntegerValue = ({
-    label,
-    defaultValue,
-    validation = {},
-    validationMap,
-    adornment,
     transformValue = toIntValue,
-    clear,
-    formProps,
+    validation,
+    ...props
 }) => {
-    const [value, setValue] = useState(defaultValue);
-    const intl = useIntl();
-    const [error, setError] = useState();
-    const validationRef = useRef();
-    validationRef.current = { isFieldNumeric: true, ...validation };
+    return useTextValue({
+        ...props,
+        transformValue: transformValue,
+        validation: { ...validation, isFieldNumeric: true },
+    });
+};
 
-    useEffect(() => {
-        function validate() {
-            const res = validateField(value, validationRef.current);
-            setError(res?.errorMsgId);
-            return !res.error;
-        }
-        validationMap.current.set(label, validate);
-    }, [label, validationMap, value]);
+const toFloatValue = (val) => {
+    if (val === '-') return val;
+    // TODO: remove replace when parsing behaviour will be made according to locale
+    // Replace ',' by '.' to ensure double values can be parsed correctly
+    return parseFloat(val?.replace(',', '.'));
+};
 
-    const handleChangeValue = useCallback(
-        (event) => {
-            const newValue = transformValue(event.target.value);
-            setValue(newValue);
-        },
-        [transformValue]
-    );
-
-    const field = useMemo(() => {
-        const Field = adornment ? TextFieldWithAdornment : TextField;
-        return (
-            <Field
-                size="small"
-                fullWidth
-                id={label}
-                label={intl.formatMessage({
-                    id: label,
-                })}
-                value={'' + value}
-                onChange={handleChangeValue}
-                {...(error && {
-                    error: true,
-                    helperText: intl.formatMessage({
-                        id: error,
-                    }),
-                })}
-                {...(adornment && {
-                    adornmentPosition: adornment.position,
-                    adornmentText: adornment?.text,
-                })}
-                {...formProps}
-            />
-        );
-    }, [intl, label, value, adornment, handleChangeValue, formProps, error]);
-
-    useEffect(() => setValue(defaultValue), [defaultValue, clear]);
-
-    return [value, field];
+export const useDoubleValue = ({
+    transformValue = toFloatValue,
+    validation,
+    ...props
+}) => {
+    return useTextValue({
+        ...props,
+        transformValue: transformValue,
+        validation: { ...validation, isFieldNumeric: true },
+    });
 };
 
 export const useBooleanValue = ({
@@ -213,15 +185,6 @@ export const useBooleanValue = ({
     useEffect(() => setValue(defaultValue), [defaultValue, clear]);
 
     return [value, field];
-};
-
-const commaToPoint = (e) => {
-    // TODO: remove replace when parsing behaviour will be made according to locale
-    // Replace ',' by '.' to ensure double values can be parsed correctly
-    return e?.replace(',', '.');
-};
-export const useDoubleValue = (props) => {
-    return useIntegerValue({ ...props, transformValue: commaToPoint });
 };
 
 export const useConnectivityValue = ({

@@ -47,10 +47,10 @@ const NetworkModificationDialog = ({
     const classes = useStyles();
     const intl = useIntl();
 
-    const [dialogOpen, setDialogOpen] = useState('');
+    const [dialogOpen, setDialogOpen] = useState(undefined);
 
     const closeDialog = () => {
-        setDialogOpen('');
+        setDialogOpen(undefined);
     };
 
     const openDialog = (dialogId) => {
@@ -74,6 +74,7 @@ const NetworkModificationDialog = ({
             voltageLevelOptions: network?.voltageLevels,
         });
     }
+
     function withSubstationOption(Dialog, props) {
         return withDefaultParams(Dialog, {
             ...props,
@@ -129,7 +130,7 @@ const NetworkModificationDialog = ({
         onClose();
     };
 
-    const RenderDialog = () => {
+    const renderDialog = () => {
         return dialogs[dialogOpen].dialog();
     };
 
@@ -170,7 +171,7 @@ const NetworkModificationDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            {dialogOpen && <RenderDialog />}
+            {dialogOpen && renderDialog()}
         </>
     );
 };

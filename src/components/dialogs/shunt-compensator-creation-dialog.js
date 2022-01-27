@@ -23,6 +23,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
     filledTextField,
     SusceptanceAdornment,
+    toPositiveIntValue,
     useBooleanValue,
     useConnectivityValue,
     useDoubleValue,
@@ -101,9 +102,10 @@ const ShuntCompensatorCreationDialog = ({
             label: 'ShuntMaximumNumberOfSections',
             defaultValue: 1,
             validation: {
-                isValueGreaterOrEqualTo: '1',
+                isValueGreaterOrEqualTo: 1,
                 errorMsgId: 'shuntCompensatorErrorMaximumLessThanOne',
             },
+            transformValue: toPositiveIntValue,
             validationMap: validationMap,
             clear: clear,
         });
@@ -114,8 +116,10 @@ const ShuntCompensatorCreationDialog = ({
             defaultValue: 0,
             validation: {
                 isValueLessOrEqualTo: maximumNumberOfSections,
+                isValueGreaterOrEqualTo: 0,
                 errorMsgId: 'shuntCompensatorErrorCurrentLessThanMaximum',
             },
+            transformValue: toPositiveIntValue,
             validationMap: validationMap,
             clear: clear,
         });
