@@ -22,6 +22,7 @@ import EquipmentDeletionDialog from './equipment-deletion-dialog';
 import LineCreationDialog from './line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from './two-windings-transformer-creation-dialog';
 import SubstationCreationDialog from './substation-creation-dialog';
+import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import ShuntCompensatorCreationDialog from './shunt-compensator-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to select network modification to create
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param selectedNodeUuid : the currently selected tree node
+ * @param network network from which to search for possible substations
+ * @param selectedNodeUuid the currently selected tree node
  */
 const NetworkModificationDialog = ({
     open,
@@ -72,6 +74,12 @@ const NetworkModificationDialog = ({
             voltageLevelOptions: network?.voltageLevels,
         });
     }
+    function withSubstationOption(Dialog, props) {
+        return withDefaultParams(Dialog, {
+            ...props,
+            substationOptions: network?.substations,
+        });
+    }
 
     const dialogs = {
         createLoad: {
@@ -103,6 +111,11 @@ const NetworkModificationDialog = ({
         substationCreation: {
             label: 'CreateSubstation',
             dialog: () => withVoltageLevel(SubstationCreationDialog),
+            icon: <AddIcon />,
+        },
+        voltageLevelCreation: {
+            label: 'CreateVoltageLevel',
+            dialog: () => withSubstationOption(VoltageLevelCreationDialog),
             icon: <AddIcon />,
         },
         deleteEquipment: {

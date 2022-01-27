@@ -1144,6 +1144,50 @@ export function createSubstation(
     );
 }
 
+export function createVoltageLevel(
+    studyUuid,
+    selectedNodeUuid,
+    voltageLevelId,
+    name,
+    nominalVoltage,
+    substationId,
+    busBarSections,
+    connections
+) {
+    console.info('Creating voltage level (stub) ');
+    const createVoltageLevelUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/voltage-levels';
+
+    let busBarConnections = connections.map((c) => {
+        return {
+            fromBBS: c.fromBBS.id,
+            toBBS: c.toBBS.id,
+            switchKind: c.switchKind,
+        };
+    });
+
+    return backendFetch(createVoltageLevelUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: voltageLevelId,
+            equipmentName: name,
+            nominalVoltage: nominalVoltage,
+            substationId: substationId,
+            busbarSections: busBarSections,
+            busbarConnections: busBarConnections,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =

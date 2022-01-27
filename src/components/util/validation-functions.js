@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,10 +12,7 @@ export function validateField(value, toValidate) {
 
     if (toValidate.isFieldRequired) {
         if (!value) {
-            return {
-                error: true,
-                errorMsgId: 'FieldIsRequired',
-            };
+            return makeErrorRecord('FieldIsRequired');
         }
     }
 
@@ -23,10 +20,7 @@ export function validateField(value, toValidate) {
         // TODO: remove replace when parsing behaviour will be made according to locale
         const valueNumericVal = toNumber(value);
         if (isNaN(valueNumericVal)) {
-            return {
-                error: true,
-                errorMsgId: 'FieldAcceptNumeric',
-            };
+            return makeErrorRecord('FieldAcceptNumeric');
         }
     }
 
@@ -40,14 +34,10 @@ export function validateField(value, toValidate) {
                 // TODO: remove replace when parsing behaviour will be made according to locale
                 const valueNumericVal = toNumber(value);
                 if (valueNumericVal > maxValue) {
-                    return {
-                        error: true,
-                        errorMsgId: toValidate.errorMsgId,
-                    };
+                    return makeErrorRecord(toValidate.errorMsgId);
                 }
             }
         }
-        return { error: false, errorMsgId: '' };
     }
 
     if (toValidate.isValueGreaterThan !== undefined) {
@@ -59,18 +49,26 @@ export function validateField(value, toValidate) {
                 // TODO: remove replace when parsing behaviour will be made according to locale
                 const valueNumericVal = toNumber(value);
                 if (valueNumericVal <= minValue) {
-                    return {
-                        error: true,
-                        errorMsgId: toValidate.errorMsgId,
-                    };
+                    return makeErrorRecord(toValidate.errorMsgId);
                 }
             }
         }
-        return { error: false, errorMsgId: '' };
     }
 
+    return makeErrorRecord(null);
+}
+
+export function makeErrorRecord(msgId) {
     return {
-        error: false,
-        errorMsgId: '',
+        error: !!msgId,
+        errorMsgId: msgId,
     };
+}
+
+export function makeErrorHelper(errors, intl, fieldId) {
+    let errEntry = errors.get(fieldId);
+    if (!errEntry || !errEntry.error) return '';
+    return intl.formatMessage({
+        id: errEntry.errorMsgId,
+    });
 }

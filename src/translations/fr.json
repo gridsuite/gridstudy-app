@@ -323,6 +323,22 @@
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
 
+    "CreateVoltageLevel": "Créer un poste",
+    "Substation": "Site",
+    "BusBarSections": "Sections de jeu de barre",
+    "BusBarSectionID" : "ID SJB",
+    "BusBarSectionName" : "Nom de la section (optionnel)",
+    "BusBarHorizPos" : "Position horizontale de la section",
+    "BusBarVertPos" : "Position verticale de la section",
+    "CreateBusBarSection": "Créer une section de jeu de barre",
+    "CreateLink": "Ajouter un lien",
+    "BusBarSection" : "Bus bar section",
+    "VoltageLevelCreationError": "Erreur à la création d'un poste",
+    "Breaker": "Breaker",
+    "Disconnector": "Sectionneur",
+    "SameHorizAndVertPos": "Au moins deux SJBs ont mêmes positions horizontale et verticale",
+    "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
+
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
 
