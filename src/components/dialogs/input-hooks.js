@@ -204,7 +204,7 @@ export const useConnectivityValue = ({
         busOrBusbarSection: null,
     });
     const [errorVoltageLevel, setErrorVoltageLevel] = useState();
-    const [errorBusBarSection, setBusBarSection] = useState();
+    const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
 
     useEffect(
@@ -224,7 +224,7 @@ export const useConnectivityValue = ({
                 connectivity.busOrBusbarSection,
                 validation
             );
-            setBusBarSection(resBBS?.errorMsgId);
+            setErrorBusBarSection(resBBS?.errorMsgId);
             return !resVL.error && !resBBS.error;
         }
         validationMap.current.set(label, validate);

@@ -28,9 +28,7 @@ export function validateField(value, toValidate) {
         if (value && toValidate.isValueLessOrEqualTo) {
             // TODO: remove replace when parsing behaviour will be made according to locale
             const maxValue = toNumber(toValidate.isValueLessOrEqualTo);
-            console.info('jbo max', maxValue);
             if (!isNaN(maxValue)) {
-                console.info('jbo not nan ');
                 // TODO: remove replace when parsing behaviour will be made according to locale
                 const valueNumericVal = toNumber(value);
                 if (valueNumericVal > maxValue) {
