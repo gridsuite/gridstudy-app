@@ -124,7 +124,7 @@ const toFloatValue = (val) => {
     // Replace ',' by '.' to ensure double values can be parsed correctly
     const tmp = val?.replace(',', '.') || '';
     if (tmp.endsWith('.')) return val;
-    return parseFloat(val);
+    return parseFloat(val) || 0;
 };
 
 export const useDoubleValue = ({
