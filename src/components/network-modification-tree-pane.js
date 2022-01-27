@@ -26,8 +26,8 @@ import PropTypes from 'prop-types';
 
 export const NetworkModificationTreePane = ({
     studyUuid,
-    closeDrawerNodeEditor,
     drawerNodeEditorOpen,
+    closeDrawerNodeEditor,
 }) => {
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
@@ -124,8 +124,8 @@ export const NetworkModificationTreePane = ({
     return (
         <NetworkModificationTree
             treeModel={treeModel}
-            closeDrawerNodeEditor={closeDrawerNodeEditor}
             drawerNodeEditorOpen={drawerNodeEditorOpen}
+            closeDrawerNodeEditor={closeDrawerNodeEditor}
         />
     );
 };

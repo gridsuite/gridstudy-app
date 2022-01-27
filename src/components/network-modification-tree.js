@@ -19,6 +19,7 @@ import NodeEditor from './graph/menus/node-editor';
 import { StudyDrawer } from './study-drawer';
 import { makeStyles } from '@material-ui/core/styles';
 import { nodeEditorWidth } from './map-lateral-drawers';
+import PropTypes from 'prop-types';
 
 const nodeTypes = {
     ROOT: NetworkModificationNode,
@@ -31,29 +32,11 @@ const nodeTypes = {
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
 const snapGrid = [15, 15];
 
-const useStyles = makeStyles((theme) => ({
-    nodeEditor: {
-        width: nodeEditorWidth,
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        // zIndex set to be below the loader with overlay
-        // and above the network explorer, for mouse events on network modification tree
-        // to be taken into account correctly
-        zIndex: 51,
-    },
-    nodeEditorShift: {
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-        pointerEvents: 'none',
-        marginLeft: -nodeEditorWidth,
-    },
-}));
-
-const NetworkModificationTree = (props) => {
+const NetworkModificationTree = ({
+    treeModel,
+    drawerNodeEditorOpen,
+    closeDrawerNodeEditor,
+}) => {
     const [selectedNode, setSelectedNode] = useState(null);
 
     const [isMoving, setIsMoving] = useState(false);
@@ -64,7 +47,7 @@ const NetworkModificationTree = (props) => {
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const styles = {
+    const classes = makeStyles((theme) => ({
         container: { width: '100%', height: '100%' },
         flow: { cursor: isMoving ? 'grabbing' : 'grab' },
         controls: {
@@ -75,9 +58,26 @@ const NetworkModificationTree = (props) => {
             left: 'unset',
             bottom: 'unset',
         },
-    };
-
-    const classes = useStyles();
+        nodeEditor: {
+            width: nodeEditorWidth,
+            transition: theme.transitions.create('margin', {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.leavingScreen,
+            }),
+            // zIndex set to be below the loader with overlay
+            // and above the network explorer, for mouse events on network modification tree
+            // to be taken into account correctly
+            zIndex: 51,
+        },
+        nodeEditorShift: {
+            transition: theme.transitions.create('margin', {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+            pointerEvents: 'none',
+            marginLeft: -nodeEditorWidth,
+        },
+    }));
 
     const onSelectionChange = useCallback((selectedElements) => {
         if (selectedElements?.length > 0) {
@@ -155,13 +155,11 @@ const NetworkModificationTree = (props) => {
 
     return (
         <>
-            <Box style={styles.container} display="flex" flexDirection="row">
+            <Box style={classes.container} display="flex" flexDirection="row">
                 <Box flexGrow={1}>
                     <ReactFlow
-                        style={styles.flow}
-                        elements={
-                            props.treeModel ? props.treeModel.treeElements : []
-                        }
+                        style={classes.flow}
+                        elements={treeModel ? treeModel.treeElements : []}
                         onNodeContextMenu={onNodeContextMenu}
                         onSelectionChange={onSelectionChange}
                         onPaneClick={onPaneClick}
@@ -179,7 +177,7 @@ const NetworkModificationTree = (props) => {
                         snapGrid={snapGrid}
                     >
                         <Controls
-                            style={styles.controls}
+                            style={classes.controls}
                             showZoom={false}
                             showInteractive={false}
                         >
@@ -188,11 +186,11 @@ const NetworkModificationTree = (props) => {
                     </ReactFlow>
                 </Box>
                 <StudyDrawer
-                    open={props.drawerNodeEditorOpen}
+                    open={drawerNodeEditorOpen}
                     drawerClassName={classes.nodeEditor}
                     drawerShiftClassName={classes.nodeEditorShift}
                 >
-                    <NodeEditor onClose={props.closeDrawerNodeEditor} />
+                    <NodeEditor onClose={closeDrawerNodeEditor} />
                 </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
@@ -209,3 +207,9 @@ const NetworkModificationTree = (props) => {
 };
 
 export default NetworkModificationTree;
+
+NetworkModificationTree.propTypes = {
+    treeModel: PropTypes.object.isRequired,
+    drawerNodeEditorOpen: PropTypes.bool.isRequired,
+    closeDrawerNodeEditor: PropTypes.func.isRequired,
+};
