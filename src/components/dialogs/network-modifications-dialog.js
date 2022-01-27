@@ -16,6 +16,7 @@ import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/ControlPoint';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { FormattedMessage, useIntl } from 'react-intl';
+import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import LoadCreationDialog from './load-creation-dialog';
 import GeneratorCreationDialog from './generator-creation-dialog';
 import EquipmentDeletionDialog from './equipment-deletion-dialog';
@@ -33,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to select network modification to create
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param selectedNodeUuid : the currently selected tree node
+ * @param network network from which to search for possible substations
+ * @param selectedNodeUuid the currently selected tree node
  */
 const NetworkModificationDialog = ({
     open,
@@ -43,6 +45,9 @@ const NetworkModificationDialog = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
+
+    const [openCreateVoltageLevelDialog, setOpenCreateVoltageLevelDialog] =
+        useState(false);
 
     const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
     const [openEquipmentDeletionDialog, setOpenEquipmentDeletionDialog] =
@@ -62,6 +67,14 @@ const NetworkModificationDialog = ({
 
     const handleClose = () => {
         onClose();
+    };
+
+    const handleCreateVoltageLevel = () => {
+        setOpenCreateVoltageLevelDialog(true);
+    };
+
+    const closeCreateVoltageLevelDialog = () => {
+        setOpenCreateVoltageLevelDialog(false);
     };
 
     const handleCreateLoad = () => {
@@ -192,6 +205,19 @@ const NetworkModificationDialog = ({
                                 fullWidth
                                 className={classes.button}
                                 variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateVoltageLevel}
+                            >
+                                {intl.formatMessage({
+                                    id: 'CreateVoltageLevel',
+                                })}
+                            </Button>
+                        </Grid>
+                        <Grid item>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
                                 startIcon={<DeleteIcon />}
                                 onClick={handleDeleteEquipment}
                             >
@@ -235,6 +261,12 @@ const NetworkModificationDialog = ({
             <SubstationCreationDialog
                 open={openCreateSubstationDialog}
                 onClose={closeCreateSubstationDialog}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+            <VoltageLevelCreationDialog
+                open={openCreateVoltageLevelDialog}
+                onClose={closeCreateVoltageLevelDialog}
+                substationOptions={network?.substations}
                 selectedNodeUuid={selectedNodeUuid}
             />
             <EquipmentDeletionDialog
