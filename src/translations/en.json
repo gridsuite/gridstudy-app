@@ -318,7 +318,7 @@
     "ShuntIdenticalSections": "Identical sections",
     "ShuntCurrentNumberOfSections": "Current number of sections",
     "ShuntMaximumNumberOfSections": "Maximum number of sections",
-    "CreateShuntCompensator":  "Create a shunt compensator",
+    "CreateShuntCompensator":  "Create shunt compensator",
 
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
