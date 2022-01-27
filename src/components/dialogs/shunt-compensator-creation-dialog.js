@@ -22,7 +22,7 @@ import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     filledTextField,
-    SusceptenceAdornment,
+    SusceptanceAdornment,
     useBooleanValue,
     useConnectivityValue,
     useDoubleValue,
@@ -134,7 +134,7 @@ const ShuntCompensatorCreationDialog = ({
         defaultValue: 0,
         validation: { isFieldRequired: true },
         validationMap: validationMap,
-        adornment: SusceptenceAdornment,
+        adornment: SusceptanceAdornment,
         clear: clear,
     });
 

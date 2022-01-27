@@ -20,7 +20,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import ConnectivityEdition from './connectivity-edition';
 
-export const SusceptenceAdornment = {
+export const SusceptanceAdornment = {
     position: 'end',
     text: 'S',
 };
