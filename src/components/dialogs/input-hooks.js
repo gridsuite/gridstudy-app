@@ -122,7 +122,9 @@ const toFloatValue = (val) => {
     if (val === '-') return val;
     // TODO: remove replace when parsing behaviour will be made according to locale
     // Replace ',' by '.' to ensure double values can be parsed correctly
-    return parseFloat(val?.replace(',', '.'));
+    const tmp = val?.replace(',', '.') || '';
+    if (tmp.endsWith('.')) return val;
+    return parseFloat(val);
 };
 
 export const useDoubleValue = ({
