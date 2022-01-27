@@ -73,7 +73,7 @@ code {
 .sld-disconnector {
     stroke-width: 3;
 }
-.sld-busbreaker-connection {
+.sld-bus-connection {
     stroke-width: 4;
 }
 .sld-vsc {
@@ -95,13 +95,21 @@ code {
 .sld-graph-label {
     font: 14px 'Verdana';
 }
+.sld-flash {
+    stroke: none;
+    fill: black;
+}
+.sld-lock {
+    stroke: none;
+    fill: black;
+}
 
 /* tautologies.css */
 
-.sld-up .sld-arrow-down {
+.sld-out .sld-arrow-in {
     visibility: hidden;
 }
-.sld-down .sld-arrow-up {
+.sld-in .sld-arrow-out {
     visibility: hidden;
 }
 .sld-closed .sld-sw-open {
@@ -370,9 +378,6 @@ polyline {
     stroke: none;
     fill: black;
 }
-.sld-busbreaker-connection.sld-constant-color {
-    stroke: black;
-}
 .sld-breaker.sld-constant-color {
     stroke: blue;
     fill: white;
@@ -383,4 +388,7 @@ polyline {
 .sld-label {
     fill: black;
     stroke: none;
+}
+.sld-frame {
+    fill: none;
 }
