@@ -316,9 +316,9 @@
 
     "ShuntSusceptancePerSection": "Susceptance par section",
     "ShuntIdenticalSections": "Sections identiques",
-    "ShuntCurrentNumberOfSections": "Nombre de sections courant",
-    "ShuntMaximumNumberOfSections": "Nombre maximum de sections",
-    "CreateShuntCompensator":  "Créer un moyen de compensation",
+    "ShuntCurrentNumberOfSections": "Nombre de sections utilisées",
+    "ShuntMaximumNumberOfSections": "Nombre de sections disponibles",
+    "CreateShuntCompensator":  "Créer un moyen de compensation statique",
 
     "CreateSubstation": "Créer un site",
     "SubstationCreationError": "Erreur lors de la création d'un site",
