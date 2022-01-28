@@ -35,7 +35,7 @@ import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import { stringify } from 'qs';
-import { selectItemNetwork } from '../redux/actions';
+import { selectItemNetwork, workingTreeNode } from '../redux/actions';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -85,7 +85,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
+    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
 
     const [showParameters, setShowParameters] = useState(false);
 
@@ -95,7 +95,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (searchTerm) => {
             fetchEquipmentsInfos(
                 studyUuid,
-                selectedNodeUuid,
+                workingNodeUuid,
                 searchTerm,
                 useNameLocal
             )
@@ -115,7 +115,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     })
                 );
         },
-        [studyUuid, selectedNodeUuid, useNameLocal, enqueueSnackbar, intlRef]
+        [studyUuid, workingNodeUuid, useNameLocal, enqueueSnackbar, intlRef]
     );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
