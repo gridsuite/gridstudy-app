@@ -207,12 +207,17 @@ const StudyPane = ({
 
     function renderMapView() {
         return (
-            <>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: '100%',
+                }}
+            >
                 <div
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        height: '7%',
                     }}
                 >
                     <HorizontalToolbar
@@ -228,7 +233,7 @@ const StudyPane = ({
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        height: '93%',
+                        flexGrow: 1,
                     }}
                 >
                     <div
@@ -343,7 +348,7 @@ const StudyPane = ({
                         )}
                     </div>
                 </div>
-            </>
+            </div>
         );
     }
 
@@ -366,7 +371,7 @@ const StudyPane = ({
         <>
             {/*Rendering the map is slow, do it once and keep it display:none*/}
             <div
-                className="singlestretch-parent singlestretch-child"
+                className="singlestretch-child"
                 style={{
                     display: props.view === StudyView.MAP ? null : 'none',
                 }}
@@ -374,7 +379,7 @@ const StudyPane = ({
                 {renderMapView()}
             </div>
             <div
-                className="singlestretch-parent singlestretch-child"
+                className="singlestretch-child"
                 style={{
                     display:
                         props.view === StudyView.SPREADSHEET ? null : 'none',
@@ -383,7 +388,7 @@ const StudyPane = ({
                 {renderTableView()}
             </div>
             <div
-                className="singlestretch-parent singlestretch-child"
+                className="singlestretch-child"
                 style={{
                     display: props.view === StudyView.RESULTS ? null : 'none',
                 }}
@@ -397,7 +402,7 @@ const StudyPane = ({
                 />
             </div>
             <div
-                className="singlestretch-parent singlestretch-child"
+                className="singlestretch-child"
                 style={{
                     display: props.view === StudyView.LOGS ? null : 'none',
                 }}
