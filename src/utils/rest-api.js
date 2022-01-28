@@ -1277,3 +1277,16 @@ export function fetchNetworkModifications(groupUuid) {
         response.json()
     );
 }
+
+export function buildNode(studyUuid, selectedNodeUuid) {
+    console.info(
+        'Build node ' + selectedNodeUuid + ' of study ' + studyUuid + ' ...'
+    );
+    const url = getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/build';
+    console.debug(url);
+    return backendFetch(url, { method: 'post' }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}

@@ -79,7 +79,7 @@ export const StudyView = {
 const StudyPane = ({
     studyUuid,
     network,
-    selectedNodeUuid,
+    workingNodeUuid,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -209,7 +209,7 @@ const StudyPane = ({
                         openVoltageLevel={openVoltageLevel}
                         centerOnSubstation={centerOnSubstation}
                         /* TODO verif tableEquipment*/
-                        selectedNodeUuid={selectedNodeUuid}
+                        selectedNodeUuid={workingNodeUuid}
                         onChangeTab={props.onChangeTab}
                         showInSpreadsheet={showInSpreadsheet}
                         loadFlowStatus={getLoadFlowRunningStatus(
@@ -247,7 +247,7 @@ const StudyPane = ({
                         loadFlowStatus={getLoadFlowRunningStatus(
                             loadFlowInfos?.loadFlowStatus
                         )}
-                        selectedNodeUuid={selectedNodeUuid}
+                        selectedNodeUuid={workingNodeUuid}
                     />
                 )}
             </div>
@@ -260,7 +260,7 @@ const StudyPane = ({
                 <NetworkTable
                     network={network}
                     studyUuid={studyUuid}
-                    selectedNodeUuid={selectedNodeUuid}
+                    selectedNodeUuid={workingNodeUuid}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
@@ -297,7 +297,7 @@ const StudyPane = ({
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
-                    selectedNodeUuid={selectedNodeUuid}
+                    selectedNodeUuid={workingNodeUuid}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}

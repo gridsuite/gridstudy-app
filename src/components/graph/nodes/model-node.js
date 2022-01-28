@@ -4,11 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import CircularProgress from '@material-ui/core/CircularProgress';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import React from 'react';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import BuildIcon from '@material-ui/icons/Build';
 import { Handle } from 'react-flow-renderer';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     modelSelected: {
@@ -17,10 +20,18 @@ const useStyles = makeStyles((theme) => ({
     model: {
         background: 'darkseagreen',
     },
+    buildStatusOk: {
+        color: 'green',
+    },
+    buildStatusInvalid: {
+        color: 'indianred',
+    },
 }));
 
 const ModelNode = (props) => {
     const classes = useStyles();
+
+    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
 
     return (
         <>
@@ -42,7 +53,21 @@ const ModelNode = (props) => {
                     props.selected ? classes.modelSelected : classes.model
                 }
             >
-                <PlayArrowIcon />
+                {props.data.buildStatus === 'BUILDING' ? (
+                    <CircularProgress size={24} />
+                ) : props.id === workingNodeUuid ? (
+                    <VisibilityIcon />
+                ) : (
+                    props.data.buildStatus !== 'NOT_BUILT' && (
+                        <BuildIcon
+                            className={
+                                props.data.buildStatus === 'BUILT'
+                                    ? classes.buildStatusOk
+                                    : classes.buildStatusInvalid
+                            }
+                        />
+                    )
+                )}
             </IconButton>
         </>
     );
