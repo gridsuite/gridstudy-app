@@ -32,6 +32,37 @@ const nodeTypes = {
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
 const snapGrid = [15, 15];
 
+const useStyles = makeStyles((theme) => ({
+    nodeEditor: {
+        width: nodeEditorWidth,
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        // zIndex set to be below the loader with overlay
+        // and above the network explorer, for mouse events on network modification tree
+        // to be taken into account correctly
+        zIndex: 51,
+    },
+    nodeEditorShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        pointerEvents: 'none',
+        marginLeft: -nodeEditorWidth,
+    },
+    container: { width: '100%', height: '100%' },
+    controls: {
+        position: 'absolute',
+        top: '10px',
+        right: '10px',
+        // Unset default properties of ReactFlow controls
+        left: 'unset',
+        bottom: 'unset',
+    },
+}));
+
 const NetworkModificationTree = ({
     treeModel,
     drawerNodeEditorOpen,
@@ -47,37 +78,7 @@ const NetworkModificationTree = ({
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const classes = makeStyles((theme) => ({
-        container: { width: '100%', height: '100%' },
-        flow: { cursor: isMoving ? 'grabbing' : 'grab' },
-        controls: {
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            // Unset default properties of ReactFlow controls
-            left: 'unset',
-            bottom: 'unset',
-        },
-        nodeEditor: {
-            width: nodeEditorWidth,
-            transition: theme.transitions.create('margin', {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.leavingScreen,
-            }),
-            // zIndex set to be below the loader with overlay
-            // and above the network explorer, for mouse events on network modification tree
-            // to be taken into account correctly
-            zIndex: 51,
-        },
-        nodeEditorShift: {
-            transition: theme.transitions.create('margin', {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-            pointerEvents: 'none',
-            marginLeft: -nodeEditorWidth,
-        },
-    }));
+    const classes = useStyles();
 
     const onSelectionChange = useCallback((selectedElements) => {
         if (selectedElements?.length > 0) {
@@ -155,10 +156,14 @@ const NetworkModificationTree = ({
 
     return (
         <>
-            <Box style={classes.container} display="flex" flexDirection="row">
+            <Box
+                style={{ width: '100%', height: '100%' }}
+                display="flex"
+                flexDirection="row"
+            >
                 <Box flexGrow={1}>
                     <ReactFlow
-                        style={classes.flow}
+                        style={{ cursor: isMoving ? 'grabbing' : 'grab' }}
                         elements={treeModel ? treeModel.treeElements : []}
                         onNodeContextMenu={onNodeContextMenu}
                         onSelectionChange={onSelectionChange}
@@ -177,7 +182,14 @@ const NetworkModificationTree = ({
                         snapGrid={snapGrid}
                     >
                         <Controls
-                            style={classes.controls}
+                            style={{
+                                position: 'absolute',
+                                top: '10px',
+                                right: '10px',
+                                // Unset default properties of ReactFlow controls
+                                left: 'unset',
+                                bottom: 'unset',
+                            }}
                             showZoom={false}
                             showInteractive={false}
                         >
