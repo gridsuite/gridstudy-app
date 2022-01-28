@@ -35,7 +35,7 @@ import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import { stringify } from 'qs';
-import { selectItemNetwork, workingTreeNode } from '../redux/actions';
+import { selectItemNetwork } from '../redux/actions';
 
 const useStyles = makeStyles(() => ({
     tabs: {
