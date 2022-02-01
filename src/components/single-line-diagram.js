@@ -16,8 +16,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { FormattedMessage } from 'react-intl';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { selectItemNetwork } from '../redux/actions';
 
@@ -348,7 +346,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         svg: null,
                         metadata: null,
                         error: errorMessage,
-                        svgUrl: null,
+                        svgUrl: props.svgUrl,
                     });
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,
@@ -907,17 +905,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
                 </Box>
-                {svg.error ? (
-                    <Typography variant="h5">
-                        <FormattedMessage
-                            id="svgNotFound"
-                            values={{
-                                svgUrl: svg.svgUrl,
-                                error: svg.error.message,
-                            }}
-                        />
-                    </Typography>
-                ) : (
+                {
                     <div
                         id="sld-svg"
                         className={
@@ -927,7 +915,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         }
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
-                )}
+                }
                 {displayMenuLine()}
                 {displayMenu(equipments.loads, 'load-menus')}
                 {displayMenu(equipments.batteries, 'battery-menus')}
@@ -960,7 +948,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 )}
 
                 {!loadingState &&
-                    !svg.error &&
                     (fullScreen ? (
                         <FullscreenExitIcon
                             onClick={hideFullScreen}
