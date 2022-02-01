@@ -50,6 +50,9 @@ import { equipments } from './network/network-equipments';
 import { RunningStatus } from './util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../utils/colors';
 
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackbar } from 'notistack';
+
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
     VERTICAL: 'vertical',
@@ -222,6 +225,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const dispatch = useDispatch();
+    const { enqueueSnackbar } = useSnackbar();
+    const intlRef = useIntlRef();
 
     const {
         totalWidth,
@@ -337,20 +342,24 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     });
                     updateLoadingState(false);
                 })
-                .catch(function (error) {
-                    console.error(error.message);
+                .catch((errorMessage) => {
+                    console.error(errorMessage);
                     setSvg({
                         svg: null,
                         metadata: null,
-                        error,
-                        svgUrl: props.svgUrl,
+                        error: errorMessage,
+                        svgUrl: null,
+                    });
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
                     });
                     updateLoadingState(false);
                 });
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState]);
+    }, [props.svgUrl, forceState, enqueueSnackbar, intlRef]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -853,7 +862,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         sizeWidth = totalWidth; // happens during initalization
     }
 
-    return (
+    return !svg.error ? (
         <Paper
             elevation={1}
             variant="outlined"
@@ -965,6 +974,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     ))}
             </Box>
         </Paper>
+    ) : (
+        <></>
     );
 });
 

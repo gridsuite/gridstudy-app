@@ -211,9 +211,11 @@ export function fetchSvg(svgUrl) {
     return backendFetch(svgUrl).then((response) =>
         response.ok
             ? response.json()
-            : response
-                  .json()
-                  .then((error) => Promise.reject(new Error(error.error)))
+            : response.json().then((json) => {
+                  return Promise.reject(
+                      json ? json.message : response.statusText
+                  );
+              })
     );
 }
 
