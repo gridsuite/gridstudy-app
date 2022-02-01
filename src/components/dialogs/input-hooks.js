@@ -50,7 +50,7 @@ export const useTextValue = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value, validationRef.current);
+            const res = validateField('' + value, validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }

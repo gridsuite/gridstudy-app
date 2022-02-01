@@ -102,8 +102,9 @@ const ShuntCompensatorCreationDialog = ({
             label: 'ShuntMaximumNumberOfSections',
             defaultValue: 1,
             validation: {
-                isValueGreaterOrEqualTo: 1,
-                errorMsgId: 'shuntCompensatorErrorMaximumLessThanOne',
+                isFieldRequired: true,
+                isValueGreaterThan: '0',
+                errorMsgId: 'ShuntCompensatorErrorMaximumLessThanOne',
             },
             transformValue: toPositiveIntValue,
             validationMap: validationMap,
@@ -116,8 +117,8 @@ const ShuntCompensatorCreationDialog = ({
             defaultValue: 0,
             validation: {
                 isValueLessOrEqualTo: maximumNumberOfSections,
-                isValueGreaterOrEqualTo: 0,
-                errorMsgId: 'shuntCompensatorErrorCurrentLessThanMaximum',
+                isValueGreaterThan: '-1',
+                errorMsgId: 'ShuntCompensatorErrorCurrentLessThanMaximum',
             },
             transformValue: toPositiveIntValue,
             validationMap: validationMap,
@@ -135,7 +136,6 @@ const ShuntCompensatorCreationDialog = ({
 
     const [susceptancePerSection, susceptancePerSectionField] = useDoubleValue({
         label: 'ShuntSusceptancePerSection',
-        defaultValue: 0,
         validation: { isFieldRequired: true },
         validationMap: validationMap,
         adornment: SusceptanceAdornment,
