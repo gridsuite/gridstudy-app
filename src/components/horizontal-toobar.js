@@ -56,7 +56,6 @@ export function HorizontalToolbar({
     function setHybridDisplay() {
         setStudyDisplay(StudyDisplay.HYBRID);
     }
-
     return (
         <List
             style={{
@@ -66,29 +65,35 @@ export function HorizontalToolbar({
                 flexDirection: 'row',
             }}
         >
-            <Tooltip
-                title={intl.formatMessage({ id: 'SubstationList' })}
-                placement="right"
-                arrow
-                enterDelay={1000}
-                enterNextDelay={1000}
-                classes={{ tooltip: classes.tooltip }}
-                style={{
-                    marginRight: '20px',
-                    marginLeft: '20px',
-                }}
-            >
-                <IconButton
-                    size={'small'}
-                    className={
-                        exploreOpen ? classes.selected : classes.notSelected
-                    }
-                    onClick={toggleExplorerDrawer}
-                >
-                    <LinearScaleIcon />
-                </IconButton>
-            </Tooltip>
-            <Divider orientation="vertical" flexItem />
+            {!(studyDisplayMode === StudyDisplay.TREE) && (
+                <>
+                    <Tooltip
+                        title={intl.formatMessage({ id: 'SubstationList' })}
+                        placement="right"
+                        arrow
+                        enterDelay={1000}
+                        enterNextDelay={1000}
+                        classes={{ tooltip: classes.tooltip }}
+                        style={{
+                            marginRight: '20px',
+                            marginLeft: '20px',
+                        }}
+                    >
+                        <IconButton
+                            size={'small'}
+                            className={
+                                exploreOpen
+                                    ? classes.selected
+                                    : classes.notSelected
+                            }
+                            onClick={toggleExplorerDrawer}
+                        >
+                            <LinearScaleIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Divider orientation="vertical" flexItem />
+                </>
+            )}
             <Tooltip
                 title={intl.formatMessage({ id: 'NetworkModifications' })}
                 placement="right"

@@ -9,7 +9,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { darken, makeStyles } from '@material-ui/core/styles';
 import { filteredNominalVoltagesUpdated } from '../redux/actions';
 import { equipments } from './network/network-equipments';
 import Paper from '@material-ui/core/Paper';
@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
     map: {
         display: 'flex',
         flexDirection: 'row',
+    },
+    horizontalToolbar: {
+        backgroundColor: darken(theme.palette.background.paper, 0.2),
     },
     error: {
         padding: theme.spacing(2),
@@ -215,6 +218,7 @@ const StudyPane = ({
                 }}
             >
                 <div
+                    className={classes.horizontalToolbar}
                     style={{
                         display: 'flex',
                         flexDirection: 'row',
