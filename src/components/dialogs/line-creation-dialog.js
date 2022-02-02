@@ -57,6 +57,7 @@ const LineCreationDialog = ({
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const classes = useStyles();
 
@@ -698,7 +699,7 @@ const LineCreationDialog = ({
                                                 ?.errorMsgId,
                                         })
                                     }
-                                    selectedNodeUuid={selectedNodeUuid}
+                                    workingNodeUuid={workingNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -741,7 +742,7 @@ const LineCreationDialog = ({
                                                 ?.errorMsgId,
                                         })
                                     }
-                                    selectedNodeUuid={selectedNodeUuid}
+                                    workingNodeUuid={workingNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -765,6 +766,7 @@ LineCreationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default LineCreationDialog;
