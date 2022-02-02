@@ -61,7 +61,7 @@ const ConnectivityEdition = ({
     helperTextVoltageLevel,
     errorBusOrBusBarSection,
     helperTextBusOrBusBarSection,
-    selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const classes = useStyles();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -92,7 +92,7 @@ const ConnectivityEdition = ({
                 case 'NODE_BREAKER':
                     fetchBusbarSectionsForVoltageLevel(
                         studyUuid,
-                        selectedNodeUuid,
+                        workingNodeUuid,
                         value.id
                     ).then((busbarSections) => {
                         setBusOrBusbarSectionOptions(busbarSections);
@@ -102,7 +102,7 @@ const ConnectivityEdition = ({
                 case 'BUS_BREAKER':
                     fetchBusesForVoltageLevel(
                         studyUuid,
-                        selectedNodeUuid,
+                        workingNodeUuid,
                         value.id
                     ).then((buses) => setBusOrBusbarSectionOptions(buses));
                     break;
@@ -272,7 +272,7 @@ ConnectivityEdition.propTypes = {
     helperTextVoltageLevel: PropTypes.string,
     errorBusOrBusBarSection: PropTypes.bool,
     helperTextBusOrBusBarSection: PropTypes.string,
-    selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default ConnectivityEdition;

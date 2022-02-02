@@ -41,6 +41,7 @@ const useStyles = makeStyles((theme) => ({
 
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
+    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const [modifications, setModifications] = useState(undefined);
@@ -115,6 +116,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 onClose={closeNetworkModificationConfiguration}
                 network={network}
                 selectedNodeUuid={selectedNode.id}
+                workingNodeUuid={workingNodeUuid}
             />
         </>
     );

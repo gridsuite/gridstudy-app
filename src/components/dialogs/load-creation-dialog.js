@@ -50,6 +50,7 @@ const LoadCreationDialog = ({
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const classes = useStyles();
 
@@ -360,7 +361,7 @@ const LoadCreationDialog = ({
                                 intl,
                                 'bus-bar-level'
                             )}
-                            selectedNodeUuid={selectedNodeUuid}
+                            workingNodeUuid={workingNodeUuid}
                         />
                     </Grid>
                 </Grid>
@@ -382,6 +383,7 @@ LoadCreationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default LoadCreationDialog;
