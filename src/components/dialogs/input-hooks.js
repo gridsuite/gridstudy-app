@@ -210,7 +210,7 @@ export const useConnectivityValue = ({
     validationMap,
     clear,
     voltageLevelOptions,
-    selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
@@ -279,7 +279,7 @@ export const useConnectivityValue = ({
                         id: errorBusBarSection,
                     })
                 }
-                selectedNodeUuid={selectedNodeUuid}
+                workingNodeUuid={workingNodeUuid}
             />
         );
     }, [
@@ -287,7 +287,7 @@ export const useConnectivityValue = ({
         errorBusBarSection,
         errorVoltageLevel,
         intl,
-        selectedNodeUuid,
+        workingNodeUuid,
         setBusOrBusbarSection,
         setVoltageLevel,
         voltageLevelOptions,
