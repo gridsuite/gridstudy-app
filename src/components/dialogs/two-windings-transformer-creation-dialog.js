@@ -56,6 +56,7 @@ const TwoWindingsTransformerCreationDialog = ({
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const classes = useStyles();
 
@@ -541,7 +542,7 @@ const TwoWindingsTransformerCreationDialog = ({
                                                 ?.errorMsgId,
                                         })
                                     }
-                                    selectedNodeUuid={selectedNodeUuid}
+                                    workingNodeUuid={workingNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -584,7 +585,7 @@ const TwoWindingsTransformerCreationDialog = ({
                                                 ?.errorMsgId,
                                         })
                                     }
-                                    selectedNodeUuid={selectedNodeUuid}
+                                    workingNodeUuid={workingNodeUuid}
                                 />
                             </Grid>
                         </Grid>
@@ -608,6 +609,7 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default TwoWindingsTransformerCreationDialog;

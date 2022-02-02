@@ -70,6 +70,7 @@ const ShuntCompensatorCreationDialog = ({
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -146,7 +147,7 @@ const ShuntCompensatorCreationDialog = ({
         label: 'Connectivity',
         validationMap: validationMap,
         voltageLevelOptions: voltageLevelOptions,
-        selectedNodeUuid: selectedNodeUuid,
+        workingNodeUuid: workingNodeUuid,
     });
 
     const handleSave = () => {
@@ -251,6 +252,7 @@ ShuntCompensatorCreationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default ShuntCompensatorCreationDialog;
