@@ -211,9 +211,11 @@ export function fetchSvg(svgUrl) {
     return backendFetch(svgUrl).then((response) =>
         response.ok
             ? response.json()
-            : response
-                  .json()
-                  .then((error) => Promise.reject(new Error(error.error)))
+            : response.json().then((json) => {
+                  return Promise.reject(
+                      json ? json.message : response.statusText
+                  );
+              })
     );
 }
 
@@ -396,7 +398,12 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(studyUuid, searchTerm, usesName) {
+export function fetchEquipmentsInfos(
+    studyUuid,
+    nodeUuid,
+    searchTerm,
+    usesName
+) {
     console.info(
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
@@ -405,7 +412,11 @@ export function fetchEquipmentsInfos(studyUuid, searchTerm, usesName) {
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
     return backendFetch(
-        getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
+        getStudyUrl(studyUuid) +
+            '/nodes/' +
+            encodeURIComponent(nodeUuid) +
+            '/search?' +
+            urlSearchParams.toString()
     ).then((response) =>
         response.ok
             ? response.json()

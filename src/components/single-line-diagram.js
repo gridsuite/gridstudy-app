@@ -16,8 +16,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { FormattedMessage } from 'react-intl';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { selectItemNetwork } from '../redux/actions';
 
@@ -49,6 +47,9 @@ import withLineMenu from './menus/line-menu';
 import { equipments } from './network/network-equipments';
 import { RunningStatus } from './util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../utils/colors';
+
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackbar } from 'notistack';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -222,6 +223,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const dispatch = useDispatch();
+    const { enqueueSnackbar } = useSnackbar();
+    const intlRef = useIntlRef();
 
     const {
         totalWidth,
@@ -337,20 +340,24 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     });
                     updateLoadingState(false);
                 })
-                .catch(function (error) {
-                    console.error(error.message);
+                .catch((errorMessage) => {
+                    console.error(errorMessage);
                     setSvg({
                         svg: null,
                         metadata: null,
-                        error,
+                        error: errorMessage,
                         svgUrl: props.svgUrl,
+                    });
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
                     });
                     updateLoadingState(false);
                 });
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState]);
+    }, [props.svgUrl, forceState, enqueueSnackbar, intlRef]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -853,7 +860,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         sizeWidth = totalWidth; // happens during initalization
     }
 
-    return (
+    return !svg.error ? (
         <Paper
             elevation={1}
             variant="outlined"
@@ -898,17 +905,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
                 </Box>
-                {svg.error ? (
-                    <Typography variant="h5">
-                        <FormattedMessage
-                            id="svgNotFound"
-                            values={{
-                                svgUrl: svg.svgUrl,
-                                error: svg.error.message,
-                            }}
-                        />
-                    </Typography>
-                ) : (
+                {
                     <div
                         id="sld-svg"
                         className={
@@ -918,7 +915,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         }
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
-                )}
+                }
                 {displayMenuLine()}
                 {displayMenu(equipments.loads, 'load-menus')}
                 {displayMenu(equipments.batteries, 'battery-menus')}
@@ -951,7 +948,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 )}
 
                 {!loadingState &&
-                    !svg.error &&
                     (fullScreen ? (
                         <FullscreenExitIcon
                             onClick={hideFullScreen}
@@ -965,6 +961,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     ))}
             </Box>
         </Paper>
+    ) : (
+        <></>
     );
 });
 
