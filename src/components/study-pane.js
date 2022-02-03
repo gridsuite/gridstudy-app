@@ -23,6 +23,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_USE_NAME,
+    PARAM_MAP_TREE_DISPLAY,
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
@@ -35,6 +36,7 @@ import {
 } from './single-line-diagram-pane';
 import HorizontalToolbar from './horizontal-toobar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
+import { useParameterState } from './parameters';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -81,7 +83,7 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-export const StudyDisplay = {
+export const StudyMapTreeDisplay = {
     MAP: 'Map',
     TREE: 'Tree',
     HYBRID: 'Hybrid',
@@ -117,6 +119,10 @@ const StudyPane = ({
         Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
+    const [studyMapTreeDisplay, setStudyMapTreeDisplay] = useParameterState(
+        PARAM_MAP_TREE_DISPLAY
+    );
+
     const filteredNominalVoltages = useSelector(
         (state) => state.filteredNominalVoltages
     );
@@ -138,8 +144,6 @@ const StudyPane = ({
     const classes = useStyles();
 
     const [drawerShift, setDrawerShift] = useState(0);
-
-    const [studyDisplay, setStudyDisplay] = useState(StudyDisplay.MAP);
 
     const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
 
@@ -225,8 +229,8 @@ const StudyPane = ({
                     }}
                 >
                     <HorizontalToolbar
-                        setStudyDisplay={setStudyDisplay}
-                        studyDisplayMode={studyDisplay}
+                        setStudyDisplay={setStudyMapTreeDisplay}
+                        studyDisplayMode={studyMapTreeDisplay}
                         exploreOpen={drawerExplorerOpen}
                         modificationPaneOpen={drawerNodeEditorOpen}
                         toggleExplorerDrawer={toggleExplorerDrawer}
@@ -243,11 +247,12 @@ const StudyPane = ({
                     <div
                         style={{
                             display:
-                                studyDisplay === StudyDisplay.MAP
+                                studyMapTreeDisplay === StudyMapTreeDisplay.MAP
                                     ? 'none'
                                     : null,
                             width:
-                                studyDisplay === StudyDisplay.HYBRID
+                                studyMapTreeDisplay ===
+                                StudyMapTreeDisplay.HYBRID
                                     ? '50%'
                                     : '100%',
                         }}
@@ -265,11 +270,12 @@ const StudyPane = ({
                         )}
                         style={{
                             display:
-                                studyDisplay === StudyDisplay.TREE
+                                studyMapTreeDisplay === StudyMapTreeDisplay.TREE
                                     ? 'none'
                                     : null,
                             width:
-                                studyDisplay === StudyDisplay.HYBRID
+                                studyMapTreeDisplay ===
+                                StudyMapTreeDisplay.HYBRID
                                     ? '50%'
                                     : '100%',
                         }}
@@ -322,7 +328,7 @@ const StudyPane = ({
                             drawerExplorerOpen={drawerExplorerOpen}
                             drawerNodeEditorOpen={
                                 drawerNodeEditorOpen &&
-                                studyDisplay === StudyDisplay.MAP
+                                studyMapTreeDisplay === StudyMapTreeDisplay.MAP
                             }
                             onVoltageLevelDisplayClick={showVoltageLevelDiagram}
                             onSubstationDisplayClick={showSubstationDiagram}

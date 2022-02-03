@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useIntl } from 'react-intl';
-import { StudyDisplay } from './study-pane';
+import { StudyMapTreeDisplay } from './study-pane';
 import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles((theme) => ({
@@ -46,15 +46,15 @@ export function HorizontalToolbar({
     const intl = useIntl();
 
     function setMapDisplay() {
-        setStudyDisplay(StudyDisplay.MAP);
+        setStudyDisplay(StudyMapTreeDisplay.MAP);
     }
 
     function setTreeDisplay() {
-        setStudyDisplay(StudyDisplay.TREE);
+        setStudyDisplay(StudyMapTreeDisplay.TREE);
     }
 
     function setHybridDisplay() {
-        setStudyDisplay(StudyDisplay.HYBRID);
+        setStudyDisplay(StudyMapTreeDisplay.HYBRID);
     }
     return (
         <List
@@ -65,7 +65,7 @@ export function HorizontalToolbar({
                 flexDirection: 'row',
             }}
         >
-            {!(studyDisplayMode === StudyDisplay.TREE) && (
+            {!(studyDisplayMode === StudyMapTreeDisplay.TREE) && (
                 <>
                     <Tooltip
                         title={intl.formatMessage({ id: 'SubstationList' })}
@@ -134,7 +134,7 @@ export function HorizontalToolbar({
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyDisplay.TREE
+                        studyDisplayMode === StudyMapTreeDisplay.TREE
                             ? classes.selected
                             : classes.notSelected
                     }
@@ -158,7 +158,7 @@ export function HorizontalToolbar({
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyDisplay.HYBRID
+                        studyDisplayMode === StudyMapTreeDisplay.HYBRID
                             ? classes.selected
                             : classes.notSelected
                     }
@@ -183,7 +183,7 @@ export function HorizontalToolbar({
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyDisplay.MAP
+                        studyDisplayMode === StudyMapTreeDisplay.MAP
                             ? classes.selected
                             : classes.notSelected
                     }
