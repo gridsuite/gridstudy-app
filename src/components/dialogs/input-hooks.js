@@ -103,7 +103,16 @@ export const useTextValue = ({
                 {...formProps}
             />
         );
-    }, [label, intl, adornment, value, handleChangeValue, error, formProps]);
+    }, [
+        label,
+        intl,
+        adornment,
+        value,
+        handleChangeValue,
+        error,
+        formProps,
+        classes,
+    ]);
 
     useEffect(() => setValue(defaultValue), [defaultValue, clear]);
     return [value, field];
