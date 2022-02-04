@@ -337,7 +337,7 @@
     "CreateLink": "Ajouter un lien",
     "BusBarSection" : "SJB",
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
-    "Breaker": "Breaker",
+    "Breaker": "Disjoncteur",
     "Disconnector": "Sectionneur",
     "SameHorizAndVertPos": "Au moins deux SJBs ont mêmes positions horizontale et verticale",
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
