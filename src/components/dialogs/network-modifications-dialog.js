@@ -43,6 +43,7 @@ const NetworkModificationDialog = ({
     onClose,
     network,
     selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -63,6 +64,7 @@ const NetworkModificationDialog = ({
                 open={true}
                 onClose={closeDialog}
                 selectedNodeUuid={selectedNodeUuid}
+                workingNodeUuid={workingNodeUuid}
                 {...props}
             />
         );
@@ -181,6 +183,7 @@ NetworkModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     network: PropTypes.object.isRequired,
     selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default NetworkModificationDialog;

@@ -19,6 +19,7 @@ import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import ConnectivityEdition from './connectivity-edition';
+import { makeStyles } from '@material-ui/core/styles';
 
 export const SusceptanceAdornment = {
     position: 'end',
@@ -30,6 +31,13 @@ export const filledTextField = {
 };
 
 const func_identity = (e) => e;
+
+const useStyles = makeStyles((theme) => ({
+    helperText: {
+        margin: 0,
+        marginTop: 4,
+    },
+}));
 
 export const useTextValue = ({
     label,
@@ -46,11 +54,13 @@ export const useTextValue = ({
     const [error, setError] = useState();
 
     const validationRef = useRef();
+    const classes = useStyles();
+
     validationRef.current = validation;
 
     useEffect(() => {
         function validate() {
-            const res = validateField(value, validationRef.current);
+            const res = validateField('' + value, validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
@@ -81,6 +91,9 @@ export const useTextValue = ({
                 })}
                 value={'' + value} // handle numerical value
                 onChange={handleChangeValue}
+                FormHelperTextProps={{
+                    className: classes.helperText,
+                }}
                 {...(error && {
                     error: true,
                     helperText: intl.formatMessage({
@@ -90,7 +103,16 @@ export const useTextValue = ({
                 {...formProps}
             />
         );
-    }, [label, intl, adornment, value, handleChangeValue, error, formProps]);
+    }, [
+        label,
+        intl,
+        adornment,
+        value,
+        handleChangeValue,
+        error,
+        formProps,
+        classes,
+    ]);
 
     useEffect(() => setValue(defaultValue), [defaultValue, clear]);
     return [value, field];
@@ -197,7 +219,7 @@ export const useConnectivityValue = ({
     validationMap,
     clear,
     voltageLevelOptions,
-    selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
@@ -266,7 +288,7 @@ export const useConnectivityValue = ({
                         id: errorBusBarSection,
                     })
                 }
-                selectedNodeUuid={selectedNodeUuid}
+                workingNodeUuid={workingNodeUuid}
             />
         );
     }, [
@@ -274,7 +296,7 @@ export const useConnectivityValue = ({
         errorBusBarSection,
         errorVoltageLevel,
         intl,
-        selectedNodeUuid,
+        workingNodeUuid,
         setBusOrBusbarSection,
         setVoltageLevel,
         voltageLevelOptions,
