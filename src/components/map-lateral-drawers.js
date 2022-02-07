@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
-import { StudyMapTreeDisplay } from './study-pane';
+import { StudyDisplayMode } from './study-pane';
 
 export const drawerExplorerWidth = 300;
 export const nodeEditorWidth = 400;
@@ -60,7 +60,7 @@ export function MapLateralDrawers({
     visibleSubstation,
     drawerExplorerOpen,
     drawerNodeEditorOpen,
-    studyMapTreeDisplay,
+    studyDisplayMode,
     closeDrawerNodeEditor,
 }) {
     const classes = useStyles();
@@ -70,7 +70,9 @@ export function MapLateralDrawers({
                 open={drawerNodeEditorOpen}
                 drawerClassName={classes.nodeEditor}
                 drawerShiftClassName={classes.nodeEditorShift}
-                anchor={'left'}
+                anchor={
+                    studyDisplayMode === StudyDisplayMode.MAP ? 'left' : 'right'
+                }
             >
                 <NodeEditor onClose={closeDrawerNodeEditor} />
             </StudyDrawer>
@@ -79,7 +81,7 @@ export function MapLateralDrawers({
                 drawerClassName={classes.drawerExplorer}
                 drawerShiftClassName={classes.drawerExplorerShift}
                 anchor={
-                    studyMapTreeDisplay === StudyMapTreeDisplay.HYBRID
+                    studyDisplayMode === StudyDisplayMode.HYBRID
                         ? 'right'
                         : 'left'
                 }
@@ -99,7 +101,7 @@ MapLateralDrawers.propTypes = {
     classes: PropTypes.any,
     drawerExplorerOpen: PropTypes.bool,
     drawerNodeEditorOpen: PropTypes.bool,
-    studyMapTreeDisplay: PropTypes.bool,
+    studyDisplayMode: PropTypes.string,
     network: PropTypes.any,
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,

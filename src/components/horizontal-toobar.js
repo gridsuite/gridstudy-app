@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useIntl } from 'react-intl';
-import { StudyMapTreeDisplay } from './study-pane';
+import { StudyDisplayMode } from './study-pane';
 import Divider from '@material-ui/core/Divider';
 
 const useStyles = makeStyles((theme) => ({
@@ -34,27 +34,26 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export function HorizontalToolbar({
-    setStudyDisplay,
+    setStudyDisplayMode,
     studyDisplayMode,
     exploreOpen,
     modificationPaneOpen,
     toggleModificationDrawer,
     toggleExplorerDrawer,
-    setCurrentTreeFocus,
 }) {
     const classes = useStyles();
     const intl = useIntl();
 
     function setMapDisplay() {
-        setStudyDisplay(StudyMapTreeDisplay.MAP);
+        setStudyDisplayMode(StudyDisplayMode.MAP);
     }
 
     function setTreeDisplay() {
-        setStudyDisplay(StudyMapTreeDisplay.TREE);
+        setStudyDisplayMode(StudyDisplayMode.TREE);
     }
 
     function setHybridDisplay() {
-        setStudyDisplay(StudyMapTreeDisplay.HYBRID);
+        setStudyDisplayMode(StudyDisplayMode.HYBRID);
     }
 
     return (
@@ -66,7 +65,7 @@ export function HorizontalToolbar({
                 flexDirection: 'row',
             }}
         >
-            {!(studyDisplayMode === StudyMapTreeDisplay.TREE) && (
+            {!(studyDisplayMode === StudyDisplayMode.TREE) && (
                 <>
                     <Tooltip
                         title={intl.formatMessage({ id: 'SubstationList' })}
@@ -135,7 +134,7 @@ export function HorizontalToolbar({
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyMapTreeDisplay.TREE
+                        studyDisplayMode === StudyDisplayMode.TREE
                             ? classes.selected
                             : classes.notSelected
                     }
@@ -159,7 +158,7 @@ export function HorizontalToolbar({
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyMapTreeDisplay.HYBRID
+                        studyDisplayMode === StudyDisplayMode.HYBRID
                             ? classes.selected
                             : classes.notSelected
                     }
@@ -184,7 +183,7 @@ export function HorizontalToolbar({
                 <IconButton
                     size={'small'}
                     className={
-                        studyDisplayMode === StudyMapTreeDisplay.MAP
+                        studyDisplayMode === StudyDisplayMode.MAP
                             ? classes.selected
                             : classes.notSelected
                     }
@@ -198,13 +197,12 @@ export function HorizontalToolbar({
 }
 
 HorizontalToolbar.propTypes = {
-    setStudyDisplay: PropTypes.func,
+    setStudyDisplayMode: PropTypes.func,
     studyDisplayMode: PropTypes.string,
     exploreOpen: PropTypes.bool,
     modificationPaneOpen: PropTypes.bool,
     toggleExplorerDrawer: PropTypes.func,
     toggleModificationDrawer: PropTypes.func,
-    setCurrentTreeFocus: PropTypes.func,
 };
 
 export default HorizontalToolbar;

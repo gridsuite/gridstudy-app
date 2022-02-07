@@ -27,7 +27,7 @@ import { StudyDrawer } from './study-drawer';
 import { makeStyles } from '@material-ui/core/styles';
 import { nodeEditorWidth } from './map-lateral-drawers';
 import PropTypes from 'prop-types';
-import { StudyMapTreeDisplay } from './study-pane';
+import { StudyDisplayMode } from './study-pane';
 
 const nodeTypes = {
     ROOT: ModelNode,
@@ -208,7 +208,7 @@ const NetworkModificationTree = ({
         const ref = useRef();
         // Store current value in ref
         useEffect(() => {
-            if (value !== StudyMapTreeDisplay.MAP) {
+            if (value !== StudyDisplayMode.MAP) {
                 ref.current = value;
             }
         }, [value]); // Only re-run if value changes
@@ -224,13 +224,13 @@ const NetworkModificationTree = ({
 
     useEffect(() => {
         if (
-            prevStudyMapTreeDisplay === StudyMapTreeDisplay.TREE &&
-            studyMapTreeDisplay === StudyMapTreeDisplay.HYBRID
+            prevStudyMapTreeDisplay === StudyDisplayMode.TREE &&
+            studyMapTreeDisplay === StudyDisplayMode.HYBRID
         ) {
             transform({ x: x / 2, y: y, zoom: zoom });
         } else if (
-            prevStudyMapTreeDisplay === StudyMapTreeDisplay.HYBRID &&
-            studyMapTreeDisplay === StudyMapTreeDisplay.TREE
+            prevStudyMapTreeDisplay === StudyDisplayMode.HYBRID &&
+            studyMapTreeDisplay === StudyDisplayMode.TREE
         ) {
             transform({ x: x * 2, y: y, zoom: zoom });
         }
@@ -284,7 +284,7 @@ const NetworkModificationTree = ({
                     drawerClassName={classes.nodeEditor}
                     drawerShiftClassName={classes.nodeEditorShift}
                     anchor={
-                        prevStudyMapTreeDisplay === StudyMapTreeDisplay.TREE
+                        prevStudyMapTreeDisplay === StudyDisplayMode.TREE
                             ? 'right'
                             : 'left'
                     }

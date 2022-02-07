@@ -84,7 +84,7 @@ export const StudyView = {
     LOGS: 'Logs',
 };
 
-export const StudyMapTreeDisplay = {
+export const StudyDisplayMode = {
     MAP: 'Map',
     TREE: 'Tree',
     HYBRID: 'Hybrid',
@@ -120,7 +120,7 @@ const StudyPane = ({
         Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
-    const [studyMapTreeDisplay, setStudyMapTreeDisplay] = useParameterState(
+    const [studyDisplayMode, setStudyDisplayMode] = useParameterState(
         PARAM_MAP_TREE_DISPLAY
     );
 
@@ -143,8 +143,6 @@ const StudyPane = ({
     const dispatch = useDispatch();
 
     const classes = useStyles();
-
-    const [drawerShift, setDrawerShift] = useState(0);
 
     const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
 
@@ -231,8 +229,8 @@ const StudyPane = ({
                         }}
                     >
                         <HorizontalToolbar
-                            setStudyDisplay={setStudyMapTreeDisplay}
-                            studyDisplayMode={studyMapTreeDisplay}
+                            setStudyDisplayMode={setStudyDisplayMode}
+                            studyDisplayMode={studyDisplayMode}
                             exploreOpen={drawerExplorerOpen}
                             modificationPaneOpen={drawerNodeEditorOpen}
                             toggleExplorerDrawer={toggleExplorerDrawer}
@@ -249,13 +247,11 @@ const StudyPane = ({
                         <div
                             style={{
                                 display:
-                                    studyMapTreeDisplay ===
-                                    StudyMapTreeDisplay.MAP
+                                    studyDisplayMode === StudyDisplayMode.MAP
                                         ? 'none'
                                         : null,
                                 width:
-                                    studyMapTreeDisplay ===
-                                    StudyMapTreeDisplay.HYBRID
+                                    studyDisplayMode === StudyDisplayMode.HYBRID
                                         ? '50%'
                                         : '100%',
                             }}
@@ -264,7 +260,7 @@ const StudyPane = ({
                                 studyUuid={studyUuid}
                                 closeDrawerNodeEditor={closeDrawerNodeEditor}
                                 drawerNodeEditorOpen={drawerNodeEditorOpen}
-                                studyMapTreeDisplay={studyMapTreeDisplay}
+                                studyMapTreeDisplay={studyDisplayMode}
                             />
                         </div>
                         <div
@@ -274,13 +270,11 @@ const StudyPane = ({
                             )}
                             style={{
                                 display:
-                                    studyMapTreeDisplay ===
-                                    StudyMapTreeDisplay.TREE
+                                    studyDisplayMode === StudyDisplayMode.TREE
                                         ? 'none'
                                         : null,
                                 width:
-                                    studyMapTreeDisplay ===
-                                    StudyMapTreeDisplay.HYBRID
+                                    studyDisplayMode === StudyDisplayMode.HYBRID
                                         ? '50%'
                                         : '100%',
                             }}
@@ -291,7 +285,7 @@ const StudyPane = ({
                                     position: 'absolute',
                                     top: 0,
                                     bottom: 0,
-                                    left: drawerShift,
+                                    left: 0,
                                     right: 0,
                                 }}
                             >
@@ -332,22 +326,21 @@ const StudyPane = ({
                                     setErrorMessage={setErrorMessage}
                                 />
                             </div>
+
                             <MapLateralDrawers
                                 network={network}
                                 drawerExplorerOpen={drawerExplorerOpen}
                                 drawerNodeEditorOpen={
                                     drawerNodeEditorOpen &&
-                                    studyMapTreeDisplay ===
-                                        StudyMapTreeDisplay.MAP
+                                    studyDisplayMode === StudyDisplayMode.MAP
                                 }
-                                studyMapTreeDisplay={studyMapTreeDisplay}
+                                studyDisplayMode={studyDisplayMode}
                                 onVoltageLevelDisplayClick={
                                     showVoltageLevelDiagram
                                 }
                                 onSubstationDisplayClick={showSubstationDiagram}
                                 onSubstationFocus={setCenterOnSubstation}
                                 visibleSubstation={visibleSubstation}
-                                setLateralShift={setDrawerShift}
                                 closeDrawerNodeEditor={closeDrawerNodeEditor}
                             />
 
@@ -373,67 +366,6 @@ const StudyPane = ({
                     </div>
                 </div>
             </ReactFlowProvider>
-            // =======
-            //                     {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
-            //                     <NetworkMapTab
-            //                         /* TODO do we move redux param to container */
-            //                         studyUuid={studyUuid}
-            //                         network={network}
-            //                         visible={props.view === StudyView.MAP}
-            //                         updatedLines={updatedLines}
-            //                         useName={useName}
-            //                         lineFullPath={lineFullPath}
-            //                         lineParallelPath={lineParallelPath}
-            //                         lineFlowMode={lineFlowMode}
-            //                         lineFlowColorMode={lineFlowColorMode}
-            //                         lineFlowAlertThreshold={lineFlowAlertThreshold}
-            //                         filteredNominalVoltages={filteredNominalVoltages}
-            //                         openVoltageLevel={openVoltageLevel}
-            //                         centerOnSubstation={centerOnSubstation}
-            //                         /* TODO verif tableEquipment*/
-            //                         selectedNodeUuid={workingNodeUuid}
-            //                         onChangeTab={props.onChangeTab}
-            //                         showInSpreadsheet={showInSpreadsheet}
-            //                         loadFlowStatus={getLoadFlowRunningStatus(
-            //                             loadFlowInfos?.loadFlowStatus
-            //                         )}
-            //                         securityAnalysisStatus={securityAnalysisStatus}
-            //                         setIsComputationRunning={setIsComputationRunning}
-            //                         runnable={runnable}
-            //                         setErrorMessage={setErrorMessage}
-            //                     />
-            //                 </div>
-            //                 // <StudyLateralToolBar
-            //                 //     network={network}
-            //                 //     onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-            //                 //     onSubstationDisplayClick={showSubstationDiagram}
-            //                 //     onSubstationFocus={setCenterOnSubstation}
-            //                 //     visibleSubstation={visibleSubstation}
-            //                 //     isMap={props.view === StudyView.MAP}
-            //                 //     setLateralShift={setDrawerShift}
-            //                 //     studyUuid={studyUuid}
-            //                 // />
-            //                 //
-            //                 // {/*
-            //                 // Rendering single line diagram only in map view and if
-            //                 // displayed voltage level or substation id has been set
-            //                 // */}
-            //                 // {props.view === StudyView.MAP && (
-            //                 //     <SingleLineDiagramPane
-            //                 //         studyUuid={studyUuid}
-            //                 //         network={network}
-            //                 //         onClose={() => closeVoltageLevelDiagram()}
-            //                 //         openVoltageLevel={openVoltageLevel}
-            //                 //         isComputationRunning={isComputationRunning}
-            //                 //         showInSpreadsheet={showInSpreadsheet}
-            //                 //         loadFlowStatus={getLoadFlowRunningStatus(
-            //                 //             loadFlowInfos?.loadFlowStatus
-            //                 //         )}
-            //                 //         selectedNodeUuid={workingNodeUuid}
-            //                 //     />
-            //                 // )}
-            //             </div>
-            // >>>>>>> main
         );
     }
 
