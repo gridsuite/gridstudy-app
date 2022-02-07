@@ -52,6 +52,7 @@ const GeneratorCreationDialog = ({
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const classes = useStyles();
 
@@ -612,7 +613,7 @@ const GeneratorCreationDialog = ({
                                         id: errors.get('bus-bar')?.errorMsgId,
                                     })
                                 }
-                                selectedNodeUuid={selectedNodeUuid}
+                                workingNodeUuid={workingNodeUuid}
                             />
                         </Grid>
                     </Grid>
@@ -635,6 +636,7 @@ GeneratorCreationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default GeneratorCreationDialog;

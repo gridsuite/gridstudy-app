@@ -10,11 +10,14 @@ import ReactFlow, {
     useStoreState,
     useZoomPanHelper,
 } from 'react-flow-renderer';
+import { useDispatch } from 'react-redux';
+import { workingTreeNode, selectTreeNode } from '../redux/actions';
+import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { Box } from '@material-ui/core';
-import { createTreeNode, deleteTreeNode } from '../utils/rest-api';
+import { createTreeNode, deleteTreeNode, buildNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useSnackbar } from 'notistack';
 import CenterGraphButton from './graph/util/center-graph-button';
@@ -27,7 +30,7 @@ import PropTypes from 'prop-types';
 import { StudyMapTreeDisplay } from './study-pane';
 
 const nodeTypes = {
-    ROOT: NetworkModificationNode,
+    ROOT: ModelNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
     MODEL: ModelNode,
 };
@@ -74,6 +77,8 @@ const NetworkModificationTree = ({
     closeDrawerNodeEditor,
     studyMapTreeDisplay,
 }) => {
+    const dispatch = useDispatch();
+
     const [selectedNode, setSelectedNode] = useState(null);
 
     const [isMoving, setIsMoving] = useState(false);
@@ -86,11 +91,47 @@ const NetworkModificationTree = ({
 
     const classes = useStyles();
 
-    const onSelectionChange = useCallback((selectedElements) => {
-        if (selectedElements?.length > 0) {
-            setSelectedNode(selectedElements[0]);
-        }
-    }, []);
+    const onElementClick = useCallback(
+        (event, element) => {
+            setSelectedNode(element);
+            dispatch(selectTreeNode(element.id));
+            if (
+                element.type === 'ROOT' ||
+                (element.type === 'MODEL' &&
+                    element.data.buildStatus === 'BUILT')
+            ) {
+                dispatch(workingTreeNode(element.id));
+            }
+        },
+        [dispatch]
+    );
+
+    const onNodeDoubleClick = useCallback(
+        (event, node) => {
+            if (node.type === 'MODEL' && node.data.buildStatus !== 'BUILT') {
+                buildNode(studyUuid, node.id)
+                    .then((resp) => {
+                        node.data.buildStatus = 'BUILDING';
+                    })
+                    .catch((errorMessage) => {
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'NodeBuildingError',
+                                intlRef: intlRef,
+                            },
+                        });
+                    });
+            }
+        },
+        [studyUuid, enqueueSnackbar, intlRef]
+    );
+
+    const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
+        onElementClick,
+        onNodeDoubleClick
+    );
 
     const onPaneClick = useCallback(() => {
         setSelectedNode(undefined);
@@ -109,6 +150,7 @@ const NetworkModificationTree = ({
             createTreeNode(studyUuid, element.id, {
                 name: 'New node',
                 type: type,
+                buildStatus: 'NOT_BUILT',
             }).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -206,7 +248,7 @@ const NetworkModificationTree = ({
                         style={{ cursor: isMoving ? 'grabbing' : 'grab' }}
                         elements={treeModel ? treeModel.treeElements : []}
                         onNodeContextMenu={onNodeContextMenu}
-                        onSelectionChange={onSelectionChange}
+                        onElementClick={nodeSingleOrDoubleClick}
                         onPaneClick={onPaneClick}
                         onMove={onMove}
                         onMoveEnd={onMoveEnd}

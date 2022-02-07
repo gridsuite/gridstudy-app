@@ -323,3 +323,12 @@ export function selectTreeNode(selectedTreeNode) {
         selectedTreeNode: selectedTreeNode,
     };
 }
+
+export const WORKING_TREE_NODE = 'WORKING_TREE_NODE';
+
+export function workingTreeNode(workingTreeNode) {
+    return {
+        type: WORKING_TREE_NODE,
+        workingTreeNode: workingTreeNode,
+    };
+}

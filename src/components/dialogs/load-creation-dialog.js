@@ -24,7 +24,7 @@ import {
 } from '../../utils/messages';
 import { createLoad } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
-import { validateField } from '../util/validation-functions';
+import { makeErrorHelper, validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
 
 const useStyles = makeStyles((theme) => ({
@@ -50,6 +50,7 @@ const LoadCreationDialog = ({
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const classes = useStyles();
 
@@ -347,22 +348,20 @@ const LoadCreationDialog = ({
                             errorVoltageLevel={
                                 errors.get('voltage-level')?.error
                             }
-                            helperTextVoltageLevel={
-                                errors.get('voltage-level')?.error &&
-                                intl.formatMessage({
-                                    id: errors.get('voltage-level')?.errorMsgId,
-                                })
-                            }
+                            helperTextVoltageLevel={makeErrorHelper(
+                                errors,
+                                intl,
+                                'voltage-level'
+                            )}
                             errorBusOrBusBarSection={
                                 errors.get('bus-bar')?.error
                             }
-                            helperTextBusOrBusBarSection={
-                                errors.get('bus-bar')?.error &&
-                                intl.formatMessage({
-                                    id: errors.get('bus-bar')?.errorMsgId,
-                                })
-                            }
-                            selectedNodeUuid={selectedNodeUuid}
+                            helperTextBusOrBusBarSection={makeErrorHelper(
+                                errors,
+                                intl,
+                                'bus-bar-level'
+                            )}
+                            workingNodeUuid={workingNodeUuid}
                         />
                     </Grid>
                 </Grid>
@@ -384,6 +383,7 @@ LoadCreationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default LoadCreationDialog;

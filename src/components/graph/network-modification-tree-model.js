@@ -19,7 +19,11 @@ export default class NetworkModificationTreeModel {
         this.treeElements.push({
             id: element.id,
             type: element.type, // input node
-            data: { label: element.name, description: element.description },
+            data: {
+                label: element.name,
+                description: element.description,
+                buildStatus: element.buildStatus,
+            },
         });
         // Add edge between node and its parent
         this.treeElements.push({
@@ -88,6 +92,7 @@ export default class NetworkModificationTreeModel {
                 this.treeElements[indexModifiedNode].data = {
                     ...this.treeElements[indexModifiedNode].data,
                     label: node.name,
+                    buildStatus: node.buildStatus,
                 };
             }
         });
@@ -99,7 +104,11 @@ export default class NetworkModificationTreeModel {
         this.treeElements.push({
             id: elements.id,
             type: elements.type, // input node
-            data: { label: elements.name, description: elements.description },
+            data: {
+                label: elements.name,
+                description: elements.description,
+                buildStatus: elements.buildStatus,
+            },
         });
         // handle root children
         elements.children.forEach((child) => {

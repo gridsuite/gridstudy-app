@@ -211,9 +211,11 @@ export function fetchSvg(svgUrl) {
     return backendFetch(svgUrl).then((response) =>
         response.ok
             ? response.json()
-            : response
-                  .json()
-                  .then((error) => Promise.reject(new Error(error.error)))
+            : response.json().then((json) => {
+                  return Promise.reject(
+                      json ? json.message : response.statusText
+                  );
+              })
     );
 }
 
@@ -396,7 +398,12 @@ export function fetchStaticVarCompensators(
     );
 }
 
-export function fetchEquipmentsInfos(studyUuid, searchTerm, usesName) {
+export function fetchEquipmentsInfos(
+    studyUuid,
+    nodeUuid,
+    searchTerm,
+    usesName
+) {
     console.info(
         "Fetching equipments infos matching with '%s' term ... ",
         searchTerm
@@ -405,7 +412,11 @@ export function fetchEquipmentsInfos(studyUuid, searchTerm, usesName) {
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
     return backendFetch(
-        getStudyUrl(studyUuid) + '/search?' + urlSearchParams.toString()
+        getStudyUrl(studyUuid) +
+            '/nodes/' +
+            encodeURIComponent(nodeUuid) +
+            '/search?' +
+            urlSearchParams.toString()
     ).then((response) =>
         response.ok
             ? response.json()
@@ -973,6 +984,44 @@ export function createGenerator(
     );
 }
 
+export function createShuntCompensator(
+    studyUuid,
+    selectedNodeUuid,
+    shuntCompensatorId,
+    shuntCompensatorName,
+    maximumNumberOfSections,
+    currentNumberOfSections,
+    identicalSections,
+    susceptancePerSection,
+    connectivity
+) {
+    console.info('Creating Shunt compensator ');
+    const createLineUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/shunt-compensators';
+    return backendFetch(createLineUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: shuntCompensatorId,
+            equipmentName: shuntCompensatorName,
+            maximumNumberOfSections: maximumNumberOfSections,
+            currentNumberOfSections: currentNumberOfSections,
+            isIdenticalSection: identicalSections,
+            susceptancePerSection: susceptancePerSection,
+            voltageLevelId: connectivity.voltageLevel.id,
+            busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function createLine(
     studyUuid,
     selectedNodeUuid,
@@ -1106,6 +1155,50 @@ export function createSubstation(
     );
 }
 
+export function createVoltageLevel(
+    studyUuid,
+    selectedNodeUuid,
+    voltageLevelId,
+    name,
+    nominalVoltage,
+    substationId,
+    busBarSections,
+    connections
+) {
+    console.info('Creating voltage level (stub) ');
+    const createVoltageLevelUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/voltage-levels';
+
+    let busBarConnections = connections.map((c) => {
+        return {
+            fromBBS: c.fromBBS.id,
+            toBBS: c.toBBS.id,
+            switchKind: c.switchKind,
+        };
+    });
+
+    return backendFetch(createVoltageLevelUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: voltageLevelId,
+            equipmentName: name,
+            nominalVoltage: nominalVoltage,
+            substationId: substationId,
+            busbarSections: busBarSections,
+            busbarConnections: busBarConnections,
+        }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =
@@ -1193,5 +1286,18 @@ export function fetchNetworkModifications(groupUuid) {
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
         response.json()
+    );
+}
+
+export function buildNode(studyUuid, selectedNodeUuid) {
+    console.info(
+        'Build node ' + selectedNodeUuid + ' of study ' + studyUuid + ' ...'
+    );
+    const url = getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/build';
+    console.debug(url);
+    return backendFetch(url, { method: 'post' }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
     );
 }

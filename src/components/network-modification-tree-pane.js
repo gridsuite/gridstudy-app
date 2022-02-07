@@ -6,21 +6,13 @@
  */
 
 import { useCallback, useEffect } from 'react';
+import { fetchNetworkModificationTreeNode } from '../utils/rest-api';
 import {
-    fetchNetworkModificationTree,
-    fetchNetworkModificationTreeNode,
-} from '../utils/rest-api';
-import {
-    loadNetworkModificationTreeSuccess,
     networkModificationTreeNodeAdded,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
-    selectTreeNode,
 } from '../redux/actions';
-import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
-import { useSnackbar } from 'notistack';
 import NetworkModificationTree from './network-modification-tree';
 import PropTypes from 'prop-types';
 
@@ -34,45 +26,8 @@ export const NetworkModificationTreePane = ({
         (state) => state.networkModificationTreeModel
     );
 
-    const intlRef = useIntlRef();
     const dispatch = useDispatch();
-    const { enqueueSnackbar } = useSnackbar();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
-    useEffect(() => {
-        console.info(
-            `Loading network modification tree of study '${studyUuid}'...`
-        );
-
-        fetchNetworkModificationTree(studyUuid)
-            .then((tree) => {
-                dispatch(selectTreeNode(tree.id));
-
-                const networkModificationTreeModel =
-                    new NetworkModificationTreeModel();
-                networkModificationTreeModel.setTreeElements(tree);
-                networkModificationTreeModel.updateLayout();
-                dispatch(
-                    loadNetworkModificationTreeSuccess(
-                        networkModificationTreeModel
-                    )
-                );
-            })
-            .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NetworkModificationTreeLoadError',
-                        intlRef: intlRef,
-                    },
-                })
-            )
-            .finally(() =>
-                console.debug('Network modification tree loading finished')
-            );
-        // Note: studyUuid and dispatch don't change
-    }, [studyUuid, enqueueSnackbar, intlRef, dispatch]);
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {

@@ -93,7 +93,7 @@ export const StudyMapTreeDisplay = {
 const StudyPane = ({
     studyUuid,
     network,
-    selectedNodeUuid,
+    workingNodeUuid,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -316,7 +316,7 @@ const StudyPane = ({
                                     openVoltageLevel={openVoltageLevel}
                                     centerOnSubstation={centerOnSubstation}
                                     /* TODO verif tableEquipment*/
-                                    selectedNodeUuid={selectedNodeUuid}
+                                    selectedNodeUuid={workingNodeUuid}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -365,13 +365,74 @@ const StudyPane = ({
                                     loadFlowStatus={getLoadFlowRunningStatus(
                                         loadFlowInfos?.loadFlowStatus
                                     )}
-                                    selectedNodeUuid={selectedNodeUuid}
+                                    selectedNodeUuid={workingNodeUuid}
                                 />
                             )}
                         </div>
                     </div>
                 </div>
             </ReactFlowProvider>
+            // =======
+            //                     {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
+            //                     <NetworkMapTab
+            //                         /* TODO do we move redux param to container */
+            //                         studyUuid={studyUuid}
+            //                         network={network}
+            //                         visible={props.view === StudyView.MAP}
+            //                         updatedLines={updatedLines}
+            //                         useName={useName}
+            //                         lineFullPath={lineFullPath}
+            //                         lineParallelPath={lineParallelPath}
+            //                         lineFlowMode={lineFlowMode}
+            //                         lineFlowColorMode={lineFlowColorMode}
+            //                         lineFlowAlertThreshold={lineFlowAlertThreshold}
+            //                         filteredNominalVoltages={filteredNominalVoltages}
+            //                         openVoltageLevel={openVoltageLevel}
+            //                         centerOnSubstation={centerOnSubstation}
+            //                         /* TODO verif tableEquipment*/
+            //                         selectedNodeUuid={workingNodeUuid}
+            //                         onChangeTab={props.onChangeTab}
+            //                         showInSpreadsheet={showInSpreadsheet}
+            //                         loadFlowStatus={getLoadFlowRunningStatus(
+            //                             loadFlowInfos?.loadFlowStatus
+            //                         )}
+            //                         securityAnalysisStatus={securityAnalysisStatus}
+            //                         setIsComputationRunning={setIsComputationRunning}
+            //                         runnable={runnable}
+            //                         setErrorMessage={setErrorMessage}
+            //                     />
+            //                 </div>
+            //                 // <StudyLateralToolBar
+            //                 //     network={network}
+            //                 //     onVoltageLevelDisplayClick={showVoltageLevelDiagram}
+            //                 //     onSubstationDisplayClick={showSubstationDiagram}
+            //                 //     onSubstationFocus={setCenterOnSubstation}
+            //                 //     visibleSubstation={visibleSubstation}
+            //                 //     isMap={props.view === StudyView.MAP}
+            //                 //     setLateralShift={setDrawerShift}
+            //                 //     studyUuid={studyUuid}
+            //                 // />
+            //                 //
+            //                 // {/*
+            //                 // Rendering single line diagram only in map view and if
+            //                 // displayed voltage level or substation id has been set
+            //                 // */}
+            //                 // {props.view === StudyView.MAP && (
+            //                 //     <SingleLineDiagramPane
+            //                 //         studyUuid={studyUuid}
+            //                 //         network={network}
+            //                 //         onClose={() => closeVoltageLevelDiagram()}
+            //                 //         openVoltageLevel={openVoltageLevel}
+            //                 //         isComputationRunning={isComputationRunning}
+            //                 //         showInSpreadsheet={showInSpreadsheet}
+            //                 //         loadFlowStatus={getLoadFlowRunningStatus(
+            //                 //             loadFlowInfos?.loadFlowStatus
+            //                 //         )}
+            //                 //         selectedNodeUuid={workingNodeUuid}
+            //                 //     />
+            //                 // )}
+            //             </div>
+            // >>>>>>> main
         );
     }
 
@@ -381,7 +442,7 @@ const StudyPane = ({
                 <NetworkTable
                     network={network}
                     studyUuid={studyUuid}
-                    selectedNodeUuid={selectedNodeUuid}
+                    selectedNodeUuid={workingNodeUuid}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
@@ -418,7 +479,7 @@ const StudyPane = ({
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
-                    selectedNodeUuid={selectedNodeUuid}
+                    selectedNodeUuid={workingNodeUuid}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}

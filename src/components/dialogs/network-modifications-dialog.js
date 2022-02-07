@@ -22,6 +22,8 @@ import EquipmentDeletionDialog from './equipment-deletion-dialog';
 import LineCreationDialog from './line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from './two-windings-transformer-creation-dialog';
 import SubstationCreationDialog from './substation-creation-dialog';
+import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
+import ShuntCompensatorCreationDialog from './shunt-compensator-creation-dialog';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -33,83 +35,105 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to select network modification to create
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param selectedNodeUuid : the currently selected tree node
+ * @param network network from which to search for possible substations
+ * @param selectedNodeUuid the currently selected tree node
  */
 const NetworkModificationDialog = ({
     open,
     onClose,
     network,
     selectedNodeUuid,
+    workingNodeUuid,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
 
-    const [openCreateLoadDialog, setOpenCreateLoadDialog] = useState(false);
-    const [openEquipmentDeletionDialog, setOpenEquipmentDeletionDialog] =
-        useState(false);
-    const [openCreateGeneratorDialog, setOpenCreateGeneratorDialog] =
-        useState(false);
+    const [dialogOpen, setDialogOpen] = useState(undefined);
 
-    const [openCreateLineDialog, setOpenCreateLineDialog] = useState(false);
+    const closeDialog = () => {
+        setDialogOpen(undefined);
+    };
 
-    const [
-        openTwoWindingsTransformerDialog,
-        setOpenTwoWindingsTransformerDialog,
-    ] = useState(false);
+    const openDialog = (dialogId) => {
+        setDialogOpen(dialogId);
+    };
 
-    const [openCreateSubstationDialog, setOpenCreateSubstationDialog] =
-        useState(false);
+    function withDefaultParams(Dialog, props) {
+        return (
+            <Dialog
+                open={true}
+                onClose={closeDialog}
+                selectedNodeUuid={selectedNodeUuid}
+                workingNodeUuid={workingNodeUuid}
+                {...props}
+            />
+        );
+    }
+
+    function withVoltageLevel(Dialog, props) {
+        return withDefaultParams(Dialog, {
+            ...props,
+            voltageLevelOptions: network?.voltageLevels,
+        });
+    }
+
+    function withSubstationOption(Dialog, props) {
+        return withDefaultParams(Dialog, {
+            ...props,
+            substationOptions: network?.substations,
+        });
+    }
+
+    const dialogs = {
+        createLoad: {
+            label: 'CreateLoad',
+            dialog: () => withVoltageLevel(LoadCreationDialog),
+            icon: <AddIcon />,
+        },
+        createGenerator: {
+            label: 'CreateGenerator',
+            dialog: () => withVoltageLevel(GeneratorCreationDialog),
+            icon: <AddIcon />,
+        },
+        createShuntCompensator: {
+            label: 'CreateShuntCompensator',
+            dialog: () => withVoltageLevel(ShuntCompensatorCreationDialog),
+            icon: <AddIcon />,
+        },
+        createLine: {
+            label: 'CreateLine',
+            dialog: () => withVoltageLevel(LineCreationDialog),
+            icon: <AddIcon />,
+        },
+        createTwoWindingTransformer: {
+            label: 'CreateTwoWindingsTransformer',
+            dialog: () =>
+                withVoltageLevel(TwoWindingsTransformerCreationDialog),
+            icon: <AddIcon />,
+        },
+        substationCreation: {
+            label: 'CreateSubstation',
+            dialog: () => withVoltageLevel(SubstationCreationDialog),
+            icon: <AddIcon />,
+        },
+        voltageLevelCreation: {
+            label: 'CreateVoltageLevel',
+            dialog: () => withSubstationOption(VoltageLevelCreationDialog),
+            icon: <AddIcon />,
+        },
+        deleteEquipment: {
+            label: 'DeleteEquipment',
+            dialog: () => withDefaultParams(EquipmentDeletionDialog),
+            icon: <DeleteIcon />,
+        },
+    };
 
     const handleClose = () => {
         onClose();
     };
 
-    const handleCreateLoad = () => {
-        setOpenCreateLoadDialog(true);
-    };
-
-    const closeCreateLoadDialog = () => {
-        setOpenCreateLoadDialog(false);
-    };
-
-    const handleDeleteEquipment = () => {
-        setOpenEquipmentDeletionDialog(true);
-    };
-
-    const closeEquipmentDeletionDialog = () => {
-        setOpenEquipmentDeletionDialog(false);
-    };
-
-    const handleCreateGenerator = () => {
-        setOpenCreateGeneratorDialog(true);
-    };
-
-    const closeCreateGeneratorDialog = () => {
-        setOpenCreateGeneratorDialog(false);
-    };
-
-    const handleCreateLine = () => {
-        setOpenCreateLineDialog(true);
-    };
-
-    const closeCreateLineDialog = () => {
-        setOpenCreateLineDialog(false);
-    };
-
-    const handleCreateTwoWindingsTransformer = () => {
-        setOpenTwoWindingsTransformerDialog(true);
-    };
-
-    const closeCreateTwoWindingsTransformerDialog = () => {
-        setOpenTwoWindingsTransformerDialog(false);
-    };
-
-    const handleCreateSubstation = () => {
-        setOpenCreateSubstationDialog(true);
-    };
-
-    const closeCreateSubstationDialog = () => {
-        setOpenCreateSubstationDialog(false);
+    const renderDialog = () => {
+        return dialogs[dialogOpen].dialog();
     };
 
     return (
@@ -126,80 +150,21 @@ const NetworkModificationDialog = ({
                 </DialogTitle>
                 <DialogContent>
                     <Grid container direction="column" spacing={2}>
-                        <Grid item>
-                            <Button
-                                fullWidth
-                                className={classes.button}
-                                variant="outlined"
-                                startIcon={<AddIcon />}
-                                onClick={handleCreateLoad}
-                            >
-                                {intl.formatMessage({ id: 'CreateLoad' })}
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                fullWidth
-                                className={classes.button}
-                                variant="outlined"
-                                startIcon={<AddIcon />}
-                                onClick={handleCreateGenerator}
-                            >
-                                {intl.formatMessage({
-                                    id: 'CreateGenerator',
-                                })}
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                fullWidth
-                                className={classes.button}
-                                variant="outlined"
-                                startIcon={<AddIcon />}
-                                onClick={handleCreateLine}
-                            >
-                                {intl.formatMessage({ id: 'CreateLine' })}
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                fullWidth
-                                className={classes.button}
-                                variant="outlined"
-                                startIcon={<AddIcon />}
-                                onClick={handleCreateTwoWindingsTransformer}
-                            >
-                                {intl.formatMessage({
-                                    id: 'CreateTwoWindingsTransformer',
-                                })}
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                fullWidth
-                                className={classes.button}
-                                variant="outlined"
-                                startIcon={<AddIcon />}
-                                onClick={handleCreateSubstation}
-                            >
-                                {intl.formatMessage({
-                                    id: 'CreateSubstation',
-                                })}
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button
-                                fullWidth
-                                className={classes.button}
-                                variant="outlined"
-                                startIcon={<DeleteIcon />}
-                                onClick={handleDeleteEquipment}
-                            >
-                                {intl.formatMessage({
-                                    id: 'DeleteEquipment',
-                                })}
-                            </Button>
-                        </Grid>
+                        {Object.entries(dialogs).map(([id, values]) => (
+                            <Grid key={id} item>
+                                <Button
+                                    fullWidth
+                                    className={classes.button}
+                                    variant="outlined"
+                                    startIcon={values.icon}
+                                    onClick={() => openDialog(id)}
+                                >
+                                    {intl.formatMessage({
+                                        id: values.label,
+                                    })}
+                                </Button>
+                            </Grid>
+                        ))}
                     </Grid>
                 </DialogContent>
                 <DialogActions>
@@ -208,40 +173,7 @@ const NetworkModificationDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <LoadCreationDialog
-                open={openCreateLoadDialog}
-                onClose={closeCreateLoadDialog}
-                voltageLevelOptions={network?.voltageLevels}
-                selectedNodeUuid={selectedNodeUuid}
-            />
-            <GeneratorCreationDialog
-                open={openCreateGeneratorDialog}
-                onClose={closeCreateGeneratorDialog}
-                voltageLevelOptions={network?.voltageLevels}
-                selectedNodeUuid={selectedNodeUuid}
-            />
-            <LineCreationDialog
-                open={openCreateLineDialog}
-                onClose={closeCreateLineDialog}
-                voltageLevelOptions={network?.voltageLevels}
-                selectedNodeUuid={selectedNodeUuid}
-            />
-            <TwoWindingsTransformerCreationDialog
-                open={openTwoWindingsTransformerDialog}
-                onClose={closeCreateTwoWindingsTransformerDialog}
-                voltageLevelOptions={network?.voltageLevels}
-                selectedNodeUuid={selectedNodeUuid}
-            />
-            <SubstationCreationDialog
-                open={openCreateSubstationDialog}
-                onClose={closeCreateSubstationDialog}
-                selectedNodeUuid={selectedNodeUuid}
-            />
-            <EquipmentDeletionDialog
-                open={openEquipmentDeletionDialog}
-                onClose={closeEquipmentDeletionDialog}
-                selectedNodeUuid={selectedNodeUuid}
-            />
+            {dialogOpen && renderDialog()}
         </>
     );
 };
@@ -251,6 +183,7 @@ NetworkModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     network: PropTypes.object.isRequired,
     selectedNodeUuid: PropTypes.string,
+    workingNodeUuid: PropTypes.string,
 };
 
 export default NetworkModificationDialog;
