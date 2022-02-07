@@ -220,6 +220,7 @@ const NetworkModificationTree = ({
 
     const [x, y, zoom] = useStoreState((state) => state.transform);
 
+    const width = useStoreState((state) => state.width);
     const { transform } = useZoomPanHelper();
 
     useEffect(() => {
@@ -227,14 +228,22 @@ const NetworkModificationTree = ({
             prevStudyMapTreeDisplay === StudyDisplayMode.TREE &&
             studyMapTreeDisplay === StudyDisplayMode.HYBRID
         ) {
-            transform({ x: x / 2, y: y, zoom: zoom });
+            transform({ x: x - width / 4, y: y, zoom: zoom });
         } else if (
             prevStudyMapTreeDisplay === StudyDisplayMode.HYBRID &&
             studyMapTreeDisplay === StudyDisplayMode.TREE
         ) {
-            transform({ x: x * 2, y: y, zoom: zoom });
+            transform({ x: x + width / 2, y: y, zoom: zoom });
         }
-    }, [x, y, zoom, studyMapTreeDisplay, prevStudyMapTreeDisplay, transform]);
+    }, [
+        x,
+        y,
+        zoom,
+        width,
+        studyMapTreeDisplay,
+        prevStudyMapTreeDisplay,
+        transform,
+    ]);
 
     return (
         <>
