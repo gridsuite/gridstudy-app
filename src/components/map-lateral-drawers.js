@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
+import { StudyMapTreeDisplay } from './study-pane';
 
 export const drawerExplorerWidth = 300;
 export const nodeEditorWidth = 400;
@@ -57,9 +58,9 @@ export function MapLateralDrawers({
     onSubstationDisplayClick,
     onSubstationFocus,
     visibleSubstation,
-    setLateralShift,
     drawerExplorerOpen,
     drawerNodeEditorOpen,
+    studyMapTreeDisplay,
     closeDrawerNodeEditor,
 }) {
     const classes = useStyles();
@@ -69,6 +70,7 @@ export function MapLateralDrawers({
                 open={drawerNodeEditorOpen}
                 drawerClassName={classes.nodeEditor}
                 drawerShiftClassName={classes.nodeEditorShift}
+                anchor={'left'}
             >
                 <NodeEditor onClose={closeDrawerNodeEditor} />
             </StudyDrawer>
@@ -76,6 +78,11 @@ export function MapLateralDrawers({
                 open={drawerExplorerOpen}
                 drawerClassName={classes.drawerExplorer}
                 drawerShiftClassName={classes.drawerExplorerShift}
+                anchor={
+                    studyMapTreeDisplay === StudyMapTreeDisplay.HYBRID
+                        ? 'right'
+                        : 'left'
+                }
             >
                 <NetworkExplorer
                     substations={network ? network.substations : []}
@@ -92,6 +99,7 @@ MapLateralDrawers.propTypes = {
     classes: PropTypes.any,
     drawerExplorerOpen: PropTypes.bool,
     drawerNodeEditorOpen: PropTypes.bool,
+    studyMapTreeDisplay: PropTypes.bool,
     network: PropTypes.any,
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,

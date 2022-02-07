@@ -32,28 +32,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ToolDrawer = ({ children }) => {
-    const classes = useStyles();
-
-    return (
-        <Drawer
-            variant={'permanent'}
-            className={clsx(classes.drawerToolbar, classes.drawer)}
-            anchor="left"
-            classes={{
-                paper: classes.drawerPaper,
-            }}
-        >
-            {children}
-        </Drawer>
-    );
-};
-
 export const StudyDrawer = ({
     drawerClassName,
     drawerShiftClassName,
     open,
     children,
+    anchor,
 }) => {
     const classes = useStyles();
     return (
@@ -62,7 +46,7 @@ export const StudyDrawer = ({
             className={clsx(drawerClassName, classes.drawer, {
                 [drawerShiftClassName]: !open,
             })}
-            anchor="left"
+            anchor={anchor}
             open={open}
             classes={{
                 paper: classes.drawerPaper,
@@ -77,4 +61,6 @@ StudyDrawer.propTypes = {
     drawerClassName: PropTypes.string,
     drawerShiftClassName: PropTypes.string,
     open: PropTypes.bool,
+    children: PropTypes.object,
+    anchor: PropTypes.string,
 };

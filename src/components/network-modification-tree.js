@@ -283,6 +283,11 @@ const NetworkModificationTree = ({
                     open={drawerNodeEditorOpen}
                     drawerClassName={classes.nodeEditor}
                     drawerShiftClassName={classes.nodeEditorShift}
+                    anchor={
+                        prevStudyMapTreeDisplay === StudyMapTreeDisplay.TREE
+                            ? 'right'
+                            : 'left'
+                    }
                 >
                     <NodeEditor onClose={closeDrawerNodeEditor} />
                 </StudyDrawer>

@@ -340,6 +340,7 @@ const StudyPane = ({
                                     studyMapTreeDisplay ===
                                         StudyMapTreeDisplay.MAP
                                 }
+                                studyMapTreeDisplay={studyMapTreeDisplay}
                                 onVoltageLevelDisplayClick={
                                     showVoltageLevelDiagram
                                 }
