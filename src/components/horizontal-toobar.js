@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import List from '@material-ui/core/List';
 import LinearScaleIcon from '@material-ui/icons/LinearScale';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
@@ -41,6 +40,7 @@ export function HorizontalToolbar({
     modificationPaneOpen,
     toggleModificationDrawer,
     toggleExplorerDrawer,
+    setCurrentTreeFocus,
 }) {
     const classes = useStyles();
     const intl = useIntl();
@@ -56,6 +56,7 @@ export function HorizontalToolbar({
     function setHybridDisplay() {
         setStudyDisplay(StudyMapTreeDisplay.HYBRID);
     }
+
     return (
         <List
             style={{
@@ -203,6 +204,7 @@ HorizontalToolbar.propTypes = {
     modificationPaneOpen: PropTypes.bool,
     toggleExplorerDrawer: PropTypes.func,
     toggleModificationDrawer: PropTypes.func,
+    setCurrentTreeFocus: PropTypes.func,
 };
 
 export default HorizontalToolbar;

@@ -37,6 +37,7 @@ import {
 import HorizontalToolbar from './horizontal-toobar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { useParameterState } from './parameters';
+import { ReactFlowProvider } from 'react-flow-renderer';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -214,151 +215,163 @@ const StudyPane = ({
 
     function renderMapView() {
         return (
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '100%',
-                }}
-            >
-                <div
-                    className={classes.horizontalToolbar}
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                    }}
-                >
-                    <HorizontalToolbar
-                        setStudyDisplay={setStudyMapTreeDisplay}
-                        studyDisplayMode={studyMapTreeDisplay}
-                        exploreOpen={drawerExplorerOpen}
-                        modificationPaneOpen={drawerNodeEditorOpen}
-                        toggleExplorerDrawer={toggleExplorerDrawer}
-                        toggleModificationDrawer={toggleModificationDrawer}
-                    />
-                </div>
+            <ReactFlowProvider>
                 <div
                     style={{
                         display: 'flex',
-                        flexDirection: 'row',
-                        flexGrow: 1,
+                        flexDirection: 'column',
+                        height: '100%',
                     }}
                 >
                     <div
+                        className={classes.horizontalToolbar}
                         style={{
-                            display:
-                                studyMapTreeDisplay === StudyMapTreeDisplay.MAP
-                                    ? 'none'
-                                    : null,
-                            width:
-                                studyMapTreeDisplay ===
-                                StudyMapTreeDisplay.HYBRID
-                                    ? '50%'
-                                    : '100%',
+                            display: 'flex',
+                            flexDirection: 'row',
                         }}
                     >
-                        <NetworkModificationTreePane
-                            studyUuid={studyUuid}
-                            closeDrawerNodeEditor={closeDrawerNodeEditor}
-                            drawerNodeEditorOpen={drawerNodeEditorOpen}
+                        <HorizontalToolbar
+                            setStudyDisplay={setStudyMapTreeDisplay}
+                            studyDisplayMode={studyMapTreeDisplay}
+                            exploreOpen={drawerExplorerOpen}
+                            modificationPaneOpen={drawerNodeEditorOpen}
+                            toggleExplorerDrawer={toggleExplorerDrawer}
+                            toggleModificationDrawer={toggleModificationDrawer}
                         />
                     </div>
                     <div
-                        className={clsx(
-                            'relative singlestretch-child',
-                            classes.map
-                        )}
                         style={{
-                            display:
-                                studyMapTreeDisplay === StudyMapTreeDisplay.TREE
-                                    ? 'none'
-                                    : null,
-                            width:
-                                studyMapTreeDisplay ===
-                                StudyMapTreeDisplay.HYBRID
-                                    ? '50%'
-                                    : '100%',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            flexGrow: 1,
                         }}
                     >
                         <div
-                            className={classes.mapCtrlBottomLeft}
                             style={{
-                                position: 'absolute',
-                                top: 0,
-                                bottom: 0,
-                                left: drawerShift,
-                                right: 0,
+                                display:
+                                    studyMapTreeDisplay ===
+                                    StudyMapTreeDisplay.MAP
+                                        ? 'none'
+                                        : null,
+                                width:
+                                    studyMapTreeDisplay ===
+                                    StudyMapTreeDisplay.HYBRID
+                                        ? '50%'
+                                        : '100%',
                             }}
                         >
-                            {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
-                            <NetworkMapTab
-                                /* TODO do we move redux param to container */
+                            <NetworkModificationTreePane
                                 studyUuid={studyUuid}
-                                network={network}
-                                visible={props.view === StudyView.MAP}
-                                updatedLines={updatedLines}
-                                useName={useName}
-                                lineFullPath={lineFullPath}
-                                lineParallelPath={lineParallelPath}
-                                lineFlowMode={lineFlowMode}
-                                lineFlowColorMode={lineFlowColorMode}
-                                lineFlowAlertThreshold={lineFlowAlertThreshold}
-                                filteredNominalVoltages={
-                                    filteredNominalVoltages
-                                }
-                                openVoltageLevel={openVoltageLevel}
-                                centerOnSubstation={centerOnSubstation}
-                                /* TODO verif tableEquipment*/
-                                selectedNodeUuid={selectedNodeUuid}
-                                onChangeTab={props.onChangeTab}
-                                showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={getLoadFlowRunningStatus(
-                                    loadFlowInfos?.loadFlowStatus
-                                )}
-                                securityAnalysisStatus={securityAnalysisStatus}
-                                setIsComputationRunning={
-                                    setIsComputationRunning
-                                }
-                                runnable={runnable}
-                                setErrorMessage={setErrorMessage}
+                                closeDrawerNodeEditor={closeDrawerNodeEditor}
+                                drawerNodeEditorOpen={drawerNodeEditorOpen}
+                                studyMapTreeDisplay={studyMapTreeDisplay}
                             />
                         </div>
-                        <MapLateralDrawers
-                            network={network}
-                            drawerExplorerOpen={drawerExplorerOpen}
-                            drawerNodeEditorOpen={
-                                drawerNodeEditorOpen &&
-                                studyMapTreeDisplay === StudyMapTreeDisplay.MAP
-                            }
-                            onVoltageLevelDisplayClick={showVoltageLevelDiagram}
-                            onSubstationDisplayClick={showSubstationDiagram}
-                            onSubstationFocus={setCenterOnSubstation}
-                            visibleSubstation={visibleSubstation}
-                            setLateralShift={setDrawerShift}
-                            closeDrawerNodeEditor={closeDrawerNodeEditor}
-                        />
+                        <div
+                            className={clsx(
+                                'relative singlestretch-child',
+                                classes.map
+                            )}
+                            style={{
+                                display:
+                                    studyMapTreeDisplay ===
+                                    StudyMapTreeDisplay.TREE
+                                        ? 'none'
+                                        : null,
+                                width:
+                                    studyMapTreeDisplay ===
+                                    StudyMapTreeDisplay.HYBRID
+                                        ? '50%'
+                                        : '100%',
+                            }}
+                        >
+                            <div
+                                className={classes.mapCtrlBottomLeft}
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    bottom: 0,
+                                    left: drawerShift,
+                                    right: 0,
+                                }}
+                            >
+                                {/* TODO do not display if study does not exists or do not fetch geoData if study does not exists */}
+                                <NetworkMapTab
+                                    /* TODO do we move redux param to container */
+                                    studyUuid={studyUuid}
+                                    network={network}
+                                    visible={props.view === StudyView.MAP}
+                                    updatedLines={updatedLines}
+                                    useName={useName}
+                                    lineFullPath={lineFullPath}
+                                    lineParallelPath={lineParallelPath}
+                                    lineFlowMode={lineFlowMode}
+                                    lineFlowColorMode={lineFlowColorMode}
+                                    lineFlowAlertThreshold={
+                                        lineFlowAlertThreshold
+                                    }
+                                    filteredNominalVoltages={
+                                        filteredNominalVoltages
+                                    }
+                                    openVoltageLevel={openVoltageLevel}
+                                    centerOnSubstation={centerOnSubstation}
+                                    /* TODO verif tableEquipment*/
+                                    selectedNodeUuid={selectedNodeUuid}
+                                    onChangeTab={props.onChangeTab}
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    loadFlowStatus={getLoadFlowRunningStatus(
+                                        loadFlowInfos?.loadFlowStatus
+                                    )}
+                                    securityAnalysisStatus={
+                                        securityAnalysisStatus
+                                    }
+                                    setIsComputationRunning={
+                                        setIsComputationRunning
+                                    }
+                                    runnable={runnable}
+                                    setErrorMessage={setErrorMessage}
+                                />
+                            </div>
+                            <MapLateralDrawers
+                                network={network}
+                                drawerExplorerOpen={drawerExplorerOpen}
+                                drawerNodeEditorOpen={
+                                    drawerNodeEditorOpen &&
+                                    studyMapTreeDisplay ===
+                                        StudyMapTreeDisplay.MAP
+                                }
+                                onVoltageLevelDisplayClick={
+                                    showVoltageLevelDiagram
+                                }
+                                onSubstationDisplayClick={showSubstationDiagram}
+                                onSubstationFocus={setCenterOnSubstation}
+                                visibleSubstation={visibleSubstation}
+                                setLateralShift={setDrawerShift}
+                                closeDrawerNodeEditor={closeDrawerNodeEditor}
+                            />
 
-                        {/*
+                            {/*
                 Rendering single line diagram only in map view and if
                 displayed voltage level or substation id has been set
                 */}
-                        {props.view === StudyView.MAP && (
-                            <SingleLineDiagramPane
-                                studyUuid={studyUuid}
-                                network={network}
-                                onClose={() => closeVoltageLevelDiagram()}
-                                openVoltageLevel={openVoltageLevel}
-                                isComputationRunning={isComputationRunning}
-                                showInSpreadsheet={showInSpreadsheet}
-                                loadFlowStatus={getLoadFlowRunningStatus(
-                                    loadFlowInfos?.loadFlowStatus
-                                )}
-                                selectedNodeUuid={selectedNodeUuid}
-                            />
-                        )}
+                            {props.view === StudyView.MAP && (
+                                <SingleLineDiagramPane
+                                    studyUuid={studyUuid}
+                                    network={network}
+                                    onClose={() => closeVoltageLevelDiagram()}
+                                    openVoltageLevel={openVoltageLevel}
+                                    isComputationRunning={isComputationRunning}
+                                    showInSpreadsheet={showInSpreadsheet}
+                                    loadFlowStatus={getLoadFlowRunningStatus(
+                                        loadFlowInfos?.loadFlowStatus
+                                    )}
+                                    selectedNodeUuid={selectedNodeUuid}
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </ReactFlowProvider>
         );
     }
 

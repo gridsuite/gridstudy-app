@@ -4,8 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState } from 'react';
-import ReactFlow, { Controls } from 'react-flow-renderer';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import ReactFlow, {
+    Controls,
+    useStoreState,
+    useZoomPanHelper,
+} from 'react-flow-renderer';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
@@ -20,6 +24,7 @@ import { StudyDrawer } from './study-drawer';
 import { makeStyles } from '@material-ui/core/styles';
 import { nodeEditorWidth } from './map-lateral-drawers';
 import PropTypes from 'prop-types';
+import { StudyMapTreeDisplay } from './study-pane';
 
 const nodeTypes = {
     ROOT: NetworkModificationNode,
@@ -67,6 +72,7 @@ const NetworkModificationTree = ({
     treeModel,
     drawerNodeEditorOpen,
     closeDrawerNodeEditor,
+    studyMapTreeDisplay,
 }) => {
     const [selectedNode, setSelectedNode] = useState(null);
 
@@ -153,6 +159,40 @@ const NetworkModificationTree = ({
             selectedNode: null,
         });
     }, []);
+
+    function usePreviousTreeDisplay(value) {
+        // The ref object is a generic container whose current property is mutable ...
+        // ... and can hold any value, similar to an instance property on a class
+        const ref = useRef();
+        // Store current value in ref
+        useEffect(() => {
+            if (value !== StudyMapTreeDisplay.MAP) {
+                ref.current = value;
+            }
+        }, [value]); // Only re-run if value changes
+        // Return previous value (happens before update in useEffect above)
+        return ref.current;
+    }
+
+    const prevStudyMapTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay);
+
+    const [x, y, zoom] = useStoreState((state) => state.transform);
+
+    const { transform } = useZoomPanHelper();
+
+    useEffect(() => {
+        if (
+            prevStudyMapTreeDisplay === StudyMapTreeDisplay.TREE &&
+            studyMapTreeDisplay === StudyMapTreeDisplay.HYBRID
+        ) {
+            transform({ x: x / 2, y: y, zoom: zoom });
+        } else if (
+            prevStudyMapTreeDisplay === StudyMapTreeDisplay.HYBRID &&
+            studyMapTreeDisplay === StudyMapTreeDisplay.TREE
+        ) {
+            transform({ x: x * 2, y: y, zoom: zoom });
+        }
+    }, [x, y, zoom, studyMapTreeDisplay, prevStudyMapTreeDisplay, transform]);
 
     return (
         <>
