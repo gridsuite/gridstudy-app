@@ -334,7 +334,7 @@
     "BusBarHorizPos" : "Horizontal position",
     "BusBarVertPos" : "Vertical position",
     "CreateBusBarSection": "Add bus bar section",
-    "CreateLink": "Create a link",
+    "CreateLink": "Add a link",
     "BusBarSection" : "Bus bar section",
     "VoltageLevelCreationError": "Voltage level creation error",
     "Breaker": "Breaker",

@@ -399,16 +399,18 @@ const VoltageLevelCreationDialog = ({
                         </Grid>
                     </Grid>
                     {connections.map((p) => makeConnectionRow(p))}
-                    <Grid item xs={3}>
-                        <Button
-                            fullWidth
-                            className={classes.button}
-                            variant="outlined"
-                            startIcon={<AddIcon />}
-                            onClick={handleCreateConnection}
-                        >
-                            {intl.formatMessage({ id: 'CreateLink' })}
-                        </Button>
+                    <Grid container spacing={2}>
+                        <Grid item xs={3}>
+                            <Button
+                                fullWidth
+                                className={classes.button}
+                                variant="outlined"
+                                startIcon={<AddIcon />}
+                                onClick={handleCreateConnection}
+                            >
+                                {intl.formatMessage({ id: 'CreateLink' })}
+                            </Button>
+                        </Grid>
                     </Grid>
                 </div>
             </DialogContent>
@@ -714,9 +716,6 @@ const VoltageLevelCreationDialog = ({
                             variant="filled"
                             fullWidth
                         >
-                            <MenuItem value="">
-                                <em>{intl.formatMessage({ id: 'None' })}</em>
-                            </MenuItem>
                             <MenuItem value={'BREAKER'}>
                                 {intl.formatMessage({ id: 'Breaker' })}
                             </MenuItem>
