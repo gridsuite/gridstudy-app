@@ -25,8 +25,6 @@ const TextFieldWithAdornment = (props) => {
         props;
     const [isFocused, setIsFocused] = useState(false);
 
-    console.log('variant:' + props['variant']);
-
     const endAdornment =
         isFocused || value
             ? {
