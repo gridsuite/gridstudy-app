@@ -137,11 +137,38 @@ export default class Network {
     }
 
     updateSubstations(substations) {
-        this.substations = this.updateEquipments(
-            this.substations,
-            substations,
-            equipments.substations
-        );
+        // replace current modified substations
+        let voltageLevelAdded = false;
+        this.substations.forEach((substation1, index) => {
+            const found = substations.filter(
+                (substation2) => substation2.id === substation1.id
+            );
+            if (found.length > 0) {
+                if (
+                    found[0].voltageLevels.length >
+                    substation1.voltageLevels.length
+                ) {
+                    voltageLevelAdded = true;
+                }
+                this.substations[index] = found[0];
+            }
+        });
+
+        // add newly created substations
+        let substationAdded = false;
+        substations.forEach((substation1) => {
+            const found = this.substations.find(
+                (substation2) => substation2.id === substation1.id
+            );
+            if (found === undefined) {
+                this.substations.push(substation1);
+                substationAdded = true;
+            }
+        });
+
+        if (substationAdded === true || voltageLevelAdded === true) {
+            this.substations = [...this.substations];
+        }
 
         // add more infos
         this.completeSubstationsInfos();
