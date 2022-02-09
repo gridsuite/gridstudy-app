@@ -17,6 +17,9 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 1,
         overflowY: 'none',
         overflowX: 'none',
+        "& .MuiDrawer-paper": {
+            transition: 'none !important',
+        }
     },
     drawerToolbar: {
         width: 0,

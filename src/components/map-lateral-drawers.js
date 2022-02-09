@@ -13,7 +13,7 @@ import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import { StudyDisplayMode } from './study-pane';
 
-export const drawerExplorerWidth = 300;
+export const drawerExplorerWidth = 375;
 export const nodeEditorWidth = 400;
 
 const useStyles = makeStyles((theme) => ({
@@ -80,11 +80,7 @@ export function MapLateralDrawers({
                 open={drawerExplorerOpen}
                 drawerClassName={classes.drawerExplorer}
                 drawerShiftClassName={classes.drawerExplorerShift}
-                anchor={
-                    studyDisplayMode === StudyDisplayMode.HYBRID
-                        ? 'right'
-                        : 'left'
-                }
+                anchor={'left'}
             >
                 <NetworkExplorer
                     substations={network ? network.substations : []}
