@@ -21,14 +21,23 @@ const useStyles = makeStyles((theme) => ({
 
 const TextFieldWithAdornment = (props) => {
     const classes = useStyles();
-    const { adornmentPosition, adornmentText, value, ...otherProps } = props;
+    const { adornmentPosition, adornmentText, value, variant, ...otherProps } =
+        props;
     const [isFocused, setIsFocused] = useState(false);
 
     const endAdornment =
         isFocused || value
             ? {
                   endAdornment: (
-                      <InputAdornment position="end">
+                      <InputAdornment
+                          position="end"
+                          // hack to circumviate centering of adornment
+                          // when TextField has variant 'filled' with 'end' position
+                          sx={{
+                              alignItems:
+                                  variant === 'filled' ? 'start' : 'end',
+                          }}
+                      >
                           {adornmentText}
                       </InputAdornment>
                   ),
