@@ -320,4 +320,5 @@ NetworkModificationTree.propTypes = {
     treeModel: PropTypes.object.isRequired,
     drawerNodeEditorOpen: PropTypes.bool.isRequired,
     closeDrawerNodeEditor: PropTypes.func.isRequired,
+    studyMapTreeDisplay: PropTypes.string.isRequired,
 };
