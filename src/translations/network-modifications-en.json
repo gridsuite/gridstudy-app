@@ -9,5 +9,6 @@
     "network_modifications/LINE_CREATION": "Creating line {computedLabel}",
     "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Creating 2 windings transformer {computedLabel}",
     "network_modifications/BRANCH_STATUS": "Modification status line {computedLabel}",
-    "network_modifications/SHUNT_COMPENSATOR_CREATION": "Creating shunt compensator {computedLabel}"
+    "network_modifications/SHUNT_COMPENSATOR_CREATION": "Creating shunt compensator {computedLabel}", 
+    "network_modifications/GROOVY_SCRIPT": "Modification by script"
 }
