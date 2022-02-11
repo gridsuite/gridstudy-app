@@ -17,6 +17,13 @@ const useStyles = makeStyles((theme) => ({
     inputLeft: {
         textAlign: 'start',
     },
+    adornRightFilled: {
+        alignItems: 'start',
+        marginBottom: '0.4em',
+    },
+    adornRightOther: {
+        marginBottom: '0.2em',
+    },
 }));
 
 const TextFieldWithAdornment = (props) => {
@@ -33,10 +40,11 @@ const TextFieldWithAdornment = (props) => {
                           position="end"
                           // hack to circumviate centering of adornment
                           // when TextField has variant 'filled' with 'end' position
-                          sx={{
-                              alignItems:
-                                  variant === 'filled' ? 'start' : 'end',
-                          }}
+                          className={
+                              variant === 'filled'
+                                  ? classes.adornRightFilled
+                                  : classes.adornRightOther
+                          }
                       >
                           {adornmentText}
                       </InputAdornment>
@@ -60,6 +68,7 @@ const TextFieldWithAdornment = (props) => {
     return (
         <TextField
             {...otherProps}
+            variant={variant}
             value={value}
             InputProps={
                 adornmentPosition === 'start' ? startAdornment : endAdornment

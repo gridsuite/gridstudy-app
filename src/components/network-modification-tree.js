@@ -29,8 +29,7 @@ const nodeTypes = {
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
 const snapGrid = [15, 15];
-
-const NetworkModificationTree = (props) => {
+const NetworkModificationTree = ({ treeModel, openModificationDrawer }) => {
     const dispatch = useDispatch();
 
     const [selectedNode, setSelectedNode] = useState(null);
@@ -59,6 +58,7 @@ const NetworkModificationTree = (props) => {
     const onElementClick = useCallback(
         (event, element) => {
             setSelectedNode(element);
+            openModificationDrawer();
             dispatch(selectTreeNode(element.id));
             if (
                 element.type === 'ROOT' ||
@@ -68,7 +68,7 @@ const NetworkModificationTree = (props) => {
                 dispatch(workingTreeNode(element.id));
             }
         },
-        [dispatch]
+        [dispatch, openModificationDrawer]
     );
 
     const onNodeDoubleClick = useCallback(
@@ -173,9 +173,7 @@ const NetworkModificationTree = (props) => {
                 <Box flexGrow={1}>
                     <ReactFlow
                         style={styles.flow}
-                        elements={
-                            props.treeModel ? props.treeModel.treeElements : []
-                        }
+                        elements={treeModel ? treeModel.treeElements : []}
                         onNodeContextMenu={onNodeContextMenu}
                         onElementClick={nodeSingleOrDoubleClick}
                         onPaneClick={onPaneClick}

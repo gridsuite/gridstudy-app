@@ -3,10 +3,12 @@
     "network_modifications/EQUIPMENT_DELETION": "Suppression de {computedLabel}",
     "network_modifications/SUBSTATION_CREATION": "Création du site {computedLabel}",
     "network_modifications/VOLTAGE_LEVEL_CREATION": "Création du poste {computedLabel}",
+    "network_modifications/EQUIPMENT_ATTRIBUTE_MODIFICATION": "Modification de l'équipement {computedLabel}",
     "network_modifications/LOAD_CREATION": "Création de la charge {computedLabel}",
     "network_modifications/GENERATOR_CREATION": "Création du générateur {computedLabel}",
     "network_modifications/LINE_CREATION": "Création de la ligne {computedLabel}",
     "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Création du transformateur à 2 enroulements {computedLabel}",
     "network_modifications/BRANCH_STATUS": "Modification du statut de la ligne {computedLabel}",
-    "network_modifications/SHUNT_COMPENSATOR_CREATION": "Création d'un moyen de compensation {computedLabel}"
+    "network_modifications/SHUNT_COMPENSATOR_CREATION": "Création d'un moyen de compensation {computedLabel}",
+    "network_modifications/GROOVY_SCRIPT": "Modification par script"
 }
