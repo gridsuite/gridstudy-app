@@ -224,16 +224,25 @@ const NetworkModificationTree = ({
     const { transform } = useZoomPanHelper();
 
     useEffect(() => {
+        const nodeEditorShift = drawerNodeEditorOpen ? nodeEditorWidth : 0;
         if (
             prevStudyMapTreeDisplay === StudyDisplayMode.TREE &&
             studyMapTreeDisplay === StudyDisplayMode.HYBRID
         ) {
-            transform({ x: x - width / 4, y: y, zoom: zoom });
+            transform({
+                x: x - (width + nodeEditorShift) / 4,
+                y: y,
+                zoom: zoom,
+            });
         } else if (
             prevStudyMapTreeDisplay === StudyDisplayMode.HYBRID &&
             studyMapTreeDisplay === StudyDisplayMode.TREE
         ) {
-            transform({ x: x + width / 2, y: y, zoom: zoom });
+            transform({
+                x: x + (width + nodeEditorShift) / 2,
+                y: y,
+                zoom: zoom,
+            });
         }
     }, [
         x,
@@ -243,6 +252,7 @@ const NetworkModificationTree = ({
         studyMapTreeDisplay,
         prevStudyMapTreeDisplay,
         transform,
+        drawerNodeEditorOpen,
     ]);
 
     return (
