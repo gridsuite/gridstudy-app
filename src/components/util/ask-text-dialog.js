@@ -30,13 +30,13 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
     const [currentValue, setCurrentValue] = useState(value);
     const intl = useIntl();
 
-    useEffect(() => {
-        setCurrentValue(value);
-    }, [value]);
-
     const handleChange = (e) => {
         setCurrentValue(e.target.value || '');
     };
+
+    useEffect(() => {
+        setCurrentValue(value);
+    }, [value]);
 
     const handleValidate = (e) => {
         onValidate(currentValue || '');

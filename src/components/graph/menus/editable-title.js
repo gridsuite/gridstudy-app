@@ -17,6 +17,7 @@ import PropTypes from 'prop-types';
 const useStyles = makeStyles((theme) => ({
     header: {
         backgroundColor: darken(theme.palette.background.default, 0.2),
+        padding: theme.spacing(1),
     },
 }));
 
