@@ -30,9 +30,8 @@ export function useNodeSingleAndDoubleClick(
                 setIsTimerActive(false);
                 setClickEvent({ count: 0 });
             }, delay);
-        } else {
-            clearTimeout(timer);
         }
+
         return () => clearTimeout(timer);
     }, [
         clickEvent,
