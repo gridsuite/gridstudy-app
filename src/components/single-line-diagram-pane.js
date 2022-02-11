@@ -185,34 +185,41 @@ export function SingleLineDiagramPane({
                 //TODO reload data more intelligently
                 updateSld();
             } else if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'study' &&
-                //If the SLD of the deleted substation is open, we close it
-                displayedSubstationIdRef.current &&
-                displayedSubstationIdRef.current ===
-                    studyUpdatedForce.eventData.headers['deletedEquipmentId']
+                studyUpdatedForce.eventData.headers['updateType'] === 'study'
             ) {
-                historyRef.current.replace(
-                    '/studies/' + encodeURIComponent(studyUuid)
-                );
-                setDisplayedSubstationId(null);
-            } else if (
-                //If the SLD of the deleted voltage level or the SLD of its substation is open, we close it
-                displayedVoltageLevelIdRef.current &&
-                (displayedVoltageLevelIdRef.current ===
-                    studyUpdatedForce.eventData.headers['deletedEquipmentId'] ||
-                    networkRef.current.voltageLevelsById.get(
-                        displayedVoltageLevelIdRef.current
-                    ).substationId ===
+                //If the SLD of the deleted substation is open, we close it
+                if (
+                    displayedSubstationIdRef.current &&
+                    displayedSubstationIdRef.current ===
                         studyUpdatedForce.eventData.headers[
                             'deletedEquipmentId'
-                        ])
-            ) {
-                historyRef.current.replace(
-                    '/studies/' + encodeURIComponent(studyUuid)
-                );
-                setDisplayedVoltageLevelId(null);
-            } else {
-                updateSld();
+                        ]
+                ) {
+                    historyRef.current.replace(
+                        '/studies/' + encodeURIComponent(studyUuid)
+                    );
+                    setDisplayedSubstationId(null);
+                } else if (
+                    //If the SLD of the deleted voltage level or the SLD of its substation is open, we close it
+                    displayedVoltageLevelIdRef.current &&
+                    (displayedVoltageLevelIdRef.current ===
+                        studyUpdatedForce.eventData.headers[
+                            'deletedEquipmentId'
+                        ] ||
+                        networkRef.current.voltageLevelsById.get(
+                            displayedVoltageLevelIdRef.current
+                        ).substationId ===
+                            studyUpdatedForce.eventData.headers[
+                                'deletedEquipmentId'
+                            ])
+                ) {
+                    historyRef.current.replace(
+                        '/studies/' + encodeURIComponent(studyUuid)
+                    );
+                    setDisplayedVoltageLevelId(null);
+                } else {
+                    updateSld();
+                }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
