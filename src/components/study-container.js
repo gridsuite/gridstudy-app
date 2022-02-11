@@ -82,7 +82,7 @@ export function useNodeData(
         const isUpdateForUs =
             lastUpdateRef.current !== studyUpdatedForce &&
             updateType &&
-            node === nodeUuid &&
+            (node === undefined || node === nodeUuid) &&
             invalidations.find((e) => updateType === e) !== -1;
         lastUpdateRef.current = studyUpdatedForce;
         if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
