@@ -21,7 +21,7 @@ export const NetworkModificationTreePane = ({
     drawerNodeEditorOpen,
     closeDrawerNodeEditor,
     studyMapTreeDisplay,
-    openModificationDrawer,
+    openDrawerNodeEditor,
 }) => {
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
@@ -84,7 +84,7 @@ export const NetworkModificationTreePane = ({
             drawerNodeEditorOpen={drawerNodeEditorOpen}
             closeDrawerNodeEditor={closeDrawerNodeEditor}
             studyMapTreeDisplay={studyMapTreeDisplay}
-            openModificationDrawer={openModificationDrawer}
+            openDrawerNodeEditor={openDrawerNodeEditor}
         />
     );
 };
@@ -95,6 +95,6 @@ NetworkModificationTreePane.propTypes = {
     studyUuid: PropTypes.string.isRequired,
     drawerNodeEditorOpen: PropTypes.bool.isRequired,
     closeDrawerNodeEditor: PropTypes.func.isRequired,
-    openModificationDrawer: PropTypes.func.isRequired,
+    openDrawerNodeEditor: PropTypes.func.isRequired,
     studyMapTreeDisplay: PropTypes.string.isRequired,
 };

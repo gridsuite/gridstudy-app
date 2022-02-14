@@ -211,10 +211,9 @@ const StudyPane = ({
         setDrawerNodeEditorOpen(false);
     };
 
-    const openModificationDrawer = useCallback(
-        () => setDrawerNodeEditorOpen(true),
-        []
-    );
+    const openDrawerNodeEditor = () => {
+        setDrawerNodeEditorOpen(true);
+    };
 
     function renderMapView() {
         return (
@@ -264,7 +263,7 @@ const StudyPane = ({
                             <NetworkModificationTreePane
                                 studyUuid={studyUuid}
                                 closeDrawerNodeEditor={closeDrawerNodeEditor}
-                                openModificationDrawer={openModificationDrawer}
+                                openDrawerNodeEditor={openDrawerNodeEditor}
                                 drawerNodeEditorOpen={drawerNodeEditorOpen}
                                 studyMapTreeDisplay={studyDisplayMode}
                             />
