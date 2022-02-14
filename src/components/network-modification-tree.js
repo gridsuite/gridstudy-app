@@ -73,6 +73,7 @@ const useStyles = makeStyles((theme) => ({
 
 const NetworkModificationTree = ({
     treeModel,
+    openModificationDrawer,
     drawerNodeEditorOpen,
     closeDrawerNodeEditor,
     studyMapTreeDisplay,
@@ -94,6 +95,7 @@ const NetworkModificationTree = ({
     const onElementClick = useCallback(
         (event, element) => {
             setSelectedNode(element);
+            openModificationDrawer();
             dispatch(selectTreeNode(element.id));
             if (
                 element.type === 'ROOT' ||
@@ -103,7 +105,7 @@ const NetworkModificationTree = ({
                 dispatch(workingTreeNode(element.id));
             }
         },
-        [dispatch]
+        [dispatch, openModificationDrawer]
     );
 
     const onNodeDoubleClick = useCallback(
@@ -330,5 +332,6 @@ NetworkModificationTree.propTypes = {
     treeModel: PropTypes.object.isRequired,
     drawerNodeEditorOpen: PropTypes.bool.isRequired,
     closeDrawerNodeEditor: PropTypes.func.isRequired,
+    openModificationDrawer: PropTypes.func.isRequired,
     studyMapTreeDisplay: PropTypes.string.isRequired,
 };

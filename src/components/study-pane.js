@@ -211,6 +211,11 @@ const StudyPane = ({
         setDrawerNodeEditorOpen(false);
     };
 
+    const openModificationDrawer = useCallback(
+        () => setDrawerNodeEditorOpen(true),
+        []
+    );
+
     function renderMapView() {
         return (
             <ReactFlowProvider>
@@ -259,6 +264,7 @@ const StudyPane = ({
                             <NetworkModificationTreePane
                                 studyUuid={studyUuid}
                                 closeDrawerNodeEditor={closeDrawerNodeEditor}
+                                openModificationDrawer={openModificationDrawer}
                                 drawerNodeEditorOpen={drawerNodeEditorOpen}
                                 studyMapTreeDisplay={studyDisplayMode}
                             />
