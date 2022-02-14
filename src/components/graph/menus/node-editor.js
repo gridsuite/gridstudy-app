@@ -6,7 +6,6 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Paper } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
@@ -26,15 +25,14 @@ import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
-        height: 'max-content',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        flexGrow: 1,
         elevation: 3,
     },
 }));
 
-const NodeEditor = ({ onClose, className }) => {
+const NodeEditor = ({ onClose }) => {
     const classes = useStyles();
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
@@ -97,15 +95,15 @@ const NodeEditor = ({ onClose, className }) => {
     };
 
     return (
-        <div className={className}>
+        <>
             {selectedNode !== undefined && (
-                <>
+                <div className={classes.paper}>
                     <EditableTitle
                         name={selectedNode.name}
                         onClose={onClose}
                         onChange={changeNodeName}
                     />
-                    <Paper className={classes.paper}>
+                    <>
                         {selectedNode && selectedNode.type !== 'MODEL' && (
                             <NetworkModificationNodeEditor
                                 selectedNode={selectedNode}
@@ -114,10 +112,10 @@ const NodeEditor = ({ onClose, className }) => {
                         {selectedNode && selectedNode.type === 'MODEL' && (
                             <ModelNodeEditor selectedNode={selectedNode} />
                         )}
-                    </Paper>
-                </>
+                    </>
+                </div>
             )}
-        </div>
+        </>
     );
 };
 
