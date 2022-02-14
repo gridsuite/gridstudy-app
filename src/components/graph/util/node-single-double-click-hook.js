@@ -12,37 +12,28 @@ export function useNodeSingleAndDoubleClick(
     delay = 250
 ) {
     const [clickEvent, setClickEvent] = useState({ count: 0 });
-    const [isTimerActive, setIsTimerActive] = useState(false);
 
     useEffect(() => {
-        let timer = null;
-        if (isTimerActive) {
-            timer = setTimeout(() => {
-                // simple click
-                if (clickEvent.count === 1) {
-                    actionSimpleClick(clickEvent.event, clickEvent.node);
-                }
-                // the duration between this click and the previous one
-                // is less than the value of delay = double-click
-                if (clickEvent.count === 2) {
-                    actionDoubleClick(clickEvent.event, clickEvent.node);
-                }
-                setIsTimerActive(false);
+        const timer = setTimeout(() => {
+            // simple click
+            if (clickEvent.count === 1) {
+                actionSimpleClick(clickEvent.event, clickEvent.node);
+            }
+            if (clickEvent.count !== 0) {
                 setClickEvent({ count: 0 });
-            }, delay);
+            }
+        }, delay);
+
+        // the duration between this click and the previous one
+        // is less than the value of delay = double-click
+        if (clickEvent.count === 2) {
+            actionDoubleClick(clickEvent.event, clickEvent.node);
         }
 
         return () => clearTimeout(timer);
-    }, [
-        clickEvent,
-        actionSimpleClick,
-        actionDoubleClick,
-        delay,
-        isTimerActive,
-    ]);
+    }, [clickEvent, actionSimpleClick, actionDoubleClick, delay]);
 
     return (event, node) => {
-        setIsTimerActive(true);
         setClickEvent((prev) => ({
             count: prev.count + 1,
             event: event,
