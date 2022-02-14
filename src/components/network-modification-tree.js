@@ -225,8 +225,22 @@ const NetworkModificationTree = ({
     const width = useStoreState((state) => state.width);
     const { transform } = useZoomPanHelper();
 
+    //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
+    //So we use this useRef to avoid to trigger on those depedencies.
+    const focusParams = useRef();
+    focusParams.current = {
+        x,
+        y,
+        zoom,
+        width,
+        transform,
+        prevStudyMapTreeDisplay,
+    };
+
     useEffect(() => {
         const nodeEditorShift = drawerNodeEditorOpen ? nodeEditorWidth : 0;
+        const { x, y, zoom, width, transform, prevStudyMapTreeDisplay } =
+            focusParams.current;
         if (
             prevStudyMapTreeDisplay === StudyDisplayMode.TREE &&
             studyMapTreeDisplay === StudyDisplayMode.HYBRID
@@ -246,16 +260,7 @@ const NetworkModificationTree = ({
                 zoom: zoom,
             });
         }
-    }, [
-        x,
-        y,
-        zoom,
-        width,
-        studyMapTreeDisplay,
-        prevStudyMapTreeDisplay,
-        transform,
-        drawerNodeEditorOpen,
-    ]);
+    }, [studyMapTreeDisplay, drawerNodeEditorOpen]);
 
     return (
         <>
