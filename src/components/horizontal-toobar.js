@@ -33,6 +33,8 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const DELAY = 1000;
+
 export function HorizontalToolbar({
     setStudyDisplayMode,
     studyDisplayMode,
@@ -71,8 +73,8 @@ export function HorizontalToolbar({
                         title={intl.formatMessage({ id: 'SubstationList' })}
                         placement="right"
                         arrow
-                        enterDelay={1000}
-                        enterNextDelay={1000}
+                        enterDelay={DELAY}
+                        enterNextDelay={DELAY}
                         classes={{ tooltip: classes.tooltip }}
                         style={{
                             marginRight: '20px',
@@ -98,8 +100,8 @@ export function HorizontalToolbar({
                 title={intl.formatMessage({ id: 'NetworkModifications' })}
                 placement="right"
                 arrow
-                enterDelay={1000}
-                enterNextDelay={1000}
+                enterDelay={DELAY}
+                enterNextDelay={DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '20px',
@@ -123,8 +125,8 @@ export function HorizontalToolbar({
                 title={intl.formatMessage({ id: 'NetworkModificationTree' })}
                 placement="right"
                 arrow
-                enterDelay={1000}
-                enterNextDelay={1000}
+                enterDelay={DELAY}
+                enterNextDelay={DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginLeft: '20px',
@@ -148,8 +150,8 @@ export function HorizontalToolbar({
                 title={intl.formatMessage({ id: 'HybridDisplay' })}
                 placement="right"
                 arrow
-                enterDelay={1000}
-                enterNextDelay={1000}
+                enterDelay={DELAY}
+                enterNextDelay={DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '8px',
@@ -173,8 +175,8 @@ export function HorizontalToolbar({
                 title={intl.formatMessage({ id: 'Map' })}
                 placement="right"
                 arrow
-                enterDelay={1000}
-                enterNextDelay={1000}
+                enterDelay={DELAY}
+                enterNextDelay={DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '8px',

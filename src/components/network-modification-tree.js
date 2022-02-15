@@ -25,7 +25,7 @@ import { useParams } from 'react-router-dom';
 import NodeEditor from './graph/menus/node-editor';
 import { StudyDrawer } from './study-drawer';
 import { makeStyles } from '@material-ui/core/styles';
-import { nodeEditorWidth } from './map-lateral-drawers';
+import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import PropTypes from 'prop-types';
 import { StudyDisplayMode } from './study-pane';
 
@@ -42,7 +42,7 @@ const snapGrid = [15, 15];
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
-        width: nodeEditorWidth,
+        width: DRAWER_NODE_EDITOR_WIDTH,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
         pointerEvents: 'none',
-        marginLeft: -nodeEditorWidth,
+        marginLeft: -DRAWER_NODE_EDITOR_WIDTH,
     },
     container: { width: '100%', height: '100%' },
     controls: {
@@ -236,7 +236,7 @@ const NetworkModificationTree = ({
     };
 
     useEffect(() => {
-        const nodeEditorShift = drawerNodeEditorOpen ? nodeEditorWidth : 0;
+        const nodeEditorShift = drawerNodeEditorOpen ? DRAWER_NODE_EDITOR_WIDTH : 0;
         const { x, y, zoom, transform, prevTreeDisplay } = focusParams.current;
         if (prevTreeDisplay) {
             if (

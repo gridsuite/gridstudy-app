@@ -13,19 +13,19 @@ import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import { StudyDisplayMode } from './study-pane';
 
-export const drawerExplorerWidth = 375;
-export const nodeEditorWidth = 400;
+export const DRAWER_EXPLORER_WIDTH = 375;
+export const DRAWER_NODE_EDITOR_WIDTH = 400;
 
 const useStyles = makeStyles((theme) => ({
     drawerExplorer: {
-        width: drawerExplorerWidth,
+        width: DRAWER_EXPLORER_WIDTH,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
     },
-    nodeEditor: {
-        width: nodeEditorWidth,
+    drawerNodeEditor: {
+        width: DRAWER_NODE_EDITOR_WIDTH,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -40,15 +40,15 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: -drawerExplorerWidth,
+        marginLeft: -DRAWER_EXPLORER_WIDTH,
     },
-    nodeEditorShift: {
+    drawerNodeEditorShift: {
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
         pointerEvents: 'none',
-        marginLeft: -nodeEditorWidth,
+        marginLeft: -DRAWER_NODE_EDITOR_WIDTH,
     },
 }));
 
@@ -68,8 +68,8 @@ export function MapLateralDrawers({
         <>
             <StudyDrawer
                 open={drawerNodeEditorOpen}
-                drawerClassName={classes.nodeEditor}
-                drawerShiftClassName={classes.nodeEditorShift}
+                drawerClassName={classes.drawerNodeEditor}
+                drawerShiftClassName={classes.drawerNodeEditorShift}
                 anchor={
                     studyDisplayMode === StudyDisplayMode.MAP ? 'left' : 'right'
                 }
