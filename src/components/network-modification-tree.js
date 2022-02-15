@@ -204,26 +204,24 @@ const NetworkModificationTree = ({
         });
     }, []);
 
-    function usePreviousTreeDisplay(value) {
-        // The ref object is a generic container whose current property is mutable ...
-        // ... and can hold any value, similar to an instance property on a class
+    const [x, y, zoom] = useStoreState((state) => state.transform);
+
+    const { transform } = useZoomPanHelper();
+
+    const width = useStoreState((state) => state.width);
+
+    const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
+
+    function usePreviousTreeDisplay(display, width) {
         const ref = useRef();
-        // Store current value in ref
         useEffect(() => {
-            if (value !== StudyDisplayMode.MAP) {
-                ref.current = value;
+            if (display !== StudyDisplayMode.MAP) {
+                ref.current = { display, width };
             }
-        }, [value]); // Only re-run if value changes
-        // Return previous value (happens before update in useEffect above)
+        }, [display, width]);
         return ref.current;
     }
 
-    const prevStudyMapTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay);
-
-    const [x, y, zoom] = useStoreState((state) => state.transform);
-
-    const width = useStoreState((state) => state.width);
-    const { transform } = useZoomPanHelper();
 
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
@@ -232,33 +230,33 @@ const NetworkModificationTree = ({
         x,
         y,
         zoom,
-        width,
         transform,
-        prevStudyMapTreeDisplay,
+        prevTreeDisplay,
     };
 
     useEffect(() => {
         const nodeEditorShift = drawerNodeEditorOpen ? nodeEditorWidth : 0;
-        const { x, y, zoom, width, transform, prevStudyMapTreeDisplay } =
-            focusParams.current;
-        if (
-            prevStudyMapTreeDisplay === StudyDisplayMode.TREE &&
-            studyMapTreeDisplay === StudyDisplayMode.HYBRID
-        ) {
-            transform({
-                x: x - (width + nodeEditorShift) / 4,
-                y: y,
-                zoom: zoom,
-            });
-        } else if (
-            prevStudyMapTreeDisplay === StudyDisplayMode.HYBRID &&
-            studyMapTreeDisplay === StudyDisplayMode.TREE
-        ) {
-            transform({
-                x: x + (width + nodeEditorShift) / 2,
-                y: y,
-                zoom: zoom,
-            });
+        const { x, y, zoom, transform, prevTreeDisplay } = focusParams.current;
+        if (prevTreeDisplay) {
+            if (
+                prevTreeDisplay.display === StudyDisplayMode.TREE &&
+                studyMapTreeDisplay === StudyDisplayMode.HYBRID
+            ) {
+                transform({
+                    x: x - (prevTreeDisplay.width + nodeEditorShift) / 4,
+                    y: y,
+                    zoom: zoom,
+                });
+            } else if (
+                prevTreeDisplay.display === StudyDisplayMode.HYBRID &&
+                studyMapTreeDisplay === StudyDisplayMode.TREE
+            ) {
+                transform({
+                    x: x + (prevTreeDisplay.width + nodeEditorShift) / 2,
+                    y: y,
+                    zoom: zoom,
+                });
+            }
         }
     }, [studyMapTreeDisplay, drawerNodeEditorOpen]);
 
@@ -310,7 +308,7 @@ const NetworkModificationTree = ({
                     drawerClassName={classes.nodeEditor}
                     drawerShiftClassName={classes.nodeEditorShift}
                     anchor={
-                        prevStudyMapTreeDisplay === StudyDisplayMode.TREE
+                        prevTreeDisplay === StudyDisplayMode.TREE
                             ? 'right'
                             : 'left'
                     }
