@@ -264,7 +264,7 @@ const NetworkModificationTree = ({
     return (
         <>
             <Box
-                style={{ width: '100%', height: '100%' }}
+                className={classes.container}
                 display="flex"
                 flexDirection="row"
             >
@@ -289,14 +289,7 @@ const NetworkModificationTree = ({
                         snapGrid={snapGrid}
                     >
                         <Controls
-                            style={{
-                                position: 'absolute',
-                                top: '10px',
-                                right: '10px',
-                                // Unset default properties of ReactFlow controls
-                                left: 'unset',
-                                bottom: 'unset',
-                            }}
+                            className={classes.controls}
                             showZoom={false}
                             showInteractive={false}
                         >
