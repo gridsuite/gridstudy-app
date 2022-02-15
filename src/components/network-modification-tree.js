@@ -224,7 +224,6 @@ const NetworkModificationTree = ({
         return ref.current;
     }
 
-
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
     const focusParams = useRef();
