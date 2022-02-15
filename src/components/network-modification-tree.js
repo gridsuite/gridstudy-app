@@ -212,6 +212,8 @@ const NetworkModificationTree = ({
 
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
 
+    // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
+    // But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
     function usePreviousTreeDisplay(display, width) {
         const ref = useRef();
         useEffect(() => {
