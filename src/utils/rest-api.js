@@ -671,9 +671,13 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     );
 }
 
-export function createTreeNode(studyUuid, parentId, node) {
+export function createTreeNode(studyUuid, parentId, insertMode, node) {
     const nodeCreationUrl =
-        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentId);
+        getStudyUrl(studyUuid) +
+        '/tree/nodes/' +
+        encodeURIComponent(parentId) +
+        '?mode=' +
+        insertMode;
     console.debug('%s with body: %s', nodeCreationUrl, node);
     return backendFetch(nodeCreationUrl, {
         method: 'post',
