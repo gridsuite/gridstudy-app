@@ -611,9 +611,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             const svgWidth = bbox.width + 40;
             const svgHeight = bbox.height + 40;
 
-            setSvgPreferredWidth(svgWidth);
-            setSvgPreferredHeight(svgHeight);
-
+            if (!isComputationRunning) {
+                setSvgPreferredWidth(svgWidth);
+                setSvgPreferredHeight(svgHeight);
+            }
             let viewboxMaxWidth =
                 svgType === SvgType.VOLTAGE_LEVEL
                     ? maxWidthVoltageLevel
