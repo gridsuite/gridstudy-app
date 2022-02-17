@@ -756,7 +756,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
-        equipmentMenu,
         showEquipmentMenu,
         showFeederSelection,
         hideFeederSelection,
@@ -785,7 +784,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         //TODO, these are from the previous useLayoutEffect
         //how to refactor to avoid repeating them here ?
         svg,
-        equipmentMenu,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
