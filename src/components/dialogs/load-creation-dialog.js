@@ -300,7 +300,7 @@ const LoadCreationDialog = ({
                 aria-labelledby="dialog-create-load"
             >
                 <DialogTitle>
-                    <Grid container spacing={1}>
+                    <Grid container justifyContent={'space-between'}>
                         <Grid item>
                             {intl.formatMessage({ id: 'CreateLoad' })}
                         </Grid>
