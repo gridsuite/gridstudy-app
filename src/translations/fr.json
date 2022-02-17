@@ -319,7 +319,7 @@
     "ShuntIdenticalSections": "Sections identiques",
     "ShuntCurrentNumberOfSections": "Nombre de sections utilisées",
     "ShuntMaximumNumberOfSections": "Nombre de sections disponibles",
-    "CreateShuntCompensator":  "Créer un moyen de compensation statique",
+    "CreateShuntCompensator": "Créer un moyen de compensation statique",
     "ShuntCompensatorErrorMaximumLessThanOne": "Le nombre maximum de sections doit être supérieur à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
 
@@ -329,13 +329,13 @@
     "CreateVoltageLevel": "Créer un poste",
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
-    "BusBarSectionID" : "ID SJB",
-    "BusBarSectionName" : "Nom de la section (optionnel)",
-    "BusBarHorizPos" : "Position horizontale de la section",
-    "BusBarVertPos" : "Position verticale de la section",
+    "BusBarSectionID": "ID SJB",
+    "BusBarSectionName": "Nom de la section (optionnel)",
+    "BusBarHorizPos": "Position horizontale de la section",
+    "BusBarVertPos": "Position verticale de la section",
     "CreateBusBarSection": "Ajouter une SJB",
     "CreateLink": "Ajouter un lien",
-    "BusBarSection" : "SJB",
+    "BusBarSection": "SJB",
     "VoltageLevelCreationError": "Erreur à la création d'un poste",
     "Breaker": "Disjoncteur",
     "Disconnector": "Sectionneur",
@@ -350,5 +350,8 @@
     "MagnetizingSusceptance": "Susceptance magnétisante",
     "RatedVoltage": "Tension nominale",
     "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
-    "NewName": "Nouveau nom"
+    "NewName": "Nouveau nom",
+
+    "CopyFromExisting": "copier depuis un équipement existant",
+    "LoadCopied": "Données de consommation copié depuis la consommation {loadId}"
 }

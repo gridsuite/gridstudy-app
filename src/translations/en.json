@@ -319,7 +319,7 @@
     "ShuntIdenticalSections": "Identical sections",
     "ShuntCurrentNumberOfSections": "Current number of sections",
     "ShuntMaximumNumberOfSections": "Maximum number of sections",
-    "CreateShuntCompensator":  "Create shunt compensator",
+    "CreateShuntCompensator": "Create shunt compensator",
     "ShuntCompensatorErrorMaximumLessThanOne": "Maximum number of sections should be greater than 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less or equal than maximum",
 
@@ -328,14 +328,14 @@
 
     "CreateVoltageLevel": "Create a voltage level",
     "Substation": "Substation",
-    "BusBarSections" : "Bus bar sections",
-    "BusBarSectionID" : "Section ID",
-    "BusBarSectionName" : "Section name (optional)",
-    "BusBarHorizPos" : "Horizontal position",
-    "BusBarVertPos" : "Vertical position",
+    "BusBarSections": "Bus bar sections",
+    "BusBarSectionID": "Section ID",
+    "BusBarSectionName": "Section name (optional)",
+    "BusBarHorizPos": "Horizontal position",
+    "BusBarVertPos": "Vertical position",
     "CreateBusBarSection": "Add bus bar section",
     "CreateLink": "Add a link",
-    "BusBarSection" : "Bus bar section",
+    "BusBarSection": "Bus bar section",
     "VoltageLevelCreationError": "Voltage level creation error",
     "Breaker": "Breaker",
     "Disconnector": "Disconnector",
@@ -350,6 +350,8 @@
     "MagnetizingSusceptance": "Magnetizing susceptance",
     "RatedVoltage": "Rated voltage",
     "TwoWindingsTransformerCreationError": "Error while creating a 2 windings transformer",
-    "NewName": "New name"
+    "NewName": "New name",
 
+    "CopyFromExisting": "Copy from existing equipment",
+    "LoadCopied": "Load data successfully copied from load {loadId}"
 }
