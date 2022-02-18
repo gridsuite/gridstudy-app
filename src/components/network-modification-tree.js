@@ -85,7 +85,7 @@ const usePreviousTreeDisplay = (display, width) => {
         }
     }, [display, width]);
     return ref.current;
-}
+};
 
 const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     const dispatch = useDispatch();
