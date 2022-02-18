@@ -21,12 +21,6 @@ const useStyles = makeStyles((theme) => ({
             transition: 'none !important',
         },
     },
-    drawerToolbar: {
-        width: 0,
-        // zIndex set to be below the loader with overlay
-        // and above the network explorer drawer
-        zIndex: 60,
-    },
     drawerPaper: {
         position: 'static',
         overflow: 'hidden',
