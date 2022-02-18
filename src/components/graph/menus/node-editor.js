@@ -20,8 +20,9 @@ import {
 } from '../../../utils/messages';
 import { EditableTitle } from './editable-title';
 import { useSnackbar } from 'notistack';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { setModificationsDrawerOpen } from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -32,17 +33,23 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NodeEditor = ({ onClose }) => {
+const NodeEditor = () => {
     const classes = useStyles();
     const intlRef = useIntlRef();
+    const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
     const [selectedNode, setSelectedNode] = useState();
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
+
     const selectedNodeUuidRef = useRef();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
+
+    const closeModificationsDrawer = () => {
+        dispatch(setModificationsDrawerOpen(false));
+    };
 
     useEffect(() => {
         if (!selectedNodeUuid) return;
@@ -100,7 +107,7 @@ const NodeEditor = ({ onClose }) => {
                 <div className={classes.paper}>
                     <EditableTitle
                         name={selectedNode.name}
-                        onClose={onClose}
+                        onClose={closeModificationsDrawer}
                         onChange={changeNodeName}
                     />
                     <>
@@ -120,7 +127,6 @@ const NodeEditor = ({ onClose }) => {
 };
 
 NodeEditor.propTypes = {
-    onClose: PropTypes.func,
     className: PropTypes.string,
 };
 

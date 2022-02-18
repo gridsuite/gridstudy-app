@@ -233,6 +233,7 @@
 
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
+    "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "Logs": "Logs",

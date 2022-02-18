@@ -233,6 +233,7 @@
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre de modification de réseau",
+    "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "Logs": "Logs",
