@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
+        zIndex: 51,
     },
     drawerNodeEditor: {
         width: DRAWER_NODE_EDITOR_WIDTH,
@@ -41,7 +42,6 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.easeOut,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        marginLeft: -DRAWER_EXPLORER_WIDTH,
     },
     drawerNodeEditorShift: {
         transition: theme.transitions.create('margin', {
