@@ -372,6 +372,14 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(true);
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'deleteStudy'
+            ) {
+                // closing window on study deletion
+                window.opener = null;
+                window.open('', '_self');
+                window.close();
             }
         }
         // Note: studyUuid, and loadNetwork don't change
