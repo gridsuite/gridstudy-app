@@ -332,3 +332,21 @@ export function workingTreeNode(workingTreeNode) {
         workingTreeNode: workingTreeNode,
     };
 }
+
+export const SET_EXPLORER_DRAWER_OPEN = 'SET_EXPLORER_DRAWER_OPEN';
+
+export function setExplorerDrawerOpen(isExplorerDrawerOpen) {
+    return {
+        type: SET_EXPLORER_DRAWER_OPEN,
+        isExplorerDrawerOpen: isExplorerDrawerOpen,
+    };
+}
+
+export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
+
+export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
+    return {
+        type: SET_MODIFICATIONS_DRAWER_OPEN,
+        isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}

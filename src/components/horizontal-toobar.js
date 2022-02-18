@@ -15,8 +15,13 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useIntl } from 'react-intl';
+import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './study-pane';
 import Divider from '@material-ui/core/Divider';
+import {
+    setExplorerDrawerOpen,
+    setModificationsDrawerOpen,
+} from '../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     selected: {
@@ -35,16 +40,25 @@ const useStyles = makeStyles((theme) => ({
 
 const DELAY = 1000;
 
-export function HorizontalToolbar({
-    setStudyDisplayMode,
-    studyDisplayMode,
-    exploreOpen,
-    modificationPaneOpen,
-    toggleModificationDrawer,
-    toggleExplorerDrawer,
-}) {
+export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
     const classes = useStyles();
     const intl = useIntl();
+    const dispatch = useDispatch();
+
+    const isExplorerDrawerOpen = useSelector(
+        (state) => state.isExplorerDrawerOpen
+    );
+    const isModificationsDrawerOpen = useSelector(
+        (state) => state.isModificationsDrawerOpen
+    );
+
+    const toggleExplorerDrawer = () => {
+        dispatch(setExplorerDrawerOpen(!isExplorerDrawerOpen));
+    };
+
+    const toggleModificationsDrawer = () => {
+        dispatch(setModificationsDrawerOpen(!isModificationsDrawerOpen));
+    };
 
     function setMapDisplay() {
         setStudyDisplayMode(StudyDisplayMode.MAP);
@@ -84,7 +98,7 @@ export function HorizontalToolbar({
                         <IconButton
                             size={'small'}
                             className={
-                                exploreOpen
+                                isExplorerDrawerOpen
                                     ? classes.selected
                                     : classes.notSelected
                             }
@@ -111,11 +125,11 @@ export function HorizontalToolbar({
                 <IconButton
                     size={'small'}
                     className={
-                        modificationPaneOpen
+                        isModificationsDrawerOpen
                             ? classes.selected
                             : classes.notSelected
                     }
-                    onClick={toggleModificationDrawer}
+                    onClick={toggleModificationsDrawer}
                 >
                     <ListIcon />
                 </IconButton>
@@ -201,10 +215,6 @@ export function HorizontalToolbar({
 HorizontalToolbar.propTypes = {
     setStudyDisplayMode: PropTypes.func,
     studyDisplayMode: PropTypes.string,
-    exploreOpen: PropTypes.bool,
-    modificationPaneOpen: PropTypes.bool,
-    toggleExplorerDrawer: PropTypes.func,
-    toggleModificationDrawer: PropTypes.func,
 };
 
 export default HorizontalToolbar;

@@ -46,6 +46,8 @@ import {
     SELECTED_TREE_NODE,
     SELECT_MAP_TREE_DISPLAY,
     WORKING_TREE_NODE,
+    SET_EXPLORER_DRAWER_OPEN,
+    SET_MODIFICATIONS_DRAWER_OPEN,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -109,6 +111,8 @@ const initialState = {
     selectItemNetwork: null,
     fullScreen: false,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
+    isExplorerDrawerOpen: true,
+    isModificationsDrawerOpen: false,
     ...paramsInitialState,
 };
 
@@ -301,5 +305,11 @@ export const reducer = createReducer(initialState, {
     },
     [WORKING_TREE_NODE]: (state, action) => {
         state.workingTreeNode = action.workingTreeNode;
+    },
+    [SET_EXPLORER_DRAWER_OPEN]: (state, action) => {
+        state.isExplorerDrawerOpen = action.isExplorerDrawerOpen;
+    },
+    [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
+        state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
     },
 });

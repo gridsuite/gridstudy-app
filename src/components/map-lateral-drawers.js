@@ -12,6 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import { StudyDisplayMode } from './study-pane';
+import {  useSelector } from 'react-redux';
 
 export const DRAWER_EXPLORER_WIDTH = 375;
 export const DRAWER_NODE_EDITOR_WIDTH = 400;
@@ -58,26 +59,35 @@ export function MapLateralDrawers({
     onSubstationDisplayClick,
     onSubstationFocus,
     visibleSubstation,
-    drawerExplorerOpen,
-    drawerNodeEditorOpen,
     studyDisplayMode,
-    closeDrawerNodeEditor,
 }) {
     const classes = useStyles();
+
+    const isExplorerDrawerOpen = useSelector(
+        (state) => state.isExplorerDrawerOpen
+    );
+
+    const isModificationsDrawerOpen = useSelector(
+        (state) => state.isModificationsDrawerOpen
+    );
+
     return (
         <>
             <StudyDrawer
-                open={drawerNodeEditorOpen}
+                open={
+                    isModificationsDrawerOpen &&
+                    studyDisplayMode === StudyDisplayMode.MAP
+                }
                 drawerClassName={classes.drawerNodeEditor}
                 drawerShiftClassName={classes.drawerNodeEditorShift}
                 anchor={
                     studyDisplayMode === StudyDisplayMode.MAP ? 'left' : 'right'
                 }
             >
-                <NodeEditor onClose={closeDrawerNodeEditor} />
+                <NodeEditor />
             </StudyDrawer>
             <StudyDrawer
-                open={drawerExplorerOpen}
+                open={isExplorerDrawerOpen}
                 drawerClassName={classes.drawerExplorer}
                 drawerShiftClassName={classes.drawerExplorerShift}
                 anchor={'left'}
@@ -95,8 +105,6 @@ export function MapLateralDrawers({
 }
 MapLateralDrawers.propTypes = {
     classes: PropTypes.any,
-    drawerExplorerOpen: PropTypes.bool,
-    drawerNodeEditorOpen: PropTypes.bool,
     studyDisplayMode: PropTypes.string,
     network: PropTypes.any,
     onVoltageLevelDisplayClick: PropTypes.func,

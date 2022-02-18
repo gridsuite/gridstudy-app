@@ -144,9 +144,9 @@ const StudyPane = ({
 
     const classes = useStyles();
 
-    const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
+    // const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
 
-    const [drawerNodeEditorOpen, setDrawerNodeEditorOpen] = useState(false);
+    // const [drawerNodeEditorOpen, setDrawerNodeEditorOpen] = useState(false);
 
     const [
         closeVoltageLevelDiagram,
@@ -199,22 +199,6 @@ const StudyPane = ({
         props.onChangeTab(1); // switch to spreadsheet view
     }
 
-    const toggleExplorerDrawer = () => {
-        setDrawerExplorerOpen(!drawerExplorerOpen);
-    };
-
-    const toggleModificationDrawer = () => {
-        setDrawerNodeEditorOpen(!drawerNodeEditorOpen);
-    };
-
-    const closeDrawerNodeEditor = () => {
-        setDrawerNodeEditorOpen(false);
-    };
-
-    const openDrawerNodeEditor = () => {
-        setDrawerNodeEditorOpen(true);
-    };
-
     function renderMapView() {
         return (
             <ReactFlowProvider>
@@ -235,10 +219,6 @@ const StudyPane = ({
                         <HorizontalToolbar
                             setStudyDisplayMode={setStudyDisplayMode}
                             studyDisplayMode={studyDisplayMode}
-                            exploreOpen={drawerExplorerOpen}
-                            modificationPaneOpen={drawerNodeEditorOpen}
-                            toggleExplorerDrawer={toggleExplorerDrawer}
-                            toggleModificationDrawer={toggleModificationDrawer}
                         />
                     </div>
                     <div
@@ -262,9 +242,6 @@ const StudyPane = ({
                         >
                             <NetworkModificationTreePane
                                 studyUuid={studyUuid}
-                                closeDrawerNodeEditor={closeDrawerNodeEditor}
-                                openDrawerNodeEditor={openDrawerNodeEditor}
-                                drawerNodeEditorOpen={drawerNodeEditorOpen}
                                 studyMapTreeDisplay={studyDisplayMode}
                             />
                         </div>
@@ -334,11 +311,6 @@ const StudyPane = ({
 
                             <MapLateralDrawers
                                 network={network}
-                                drawerExplorerOpen={drawerExplorerOpen}
-                                drawerNodeEditorOpen={
-                                    drawerNodeEditorOpen &&
-                                    studyDisplayMode === StudyDisplayMode.MAP
-                                }
                                 studyDisplayMode={studyDisplayMode}
                                 onVoltageLevelDisplayClick={
                                     showVoltageLevelDiagram
@@ -346,7 +318,6 @@ const StudyPane = ({
                                 onSubstationDisplayClick={showSubstationDiagram}
                                 onSubstationFocus={setCenterOnSubstation}
                                 visibleSubstation={visibleSubstation}
-                                closeDrawerNodeEditor={closeDrawerNodeEditor}
                             />
 
                             {/*

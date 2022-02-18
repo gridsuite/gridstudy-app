@@ -10,8 +10,12 @@ import ReactFlow, {
     useStoreState,
     useZoomPanHelper,
 } from 'react-flow-renderer';
-import { useDispatch } from 'react-redux';
-import { workingTreeNode, selectTreeNode } from '../redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    workingTreeNode,
+    selectTreeNode,
+    setModificationsDrawerOpen,
+} from '../redux/actions';
 import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
@@ -71,13 +75,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const NetworkModificationTree = ({
-    treeModel,
-    openDrawerNodeEditor,
-    drawerNodeEditorOpen,
-    closeDrawerNodeEditor,
-    studyMapTreeDisplay,
-}) => {
+const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     const dispatch = useDispatch();
 
     const [selectedNode, setSelectedNode] = useState(null);
@@ -92,10 +90,22 @@ const NetworkModificationTree = ({
 
     const classes = useStyles();
 
+    const isModificationsDrawerOpen = useSelector(
+        (state) => state.isModificationsDrawerOpen
+    );
+
+    const closeModificationsDrawer = () => {
+        dispatch(setModificationsDrawerOpen(false));
+    };
+
+    const openModificationsDrawer = useCallback(() => {
+        dispatch(setModificationsDrawerOpen(false));
+    }, [dispatch]);
+
     const onElementClick = useCallback(
         (event, element) => {
             setSelectedNode(element);
-            openDrawerNodeEditor();
+            openModificationsDrawer();
             dispatch(selectTreeNode(element.id));
             if (
                 element.type === 'ROOT' ||
@@ -105,7 +115,7 @@ const NetworkModificationTree = ({
                 dispatch(workingTreeNode(element.id));
             }
         },
-        [dispatch, openDrawerNodeEditor]
+        [dispatch, openModificationsDrawer]
     );
 
     const onNodeDoubleClick = useCallback(
@@ -236,7 +246,9 @@ const NetworkModificationTree = ({
     };
 
     useEffect(() => {
-        const nodeEditorShift = drawerNodeEditorOpen ? DRAWER_NODE_EDITOR_WIDTH : 0;
+        const nodeEditorShift = isModificationsDrawerOpen
+            ? DRAWER_NODE_EDITOR_WIDTH
+            : 0;
         const { x, y, zoom, transform, prevTreeDisplay } = focusParams.current;
         if (prevTreeDisplay) {
             if (
@@ -259,7 +271,7 @@ const NetworkModificationTree = ({
                 });
             }
         }
-    }, [studyMapTreeDisplay, drawerNodeEditorOpen]);
+    }, [studyMapTreeDisplay, isModificationsDrawerOpen]);
 
     return (
         <>
@@ -298,7 +310,7 @@ const NetworkModificationTree = ({
                     </ReactFlow>
                 </Box>
                 <StudyDrawer
-                    open={drawerNodeEditorOpen}
+                    open={isModificationsDrawerOpen}
                     drawerClassName={classes.nodeEditor}
                     drawerShiftClassName={classes.nodeEditorShift}
                     anchor={
@@ -307,7 +319,7 @@ const NetworkModificationTree = ({
                             : 'left'
                     }
                 >
-                    <NodeEditor onClose={closeDrawerNodeEditor} />
+                    <NodeEditor onClose={closeModificationsDrawer} />
                 </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
@@ -327,8 +339,5 @@ export default NetworkModificationTree;
 
 NetworkModificationTree.propTypes = {
     treeModel: PropTypes.object.isRequired,
-    drawerNodeEditorOpen: PropTypes.bool.isRequired,
-    closeDrawerNodeEditor: PropTypes.func.isRequired,
-    openDrawerNodeEditor: PropTypes.func.isRequired,
     studyMapTreeDisplay: PropTypes.string.isRequired,
 };
