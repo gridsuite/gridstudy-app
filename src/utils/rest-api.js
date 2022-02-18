@@ -1289,6 +1289,21 @@ export function fetchNetworkModifications(groupUuid) {
     );
 }
 
+export function fetchNetworkModification(modificationUuid) {
+    const modificationFetchUrl =
+        PREFIX_NETWORK_MODIFICATION_QUERIES +
+        '/v1/modifications/' +
+        encodeURIComponent(modificationUuid);
+    console.debug(modificationFetchUrl);
+    return backendFetch(modificationFetchUrl, {
+        method: 'get',
+    }).then((response) =>
+        response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function buildNode(studyUuid, selectedNodeUuid) {
     console.info(
         'Build node ' + selectedNodeUuid + ' of study ' + studyUuid + ' ...'

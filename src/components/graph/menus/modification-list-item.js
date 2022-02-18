@@ -13,6 +13,7 @@ import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from 'prop-types';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,10 +25,25 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ModificationListItem = ({ modification, onDelete, ...props }) => {
+export const ModificationListItem = ({
+    modification,
+    onDelete,
+    onEdit,
+    ...props
+}) => {
     const intl = useIntl();
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
+
+    const equipmentCreationModificationsType = new Set([
+        'GENERATOR_CREATION',
+        'LINE_CREATION',
+        'LOAD_CREATION',
+        'SHUNT_COMPENSATOR_CREATION',
+        'SUBSTATION_CREATION',
+        'TWO_WINDINGS_TRANSFORMER_CREATION',
+        'VOLTAGE_LEVEL_CREATION',
+    ]);
 
     const getComputedLabel = useCallback(() => {
         return useName && modification.equipmentName
@@ -46,10 +62,28 @@ export const ModificationListItem = ({ modification, onDelete, ...props }) => {
             ),
         [modification, getComputedLabel, intl]
     );
+    console.info('modification', modification);
     return (
         <>
             <ListItem {...props} className={classes.listItem}>
-                <OverflowableText className={classes.label} text={getLabel()} />
+                {equipmentCreationModificationsType.has(modification.type) && (
+                    <IconButton
+                        onClick={() => onEdit(modification.uuid)}
+                        size={'small'}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                )}
+                <OverflowableText
+                    className={classes.label}
+                    text={getLabel()}
+                    style={{
+                        paddingLeft:
+                            !equipmentCreationModificationsType.has(
+                                modification.type
+                            ) && '30px',
+                    }}
+                />
                 <IconButton
                     onClick={() => onDelete(modification.uuid)}
                     size={'small'}
@@ -64,4 +98,6 @@ export const ModificationListItem = ({ modification, onDelete, ...props }) => {
 
 ModificationListItem.propTypes = {
     modification: PropTypes.object,
+    onDelete: PropTypes.func,
+    onEdit: PropTypes.func,
 };
