@@ -12,7 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import { StudyDisplayMode } from './study-pane';
-import {  useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 export const DRAWER_EXPLORER_WIDTH = 375;
 export const DRAWER_NODE_EDITOR_WIDTH = 400;
