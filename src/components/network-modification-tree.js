@@ -75,6 +75,18 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+// We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
+// But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
+const usePreviousTreeDisplay = (display, width) => {
+    const ref = useRef();
+    useEffect(() => {
+        if (display !== StudyDisplayMode.MAP) {
+            ref.current = { display, width };
+        }
+    }, [display, width]);
+    return ref.current;
+}
+
 const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     const dispatch = useDispatch();
 
@@ -221,18 +233,6 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     const width = useStoreState((state) => state.width);
 
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
-
-    // We need the previous display and width to compute the transformation we will apply to the tree in order to keep the same focus.
-    // But the MAP display is neutral for this computation: We need to know what was the last HYBRID or TREE display and its width.
-    function usePreviousTreeDisplay(display, width) {
-        const ref = useRef();
-        useEffect(() => {
-            if (display !== StudyDisplayMode.MAP) {
-                ref.current = { display, width };
-            }
-        }, [display, width]);
-        return ref.current;
-    }
 
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.

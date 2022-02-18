@@ -144,10 +144,6 @@ const StudyPane = ({
 
     const classes = useStyles();
 
-    // const [drawerExplorerOpen, setDrawerExplorerOpen] = useState(true);
-
-    // const [drawerNodeEditorOpen, setDrawerNodeEditorOpen] = useState(false);
-
     const [
         closeVoltageLevelDiagram,
         showVoltageLevelDiagram,
