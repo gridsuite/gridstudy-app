@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 
 export const NetworkModificationTreePane = ({
     studyUuid,
-    openModificationDrawer,
+    studyMapTreeDisplay,
 }) => {
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
@@ -79,7 +79,7 @@ export const NetworkModificationTreePane = ({
     return (
         <NetworkModificationTree
             treeModel={treeModel}
-            openModificationDrawer={openModificationDrawer}
+            studyMapTreeDisplay={studyMapTreeDisplay}
         />
     );
 };
@@ -88,4 +88,5 @@ export default NetworkModificationTreePane;
 
 NetworkModificationTreePane.propTypes = {
     studyUuid: PropTypes.string.isRequired,
+    studyMapTreeDisplay: PropTypes.string.isRequired,
 };
