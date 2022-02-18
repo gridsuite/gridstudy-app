@@ -110,7 +110,5 @@ MapLateralDrawers.propTypes = {
     onVoltageLevelDisplayClick: PropTypes.func,
     onSubstationDisplayClick: PropTypes.func,
     onSubstationFocus: PropTypes.func,
-    closeDrawerNodeEditor: PropTypes.func,
     visibleSubstation: PropTypes.any,
-    onClose: PropTypes.func,
 };
