@@ -142,9 +142,11 @@ const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
         onClose();
     };
 
-    const handleClose = () => {
-        setErrors(new Map());
-        onClose();
+    const handleClose = (event, reason) => {
+        if (reason !== 'backdropClick') {
+            setErrors(new Map());
+            onClose();
+        }
     };
 
     return (
