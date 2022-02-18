@@ -106,12 +106,8 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
         (state) => state.isModificationsDrawerOpen
     );
 
-    const closeModificationsDrawer = () => {
-        dispatch(setModificationsDrawerOpen(false));
-    };
-
     const openModificationsDrawer = useCallback(() => {
-        dispatch(setModificationsDrawerOpen(false));
+        dispatch(setModificationsDrawerOpen(true));
     }, [dispatch]);
 
     const onElementClick = useCallback(
@@ -319,7 +315,7 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
                             : 'left'
                     }
                 >
-                    <NodeEditor onClose={closeModificationsDrawer} />
+                    <NodeEditor />
                 </StudyDrawer>
             </Box>
             {createNodeMenu.display && (
