@@ -53,7 +53,8 @@ export const NetworkModificationTreePane = ({
                     dispatch(
                         networkModificationTreeNodeAdded(
                             node,
-                            studyUpdatedForce.eventData.headers['node']
+                            studyUpdatedForce.eventData.headers['parentNode'],
+                            studyUpdatedForce.eventData.headers['insertMode']
                         )
                     );
                 });

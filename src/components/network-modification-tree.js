@@ -170,8 +170,8 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     }, []);
 
     const handleCreateNode = useCallback(
-        (element, type) => {
-            createTreeNode(studyUuid, element.id, {
+        (element, type, insertMode) => {
+            createTreeNode(studyUuid, element.id, insertMode, {
                 name: 'New node',
                 type: type,
                 buildStatus: 'NOT_BUILT',

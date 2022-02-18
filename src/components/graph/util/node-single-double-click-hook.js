@@ -16,15 +16,19 @@ export function useNodeSingleAndDoubleClick(
     useEffect(() => {
         const timer = setTimeout(() => {
             // simple click
-            if (clickEvent.count === 1)
+            if (clickEvent.count === 1) {
                 actionSimpleClick(clickEvent.event, clickEvent.node);
-            setClickEvent({ count: 0 });
+            }
+            if (clickEvent.count !== 0) {
+                setClickEvent({ count: 0 });
+            }
         }, delay);
 
         // the duration between this click and the previous one
         // is less than the value of delay = double-click
-        if (clickEvent.count === 2)
+        if (clickEvent.count === 2) {
             actionDoubleClick(clickEvent.event, clickEvent.node);
+        }
 
         return () => clearTimeout(timer);
     }, [clickEvent, actionSimpleClick, actionDoubleClick, delay]);
