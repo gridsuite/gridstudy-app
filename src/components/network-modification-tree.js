@@ -106,14 +106,10 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
         (state) => state.isModificationsDrawerOpen
     );
 
-    const openModificationsDrawer = useCallback(() => {
-        dispatch(setModificationsDrawerOpen(true));
-    }, [dispatch]);
-
     const onElementClick = useCallback(
         (event, element) => {
             setSelectedNode(element);
-            openModificationsDrawer();
+            dispatch(setModificationsDrawerOpen(true));
             dispatch(selectTreeNode(element.id));
             if (
                 element.type === 'ROOT' ||
@@ -123,7 +119,7 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
                 dispatch(workingTreeNode(element.id));
             }
         },
-        [dispatch, openModificationsDrawer]
+        [dispatch]
     );
 
     const onNodeDoubleClick = useCallback(
