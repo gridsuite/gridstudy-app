@@ -147,7 +147,8 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.addChild(
                 action.networkModificationTreeNode,
-                action.parentNodeId
+                action.parentNodeId,
+                action.insertMode
             );
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;

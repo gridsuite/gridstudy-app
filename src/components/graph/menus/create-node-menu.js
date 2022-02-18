@@ -37,13 +37,13 @@ const CreateNodeMenu = ({
     const classes = useStyles();
     const intl = useIntl();
 
-    function createNetworkModificationNode() {
-        handleNodeCreation(activeNode, 'NETWORK_MODIFICATION');
+    function createNetworkModificationNode(insertMode) {
+        handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);
         handleClose();
     }
 
-    function createModelNode() {
-        handleNodeCreation(activeNode, 'MODEL');
+    function createModelNode(insertMode) {
+        handleNodeCreation(activeNode, 'MODEL', insertMode);
         handleClose();
     }
 
@@ -51,6 +51,44 @@ const CreateNodeMenu = ({
         handleNodeRemoval(activeNode);
         handleClose();
     }
+
+    const NODE_MENU_ITEMS = {
+        CREATE_MODIFICATION_NODE: {
+            onRoot: true,
+            action: () => createNetworkModificationNode('CHILD'),
+            id: 'createNetworkModificationNode',
+        },
+        CREATE_MODEL_NODE: {
+            onRoot: true,
+            action: () => createModelNode('CHILD'),
+            id: 'createModelNode',
+        },
+        INSERT_MODIFICATION_NODE_BEFORE: {
+            onRoot: false,
+            action: () => createNetworkModificationNode('BEFORE'),
+            id: 'insertNetworkModificationNodeBefore',
+        },
+        INSERT_MODEL_NODE_BEFORE: {
+            onRoot: false,
+            action: () => createModelNode('BEFORE'),
+            id: 'insertModelNodeBefore',
+        },
+        INSERT_MODIFICATION_NODE_AFTER: {
+            onRoot: true,
+            action: () => createNetworkModificationNode('AFTER'),
+            id: 'insertNetworkModificationNodeAfter',
+        },
+        INSERT_MODEL_NODE_AFTER: {
+            onRoot: true,
+            action: () => createModelNode('AFTER'),
+            id: 'insertModelNodeAfter',
+        },
+        REMOVE_NODE: {
+            onRoot: false,
+            action: () => removeNode(),
+            id: 'removeNode',
+        },
+    };
 
     return (
         <Menu
@@ -64,51 +102,27 @@ const CreateNodeMenu = ({
             open={true}
             onClose={handleClose}
         >
-            <MenuItem
-                className={classes.menuItem}
-                onClick={() => createNetworkModificationNode()}
-            >
-                <ListItemText
-                    className={classes.listItemText}
-                    primary={
-                        <Typography noWrap>
-                            {intl.formatMessage({
-                                id: 'createNetworkModificationNode',
-                            })}
-                        </Typography>
-                    }
-                />
-            </MenuItem>
-
-            <MenuItem
-                className={classes.menuItem}
-                onClick={() => createModelNode()}
-            >
-                <ListItemText
-                    className={classes.listItemText}
-                    primary={
-                        <Typography noWrap>
-                            {intl.formatMessage({ id: 'createModelNode' })}
-                        </Typography>
-                    }
-                />
-            </MenuItem>
-
-            {activeNode?.type !== 'ROOT' && (
-                <MenuItem
-                    className={classes.menuItem}
-                    onClick={() => removeNode()}
-                >
-                    <ListItemText
-                        className={classes.listItemText}
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({ id: 'removeNode' })}
-                            </Typography>
-                        }
-                    />
-                </MenuItem>
-            )}
+            {Object.values(NODE_MENU_ITEMS).map((item) => {
+                return (
+                    (activeNode?.type !== 'ROOT' || item.onRoot) && (
+                        <MenuItem
+                            className={classes.menuItem}
+                            onClick={item.action}
+                        >
+                            <ListItemText
+                                className={classes.listItemText}
+                                primary={
+                                    <Typography noWrap>
+                                        {intl.formatMessage({
+                                            id: item.id,
+                                        })}
+                                    </Typography>
+                                }
+                            />
+                        </MenuItem>
+                    )
+                );
+            })}
         </Menu>
     );
 };

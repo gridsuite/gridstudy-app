@@ -61,12 +61,14 @@ export const NETWORK_MODIFICATION_TREE_NODE_ADDED =
 
 export function networkModificationTreeNodeAdded(
     networkModificationTreeNode,
-    parentNodeId
+    parentNodeId,
+    insertMode
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
         networkModificationTreeNode: networkModificationTreeNode,
         parentNodeId: parentNodeId,
+        insertMode: insertMode,
     };
 }
 
