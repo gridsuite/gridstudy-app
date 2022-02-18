@@ -17,15 +17,13 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 1,
         overflowY: 'none',
         overflowX: 'none',
-        '& .MuiDrawer-paper': {
-            transition: 'none !important',
-        },
     },
     drawerPaper: {
         position: 'static',
         overflow: 'hidden',
         flex: '1',
         flexGrow: '1',
+        transition: 'none !important',
     },
 }));
 
