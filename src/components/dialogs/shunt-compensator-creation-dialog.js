@@ -188,10 +188,15 @@ const ShuntCompensatorCreationDialog = ({
         setClear(!clear);
     }, [clear]);
 
-    const handleClose = useCallback(() => {
-        validationMap.current = new Map();
-        onClose();
-    }, [onClose]);
+    const handleClose = useCallback(
+        (event, reason) => {
+            if (reason !== 'backdropClick') {
+                validationMap.current = new Map();
+                onClose();
+            }
+        },
+        [onClose]
+    );
 
     const handleCloseAndClear = () => {
         clearValues();
