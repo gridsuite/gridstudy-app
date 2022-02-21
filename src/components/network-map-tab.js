@@ -231,7 +231,7 @@ export const NetworkMapTab = ({
                 handleClose={closeChoiceVoltageLevelMenu}
                 onClickHandler={choiceVoltageLevel}
                 substation={choiceVoltageLevelsSubstation}
-                position={[position[0] + 200, position[1]]}
+                position={[position[0] + 100, position[1]]}
             />
         );
     }

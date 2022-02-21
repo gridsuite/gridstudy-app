@@ -16,7 +16,12 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { useSelector } from 'react-redux';
 import { getNominalVoltageColor } from '../utils/colors';
-import { PARAM_USE_NAME } from '../utils/config-params';
+import { PARAM_MAP_TREE_DISPLAY, PARAM_USE_NAME } from '../utils/config-params';
+import { StudyDisplayMode } from './study-pane';
+import {
+    DRAWER_EXPLORER_WIDTH,
+    DRAWER_NODE_EDITOR_WIDTH,
+} from './map-lateral-drawers';
 
 const useStyles = makeStyles((theme) => ({
     menu: {
@@ -57,6 +62,25 @@ const VoltageLevelChoice = ({
 }) => {
     const classes = useStyles();
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
+    const displayMode = useSelector((state) => state[PARAM_MAP_TREE_DISPLAY]);
+    const isExplorerDrawerOpen = useSelector(
+        (state) => state.isExplorerDrawerOpen
+    );
+    const isModificationsDrawerOpen = useSelector(
+        (state) => state.isModificationsDrawerOpen
+    );
+
+    let leftPosition =
+        displayMode === StudyDisplayMode.HYBRID
+            ? position[0] + window.screen.width / 2
+            : position[0];
+    leftPosition =
+        displayMode === StudyDisplayMode.MAP && isModificationsDrawerOpen
+            ? leftPosition + DRAWER_NODE_EDITOR_WIDTH
+            : leftPosition;
+    leftPosition = isExplorerDrawerOpen
+        ? leftPosition + DRAWER_EXPLORER_WIDTH
+        : leftPosition;
 
     return (
         <div className={classes.menu}>
@@ -65,7 +89,7 @@ const VoltageLevelChoice = ({
                 anchorPosition={{
                     position: 'absolute',
                     top: position[1],
-                    left: position[0],
+                    left: leftPosition,
                 }}
                 id="choice-vl-menu"
                 open={true}
