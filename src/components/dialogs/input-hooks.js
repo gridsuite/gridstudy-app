@@ -5,21 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
-import { useIntl } from 'react-intl';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../util/validation-functions';
-import { TextField } from '@material-ui/core';
+import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import ConnectivityEdition from './connectivity-edition';
 import { makeStyles } from '@material-ui/core/styles';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
 
 export const SusceptanceAdornment = {
     position: 'end',
@@ -37,16 +33,40 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
         marginTop: 4,
     },
+    h3: {
+        marginBottom: 0,
+        paddingBottom: 1,
+    },
 }));
+
+export const useInputForm = () => {
+    const validationMap = useRef(new Map());
+    const [toggleClear, setToggleClear] = useState(false);
+    const validate = useCallback(() => {
+        // Check if error list contains an error
+        return Array.from(validationMap.current.values())
+            .map((e) => e())
+            .every((res) => res);
+    }, []);
+    const addValidation = useCallback((label, validate) => {
+        validationMap.current.set(label, validate);
+    }, []);
+    const clear = useCallback(() => {
+        setToggleClear((oldValue) => !oldValue);
+    }, []);
+    const reset = useCallback((label, validate) => {
+        validationMap.current = new Map();
+    }, []);
+    return { toggleClear, clear, validate, addValidation, reset };
+};
 
 export const useTextValue = ({
     label,
     defaultValue = '',
     validation = {},
-    validationMap,
     adornment,
     transformValue = func_identity,
-    clear,
+    inputForm,
     formProps,
 }) => {
     const [value, setValue] = useState(defaultValue);
@@ -64,8 +84,8 @@ export const useTextValue = ({
             setError(res?.errorMsgId);
             return !res.error;
         }
-        validationMap.current.set(label, validate);
-    }, [label, validationMap, value]);
+        inputForm.addValidation(label, validate);
+    }, [label, inputForm, value]);
 
     const handleChangeValue = useCallback(
         (event) => {
@@ -114,7 +134,10 @@ export const useTextValue = ({
         classes,
     ]);
 
-    useEffect(() => setValue(defaultValue), [defaultValue, clear]);
+    useEffect(
+        () => setValue(defaultValue),
+        [defaultValue, inputForm.toggleClear]
+    );
     return [value, field];
 };
 
@@ -165,8 +188,7 @@ export const useBooleanValue = ({
     label,
     defaultValue,
     validation = {},
-    validationMap,
-    clear,
+    inputForm,
     formProps,
 }) => {
     const [value, setValue] = useState(defaultValue);
@@ -176,8 +198,8 @@ export const useBooleanValue = ({
         function validate() {
             return true;
         }
-        validationMap.current.set(label, validate);
-    }, [label, validation, validationMap, value]);
+        inputForm.addValidation(label, validate);
+    }, [label, validation, inputForm, value]);
 
     const handleChangeValue = useCallback((event) => {
         setValue(event.target.checked);
@@ -206,7 +228,10 @@ export const useBooleanValue = ({
         );
     }, [intl, label, value, handleChangeValue, formProps]);
 
-    useEffect(() => setValue(defaultValue), [defaultValue, clear]);
+    useEffect(
+        () => setValue(defaultValue),
+        [defaultValue, inputForm.toggleClear]
+    );
 
     return [value, field];
 };
@@ -216,8 +241,7 @@ export const useConnectivityValue = ({
     validation = {
         isFieldRequired: true,
     },
-    validationMap,
-    clear,
+    inputForm,
     voltageLevelOptions,
     workingNodeUuid,
 }) => {
@@ -235,7 +259,7 @@ export const useConnectivityValue = ({
                 voltageLevel: null,
                 busOrBusbarSection: null,
             }),
-        [clear]
+        [inputForm.toggleClear]
     );
 
     useEffect(() => {
@@ -249,8 +273,8 @@ export const useConnectivityValue = ({
             setErrorBusBarSection(resBBS?.errorMsgId);
             return !resVL.error && !resBBS.error;
         }
-        validationMap.current.set(label, validate);
-    }, [connectivity, label, validation, validationMap]);
+        inputForm.addValidation(label, validate);
+    }, [connectivity, label, validation, inputForm]);
 
     const setVoltageLevel = useCallback((newVal) => {
         setConnectivity((oldVal) => {
@@ -303,4 +327,73 @@ export const useConnectivityValue = ({
     ]);
 
     return [connectivity, render];
+};
+
+export const useEnumValue = ({
+    label,
+    defaultValue,
+    validation = {},
+    inputForm,
+    formProps,
+    enumValues,
+}) => {
+    const [value, setValue] = useState(defaultValue);
+
+    useEffect(() => {
+        function validate() {
+            return true;
+        }
+        inputForm.addValidation(label, validate);
+    }, [label, validation, inputForm, value]);
+
+    const handleChangeValue = useCallback((event) => {
+        setValue(event.target.value);
+    }, []);
+
+    const field = useMemo(() => {
+        return (
+            <FormControl fullWidth size="small">
+                {/*This InputLabel is necessary in order to display
+                            the label describing the content of the Select*/}
+                <InputLabel id="enum-type-label" variant={'filled'}>
+                    <FormattedMessage id={label} />
+                </InputLabel>
+                <Select
+                    id={label}
+                    value={value}
+                    onChange={handleChangeValue}
+                    variant="filled"
+                    fullWidth
+                    {...formProps}
+                >
+                    {enumValues.map((e) => (
+                        <MenuItem value={e.id}>
+                            <em>
+                                <FormattedMessage id={e.label} />
+                            </em>
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        );
+    }, [label, value, handleChangeValue, formProps, enumValues]);
+
+    useEffect(
+        () => setValue(defaultValue),
+        [defaultValue, inputForm.toggleClear]
+    );
+
+    return [value, field];
+};
+export const GridSection = ({ title }) => {
+    const classes = useStyles();
+    return (
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <h3 className={classes.h3}>
+                    <FormattedMessage id={title} />
+                </h3>
+            </Grid>
+        </Grid>
+    );
 };

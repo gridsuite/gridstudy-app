@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -14,47 +14,21 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
+import { displayErrorMessageWithSnackbar, useIntlRef } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
-import { makeStyles } from '@material-ui/core/styles';
 import {
     filledTextField,
+    GridSection,
     SusceptanceAdornment,
     toPositiveIntValue,
     useBooleanValue,
     useConnectivityValue,
     useDoubleValue,
+    useInputForm,
     useIntegerValue,
-    useTextValue,
+    useTextValue
 } from './input-hooks';
 import { createShuntCompensator } from '../../utils/rest-api';
-
-const useStyles = makeStyles((theme) => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-    h3: {
-        marginBottom: 0,
-        paddingBottom: 1,
-    },
-}));
-
-const GridSection = ({ title }) => {
-    const classes = useStyles();
-    return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <h3 className={classes.h3}>
-                    <FormattedMessage id={title} />
-                </h3>
-            </Grid>
-        </Grid>
-    );
-};
 
 const disabledChecked = { disabled: true };
 
@@ -79,22 +53,18 @@ const ShuntCompensatorCreationDialog = ({
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const validationMap = useRef(new Map());
-
-    const [clear, setClear] = useState(false);
+    const inputForm = useInputForm();
 
     const [shuntCompensatorId, shuntCompensatorIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
-        validationMap: validationMap,
-        clear: clear,
+        inputForm: inputForm,
         formProps: filledTextField,
     });
 
     const [shuntCompensatorName, shuntCompensatorNameField] = useTextValue({
         label: 'NameOptional',
-        validationMap: validationMap,
-        clear: clear,
+        inputForm: inputForm,
         formProps: filledTextField,
     });
 
@@ -108,8 +78,7 @@ const ShuntCompensatorCreationDialog = ({
                 errorMsgId: 'ShuntCompensatorErrorMaximumLessThanOne',
             },
             transformValue: toPositiveIntValue,
-            validationMap: validationMap,
-            clear: clear,
+            inputForm: inputForm,
         });
 
     const [currentNumberOfSections, currentNumberOfSectionsField] =
@@ -122,41 +91,33 @@ const ShuntCompensatorCreationDialog = ({
                 errorMsgId: 'ShuntCompensatorErrorCurrentLessThanMaximum',
             },
             transformValue: toPositiveIntValue,
-            validationMap: validationMap,
-            clear: clear,
+            inputForm: inputForm,
         });
 
     const [identicalSections, identicalSectionsField] = useBooleanValue({
         label: 'ShuntIdenticalSections',
         defaultValue: true,
         validation: { isFieldRequired: true },
-        validationMap: validationMap,
         formProps: disabledChecked,
-        clear: clear,
+        inputForm: inputForm,
     });
 
     const [susceptancePerSection, susceptancePerSectionField] = useDoubleValue({
         label: 'ShuntSusceptancePerSection',
         validation: { isFieldRequired: true },
-        validationMap: validationMap,
         adornment: SusceptanceAdornment,
-        clear: clear,
+        inputForm: inputForm,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
-        validationMap: validationMap,
+        inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
     });
 
     const handleSave = () => {
-        // Check if error list contains an error
-        let isInvalid = Array.from(validationMap.current.values())
-            .map((e) => e())
-            .some((res) => !res);
-
-        if (!isInvalid) {
+        if (inputForm.validate()) {
             createShuntCompensator(
                 studyUuid,
                 selectedNodeUuid,
@@ -185,17 +146,17 @@ const ShuntCompensatorCreationDialog = ({
     };
 
     const clearValues = useCallback(() => {
-        setClear(!clear);
-    }, [clear]);
+        inputForm.clear();
+    }, [inputForm]);
 
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
-                validationMap.current = new Map();
+                inputForm.reset();
                 onClose();
             }
         },
-        [onClose]
+        [inputForm, onClose]
     );
 
     const handleCloseAndClear = () => {
