@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -14,7 +14,10 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../../utils/messages';
+import {
+    displayErrorMessageWithSnackbar,
+    useIntlRef,
+} from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import {
     filledTextField,
@@ -26,7 +29,7 @@ import {
     useDoubleValue,
     useInputForm,
     useIntegerValue,
-    useTextValue
+    useTextValue,
 } from './input-hooks';
 import { createShuntCompensator } from '../../utils/rest-api';
 
@@ -48,7 +51,6 @@ const ShuntCompensatorCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -180,7 +182,7 @@ const ShuntCompensatorCreationDialog = ({
             aria-labelledby="dialog-create-shuntCompensator"
         >
             <DialogTitle>
-                {intl.formatMessage({ id: 'CreateShuntCompensator' })}
+                <FormattedMessage id="CreateShuntCompensator" />
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>

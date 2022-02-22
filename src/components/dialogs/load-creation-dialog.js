@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
@@ -21,13 +21,14 @@ import {
 } from '../../utils/messages';
 import { createLoad } from '../../utils/rest-api';
 import {
-    filledTextField, GridSection,
+    filledTextField,
+    GridSection,
     toPositiveIntValue,
     useConnectivityValue,
     useEnumValue,
     useInputForm,
     useIntegerValue,
-    useTextValue
+    useTextValue,
 } from './input-hooks';
 
 const LOAD_TYPES = [
@@ -53,7 +54,6 @@ const LoadCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -173,7 +173,7 @@ const LoadCreationDialog = ({
             maxWidth={'md'}
         >
             <DialogTitle>
-                {intl.formatMessage({ id: 'CreateLoad' })}
+                <FormattedMessage id="CreateLoad" />
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
@@ -181,7 +181,7 @@ const LoadCreationDialog = ({
                     {gridItem(loadNameField)}
                     {gridItem(loadTypeField)}
                 </Grid>
-                <GridSection title="Characteristics" />
+                <GridSection title="Setpoints" />
                 <Grid container spacing={2}>
                     {gridItem(activePowerField)}
                     {gridItem(reactivePowerField)}

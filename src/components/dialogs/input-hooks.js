@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../util/validation-functions';
 import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
@@ -22,6 +28,16 @@ export const SusceptanceAdornment = {
     text: 'S',
 };
 
+export const OhmAdornment = {
+    position: 'end',
+    text: 'Ω',
+};
+
+export const AmpereAdornment = {
+    position: 'end',
+    text: 'A',
+};
+
 export const filledTextField = {
     variant: 'filled',
 };
@@ -36,6 +52,14 @@ const useStyles = makeStyles((theme) => ({
     h3: {
         marginBottom: 0,
         paddingBottom: 1,
+    },
+    h4: {
+        marginBottom: 0,
+    },
+    popper: {
+        style: {
+            width: 'fit-content',
+        },
     },
 }));
 
@@ -244,6 +268,7 @@ export const useConnectivityValue = ({
     inputForm,
     voltageLevelOptions,
     workingNodeUuid,
+    direction = 'row',
 }) => {
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
@@ -313,17 +338,19 @@ export const useConnectivityValue = ({
                     })
                 }
                 workingNodeUuid={workingNodeUuid}
+                direction={direction}
             />
         );
     }, [
         connectivity,
+        direction,
         errorBusBarSection,
         errorVoltageLevel,
         intl,
-        workingNodeUuid,
         setBusOrBusbarSection,
         setVoltageLevel,
         voltageLevelOptions,
+        workingNodeUuid,
     ]);
 
     return [connectivity, render];
@@ -385,11 +412,11 @@ export const useEnumValue = ({
 
     return [value, field];
 };
-export const GridSection = ({ title }) => {
+export const GridSection = ({ title, size = 12 }) => {
     const classes = useStyles();
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid item xs={size}>
                 <h3 className={classes.h3}>
                     <FormattedMessage id={title} />
                 </h3>
