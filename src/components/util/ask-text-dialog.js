@@ -35,8 +35,8 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
     };
 
     useEffect(() => {
-        setCurrentValue(value);
-    }, [value]);
+        if (show) setCurrentValue(value);
+    }, [value, show]);
 
     const handleValidate = (e) => {
         onValidate(currentValue || '');
