@@ -233,6 +233,7 @@
 
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
+    "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "Logs": "Logs",
@@ -244,7 +245,7 @@
 
     "Optional": "(optional)",
     "createNetworkModificationNode": "Create a network modification node",
-    "createModelNode": "Create model node",
+    "createModelNode": "Create a model node",
     "removeNode": "Remove node",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
     "NodeCreateError": "An error occured while creating node",
@@ -353,5 +354,10 @@
     "NewName": "New name",
 
     "CopyFromExisting": "Copy from existing equipment",
-    "LoadCopied": "Load data successfully copied from load {loadId}"
+    "LoadCopied": "Load data successfully copied from load {loadId}",
+
+    "insertNetworkModificationNodeBefore": "Insert a network modification node before",
+    "insertModelNodeBefore": "Insert a model node before",
+    "insertNetworkModificationNodeAfter": "Insert a network modification node after",
+    "insertModelNodeAfter": "Insert a model node after"
 }

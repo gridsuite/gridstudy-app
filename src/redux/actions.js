@@ -20,6 +20,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
+    PARAM_MAP_TREE_DISPLAY,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -61,12 +62,14 @@ export const NETWORK_MODIFICATION_TREE_NODE_ADDED =
 
 export function networkModificationTreeNodeAdded(
     networkModificationTreeNode,
-    parentNodeId
+    parentNodeId,
+    insertMode
 ) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODE_ADDED,
         networkModificationTreeNode: networkModificationTreeNode,
         parentNodeId: parentNodeId,
+        insertMode: insertMode,
     };
 }
 
@@ -104,6 +107,15 @@ export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
 
 export function selectLanguage(language) {
     return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
+}
+
+export const SELECT_MAP_TREE_DISPLAY = 'SELECT_MAP_TREE_DISPLAY';
+
+export function selectMapTreeDisplay(mapTreeDisplay) {
+    return {
+        type: SELECT_MAP_TREE_DISPLAY,
+        [PARAM_MAP_TREE_DISPLAY]: mapTreeDisplay,
+    };
 }
 
 export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
@@ -320,5 +332,23 @@ export function workingTreeNode(workingTreeNode) {
     return {
         type: WORKING_TREE_NODE,
         workingTreeNode: workingTreeNode,
+    };
+}
+
+export const SET_EXPLORER_DRAWER_OPEN = 'SET_EXPLORER_DRAWER_OPEN';
+
+export function setExplorerDrawerOpen(isExplorerDrawerOpen) {
+    return {
+        type: SET_EXPLORER_DRAWER_OPEN,
+        isExplorerDrawerOpen: isExplorerDrawerOpen,
+    };
+}
+
+export const SET_MODIFICATIONS_DRAWER_OPEN = 'SET_MODIFICATIONS_DRAWER_OPEN';
+
+export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
+    return {
+        type: SET_MODIFICATIONS_DRAWER_OPEN,
+        isModificationsDrawerOpen: isModificationsDrawerOpen,
     };
 }
