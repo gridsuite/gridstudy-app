@@ -354,7 +354,7 @@
     "NewName": "New name",
 
     "CopyFromExisting": "Copy from existing equipment",
-    "LoadCopied": "Load data successfully copied from load {loadId}",
+    "LoadCopied": "Data successfully copied from load {loadId}",
 
     "insertNetworkModificationNodeBefore": "Insert a network modification node before",
     "insertModelNodeBefore": "Insert a model node before",

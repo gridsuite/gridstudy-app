@@ -21,29 +21,19 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import {
-    createLoad,
-    fetchEquipmentsInfos,
-    fetchLoadInfos,
-} from '../../utils/rest-api';
+import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { makeErrorHelper, validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
-import { PARAM_USE_NAME } from '../../utils/config-params';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
-import {
-    equipmentStyles,
-    getEquipmentsInfosForSearchBar,
-    renderEquipmentForSearchBar,
-    ElementSearchDialog,
-} from '@gridsuite/commons-ui';
+import EquipmentSearchDialog from './equipment-search-dialog';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -60,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const useEquipmentStyles = makeStyles(equipmentStyles);
+const DELAY = 1000;
 
 /**
  * Dialog to create a load in the network
@@ -222,13 +212,7 @@ const LoadCreationDialog = ({
         }
     };
 
-    //Search bar
-    const equipmentClasses = useEquipmentStyles();
-
-    const useNameLocal = useState(PARAM_USE_NAME);
-
     const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
-    const [equipmentsFound, setEquipmentsFound] = useState([]);
 
     const handleOpenSearchDialog = () => {
         setDialogSearchOpen(true);
@@ -240,13 +224,14 @@ const LoadCreationDialog = ({
                 setLoadId(load.id);
                 setLoadName(load.name);
                 setLoadType(load.type);
-                setActivePower(load.p0);
-                setReactivePower(load.q0);
+                setActivePower(String(load.p0));
+                setReactivePower(String(load.q0));
                 setVoltageLevel(
                     voltageLevelOptions.find(
                         (value) => value.id === load.voltageLevelId
                     )
                 );
+                //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
             })
             .then(() => {
                 let msg = intl.formatMessage(
@@ -263,34 +248,6 @@ const LoadCreationDialog = ({
             });
         setDialogSearchOpen(false);
     };
-
-    const searchMatchingEquipments = useCallback(
-        (searchTerm) => {
-            fetchEquipmentsInfos(
-                studyUuid,
-                workingNodeUuid,
-                searchTerm,
-                useNameLocal,
-                'LOAD'
-            )
-                .then((infos) =>
-                    setEquipmentsFound(
-                        getEquipmentsInfosForSearchBar(infos, useNameLocal)
-                    )
-                )
-                .catch((errorMessage) =>
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'equipmentsSearchingError',
-                            intlRef: intlRef,
-                        },
-                    })
-                );
-        },
-        [studyUuid, workingNodeUuid, useNameLocal, enqueueSnackbar, intlRef]
-    );
 
     return (
         <>
@@ -313,8 +270,8 @@ const LoadCreationDialog = ({
                                 })}
                                 placement="top"
                                 arrow
-                                enterDelay={500}
-                                enterNextDelay={500}
+                                enterDelay={DELAY}
+                                enterNextDelay={DELAY}
                                 classes={{ tooltip: classes.tooltip }}
                             >
                                 <Button onClick={handleOpenSearchDialog}>
@@ -503,21 +460,12 @@ const LoadCreationDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <ElementSearchDialog
+            <EquipmentSearchDialog
                 open={isDialogSearchOpen}
                 onClose={() => setDialogSearchOpen(false)}
-                searchingLabel={intl.formatMessage({
-                    id: 'equipment_search/label',
-                })}
-                onSearchTermChange={searchMatchingEquipments}
-                onSelectionChange={(element) => {
-                    handleSelectionChange(element);
-                }}
-                elementsFound={equipmentsFound}
-                renderElement={renderEquipmentForSearchBar(
-                    equipmentClasses,
-                    intl
-                )}
+                equipmentType={'LOAD'}
+                onSelectionChange={handleSelectionChange}
+                workingNodeUuid={workingNodeUuid}
             />
         </>
     );

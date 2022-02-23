@@ -353,8 +353,8 @@
     "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
     "NewName": "Nouveau nom",
 
-    "CopyFromExisting": "copier depuis un équipement existant",
-    "LoadCopied": "Données de consommation copié depuis la consommation {loadId}",
+    "CopyFromExisting": "Copier depuis un équipement existant",
+    "LoadCopied": "Données copiées depuis la consommation {loadId}",
 
     "insertNetworkModificationNodeBefore": "Insérer un nœud de modifications de réseau au dessus",
     "insertModelNodeBefore": "Insérer un nœud modèle au dessus",

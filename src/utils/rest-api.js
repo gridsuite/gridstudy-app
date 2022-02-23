@@ -429,13 +429,7 @@ export function fetchEquipmentsInfos(
 }
 
 export function fetchLoadInfos(studyUuid, selectedNodeUuid, loadId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        'Loads',
-        'loads',
-        loadId
-    );
+    return fetchEquipmentInfos(studyUuid, selectedNodeUuid, 'loads', loadId);
 }
 
 export function fetchAllEquipments(
@@ -474,12 +468,11 @@ function fetchEquipments(
 function fetchEquipmentInfos(
     studyUuid,
     selectedNodeUuid,
-    equipmentType,
     equipmentPath,
     equipmentId
 ) {
     console.info(
-        `Fetching specific equipments '${equipmentId}' of type '${equipmentType}' of study '${studyUuid}' and node '${selectedNodeUuid}' ...`
+        `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${selectedNodeUuid}' ...`
     );
     const fetchEquipmentInfosUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
