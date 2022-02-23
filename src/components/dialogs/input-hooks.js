@@ -390,6 +390,11 @@ export const useAutocompleteField = ({
 }) => {
     const [value, setValue] = useState('');
 
+    console.info('values', values);
+    console.info('Object.keys(values.object())', Object.keys(values.object()));
+    // console.info('(code) => values.get(code)', (code) => values.get(code));
+
+
     useEffect(() => {
         function validate() {
             return true;
@@ -398,6 +403,7 @@ export const useAutocompleteField = ({
     }, [label, validation, inputForm, value]);
 
     const handleChangeValue = useCallback((event) => {
+        console.info('event.target.value', event.target.value);
         setValue(event.target.value);
     }, []);
 

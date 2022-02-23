@@ -34,7 +34,7 @@ import {
 } from './input-hooks';
 
 const LOAD_TYPES = [
-    { id: '', label: 'NONE' },
+    { id: '', label: 'None' },
     { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },

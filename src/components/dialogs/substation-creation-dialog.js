@@ -63,6 +63,7 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
     });
 
     const countriesListCB = useCallback(() => {
+        console.info('countriesListCB');
         try {
             return require('localized-countries')(
                 require('localized-countries/data/' +
