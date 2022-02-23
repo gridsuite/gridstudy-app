@@ -17,10 +17,20 @@ import { makeStyles } from '@material-ui/core/styles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useSelector } from 'react-redux';
-import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
+import {
+    PARAM_DISPLAY_OVERLOAD_TABLE,
+    PARAM_MAP_TREE_DISPLAY,
+} from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
+import { StudyDisplayMode } from './study-pane';
+import {
+    DRAWER_EXPLORER_WIDTH,
+    DRAWER_NODE_EDITOR_WIDTH,
+} from './map-lateral-drawers';
 
 const INITIAL_POSITION = [0, 0];
+
+const VL_CHOICE_MENU_SHIFT = 100;
 
 const useStyles = makeStyles((theme) => ({
     divNominalVoltageFilter: {
@@ -225,13 +235,32 @@ export const NetworkMapTab = ({
         );
     };
 
+    const displayMode = useSelector((state) => state[PARAM_MAP_TREE_DISPLAY]);
+    const isExplorerDrawerOpen = useSelector(
+        (state) => state.isExplorerDrawerOpen
+    );
+    const isModificationsDrawerOpen = useSelector(
+        (state) => state.isModificationsDrawerOpen
+    );
+
     function renderVoltageLevelChoice() {
+        let leftPosition =
+            displayMode === StudyDisplayMode.HYBRID
+                ? position[0] + window.screen.width / 2
+                : position[0];
+        leftPosition =
+            displayMode === StudyDisplayMode.MAP && isModificationsDrawerOpen
+                ? leftPosition + DRAWER_NODE_EDITOR_WIDTH
+                : leftPosition;
+        leftPosition = isExplorerDrawerOpen
+            ? leftPosition + DRAWER_EXPLORER_WIDTH
+            : leftPosition;
         return (
             <VoltageLevelChoice
                 handleClose={closeChoiceVoltageLevelMenu}
                 onClickHandler={choiceVoltageLevel}
                 substation={choiceVoltageLevelsSubstation}
-                position={[position[0] + 200, position[1]]}
+                position={[leftPosition + VL_CHOICE_MENU_SHIFT, position[1]]}
             />
         );
     }
