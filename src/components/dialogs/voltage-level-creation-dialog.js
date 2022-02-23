@@ -319,20 +319,18 @@ const VoltageLevelCreationDialog = ({
                 substation.id,
                 busBarSections,
                 connections
-            )
-                .then(() => {
-                    handleCloseAndClear();
-                })
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'VoltageLevelCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'VoltageLevelCreationError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
+            // do not wait fetch response and close dialog, errors will be shown in snackbar.
+            handleCloseAndClear();
         }
     };
 
