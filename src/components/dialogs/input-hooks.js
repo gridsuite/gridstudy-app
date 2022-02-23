@@ -22,6 +22,7 @@ import ConnectivityEdition from './connectivity-edition';
 import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
+import { Autocomplete } from '@material-ui/lab';
 
 export const SusceptanceAdornment = {
     position: 'end',
@@ -36,6 +37,21 @@ export const OhmAdornment = {
 export const AmpereAdornment = {
     position: 'end',
     text: 'A',
+};
+
+export const ActivePowerAdornment = {
+    position: 'end',
+    text: 'MW',
+};
+
+export const ReactivePowerAdornment = {
+    position: 'end',
+    text: 'MVar',
+};
+
+export const VoltageAdornment = {
+    position: 'end',
+    text: 'kV',
 };
 
 export const filledTextField = {
@@ -126,9 +142,17 @@ export const useTextValue = ({
                 size="small"
                 fullWidth
                 id={label}
-                label={intl.formatMessage({
-                    id: label,
-                })}
+                label={
+                    intl.formatMessage({
+                        id: label,
+                    }) +
+                    ' ' +
+                    (!validation.isFieldRequired
+                        ? intl.formatMessage({
+                              id: 'Optional',
+                          })
+                        : '')
+                }
                 {...(adornment && {
                     adornmentPosition: adornment.position,
                     adornmentText: adornment?.text,
@@ -156,6 +180,7 @@ export const useTextValue = ({
         error,
         formProps,
         classes,
+        validation.isFieldRequired,
     ]);
 
     useEffect(
@@ -354,6 +379,53 @@ export const useConnectivityValue = ({
     ]);
 
     return [connectivity, render];
+};
+
+export const useAutocompleteField = ({
+    label,
+    validation = {},
+    inputForm,
+    formProps,
+    values,
+}) => {
+    const [value, setValue] = useState('');
+
+    useEffect(() => {
+        function validate() {
+            return true;
+        }
+        inputForm.addValidation(label, validate);
+    }, [label, validation, inputForm, value]);
+
+    const handleChangeValue = useCallback((event) => {
+        setValue(event.target.value);
+    }, []);
+
+    const field = useMemo(() => {
+        return (
+            <Grid item xs={4} align="start">
+                <Autocomplete
+                    id={label}
+                    onChange={(event, newValue) => {
+                        handleChangeValue(newValue);
+                    }}
+                    options={Object.keys(values.object())}
+                    getOptionLabel={(code) => values.get(code)}
+                    renderInput={(props) => (
+                        <TextField
+                            {...formProps}
+                            variant="filled"
+                            size="small"
+                            label={<FormattedMessage id={label} />}
+                            value={value}
+                        />
+                    )}
+                />
+            </Grid>
+        );
+    }, [label, value, handleChangeValue, formProps, values]);
+
+    return [value, field];
 };
 
 export const useEnumValue = ({

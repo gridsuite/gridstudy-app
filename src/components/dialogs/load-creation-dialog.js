@@ -21,8 +21,10 @@ import {
 } from '../../utils/messages';
 import { createLoad } from '../../utils/rest-api';
 import {
+    ActivePowerAdornment,
     filledTextField,
     GridSection,
+    ReactivePowerAdornment,
     toPositiveIntValue,
     useConnectivityValue,
     useEnumValue,
@@ -68,37 +70,39 @@ const LoadCreationDialog = ({
     });
 
     const [loadName, loadNameField] = useTextValue({
-        label: 'NameOptional',
+        label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
     });
 
     const [loadType, loadTypeField] = useEnumValue({
-        label: 'TypeOptional',
+        label: 'Type',
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
     });
 
     const [activePower, activePowerField] = useIntegerValue({
-        label: 'ActivePower',
+        label: 'ActivePowerText',
         validation: {
             isFieldRequired: true,
             isValueGreaterThan: '0',
             errorMsgId: 'ActivePowerErrorMaximumLessThanOne',
         },
         transformValue: toPositiveIntValue,
+        adornment: ActivePowerAdornment,
         inputForm: inputForm,
     });
 
     const [reactivePower, reactivePowerField] = useIntegerValue({
-        label: 'ReactivePower',
+        label: 'ReactivePowerText',
         validation: {
             isFieldRequired: true,
             isValueGreaterThan: '0',
             errorMsgId: 'ReactivePowerErrorMaximumLessThanOne',
         },
         transformValue: toPositiveIntValue,
+        adornment: ReactivePowerAdornment,
         inputForm: inputForm,
     });
 

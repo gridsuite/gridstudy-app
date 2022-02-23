@@ -65,7 +65,7 @@ const ShuntCompensatorCreationDialog = ({
     });
 
     const [shuntCompensatorName, shuntCompensatorNameField] = useTextValue({
-        label: 'NameOptional',
+        label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
     });
@@ -91,6 +91,7 @@ const ShuntCompensatorCreationDialog = ({
                 isValueLessOrEqualTo: maximumNumberOfSections,
                 isValueGreaterThan: '-1',
                 errorMsgId: 'ShuntCompensatorErrorCurrentLessThanMaximum',
+                isFieldRequired: true,
             },
             transformValue: toPositiveIntValue,
             inputForm: inputForm,

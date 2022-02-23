@@ -83,7 +83,7 @@ const LineCreationDialog = ({
     });
 
     const [lineName, lineNameField] = useTextValue({
-        label: 'NameOptional',
+        label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
     });
@@ -175,8 +175,10 @@ const LineCreationDialog = ({
                 shuntSusceptance1,
                 shuntConductance2,
                 shuntSusceptance2,
-                connectivity1,
-                connectivity2,
+                connectivity1.voltageLevel.id,
+                connectivity1.busOrBusbarSection.id,
+                connectivity2.voltageLevel.id,
+                connectivity2.busOrBusbarSection.id,
                 permanentCurrentLimit1,
                 permanentCurrentLimit2
             )
@@ -235,8 +237,8 @@ const LineCreationDialog = ({
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                        {gridItem(lineIdField)}
-                        {gridItem(lineNameField)}
+                    {gridItem(lineIdField)}
+                    {gridItem(lineNameField)}
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -246,8 +248,8 @@ const LineCreationDialog = ({
                     </Grid>
                 </Grid>
                 <Grid container spacing={2}>
-                        {gridItem(seriesResistanceField)}
-                        {gridItem(seriesReactanceField)}
+                    {gridItem(seriesResistanceField)}
+                    {gridItem(seriesReactanceField)}
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
@@ -262,7 +264,7 @@ const LineCreationDialog = ({
                     </Grid>
                 </Grid>
                 <Grid container spacing={2}>
-                    <Grid item container xs={6} direction="column" >
+                    <Grid item container xs={6} direction="column">
                         {gridItem(shuntConductance1Field, 14)}
                         {gridItem(shuntSusceptance1Field, 14)}
                     </Grid>
@@ -321,12 +323,12 @@ const LineCreationDialog = ({
                 <Grid container spacing={2}>
                     <Grid item container xs={6} direction="column">
                         <Grid container direction="column" spacing={2}>
-                                {gridItem(connectivity1Field,'column')}
+                            {gridItem(connectivity1Field, 'column')}
                         </Grid>
                     </Grid>
                     <Grid item container direction="column" xs={6}>
                         <Grid container direction="column" spacing={2}>
-                                {gridItem(connectivity2Field,'column')}
+                            {gridItem(connectivity2Field, 'column')}
                         </Grid>
                     </Grid>
                 </Grid>
