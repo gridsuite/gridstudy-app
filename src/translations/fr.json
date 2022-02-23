@@ -355,6 +355,8 @@
 
     "CopyFromExisting": "Copier depuis un équipement existant",
     "LoadCopied": "Données copiées depuis la consommation {loadId}",
+    "LoadCopyFailed404": "Erreur lors de la copie de la consommation : la consommation n'a pas été trouvée",
+    "LoadCopyFailed": "Erreur lors de la copie de la consommation",
 
     "insertNetworkModificationNodeBefore": "Insérer un nœud de modifications de réseau au dessus",
     "insertModelNodeBefore": "Insérer un nœud modèle au dessus",

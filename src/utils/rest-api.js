@@ -481,9 +481,7 @@ function fetchEquipmentInfos(
         '/' +
         equipmentId;
     console.debug(fetchEquipmentInfosUrl);
-    return backendFetch(fetchEquipmentInfosUrl).then((response) =>
-        response.json()
-    );
+    return backendFetch(fetchEquipmentInfosUrl);
 }
 
 export function fetchBusesForVoltageLevel(

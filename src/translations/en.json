@@ -355,6 +355,8 @@
 
     "CopyFromExisting": "Copy from existing equipment",
     "LoadCopied": "Data successfully copied from load {loadId}",
+    "LoadCopyFailed404": "Load copy failed: the load was not found",
+    "LoadCopyFailed": "Load copy failed",
 
     "insertNetworkModificationNodeBefore": "Insert a network modification node before",
     "insertModelNodeBefore": "Insert a model node before",

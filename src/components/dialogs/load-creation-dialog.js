@@ -219,33 +219,63 @@ const LoadCreationDialog = ({
     };
 
     const handleSelectionChange = (element) => {
-        fetchLoadInfos(studyUuid, workingNodeUuid, element.id)
-            .then((load) => {
-                setLoadId(load.id);
-                setLoadName(load.name);
-                setLoadType(load.type);
-                setActivePower(String(load.p0));
-                setReactivePower(String(load.q0));
-                setVoltageLevel(
-                    voltageLevelOptions.find(
-                        (value) => value.id === load.voltageLevelId
-                    )
-                );
-                //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
-            })
-            .then(() => {
-                let msg = intl.formatMessage(
-                    { id: 'LoadCopied' },
-                    {
-                        loadId: element.id,
+        let msg;
+        fetchLoadInfos(studyUuid, workingNodeUuid, element.id).then(
+            (response) => {
+                if (response.status === 200) {
+                    response.json().then((load) => {
+                        //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
+                        setLoadId(load.id);
+                        setLoadName(load.name);
+                        setLoadType(load.type);
+                        setActivePower(String(load.p0));
+                        setReactivePower(String(load.q0));
+                        setVoltageLevel(
+                            voltageLevelOptions.find(
+                                (value) => value.id === load.voltageLevelId
+                            )
+                        );
+
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopied' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                        enqueueSnackbar(msg, {
+                            variant: 'info',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        });
+                    });
+                } else {
+                    console.error(
+                        'error while fetching load {loadId} : status = {status}',
+                        element.id,
+                        response.status
+                    );
+                    if (response.status === 404) {
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopyFailed404' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                    } else {
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopyFailed' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
                     }
-                );
-                enqueueSnackbar(msg, {
-                    variant: 'info',
-                    persist: false,
-                    style: { whiteSpace: 'pre-line' },
-                });
-            });
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: msg,
+                        enqueueSnackbar,
+                    });
+                }
+            }
+        );
         setDialogSearchOpen(false);
     };
 
