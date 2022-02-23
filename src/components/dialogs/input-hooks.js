@@ -390,11 +390,6 @@ export const useAutocompleteField = ({
 }) => {
     const [value, setValue] = useState('');
 
-    console.info('values', values);
-    console.info('Object.keys(values.object())', Object.keys(values.object()));
-    // console.info('(code) => values.get(code)', (code) => values.get(code));
-
-
     useEffect(() => {
         function validate() {
             return true;
@@ -402,32 +397,32 @@ export const useAutocompleteField = ({
         inputForm.addValidation(label, validate);
     }, [label, validation, inputForm, value]);
 
-    const handleChangeValue = useCallback((event) => {
-        console.info('event.target.value', event.target.value);
-        setValue(event.target.value);
+    const handleChangeValue = useCallback((value) => {
+        setValue(value);
     }, []);
 
     const field = useMemo(() => {
         return (
-            <Grid item xs={4} align="start">
-                <Autocomplete
-                    id={label}
-                    onChange={(event, newValue) => {
-                        handleChangeValue(newValue);
-                    }}
-                    options={Object.keys(values.object())}
-                    getOptionLabel={(code) => values.get(code)}
-                    renderInput={(props) => (
-                        <TextField
-                            {...formProps}
-                            variant="filled"
-                            size="small"
-                            label={<FormattedMessage id={label} />}
-                            value={value}
-                        />
-                    )}
-                />
-            </Grid>
+            // <Grid item xs={4} align="start">
+            <Autocomplete
+                id={label}
+                onChange={(event, newValue) => {
+                    handleChangeValue(newValue);
+                }}
+                options={Object.keys(values.object())}
+                getOptionLabel={(code) => values.get(code)}
+                renderInput={(props) => (
+                    <TextField
+                        {...formProps}
+                        {...props}
+                        variant="filled"
+                        size="small"
+                        label={<FormattedMessage id={label} />}
+                        value={value}
+                    />
+                )}
+            />
+            // </Grid>
         );
     }, [label, value, handleChangeValue, formProps, values]);
 

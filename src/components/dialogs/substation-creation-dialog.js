@@ -12,7 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -26,7 +26,6 @@ import { getComputedLanguage } from '../../utils/language';
 import {
     filledTextField,
     useAutocompleteField,
-    useEnumValue,
     useInputForm,
     useTextValue,
 } from './input-hooks';
@@ -62,7 +61,7 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         formProps: filledTextField,
     });
 
-    const countriesListCB = useCallback(() => {
+    const countriesList = useMemo(() => {
         console.info('countriesListCB');
         try {
             return require('localized-countries')(
@@ -81,7 +80,7 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         label: 'Country',
         inputForm: inputForm,
         formProps: filledTextField,
-        values: countriesListCB(),
+        values: countriesList,
     });
 
     const handleSave = () => {

@@ -28,17 +28,24 @@ import { useSnackbar } from 'notistack';
 import { validateField } from '../util/validation-functions';
 import { makeStyles } from '@material-ui/core/styles';
 import ConnectivityEdition from './connectivity-edition';
+import {
+    ActivePowerAdornment,
+    filledTextField, ReactivePowerAdornment,
+    toPositiveIntValue,
+    useEnumValue,
+    useIntegerValue,
+    useTextValue
+} from './input-hooks';
 
-const useStyles = makeStyles((theme) => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-    h3: {
-        marginBottom: 0,
-        paddingBottom: 1,
-    },
-}));
+const ENERGY_SOURCES = [
+    { id: '', label: 'None' },
+    { id: 'HYDRO', label: 'Hydro' },
+    { id: 'NUCLEAR', label: 'Nuclear' },
+    { id: 'WIND', label: 'Wind' },
+    { id: 'THERMAL', label: 'Thermal' },
+    { id: 'SOLAR', label: 'Solar' },
+    { id: 'OTHER', label: 'Other' },
+];
 
 /**
  * Dialog to create a generator in the network
@@ -63,21 +70,87 @@ const GeneratorCreationDialog = ({
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const [generatorId, setGeneratorId] = useState('');
+    const [generatorId, generatorIdField] = useTextValue({
+        label: 'ID',
+        validation: { isFieldRequired: true },
+        inputForm: inputForm,
+        formProps: filledTextField,
+    });
 
-    const [generatorName, setGeneratorName] = useState('');
+    const [generatorName, generatorNameField] = useTextValue({
+        label: 'Name',
+        inputForm: inputForm,
+        formProps: filledTextField,
+    });
 
-    const [energySource, setEnergySource] = useState('');
+    const [energySource, energySourceField] = useEnumValue({
+        label: 'Type',
+        inputForm: inputForm,
+        formProps: filledTextField,
+        enumValues: ENERGY_SOURCES,
+    });
 
-    const [minimumActivePower, setMinimumActivePower] = useState('');
+    const [minimumActivePower, minimumActivePowerField] = useIntegerValue({
+        label: 'MinimumActivePowerText',
+        validation: {
+            isFieldRequired: true,
+            isValueGreaterThan: '0',
+            errorMsgId: 'MinimumActivePowerErrorMaximumLessThanOne',
+        },
+        transformValue: toPositiveIntValue,
+        adornment: ActivePowerAdornment,
+        inputForm: inputForm,
+    });
 
-    const [maximumActivePower, setMaximumActivePower] = useState('');
+    const [maximumActivePower, maximumActivePowerField] = useIntegerValue({
+        label: 'MaximumActivePowerText',
+        validation: {
+            isFieldRequired: true,
+            isValueGreaterThan: '0',
+            errorMsgId: 'MaximumActivePowerErrorMaximumLessThanOne',
+        },
+        transformValue: toPositiveIntValue,
+        adornment: ActivePowerAdornment,
+        inputForm: inputForm,
+    });
 
-    const [ratedNominalPower, setRatedNominalPower] = useState('');
+    const [ratedNominalPower, ratedNominalPowerField] = useIntegerValue({
+        label: 'ReactiveNominalPowerText',
+        validation: {
+            isFieldRequired: true,
+            isValueGreaterThan: '0',
+            errorMsgId: 'RatedNominalPowerErrorMaximumLessThanOne',
+        },
+        transformValue: toPositiveIntValue,
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+    });
 
-    const [activePowerSetpoint, setActivePowerSetpoint] = useState('');
+    const [activePowerSetpoint, activePowerSetpointField] = useIntegerValue({
+        label: 'ActivePowerText',
+        validation: {
+            isFieldRequired: true,
+            isValueGreaterThan: '0',
+            errorMsgId: 'ActivePowerErrorMaximumLessThanOne',
+        },
+        transformValue: toPositiveIntValue,
+        adornment: ActivePowerAdornment,
+        inputForm: inputForm,
+    });
 
-    const [reactivePowerSetpoint, setReactivePowerSetpoint] = useState('');
+    const [reactivePowerSetpoint, reactivePowerSetpointField] = useIntegerValue({
+        label: 'ReactivePowerText',
+        validation: {
+            isFieldRequired: true,
+            isValueGreaterThan: '0',
+            errorMsgId: 'RectivePowerErrorMaximumLessThanOne',
+        },
+        transformValue: toPositiveIntValue,
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+    });
+
+
     const [enabledReactivePowerSetpoint, setEnabledReactivePowerSetpoint] =
         useState(true);
 
