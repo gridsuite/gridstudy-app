@@ -1,10 +1,16 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import {
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+    Tooltip,
+} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -22,10 +28,12 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createLoad } from '../../utils/rest-api';
+import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { makeErrorHelper, validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
+import EquipmentSearchDialog from './equipment-search-dialog';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -36,7 +44,13 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 0,
         paddingBottom: 1,
     },
+    tooltip: {
+        fontSize: 18,
+        maxWidth: 'none',
+    },
 }));
+
+const DELAY = 1000;
 
 /**
  * Dialog to create a load in the network
@@ -44,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
+ * @param workingNodeUuid : the node we are currently working on
  */
 const LoadCreationDialog = ({
     open,
@@ -195,186 +210,293 @@ const LoadCreationDialog = ({
         }
     };
 
+    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+
+    const handleOpenSearchDialog = () => {
+        setDialogSearchOpen(true);
+    };
+
+    const handleSelectionChange = (element) => {
+        let msg;
+        fetchLoadInfos(studyUuid, workingNodeUuid, element.id).then(
+            (response) => {
+                if (response.status === 200) {
+                    response.json().then((load) => {
+                        //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
+                        setLoadId(load.id);
+                        setLoadName(load.name);
+                        setLoadType(load.type);
+                        setActivePower(String(load.p0));
+                        setReactivePower(String(load.q0));
+                        setVoltageLevel(
+                            voltageLevelOptions.find(
+                                (value) => value.id === load.voltageLevelId
+                            )
+                        );
+                        setBusOrBusbarSection(null);
+
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopied' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                        enqueueSnackbar(msg, {
+                            variant: 'info',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        });
+                    });
+                } else {
+                    console.error(
+                        'error while fetching load {loadId} : status = {status}',
+                        element.id,
+                        response.status
+                    );
+                    if (response.status === 404) {
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopyFailed404' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                    } else {
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopyFailed' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                    }
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: msg,
+                        enqueueSnackbar,
+                    });
+                }
+            }
+        );
+        setDialogSearchOpen(false);
+    };
+
     return (
-        <Dialog
-            fullWidth
-            maxWidth="md" // 3 columns
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-load"
-        >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'CreateLoad' })}
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={4} align="start">
-                        <TextField
-                            size="small"
-                            fullWidth
-                            id="load-id"
-                            label={intl.formatMessage({ id: 'ID' })}
-                            variant="filled"
-                            value={loadId}
-                            onChange={handleChangeLoadId}
-                            /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                               which is not the case when no variant is used) */
-                            FormHelperTextProps={{
-                                className: classes.helperText,
-                            }}
-                            {...(errors.get('load-id')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('load-id')?.errorMsgId,
-                                }),
-                            })}
-                        />
-                    </Grid>
-                    <Grid item xs={4} align="start">
-                        <TextField
-                            size="small"
-                            fullWidth
-                            id="load-name"
-                            label={intl.formatMessage({ id: 'NameOptional' })}
-                            value={loadName}
-                            onChange={handleChangeLoadName}
-                            variant="filled"
-                        />
-                    </Grid>
-                    <Grid item xs={4} align="start">
-                        <FormControl fullWidth size="small">
-                            {/*This InputLabel is necessary in order to display
-                            the label describing the content of the Select*/}
-                            <InputLabel id="load-type-label" variant={'filled'}>
-                                {intl.formatMessage({ id: 'TypeOptional' })}
-                            </InputLabel>
-                            <Select
-                                id="load-type"
-                                value={loadType}
-                                onChange={handleChangeLoadType}
-                                variant="filled"
-                                fullWidth
+        <>
+            <Dialog
+                fullWidth
+                maxWidth="md" // 3 columns
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-load"
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item>
+                            {intl.formatMessage({ id: 'CreateLoad' })}
+                        </Grid>
+                        <Grid item>
+                            <Tooltip
+                                title={intl.formatMessage({
+                                    id: 'CopyFromExisting',
+                                })}
+                                placement="top"
+                                arrow
+                                enterDelay={DELAY}
+                                enterNextDelay={DELAY}
+                                classes={{ tooltip: classes.tooltip }}
                             >
-                                <MenuItem value="">
-                                    <em>
-                                        {intl.formatMessage({ id: 'None' })}
-                                    </em>
-                                </MenuItem>
-                                <MenuItem value={'UNDEFINED'}>
-                                    {intl.formatMessage({
-                                        id: 'UndefinedDefaultValue',
-                                    })}
-                                </MenuItem>
-                                <MenuItem value={'AUXILIARY'}>
-                                    {intl.formatMessage({ id: 'Auxiliary' })}
-                                </MenuItem>
-                                <MenuItem value={'FICTITIOUS'}>
-                                    {intl.formatMessage({ id: 'Fictitious' })}
-                                </MenuItem>
-                            </Select>
-                        </FormControl>
+                                <Button onClick={handleOpenSearchDialog}>
+                                    <FindInPageIcon />
+                                </Button>
+                            </Tooltip>
+                        </Grid>
                     </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <h3 className={classes.h3}>
-                            <FormattedMessage id="Setpoints" />
-                        </h3>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        <Grid item xs={4} align="start">
+                            <TextField
+                                size="small"
+                                fullWidth
+                                id="load-id"
+                                label={intl.formatMessage({ id: 'ID' })}
+                                variant="filled"
+                                value={loadId}
+                                onChange={handleChangeLoadId}
+                                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
+                                   which is not the case when no variant is used) */
+                                FormHelperTextProps={{
+                                    className: classes.helperText,
+                                }}
+                                {...(errors.get('load-id')?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('load-id')?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="start">
+                            <TextField
+                                size="small"
+                                fullWidth
+                                id="load-name"
+                                label={intl.formatMessage({
+                                    id: 'NameOptional',
+                                })}
+                                value={loadName}
+                                onChange={handleChangeLoadName}
+                                variant="filled"
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="start">
+                            <FormControl fullWidth size="small">
+                                {/*This InputLabel is necessary in order to display
+                                the label describing the content of the Select*/}
+                                <InputLabel
+                                    id="load-type-label"
+                                    variant={'filled'}
+                                >
+                                    {intl.formatMessage({ id: 'TypeOptional' })}
+                                </InputLabel>
+                                <Select
+                                    id="load-type"
+                                    value={loadType}
+                                    onChange={handleChangeLoadType}
+                                    variant="filled"
+                                    fullWidth
+                                >
+                                    <MenuItem value="">
+                                        <em>
+                                            {intl.formatMessage({ id: 'None' })}
+                                        </em>
+                                    </MenuItem>
+                                    <MenuItem value={'UNDEFINED'}>
+                                        {intl.formatMessage({
+                                            id: 'UndefinedDefaultValue',
+                                        })}
+                                    </MenuItem>
+                                    <MenuItem value={'AUXILIARY'}>
+                                        {intl.formatMessage({
+                                            id: 'Auxiliary',
+                                        })}
+                                    </MenuItem>
+                                    <MenuItem value={'FICTITIOUS'}>
+                                        {intl.formatMessage({
+                                            id: 'Fictitious',
+                                        })}
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
                     </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={4} align="start">
-                        <TextFieldWithAdornment
-                            size="small"
-                            fullWidth
-                            id="load-active-power"
-                            label={intl.formatMessage({
-                                id: 'ActivePowerText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'MW'}
-                            value={activePower}
-                            onChange={handleChangeActivePower}
-                            {...(errors.get('active-power')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('active-power')?.errorMsgId,
-                                }),
-                            })}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <h3 className={classes.h3}>
+                                <FormattedMessage id="Setpoints" />
+                            </h3>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={4} align="start">
-                        <TextFieldWithAdornment
-                            size="small"
-                            fullWidth
-                            id="load-reactive-power"
-                            label={intl.formatMessage({
-                                id: 'ReactivePowerText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'MVar'}
-                            value={reactivePower}
-                            onChange={handleChangeReactivePower}
-                            {...(errors.get('reactive-power')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('reactive-power')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={4} align="start">
+                            <TextFieldWithAdornment
+                                size="small"
+                                fullWidth
+                                id="load-active-power"
+                                label={intl.formatMessage({
+                                    id: 'ActivePowerText',
+                                })}
+                                adornmentPosition={'end'}
+                                adornmentText={'MW'}
+                                value={activePower}
+                                onChange={handleChangeActivePower}
+                                {...(errors.get('active-power')?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('active-power')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
+                        <Grid item xs={4} align="start">
+                            <TextFieldWithAdornment
+                                size="small"
+                                fullWidth
+                                id="load-reactive-power"
+                                label={intl.formatMessage({
+                                    id: 'ReactivePowerText',
+                                })}
+                                adornmentPosition={'end'}
+                                adornmentText={'MVar'}
+                                value={reactivePower}
+                                onChange={handleChangeReactivePower}
+                                {...(errors.get('reactive-power')?.error && {
+                                    error: true,
+                                    helperText: intl.formatMessage({
+                                        id: errors.get('reactive-power')
+                                            ?.errorMsgId,
+                                    }),
+                                })}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
-                {/* Connectivity part */}
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <h3 className={classes.h3}>
-                            <FormattedMessage id="Connectivity" />
-                        </h3>
+                    {/* Connectivity part */}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <h3 className={classes.h3}>
+                                <FormattedMessage id="Connectivity" />
+                            </h3>
+                        </Grid>
                     </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={8} align="start">
-                        <ConnectivityEdition
-                            voltageLevelOptions={voltageLevelOptions}
-                            voltageLevel={voltageLevel}
-                            busOrBusbarSection={busOrBusbarSection}
-                            onChangeVoltageLevel={(value) =>
-                                setVoltageLevel(value)
-                            }
-                            onChangeBusOrBusbarSection={(busOrBusbarSection) =>
-                                setBusOrBusbarSection(busOrBusbarSection)
-                            }
-                            errorVoltageLevel={
-                                errors.get('voltage-level')?.error
-                            }
-                            helperTextVoltageLevel={makeErrorHelper(
-                                errors,
-                                intl,
-                                'voltage-level'
-                            )}
-                            errorBusOrBusBarSection={
-                                errors.get('bus-bar')?.error
-                            }
-                            helperTextBusOrBusBarSection={makeErrorHelper(
-                                errors,
-                                intl,
-                                'bus-bar-level'
-                            )}
-                            workingNodeUuid={workingNodeUuid}
-                        />
+                    <Grid container spacing={2}>
+                        <Grid item xs={8} align="start">
+                            <ConnectivityEdition
+                                voltageLevelOptions={voltageLevelOptions}
+                                voltageLevel={voltageLevel}
+                                busOrBusbarSection={busOrBusbarSection}
+                                onChangeVoltageLevel={(value) =>
+                                    setVoltageLevel(value)
+                                }
+                                onChangeBusOrBusbarSection={(
+                                    busOrBusbarSection
+                                ) => setBusOrBusbarSection(busOrBusbarSection)}
+                                errorVoltageLevel={
+                                    errors.get('voltage-level')?.error
+                                }
+                                helperTextVoltageLevel={makeErrorHelper(
+                                    errors,
+                                    intl,
+                                    'voltage-level'
+                                )}
+                                errorBusOrBusBarSection={
+                                    errors.get('bus-bar')?.error
+                                }
+                                helperTextBusOrBusBarSection={makeErrorHelper(
+                                    errors,
+                                    intl,
+                                    'bus-bar-level'
+                                )}
+                                workingNodeUuid={workingNodeUuid}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id="save" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={isDialogSearchOpen}
+                onClose={() => setDialogSearchOpen(false)}
+                equipmentType={'LOAD'}
+                onSelectionChange={handleSelectionChange}
+                workingNodeUuid={workingNodeUuid}
+            />
+        </>
     );
 };
 
