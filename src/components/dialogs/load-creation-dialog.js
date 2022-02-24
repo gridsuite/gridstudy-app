@@ -25,7 +25,6 @@ import {
     filledTextField,
     GridSection,
     ReactivePowerAdornment,
-    toPositiveIntValue,
     useConnectivityValue,
     useEnumValue,
     useInputForm,
@@ -88,7 +87,6 @@ const LoadCreationDialog = ({
             isFieldRequired: true,
             isFieldNumeric: true,
         },
-        transformValue: toPositiveIntValue,
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
     });
@@ -99,7 +97,6 @@ const LoadCreationDialog = ({
             isFieldRequired: true,
             isFieldNumeric: true,
         },
-        transformValue: toPositiveIntValue,
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
     });

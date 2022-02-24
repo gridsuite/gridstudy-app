@@ -25,7 +25,6 @@ import {
     ActivePowerAdornment,
     filledTextField,
     ReactivePowerAdornment,
-    toPositiveIntValue,
     useBooleanValue,
     useConnectivityValue,
     useDoubleValue,
@@ -95,7 +94,7 @@ const GeneratorCreationDialog = ({
     });
 
     const [energySource, energySourceField] = useEnumValue({
-        label: 'EnergySource',
+        label: 'EnergySourceText',
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: ENERGY_SOURCES,
@@ -110,7 +109,6 @@ const GeneratorCreationDialog = ({
             isFieldRequired: true,
             isFieldNumeric: true,
         },
-        transformValue: toPositiveIntValue,
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
     });
@@ -123,7 +121,6 @@ const GeneratorCreationDialog = ({
             isValueLessOrEqualTo: maximumActivePower,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
-        transformValue: toPositiveIntValue,
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
     });
@@ -136,7 +133,6 @@ const GeneratorCreationDialog = ({
             isValueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
-        transformValue: toPositiveIntValue,
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
     });
@@ -147,20 +143,19 @@ const GeneratorCreationDialog = ({
             isFieldRequired: true,
             isFieldNumeric: true,
         },
-        transformValue: toPositiveIntValue,
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
     });
 
     const [voltageRegulation, voltageRegulationField] = useBooleanValue({
-        label: 'VoltageRegulation',
+        label: 'VoltageRegulationText',
         defaultValue: false,
         validation: { isFieldRequired: true },
         inputForm: inputForm,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
-        label: 'Voltage',
+        label: 'VoltageText',
         validation: {
             isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
@@ -179,7 +174,6 @@ const GeneratorCreationDialog = ({
                 isFieldRequired: !voltageRegulation,
                 isFieldNumeric: true,
             },
-            transformValue: toPositiveIntValue,
             adornment: ReactivePowerAdornment,
             inputForm: inputForm,
             formProps: { disabled: voltageRegulation },
