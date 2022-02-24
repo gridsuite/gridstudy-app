@@ -243,29 +243,29 @@ const LoadCreationDialog = ({
                     response.json().then((load) => {
                         addSuffixIfNecessary(load.id, 1).then((loadId) => {
                             setLoadId(loadId);
-                        });
-                        //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
-                        setLoadName(load.name);
-                        setLoadType(load.type);
-                        setActivePower(String(load.p0));
-                        setReactivePower(String(load.q0));
-                        setVoltageLevel(
-                            voltageLevelOptions.find(
-                                (value) => value.id === load.voltageLevelId
-                            )
-                        );
-                        setBusOrBusbarSection(null);
+                            //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
+                            setLoadName(load.name);
+                            setLoadType(load.type);
+                            setActivePower(String(load.p0));
+                            setReactivePower(String(load.q0));
+                            setVoltageLevel(
+                                voltageLevelOptions.find(
+                                    (value) => value.id === load.voltageLevelId
+                                )
+                            );
+                            setBusOrBusbarSection(null);
 
-                        msg = intl.formatMessage(
-                            { id: 'LoadCopied' },
-                            {
-                                loadId: element.id,
-                            }
-                        );
-                        enqueueSnackbar(msg, {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
+                            msg = intl.formatMessage(
+                                { id: 'LoadCopied' },
+                                {
+                                    loadId: element.id,
+                                }
+                            );
+                            enqueueSnackbar(msg, {
+                                variant: 'info',
+                                persist: false,
+                                style: { whiteSpace: 'pre-line' },
+                            });
                         });
                     });
                 } else {
