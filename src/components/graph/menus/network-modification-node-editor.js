@@ -55,7 +55,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     useEffect(() => {
         if (selectedNode !== selectedNodeRef.current) {
             selectedNodeRef.current = selectedNode;
-            console.info('selectedNode', selectedNode);
             if (!selectedNode.networkModification) setModifications([]);
             else {
                 fetchNetworkModifications(selectedNode.networkModification)
@@ -90,11 +89,14 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         deleteModification(studyUuid, selectedNode, uuid);
     };
 
-    const doEditModification = (modificationUuid) => {
-        const modification =  fetchNetworkModification(modificationUuid);
+    const [editData, setEditData] = useState(undefined);
 
+    const doEditModification = (modificationUuid) => {
+        const modification = fetchNetworkModification(modificationUuid);
         modification.then((res) => {
-            console.info('edit modification', res.formData())
+            res.json().then((data) => {
+                setEditData(data[0]);
+            });
         });
     };
 
@@ -127,6 +129,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
             <NetworkModificationDialog
                 open={openNetworkModificationsDialog}
+                editData={editData}
                 onClose={closeNetworkModificationConfiguration}
                 network={network}
                 selectedNodeUuid={selectedNode.id}

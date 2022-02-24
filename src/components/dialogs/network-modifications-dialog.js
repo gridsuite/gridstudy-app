@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -44,6 +44,7 @@ const NetworkModificationDialog = ({
     network,
     selectedNodeUuid,
     workingNodeUuid,
+    editData,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -57,6 +58,11 @@ const NetworkModificationDialog = ({
     const openDialog = (dialogId) => {
         setDialogOpen(dialogId);
     };
+
+    useEffect(() => {
+        console.info('editData', editData);
+        setDialogOpen(editData?.type);
+    }, [editData]);
 
     function withDefaultParams(Dialog, props) {
         return (
@@ -85,38 +91,38 @@ const NetworkModificationDialog = ({
     }
 
     const dialogs = {
-        createLoad: {
+        LOAD_CREATION: {
             label: 'CreateLoad',
             dialog: () => withVoltageLevel(LoadCreationDialog),
             icon: <AddIcon />,
         },
-        createGenerator: {
+        GENERATOR_CREATION: {
             label: 'CreateGenerator',
             dialog: () => withVoltageLevel(GeneratorCreationDialog),
             icon: <AddIcon />,
         },
-        createShuntCompensator: {
+        SHUNT_COMPENSATOR_CREATION: {
             label: 'CreateShuntCompensator',
             dialog: () => withVoltageLevel(ShuntCompensatorCreationDialog),
             icon: <AddIcon />,
         },
-        createLine: {
+        LINE_CREATION: {
             label: 'CreateLine',
             dialog: () => withVoltageLevel(LineCreationDialog),
             icon: <AddIcon />,
         },
-        createTwoWindingTransformer: {
+        TWO_WINDING_TRANSFORMER_CREATION: {
             label: 'CreateTwoWindingsTransformer',
             dialog: () =>
                 withVoltageLevel(TwoWindingsTransformerCreationDialog),
             icon: <AddIcon />,
         },
-        substationCreation: {
+        SUBSTATION_CREATION: {
             label: 'CreateSubstation',
             dialog: () => withVoltageLevel(SubstationCreationDialog),
             icon: <AddIcon />,
         },
-        voltageLevelCreation: {
+        VOLTAGE_LEVEL_CREATION: {
             label: 'CreateVoltageLevel',
             dialog: () => withSubstationOption(VoltageLevelCreationDialog),
             icon: <AddIcon />,
