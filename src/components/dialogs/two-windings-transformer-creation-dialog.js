@@ -229,21 +229,18 @@ const TwoWindingsTransformerCreationDialog = ({
                 busOrBusbarSection1.id,
                 voltageLevel2.id,
                 busOrBusbarSection2.id
-            )
-                .then(() => {
-                    handleCloseAndClear();
-                })
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId:
-                                'TwoWindingsTransformerCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'TwoWindingsTransformerCreationError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
+            // do not wait fetch response and close dialog, errors will be shown in snackbar.
+            handleCloseAndClear();
         }
     };
 
