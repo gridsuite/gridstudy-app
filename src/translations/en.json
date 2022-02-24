@@ -233,6 +233,7 @@
 
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
+    "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "Logs": "Logs",
@@ -244,7 +245,7 @@
 
     "Optional": "(optional)",
     "createNetworkModificationNode": "Create a network modification node",
-    "createModelNode": "Create model node",
+    "createModelNode": "Create a model node",
     "removeNode": "Remove node",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
     "NodeCreateError": "An error occured while creating node",
@@ -289,7 +290,7 @@
 
     "CreateGenerator": "Create generator",
     "GeneratorCreationError": "Error while creating generator",
-    "EnergySourceOptional": "Energy source (optional)",
+    "EnergySourceText": "Energy source",
     "Hydro": "Hydro",
     "Nuclear": "Nuclear",
     "Wind": "Wind",
@@ -350,6 +351,10 @@
     "MagnetizingSusceptance": "Magnetizing susceptance",
     "RatedVoltage": "Rated voltage",
     "TwoWindingsTransformerCreationError": "Error while creating a 2 windings transformer",
-    "NewName": "New name"
+    "NewName": "New name",
 
+    "insertNetworkModificationNodeBefore": "Insert a network modification node before",
+    "insertModelNodeBefore": "Insert a model node before",
+    "insertNetworkModificationNodeAfter": "Insert a network modification node after",
+    "insertModelNodeAfter": "Insert a model node after"
 }

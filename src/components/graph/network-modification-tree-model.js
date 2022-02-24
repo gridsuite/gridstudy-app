@@ -13,28 +13,49 @@ export default class NetworkModificationTreeModel {
         this.treeElements = getLayoutedElements(this.treeElements);
     }
 
-    // TODO: support the cases where node is inserted between two existing nodes
-    addChild(element, parentId) {
+    addChild(newElement, parentId, insertMode) {
         // Add node
         this.treeElements.push({
-            id: element.id,
-            type: element.type, // input node
+            id: newElement.id,
+            type: newElement.type, // input node
             data: {
-                label: element.name,
-                description: element.description,
-                buildStatus: element.buildStatus,
+                label: newElement.name,
+                description: newElement.description,
+                buildStatus: newElement.buildStatus,
             },
         });
         // Add edge between node and its parent
         this.treeElements.push({
-            id: 'e' + parentId + '-' + element.id,
+            id: 'e' + parentId + '-' + newElement.id,
             source: parentId,
-            target: element.id,
+            target: newElement.id,
             type: 'smoothstep',
         });
-        if (element.children) {
-            element.children.forEach((child) => {
-                this.addChild(child, element.id);
+
+        if (insertMode === 'BEFORE' || insertMode === 'AFTER') {
+            // remove previous edges between parent and node children
+            const filteredTreeElements = this.treeElements.filter((element) => {
+                return (
+                    (element.source !== parentId ||
+                        !newElement.childrenIds.includes(element.target)) &&
+                    (element.target !== parentId ||
+                        !newElement.childrenIds.includes(element.source))
+                );
+            });
+            // create new edges between node and its children
+            newElement.childrenIds.forEach((childId) => {
+                filteredTreeElements.push({
+                    id: 'e' + newElement.id + '-' + childId,
+                    source: newElement.id,
+                    target: childId,
+                    type: 'smoothstep',
+                });
+            });
+            this.treeElements = filteredTreeElements;
+        }
+        if (newElement.children) {
+            newElement.children.forEach((child) => {
+                this.addChild(child, newElement.id);
             });
         }
     }

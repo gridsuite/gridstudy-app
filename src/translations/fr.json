@@ -233,6 +233,7 @@
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre de modification de réseau",
+    "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
 
     "Logs": "Logs",
@@ -244,7 +245,7 @@
 
     "Optional": "(optionnel)",
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
-    "createModelNode": "Créer nœud modèle",
+    "createModelNode": "Créer un nœud modèle",
     "removeNode": "Supprimer nœud",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
@@ -289,7 +290,7 @@
 
     "CreateGenerator": "Créer un groupe",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
-    "EnergySourceOptional": "Source d'énergie (optionnel)",
+    "EnergySourceText": "Source d'énergie",
     "Hydro": "Hydraulique",
     "Nuclear": "Nucléaire",
     "Wind": "Eolien",
@@ -350,5 +351,10 @@
     "MagnetizingSusceptance": "Susceptance magnétisante",
     "RatedVoltage": "Tension nominale",
     "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
-    "NewName": "Nouveau nom"
+    "NewName": "Nouveau nom",
+
+    "insertNetworkModificationNodeBefore": "Insérer un nœud de modifications de réseau au dessus",
+    "insertModelNodeBefore": "Insérer un nœud modèle au dessus",
+    "insertNetworkModificationNodeAfter": "Insérer un nœud de modifications de réseau en dessous",
+    "insertModelNodeAfter": "Insérer un nœud modèle en dessous"
 }

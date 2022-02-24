@@ -4,27 +4,33 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { TextField } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import React, { useCallback } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
 import { createLine } from '../../utils/rest-api';
-import TextFieldWithAdornment from '../util/text-field-with-adornment';
-import { validateField } from '../util/validation-functions';
-import ConnectivityEdition from './connectivity-edition';
+import {
+    filledTextField,
+    SusceptanceAdornment,
+    OhmAdornment,
+    AmpereAdornment,
+    useDoubleValue,
+    useInputForm,
+    useTextValue,
+    useConnectivityValue,
+} from './input-hooks';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -63,186 +69,117 @@ const LineCreationDialog = ({
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const [lineId, setLineId] = useState('');
+    const inputForm = useInputForm();
 
-    const [lineName, setLineName] = useState('');
+    const [lineId, lineIdField] = useTextValue({
+        label: 'ID',
+        validation: { isFieldRequired: true },
+        inputForm: inputForm,
+        formProps: filledTextField,
+    });
 
-    const [seriesResistance, setSeriesResistance] = useState('');
+    const [lineName, lineNameField] = useTextValue({
+        label: 'Name',
+        inputForm: inputForm,
+        formProps: filledTextField,
+    });
 
-    const [seriesReactance, setSeriesReactance] = useState('');
+    const [seriesResistance, seriesResistanceField] = useDoubleValue({
+        label: 'SeriesResistanceText',
+        validation: { isFieldRequired: true, isFieldNumeric: true },
+        adornment: OhmAdornment,
+        inputForm: inputForm,
+    });
 
-    const [shuntConductance1, setShuntConductance1] = useState('');
-    const [shuntSusceptance1, setShuntSusceptance1] = useState('');
-    const [voltageLevel1, setVoltageLevel1] = useState(null);
-    const [busOrBusbarSection1, setBusOrBusbarSection1] = useState(null);
-    const [permanentCurrentLimit1, setPermanentCurrentLimit1] = useState('');
+    const [seriesReactance, seriesReactanceField] = useDoubleValue({
+        label: 'SeriesReactanceText',
+        validation: { isFieldRequired: true, isFieldNumeric: true },
+        adornment: OhmAdornment,
+        inputForm: inputForm,
+    });
 
-    const [shuntConductance2, setShuntConductance2] = useState('');
-    const [shuntSusceptance2, setShuntSusceptance2] = useState('');
-    const [voltageLevel2, setVoltageLevel2] = useState(null);
-    const [busOrBusbarSection2, setBusOrBusbarSection2] = useState(null);
-    const [permanentCurrentLimit2, setPermanentCurrentLimit2] = useState('');
+    const [shuntConductance1, shuntConductance1Field] = useDoubleValue({
+        label: 'ShuntConductanceText',
+        id: 'ShuntConductance1',
+        validation: { isFieldRequired: false, isFieldNumeric: true },
+        adornment: SusceptanceAdornment,
+        inputForm: inputForm,
+    });
 
-    const [errors, setErrors] = useState(new Map());
+    const [shuntSusceptance1, shuntSusceptance1Field] = useDoubleValue({
+        label: 'ShuntSusceptanceText',
+        id: 'ShuntSusceptance1',
+        validation: { isFieldRequired: false, isFieldNumeric: true },
+        adornment: SusceptanceAdornment,
+        inputForm: inputForm,
+    });
 
-    const handleChangeLineId = (event) => {
-        setLineId(event.target.value);
-    };
+    const [shuntConductance2, shuntConductance2Field] = useDoubleValue({
+        label: 'ShuntConductanceText',
+        id: 'ShuntConductance2',
+        validation: { isFieldRequired: false, isFieldNumeric: true },
+        adornment: SusceptanceAdornment,
+        inputForm: inputForm,
+    });
 
-    const handleChangeLineName = (event) => {
-        setLineName(event.target.value);
-    };
+    const [shuntSusceptance2, shuntSusceptance2Field] = useDoubleValue({
+        label: 'ShuntSusceptanceText',
+        id: 'ShuntSusceptance2',
+        validation: { isFieldRequired: false, isFieldNumeric: true },
+        adornment: SusceptanceAdornment,
+        inputForm: inputForm,
+    });
 
-    const handleChangeSeriesResistance = (event) => {
-        setSeriesResistance(event.target.value?.replace(',', '.'));
-    };
+    const [connectivity1, connectivity1Field] = useConnectivityValue({
+        label: 'Connectivity',
+        id: 'Connectivity1',
+        inputForm: inputForm,
+        voltageLevelOptions: voltageLevelOptions,
+        workingNodeUuid: workingNodeUuid,
+        direction: 'column',
+    });
 
-    const handleChangeSeriesReactance = (event) => {
-        setSeriesReactance(event.target.value?.replace(',', '.'));
-    };
+    const [connectivity2, connectivity2Field] = useConnectivityValue({
+        label: 'Connectivity',
+        id: 'Connectivity2',
+        inputForm: inputForm,
+        voltageLevelOptions: voltageLevelOptions,
+        workingNodeUuid: workingNodeUuid,
+        direction: 'column',
+    });
 
-    const handleChangeShuntConductance1 = (event) => {
-        setShuntConductance1(event.target.value?.replace(',', '.'));
-    };
+    const [permanentCurrentLimit1, permanentCurrentLimit1Field] =
+        useDoubleValue({
+            label: 'PermanentCurrentLimitText',
+            validation: {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+                isValueGreaterThan: '0',
+                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
+            },
+            adornment: AmpereAdornment,
+            inputForm: inputForm,
+        });
 
-    const handleChangeShuntSusceptance1 = (event) => {
-        setShuntSusceptance1(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangePermanentCurrentLimit1 = (event) => {
-        setPermanentCurrentLimit1(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangeShuntConductance2 = (event) => {
-        setShuntConductance2(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangeShuntSusceptance2 = (event) => {
-        setShuntSusceptance2(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangePermanentCurrentLimit2 = (event) => {
-        setPermanentCurrentLimit2(event.target.value?.replace(',', '.'));
-    };
+    const [permanentCurrentLimit2, permanentCurrentLimit2Field] =
+        useDoubleValue({
+            label: 'PermanentCurrentLimitText',
+            validation: {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+                isValueGreaterThan: '0',
+                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
+            },
+            adornment: AmpereAdornment,
+            inputForm: inputForm,
+        });
 
     const handleSave = () => {
-        let tmpErrors = new Map(errors);
-
-        tmpErrors.set(
-            'line-id',
-            validateField(lineId, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'series-resistance',
-            validateField(seriesResistance, {
-                isFieldRequired: true,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'series-reactance',
-            validateField(seriesReactance, {
-                isFieldRequired: true,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'shunt-conductance-side1',
-            validateField(shuntConductance1, {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'shunt-susceptance-side1',
-            validateField(shuntSusceptance1, {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'voltage-level1',
-            validateField(voltageLevel1, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'bus-bar1',
-            validateField(busOrBusbarSection1, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'permanent-current-limit-side1',
-            validateField(permanentCurrentLimit1, {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-                isValueGreaterThan: '0',
-                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
-            })
-        );
-
-        tmpErrors.set(
-            'shunt-conductance-side2',
-            validateField(shuntConductance2, {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'shunt-susceptance-side2',
-            validateField(shuntSusceptance2, {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'voltage-level2',
-            validateField(voltageLevel2, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'bus-bar2',
-            validateField(busOrBusbarSection2, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'permanent-current-limit-side2',
-            validateField(permanentCurrentLimit2, {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-                isValueGreaterThan: '0',
-                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
-            })
-        );
-
-        setErrors(tmpErrors);
-
-        // Check if error list contains an error
-        let isValid =
-            Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
-
-        if (isValid) {
+        if (inputForm.validate()) {
             createLine(
                 studyUuid,
                 selectedNodeUuid,
@@ -254,57 +191,53 @@ const LineCreationDialog = ({
                 shuntSusceptance1,
                 shuntConductance2,
                 shuntSusceptance2,
-                voltageLevel1.id,
-                busOrBusbarSection1.id,
-                voltageLevel2.id,
-                busOrBusbarSection2.id,
+                connectivity1.voltageLevel.id,
+                connectivity1.busOrBusbarSection.id,
+                connectivity2.voltageLevel.id,
+                connectivity2.busOrBusbarSection.id,
                 permanentCurrentLimit1,
                 permanentCurrentLimit2
-            )
-                .then(() => {
-                    handleCloseAndClear();
-                })
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LineCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LineCreationError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
+            // do not wait fetch response and close dialog, errors will be shown in snackbar.
+            handleCloseAndClear();
         }
     };
 
-    const clearValues = () => {
-        setLineId('');
-        setLineName('');
-        setSeriesResistance('');
-        setSeriesReactance('');
+    const clearValues = useCallback(() => {
+        inputForm.clear();
+    }, [inputForm]);
 
-        setShuntConductance1('');
-        setShuntSusceptance1('');
-        setVoltageLevel1(null);
-        setBusOrBusbarSection1(null);
-        setPermanentCurrentLimit1('');
-
-        setShuntConductance2('');
-        setShuntSusceptance2('');
-        setVoltageLevel2(null);
-        setBusOrBusbarSection2(null);
-        setPermanentCurrentLimit2('');
-    };
+    const handleClose = useCallback(
+        (event, reason) => {
+            if (reason !== 'backdropClick') {
+                inputForm.reset();
+                onClose();
+            }
+        },
+        [inputForm, onClose]
+    );
 
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
     };
 
-    const handleClose = () => {
-        setErrors(new Map());
-        onClose();
-    };
+    function gridItem(field, size = 6) {
+        return (
+            <Grid item xs={size} align="start">
+                {field}
+            </Grid>
+        );
+    }
 
     return (
         <Dialog
@@ -314,49 +247,12 @@ const LineCreationDialog = ({
             fullWidth={true}
         >
             <DialogTitle>
-                {intl.formatMessage({ id: 'CreateLine' })}
+                <FormattedMessage id="CreateLine" />
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                    <Grid item xs={6} align="start">
-                        <TextField
-                            size="small"
-                            fullWidth
-                            id="line-id"
-                            label={intl.formatMessage({ id: 'ID' })}
-                            variant="filled"
-                            value={lineId}
-                            onChange={handleChangeLineId}
-                            /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                               which is not the case when no variant is used) */
-                            FormHelperTextProps={{
-                                className: classes.helperText,
-                            }}
-                            {...(errors.get('line-id')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('line-id')?.errorMsgId,
-                                }),
-                            })}
-                        />
-                    </Grid>
-                    <Grid item xs={6} align="start">
-                        <TextField
-                            size="small"
-                            fullWidth
-                            id="line-name"
-                            label={
-                                intl.formatMessage({ id: 'Name' }) +
-                                ' ' +
-                                intl.formatMessage({
-                                    id: 'Optional',
-                                })
-                            }
-                            value={lineName}
-                            onChange={handleChangeLineName}
-                            variant="filled"
-                        />
-                    </Grid>
+                    {gridItem(lineIdField)}
+                    {gridItem(lineNameField)}
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -366,48 +262,8 @@ const LineCreationDialog = ({
                     </Grid>
                 </Grid>
                 <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <TextFieldWithAdornment
-                            size="small"
-                            fullWidth
-                            id="line-series-resistance"
-                            label={intl.formatMessage({
-                                id: 'SeriesResistanceText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'Ω'}
-                            value={seriesResistance}
-                            onChange={handleChangeSeriesResistance}
-                            {...(errors.get('series-resistance')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('series-resistance')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <TextFieldWithAdornment
-                            size="small"
-                            fullWidth
-                            id="line-series-reactance"
-                            label={intl.formatMessage({
-                                id: 'SeriesReactanceText',
-                            })}
-                            adornmentPosition={'end'}
-                            adornmentText={'Ω'}
-                            value={seriesReactance}
-                            onChange={handleChangeSeriesReactance}
-                            {...(errors.get('series-reactance')?.error && {
-                                error: true,
-                                helperText: intl.formatMessage({
-                                    id: errors.get('series-reactance')
-                                        ?.errorMsgId,
-                                }),
-                            })}
-                        />
-                    </Grid>
+                    {gridItem(seriesResistanceField)}
+                    {gridItem(seriesReactanceField)}
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
@@ -423,128 +279,12 @@ const LineCreationDialog = ({
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item container xs={6} direction="column">
-                        <Grid container direction="column" spacing={2}>
-                            <Grid item align="start">
-                                <TextFieldWithAdornment
-                                    size="small"
-                                    fullWidth
-                                    id="line-shunt-conductance-side1"
-                                    label={
-                                        intl.formatMessage({
-                                            id: 'ShuntConductanceText',
-                                        }) +
-                                        ' ' +
-                                        intl.formatMessage({
-                                            id: 'Optional',
-                                        })
-                                    }
-                                    adornmentPosition={'end'}
-                                    adornmentText={'S'}
-                                    value={shuntConductance1}
-                                    onChange={handleChangeShuntConductance1}
-                                    {...(errors.get('shunt-conductance-side1')
-                                        ?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get(
-                                                'shunt-conductance-side1'
-                                            )?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            </Grid>
-                            <Grid item align="start">
-                                <TextFieldWithAdornment
-                                    size="small"
-                                    fullWidth
-                                    id="line-shunt-susceptance-side1"
-                                    label={
-                                        intl.formatMessage({
-                                            id: 'ShuntSusceptanceText',
-                                        }) +
-                                        ' ' +
-                                        intl.formatMessage({
-                                            id: 'Optional',
-                                        })
-                                    }
-                                    adornmentPosition={'end'}
-                                    adornmentText={'S'}
-                                    value={shuntSusceptance1}
-                                    onChange={handleChangeShuntSusceptance1}
-                                    {...(errors.get('shunt-susceptance-side1')
-                                        ?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get(
-                                                'shunt-susceptance-side1'
-                                            )?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            </Grid>
-                        </Grid>
+                        {gridItem(shuntConductance1Field, 14)}
+                        {gridItem(shuntSusceptance1Field, 14)}
                     </Grid>
                     <Grid item container direction="column" xs={6}>
-                        <Grid container direction="column" spacing={2}>
-                            <Grid item align="start">
-                                <TextFieldWithAdornment
-                                    size="small"
-                                    fullWidth
-                                    id="line-shunt-conductance-side2"
-                                    label={
-                                        intl.formatMessage({
-                                            id: 'ShuntConductanceText',
-                                        }) +
-                                        ' ' +
-                                        intl.formatMessage({
-                                            id: 'Optional',
-                                        })
-                                    }
-                                    adornmentPosition={'end'}
-                                    adornmentText={'S'}
-                                    value={shuntConductance2}
-                                    onChange={handleChangeShuntConductance2}
-                                    {...(errors.get('shunt-conductance-side2')
-                                        ?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get(
-                                                'shunt-conductance-side2'
-                                            )?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            </Grid>
-                            <Grid item align="start">
-                                <TextFieldWithAdornment
-                                    size="small"
-                                    fullWidth
-                                    id="line-shunt-susceptance-side2"
-                                    label={
-                                        intl.formatMessage({
-                                            id: 'ShuntSusceptanceText',
-                                        }) +
-                                        ' ' +
-                                        intl.formatMessage({
-                                            id: 'Optional',
-                                        })
-                                    }
-                                    adornmentPosition={'end'}
-                                    adornmentText={'S'}
-                                    value={shuntSusceptance2}
-                                    onChange={handleChangeShuntSusceptance2}
-                                    {...(errors.get('shunt-susceptance-side2')
-                                        ?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get(
-                                                'shunt-susceptance-side2'
-                                            )?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            </Grid>
-                        </Grid>
+                        {gridItem(shuntConductance2Field, 14)}
+                        {gridItem(shuntSusceptance2Field, 14)}
                     </Grid>
                 </Grid>
                 <Grid container spacing={2}>
@@ -568,76 +308,10 @@ const LineCreationDialog = ({
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item container xs={6} direction="column">
-                        <Grid container direction="column" spacing={2}>
-                            <Grid item align="start">
-                                <TextFieldWithAdornment
-                                    size="small"
-                                    fullWidth
-                                    id="permanent-current-limit-side1"
-                                    label={
-                                        intl.formatMessage({
-                                            id: 'PermanentCurrentLimitText',
-                                        }) +
-                                        ' ' +
-                                        intl.formatMessage({
-                                            id: 'Optional',
-                                        })
-                                    }
-                                    adornmentPosition={'end'}
-                                    adornmentText={'A'}
-                                    value={permanentCurrentLimit1}
-                                    onChange={
-                                        handleChangePermanentCurrentLimit1
-                                    }
-                                    {...(errors.get(
-                                        'permanent-current-limit-side1'
-                                    )?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get(
-                                                'permanent-current-limit-side1'
-                                            )?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            </Grid>
-                        </Grid>
+                        {gridItem(permanentCurrentLimit1Field, 14)}
                     </Grid>
                     <Grid item container direction="column" xs={6}>
-                        <Grid container direction="column" spacing={2}>
-                            <Grid item align="start">
-                                <TextFieldWithAdornment
-                                    size="small"
-                                    fullWidth
-                                    id="permanent-current-limit-side2"
-                                    label={
-                                        intl.formatMessage({
-                                            id: 'PermanentCurrentLimitText',
-                                        }) +
-                                        ' ' +
-                                        intl.formatMessage({
-                                            id: 'Optional',
-                                        })
-                                    }
-                                    adornmentPosition={'end'}
-                                    adornmentText={'A'}
-                                    value={permanentCurrentLimit2}
-                                    onChange={
-                                        handleChangePermanentCurrentLimit2
-                                    }
-                                    {...(errors.get(
-                                        'permanent-current-limit-side2'
-                                    )?.error && {
-                                        error: true,
-                                        helperText: intl.formatMessage({
-                                            id: errors.get(
-                                                'permanent-current-limit-side2'
-                                            )?.errorMsgId,
-                                        }),
-                                    })}
-                                />
-                            </Grid>
-                        </Grid>
+                        {gridItem(permanentCurrentLimit2Field, 14)}
                     </Grid>
                 </Grid>
                 <Grid container spacing={2}>
@@ -663,88 +337,12 @@ const LineCreationDialog = ({
                 <Grid container spacing={2}>
                     <Grid item container xs={6} direction="column">
                         <Grid container direction="column" spacing={2}>
-                            <Grid item align="start">
-                                <ConnectivityEdition
-                                    voltageLevelOptions={voltageLevelOptions}
-                                    voltageLevel={voltageLevel1}
-                                    busOrBusbarSection={busOrBusbarSection1}
-                                    onChangeVoltageLevel={(value) =>
-                                        setVoltageLevel1(value)
-                                    }
-                                    onChangeBusOrBusbarSection={(
-                                        busOrBusbarSection
-                                    ) =>
-                                        setBusOrBusbarSection1(
-                                            busOrBusbarSection
-                                        )
-                                    }
-                                    direction="column"
-                                    errorVoltageLevel={
-                                        errors.get('voltage-level1')?.error
-                                    }
-                                    helperTextVoltageLevel={
-                                        errors.get('voltage-level1')?.error &&
-                                        intl.formatMessage({
-                                            id: errors.get('voltage-level1')
-                                                ?.errorMsgId,
-                                        })
-                                    }
-                                    errorBusOrBusBarSection={
-                                        errors.get('bus-bar1')?.error
-                                    }
-                                    helperTextBusOrBusBarSection={
-                                        errors.get('bus-bar1')?.error &&
-                                        intl.formatMessage({
-                                            id: errors.get('bus-bar1')
-                                                ?.errorMsgId,
-                                        })
-                                    }
-                                    workingNodeUuid={workingNodeUuid}
-                                />
-                            </Grid>
+                            {gridItem(connectivity1Field, 'column')}
                         </Grid>
                     </Grid>
                     <Grid item container direction="column" xs={6}>
                         <Grid container direction="column" spacing={2}>
-                            <Grid item align="start">
-                                <ConnectivityEdition
-                                    voltageLevelOptions={voltageLevelOptions}
-                                    voltageLevel={voltageLevel2}
-                                    busOrBusbarSection={busOrBusbarSection2}
-                                    onChangeVoltageLevel={(value) =>
-                                        setVoltageLevel2(value)
-                                    }
-                                    onChangeBusOrBusbarSection={(
-                                        busOrBusbarSection
-                                    ) =>
-                                        setBusOrBusbarSection2(
-                                            busOrBusbarSection
-                                        )
-                                    }
-                                    direction="column"
-                                    errorVoltageLevel={
-                                        errors.get('voltage-level2')?.error
-                                    }
-                                    helperTextVoltageLevel={
-                                        errors.get('voltage-level2')?.error &&
-                                        intl.formatMessage({
-                                            id: errors.get('voltage-level2')
-                                                ?.errorMsgId,
-                                        })
-                                    }
-                                    errorBusOrBusBarSection={
-                                        errors.get('bus-bar2')?.error
-                                    }
-                                    helperTextBusOrBusBarSection={
-                                        errors.get('bus-bar2')?.error &&
-                                        intl.formatMessage({
-                                            id: errors.get('bus-bar2')
-                                                ?.errorMsgId,
-                                        })
-                                    }
-                                    workingNodeUuid={workingNodeUuid}
-                                />
-                            </Grid>
+                            {gridItem(connectivity2Field, 'column')}
                         </Grid>
                     </Grid>
                 </Grid>
