@@ -253,7 +253,7 @@ const StudyPane = ({
                             display: 'flex',
                             flexDirection: 'row',
                             flexGrow: 1,
-                            overflow: 'auto',
+                            overflow: 'hidden',
                         }}
                     >
                         <div

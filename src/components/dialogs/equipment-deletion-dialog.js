@@ -124,10 +124,10 @@ const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
                         response,
                         'UnableToDeleteEquipment'
                     );
-                } else {
-                    handleCloseAndClear();
                 }
             });
+            // do not wait fetch response and close dialog, errors will be shown in snackbar.
+            handleCloseAndClear();
         }
     };
 
