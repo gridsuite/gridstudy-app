@@ -72,9 +72,6 @@ const ConnectivityEdition = ({
         []
     );
 
-    const [selectedVoltageLevel, setSelectedVoltageLevel] =
-        useState(voltageLevel);
-
     // Specific Popper component to be used with Autocomplete
     // This allows the popper to fit its content, which is not the case by default
     const FittingPopper = (props) => {
@@ -87,19 +84,13 @@ const ConnectivityEdition = ({
         );
     };
 
-    useEffect(() => {
-        setSelectedVoltageLevel(voltageLevel);
-    }, [voltageLevel]);
-
     const handleChangeVoltageLevel = useCallback(
         (event, value, reason) => {
             if (reason === 'select-option') {
                 onChangeVoltageLevel(value);
-                setSelectedVoltageLevel(value);
                 onChangeBusOrBusbarSection(null);
             } else if (reason === 'clear') {
                 onChangeVoltageLevel(null);
-                setSelectedVoltageLevel(null);
                 onChangeBusOrBusbarSection(null);
                 setBusOrBusbarSectionOptions([]);
             }
@@ -113,12 +104,12 @@ const ConnectivityEdition = ({
 
     useEffect(() => {
         //To force the update of busbar choices when voltageLevel change is not triggered by this component
-        switch (selectedVoltageLevel?.topologyKind) {
+        switch (voltageLevel?.topologyKind) {
             case 'NODE_BREAKER':
                 fetchBusbarSectionsForVoltageLevel(
                     studyUuid,
                     workingNodeUuid,
-                    selectedVoltageLevel.id
+                    voltageLevel.id
                 ).then((busbarSections) => {
                     setBusOrBusbarSectionOptions(busbarSections);
                 });
@@ -128,7 +119,7 @@ const ConnectivityEdition = ({
                 fetchBusesForVoltageLevel(
                     studyUuid,
                     workingNodeUuid,
-                    selectedVoltageLevel.id
+                    voltageLevel.id
                 ).then((buses) => setBusOrBusbarSectionOptions(buses));
                 break;
 
@@ -136,12 +127,7 @@ const ConnectivityEdition = ({
                 setBusOrBusbarSectionOptions([]);
                 break;
         }
-    }, [
-        selectedVoltageLevel,
-        handleChangeVoltageLevel,
-        studyUuid,
-        workingNodeUuid,
-    ]);
+    }, [voltageLevel, handleChangeVoltageLevel, studyUuid, workingNodeUuid]);
 
     return (
         <>
