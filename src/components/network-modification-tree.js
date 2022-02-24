@@ -265,6 +265,23 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
         }
     }, [studyMapTreeDisplay, isModificationsDrawerOpen]);
 
+    useEffect(() => {
+        const { x, y, zoom, transform } = focusParams.current;
+        if (isModificationsDrawerOpen) {
+            transform({
+                x: x - DRAWER_NODE_EDITOR_WIDTH / 2,
+                y: y,
+                zoom: zoom,
+            });
+        } else {
+            transform({
+                x: x + DRAWER_NODE_EDITOR_WIDTH / 2,
+                y: y,
+                zoom: zoom,
+            });
+        }
+    }, [isModificationsDrawerOpen]);
+
     return (
         <>
             <Box

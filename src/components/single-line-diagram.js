@@ -600,10 +600,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         }
 
         if (svg.svg) {
+            const divElt = document.getElementById('sld-svg');
+            divElt.innerHTML = svg.svg;
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
             // calculate svg width and height from svg bounding box
-            const divElt = document.getElementById('sld-svg');
             const svgEl = divElt.getElementsByTagName('svg')[0];
             const bbox = svgEl.getBBox();
             const xOrigin = bbox.x - 20;

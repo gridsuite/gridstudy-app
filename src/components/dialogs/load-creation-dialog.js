@@ -118,21 +118,20 @@ const LoadCreationDialog = ({
                 !loadType ? 'UNDEFINED' : loadType,
                 activePower,
                 reactivePower,
-                connectivity
-            )
-                .then(() => {
-                    handleCloseAndClear();
-                })
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LoadCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+                connectivity.voltageLevel.id,
+                connectivity.busOrBusbarSection.id
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LoadCreationError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
+            // do not wait fetch response and close dialog, errors will be shown in snackbar.
+            handleCloseAndClear();
         }
     };
 
