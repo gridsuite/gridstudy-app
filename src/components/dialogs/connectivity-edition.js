@@ -9,7 +9,7 @@ import { useIntl } from 'react-intl';
 import Grid from '@material-ui/core/Grid';
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { Popper, TextField } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchBusbarSectionsForVoltageLevel,
@@ -72,6 +72,9 @@ const ConnectivityEdition = ({
         []
     );
 
+    const [selectedVoltageLevel, setSelectedVoltageLevel] =
+        useState(voltageLevel);
+
     // Specific Popper component to be used with Autocomplete
     // This allows the popper to fit its content, which is not the case by default
     const FittingPopper = (props) => {
@@ -84,43 +87,61 @@ const ConnectivityEdition = ({
         );
     };
 
-    const handleChangeVoltageLevel = (event, value, reason) => {
-        if (reason === 'select-option') {
-            onChangeVoltageLevel(value);
-            onChangeBusOrBusbarSection(null);
-            switch (value?.topologyKind) {
-                case 'NODE_BREAKER':
-                    fetchBusbarSectionsForVoltageLevel(
-                        studyUuid,
-                        workingNodeUuid,
-                        value.id
-                    ).then((busbarSections) => {
-                        setBusOrBusbarSectionOptions(busbarSections);
-                    });
-                    break;
+    useEffect(() => {
+        setSelectedVoltageLevel(voltageLevel);
+    }, [voltageLevel]);
 
-                case 'BUS_BREAKER':
-                    fetchBusesForVoltageLevel(
-                        studyUuid,
-                        workingNodeUuid,
-                        value.id
-                    ).then((buses) => setBusOrBusbarSectionOptions(buses));
-                    break;
-
-                default:
-                    setBusOrBusbarSectionOptions([]);
-                    break;
+    const handleChangeVoltageLevel = useCallback(
+        (event, value, reason) => {
+            if (reason === 'select-option') {
+                onChangeVoltageLevel(value);
+                setSelectedVoltageLevel(value);
+                onChangeBusOrBusbarSection(null);
+            } else if (reason === 'clear') {
+                onChangeVoltageLevel(null);
+                setSelectedVoltageLevel(null);
+                onChangeBusOrBusbarSection(null);
+                setBusOrBusbarSectionOptions([]);
             }
-        } else if (reason === 'clear') {
-            onChangeVoltageLevel(null);
-            onChangeBusOrBusbarSection(null);
-            setBusOrBusbarSectionOptions([]);
-        }
-    };
+        },
+        [onChangeBusOrBusbarSection, onChangeVoltageLevel]
+    );
 
     const handleChangeBus = (event, value, reason) => {
         onChangeBusOrBusbarSection(value);
     };
+
+    useEffect(() => {
+        //To force the update of busbar choices when voltageLevel change is not triggered by this component
+        switch (selectedVoltageLevel?.topologyKind) {
+            case 'NODE_BREAKER':
+                fetchBusbarSectionsForVoltageLevel(
+                    studyUuid,
+                    workingNodeUuid,
+                    selectedVoltageLevel.id
+                ).then((busbarSections) => {
+                    setBusOrBusbarSectionOptions(busbarSections);
+                });
+                break;
+
+            case 'BUS_BREAKER':
+                fetchBusesForVoltageLevel(
+                    studyUuid,
+                    workingNodeUuid,
+                    selectedVoltageLevel.id
+                ).then((buses) => setBusOrBusbarSectionOptions(buses));
+                break;
+
+            default:
+                setBusOrBusbarSectionOptions([]);
+                break;
+        }
+    }, [
+        selectedVoltageLevel,
+        handleChangeVoltageLevel,
+        studyUuid,
+        workingNodeUuid,
+    ]);
 
     return (
         <>

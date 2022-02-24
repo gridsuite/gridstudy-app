@@ -479,7 +479,7 @@ function fetchEquipmentInfos(
         '/network-map/' +
         equipmentPath +
         '/' +
-        equipmentId;
+        encodeURIComponent(equipmentId);
     console.debug(fetchEquipmentInfosUrl);
     return backendFetch(fetchEquipmentInfosUrl);
 }
