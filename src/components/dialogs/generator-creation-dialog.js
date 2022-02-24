@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -13,11 +13,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
-import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { useParams } from 'react-router-dom';
 import { createGenerator } from '../../utils/rest-api';
 import {
@@ -25,17 +20,32 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
-import { validateField } from '../util/validation-functions';
 import { makeStyles } from '@material-ui/core/styles';
-import ConnectivityEdition from './connectivity-edition';
 import {
     ActivePowerAdornment,
-    filledTextField, ReactivePowerAdornment,
+    filledTextField,
+    ReactivePowerAdornment,
     toPositiveIntValue,
+    useBooleanValue,
+    useConnectivityValue,
+    useDoubleValue,
     useEnumValue,
+    useInputForm,
     useIntegerValue,
-    useTextValue
+    useTextValue,
+    VoltageAdornment,
 } from './input-hooks';
+
+const useStyles = makeStyles((theme) => ({
+    helperText: {
+        margin: 0,
+        marginTop: 4,
+    },
+    h3: {
+        marginBottom: 0,
+        paddingBottom: 1,
+    },
+}));
 
 const ENERGY_SOURCES = [
     { id: '', label: 'None' },
@@ -61,14 +71,15 @@ const GeneratorCreationDialog = ({
     selectedNodeUuid,
     workingNodeUuid,
 }) => {
-    const classes = useStyles();
-
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
+    const classes = useStyles();
     const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
+
+    const inputForm = useInputForm();
 
     const [generatorId, generatorIdField] = useTextValue({
         label: 'ID',
@@ -84,7 +95,7 @@ const GeneratorCreationDialog = ({
     });
 
     const [energySource, energySourceField] = useEnumValue({
-        label: 'Type',
+        label: 'EnergySource',
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: ENERGY_SOURCES,
@@ -115,7 +126,7 @@ const GeneratorCreationDialog = ({
     });
 
     const [ratedNominalPower, ratedNominalPowerField] = useIntegerValue({
-        label: 'ReactiveNominalPowerText',
+        label: 'RatedNominalPowerText',
         validation: {
             isFieldRequired: true,
             isValueGreaterThan: '0',
@@ -138,188 +149,45 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
     });
 
-    const [reactivePowerSetpoint, reactivePowerSetpointField] = useIntegerValue({
-        label: 'ReactivePowerText',
-        validation: {
-            isFieldRequired: true,
-            isValueGreaterThan: '0',
-            errorMsgId: 'RectivePowerErrorMaximumLessThanOne',
-        },
-        transformValue: toPositiveIntValue,
-        adornment: ReactivePowerAdornment,
+    const [voltageRegulation, voltageRegulationField] = useBooleanValue({
+        label: 'VoltageRegulation',
+        defaultValue: true,
+        validation: { isFieldRequired: true },
         inputForm: inputForm,
     });
 
+    const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
+        label: 'Voltage',
+        validation: { isFieldRequired: true },
+        adornment: VoltageAdornment,
+        formProps: { disabled: !voltageRegulation },
+        inputForm: inputForm,
+    });
 
-    const [enabledReactivePowerSetpoint, setEnabledReactivePowerSetpoint] =
-        useState(true);
-
-    const [voltageRegulation, setVoltageRegulation] = useState(false);
-
-    const [voltageSetpoint, setVoltageSetpoint] = useState('');
-    const [enabledVoltageSetpoint, setEnabledVoltageSetpoint] = useState(false);
-
-    const [voltageLevel, setVoltageLevel] = useState(null);
-
-    const [busOrBusbarSection, setBusOrBusbarSection] = useState(null);
-
-    const [errors, setErrors] = useState(new Map());
-
-    const handleChangeGeneratorId = (event) => {
-        setGeneratorId(event.target.value);
-    };
-
-    const handleChangeGeneratorName = (event) => {
-        setGeneratorName(event.target.value);
-    };
-
-    const handleChangeEnergySource = (event) => {
-        setEnergySource(event.target.value);
-    };
-
-    const handleChangeMinimumActivePower = (event) => {
-        // TODO: remove replace when parsing behaviour will be made according to locale
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setMinimumActivePower(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangeMaximumActivePower = (event) => {
-        // TODO: remove replace when parsing behaviour will be made according to locale
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setMaximumActivePower(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangeRatedNominalPower = (event) => {
-        // TODO: remove replace when parsing behaviour will be made according to locale
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setRatedNominalPower(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangeActivePowerSetpoint = (event) => {
-        // TODO: remove replace when parsing behaviour will be made according to locale
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setActivePowerSetpoint(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangeReactivePowerSetpoint = (event) => {
-        // TODO: remove replace when parsing behaviour will be made according to locale
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setReactivePowerSetpoint(event.target.value?.replace(',', '.'));
-    };
-
-    const handleChangeVoltageRegulation = (event) => {
-        setVoltageRegulation(event.target.checked);
-        setEnabledReactivePowerSetpoint(!event.target.checked);
-        setEnabledVoltageSetpoint(event.target.checked);
-
-        let tmpErrors = new Map(errors);
-        if (event.target.checked) {
-            setReactivePowerSetpoint('');
-            tmpErrors.set('reactive-power-set-point', {
-                error: false,
-                errorMsgId: '',
-            });
-        } else {
-            setVoltageSetpoint('');
-            tmpErrors.set('voltage-set-point', {
-                error: false,
-                errorMsgId: '',
-            });
+    const [reactivePowerSetpoint, reactivePowerSetpointField] = useIntegerValue(
+        {
+            label: 'ReactivePowerText',
+            validation: {
+                isFieldRequired: true,
+                isValueGreaterThan: '0',
+                errorMsgId: 'RectivePowerErrorMaximumLessThanOne',
+            },
+            transformValue: toPositiveIntValue,
+            adornment: ReactivePowerAdornment,
+            inputForm: inputForm,
+            formProps: { disabled: voltageRegulation },
         }
-        setErrors(tmpErrors);
-    };
+    );
 
-    const handleChangeVoltageSetpoint = (event) => {
-        // TODO: remove replace when parsing behaviour will be made according to locale
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setVoltageSetpoint(event.target.value?.replace(',', '.'));
-    };
+    const [connectivity, connectivityField] = useConnectivityValue({
+        label: 'Connectivity',
+        inputForm: inputForm,
+        voltageLevelOptions: voltageLevelOptions,
+        workingNodeUuid: workingNodeUuid,
+    });
 
     const handleSave = () => {
-        let tmpErrors = new Map(errors);
-
-        tmpErrors.set(
-            'generator-id',
-            validateField(generatorId, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'minimum-active-power',
-            validateField(minimumActivePower, {
-                isFieldRequired: true,
-                isFieldNumeric: true,
-                isValueLessOrEqualTo: maximumActivePower,
-                errorMsgId: 'MinActivePowerLessThanMaxActivePower',
-            })
-        );
-
-        tmpErrors.set(
-            'maximum-active-power',
-            validateField(maximumActivePower, {
-                isFieldRequired: true,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'rated-nominal-power',
-            validateField(ratedNominalPower, {
-                isFieldRequired: false,
-                isFieldNumeric: true,
-                isValueGreaterThan: '0',
-                errorMsgId: 'RatedNominalPowerGreaterThanZero',
-            })
-        );
-
-        tmpErrors.set(
-            'active-power-set-point',
-            validateField(activePowerSetpoint, {
-                isFieldRequired: true,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'reactive-power-set-point',
-            validateField(reactivePowerSetpoint, {
-                isFieldRequired: !voltageRegulation,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'voltage-set-point',
-            validateField(voltageSetpoint, {
-                isFieldRequired: voltageRegulation,
-                isFieldNumeric: true,
-                isValueGreaterThan: '0',
-                errorMsgId: 'VoltageGreaterThanZero',
-            })
-        );
-
-        tmpErrors.set(
-            'voltage-level',
-            validateField(voltageLevel, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'bus-bar',
-            validateField(busOrBusbarSection, {
-                isFieldRequired: true,
-            })
-        );
-
-        setErrors(tmpErrors);
-
-        // Check if error list contains an error
-        let isValid =
-            Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
-
-        if (isValid) {
+        if (inputForm.validate()) {
             createGenerator(
                 studyUuid,
                 selectedNodeUuid,
@@ -333,8 +201,8 @@ const GeneratorCreationDialog = ({
                 reactivePowerSetpoint ? reactivePowerSetpoint : null,
                 voltageRegulation,
                 voltageSetpoint ? voltageSetpoint : null,
-                voltageLevel.id,
-                busOrBusbarSection.id
+                connectivity.voltageLevel.id,
+                connectivity.busOrBusbarSection.id
             )
                 .then(() => {
                     handleCloseAndClear();
@@ -352,32 +220,32 @@ const GeneratorCreationDialog = ({
         }
     };
 
-    const clearValues = () => {
-        setGeneratorId('');
-        setGeneratorName('');
-        setEnergySource('');
-        setMinimumActivePower('');
-        setMaximumActivePower('');
-        setRatedNominalPower('');
-        setActivePowerSetpoint('');
-        setReactivePowerSetpoint('');
-        setVoltageRegulation(false);
-        setVoltageSetpoint('');
-        setVoltageLevel(null);
-        setBusOrBusbarSection(null);
-    };
+    const clearValues = useCallback(() => {
+        inputForm.clear();
+    }, [inputForm]);
+
+    const handleClose = useCallback(
+        (event, reason) => {
+            if (reason !== 'backdropClick') {
+                inputForm.reset();
+                onClose();
+            }
+        },
+        [inputForm, onClose]
+    );
 
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
     };
 
-    const handleClose = (event, reason) => {
-        if (reason !== 'backdropClick') {
-            setErrors(new Map());
-            onClose();
-        }
-    };
+    function gridItem(field, size = 4) {
+        return (
+            <Grid item xs={size} align="start">
+                {field}
+            </Grid>
+        );
+    }
 
     return (
         <Dialog
@@ -393,86 +261,9 @@ const GeneratorCreationDialog = ({
             <DialogContent>
                 <div>
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
-                            <TextField
-                                size="small"
-                                fullWidth
-                                id="generator-id"
-                                label={intl.formatMessage({ id: 'ID' })}
-                                variant="filled"
-                                value={generatorId}
-                                onChange={handleChangeGeneratorId}
-                                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                               which is not the case when no variant is used) */
-                                FormHelperTextProps={{
-                                    className: classes.helperText,
-                                }}
-                                {...(errors.get('generator-id')?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('generator-id')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <TextField
-                                size="small"
-                                fullWidth
-                                id="generator-name"
-                                label={intl.formatMessage({
-                                    id: 'NameOptional',
-                                })}
-                                value={generatorName}
-                                onChange={handleChangeGeneratorName}
-                                variant="filled"
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <FormControl fullWidth size="small">
-                                {/*This InputLabel is necessary in order to display
-                                   the label describing the content of the Select*/}
-                                <InputLabel
-                                    id="energy-source-label"
-                                    variant={'filled'}
-                                >
-                                    {intl.formatMessage({
-                                        id: 'EnergySourceOptional',
-                                    })}
-                                </InputLabel>
-                                <Select
-                                    id="energy-source"
-                                    value={energySource}
-                                    onChange={handleChangeEnergySource}
-                                    variant="filled"
-                                >
-                                    <MenuItem value="">
-                                        <em>
-                                            {intl.formatMessage({ id: 'None' })}
-                                        </em>
-                                    </MenuItem>
-                                    <MenuItem value={'HYDRO'}>
-                                        {intl.formatMessage({ id: 'Hydro' })}
-                                    </MenuItem>
-                                    <MenuItem value={'NUCLEAR'}>
-                                        {intl.formatMessage({ id: 'Nuclear' })}
-                                    </MenuItem>
-                                    <MenuItem value={'WIND'}>
-                                        {intl.formatMessage({ id: 'Wind' })}
-                                    </MenuItem>
-                                    <MenuItem value={'THERMAL'}>
-                                        {intl.formatMessage({ id: 'Thermal' })}
-                                    </MenuItem>
-                                    <MenuItem value={'SOLAR'}>
-                                        {intl.formatMessage({ id: 'Solar' })}
-                                    </MenuItem>
-                                    <MenuItem value={'OTHER'}>
-                                        {intl.formatMessage({ id: 'Other' })}
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
+                        {gridItem(generatorIdField)}
+                        {gridItem(generatorNameField)}
+                        {gridItem(energySourceField)}
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -482,72 +273,9 @@ const GeneratorCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
-                            <TextFieldWithAdornment
-                                size="small"
-                                fullWidth
-                                id="minimum-active-power"
-                                label={intl.formatMessage({
-                                    id: 'MinimumActivePowerText',
-                                })}
-                                adornmentPosition={'end'}
-                                adornmentText={'MW'}
-                                value={minimumActivePower}
-                                onChange={handleChangeMinimumActivePower}
-                                {...(errors.get('minimum-active-power')
-                                    ?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('minimum-active-power')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <TextFieldWithAdornment
-                                size="small"
-                                fullWidth
-                                id="maximum-active-power"
-                                label={intl.formatMessage({
-                                    id: 'MaximumActivePowerText',
-                                })}
-                                adornmentPosition={'end'}
-                                adornmentText={'MW'}
-                                value={maximumActivePower}
-                                onChange={handleChangeMaximumActivePower}
-                                {...(errors.get('maximum-active-power')
-                                    ?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('maximum-active-power')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <TextFieldWithAdornment
-                                size="small"
-                                fullWidth
-                                id="rated-nominal-power"
-                                label={intl.formatMessage({
-                                    id: 'RatedNominalPowerText',
-                                })}
-                                adornmentPosition={'end'}
-                                adornmentText={'MVA'}
-                                value={ratedNominalPower}
-                                onChange={handleChangeRatedNominalPower}
-                                {...(errors.get('rated-nominal-power')
-                                    ?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('rated-nominal-power')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
+                        {gridItem(minimumActivePowerField)}
+                        {gridItem(maximumActivePowerField)}
+                        {gridItem(ratedNominalPowerField)}
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -557,97 +285,12 @@ const GeneratorCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
-                            <TextFieldWithAdornment
-                                size="small"
-                                fullWidth
-                                id="active-power-set-point"
-                                label={intl.formatMessage({
-                                    id: 'ActivePowerText',
-                                })}
-                                adornmentPosition={'end'}
-                                adornmentText={'MW'}
-                                value={activePowerSetpoint}
-                                onChange={handleChangeActivePowerSetpoint}
-                                {...(errors.get('active-power-set-point')
-                                    ?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('active-power-set-point')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <TextFieldWithAdornment
-                                size="small"
-                                fullWidth
-                                id="reactive-power-set-point"
-                                label={intl.formatMessage({
-                                    id: 'ReactivePowerText',
-                                })}
-                                adornmentPosition={'end'}
-                                adornmentText={'MVar'}
-                                disabled={!enabledReactivePowerSetpoint}
-                                value={reactivePowerSetpoint}
-                                onChange={handleChangeReactivePowerSetpoint}
-                                {...(errors.get('reactive-power-set-point')
-                                    ?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get(
-                                            'reactive-power-set-point'
-                                        )?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
+                        {gridItem(activePowerSetpointField)}
+                        {gridItem(reactivePowerSetpointField)}
                     </Grid>
                     <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={4} align="start">
-                            <FormControlLabel
-                                id="voltage-regulation"
-                                control={
-                                    <Switch
-                                        checked={voltageRegulation}
-                                        onChange={(e) =>
-                                            handleChangeVoltageRegulation(e)
-                                        }
-                                        value="checked"
-                                        color="primary"
-                                        inputProps={{
-                                            'aria-label': 'primary checkbox',
-                                        }}
-                                    />
-                                }
-                                label={intl.formatMessage({
-                                    id: 'VoltageRegulationText',
-                                })}
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <TextFieldWithAdornment
-                                size="small"
-                                fullWidth
-                                id="voltage-set-point"
-                                label={intl.formatMessage({
-                                    id: 'VoltageText',
-                                })}
-                                adornmentPosition={'end'}
-                                adornmentText={'kV'}
-                                disabled={!enabledVoltageSetpoint}
-                                value={voltageSetpoint}
-                                onChange={handleChangeVoltageSetpoint}
-                                {...(errors.get('voltage-set-point')?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('voltage-set-point')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
+                        {gridItem(voltageRegulationField)}
+                        {gridItem(voltageSetpointField)}
                     </Grid>
                     {/* Connectivity part */}
                     <Grid container spacing={2}>
@@ -658,39 +301,7 @@ const GeneratorCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item xs={8} align="start">
-                            <ConnectivityEdition
-                                voltageLevelOptions={voltageLevelOptions}
-                                voltageLevel={voltageLevel}
-                                busOrBusbarSection={busOrBusbarSection}
-                                onChangeVoltageLevel={(value) =>
-                                    setVoltageLevel(value)
-                                }
-                                onChangeBusOrBusbarSection={(
-                                    busOrBusbarSection
-                                ) => setBusOrBusbarSection(busOrBusbarSection)}
-                                errorVoltageLevel={
-                                    errors.get('voltage-level')?.error
-                                }
-                                helperTextVoltageLevel={
-                                    errors.get('voltage-level')?.error &&
-                                    intl.formatMessage({
-                                        id: errors.get('voltage-level')
-                                            ?.errorMsgId,
-                                    })
-                                }
-                                errorBusOrBusBarSection={
-                                    errors.get('bus-bar')?.error
-                                }
-                                helperTextBusOrBusBarSection={
-                                    errors.get('bus-bar')?.error &&
-                                    intl.formatMessage({
-                                        id: errors.get('bus-bar')?.errorMsgId,
-                                    })
-                                }
-                                workingNodeUuid={workingNodeUuid}
-                            />
-                        </Grid>
+                        {gridItem(connectivityField, 8)}
                     </Grid>
                 </div>
             </DialogContent>

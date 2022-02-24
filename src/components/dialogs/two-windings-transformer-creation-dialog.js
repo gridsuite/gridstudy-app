@@ -157,7 +157,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 ratedVoltage2,
                 connectivity1.voltageLevel.id,
                 connectivity1.busOrBusbarSection.id,
-                connectivity2.voltageLevel.id
+                connectivity2.voltageLevel.id,
+                connectivity2.busOrBusbarSection.id
             )
                 .then(() => {
                     handleCloseAndClear();
