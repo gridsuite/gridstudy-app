@@ -27,7 +27,7 @@ const WaitingLoader = ({ loading, message, errMessage, children }) => {
 export default WaitingLoader;
 
 WaitingLoader.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     errMessage: PropTypes.string,
     loading: PropTypes.bool.isRequired,
     message: PropTypes.string,
