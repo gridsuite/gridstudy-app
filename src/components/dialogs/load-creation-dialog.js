@@ -235,6 +235,7 @@ const LoadCreationDialog = ({
                                 (value) => value.id === load.voltageLevelId
                             )
                         );
+                        setBusOrBusbarSection(null);
 
                         msg = intl.formatMessage(
                             { id: 'LoadCopied' },
