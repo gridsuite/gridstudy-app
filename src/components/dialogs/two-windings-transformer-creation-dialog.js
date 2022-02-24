@@ -114,6 +114,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [ratedVoltage1, ratedVoltage1Field] = useDoubleValue({
         label: 'RatedVoltage',
+        id: 'RatedVoltage1',
         validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: VoltageAdornment,
         inputForm: inputForm,
@@ -121,6 +122,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [ratedVoltage2, ratedVoltage2Field] = useDoubleValue({
         label: 'RatedVoltage',
+        id: 'RatedVoltage2',
         validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: VoltageAdornment,
         inputForm: inputForm,
@@ -128,6 +130,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [connectivity1, connectivity1Field] = useConnectivityValue({
         label: 'Connectivity',
+        id: 'Connectivity1',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
@@ -136,6 +139,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
         label: 'Connectivity',
+        id: 'Connectivity2',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,

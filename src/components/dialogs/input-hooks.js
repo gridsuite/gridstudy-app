@@ -88,8 +88,8 @@ export const useInputForm = () => {
             .map((e) => e())
             .every((res) => res);
     }, []);
-    const addValidation = useCallback((label, validate) => {
-        validationMap.current.set(label, validate);
+    const addValidation = useCallback((id, validate) => {
+        validationMap.current.set(id, validate);
     }, []);
     const clear = useCallback(() => {
         setToggleClear((oldValue) => !oldValue);
@@ -102,6 +102,7 @@ export const useInputForm = () => {
 
 export const useTextValue = ({
     label,
+    id,
     defaultValue = '',
     validation = {},
     adornment,
@@ -124,8 +125,8 @@ export const useTextValue = ({
             setError(res?.errorMsgId);
             return !res.error;
         }
-        inputForm.addValidation(label, validate);
-    }, [label, inputForm, value]);
+        inputForm.addValidation(id ? id : label, validate);
+    }, [label, inputForm, value, id]);
 
     const handleChangeValue = useCallback(
         (event) => {
@@ -138,10 +139,10 @@ export const useTextValue = ({
         const Field = adornment ? TextFieldWithAdornment : TextField;
         return (
             <Field
-                key={label}
+                key={id ? id : label}
                 size="small"
                 fullWidth
-                id={label}
+                id={id ? id : label}
                 label={
                     intl.formatMessage({
                         id: label,
@@ -173,6 +174,7 @@ export const useTextValue = ({
         );
     }, [
         label,
+        id,
         intl,
         adornment,
         value,
@@ -235,6 +237,7 @@ export const useDoubleValue = ({
 
 export const useBooleanValue = ({
     label,
+    id,
     defaultValue,
     validation = {},
     inputForm,
@@ -247,8 +250,8 @@ export const useBooleanValue = ({
         function validate() {
             return true;
         }
-        inputForm.addValidation(label, validate);
-    }, [label, validation, inputForm, value]);
+        inputForm.addValidation(id ? id : label, validate);
+    }, [label, validation, inputForm, value, id]);
 
     const handleChangeValue = useCallback((event) => {
         setValue(event.target.checked);
@@ -257,7 +260,7 @@ export const useBooleanValue = ({
     const field = useMemo(() => {
         return (
             <FormControlLabel
-                id={label}
+                id={id ? id : label}
                 control={
                     <Switch
                         checked={value}
@@ -275,7 +278,7 @@ export const useBooleanValue = ({
                 })}
             />
         );
-    }, [intl, label, value, handleChangeValue, formProps]);
+    }, [intl, label, value, handleChangeValue, formProps, id]);
 
     useEffect(
         () => setValue(defaultValue),
@@ -287,6 +290,7 @@ export const useBooleanValue = ({
 
 export const useConnectivityValue = ({
     label,
+    id,
     validation = {
         isFieldRequired: true,
     },
@@ -323,8 +327,8 @@ export const useConnectivityValue = ({
             setErrorBusBarSection(resBBS?.errorMsgId);
             return !resVL.error && !resBBS.error;
         }
-        inputForm.addValidation(label, validate);
-    }, [connectivity, label, validation, inputForm]);
+        inputForm.addValidation(id ? id : label, validate);
+    }, [connectivity, label, validation, inputForm, id]);
 
     const setVoltageLevel = useCallback((newVal) => {
         setConnectivity((oldVal) => {

@@ -104,6 +104,7 @@ const LineCreationDialog = ({
 
     const [shuntConductance1, shuntConductance1Field] = useDoubleValue({
         label: 'ShuntConductanceText',
+        id: 'ShuntConductance1',
         validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
@@ -111,6 +112,7 @@ const LineCreationDialog = ({
 
     const [shuntSusceptance1, shuntSusceptance1Field] = useDoubleValue({
         label: 'ShuntSusceptanceText',
+        id: 'ShuntSusceptance1',
         validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
@@ -118,6 +120,7 @@ const LineCreationDialog = ({
 
     const [shuntConductance2, shuntConductance2Field] = useDoubleValue({
         label: 'ShuntConductanceText',
+        id: 'ShuntConductance2',
         validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
@@ -125,6 +128,7 @@ const LineCreationDialog = ({
 
     const [shuntSusceptance2, shuntSusceptance2Field] = useDoubleValue({
         label: 'ShuntSusceptanceText',
+        id: 'ShuntSusceptance2',
         validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
@@ -132,6 +136,7 @@ const LineCreationDialog = ({
 
     const [connectivity1, connectivity1Field] = useConnectivityValue({
         label: 'Connectivity',
+        id: 'Connectivity1',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
@@ -140,6 +145,7 @@ const LineCreationDialog = ({
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
         label: 'Connectivity',
+        id: 'Connectivity2',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
