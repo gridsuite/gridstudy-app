@@ -28,7 +28,11 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
+import {
+    createLoad,
+    fetchEquipmentExists,
+    fetchLoadInfos,
+} from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { makeErrorHelper, validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
@@ -216,14 +220,31 @@ const LoadCreationDialog = ({
         setDialogSearchOpen(true);
     };
 
+    const addSuffixIfNecessary = (loadId, i) => {
+        return fetchEquipmentExists(
+            studyUuid,
+            selectedNodeUuid,
+            'loads',
+            loadId + '(' + i + ')'
+        ).then((response) => {
+            if (response.status === 404) {
+                return loadId + '(' + i + ')';
+            } else {
+                return addSuffixIfNecessary(loadId, i + 1);
+            }
+        });
+    };
+
     const handleSelectionChange = (element) => {
         let msg;
         fetchLoadInfos(studyUuid, workingNodeUuid, element.id).then(
             (response) => {
                 if (response.status === 200) {
                     response.json().then((load) => {
+                        addSuffixIfNecessary(load.id, 1).then((loadId) => {
+                            setLoadId(loadId);
+                        });
                         //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
-                        setLoadId(load.id);
                         setLoadName(load.name);
                         setLoadType(load.type);
                         setActivePower(String(load.p0));

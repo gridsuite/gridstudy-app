@@ -484,6 +484,25 @@ function fetchEquipmentInfos(
     return backendFetch(fetchEquipmentInfosUrl);
 }
 
+export function fetchEquipmentExists(
+    studyUuid,
+    selectedNodeUuid,
+    equipmentPath,
+    equipmentId
+) {
+    console.info(
+        `Fetching existence of specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${selectedNodeUuid}' ...`
+    );
+    const fetchEquipmentInfosUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-map/' +
+        equipmentPath +
+        '/' +
+        encodeURIComponent(equipmentId);
+    console.debug(fetchEquipmentInfosUrl);
+    return backendFetch(fetchEquipmentInfosUrl, { method: 'head' });
+}
+
 export function fetchBusesForVoltageLevel(
     studyUuid,
     selectedNodeUuid,
