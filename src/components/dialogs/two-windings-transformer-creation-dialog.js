@@ -84,14 +84,14 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [seriesResistance, seriesResistanceField] = useDoubleValue({
         label: 'SeriesResistanceText',
-        validation: { isFieldRequired: true },
+        validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: OhmAdornment,
         inputForm: inputForm,
     });
 
     const [seriesReactance, seriesReactanceField] = useDoubleValue({
         label: 'SeriesReactanceText',
-        validation: { isFieldRequired: true },
+        validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: OhmAdornment,
         inputForm: inputForm,
     });
@@ -99,7 +99,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const [magnetizingConductance, magnetizingConductanceField] =
         useDoubleValue({
             label: 'MagnetizingConductance',
-            validation: { isFieldRequired: true },
+            validation: { isFieldRequired: true, isFieldNumeric: true },
             adornment: SusceptanceAdornment,
             inputForm: inputForm,
         });
@@ -107,21 +107,21 @@ const TwoWindingsTransformerCreationDialog = ({
     const [magnetizingSusceptance, magnetizingSusceptanceField] =
         useDoubleValue({
             label: 'MagnetizingSusceptance',
-            validation: { isFieldRequired: true },
+            validation: { isFieldRequired: true, isFieldNumeric: true },
             adornment: SusceptanceAdornment,
             inputForm: inputForm,
         });
 
     const [ratedVoltage1, ratedVoltage1Field] = useDoubleValue({
         label: 'RatedVoltage',
-        validation: { isFieldRequired: true },
+        validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: VoltageAdornment,
         inputForm: inputForm,
     });
 
     const [ratedVoltage2, ratedVoltage2Field] = useDoubleValue({
         label: 'RatedVoltage',
-        validation: { isFieldRequired: true },
+        validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: VoltageAdornment,
         inputForm: inputForm,
     });

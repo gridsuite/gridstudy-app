@@ -390,6 +390,8 @@ export const useAutocompleteField = ({
 }) => {
     const [value, setValue] = useState('');
 
+    const intl = useIntl();
+
     useEffect(() => {
         function validate() {
             return true;
@@ -417,14 +419,32 @@ export const useAutocompleteField = ({
                         {...props}
                         variant="filled"
                         size="small"
-                        label={<FormattedMessage id={label} />}
+                        label={
+                            intl.formatMessage({
+                                id: label,
+                            }) +
+                            ' ' +
+                            (!validation.isFieldRequired
+                                ? intl.formatMessage({
+                                      id: 'Optional',
+                                  })
+                                : '')
+                        }
                         value={value}
                     />
                 )}
             />
             // </Grid>
         );
-    }, [label, value, handleChangeValue, formProps, values]);
+    }, [
+        label,
+        value,
+        handleChangeValue,
+        formProps,
+        values,
+        intl,
+        validation.isFieldRequired,
+    ]);
 
     return [value, field];
 };
@@ -437,6 +457,7 @@ export const useEnumValue = ({
     formProps,
     enumValues,
 }) => {
+    const intl = useIntl();
     const [value, setValue] = useState(defaultValue);
 
     useEffect(() => {
@@ -456,7 +477,15 @@ export const useEnumValue = ({
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                 <InputLabel id="enum-type-label" variant={'filled'}>
-                    <FormattedMessage id={label} />
+                    {intl.formatMessage({
+                        id: label,
+                    }) +
+                        ' ' +
+                        (!validation.isFieldRequired
+                            ? intl.formatMessage({
+                                  id: 'Optional',
+                              })
+                            : '')}
                 </InputLabel>
                 <Select
                     id={label}
@@ -476,7 +505,15 @@ export const useEnumValue = ({
                 </Select>
             </FormControl>
         );
-    }, [label, value, handleChangeValue, formProps, enumValues]);
+    }, [
+        label,
+        value,
+        handleChangeValue,
+        formProps,
+        enumValues,
+        intl,
+        validation.isFieldRequired,
+    ]);
 
     useEffect(
         () => setValue(defaultValue),

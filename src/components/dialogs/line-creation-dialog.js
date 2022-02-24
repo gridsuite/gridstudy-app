@@ -90,42 +90,42 @@ const LineCreationDialog = ({
 
     const [seriesResistance, seriesResistanceField] = useDoubleValue({
         label: 'SeriesResistanceText',
-        validation: { isFieldRequired: true },
+        validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: OhmAdornment,
         inputForm: inputForm,
     });
 
     const [seriesReactance, seriesReactanceField] = useDoubleValue({
         label: 'SeriesReactanceText',
-        validation: { isFieldRequired: true },
+        validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: OhmAdornment,
         inputForm: inputForm,
     });
 
     const [shuntConductance1, shuntConductance1Field] = useDoubleValue({
         label: 'ShuntConductanceText',
-        validation: { isFieldRequired: false },
+        validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
     });
 
     const [shuntSusceptance1, shuntSusceptance1Field] = useDoubleValue({
         label: 'ShuntSusceptanceText',
-        validation: { isFieldRequired: false },
+        validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
     });
 
     const [shuntConductance2, shuntConductance2Field] = useDoubleValue({
         label: 'ShuntConductanceText',
-        validation: { isFieldRequired: false },
+        validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
     });
 
     const [shuntSusceptance2, shuntSusceptance2Field] = useDoubleValue({
         label: 'ShuntSusceptanceText',
-        validation: { isFieldRequired: false },
+        validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
     });
@@ -149,7 +149,12 @@ const LineCreationDialog = ({
     const [permanentCurrentLimit1, permanentCurrentLimit1Field] =
         useDoubleValue({
             label: 'PermanentCurrentLimitText',
-            validation: { isFieldRequired: false },
+            validation: {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+                isValueGreaterThan: '0',
+                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
+            },
             adornment: AmpereAdornment,
             inputForm: inputForm,
         });
@@ -157,7 +162,12 @@ const LineCreationDialog = ({
     const [permanentCurrentLimit2, permanentCurrentLimit2Field] =
         useDoubleValue({
             label: 'PermanentCurrentLimitText',
-            validation: { isFieldRequired: false },
+            validation: {
+                isFieldRequired: false,
+                isFieldNumeric: true,
+                isValueGreaterThan: '0',
+                errorMsgId: 'permanentCurrentLimitGreaterThanZero',
+            },
             adornment: AmpereAdornment,
             inputForm: inputForm,
         });

@@ -86,8 +86,7 @@ const LoadCreationDialog = ({
         label: 'ActivePowerText',
         validation: {
             isFieldRequired: true,
-            isValueGreaterThan: '0',
-            errorMsgId: 'ActivePowerErrorMaximumLessThanOne',
+            isFieldNumeric: true,
         },
         transformValue: toPositiveIntValue,
         adornment: ActivePowerAdornment,
@@ -98,8 +97,7 @@ const LoadCreationDialog = ({
         label: 'ReactivePowerText',
         validation: {
             isFieldRequired: true,
-            isValueGreaterThan: '0',
-            errorMsgId: 'ReactivePowerErrorMaximumLessThanOne',
+            isFieldNumeric: true,
         },
         transformValue: toPositiveIntValue,
         adornment: ReactivePowerAdornment,

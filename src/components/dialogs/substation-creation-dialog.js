@@ -62,7 +62,6 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
     });
 
     const countriesList = useMemo(() => {
-        console.info('countriesListCB');
         try {
             return require('localized-countries')(
                 require('localized-countries/data/' +
@@ -80,6 +79,7 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         label: 'Country',
         inputForm: inputForm,
         formProps: filledTextField,
+        validation: { isFieldRequired: false },
         values: countriesList,
     });
 

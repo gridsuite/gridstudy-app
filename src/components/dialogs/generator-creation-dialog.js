@@ -99,26 +99,29 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: ENERGY_SOURCES,
-    });
-
-    const [minimumActivePower, minimumActivePowerField] = useIntegerValue({
-        label: 'MinimumActivePowerText',
         validation: {
-            isFieldRequired: true,
-            isValueGreaterThan: '0',
-            errorMsgId: 'MinimumActivePowerErrorMaximumLessThanOne',
+            isFieldRequired: false,
         },
-        transformValue: toPositiveIntValue,
-        adornment: ActivePowerAdornment,
-        inputForm: inputForm,
     });
 
     const [maximumActivePower, maximumActivePowerField] = useIntegerValue({
         label: 'MaximumActivePowerText',
         validation: {
             isFieldRequired: true,
-            isValueGreaterThan: '0',
-            errorMsgId: 'MaximumActivePowerErrorMaximumLessThanOne',
+            isFieldNumeric: true,
+        },
+        transformValue: toPositiveIntValue,
+        adornment: ActivePowerAdornment,
+        inputForm: inputForm,
+    });
+
+    const [minimumActivePower, minimumActivePowerField] = useIntegerValue({
+        label: 'MinimumActivePowerText',
+        validation: {
+            isFieldRequired: true,
+            isFieldNumeric: true,
+            isValueLessOrEqualTo: maximumActivePower,
+            errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         transformValue: toPositiveIntValue,
         adornment: ActivePowerAdornment,
@@ -128,9 +131,10 @@ const GeneratorCreationDialog = ({
     const [ratedNominalPower, ratedNominalPowerField] = useIntegerValue({
         label: 'RatedNominalPowerText',
         validation: {
-            isFieldRequired: true,
+            isFieldRequired: false,
+            isFieldNumeric: true,
             isValueGreaterThan: '0',
-            errorMsgId: 'RatedNominalPowerErrorMaximumLessThanOne',
+            errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
         transformValue: toPositiveIntValue,
         adornment: ReactivePowerAdornment,
@@ -141,8 +145,7 @@ const GeneratorCreationDialog = ({
         label: 'ActivePowerText',
         validation: {
             isFieldRequired: true,
-            isValueGreaterThan: '0',
-            errorMsgId: 'ActivePowerErrorMaximumLessThanOne',
+            isFieldNumeric: true,
         },
         transformValue: toPositiveIntValue,
         adornment: ActivePowerAdornment,
@@ -151,14 +154,19 @@ const GeneratorCreationDialog = ({
 
     const [voltageRegulation, voltageRegulationField] = useBooleanValue({
         label: 'VoltageRegulation',
-        defaultValue: true,
+        defaultValue: false,
         validation: { isFieldRequired: true },
         inputForm: inputForm,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
         label: 'Voltage',
-        validation: { isFieldRequired: true },
+        validation: {
+            isFieldRequired: voltageRegulation,
+            isFieldNumeric: true,
+            isValueGreaterThan: '0',
+            errorMsgId: 'VoltageGreaterThanZero',
+        },
         adornment: VoltageAdornment,
         formProps: { disabled: !voltageRegulation },
         inputForm: inputForm,
@@ -168,9 +176,8 @@ const GeneratorCreationDialog = ({
         {
             label: 'ReactivePowerText',
             validation: {
-                isFieldRequired: true,
-                isValueGreaterThan: '0',
-                errorMsgId: 'RectivePowerErrorMaximumLessThanOne',
+                isFieldRequired: !voltageRegulation,
+                isFieldNumeric: true,
             },
             transformValue: toPositiveIntValue,
             adornment: ReactivePowerAdornment,
