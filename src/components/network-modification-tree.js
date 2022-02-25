@@ -282,9 +282,9 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
         }
     }, [isModificationsDrawerOpen]);
 
-    const onLoad = (reactFlowInstance) => {
+    const onLoad = useCallback((reactFlowInstance) => {
         reactFlowInstance.fitView();
-    };
+    }, []);
 
     return (
         <>
