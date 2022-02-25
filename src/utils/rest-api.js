@@ -403,6 +403,7 @@ export function fetchEquipmentsInfos(
     nodeUuid,
     searchTerm,
     usesName,
+    searchInUpstreamBuiltParent,
     equipmentType
 ) {
     console.info(
@@ -412,6 +413,12 @@ export function fetchEquipmentsInfos(
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
+    if (equipmentType !== undefined) {
+        urlSearchParams.append(
+            'searchInUpstreamBuiltParentNode',
+            searchInUpstreamBuiltParent
+        );
+    }
     if (equipmentType !== undefined) {
         urlSearchParams.append('equipmentType', equipmentType);
     }
@@ -469,17 +476,29 @@ function fetchEquipmentInfos(
     studyUuid,
     selectedNodeUuid,
     equipmentPath,
-    equipmentId
+    equipmentId,
+    searchInUpstreamBuiltParent
 ) {
     console.info(
         `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${selectedNodeUuid}' ...`
     );
+
+    let urlSearchParams = new URLSearchParams();
+    if (searchInUpstreamBuiltParent !== undefined) {
+        urlSearchParams.append(
+            'searchInUpstreamBuiltParentNode',
+            searchInUpstreamBuiltParent
+        );
+    }
+
     const fetchEquipmentInfosUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +
         equipmentPath +
         '/' +
-        encodeURIComponent(equipmentId);
+        encodeURIComponent(equipmentId) +
+        '?' +
+        urlSearchParams.toString();
     console.debug(fetchEquipmentInfosUrl);
     return backendFetch(fetchEquipmentInfosUrl);
 }

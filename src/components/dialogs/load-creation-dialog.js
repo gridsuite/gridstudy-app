@@ -237,7 +237,7 @@ const LoadCreationDialog = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchLoadInfos(studyUuid, workingNodeUuid, element.id).then(
+        fetchLoadInfos(studyUuid, selectedNodeUuid, element.id).then(
             (response) => {
                 if (response.status === 200) {
                     response.json().then((load) => {
@@ -515,7 +515,7 @@ const LoadCreationDialog = ({
                 onClose={() => setDialogSearchOpen(false)}
                 equipmentType={'LOAD'}
                 onSelectionChange={handleSelectionChange}
-                workingNodeUuid={workingNodeUuid}
+                selectedNodeUuid={selectedNodeUuid}
             />
         </>
     );
