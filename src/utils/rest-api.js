@@ -1133,7 +1133,8 @@ export function createSubstation(
     selectedNodeUuid,
     substationId,
     substationName,
-    substationCountry
+    substationCountry,
+    isEdition = false
 ) {
     console.info('Creating substation ');
     const createSubstationUrl =
@@ -1141,7 +1142,7 @@ export function createSubstation(
         '/network-modification/substations';
 
     return backendFetch(createSubstationUrl, {
-        method: 'PUT',
+        method: isEdition ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',

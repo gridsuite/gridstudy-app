@@ -99,7 +99,8 @@ const SubstationCreationDialog = ({
                     selectedNodeUuid,
                     substationId,
                     substationName,
-                    substationCountry
+                    substationCountry,
+                    true
                 ).catch((errorMessage) => {
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,
