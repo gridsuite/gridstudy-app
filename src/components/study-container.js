@@ -377,7 +377,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 'deleteStudy'
             ) {
                 // closing window on study deletion
-                window.open('', '_self');
                 window.close();
             }
         }
