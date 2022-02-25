@@ -389,6 +389,7 @@ export const useAutocompleteField = ({
     label,
     validation = {},
     inputForm,
+    defaultValue,
     formProps,
     values,
 }) => {
@@ -409,7 +410,6 @@ export const useAutocompleteField = ({
 
     const field = useMemo(() => {
         return (
-            // <Grid item xs={4} align="start">
             <Autocomplete
                 id={label}
                 onChange={(event, newValue) => {
@@ -417,6 +417,7 @@ export const useAutocompleteField = ({
                 }}
                 options={Object.keys(values.object())}
                 getOptionLabel={(code) => values.get(code)}
+                defaultValue={defaultValue}
                 renderInput={(props) => (
                     <TextField
                         {...formProps}
@@ -438,7 +439,6 @@ export const useAutocompleteField = ({
                     />
                 )}
             />
-            // </Grid>
         );
     }, [
         label,
@@ -447,6 +447,7 @@ export const useAutocompleteField = ({
         formProps,
         values,
         intl,
+        defaultValue,
         validation.isFieldRequired,
     ]);
 

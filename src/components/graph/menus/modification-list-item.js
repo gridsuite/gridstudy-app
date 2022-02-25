@@ -62,7 +62,6 @@ export const ModificationListItem = ({
             ),
         [modification, getComputedLabel, intl]
     );
-    console.info('modification', modification);
     return (
         <>
             <ListItem {...props} className={classes.listItem}>

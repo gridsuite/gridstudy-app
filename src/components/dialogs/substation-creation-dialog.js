@@ -36,7 +36,12 @@ import {
  * @param {EventListener} onClose Event to close the dialog
  * @param selectedNodeUuid : the currently selected tree node
  */
-const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
+const SubstationCreationDialog = ({
+    open,
+    onClose,
+    selectedNodeUuid,
+    editData,
+}) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -53,12 +58,14 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: editData?.equipmentId,
     });
 
     const [substationName, substationNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: editData?.equipmentName,
     });
 
     const countriesList = useMemo(() => {
@@ -81,26 +88,47 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         formProps: filledTextField,
         validation: { isFieldRequired: false },
         values: countriesList,
+        defaultValue: editData?.substationCountry,
     });
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            createSubstation(
-                studyUuid,
-                selectedNodeUuid,
-                substationId,
-                substationName,
-                substationCountry
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'SubstationCreationError',
-                        intlRef: intlRef,
-                    },
+            if (editData) {
+                createSubstation(
+                    studyUuid,
+                    selectedNodeUuid,
+                    substationId,
+                    substationName,
+                    substationCountry
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'SubstationCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
+            } else {
+                createSubstation(
+                    studyUuid,
+                    selectedNodeUuid,
+                    substationId,
+                    substationName,
+                    substationCountry
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'SubstationCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+            }
+
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
@@ -155,7 +183,7 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
                     <FormattedMessage id="close" />
                 </Button>
                 <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id={editData ? 'Update' : 'save'} />
                 </Button>
             </DialogActions>
         </Dialog>

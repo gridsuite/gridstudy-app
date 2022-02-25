@@ -356,5 +356,7 @@
     "insertNetworkModificationNodeBefore": "Insert a network modification node before",
     "insertModelNodeBefore": "Insert a model node before",
     "insertNetworkModificationNodeAfter": "Insert a network modification node after",
-    "insertModelNodeAfter": "Insert a model node after"
+    "insertModelNodeAfter": "Insert a model node after",
+
+    "Update": "Update"
 }

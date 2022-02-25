@@ -83,6 +83,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsDialog(false);
+        setEditData(undefined);
     };
 
     const doDeleteModification = (uuid) => {
@@ -130,6 +131,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             <NetworkModificationDialog
                 open={openNetworkModificationsDialog}
                 editData={editData}
+                setEditData={setEditData}
                 onClose={closeNetworkModificationConfiguration}
                 network={network}
                 selectedNodeUuid={selectedNode.id}

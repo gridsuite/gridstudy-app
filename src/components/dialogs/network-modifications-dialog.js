@@ -45,6 +45,7 @@ const NetworkModificationDialog = ({
     selectedNodeUuid,
     workingNodeUuid,
     editData,
+    setEditData,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
@@ -53,6 +54,7 @@ const NetworkModificationDialog = ({
 
     const closeDialog = () => {
         setDialogOpen(undefined);
+        setEditData(undefined);
     };
 
     const openDialog = (dialogId) => {
@@ -60,7 +62,6 @@ const NetworkModificationDialog = ({
     };
 
     useEffect(() => {
-        console.info('editData', editData);
         setDialogOpen(editData?.type);
     }, [editData]);
 
@@ -71,6 +72,7 @@ const NetworkModificationDialog = ({
                 onClose={closeDialog}
                 selectedNodeUuid={selectedNodeUuid}
                 workingNodeUuid={workingNodeUuid}
+                editData={editData}
                 {...props}
             />
         );
