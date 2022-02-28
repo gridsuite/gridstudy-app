@@ -92,6 +92,7 @@ const SubstationCreationDialog = ({
     });
 
     const handleSave = () => {
+        console.info('editData.uuid', editData?.uuid);
         if (inputForm.validate()) {
             if (editData) {
                 createSubstation(
@@ -100,7 +101,8 @@ const SubstationCreationDialog = ({
                     substationId,
                     substationName,
                     substationCountry,
-                    true
+                    true,
+                    editData.uuid
                 ).catch((errorMessage) => {
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,

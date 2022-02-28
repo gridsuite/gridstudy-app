@@ -1134,7 +1134,8 @@ export function createSubstation(
     substationId,
     substationName,
     substationCountry,
-    isEdition = false
+    isEdition = false,
+    uuid
 ) {
     console.info('Creating substation ');
     const createSubstationUrl =
@@ -1152,6 +1153,7 @@ export function createSubstation(
             equipmentName: substationName,
             substationCountry:
                 substationCountry === '' ? null : substationCountry,
+            uuid: uuid,
         }),
     }).then((response) =>
         response.ok
