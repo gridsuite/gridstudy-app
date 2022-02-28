@@ -23,6 +23,7 @@ import { useParams } from 'react-router-dom';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
+import { useSelector } from 'react-redux';
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
 
@@ -47,8 +48,7 @@ const EquipmentSearchDialog = ({
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const useNameLocal = useState(PARAM_USE_NAME);
-
+    const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
     const [equipmentsFound, setEquipmentsFound] = useState([]);
 
     const searchMatchingEquipments = useCallback(
