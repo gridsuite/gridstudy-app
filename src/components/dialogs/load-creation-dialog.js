@@ -244,7 +244,6 @@ const LoadCreationDialog = ({
                     response.json().then((load) => {
                         addSuffixIfNecessary(load.id, 1).then((loadId) => {
                             setLoadId(loadId);
-                            //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
                             setLoadName(load.name);
                             setLoadType(load.type);
                             setActivePower(String(load.p0));
@@ -254,6 +253,7 @@ const LoadCreationDialog = ({
                                     (value) => value.id === load.voltageLevelId
                                 )
                             );
+                            //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
                             setBusOrBusbarSection(null);
 
                             msg = intl.formatMessage(

@@ -520,7 +520,7 @@ export function fetchEquipmentExists(
             searchInUpstreamBuiltParent
         );
     }
-    const fetchEquipmentInfosUrl =
+    const fetchEquipmentExistsUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +
         equipmentPath +
@@ -528,8 +528,8 @@ export function fetchEquipmentExists(
         encodeURIComponent(equipmentId) +
         '?' +
         urlSearchParams.toString();
-    console.debug(fetchEquipmentInfosUrl);
-    return backendFetch(fetchEquipmentInfosUrl, { method: 'head' });
+    console.debug(fetchEquipmentExistsUrl);
+    return backendFetch(fetchEquipmentExistsUrl, { method: 'head' });
 }
 
 export function fetchBusesForVoltageLevel(
