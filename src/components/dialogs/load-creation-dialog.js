@@ -225,7 +225,8 @@ const LoadCreationDialog = ({
             studyUuid,
             selectedNodeUuid,
             'loads',
-            loadId + '(' + i + ')'
+            loadId + '(' + i + ')',
+            true
         ).then((response) => {
             if (response.status === 404) {
                 return loadId + '(' + i + ')';
