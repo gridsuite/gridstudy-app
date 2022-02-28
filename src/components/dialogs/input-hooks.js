@@ -14,7 +14,13 @@ import React, {
 } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../util/validation-functions';
-import { InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import {
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+    Tooltip,
+} from '@material-ui/core';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
@@ -23,6 +29,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import { Autocomplete } from '@material-ui/lab';
+import Button from '@material-ui/core/Button';
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 export const SusceptanceAdornment = {
     position: 'end',
@@ -58,6 +66,8 @@ export const filledTextField = {
     variant: 'filled',
 };
 
+const DELAY = 1000;
+
 const func_identity = (e) => e;
 
 const useStyles = makeStyles((theme) => ({
@@ -76,6 +86,10 @@ const useStyles = makeStyles((theme) => ({
         style: {
             width: 'fit-content',
         },
+    },
+    tooltip: {
+        fontSize: 18,
+        maxWidth: 'none',
     },
 }));
 
@@ -298,7 +312,10 @@ export const useConnectivityValue = ({
     voltageLevelOptions,
     workingNodeUuid,
     direction = 'row',
+    voltageLevelIdDefaultValue,
+    busOrBusbarSectionIdDefaultValue,
 }) => {
+    console.info('voltageLevelDefaultValue', voltageLevelIdDefaultValue);
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
         busOrBusbarSection: null,
@@ -315,6 +332,19 @@ export const useConnectivityValue = ({
             }),
         [inputForm.toggleClear]
     );
+
+    useEffect(() => {
+        setConnectivity({
+            voltageLevel: voltageLevelOptions.find(
+                (value) => value.id === voltageLevelIdDefaultValue
+            ),
+            busOrBusbarSection: null,
+        });
+    }, [
+        voltageLevelOptions,
+        voltageLevelIdDefaultValue,
+        busOrBusbarSectionIdDefaultValue,
+    ]);
 
     useEffect(() => {
         function validate() {
@@ -453,6 +483,28 @@ export const useAutocompleteField = ({
     return [value, field];
 };
 
+export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
+    const classes = useStyles();
+
+    const button = useMemo(() => {
+        return (
+            <Tooltip
+                title={<FormattedMessage id={label} />}
+                placement="top"
+                arrow
+                enterDelay={DELAY}
+                enterNextDelay={DELAY}
+                classes={{ tooltip: classes.tooltip }}
+            >
+                <Button onClick={handleOpenSearchDialog}>
+                    <FindInPageIcon />
+                </Button>
+            </Tooltip>
+        );
+    }, [label, handleOpenSearchDialog, classes.tooltip]);
+    return button;
+};
+
 export const useEnumValue = ({
     label,
     defaultValue,
@@ -464,6 +516,8 @@ export const useEnumValue = ({
     const intl = useIntl();
     const [value, setValue] = useState(defaultValue);
 
+    console.info('enumValues', enumValues);
+
     useEffect(() => {
         function validate() {
             return true;
@@ -472,6 +526,7 @@ export const useEnumValue = ({
     }, [label, validation, inputForm, value]);
 
     const handleChangeValue = useCallback((event) => {
+        console.info('event.target.value', event.target.value);
         setValue(event.target.value);
     }, []);
 
@@ -500,7 +555,7 @@ export const useEnumValue = ({
                     {...formProps}
                 >
                     {enumValues.map((e) => (
-                        <MenuItem value={e.id}>
+                        <MenuItem value={e.id} key={e.id}>
                             <em>
                                 <FormattedMessage id={e.label} />
                             </em>
@@ -519,13 +574,18 @@ export const useEnumValue = ({
         validation.isFieldRequired,
     ]);
 
-    useEffect(
-        () => setValue(defaultValue),
-        [defaultValue, inputForm.toggleClear]
-    );
+    useEffect(() => {
+        setValue(undefined);
+    }, [inputForm.toggleClear]);
+
+    useEffect(() => {
+        console.info('defaultValue222222222222', defaultValue);
+        setValue(defaultValue);
+    }, [defaultValue]);
 
     return [value, field];
 };
+
 export const GridSection = ({ title, size = 12 }) => {
     const classes = useStyles();
     return (

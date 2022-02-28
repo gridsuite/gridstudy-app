@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -402,7 +402,8 @@ export function fetchEquipmentsInfos(
     studyUuid,
     nodeUuid,
     searchTerm,
-    usesName
+    usesName,
+    equipmentType
 ) {
     console.info(
         "Fetching equipments infos matching with '%s' term ... ",
@@ -411,6 +412,9 @@ export function fetchEquipmentsInfos(
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
+    if (equipmentType !== undefined) {
+        urlSearchParams.append('equipmentType', equipmentType);
+    }
     return backendFetch(
         getStudyUrl(studyUuid) +
             '/nodes/' +
@@ -422,6 +426,10 @@ export function fetchEquipmentsInfos(
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
     );
+}
+
+export function fetchLoadInfos(studyUuid, selectedNodeUuid, loadId) {
+    return fetchEquipmentInfos(studyUuid, selectedNodeUuid, 'loads', loadId);
 }
 
 export function fetchAllEquipments(
@@ -455,6 +463,25 @@ function fetchEquipments(
         getSubstationsIdsListsQueryParams(substationsIds);
     console.debug(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
+}
+
+function fetchEquipmentInfos(
+    studyUuid,
+    selectedNodeUuid,
+    equipmentPath,
+    equipmentId
+) {
+    console.info(
+        `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${selectedNodeUuid}' ...`
+    );
+    const fetchEquipmentInfosUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-map/' +
+        equipmentPath +
+        '/' +
+        encodeURIComponent(equipmentId);
+    console.debug(fetchEquipmentInfosUrl);
+    return backendFetch(fetchEquipmentInfosUrl);
 }
 
 export function fetchBusesForVoltageLevel(
