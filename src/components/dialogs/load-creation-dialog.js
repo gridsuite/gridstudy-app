@@ -22,6 +22,7 @@ import {
 import {
     ActivePowerAdornment,
     filledTextField,
+    gridItem,
     GridSection,
     ReactivePowerAdornment,
     useConnectivityValue,
@@ -232,14 +233,6 @@ const LoadCreationDialog = ({
         setDialogSearchOpen(false);
     };
 
-    function gridItem(field, size = 4) {
-        return (
-            <Grid item xs={size} align="start">
-                {field}
-            </Grid>
-        );
-    }
-
     return (
         <>
             <Dialog
@@ -259,14 +252,14 @@ const LoadCreationDialog = ({
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
-                        {gridItem(loadIdField)}
-                        {gridItem(loadNameField)}
-                        {gridItem(loadTypeField)}
+                        {gridItem(loadIdField, 4)}
+                        {gridItem(loadNameField, 4)}
+                        {gridItem(loadTypeField, 4)}
                     </Grid>
                     <GridSection title="Setpoints" />
                     <Grid container spacing={2}>
-                        {gridItem(activePowerField)}
-                        {gridItem(reactivePowerField)}
+                        {gridItem(activePowerField, 4)}
+                        {gridItem(reactivePowerField, 4)}
                     </Grid>
                     <GridSection title="Connectivity" />
                     <Grid container spacing={2}>

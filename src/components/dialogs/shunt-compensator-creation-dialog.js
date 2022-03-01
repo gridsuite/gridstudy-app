@@ -21,6 +21,7 @@ import {
 import { useSnackbar } from 'notistack';
 import {
     filledTextField,
+    gridItem,
     GridSection,
     SusceptanceAdornment,
     toPositiveIntValue,
@@ -164,14 +165,6 @@ const ShuntCompensatorCreationDialog = ({
         clearValues();
         handleClose();
     };
-
-    function gridItem(field, size = 6) {
-        return (
-            <Grid item xs={size} align="start">
-                {field}
-            </Grid>
-        );
-    }
 
     return (
         <Dialog

@@ -25,6 +25,7 @@ import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { getComputedLanguage } from '../../utils/language';
 import {
     filledTextField,
+    gridItem,
     useAutocompleteField,
     useInputForm,
     useTextValue,
@@ -125,14 +126,6 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         handleClose();
     };
 
-    function gridItem(field, size = 4) {
-        return (
-            <Grid item xs={size} align="start">
-                {field}
-            </Grid>
-        );
-    }
-
     return (
         <Dialog
             open={open}
@@ -145,9 +138,9 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                    {gridItem(substationIdField)}
-                    {gridItem(substationNameField)}
-                    {gridItem(substationCountryField)}
+                    {gridItem(substationIdField, 4)}
+                    {gridItem(substationNameField, 4)}
+                    {gridItem(substationCountryField, 4)}
                 </Grid>
             </DialogContent>
             <DialogActions>

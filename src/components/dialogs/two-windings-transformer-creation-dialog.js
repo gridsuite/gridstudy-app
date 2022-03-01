@@ -23,6 +23,7 @@ import {
 import { createTwoWindingsTransformer } from '../../utils/rest-api';
 import {
     filledTextField,
+    gridItem,
     OhmAdornment,
     SusceptanceAdornment,
     useConnectivityValue,
@@ -196,14 +197,6 @@ const TwoWindingsTransformerCreationDialog = ({
         clearValues();
         handleClose();
     };
-
-    function gridItem(field, size = 6) {
-        return (
-            <Grid item xs={size} align="start">
-                {field}
-            </Grid>
-        );
-    }
 
     return (
         <Dialog
