@@ -315,7 +315,6 @@ export const useConnectivityValue = ({
     voltageLevelIdDefaultValue,
     busOrBusbarSectionIdDefaultValue,
 }) => {
-    console.info('voltageLevelDefaultValue', voltageLevelIdDefaultValue);
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
         busOrBusbarSection: null,
@@ -335,9 +334,11 @@ export const useConnectivityValue = ({
 
     useEffect(() => {
         setConnectivity({
-            voltageLevel: voltageLevelOptions.find(
-                (value) => value.id === voltageLevelIdDefaultValue
-            ),
+            voltageLevel: voltageLevelIdDefaultValue
+                ? voltageLevelOptions.find(
+                      (value) => value.id === voltageLevelIdDefaultValue
+                  )
+                : null,
             busOrBusbarSection: null,
         });
     }, [
@@ -516,8 +517,6 @@ export const useEnumValue = ({
     const intl = useIntl();
     const [value, setValue] = useState(defaultValue);
 
-    console.info('enumValues', enumValues);
-
     useEffect(() => {
         function validate() {
             return true;
@@ -526,7 +525,6 @@ export const useEnumValue = ({
     }, [label, validation, inputForm, value]);
 
     const handleChangeValue = useCallback((event) => {
-        console.info('event.target.value', event.target.value);
         setValue(event.target.value);
     }, []);
 
@@ -579,7 +577,6 @@ export const useEnumValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        console.info('defaultValue222222222222', defaultValue);
         setValue(defaultValue);
     }, [defaultValue]);
 

@@ -123,8 +123,6 @@ const LoadCreationDialog = ({
         defaultValue: formValues ? String(formValues.q0) : undefined,
     });
 
-    console.info('formValues', formValues);
-
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
         inputForm: inputForm,
