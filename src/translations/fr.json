@@ -341,6 +341,7 @@
     "Breaker": "Disjoncteur",
     "Disconnector": "Sectionneur",
     "SameHorizAndVertPos": "Au moins deux SJBs ont mêmes positions horizontale et verticale",
+    "DuplicateId": "Identifiant non unique",
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
     "PermanentCurrentLimitText": "IST",

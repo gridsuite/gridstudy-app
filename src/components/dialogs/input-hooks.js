@@ -381,7 +381,6 @@ export const useAutocompleteField = ({
 
     const field = useMemo(() => {
         return (
-            // <Grid item xs={4} align="start">
             <Autocomplete
                 id={label}
                 onChange={(event, newValue) => {
@@ -427,7 +426,6 @@ export const useAutocompleteField = ({
                     />
                 )}
             />
-            // </Grid>
         );
     }, [
         label,
@@ -603,7 +601,7 @@ export const useExpandableValues = ({
 }) => {
     const classes = useStyles();
     const [values, setValues] = useState(defaultValues);
-    const [errors, setErrors] = useState(defaultValues);
+    const [errors, setErrors] = useState();
     const handleDeleteBusBarSection = useCallback((index) => {
         setValues((oldValues) => {
             let newValues = [...oldValues];
@@ -646,7 +644,7 @@ export const useExpandableValues = ({
                             onChange={handleSetValue}
                             index={idx}
                             inputForm={inputForm}
-                            errors={errors.get(idx)}
+                            errors={errors?.get(idx)}
                         />
                         <Grid item xs={1}>
                             <IconButton
