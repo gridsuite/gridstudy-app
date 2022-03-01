@@ -290,7 +290,7 @@
 
     "CreateGenerator": "Create generator",
     "GeneratorCreationError": "Error while creating generator",
-    "EnergySourceOptional": "Energy source (optional)",
+    "EnergySourceText": "Energy source",
     "Hydro": "Hydro",
     "Nuclear": "Nuclear",
     "Wind": "Wind",
