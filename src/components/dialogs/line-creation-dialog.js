@@ -31,7 +31,6 @@ import {
     useTextValue,
     useConnectivityValue,
 } from './input-hooks';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
