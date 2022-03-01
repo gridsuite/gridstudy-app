@@ -30,6 +30,7 @@ import {
     useInputForm,
     useTextValue,
     useConnectivityValue,
+    gridItem,
 } from './input-hooks';
 
 const useStyles = makeStyles((theme) => ({
@@ -230,14 +231,6 @@ const LineCreationDialog = ({
         clearValues();
         handleClose();
     };
-
-    function gridItem(field, size = 6) {
-        return (
-            <Grid item xs={size} align="start">
-                {field}
-            </Grid>
-        );
-    }
 
     return (
         <Dialog

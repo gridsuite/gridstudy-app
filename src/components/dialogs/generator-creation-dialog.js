@@ -24,6 +24,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
     ActivePowerAdornment,
     filledTextField,
+    gridItem,
     ReactivePowerAdornment,
     useBooleanValue,
     useConnectivityValue,
@@ -238,14 +239,6 @@ const GeneratorCreationDialog = ({
         handleClose();
     };
 
-    function gridItem(field, size = 4) {
-        return (
-            <Grid item xs={size} align="start">
-                {field}
-            </Grid>
-        );
-    }
-
     return (
         <Dialog
             fullWidth
@@ -260,9 +253,9 @@ const GeneratorCreationDialog = ({
             <DialogContent>
                 <div>
                     <Grid container spacing={2}>
-                        {gridItem(generatorIdField)}
-                        {gridItem(generatorNameField)}
-                        {gridItem(energySourceField)}
+                        {gridItem(generatorIdField, 4)}
+                        {gridItem(generatorNameField, 4)}
+                        {gridItem(energySourceField, 4)}
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -272,9 +265,9 @@ const GeneratorCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        {gridItem(minimumActivePowerField)}
-                        {gridItem(maximumActivePowerField)}
-                        {gridItem(ratedNominalPowerField)}
+                        {gridItem(minimumActivePowerField, 4)}
+                        {gridItem(maximumActivePowerField, 4)}
+                        {gridItem(ratedNominalPowerField, 4)}
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
@@ -284,12 +277,12 @@ const GeneratorCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        {gridItem(activePowerSetpointField)}
-                        {gridItem(reactivePowerSetpointField)}
+                        {gridItem(activePowerSetpointField, 4)}
+                        {gridItem(reactivePowerSetpointField, 4)}
                     </Grid>
                     <Grid container spacing={2} alignItems="center">
-                        {gridItem(voltageRegulationField)}
-                        {gridItem(voltageSetpointField)}
+                        {gridItem(voltageRegulationField, 4)}
+                        {gridItem(voltageSetpointField, 4)}
                     </Grid>
                     {/* Connectivity part */}
                     <Grid container spacing={2}>

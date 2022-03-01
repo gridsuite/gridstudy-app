@@ -93,6 +93,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+export const gridItem = (field, size = 6) => {
+    return (
+        <Grid item xs={size} align="start">
+            {field}
+        </Grid>
+    );
+};
+
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
