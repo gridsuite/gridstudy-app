@@ -79,11 +79,14 @@ export function useNodeData(
         const headers = studyUpdatedForce?.eventData?.headers;
         const updateType = headers && headers['updateType'];
         const node = headers && headers['node'];
+        const nodes = headers && headers['nodes'];
         const isUpdateForUs =
             lastUpdateRef.current !== studyUpdatedForce &&
             updateType &&
-            (node === undefined || node === nodeUuid) &&
-            invalidations.find((e) => updateType === e) !== -1;
+            ((node === undefined && nodes === undefined) ||
+                node === nodeUuid ||
+                nodes?.indexOf(nodeUuid) !== -1) &&
+            invalidations.indexOf(updateType) !== -1;
         lastUpdateRef.current = studyUpdatedForce;
         if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
             update();
@@ -120,6 +123,9 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
+const loadFlowStatusInvalidations = ['loadflow_status'];
+const securityAnalysisStatusInvalidations = ['securityAnalysis_status'];
+
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
 
@@ -142,14 +148,14 @@ export function StudyContainer({ view, onChangeTab }) {
         studyUuid,
         workingNodeUuid,
         fetchLoadFlowInfos,
-        ['loadflow_status']
+        loadFlowStatusInvalidations
     );
 
     const [securityAnalysisStatus] = useNodeData(
         studyUuid,
         workingNodeUuid,
         fetchSecurityAnalysisStatus,
-        ['securityAnalysis_status'],
+        securityAnalysisStatusInvalidations,
         RunningStatus.IDLE,
         getSecurityAnalysisRunningStatus
     );
