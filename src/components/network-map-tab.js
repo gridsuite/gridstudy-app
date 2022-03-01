@@ -172,7 +172,12 @@ export const NetworkMapTab = ({
     }
 
     const voltageLevelMenuClick = (equipment, x, y) => {
-        showEquipmentMenu(equipment, x, y, equipments.voltageLevels);
+        showEquipmentMenu(
+            equipment,
+            getComputedLeftPosition(x),
+            y,
+            equipments.voltageLevels
+        );
     };
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -243,24 +248,35 @@ export const NetworkMapTab = ({
         (state) => state.isModificationsDrawerOpen
     );
 
-    function renderVoltageLevelChoice() {
-        let leftPosition =
-            displayMode === StudyDisplayMode.HYBRID
-                ? position[0] + window.screen.width / 2
-                : position[0];
-        leftPosition =
-            displayMode === StudyDisplayMode.MAP && isModificationsDrawerOpen
-                ? leftPosition + DRAWER_NODE_EDITOR_WIDTH
+    const getComputedLeftPosition = useCallback(
+        (x) => {
+            let leftPosition =
+                displayMode === StudyDisplayMode.HYBRID
+                    ? x + window.screen.width / 2
+                    : x;
+            leftPosition =
+                displayMode === StudyDisplayMode.MAP &&
+                isModificationsDrawerOpen
+                    ? leftPosition + DRAWER_NODE_EDITOR_WIDTH
+                    : leftPosition;
+            leftPosition = isExplorerDrawerOpen
+                ? leftPosition + DRAWER_EXPLORER_WIDTH
                 : leftPosition;
-        leftPosition = isExplorerDrawerOpen
-            ? leftPosition + DRAWER_EXPLORER_WIDTH
-            : leftPosition;
+            return leftPosition;
+        },
+        [displayMode, isExplorerDrawerOpen, isModificationsDrawerOpen]
+    );
+
+    function renderVoltageLevelChoice() {
         return (
             <VoltageLevelChoice
                 handleClose={closeChoiceVoltageLevelMenu}
                 onClickHandler={choiceVoltageLevel}
                 substation={choiceVoltageLevelsSubstation}
-                position={[leftPosition + VL_CHOICE_MENU_SHIFT, position[1]]}
+                position={[
+                    getComputedLeftPosition(position[0]) + VL_CHOICE_MENU_SHIFT,
+                    position[1],
+                ]}
             />
         );
     }
@@ -309,14 +325,24 @@ export const NetworkMapTab = ({
             ref={mapRef}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.lines)
+                showEquipmentMenu(
+                    equipment,
+                    getComputedLeftPosition(x),
+                    y,
+                    equipments.lines
+                )
             }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, equipments.substations)
+                showEquipmentMenu(
+                    equipment,
+                    getComputedLeftPosition(x),
+                    y,
+                    equipments.substations
+                )
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
         />
