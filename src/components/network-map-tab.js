@@ -174,7 +174,7 @@ export const NetworkMapTab = ({
     const voltageLevelMenuClick = (equipment, x, y) => {
         showEquipmentMenu(
             equipment,
-            getComputedLeftPosition(x),
+            getComputedXPos(x),
             y,
             equipments.voltageLevels
         );
@@ -248,7 +248,7 @@ export const NetworkMapTab = ({
         (state) => state.isModificationsDrawerOpen
     );
 
-    const getComputedLeftPosition = useCallback(
+    const getComputedXPos = useCallback(
         (x) => {
             let leftPosition =
                 displayMode === StudyDisplayMode.HYBRID
@@ -274,7 +274,7 @@ export const NetworkMapTab = ({
                 onClickHandler={choiceVoltageLevel}
                 substation={choiceVoltageLevelsSubstation}
                 position={[
-                    getComputedLeftPosition(position[0]) + VL_CHOICE_MENU_SHIFT,
+                    getComputedXPos(position[0]) + VL_CHOICE_MENU_SHIFT,
                     position[1],
                 ]}
             />
@@ -327,7 +327,7 @@ export const NetworkMapTab = ({
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(
                     equipment,
-                    getComputedLeftPosition(x),
+                    getComputedXPos(x),
                     y,
                     equipments.lines
                 )
@@ -339,7 +339,7 @@ export const NetworkMapTab = ({
             onSubstationMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(
                     equipment,
-                    getComputedLeftPosition(x),
+                    getComputedXPos(x),
                     y,
                     equipments.substations
                 )
