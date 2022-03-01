@@ -553,8 +553,8 @@ export const useEnumValue = ({
                     fullWidth
                     {...formProps}
                 >
-                    {enumValues.map((e) => (
-                        <MenuItem value={e.id} key={e.id}>
+                    {enumValues.map((e, index) => (
+                        <MenuItem value={e.id} key={e.id + '_' + index}>
                             <em>
                                 <FormattedMessage id={e.label} />
                             </em>
@@ -574,11 +574,11 @@ export const useEnumValue = ({
     ]);
 
     useEffect(() => {
-        setValue(undefined);
+        setValue('');
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
-        setValue(defaultValue);
+        setValue(defaultValue || '');
     }, [defaultValue]);
 
     return [value, field];
