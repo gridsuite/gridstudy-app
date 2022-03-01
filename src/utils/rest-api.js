@@ -403,7 +403,7 @@ export function fetchEquipmentsInfos(
     nodeUuid,
     searchTerm,
     usesName,
-    searchInUpstreamBuiltParent,
+    inUpstreamBuiltParentNode,
     equipmentType
 ) {
     console.info(
@@ -413,10 +413,10 @@ export function fetchEquipmentsInfos(
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
-    if (searchInUpstreamBuiltParent !== undefined) {
+    if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
-            'searchInUpstreamBuiltParentNode',
-            searchInUpstreamBuiltParent
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
         );
     }
     if (equipmentType !== undefined) {
@@ -483,17 +483,17 @@ function fetchEquipmentInfos(
     selectedNodeUuid,
     equipmentPath,
     equipmentId,
-    searchInUpstreamBuiltParent
+    inUpstreamBuiltParentNode
 ) {
     console.info(
         `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${selectedNodeUuid}' ...`
     );
 
     let urlSearchParams = new URLSearchParams();
-    if (searchInUpstreamBuiltParent !== undefined) {
+    if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
-            'searchInUpstreamBuiltParentNode',
-            searchInUpstreamBuiltParent
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
         );
     }
 
