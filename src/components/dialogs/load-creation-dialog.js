@@ -28,11 +28,7 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import {
-    createLoad,
-    fetchEquipmentExists,
-    fetchLoadInfos,
-} from '../../utils/rest-api';
+import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import { makeErrorHelper, validateField } from '../util/validation-functions';
 import ConnectivityEdition from './connectivity-edition';
@@ -220,53 +216,35 @@ const LoadCreationDialog = ({
         setDialogSearchOpen(true);
     };
 
-    const addSuffixIfNecessary = (loadId, i) => {
-        return fetchEquipmentExists(
-            studyUuid,
-            selectedNodeUuid,
-            'loads',
-            loadId + '(' + i + ')',
-            true
-        ).then((response) => {
-            if (response.status === 404) {
-                return loadId + '(' + i + ')';
-            } else {
-                return addSuffixIfNecessary(loadId, i + 1);
-            }
-        });
-    };
-
     const handleSelectionChange = (element) => {
         let msg;
         fetchLoadInfos(studyUuid, selectedNodeUuid, element.id).then(
             (response) => {
                 if (response.status === 200) {
                     response.json().then((load) => {
-                        addSuffixIfNecessary(load.id, 1).then((loadId) => {
-                            setLoadId(loadId);
-                            setLoadName(load.name);
-                            setLoadType(load.type);
-                            setActivePower(String(load.p0));
-                            setReactivePower(String(load.q0));
-                            setVoltageLevel(
-                                voltageLevelOptions.find(
-                                    (value) => value.id === load.voltageLevelId
-                                )
-                            );
-                            //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
-                            setBusOrBusbarSection(null);
+                        setLoadId(load.id + '(1)');
+                        setLoadName(load.name);
+                        setLoadType(load.type);
+                        setActivePower(String(load.p0));
+                        setReactivePower(String(load.q0));
+                        setVoltageLevel(
+                            voltageLevelOptions.find(
+                                (value) => value.id === load.voltageLevelId
+                            )
+                        );
+                        //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
+                        setBusOrBusbarSection(null);
 
-                            msg = intl.formatMessage(
-                                { id: 'LoadCopied' },
-                                {
-                                    loadId: element.id,
-                                }
-                            );
-                            enqueueSnackbar(msg, {
-                                variant: 'info',
-                                persist: false,
-                                style: { whiteSpace: 'pre-line' },
-                            });
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopied' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                        enqueueSnackbar(msg, {
+                            variant: 'info',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
                         });
                     });
                 } else {

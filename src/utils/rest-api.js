@@ -509,35 +509,6 @@ function fetchEquipmentInfos(
     return backendFetch(fetchEquipmentInfosUrl);
 }
 
-export function fetchEquipmentExists(
-    studyUuid,
-    selectedNodeUuid,
-    equipmentPath,
-    equipmentId,
-    searchInUpstreamBuiltParent
-) {
-    console.info(
-        `Fetching existence of specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${selectedNodeUuid}' ...`
-    );
-    let urlSearchParams = new URLSearchParams();
-    if (searchInUpstreamBuiltParent !== undefined) {
-        urlSearchParams.append(
-            'searchInUpstreamBuiltParentNode',
-            searchInUpstreamBuiltParent
-        );
-    }
-    const fetchEquipmentExistsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-map/' +
-        equipmentPath +
-        '/' +
-        encodeURIComponent(equipmentId) +
-        '?' +
-        urlSearchParams.toString();
-    console.debug(fetchEquipmentExistsUrl);
-    return backendFetch(fetchEquipmentExistsUrl, { method: 'head' });
-}
-
 export function fetchBusesForVoltageLevel(
     studyUuid,
     selectedNodeUuid,
