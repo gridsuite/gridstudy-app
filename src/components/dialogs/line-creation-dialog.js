@@ -10,6 +10,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback } from 'react';
@@ -30,7 +31,6 @@ import {
     useTextValue,
     useConnectivityValue,
 } from './input-hooks';
-import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
