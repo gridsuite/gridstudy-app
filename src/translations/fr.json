@@ -331,7 +331,7 @@
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
     "BusBarSectionID": "ID SJB",
-    "BusBarSectionName": "Nom de la section (optionnel)",
+    "BusBarSectionName": "Nom de la section",
     "BusBarHorizPos": "Position horizontale de la section",
     "BusBarVertPos": "Position verticale de la section",
     "CreateBusBarSection": "Ajouter une SJB",

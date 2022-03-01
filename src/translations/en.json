@@ -331,7 +331,7 @@
     "Substation": "Substation",
     "BusBarSections": "Bus bar sections",
     "BusBarSectionID": "Section ID",
-    "BusBarSectionName": "Section name (optional)",
+    "BusBarSectionName": "Section name",
     "BusBarHorizPos": "Horizontal position",
     "BusBarVertPos": "Vertical position",
     "CreateBusBarSection": "Add bus bar section",

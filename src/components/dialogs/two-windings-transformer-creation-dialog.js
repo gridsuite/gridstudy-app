@@ -22,16 +22,18 @@ import {
 } from '../../utils/messages';
 import { createTwoWindingsTransformer } from '../../utils/rest-api';
 import {
-    filledTextField,
     gridItem,
-    OhmAdornment,
-    SusceptanceAdornment,
     useConnectivityValue,
     useDoubleValue,
     useInputForm,
     useTextValue,
-    VoltageAdornment,
 } from './input-hooks';
+import {
+    filledTextField,
+    OhmAdornment,
+    SusceptanceAdornment,
+    VoltageAdornment,
+} from './dialogUtils';
 
 const useStyles = makeStyles((theme) => ({
     h3: {

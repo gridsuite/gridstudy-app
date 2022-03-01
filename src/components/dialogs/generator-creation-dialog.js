@@ -22,10 +22,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-    ActivePowerAdornment,
-    filledTextField,
     gridItem,
-    ReactivePowerAdornment,
     useBooleanValue,
     useConnectivityValue,
     useDoubleValue,
@@ -33,8 +30,13 @@ import {
     useInputForm,
     useIntegerValue,
     useTextValue,
-    VoltageAdornment,
 } from './input-hooks';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    ReactivePowerAdornment,
+    VoltageAdornment,
+} from './dialogUtils';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {

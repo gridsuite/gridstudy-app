@@ -20,11 +20,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import {
-    ActivePowerAdornment,
-    filledTextField,
     gridItem,
-    GridSection,
-    ReactivePowerAdornment,
     useConnectivityValue,
     useEnumValue,
     useInputForm,
@@ -32,6 +28,12 @@ import {
     useSearchEquipmentField,
     useTextValue,
 } from './input-hooks';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    GridSection,
+    ReactivePowerAdornment,
+} from './dialogUtils';
 
 import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
