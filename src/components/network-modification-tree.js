@@ -282,6 +282,10 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
         }
     }, [isModificationsDrawerOpen]);
 
+    const onLoad = useCallback((reactFlowInstance) => {
+        reactFlowInstance.fitView();
+    }, []);
+
     return (
         <>
             <Box
@@ -297,6 +301,7 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
                         onElementClick={nodeSingleOrDoubleClick}
                         onPaneClick={onPaneClick}
                         onMove={onMove}
+                        onLoad={onLoad}
                         onMoveEnd={onMoveEnd}
                         elementsSelectable
                         selectNodesOnDrag={false}

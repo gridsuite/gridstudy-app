@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -12,14 +12,13 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useCallback, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createLoad } from '../../utils/rest-api';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -29,8 +28,12 @@ import {
     useEnumValue,
     useInputForm,
     useIntegerValue,
+    useSearchEquipmentField,
     useTextValue,
 } from './input-hooks';
+
+import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
+import EquipmentSearchDialog from './equipment-search-dialog';
 
 const LOAD_TYPES = [
     { id: '', label: 'None' },
@@ -45,6 +48,7 @@ const LOAD_TYPES = [
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
+ * @param workingNodeUuid : the node we are currently working on
  */
 const LoadCreationDialog = ({
     open,
@@ -55,23 +59,38 @@ const LoadCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
+    const intl = useIntl();
+
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    const handleOpenSearchDialog = () => {
+        setDialogSearchOpen(true);
+    };
+
+    const copyEquipmentButton = useSearchEquipmentField({
+        label: 'CopyFromExisting',
+        handleOpenSearchDialog: handleOpenSearchDialog,
+    });
+
     const [loadId, loadIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.id,
     });
 
     const [loadName, loadNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.name,
     });
 
     const [loadType, loadTypeField] = useEnumValue({
@@ -79,6 +98,7 @@ const LoadCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
+        defaultValue: formValues ? formValues.type : '',
     });
 
     const [activePower, activePowerField] = useIntegerValue({
@@ -89,6 +109,7 @@ const LoadCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues ? String(formValues.p0) : undefined,
     });
 
     const [reactivePower, reactivePowerField] = useIntegerValue({
@@ -99,6 +120,7 @@ const LoadCreationDialog = ({
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues ? String(formValues.q0) : undefined,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
@@ -106,6 +128,9 @@ const LoadCreationDialog = ({
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+        //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
+        busOrBusbarSectionIdDefaultValue: null,
     });
 
     const handleSave = () => {
@@ -154,6 +179,59 @@ const LoadCreationDialog = ({
         handleClose();
     };
 
+    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+
+    const handleSelectionChange = (element) => {
+        let msg;
+        fetchLoadInfos(studyUuid, workingNodeUuid, element.id).then(
+            (response) => {
+                if (response.status === 200) {
+                    response.json().then((load) => {
+                        setFormValues(load);
+
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopied' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                        enqueueSnackbar(msg, {
+                            variant: 'info',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        });
+                    });
+                } else {
+                    console.error(
+                        'error while fetching load {loadId} : status = {status}',
+                        element.id,
+                        response.status
+                    );
+                    if (response.status === 404) {
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopyFailed404' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                    } else {
+                        msg = intl.formatMessage(
+                            { id: 'LoadCopyFailed' },
+                            {
+                                loadId: element.id,
+                            }
+                        );
+                    }
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: msg,
+                        enqueueSnackbar,
+                    });
+                }
+            }
+        );
+        setDialogSearchOpen(false);
+    };
+
     function gridItem(field, size = 4) {
         return (
             <Grid item xs={size} align="start">
@@ -163,41 +241,55 @@ const LoadCreationDialog = ({
     }
 
     return (
-        <Dialog
-            fullWidth
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-load"
-            maxWidth={'md'}
-        >
-            <DialogTitle>
-                <FormattedMessage id="CreateLoad" />
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(loadIdField)}
-                    {gridItem(loadNameField)}
-                    {gridItem(loadTypeField)}
-                </Grid>
-                <GridSection title="Setpoints" />
-                <Grid container spacing={2}>
-                    {gridItem(activePowerField)}
-                    {gridItem(reactivePowerField)}
-                </Grid>
-                <GridSection title="Connectivity" />
-                <Grid container spacing={2}>
-                    {gridItem(connectivityField, 8)}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            <Dialog
+                fullWidth
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-load"
+                maxWidth={'md'}
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateLoad" />
+                        </Grid>
+                        {gridItem(copyEquipmentButton, 1)}
+                    </Grid>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(loadIdField)}
+                        {gridItem(loadNameField)}
+                        {gridItem(loadTypeField)}
+                    </Grid>
+                    <GridSection title="Setpoints" />
+                    <Grid container spacing={2}>
+                        {gridItem(activePowerField)}
+                        {gridItem(reactivePowerField)}
+                    </Grid>
+                    <GridSection title="Connectivity" />
+                    <Grid container spacing={2}>
+                        {gridItem(connectivityField, 8)}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id="save" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={isDialogSearchOpen}
+                onClose={() => setDialogSearchOpen(false)}
+                equipmentType={'LOAD'}
+                onSelectionChange={handleSelectionChange}
+                workingNodeUuid={workingNodeUuid}
+            />
+        </>
     );
 };
 
