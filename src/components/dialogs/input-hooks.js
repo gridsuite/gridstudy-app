@@ -104,7 +104,6 @@ export const gridItem = (field, size = 6) => {
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
-    const [toggleForceUpdate, setToggleForceUpdate] = useState(false);
     const validate = useCallback(() => {
         // Check if error list contains an error
         return Array.from(validationMap.current.values())
@@ -117,17 +116,12 @@ export const useInputForm = () => {
     const clear = useCallback(() => {
         setToggleClear((oldValue) => !oldValue);
     }, []);
-    const forceUpdate = useCallback(() => {
-        setToggleForceUpdate((oldValue) => !oldValue);
-    }, []);
     const reset = useCallback((label, validate) => {
         validationMap.current = new Map();
     }, []);
     return {
         toggleClear,
         clear,
-        toggleForceUpdate,
-        forceUpdate,
         validate,
         addValidation,
         reset,
@@ -365,7 +359,6 @@ export const useConnectivityValue = ({
         voltageLevelOptions,
         busOrBusbarSectionIdDefaultValue,
         voltageLevelIdDefaultValue,
-        inputForm.toggleForceUpdate,
     ]);
 
     useEffect(() => {

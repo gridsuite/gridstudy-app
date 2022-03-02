@@ -188,10 +188,10 @@ const LoadCreationDialog = ({
             (response) => {
                 if (response.status === 200) {
                     response.json().then((load) => {
+                        setFormValues(null);
                         load.id = load.id + '(1)';
                         load.busOrBusbarSectionId = null;
                         setFormValues(load);
-                        inputForm.forceUpdate();
 
                         msg = intl.formatMessage(
                             { id: 'LoadCopied' },
