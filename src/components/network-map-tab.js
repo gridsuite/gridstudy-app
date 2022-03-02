@@ -22,9 +22,6 @@ import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 
 const INITIAL_POSITION = [0, 0];
 
-const VL_CHOICE_MENU_LEFT_SHIFT = 70;
-const VL_CHOICE_MENU_TOP_SHIFT = 35;
-
 const useStyles = makeStyles((theme) => ({
     divNominalVoltageFilter: {
         position: 'absolute',
@@ -231,10 +228,7 @@ export const NetworkMapTab = ({
                 handleClose={closeChoiceVoltageLevelMenu}
                 onClickHandler={choiceVoltageLevel}
                 substation={choiceVoltageLevelsSubstation}
-                position={[
-                    position[0] + VL_CHOICE_MENU_LEFT_SHIFT,
-                    position[1] - VL_CHOICE_MENU_TOP_SHIFT,
-                ]}
+                position={[position[0], position[1]]}
             />
         );
     }
