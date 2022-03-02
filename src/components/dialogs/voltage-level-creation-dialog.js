@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -182,7 +182,7 @@ function validateBusBarSection(values) {
         if (errorId || errorPosition)
             res.set(idx, {
                 error: true,
-                ...(errorId && { BusBarSectionID: 'not unique' }),
+                ...(errorId && { BusBarSectionID: 'DuplicateId' }),
                 ...(errorPosition && {
                     BusBarHorizPos: 'SameHorizAndVertPos',
                     BusBarVertPos: 'SameHorizAndVertPos',
