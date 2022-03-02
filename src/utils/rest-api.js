@@ -403,6 +403,7 @@ export function fetchEquipmentsInfos(
     nodeUuid,
     searchTerm,
     usesName,
+    inUpstreamBuiltParentNode,
     equipmentType
 ) {
     console.info(
@@ -412,6 +413,12 @@ export function fetchEquipmentsInfos(
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('fieldSelector', usesName ? 'name' : 'id');
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
     if (equipmentType !== undefined) {
         urlSearchParams.append('equipmentType', equipmentType);
     }
@@ -429,7 +436,13 @@ export function fetchEquipmentsInfos(
 }
 
 export function fetchLoadInfos(studyUuid, selectedNodeUuid, loadId) {
-    return fetchEquipmentInfos(studyUuid, selectedNodeUuid, 'loads', loadId);
+    return fetchEquipmentInfos(
+        studyUuid,
+        selectedNodeUuid,
+        'loads',
+        loadId,
+        true
+    );
 }
 
 export function fetchAllEquipments(
@@ -469,17 +482,29 @@ function fetchEquipmentInfos(
     studyUuid,
     selectedNodeUuid,
     equipmentPath,
-    equipmentId
+    equipmentId,
+    inUpstreamBuiltParentNode
 ) {
     console.info(
         `Fetching specific equipments '${equipmentId}' of type '${equipmentPath}' of study '${studyUuid}' and node '${selectedNodeUuid}' ...`
     );
+
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
     const fetchEquipmentInfosUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +
         equipmentPath +
         '/' +
-        encodeURIComponent(equipmentId);
+        encodeURIComponent(equipmentId) +
+        '?' +
+        urlSearchParams.toString();
     console.debug(fetchEquipmentInfosUrl);
     return backendFetch(fetchEquipmentInfosUrl);
 }
