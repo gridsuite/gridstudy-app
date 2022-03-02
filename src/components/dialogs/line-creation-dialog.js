@@ -26,12 +26,11 @@ import {
     useInputForm,
     useTextValue,
     useConnectivityValue,
-    gridItem,
 } from './input-hooks';
-import { makeStyles } from '@material-ui/core/styles';
 import {
     AmpereAdornment,
     filledTextField,
+    gridItem,
     OhmAdornment,
     SusceptanceAdornment,
 } from './dialogUtils';

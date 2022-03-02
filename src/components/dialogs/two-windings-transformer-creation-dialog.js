@@ -22,7 +22,6 @@ import {
 } from '../../utils/messages';
 import { createTwoWindingsTransformer } from '../../utils/rest-api';
 import {
-    gridItem,
     useConnectivityValue,
     useDoubleValue,
     useInputForm,
@@ -30,6 +29,7 @@ import {
 } from './input-hooks';
 import {
     filledTextField,
+    gridItem,
     OhmAdornment,
     SusceptanceAdornment,
     VoltageAdornment,

@@ -20,7 +20,6 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import {
-    gridItem,
     useBooleanValue,
     useConnectivityValue,
     useDoubleValue,
@@ -31,6 +30,7 @@ import {
 import { createShuntCompensator } from '../../utils/rest-api';
 import {
     filledTextField,
+    gridItem,
     GridSection,
     SusceptanceAdornment,
     toPositiveIntValue,

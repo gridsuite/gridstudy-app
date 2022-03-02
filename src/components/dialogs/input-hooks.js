@@ -41,14 +41,7 @@ import {
 import { getComputedLanguage } from '../../utils/language';
 import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-
-export const gridItem = (field, size = 6) => {
-    return (
-        <Grid item xs={size} align="start">
-            {field}
-        </Grid>
-    );
-};
+import FindInPageIcon from '@material-ui/icons/FindInPage';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -71,6 +64,16 @@ export const useInputForm = () => {
     return { toggleClear, clear, validate, addValidation, reset };
 };
 
+function genHelperError(...errors) {
+    const inError = errors.find((e) => e);
+    if (inError)
+        return {
+            error: true,
+            helperText: <FormattedMessage id={inError} />,
+        };
+    return {};
+}
+
 export const useTextValue = ({
     label,
     id,
@@ -80,6 +83,7 @@ export const useTextValue = ({
     transformValue = func_identity,
     inputForm,
     formProps,
+    errorMsg,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const intl = useIntl();
@@ -97,7 +101,7 @@ export const useTextValue = ({
             return !res.error;
         }
         inputForm.addValidation(id ? id : label, validate);
-    }, [label, inputForm, value, id]);
+    }, [label, inputForm, value, id, validation]);
 
     const handleChangeValue = useCallback(
         (event) => {
@@ -134,26 +138,22 @@ export const useTextValue = ({
                 FormHelperTextProps={{
                     className: classes.helperText,
                 }}
-                {...(error && {
-                    error: true,
-                    helperText: intl.formatMessage({
-                        id: error,
-                    }),
-                })}
+                {...genHelperError(error, errorMsg)}
                 {...formProps}
             />
         );
     }, [
-        label,
-        id,
-        intl,
         adornment,
+        id,
+        label,
+        intl,
+        validation.isFieldRequired,
         value,
         handleChangeValue,
+        classes.helperText,
         error,
+        errorMsg,
         formProps,
-        classes,
-        validation.isFieldRequired,
     ]);
 
     useEffect(
@@ -356,6 +356,7 @@ export const useConnectivityValue = ({
 
 const filter = createFilterOptions();
 export const useAutocompleteField = ({
+    id,
     label,
     validation = {},
     inputForm,
@@ -363,17 +364,23 @@ export const useAutocompleteField = ({
     values,
     getLabel = func_identity,
     allowNewValue = false,
+    errorMsg,
 }) => {
     const [value, setValue] = useState('');
+    const [error, setError] = useState('');
+    const validationRef = useRef();
+    validationRef.current = validation;
 
     const intl = useIntl();
 
     useEffect(() => {
         function validate() {
-            return true;
+            const res = validateField('' + value, validationRef.current);
+            setError(res?.errorMsgId);
+            return !res.error;
         }
-        inputForm.addValidation(label, validate);
-    }, [label, validation, inputForm, value]);
+        inputForm.addValidation(id ? id : label, validate);
+    }, [label, validation, inputForm, value, id]);
 
     const handleChangeValue = useCallback((value) => {
         setValue(value);
@@ -421,6 +428,7 @@ export const useAutocompleteField = ({
                                 : '')
                         }
                         value={value}
+                        {...genHelperError(error, errorMsg)}
                         {...formProps}
                         {...props}
                     />
@@ -429,18 +437,22 @@ export const useAutocompleteField = ({
         );
     }, [
         label,
-        value,
-        handleChangeValue,
-        formProps,
         values,
-        intl,
         getLabel,
         allowNewValue,
+        handleChangeValue,
+        intl,
         validation.isFieldRequired,
+        value,
+        error,
+        errorMsg,
+        formProps,
     ]);
 
     return [value, field];
 };
+
+const DELAY = 1000;
 
 export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
     const classes = useStyles();
@@ -509,6 +521,7 @@ export const useEnumValue = ({
     doTranslation = true,
     getId = getObjectId,
     getEnumLabel = getLabel,
+    errorMsg,
 }) => {
     const intl = useIntl();
     const [value, setValue] = useState(defaultValue);
@@ -551,7 +564,7 @@ export const useEnumValue = ({
                     {enumValues
                         .filter((e) => getId(e))
                         .map((e, index) => (
-                            <MenuItem key={'id_' + index} value={getId(e)} key={e.id + '_' + index}>
+                            <MenuItem value={getId(e)} key={e.id + '_' + index}>
                                 <em>
                                     {doTranslation && (
                                         <FormattedMessage
@@ -593,7 +606,6 @@ export const useExpandableValues = ({
     id,
     labelAddValue,
     Field,
-    validation,
     inputForm,
     defaultValues = [],
     fieldProps,
@@ -624,12 +636,9 @@ export const useExpandableValues = ({
 
     useEffect(() => {
         function validation() {
-            function validate() {
-                const res = validateItem(values);
-                setErrors(res);
-                return res.values().none((e) => e.error);
-            }
-            inputForm.addValidation(id, validate);
+            const res = validateItem(values);
+            setErrors(res);
+            return res?.size === 0;
         }
         inputForm.addValidation(id, validation);
     }, [inputForm, values, id, validateItem]);

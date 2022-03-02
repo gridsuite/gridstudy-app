@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -29,15 +29,7 @@ import {
     useIntegerValue,
     useTextValue,
 } from './input-hooks';
-import { filledTextField, GridSection } from './dialogUtils';
-
-function gridItem(field, size = 3) {
-    return (
-        <Grid item xs={size} align="start">
-            {field}
-        </Grid>
-    );
-}
+import { filledTextField, gridItem, GridSection } from './dialogUtils';
 
 const numericalWithButton = {
     type: 'number',
@@ -56,10 +48,10 @@ const BusBarSection = ({
         label: 'BusBarSectionID',
         validation: {
             isFieldRequired: true,
-            function: () => errors?.get('BusBarSectionID'),
         },
         defaultValue: defaultValue?.id || '',
         inputForm: inputForm,
+        errorMsg: errors?.BusBarSectionID,
     });
     const [name, nameField] = useTextValue({
         id: 'BusBarSectionName' + index,
@@ -73,11 +65,11 @@ const BusBarSection = ({
         label: 'BusBarHorizPos',
         validation: {
             isFieldRequired: true,
-            function: () => errors?.get('BusBarHorizPos'),
         },
         defaultValue: defaultValue?.horizPos || 1,
         inputForm: inputForm,
         formProps: numericalWithButton,
+        errorMsg: errors?.BusBarHorizPos,
     });
 
     const [vertPos, vertPosField] = useIntegerValue({
@@ -85,11 +77,11 @@ const BusBarSection = ({
         label: 'BusBarVertPos',
         validation: {
             isFieldRequired: true,
-            function: () => errors?.get('BusBarVertPos'),
         },
         defaultValue: defaultValue?.vertPos || 1,
         inputForm: inputForm,
         formProps: numericalWithButton,
+        errorMsg: errors?.BusBarVertPos,
     });
 
     useEffect(() => {
@@ -98,9 +90,9 @@ const BusBarSection = ({
 
     return (
         <>
-            {gridItem(idField)}
-            {gridItem(nameField)}
-            {gridItem(horizPosField)}
+            {gridItem(idField, 3)}
+            {gridItem(nameField, 3)}
+            {gridItem(horizPosField, 3)}
             {gridItem(vertPosField, 2)}
         </>
     );
@@ -122,33 +114,31 @@ const BusBarConnexion = ({
     fieldProps,
     errors,
 }) => {
-    const [fromBBS, fromBBSField] = useEnumValue({
+    const [fromBBS, fromBBSField] = useAutocompleteField({
         id: 'sjbFrom' + index,
         label: 'BusBarSection',
         inputForm: inputForm,
         validation: {
             isFieldRequired: true,
-            function: () => errors?.get('sjbFrom'),
         },
         defaultValue: defaultValue?.fromBBS,
-        enumValues: fieldProps,
-        doTranslation: false,
-        getId: getIdSjb,
-        getEnumLabel: getIdSjb,
+        values: fieldProps,
+        getLabel: getIdSjb,
+        errorMsg: errors?.sjbFrom,
+        allowNewValue: true,
     });
-    const [toBBS, toBBSField] = useEnumValue({
+    const [toBBS, toBBSField] = useAutocompleteField({
         id: 'sjbTo' + index,
         label: 'BusBarSection',
         inputForm: inputForm,
-        enumValues: fieldProps,
         validation: {
             isFieldRequired: true,
-            function: () => errors?.get('sjbTo'),
         },
         defaultValue: defaultValue?.toBBS,
-        doTranslation: false,
-        getId: getIdSjb,
-        getEnumLabel: getIdSjb,
+        values: fieldProps,
+        getLabel: getIdSjb,
+        errorMsg: errors?.sjbTo,
+        allowNewValue: true,
     });
     const [switchKind, switchKindField] = useEnumValue({
         label: 'Type',
@@ -168,9 +158,9 @@ const BusBarConnexion = ({
 
     return (
         <>
-            {gridItem(fromBBSField)}
-            {gridItem(toBBSField)}
-            {gridItem(switchKindField)}
+            {gridItem(fromBBSField, 3)}
+            {gridItem(toBBSField, 3)}
+            {gridItem(switchKindField, 3)}
         </>
     );
 };
@@ -178,27 +168,29 @@ const BusBarConnexion = ({
 function validateBusBarSection(values) {
     const res = new Map();
     const idMap = values.reduce(
-        (m, v) => m.set(v.idSjb, m.get(v.idSjb) + 1 || 1),
+        (m, v) => m.set(v.idSjb, (m.get(v.idSjb) || 0) + 1),
         new Map()
     );
 
     const keyPosition = (val) => val.horizPos + '#' + val.vertPos;
     const posMap = values.reduce(
-        (m, v) => m.set(keyPosition(v), m.get(keyPosition(v)) + 1 || 1),
+        (m, v) => m.set(keyPosition(v), (m.get(keyPosition(v)) || 0) + 1),
         new Map()
     );
     values.forEach((val, idx) => {
-        const errorId = idMap.get(val) > 1;
-        const errorPosition = posMap.get(keyPosition(val));
-        res.set(idx, {
-            error: errorId || errorPosition,
-            ...(errorId && { BusBarSection: 'not unique' }),
-            ...(errorPosition && {
-                BusBarHorizPos: 'SameHorizAndVertPos',
-                BusBarVertPos: 'SameHorizAndVertPos',
-            }),
-        });
+        const errorId = idMap.get(val.idSjb) > 1;
+        const errorPosition = posMap.get(keyPosition(val)) > 1;
+        if (errorId || errorPosition)
+            res.set(idx, {
+                error: true,
+                ...(errorId && { BusBarSectionID: 'not unique' }),
+                ...(errorPosition && {
+                    BusBarHorizPos: 'SameHorizAndVertPos',
+                    BusBarVertPos: 'SameHorizAndVertPos',
+                }),
+            });
     });
+    return res;
 }
 
 function validateConnection(values) {
@@ -341,10 +333,10 @@ const VoltageLevelCreationDialog = ({
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                    {gridItem(voltageLevelIdField)}
-                    {gridItem(voltageLevelNameField)}
-                    {gridItem(nominalVoltageField)}
-                    {gridItem(substationField)}
+                    {gridItem(voltageLevelIdField, 3)}
+                    {gridItem(voltageLevelNameField, 3)}
+                    {gridItem(nominalVoltageField, 3)}
+                    {gridItem(substationField, 3)}
                     <GridSection title={'BusBarSections'} />
                     {busBarSectionsField}
                     <GridSection title={'Connectivity'} />

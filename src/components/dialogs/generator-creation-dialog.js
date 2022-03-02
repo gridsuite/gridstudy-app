@@ -22,7 +22,6 @@ import {
 import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-    gridItem,
     useBooleanValue,
     useConnectivityValue,
     useDoubleValue,
@@ -34,6 +33,7 @@ import {
 import {
     ActivePowerAdornment,
     filledTextField,
+    gridItem,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';

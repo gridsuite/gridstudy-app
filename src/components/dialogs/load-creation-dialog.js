@@ -20,7 +20,6 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import {
-    gridItem,
     useConnectivityValue,
     useEnumValue,
     useInputForm,
@@ -31,6 +30,7 @@ import {
 import {
     ActivePowerAdornment,
     filledTextField,
+    gridItem,
     GridSection,
     ReactivePowerAdornment,
 } from './dialogUtils';

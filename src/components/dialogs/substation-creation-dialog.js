@@ -21,7 +21,7 @@ import {
 } from '../../utils/messages';
 import { createSubstation } from '../../utils/rest-api';
 import { useCountryValue, useInputForm, useTextValue } from './input-hooks';
-import { filledTextField } from './dialogUtils';
+import { filledTextField, gridItem } from './dialogUtils';
 
 /**
  * Dialog to create a substation in the network

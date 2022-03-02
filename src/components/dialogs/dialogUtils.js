@@ -45,28 +45,6 @@ export const filledTextField = {
     variant: 'filled',
 };
 export const func_identity = (e) => e;
-export const useStyles = makeStyles((theme) => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-    h3: {
-        marginBottom: 0,
-        paddingBottom: 1,
-    },
-    h4: {
-        marginBottom: 0,
-    },
-    popper: {
-        style: {
-            width: 'fit-content',
-        },
-    },
-    button: {
-        justifyContent: 'flex-start',
-        fontSize: 'small',
-    },
-}));
 
 export function toIntValue(val) {
     if (val === '-') return val;
@@ -96,6 +74,14 @@ export const GridSection = ({ title, size = 12 }) => {
                     <FormattedMessage id={title} />
                 </h3>
             </Grid>
+        </Grid>
+    );
+};
+
+export const gridItem = (field, size = 6) => {
+    return (
+        <Grid item xs={size} align="start">
+            {field}
         </Grid>
     );
 };
