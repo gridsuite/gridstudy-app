@@ -74,6 +74,15 @@ function genHelperError(...errors) {
     return {};
 }
 
+const FieldLabel = ({ label, optional }) => {
+    return (
+        <>
+            <FormattedMessage id={label} />
+            {optional && <FormattedMessage id="Optional" />}
+        </>
+    );
+};
+
 export const useTextValue = ({
     label,
     id,
@@ -86,7 +95,6 @@ export const useTextValue = ({
     errorMsg,
 }) => {
     const [value, setValue] = useState(defaultValue);
-    const intl = useIntl();
     const [error, setError] = useState();
 
     const validationRef = useRef();
@@ -118,17 +126,10 @@ export const useTextValue = ({
                 size="small"
                 fullWidth
                 id={id ? id : label}
-                label={
-                    intl.formatMessage({
-                        id: label,
-                    }) +
-                    ' ' +
-                    (!validation.isFieldRequired
-                        ? intl.formatMessage({
-                              id: 'Optional',
-                          })
-                        : '')
-                }
+                label={FieldLabel({
+                    label,
+                    optional: !validation.isFieldRequired,
+                })}
                 {...(adornment && {
                     adornmentPosition: adornment.position,
                     adornmentText: adornment?.text,
@@ -146,7 +147,6 @@ export const useTextValue = ({
         adornment,
         id,
         label,
-        intl,
         validation.isFieldRequired,
         value,
         handleChangeValue,
@@ -355,6 +355,7 @@ export const useConnectivityValue = ({
 };
 
 const filter = createFilterOptions();
+
 export const useAutocompleteField = ({
     id,
     label,
@@ -370,8 +371,6 @@ export const useAutocompleteField = ({
     const [error, setError] = useState('');
     const validationRef = useRef();
     validationRef.current = validation;
-
-    const intl = useIntl();
 
     useEffect(() => {
         function validate() {
@@ -417,15 +416,10 @@ export const useAutocompleteField = ({
                         variant="filled"
                         size="small"
                         label={
-                            intl.formatMessage({
-                                id: label,
-                            }) +
-                            ' ' +
-                            (!validation.isFieldRequired
-                                ? intl.formatMessage({
-                                      id: 'Optional',
-                                  })
-                                : '')
+                            <FieldLabel
+                                label={label}
+                                optional={!validation.isFieldRequired}
+                            />
                         }
                         value={value}
                         {...genHelperError(error, errorMsg)}
@@ -441,7 +435,6 @@ export const useAutocompleteField = ({
         getLabel,
         allowNewValue,
         handleChangeValue,
-        intl,
         validation.isFieldRequired,
         value,
         error,
@@ -521,9 +514,7 @@ export const useEnumValue = ({
     doTranslation = true,
     getId = getObjectId,
     getEnumLabel = getLabel,
-    errorMsg,
 }) => {
-    const intl = useIntl();
     const [value, setValue] = useState(defaultValue);
 
     useEffect(() => {
@@ -543,15 +534,10 @@ export const useEnumValue = ({
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
                 <InputLabel id="enum-type-label" variant={'filled'}>
-                    {intl.formatMessage({
-                        id: label,
-                    }) +
-                        ' ' +
-                        (!validation.isFieldRequired
-                            ? intl.formatMessage({
-                                  id: 'Optional',
-                              })
-                            : '')}
+                    <FieldLabel
+                        label={label}
+                        optional={!validation.isFieldRequired}
+                    />
                 </InputLabel>
                 <Select
                     id={label}
@@ -586,7 +572,6 @@ export const useEnumValue = ({
         handleChangeValue,
         formProps,
         enumValues,
-        intl,
         doTranslation,
         validation.isFieldRequired,
     ]);

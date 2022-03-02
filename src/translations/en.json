@@ -243,7 +243,7 @@
 
     "ComponentLibrary": "Component library selection : ",
 
-    "Optional": "(optional)",
+    "Optional": " (optional)",
     "createNetworkModificationNode": "Create a network modification node",
     "createModelNode": "Create a model node",
     "removeNode": "Remove node",

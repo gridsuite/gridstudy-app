@@ -243,7 +243,7 @@
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants : ",
 
-    "Optional": "(optionnel)",
+    "Optional": " (optionnel)",
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
     "createModelNode": "Créer un nœud modèle",
     "removeNode": "Supprimer nœud",
