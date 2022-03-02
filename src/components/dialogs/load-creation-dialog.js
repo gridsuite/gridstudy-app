@@ -21,9 +21,9 @@ import {
 } from '../../utils/messages';
 import {
     useConnectivityValue,
+    useDoubleValue,
     useEnumValue,
     useInputForm,
-    useIntegerValue,
     useSearchEquipmentField,
     useTextValue,
 } from './input-hooks';
@@ -104,7 +104,7 @@ const LoadCreationDialog = ({
         defaultValue: formValues ? formValues.type : '',
     });
 
-    const [activePower, activePowerField] = useIntegerValue({
+    const [activePower, activePowerField] = useDoubleValue({
         label: 'ActivePowerText',
         validation: {
             isFieldRequired: true,
@@ -115,7 +115,7 @@ const LoadCreationDialog = ({
         defaultValue: formValues ? String(formValues.p0) : undefined,
     });
 
-    const [reactivePower, reactivePowerField] = useIntegerValue({
+    const [reactivePower, reactivePowerField] = useDoubleValue({
         label: 'ReactivePowerText',
         validation: {
             isFieldRequired: true,
