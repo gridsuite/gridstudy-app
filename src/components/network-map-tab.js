@@ -17,20 +17,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useSelector } from 'react-redux';
-import {
-    PARAM_DISPLAY_OVERLOAD_TABLE,
-    PARAM_MAP_TREE_DISPLAY,
-} from '../utils/config-params';
+import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
-import { StudyDisplayMode } from './study-pane';
-import {
-    DRAWER_EXPLORER_WIDTH,
-    DRAWER_NODE_EDITOR_WIDTH,
-} from './map-lateral-drawers';
 
 const INITIAL_POSITION = [0, 0];
 
-const VL_CHOICE_MENU_SHIFT = 100;
+const VL_CHOICE_MENU_LEFT_SHIFT = 70;
+const VL_CHOICE_MENU_TOP_SHIFT = 35;
 
 const useStyles = makeStyles((theme) => ({
     divNominalVoltageFilter: {
@@ -114,10 +107,7 @@ export const NetworkMapTab = ({
         return (
             <Menu
                 id={equipmentMenu.equipment.id}
-                position={[
-                    equipmentMenu.position[0],
-                    equipmentMenu.position[1],
-                ]}
+                position={equipmentMenu.position}
                 handleClose={closeEquipmentMenu}
                 handleViewInSpreadsheet={handleViewInSpreadsheet}
                 {...props}
@@ -172,12 +162,7 @@ export const NetworkMapTab = ({
     }
 
     const voltageLevelMenuClick = (equipment, x, y) => {
-        showEquipmentMenu(
-            equipment,
-            getComputedXPos(x),
-            y,
-            equipments.voltageLevels
-        );
+        showEquipmentMenu(equipment, x, y, equipments.voltageLevels);
     };
 
     const chooseVoltageLevelForSubstation = useCallback(
@@ -202,10 +187,10 @@ export const NetworkMapTab = ({
 
         Promise.all([substationPositions, linePositions])
             .then((values) => {
-                const geoData = new GeoData();
-                geoData.setSubstationPositions(values[0]);
-                geoData.setLinePositions(values[1]);
-                setGeoData(geoData);
+                const newGeoData = new GeoData();
+                newGeoData.setSubstationPositions(values[0]);
+                newGeoData.setLinePositions(values[1]);
+                setGeoData(newGeoData);
                 setWaitingLoadGeoData(false);
             })
             .catch(function (error) {
@@ -240,33 +225,6 @@ export const NetworkMapTab = ({
         );
     };
 
-    const displayMode = useSelector((state) => state[PARAM_MAP_TREE_DISPLAY]);
-    const isExplorerDrawerOpen = useSelector(
-        (state) => state.isExplorerDrawerOpen
-    );
-    const isModificationsDrawerOpen = useSelector(
-        (state) => state.isModificationsDrawerOpen
-    );
-
-    const getComputedXPos = useCallback(
-        (x) => {
-            let leftPosition =
-                displayMode === StudyDisplayMode.HYBRID
-                    ? x + window.screen.width / 2
-                    : x;
-            leftPosition =
-                displayMode === StudyDisplayMode.MAP &&
-                isModificationsDrawerOpen
-                    ? leftPosition + DRAWER_NODE_EDITOR_WIDTH
-                    : leftPosition;
-            leftPosition = isExplorerDrawerOpen
-                ? leftPosition + DRAWER_EXPLORER_WIDTH
-                : leftPosition;
-            return leftPosition;
-        },
-        [displayMode, isExplorerDrawerOpen, isModificationsDrawerOpen]
-    );
-
     function renderVoltageLevelChoice() {
         return (
             <VoltageLevelChoice
@@ -274,8 +232,8 @@ export const NetworkMapTab = ({
                 onClickHandler={choiceVoltageLevel}
                 substation={choiceVoltageLevelsSubstation}
                 position={[
-                    getComputedXPos(position[0]) + VL_CHOICE_MENU_SHIFT,
-                    position[1],
+                    position[0] + VL_CHOICE_MENU_LEFT_SHIFT,
+                    position[1] - VL_CHOICE_MENU_TOP_SHIFT,
                 ]}
             />
         );
@@ -325,24 +283,14 @@ export const NetworkMapTab = ({
             ref={mapRef}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(
-                    equipment,
-                    getComputedXPos(x),
-                    y,
-                    equipments.lines
-                )
+                showEquipmentMenu(equipment, x, y, equipments.lines)
             }
             visible={visible}
             onSubstationClickChooseVoltageLevel={
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(
-                    equipment,
-                    getComputedXPos(x),
-                    y,
-                    equipments.substations
-                )
+                showEquipmentMenu(equipment, x, y, equipments.substations)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
         />
