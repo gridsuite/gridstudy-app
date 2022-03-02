@@ -412,6 +412,8 @@ export const useAutocompleteField = ({
                 })}
                 renderInput={(props) => (
                     <TextField
+                        {...formProps}
+                        {...props}
                         variant="filled"
                         size="small"
                         label={
@@ -422,8 +424,6 @@ export const useAutocompleteField = ({
                         }
                         value={value}
                         {...genHelperError(error, errorMsg)}
-                        {...formProps}
-                        {...props}
                     />
                 )}
             />
