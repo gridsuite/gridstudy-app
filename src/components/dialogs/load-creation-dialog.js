@@ -132,8 +132,8 @@ const LoadCreationDialog = ({
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
-        //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
-        busOrBusbarSectionIdDefaultValue: null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId || null,
     });
 
     const handleSave = () => {
@@ -186,10 +186,13 @@ const LoadCreationDialog = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchLoadInfos(studyUuid, workingNodeUuid, element.id).then(
+        fetchLoadInfos(studyUuid, selectedNodeUuid, element.id).then(
             (response) => {
                 if (response.status === 200) {
                     response.json().then((load) => {
+                        setFormValues(null);
+                        load.id = load.id + '(1)';
+                        load.busOrBusbarSectionId = null;
                         setFormValues(load);
 
                         msg = intl.formatMessage(
@@ -282,7 +285,7 @@ const LoadCreationDialog = ({
                 onClose={() => setDialogSearchOpen(false)}
                 equipmentType={'LOAD'}
                 onSelectionChange={handleSelectionChange}
-                workingNodeUuid={workingNodeUuid}
+                selectedNodeUuid={selectedNodeUuid}
             />
         </>
     );

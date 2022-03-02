@@ -23,6 +23,7 @@ import { useParams } from 'react-router-dom';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
+import { useSelector } from 'react-redux';
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
 
@@ -32,14 +33,14 @@ const useEquipmentStyles = makeStyles(equipmentStyles);
  * @param {Function} onClose: callback to call when closing the dialog
  * @param {Function} onSelectionChange: callback when the selection changes
  * @param {String} equipmentType: the type of equipment we want to search
- * @param {String} workingNodeUuid: the node we are currently working on
+ * @param {String} selectedNodeUuid: the node selected
  */
 const EquipmentSearchDialog = ({
     open,
     onClose,
     onSelectionChange,
     equipmentType,
-    workingNodeUuid,
+    selectedNodeUuid,
 }) => {
     const equipmentClasses = useEquipmentStyles();
 
@@ -47,17 +48,17 @@ const EquipmentSearchDialog = ({
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    const useNameLocal = useState(PARAM_USE_NAME);
-
+    const useNameLocal = useSelector((state) => state[PARAM_USE_NAME]);
     const [equipmentsFound, setEquipmentsFound] = useState([]);
 
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
             fetchEquipmentsInfos(
                 studyUuid,
-                workingNodeUuid,
+                selectedNodeUuid,
                 searchTerm,
                 useNameLocal,
+                true,
                 equipmentType
             )
                 .then((infos) =>
@@ -78,7 +79,7 @@ const EquipmentSearchDialog = ({
         },
         [
             studyUuid,
-            workingNodeUuid,
+            selectedNodeUuid,
             useNameLocal,
             enqueueSnackbar,
             intlRef,
@@ -108,7 +109,7 @@ EquipmentSearchDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onSelectionChange: PropTypes.func.isRequired,
     equipmentType: PropTypes.string.isRequired,
-    workingNodeUuid: PropTypes.string.isRequired,
+    selectedNodeUuid: PropTypes.string.isRequired,
 };
 
 export default EquipmentSearchDialog;
