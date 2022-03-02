@@ -15,6 +15,22 @@ export const useStyles = makeStyles((theme) => ({
         marginBottom: 0,
         paddingBottom: 1,
     },
+    helperText: {
+        margin: 0,
+        marginTop: 4,
+    },
+    h4: {
+        marginBottom: 0,
+    },
+    popper: {
+        style: {
+            width: 'fit-content',
+        },
+    },
+    tooltip: {
+        fontSize: 18,
+        maxWidth: 'none',
+    },
 }));
 
 export const SusceptanceAdornment = {

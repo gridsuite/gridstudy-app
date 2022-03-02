@@ -85,7 +85,7 @@ const BusBarSection = ({
     });
 
     useEffect(() => {
-        onChange(index, { idSjb, name, horizPos, vertPos });
+        onChange(index, { id: idSjb, name, horizPos, vertPos });
     }, [index, onChange, horizPos, idSjb, name, vertPos]);
 
     return (
@@ -103,7 +103,6 @@ const SWITCH_TYPE = [
     { id: 'DISCONNECTOR', label: 'Disconnector' },
 ];
 
-const getIdSjb = (e) => e?.idSjb;
 const getId = (e) => e?.id;
 
 const BusBarConnexion = ({
@@ -123,7 +122,7 @@ const BusBarConnexion = ({
         },
         defaultValue: defaultValue?.fromBBS,
         values: fieldProps,
-        getLabel: getIdSjb,
+        getLabel: getId,
         errorMsg: errors?.sjbFrom,
         allowNewValue: true,
     });
@@ -136,7 +135,7 @@ const BusBarConnexion = ({
         },
         defaultValue: defaultValue?.toBBS,
         values: fieldProps,
-        getLabel: getIdSjb,
+        getLabel: getId,
         errorMsg: errors?.sjbTo,
         allowNewValue: true,
     });
@@ -168,7 +167,7 @@ const BusBarConnexion = ({
 function validateBusBarSection(values) {
     const res = new Map();
     const idMap = values.reduce(
-        (m, v) => m.set(v.idSjb, (m.get(v.idSjb) || 0) + 1),
+        (m, v) => m.set(v.id, (m.get(v.id) || 0) + 1),
         new Map()
     );
 
@@ -178,7 +177,7 @@ function validateBusBarSection(values) {
         new Map()
     );
     values.forEach((val, idx) => {
-        const errorId = idMap.get(val.idSjb) > 1;
+        const errorId = idMap.get(val.id) > 1;
         const errorPosition = posMap.get(keyPosition(val)) > 1;
         if (errorId || errorPosition)
             res.set(idx, {
