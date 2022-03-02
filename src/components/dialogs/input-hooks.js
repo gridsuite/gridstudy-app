@@ -396,7 +396,6 @@ export const useAutocompleteField = ({
                 options={values}
                 getOptionLabel={getLabel}
                 {...(allowNewValue && {
-                    freeSolo: true,
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
                         if (

@@ -31,6 +31,11 @@ export const useStyles = makeStyles((theme) => ({
         fontSize: 18,
         maxWidth: 'none',
     },
+    button: {
+        justifyContent: 'flex-start',
+        fontSize: 'small',
+        marginTop: theme.spacing(1),
+    },
 }));
 
 export const SusceptanceAdornment = {

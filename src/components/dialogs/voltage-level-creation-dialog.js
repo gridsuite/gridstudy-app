@@ -262,7 +262,6 @@ const VoltageLevelCreationDialog = ({
         labelAddValue: 'CreateBusBarSection',
         validateItem: validateBusBarSection,
         inputForm: inputForm,
-        formProps: filledTextField,
         Field: BusBarSection,
     });
 
@@ -271,7 +270,6 @@ const VoltageLevelCreationDialog = ({
         labelAddValue: 'CreateLink',
         validateItem: validateConnection,
         inputForm: inputForm,
-        formProps: filledTextField,
         Field: BusBarConnexion,
         fieldProps: busBarSections,
     });
@@ -328,7 +326,11 @@ const VoltageLevelCreationDialog = ({
             aria-labelledby="dialog-create-voltage-level"
         >
             <DialogTitle>
-                {intl.formatMessage({ id: 'CreateVoltageLevel' })}
+                <Grid container justifyContent={'space-between'}>
+                    <Grid item xs={11}>
+                        <FormattedMessage id={'CreateVoltageLevel'} />
+                    </Grid>
+                </Grid>
             </DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
@@ -336,8 +338,12 @@ const VoltageLevelCreationDialog = ({
                     {gridItem(voltageLevelNameField, 3)}
                     {gridItem(nominalVoltageField, 3)}
                     {gridItem(substationField, 3)}
+                </Grid>
+                <Grid container>
                     <GridSection title={'BusBarSections'} />
                     {busBarSectionsField}
+                </Grid>
+                <Grid container>
                     <GridSection title={'Connectivity'} />
                     {connectionsField}
                 </Grid>
