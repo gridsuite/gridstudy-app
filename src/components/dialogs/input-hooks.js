@@ -119,7 +119,13 @@ export const useInputForm = () => {
     const reset = useCallback((label, validate) => {
         validationMap.current = new Map();
     }, []);
-    return { toggleClear, clear, validate, addValidation, reset };
+    return {
+        toggleClear,
+        clear,
+        validate,
+        addValidation,
+        reset,
+    };
 };
 
 export const useTextValue = ({
@@ -347,12 +353,12 @@ export const useConnectivityValue = ({
                       (value) => value.id === voltageLevelIdDefaultValue
                   )
                 : null,
-            busOrBusbarSection: null,
+            busOrBusbarSection: busOrBusbarSectionIdDefaultValue,
         });
     }, [
         voltageLevelOptions,
-        voltageLevelIdDefaultValue,
         busOrBusbarSectionIdDefaultValue,
+        voltageLevelIdDefaultValue,
     ]);
 
     useEffect(() => {
