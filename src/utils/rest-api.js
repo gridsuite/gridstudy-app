@@ -972,7 +972,7 @@ export function createLoad(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/loads';
     return backendFetch(createLoadUrl, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1014,7 +1014,7 @@ export function createGenerator(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/generators';
     return backendFetch(createGeneratorUrl, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1056,7 +1056,7 @@ export function createShuntCompensator(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/shunt-compensators';
     return backendFetch(createLineUrl, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1101,7 +1101,7 @@ export function createLine(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/lines';
     return backendFetch(createLineUrl, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1154,7 +1154,7 @@ export function createTwoWindingsTransformer(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/two-windings-transformer';
     return backendFetch(createTwoWindingsTransformerUrl, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1193,6 +1193,8 @@ export function createSubstation(
     const createSubstationUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/substations';
+
+    console.info('isEdition', isEdition)
 
     return backendFetch(createSubstationUrl, {
         method: isEdition ? 'PUT' : 'POST',
@@ -1238,7 +1240,7 @@ export function createVoltageLevel(
     });
 
     return backendFetch(createVoltageLevelUrl, {
-        method: 'PUT',
+        method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
