@@ -420,7 +420,6 @@ export const useAutocompleteField = ({
                     <TextField
                         {...formProps}
                         {...props}
-                        variant="filled"
                         size="small"
                         label={
                             <FieldLabel
