@@ -12,7 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -20,16 +20,8 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { createSubstation } from '../../utils/rest-api';
-import { useParameterState } from '../parameters';
-import { PARAM_LANGUAGE } from '../../utils/config-params';
-import { getComputedLanguage } from '../../utils/language';
-import {
-    filledTextField,
-    gridItem,
-    useAutocompleteField,
-    useInputForm,
-    useTextValue,
-} from './input-hooks';
+import { useCountryValue, useInputForm, useTextValue } from './input-hooks';
+import { filledTextField, gridItem } from './dialogUtils';
 
 /**
  * Dialog to create a substation in the network
@@ -38,8 +30,6 @@ import {
  * @param selectedNodeUuid : the currently selected tree node
  */
 const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const intl = useIntl();
@@ -62,26 +52,11 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         formProps: filledTextField,
     });
 
-    const countriesList = useMemo(() => {
-        try {
-            return require('localized-countries')(
-                require('localized-countries/data/' +
-                    getComputedLanguage(languageLocal).substr(0, 2))
-            );
-        } catch (error) {
-            // fallback to english if no localised list found
-            return require('localized-countries')(
-                require('localized-countries/data/en')
-            );
-        }
-    }, [languageLocal]);
-
-    const [substationCountry, substationCountryField] = useAutocompleteField({
+    const [substationCountry, substationCountryField] = useCountryValue({
         label: 'Country',
         inputForm: inputForm,
         formProps: filledTextField,
         validation: { isFieldRequired: false },
-        values: countriesList,
     });
 
     const handleSave = () => {
