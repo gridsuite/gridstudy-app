@@ -243,8 +243,8 @@ const NetworkMap = forwardRef((props, ref) => {
                 } else if (props.onVoltageLevelMenuClick && event.rightButton) {
                     props.onVoltageLevelMenuClick(
                         network.getVoltageLevel(idVl),
-                        info.x,
-                        info.y
+                        event.center.x,
+                        event.center.y
                     );
                 }
             }
@@ -255,14 +255,14 @@ const NetworkMap = forwardRef((props, ref) => {
                 ) {
                     props.onSubstationClickChooseVoltageLevel(
                         idSubstation,
-                        info.x,
-                        info.y
+                        event.center.x,
+                        event.center.y
                     );
                 } else if (props.onSubstationMenuClick && event.rightButton) {
                     props.onSubstationMenuClick(
                         network.getSubstation(idSubstation),
-                        info.x,
-                        info.y
+                        event.center.x,
+                        event.center.y
                     );
                 }
             }
@@ -279,7 +279,7 @@ const NetworkMap = forwardRef((props, ref) => {
             // picked line properties are retrieved from network data and not from pickable object infos,
             // because pickable object infos might not be up to date
             let line = network.getLine(info.object.id);
-            props.onLineMenuClick(line, info.x, info.y + 60);
+            props.onLineMenuClick(line, event.center.x, event.center.y);
         }
     }
 

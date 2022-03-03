@@ -27,7 +27,6 @@ const withEquipmentMenu =
                 className={classes.menu}
                 anchorReference="anchorPosition"
                 anchorPosition={{
-                    position: 'absolute',
                     top: position[1],
                     left: position[0],
                 }}

@@ -31,7 +31,6 @@ import {
     useDoubleValue,
     useEnumValue,
     useInputForm,
-    useIntegerValue,
     useTextValue,
     VoltageAdornment,
 } from './input-hooks';
@@ -104,7 +103,7 @@ const GeneratorCreationDialog = ({
         },
     });
 
-    const [maximumActivePower, maximumActivePowerField] = useIntegerValue({
+    const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
         label: 'MaximumActivePowerText',
         validation: {
             isFieldRequired: true,
@@ -114,7 +113,7 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
     });
 
-    const [minimumActivePower, minimumActivePowerField] = useIntegerValue({
+    const [minimumActivePower, minimumActivePowerField] = useDoubleValue({
         label: 'MinimumActivePowerText',
         validation: {
             isFieldRequired: true,
@@ -126,7 +125,7 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
     });
 
-    const [ratedNominalPower, ratedNominalPowerField] = useIntegerValue({
+    const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
         validation: {
             isFieldRequired: false,
@@ -138,7 +137,7 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
     });
 
-    const [activePowerSetpoint, activePowerSetpointField] = useIntegerValue({
+    const [activePowerSetpoint, activePowerSetpointField] = useDoubleValue({
         label: 'ActivePowerText',
         validation: {
             isFieldRequired: true,
@@ -168,18 +167,16 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
     });
 
-    const [reactivePowerSetpoint, reactivePowerSetpointField] = useIntegerValue(
-        {
-            label: 'ReactivePowerText',
-            validation: {
-                isFieldRequired: !voltageRegulation,
-                isFieldNumeric: true,
-            },
-            adornment: ReactivePowerAdornment,
-            inputForm: inputForm,
-            formProps: { disabled: voltageRegulation },
-        }
-    );
+    const [reactivePowerSetpoint, reactivePowerSetpointField] = useDoubleValue({
+        label: 'ReactivePowerText',
+        validation: {
+            isFieldRequired: !voltageRegulation,
+            isFieldNumeric: true,
+        },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        formProps: { disabled: voltageRegulation },
+    });
 
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
