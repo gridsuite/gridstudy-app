@@ -353,7 +353,7 @@
     "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
     "NewName": "Nouveau nom",
 
-    "CopyFromExisting": "Copier depuis un équipement existant",
+    "CopyFromExisting": "Copier depuis un ouvrage existant",
     "LoadCopied": "Données copiées depuis la consommation {loadId}",
     "LoadCopyFailed404": "Erreur lors de la copie de la consommation : la consommation n'a pas été trouvée",
     "LoadCopyFailed": "Erreur lors de la copie de la consommation",

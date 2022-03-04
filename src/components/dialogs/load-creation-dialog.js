@@ -182,6 +182,10 @@ const LoadCreationDialog = ({
 
     const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
 
+    const handleCloseSearchDialog = () => {
+        setDialogSearchOpen(false);
+    };
+
     const handleSelectionChange = (element) => {
         let msg;
         fetchLoadInfos(studyUuid, selectedNodeUuid, element.id).then(
@@ -233,7 +237,7 @@ const LoadCreationDialog = ({
                 }
             }
         );
-        setDialogSearchOpen(false);
+        handleCloseSearchDialog();
     };
 
     return (
@@ -246,11 +250,11 @@ const LoadCreationDialog = ({
                 maxWidth={'md'}
             >
                 <DialogTitle>
-                    <Grid container justifyContent={'space-between'}>
+                    <Grid container justifyContent={'flex-end'}>
                         <Grid item xs={11}>
                             <FormattedMessage id="CreateLoad" />
                         </Grid>
-                        {gridItem(copyEquipmentButton, 1)}
+                        {gridItem(copyEquipmentButton, 1, 'end')}
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
@@ -280,7 +284,7 @@ const LoadCreationDialog = ({
             </Dialog>
             <EquipmentSearchDialog
                 open={isDialogSearchOpen}
-                onClose={() => setDialogSearchOpen(false)}
+                onClose={handleCloseSearchDialog}
                 equipmentType={'LOAD'}
                 onSelectionChange={handleSelectionChange}
                 selectedNodeUuid={selectedNodeUuid}

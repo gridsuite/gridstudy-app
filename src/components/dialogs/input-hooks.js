@@ -93,9 +93,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const gridItem = (field, size = 6) => {
+export const gridItem = (field, size = 6, align = 'start') => {
     return (
-        <Grid item xs={size} align="start">
+        <Grid item xs={size} align={align}>
             {field}
         </Grid>
     );
@@ -501,7 +501,7 @@ export const useAutocompleteField = ({
 export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
     const classes = useStyles();
 
-    const button = useMemo(() => {
+    return useMemo(() => {
         return (
             <Tooltip
                 title={<FormattedMessage id={label} />}
@@ -517,7 +517,6 @@ export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
             </Tooltip>
         );
     }, [label, handleOpenSearchDialog, classes.tooltip]);
-    return button;
 };
 
 export const useEnumValue = ({
