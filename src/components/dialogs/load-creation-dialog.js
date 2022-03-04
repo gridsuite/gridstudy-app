@@ -12,7 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -59,6 +59,7 @@ const LoadCreationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
+    editData
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -80,6 +81,12 @@ const LoadCreationDialog = ({
         label: 'CopyFromExisting',
         handleOpenSearchDialog: handleOpenSearchDialog,
     });
+
+    useEffect(() => {
+        console.info('editData666666666', editData)
+        setFormValues(editData);
+        console.info('formValues', formValues)
+    }, [editData, formValues]);
 
     const [loadId, loadIdField] = useTextValue({
         label: 'ID',
@@ -147,6 +154,28 @@ const LoadCreationDialog = ({
                 activePower,
                 reactivePower,
                 connectivity.voltageLevel.id,
+                connectivity.busOrBusbarSection.id,
+                true
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LoadCreationError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        } else {
+            createLoad(
+                studyUuid,
+                selectedNodeUuid,
+                loadId,
+                loadName ? loadName : null,
+                !loadType ? 'UNDEFINED' : loadType,
+                activePower,
+                reactivePower,
+                connectivity.voltageLevel.id,
                 connectivity.busOrBusbarSection.id
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
@@ -158,9 +187,9 @@ const LoadCreationDialog = ({
                     },
                 });
             });
-            // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            handleCloseAndClear();
         }
+        // do not wait fetch response and close dialog, errors will be shown in snackbar.
+        handleCloseAndClear();
     };
 
     const clearValues = useCallback(() => {
