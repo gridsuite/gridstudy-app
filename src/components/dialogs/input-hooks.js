@@ -451,7 +451,7 @@ export const useAutocompleteField = ({
 
 const DELAY = 1000;
 
-export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
+export const useButtonWithTooltip = ({ handleClick, label }) => {
     const classes = useStyles();
 
     return useMemo(() => {
@@ -464,12 +464,12 @@ export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
                 enterNextDelay={DELAY}
                 classes={{ tooltip: classes.tooltip }}
             >
-                <IconButton style={{padding: '2px'}} onClick={handleOpenSearchDialog}>
+                <IconButton style={{ padding: '2px' }} onClick={handleClick}>
                     <FindInPageIcon />
                 </IconButton>
             </Tooltip>
         );
-    }, [label, handleOpenSearchDialog, classes.tooltip]);
+    }, [label, handleClick, classes.tooltip]);
 };
 
 export const useCountryValue = (props) => {

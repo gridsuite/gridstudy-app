@@ -24,7 +24,7 @@ import {
     useDoubleValue,
     useEnumValue,
     useInputForm,
-    useSearchEquipmentField,
+    useButtonWithTooltip,
     useTextValue,
 } from './input-hooks';
 import {
@@ -76,9 +76,9 @@ const LoadCreationDialog = ({
         setDialogSearchOpen(true);
     };
 
-    const copyEquipmentButton = useSearchEquipmentField({
+    const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleOpenSearchDialog: handleOpenSearchDialog,
+        handleClick: handleOpenSearchDialog,
     });
 
     const [loadId, loadIdField] = useTextValue({
@@ -256,9 +256,7 @@ const LoadCreationDialog = ({
                         <Grid item xs={11}>
                             <FormattedMessage id="CreateLoad" />
                         </Grid>
-                        <Grid item>
-                            {copyEquipmentButton}
-                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>

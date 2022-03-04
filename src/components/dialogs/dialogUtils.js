@@ -101,7 +101,7 @@ export const GridSection = ({ title, size = 12 }) => {
 
 export const gridItem = (field, size = 6) => {
     return (
-        <Grid item xs={size} align={"start"}>
+        <Grid item xs={size} align={'start'}>
             {field}
         </Grid>
     );
