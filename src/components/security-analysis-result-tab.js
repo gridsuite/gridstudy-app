@@ -10,6 +10,8 @@ import { fetchSecurityAnalysisResult } from '../utils/rest-api';
 import WaitingLoader from './util/waiting-loader';
 import SecurityAnalysisResult from './security-analysis-result';
 
+const securityAnalysisResultInvalidations = ['securityAnalysisResult'];
+
 export const SecurityAnalysisResultTab = ({
     studyUuid,
     nodeUuid,
@@ -20,7 +22,7 @@ export const SecurityAnalysisResultTab = ({
         studyUuid,
         nodeUuid,
         fetchSecurityAnalysisResult,
-        ['securityAnalysisResult']
+        securityAnalysisResultInvalidations
     );
 
     function onClickNmKConstraint(row, column) {
