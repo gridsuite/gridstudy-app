@@ -22,16 +22,18 @@ import {
 } from '../../utils/messages';
 import { createLine } from '../../utils/rest-api';
 import {
-    filledTextField,
-    SusceptanceAdornment,
-    OhmAdornment,
-    AmpereAdornment,
     useDoubleValue,
     useInputForm,
     useTextValue,
     useConnectivityValue,
-    gridItem,
 } from './input-hooks';
+import {
+    AmpereAdornment,
+    filledTextField,
+    gridItem,
+    OhmAdornment,
+    SusceptanceAdornment,
+} from './dialogUtils';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
