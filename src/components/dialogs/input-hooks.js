@@ -134,7 +134,8 @@ export const useTextValue = ({
                 id={id ? id : label}
                 label={FieldLabel({
                     label,
-                    optional: !validation.isFieldRequired && !formProps?.disabled,
+                    optional:
+                        !validation.isFieldRequired && !formProps?.disabled,
                 })}
                 {...(adornment && {
                     adornmentPosition: adornment.position,
@@ -551,19 +552,16 @@ export const useEnumValue = ({
                     fullWidth
                     {...formProps}
                 >
-                    {enumValues
-                        .map((e, index) => (
-                            <MenuItem value={getId(e)} key={e.id + '_' + index}>
-                                <em>
-                                    {doTranslation && (
-                                        <FormattedMessage
-                                            id={getEnumLabel(e)}
-                                        />
-                                    )}
-                                    {!doTranslation && getEnumLabel(e)}
-                                </em>
-                            </MenuItem>
-                        ))}
+                    {enumValues.map((e, index) => (
+                        <MenuItem value={getId(e)} key={e.id + '_' + index}>
+                            <em>
+                                {doTranslation && (
+                                    <FormattedMessage id={getEnumLabel(e)} />
+                                )}
+                                {!doTranslation && getEnumLabel(e)}
+                            </em>
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
         );
