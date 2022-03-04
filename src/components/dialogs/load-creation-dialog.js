@@ -252,11 +252,13 @@ const LoadCreationDialog = ({
                 maxWidth={'md'}
             >
                 <DialogTitle>
-                    <Grid container justifyContent={'flex-end'}>
+                    <Grid container justifyContent={'space-between'}>
                         <Grid item xs={11}>
                             <FormattedMessage id="CreateLoad" />
                         </Grid>
-                        {gridItem(copyEquipmentButton, 1, 'end')}
+                        <Grid item>
+                            {copyEquipmentButton}
+                        </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>

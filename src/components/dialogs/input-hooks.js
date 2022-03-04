@@ -464,9 +464,9 @@ export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
                 enterNextDelay={DELAY}
                 classes={{ tooltip: classes.tooltip }}
             >
-                <Button onClick={handleOpenSearchDialog}>
+                <IconButton style={{padding: '2px'}} onClick={handleOpenSearchDialog}>
                     <FindInPageIcon />
-                </Button>
+                </IconButton>
             </Tooltip>
         );
     }, [label, handleOpenSearchDialog, classes.tooltip]);
