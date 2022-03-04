@@ -965,14 +965,15 @@ export function createLoad(
     activePower,
     reactivePower,
     voltageLevelId,
-    busOrBusbarSectionId
+    busOrBusbarSectionId,
+    isEdition = false
 ) {
     console.info('Creating load ');
     const createLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/loads';
     return backendFetch(createLoadUrl, {
-        method: 'POST',
+        method: isEdition ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1193,8 +1194,6 @@ export function createSubstation(
     const createSubstationUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/substations';
-
-    console.info('isEdition', isEdition)
 
     return backendFetch(createSubstationUrl, {
         method: isEdition ? 'PUT' : 'POST',
