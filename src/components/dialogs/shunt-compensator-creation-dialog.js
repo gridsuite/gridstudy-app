@@ -20,11 +20,6 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import {
-    filledTextField,
-    gridItem,
-    GridSection,
-    SusceptanceAdornment,
-    toPositiveIntValue,
     useBooleanValue,
     useConnectivityValue,
     useDoubleValue,
@@ -33,6 +28,13 @@ import {
     useTextValue,
 } from './input-hooks';
 import { createShuntCompensator } from '../../utils/rest-api';
+import {
+    filledTextField,
+    gridItem,
+    GridSection,
+    SusceptanceAdornment,
+    toPositiveIntValue,
+} from './dialogUtils';
 
 const disabledChecked = { disabled: true };
 
