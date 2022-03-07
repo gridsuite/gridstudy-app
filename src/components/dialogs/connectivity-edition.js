@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 const ConnectivityEdition = ({
     voltageLevelOptions,
     voltageLevel,
-    busOrBusbarSection,
+    busOrBusbarSectionId,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
     direction,
@@ -71,6 +71,8 @@ const ConnectivityEdition = ({
     const [busOrBusbarSectionOptions, setBusOrBusbarSectionOptions] = useState(
         []
     );
+
+    const [busOrBusbarSection, setBusOrBusbarSection] = useState([]);
 
     // Specific Popper component to be used with Autocomplete
     // This allows the popper to fit its content, which is not the case by default
@@ -103,6 +105,8 @@ const ConnectivityEdition = ({
     };
 
     useEffect(() => {
+        console.info('voltageLevel.id', voltageLevel?.id);
+        console.info('busOrBusbarSectionId', busOrBusbarSectionId);
         //To force the update of busbar choices when voltageLevel change is not triggered by this component
         switch (voltageLevel?.topologyKind) {
             case 'NODE_BREAKER':
@@ -127,7 +131,26 @@ const ConnectivityEdition = ({
                 setBusOrBusbarSectionOptions([]);
                 break;
         }
-    }, [voltageLevel, handleChangeVoltageLevel, studyUuid, workingNodeUuid]);
+        setBusOrBusbarSection(
+            busOrBusbarSectionId
+                ? busOrBusbarSectionOptions.find(
+                      (value) => value.id === busOrBusbarSectionId
+                  )
+                : null
+        );
+    }, [voltageLevel, handleChangeVoltageLevel, studyUuid, workingNodeUuid, busOrBusbarSectionId, setBusOrBusbarSectionOptions]);
+
+    useEffect(() => {
+        console.info('voltageLevel.id', voltageLevel?.id);
+        console.info('busOrBusbarSectionId', busOrBusbarSectionId);
+        setBusOrBusbarSection(
+            busOrBusbarSectionId
+                ? busOrBusbarSectionOptions.find(
+                    (value) => value.id === busOrBusbarSectionId
+                )
+                : null
+        );
+    }, [busOrBusbarSectionOptions]);
 
     return (
         <>

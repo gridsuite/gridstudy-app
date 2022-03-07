@@ -966,7 +966,8 @@ export function createLoad(
     reactivePower,
     voltageLevelId,
     busOrBusbarSectionId,
-    isEdition = false
+    isEdition = false,
+    uuid
 ) {
     console.info('Creating load ');
     const createLoadUrl =
@@ -986,6 +987,7 @@ export function createLoad(
             reactivePower: reactivePower,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
+            uuid: uuid,
         }),
     }).then((response) =>
         response.ok

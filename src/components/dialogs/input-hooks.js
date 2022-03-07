@@ -260,6 +260,14 @@ export const useConnectivityValue = ({
     voltageLevelIdDefaultValue,
     busOrBusbarSectionIdDefaultValue,
 }) => {
+    console.info(
+        'voltageLevelIdDefaultValue',
+        voltageLevelIdDefaultValue
+    );
+    console.info(
+        'busOrBusbarSectionIdDefaultValue',
+        busOrBusbarSectionIdDefaultValue
+    );
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
         busOrBusbarSection: null,
@@ -319,11 +327,13 @@ export const useConnectivityValue = ({
     }, []);
 
     const render = useMemo(() => {
+        console.info('connectivity', connectivity)
         return (
             <ConnectivityEdition
                 voltageLevelOptions={voltageLevelOptions}
                 voltageLevel={connectivity.voltageLevel}
                 busOrBusbarSection={connectivity.busOrBusbarSection}
+                busOrBusbarSectionId={connectivity.busOrBusbarSection}
                 onChangeVoltageLevel={(value) => setVoltageLevel(value)}
                 onChangeBusOrBusbarSection={(busOrBusbarSection) =>
                     setBusOrBusbarSection(busOrBusbarSection)

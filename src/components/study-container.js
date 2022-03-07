@@ -428,6 +428,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUpdatedForce, updateNetwork, removeEquipmentFromNetwork]);
 
+    console.info('loadFlowInfos', loadFlowInfos)
     return (
         <WaitingLoader
             errMessage={
