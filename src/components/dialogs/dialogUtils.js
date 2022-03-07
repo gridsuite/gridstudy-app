@@ -82,7 +82,7 @@ export const toFloatValue = (val) => {
     // TODO: remove replace when parsing behaviour will be made according to locale
     // Replace ',' by '.' to ensure double values can be parsed correctly
     const tmp = val?.replace(',', '.') || '';
-    if (tmp.endsWith('.')) return val;
+    if (tmp.endsWith('.') || tmp.endsWith('0')) return val;
     return parseFloat(val) || 0;
 };
 
