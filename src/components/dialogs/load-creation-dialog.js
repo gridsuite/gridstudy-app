@@ -24,7 +24,7 @@ import {
     useDoubleValue,
     useEnumValue,
     useInputForm,
-    useSearchEquipmentField,
+    useButtonWithTooltip,
     useTextValue,
 } from './input-hooks';
 import {
@@ -77,9 +77,9 @@ const LoadCreationDialog = ({
         setDialogSearchOpen(true);
     };
 
-    const copyEquipmentButton = useSearchEquipmentField({
+    const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleOpenSearchDialog: handleOpenSearchDialog,
+        handleClick: handleOpenSearchDialog,
     });
 
     useEffect(() => {
@@ -212,6 +212,10 @@ const LoadCreationDialog = ({
 
     const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
 
+    const handleCloseSearchDialog = () => {
+        setDialogSearchOpen(false);
+    };
+
     const handleSelectionChange = (element) => {
         let msg;
         fetchLoadInfos(studyUuid, selectedNodeUuid, element.id).then(
@@ -264,7 +268,7 @@ const LoadCreationDialog = ({
                 }
             }
         );
-        setDialogSearchOpen(false);
+        handleCloseSearchDialog();
     };
 
     return (
@@ -281,7 +285,7 @@ const LoadCreationDialog = ({
                         <Grid item xs={11}>
                             <FormattedMessage id="CreateLoad" />
                         </Grid>
-                        {gridItem(copyEquipmentButton, 1)}
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
@@ -311,7 +315,7 @@ const LoadCreationDialog = ({
             </Dialog>
             <EquipmentSearchDialog
                 open={isDialogSearchOpen}
-                onClose={() => setDialogSearchOpen(false)}
+                onClose={handleCloseSearchDialog}
                 equipmentType={'LOAD'}
                 onSelectionChange={handleSelectionChange}
                 selectedNodeUuid={selectedNodeUuid}

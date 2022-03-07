@@ -82,8 +82,8 @@ export const toFloatValue = (val) => {
     // TODO: remove replace when parsing behaviour will be made according to locale
     // Replace ',' by '.' to ensure double values can be parsed correctly
     const tmp = val?.replace(',', '.') || '';
-    if (tmp.endsWith('.')) return val;
-    return parseFloat(val) || 0;
+    if (tmp.endsWith('.') || tmp.endsWith('0')) return val;
+    return parseFloat(tmp) || 0;
 };
 
 export const GridSection = ({ title, size = 12 }) => {
@@ -101,7 +101,7 @@ export const GridSection = ({ title, size = 12 }) => {
 
 export const gridItem = (field, size = 6) => {
     return (
-        <Grid item xs={size} align="start">
+        <Grid item xs={size} align={'start'}>
             {field}
         </Grid>
     );

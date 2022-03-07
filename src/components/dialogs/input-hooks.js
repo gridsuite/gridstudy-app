@@ -134,7 +134,8 @@ export const useTextValue = ({
                 id={id ? id : label}
                 label={FieldLabel({
                     label,
-                    optional: !validation.isFieldRequired,
+                    optional:
+                        !validation.isFieldRequired && !formProps?.disabled,
                 })}
                 {...(adornment && {
                     adornmentPosition: adornment.position,
@@ -452,10 +453,10 @@ export const useAutocompleteField = ({
 
 const DELAY = 1000;
 
-export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
+export const useButtonWithTooltip = ({ handleClick, label }) => {
     const classes = useStyles();
 
-    const button = useMemo(() => {
+    return useMemo(() => {
         return (
             <Tooltip
                 title={<FormattedMessage id={label} />}
@@ -465,13 +466,12 @@ export const useSearchEquipmentField = ({ handleOpenSearchDialog, label }) => {
                 enterNextDelay={DELAY}
                 classes={{ tooltip: classes.tooltip }}
             >
-                <Button onClick={handleOpenSearchDialog}>
+                <IconButton style={{ padding: '2px' }} onClick={handleClick}>
                     <FindInPageIcon />
-                </Button>
+                </IconButton>
             </Tooltip>
         );
-    }, [label, handleOpenSearchDialog, classes.tooltip]);
-    return button;
+    }, [label, handleClick, classes.tooltip]);
 };
 
 export const useCountryValue = (props) => {
@@ -552,20 +552,16 @@ export const useEnumValue = ({
                     fullWidth
                     {...formProps}
                 >
-                    {enumValues
-                        .filter((e) => getId(e))
-                        .map((e, index) => (
-                            <MenuItem value={getId(e)} key={e.id + '_' + index}>
-                                <em>
-                                    {doTranslation && (
-                                        <FormattedMessage
-                                            id={getEnumLabel(e)}
-                                        />
-                                    )}
-                                    {!doTranslation && getEnumLabel(e)}
-                                </em>
-                            </MenuItem>
-                        ))}
+                    {enumValues.map((e, index) => (
+                        <MenuItem value={getId(e)} key={e.id + '_' + index}>
+                            <em>
+                                {doTranslation && (
+                                    <FormattedMessage id={getEnumLabel(e)} />
+                                )}
+                                {!doTranslation && getEnumLabel(e)}
+                            </em>
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
         );
