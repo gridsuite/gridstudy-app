@@ -47,7 +47,6 @@ const NetworkModificationDialog = ({
     editData,
     setEditData,
 }) => {
-    console.info('editData2222', editData)
     const classes = useStyles();
     const intl = useIntl();
 

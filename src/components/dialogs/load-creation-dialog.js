@@ -59,7 +59,7 @@ const LoadCreationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
-    editData
+    editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -83,9 +83,8 @@ const LoadCreationDialog = ({
     });
 
     useEffect(() => {
-        console.info('editData666666666', editData)
         setFormValues(editData);
-        console.info('formValues', formValues)
+        console.info('load from edition', editData);
     }, [editData, formValues]);
 
     const [loadId, loadIdField] = useTextValue({
@@ -222,6 +221,7 @@ const LoadCreationDialog = ({
                         setFormValues(null);
                         load.id = load.id + '(1)';
                         load.busOrBusbarSectionId = null;
+                        console.info('load from copy', load);
                         setFormValues(load);
 
                         msg = intl.formatMessage(
