@@ -114,6 +114,7 @@ export default class NetworkModificationTreeModel {
                     ...this.treeElements[indexModifiedNode].data,
                     label: node.name,
                     buildStatus: node.buildStatus,
+                    readOnly: node.readOnly,
                 };
             }
         });
@@ -129,6 +130,7 @@ export default class NetworkModificationTreeModel {
                 label: elements.name,
                 description: elements.description,
                 buildStatus: elements.buildStatus,
+                readOnly: elements.readOnly,
             },
         });
         // handle root children

@@ -19,6 +19,7 @@ import {
 import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
 import ModelNode from './graph/nodes/model-node';
+import RootNode from './graph/nodes/root-node';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { Box } from '@material-ui/core';
 import { createTreeNode, deleteTreeNode, buildNode } from '../utils/rest-api';
@@ -34,7 +35,7 @@ import PropTypes from 'prop-types';
 import { StudyDisplayMode } from './study-pane';
 
 const nodeTypes = {
-    ROOT: ModelNode,
+    ROOT: RootNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
     MODEL: ModelNode,
 };
