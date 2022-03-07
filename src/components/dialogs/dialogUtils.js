@@ -83,7 +83,7 @@ export const toFloatValue = (val) => {
     // Replace ',' by '.' to ensure double values can be parsed correctly
     const tmp = val?.replace(',', '.') || '';
     if (tmp.endsWith('.') || tmp.endsWith('0')) return val;
-    return parseFloat(val) || 0;
+    return parseFloat(tmp) || 0;
 };
 
 export const GridSection = ({ title, size = 12 }) => {
