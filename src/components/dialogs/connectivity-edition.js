@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 const ConnectivityEdition = ({
     voltageLevelOptions,
     voltageLevel,
-    busOrBusbarSectionProp,
+    busOrBusbarSection,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
     direction,
@@ -72,7 +72,7 @@ const ConnectivityEdition = ({
         []
     );
 
-    const [busOrBusbarSection, setBusOrBusbarSection] = useState(null);
+    const [currentBBS, setCurrentBBS] = useState(null);
 
     // Specific Popper component to be used with Autocomplete
     // This allows the popper to fit its content, which is not the case by default
@@ -138,18 +138,14 @@ const ConnectivityEdition = ({
     ]);
 
     useEffect(() => {
-        if (busOrBusbarSectionOptions.length) {
-            setBusOrBusbarSection(
-                busOrBusbarSectionProp
-                    ? busOrBusbarSectionOptions.find(
-                          (value) => value.id === busOrBusbarSectionProp.id
-                      )
-                    : ''
-            );
-        } else {
-            setBusOrBusbarSection('');
-        }
-    }, [busOrBusbarSectionOptions, busOrBusbarSectionProp]);
+        setCurrentBBS(
+            busOrBusbarSection && busOrBusbarSectionOptions.length
+                ? busOrBusbarSectionOptions.find(
+                      (value) => value.id === busOrBusbarSection.id
+                  )
+                : ''
+        );
+    }, [busOrBusbarSectionOptions, busOrBusbarSection]);
 
     return (
         <>
@@ -262,7 +258,7 @@ const ConnectivityEdition = ({
                             }
                             return filtered;
                         }}
-                        value={busOrBusbarSection}
+                        value={currentBBS}
                         onChange={handleChangeBus}
                         renderInput={(params) => (
                             <TextField

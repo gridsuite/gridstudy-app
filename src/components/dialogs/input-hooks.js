@@ -278,19 +278,18 @@ export const useConnectivityValue = ({
     );
 
     useEffect(() => {
-        const busOrBusbarSection = busOrBusbarSectionIdDefaultValue
-            ? {
-                  id: busOrBusbarSectionIdDefaultValue,
-                  name: busOrBusbarSectionIdDefaultValue,
-              }
-            : null;
         setConnectivity({
             voltageLevel: voltageLevelIdDefaultValue
                 ? voltageLevelOptions.find(
                       (value) => value.id === voltageLevelIdDefaultValue
                   )
                 : null,
-            busOrBusbarSection: busOrBusbarSection,
+            busOrBusbarSection: busOrBusbarSectionIdDefaultValue
+                ? {
+                      id: busOrBusbarSectionIdDefaultValue,
+                      name: '',
+                  }
+                : null,
         });
     }, [
         voltageLevelOptions,
@@ -330,7 +329,6 @@ export const useConnectivityValue = ({
                 voltageLevelOptions={voltageLevelOptions}
                 voltageLevel={connectivity.voltageLevel}
                 busOrBusbarSection={connectivity.busOrBusbarSection}
-                busOrBusbarSectionProp={connectivity.busOrBusbarSection}
                 onChangeVoltageLevel={(value) => setVoltageLevel(value)}
                 onChangeBusOrBusbarSection={(busOrBusbarSection) =>
                     setBusOrBusbarSection(busOrBusbarSection)
