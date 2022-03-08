@@ -318,7 +318,7 @@ export const NetworkMapTab = ({
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
-                    selectedNodeUuid={workingNode?.id}
+                    workingNode={workingNode}
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}
