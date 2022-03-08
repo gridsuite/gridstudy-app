@@ -329,9 +329,13 @@ export function selectTreeNode(selectedTreeNode) {
 export const WORKING_TREE_NODE = 'WORKING_TREE_NODE';
 
 export function workingTreeNode(workingTreeNode) {
+    console.log('NNO', workingTreeNode);
     return {
         type: WORKING_TREE_NODE,
-        workingTreeNode: workingTreeNode,
+        workingTreeNode: {
+            id: workingTreeNode.id,
+            readOnly: workingTreeNode.readOnly,
+        },
     };
 }
 

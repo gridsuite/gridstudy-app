@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 const RootNode = (props) => {
     const classes = useStyles();
 
-    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
+    const workingNode = useSelector((state) => state.workingTreeNode);
 
     return (
         <>
@@ -47,7 +47,7 @@ const RootNode = (props) => {
             >
                 {props.data.buildStatus === 'BUILDING' ? (
                     <CircularProgress size={24} />
-                ) : props.id === workingNodeUuid ? (
+                ) : props.id === workingNode?.id ? (
                     <VisibilityIcon />
                 ) : (
                     props.data.readOnly && <LockIcon />

@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 const ModelNode = (props) => {
     const classes = useStyles();
 
-    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
+    const workingNode = useSelector((state) => state.workingTreeNode);
 
     return (
         <>
@@ -56,7 +56,7 @@ const ModelNode = (props) => {
             >
                 {props.data.buildStatus === 'BUILDING' ? (
                     <CircularProgress size={24} />
-                ) : props.id === workingNodeUuid ? (
+                ) : props.id === workingNode?.id ? (
                     <VisibilityIcon />
                 ) : (
                     props.data.buildStatus !== 'NOT_BUILT' && (

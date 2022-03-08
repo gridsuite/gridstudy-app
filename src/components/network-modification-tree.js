@@ -121,7 +121,7 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
                 (element.type === 'MODEL' &&
                     element.data.buildStatus === 'BUILT')
             ) {
-                dispatch(workingTreeNode(element.id));
+                dispatch(workingTreeNode(element));
             }
         },
         [dispatch]
