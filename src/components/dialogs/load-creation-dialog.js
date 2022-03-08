@@ -91,10 +91,8 @@ const LoadCreationDialog = ({
             editData.p0 = editData?.activePower || '';
             editData.q0 = editData?.reactivePower || '';
             setFormValues(editData);
-            console.info('editData', editData);
-            console.info('formValues', formValues);
         }
-    }, [editData, formValues]);
+    }, [editData]);
 
     const [loadId, loadIdField] = useTextValue({
         label: 'ID',
@@ -154,7 +152,6 @@ const LoadCreationDialog = ({
     const handleSave = () => {
         if (inputForm.validate()) {
             if (editData) {
-                console.info('connectivity', connectivity)
                 createLoad(
                     studyUuid,
                     selectedNodeUuid,
@@ -238,7 +235,6 @@ const LoadCreationDialog = ({
                         setFormValues(null);
                         load.id = load.id + '(1)';
                         load.busOrBusbarSectionId = null;
-                        console.info('load from copy', load);
                         setFormValues(load);
 
                         msg = intl.formatMessage(

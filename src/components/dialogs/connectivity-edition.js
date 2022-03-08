@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
 const ConnectivityEdition = ({
     voltageLevelOptions,
     voltageLevel,
-    busOrBusbarSectionId,
+    busOrBusbarSectionProp,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
     direction,
@@ -72,7 +72,7 @@ const ConnectivityEdition = ({
         []
     );
 
-    const [busOrBusbarSection, setBusOrBusbarSection] = useState([]);
+    const [busOrBusbarSection, setBusOrBusbarSection] = useState(null);
 
     // Specific Popper component to be used with Autocomplete
     // This allows the popper to fit its content, which is not the case by default
@@ -105,8 +105,6 @@ const ConnectivityEdition = ({
     };
 
     useEffect(() => {
-        console.info('voltageLevel.id', voltageLevel?.id);
-        console.info('busOrBusbarSectionId', busOrBusbarSectionId);
         //To force the update of busbar choices when voltageLevel change is not triggered by this component
         switch (voltageLevel?.topologyKind) {
             case 'NODE_BREAKER':
@@ -131,26 +129,27 @@ const ConnectivityEdition = ({
                 setBusOrBusbarSectionOptions([]);
                 break;
         }
-        setBusOrBusbarSection(
-            busOrBusbarSectionId
-                ? busOrBusbarSectionOptions.find(
-                      (value) => value.id === busOrBusbarSectionId
-                  )
-                : null
-        );
-    }, [voltageLevel, handleChangeVoltageLevel, studyUuid, workingNodeUuid, busOrBusbarSectionId, setBusOrBusbarSectionOptions]);
+    }, [
+        voltageLevel,
+        handleChangeVoltageLevel,
+        studyUuid,
+        workingNodeUuid,
+        setBusOrBusbarSectionOptions,
+    ]);
 
     useEffect(() => {
-        console.info('voltageLevel.id', voltageLevel?.id);
-        console.info('busOrBusbarSectionId', busOrBusbarSectionId);
-        setBusOrBusbarSection(
-            busOrBusbarSectionId
-                ? busOrBusbarSectionOptions.find(
-                    (value) => value.id === busOrBusbarSectionId
-                )
-                : null
-        );
-    }, [busOrBusbarSectionOptions]);
+        if (busOrBusbarSectionOptions.length) {
+            setBusOrBusbarSection(
+                busOrBusbarSectionProp
+                    ? busOrBusbarSectionOptions.find(
+                          (value) => value.id === busOrBusbarSectionProp.id
+                      )
+                    : ''
+            );
+        } else {
+            setBusOrBusbarSection('');
+        }
+    }, [busOrBusbarSectionOptions, busOrBusbarSectionProp]);
 
     return (
         <>
@@ -243,9 +242,7 @@ const ConnectivityEdition = ({
                         id="bus"
                         disabled={!voltageLevel}
                         options={busOrBusbarSectionOptions}
-                        getOptionLabel={(busOrBusbarSection) =>
-                            busOrBusbarSection?.id
-                        }
+                        getOptionLabel={(bbs) => bbs?.id || ''}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
                         */
