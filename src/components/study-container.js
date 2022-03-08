@@ -123,7 +123,7 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
-const loadFlowStatusInvalidations = ['loadflow_status'];
+const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
 const securityAnalysisStatusInvalidations = ['securityAnalysis_status'];
 
 export function StudyContainer({ view, onChangeTab }) {
