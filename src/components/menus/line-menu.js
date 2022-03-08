@@ -51,13 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 const withLineMenu =
     (BaseMenu) =>
-    ({
-        id,
-        position,
-        handleClose,
-        handleViewInSpreadsheet,
-        selectedNodeUuid,
-    }) => {
+    ({ id, position, handleClose, handleViewInSpreadsheet, workingNode }) => {
         const classes = useStyles();
         const intl = useIntl();
         const intlRef = useIntlRef();
@@ -99,7 +93,7 @@ const withLineMenu =
         function handleLockout() {
             if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
-            lockoutLine(studyUuid, selectedNodeUuid, line.id).then(
+            lockoutLine(studyUuid, workingNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -114,7 +108,7 @@ const withLineMenu =
         function handleTrip() {
             if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
-            tripLine(studyUuid, selectedNodeUuid, line.id).then((response) => {
+            tripLine(studyUuid, workingNode?.id, line.id).then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToTripLine');
                 }
@@ -132,7 +126,7 @@ const withLineMenu =
             )
                 return;
             handleClose();
-            energiseLineEnd(studyUuid, selectedNodeUuid, line.id, side).then(
+            energiseLineEnd(studyUuid, workingNode?.id, line.id, side).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -147,7 +141,7 @@ const withLineMenu =
         function handleSwitchOn() {
             if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
-            switchOnLine(studyUuid, selectedNodeUuid, line.id).then(
+            switchOnLine(studyUuid, workingNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -182,6 +176,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
                     selected={line.branchStatus === 'PLANNED_OUTAGE'}
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -201,6 +196,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     selected={line.branchStatus === 'FORCED_OUTAGE'}
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -222,6 +218,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && !line.terminal2Connected
                     }
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -250,6 +247,7 @@ const withLineMenu =
                     selected={
                         line.terminal2Connected && !line.terminal1Connected
                     }
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -278,6 +276,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && line.terminal2Connected
                     }
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <PlayIcon />
@@ -301,7 +300,7 @@ withLineMenu.propTypes = {
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
-    selectedNodeUuid: PropTypes.string,
+    workingNode: PropTypes.object,
 };
 
 export default withLineMenu;

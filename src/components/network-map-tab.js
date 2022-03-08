@@ -212,7 +212,7 @@ export const NetworkMapTab = ({
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
                     withEquipment(MenuLine, {
-                        selectedNodeUuid: workingNode?.id,
+                        workingNode: workingNode,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
