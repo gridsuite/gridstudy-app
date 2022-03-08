@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 export const EquipmentTable = ({
     fetched,
     studyUuid,
-    selectedNodeUuid,
+    workingNode,
     rows,
     selectedColumnsNames,
     tableDefinition,
@@ -71,7 +71,7 @@ export const EquipmentTable = ({
         Object.values(lineEdit.newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(studyUuid, selectedNodeUuid, groovyCr).then(
+        requestNetworkChange(studyUuid, workingNode?.id, groovyCr).then(
             (response) => {
                 if (response.ok) {
                     Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
@@ -289,7 +289,8 @@ export const EquipmentTable = ({
                 rowHeight={ROW_HEIGHT}
                 filter={filter}
                 columns={
-                    tableDefinition.modifiableEquipmentType
+                    tableDefinition.modifiableEquipmentType &&
+                    !workingNode?.readOnly
                         ? [
                               makeHeaderCell(),
                               ...generateTableColumns(tableDefinition),

@@ -271,7 +271,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     'BUILT'
                 );
                 dispatch(
-                    workingTreeNode(firstBuiltModelNode ? firstBuiltModelNode : tree)
+                    workingTreeNode(
+                        firstBuiltModelNode
+                            ? firstBuiltModelNode
+                            : getFirstNodeOfType(tree, 'ROOT')
+                    )
                 );
 
                 dispatch(
@@ -444,7 +448,7 @@ export function StudyContainer({ view, onChangeTab }) {
             <StudyPane
                 studyUuid={studyUuid}
                 network={network}
-                workingNodeUuid={workingNode?.id}
+                workingNode={workingNode}
                 view={view}
                 onChangeTab={onChangeTab}
                 updatedLines={updatedLines}
