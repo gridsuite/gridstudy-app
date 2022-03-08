@@ -226,13 +226,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const { enqueueSnackbar } = useSnackbar();
     const intlRef = useIntlRef();
 
-    const {
-        totalWidth,
-        totalHeight,
-        svgType,
-        loadFlowStatus,
-        selectedNodeUuid,
-    } = props;
+    const { totalWidth, totalHeight, svgType, loadFlowStatus, workingNode } =
+        props;
 
     const network = useSelector((state) => state.network);
 
@@ -718,7 +713,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
 
             // handling the click on a switch
-            if (!isComputationRunning) {
+            if (!isComputationRunning && !workingNode?.readOnly) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
                 );
@@ -821,7 +816,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    selectedNodeUuid={selectedNodeUuid}
+                    workingNode={workingNode}
                 />
             )
         );
@@ -991,7 +986,7 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
-    selectedNodeUuid: PropTypes.string,
+    workingNode: PropTypes.object,
 };
 
 export default SingleLineDiagram;

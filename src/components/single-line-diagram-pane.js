@@ -313,7 +313,7 @@ export function SingleLineDiagramPane({
                     }
                     showInSpreadsheet={showInSpreadsheet}
                     loadFlowStatus={loadFlowStatus}
-                    selectedNodeUuid={workingNode?.id}
+                    workingNode={workingNode}
                 />
             </div>
         )
