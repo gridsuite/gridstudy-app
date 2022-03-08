@@ -111,7 +111,7 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
             setSelectedNode(element);
             dispatch(
                 setModificationsDrawerOpen(
-                    element.type === 'NETWORK_MODIFICATION' ? true : false
+                    element.type === 'NETWORK_MODIFICATION'
                 )
             );
             dispatch(selectTreeNode(element));
