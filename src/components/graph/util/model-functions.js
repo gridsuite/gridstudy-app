@@ -8,8 +8,7 @@
 export function getFirstNodeOfType(elements, nodeType, buildStatus) {
     if (
         elements.type === nodeType &&
-        (elements.buildStatus === undefined ||
-            elements.buildStatus === buildStatus)
+        (buildStatus === undefined || elements.buildStatus === buildStatus)
     ) {
         return {
             id: elements.id,
