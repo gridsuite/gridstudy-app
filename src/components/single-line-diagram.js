@@ -749,6 +749,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, [
         network,
         svg,
+        workingNode,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
