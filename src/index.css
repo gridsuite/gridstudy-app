@@ -68,19 +68,9 @@ code {
     stroke: black;
     fill: none;
 }
-.sld-disconnector-fictitious {
-    stroke-width: 3;
-    stroke: maroon;
-    fill: none;
-}
 .sld-breaker {
     stroke-width: 2;
     stroke: blue;
-    fill: white;
-}
-.sld-breaker-fictitious {
-    stroke-width: 2;
-    stroke: maroon;
     fill: white;
 }
 .sld-bus-connection {
@@ -99,10 +89,6 @@ code {
 }
 .sld-load-break-switch {
     stroke: var(--sld-vl-color, blue);
-    fill: none;
-}
-.sld-load-break-switch-fictitious {
-    stroke: var(--sld-vl-color, maroon);
     fill: none;
 }
 .sld-load {
@@ -188,6 +174,9 @@ code {
 }
 .sld-frame {
     fill: var(--sld-background-color, transparent);
+}
+.sld-sw-fictitious {
+    stroke: maroon
 }
 
 /* tautologies.css */
