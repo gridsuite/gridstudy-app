@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
  * @param selectedNodeUuid : the currently selected tree node
  */
 const TwoWindingsTransformerCreationDialog = ({
+    editData,
     open,
     onClose,
     voltageLevelOptions,
@@ -70,12 +71,21 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [twoWindingsTransformerId, twoWindingsTransformerIdField] =
         useTextValue({
             label: 'ID',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
             formProps: filledTextField,
+            defaultValue: formValues?.equipmentId,
         });
 
     const [twoWindingsTransformerName, twoWindingsTransformerNameField] =
@@ -83,6 +93,7 @@ const TwoWindingsTransformerCreationDialog = ({
             label: 'Name',
             inputForm: inputForm,
             formProps: filledTextField,
+            defaultValue: formValues?.equipmentName,
         });
 
     const [seriesResistance, seriesResistanceField] = useDoubleValue({
@@ -90,6 +101,7 @@ const TwoWindingsTransformerCreationDialog = ({
         validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: OhmAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.seriesResistance,
     });
 
     const [seriesReactance, seriesReactanceField] = useDoubleValue({
@@ -97,6 +109,7 @@ const TwoWindingsTransformerCreationDialog = ({
         validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: OhmAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.seriesReactance,
     });
 
     const [magnetizingConductance, magnetizingConductanceField] =
@@ -105,6 +118,7 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true, isFieldNumeric: true },
             adornment: SusceptanceAdornment,
             inputForm: inputForm,
+            defaultValue: formValues?.magnetizingConductance,
         });
 
     const [magnetizingSusceptance, magnetizingSusceptanceField] =
@@ -113,6 +127,7 @@ const TwoWindingsTransformerCreationDialog = ({
             validation: { isFieldRequired: true, isFieldNumeric: true },
             adornment: SusceptanceAdornment,
             inputForm: inputForm,
+            defaultValue: formValues?.magnetizingSusceptance,
         });
 
     const [ratedVoltage1, ratedVoltage1Field] = useDoubleValue({
@@ -121,6 +136,7 @@ const TwoWindingsTransformerCreationDialog = ({
         validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: VoltageAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.ratedVoltage1,
     });
 
     const [ratedVoltage2, ratedVoltage2Field] = useDoubleValue({
@@ -129,6 +145,7 @@ const TwoWindingsTransformerCreationDialog = ({
         validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: VoltageAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.ratedVoltage2,
     });
 
     const [connectivity1, connectivity1Field] = useConnectivityValue({
@@ -138,6 +155,9 @@ const TwoWindingsTransformerCreationDialog = ({
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
         direction: 'column',
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId1 || null,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -147,35 +167,70 @@ const TwoWindingsTransformerCreationDialog = ({
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
         direction: 'column',
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId2 || null,
     });
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            createTwoWindingsTransformer(
-                studyUuid,
-                selectedNodeUuid,
-                twoWindingsTransformerId,
-                twoWindingsTransformerName,
-                seriesResistance,
-                seriesReactance,
-                magnetizingConductance,
-                magnetizingSusceptance,
-                ratedVoltage1,
-                ratedVoltage2,
-                connectivity1.voltageLevel.id,
-                connectivity1.busOrBusbarSection.id,
-                connectivity2.voltageLevel.id,
-                connectivity2.busOrBusbarSection.id
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'TwoWindingsTransformerCreationError',
-                        intlRef: intlRef,
-                    },
+            if (editData) {
+                createTwoWindingsTransformer(
+                    studyUuid,
+                    selectedNodeUuid,
+                    twoWindingsTransformerId,
+                    twoWindingsTransformerName,
+                    seriesResistance,
+                    seriesReactance,
+                    magnetizingConductance,
+                    magnetizingSusceptance,
+                    ratedVoltage1,
+                    ratedVoltage2,
+                    connectivity1.voltageLevel.id,
+                    connectivity1.busOrBusbarSection.id,
+                    connectivity2.voltageLevel.id,
+                    connectivity2.busOrBusbarSection.id,
+                    true,
+                    editData.uuid
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId:
+                                'TwoWindingsTransformerCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
+            } else {
+                createTwoWindingsTransformer(
+                    studyUuid,
+                    selectedNodeUuid,
+                    twoWindingsTransformerId,
+                    twoWindingsTransformerName,
+                    seriesResistance,
+                    seriesReactance,
+                    magnetizingConductance,
+                    magnetizingSusceptance,
+                    ratedVoltage1,
+                    ratedVoltage2,
+                    connectivity1.voltageLevel.id,
+                    connectivity1.busOrBusbarSection.id,
+                    connectivity2.voltageLevel.id,
+                    connectivity2.busOrBusbarSection.id
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId:
+                                'TwoWindingsTransformerCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+            }
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
@@ -290,7 +345,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     <FormattedMessage id="close" />
                 </Button>
                 <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id={editData ? 'Update' : 'save'} />
                 </Button>
             </DialogActions>
         </Dialog>
@@ -298,6 +353,7 @@ const TwoWindingsTransformerCreationDialog = ({
 };
 
 TwoWindingsTransformerCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

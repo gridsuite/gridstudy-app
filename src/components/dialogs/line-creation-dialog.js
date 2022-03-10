@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -62,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
  * @param selectedNodeUuid : the currently selected tree node
  */
 const LineCreationDialog = ({
+    editData,
     open,
     onClose,
     voltageLevelOptions,
@@ -78,17 +79,27 @@ const LineCreationDialog = ({
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [lineId, lineIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [lineName, lineNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [seriesResistance, seriesResistanceField] = useDoubleValue({
@@ -96,6 +107,7 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: OhmAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.seriesResistance,
     });
 
     const [seriesReactance, seriesReactanceField] = useDoubleValue({
@@ -103,6 +115,7 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: true, isFieldNumeric: true },
         adornment: OhmAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.seriesReactance,
     });
 
     const [shuntConductance1, shuntConductance1Field] = useDoubleValue({
@@ -111,6 +124,7 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.shuntConductance1,
     });
 
     const [shuntSusceptance1, shuntSusceptance1Field] = useDoubleValue({
@@ -119,6 +133,7 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.shuntSusceptance1,
     });
 
     const [shuntConductance2, shuntConductance2Field] = useDoubleValue({
@@ -127,6 +142,7 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.shuntConductance2,
     });
 
     const [shuntSusceptance2, shuntSusceptance2Field] = useDoubleValue({
@@ -135,6 +151,7 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: false, isFieldNumeric: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.shuntSusceptance2,
     });
 
     const [connectivity1, connectivity1Field] = useConnectivityValue({
@@ -144,6 +161,9 @@ const LineCreationDialog = ({
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
         direction: 'column',
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId1 || null,
     });
 
     const [connectivity2, connectivity2Field] = useConnectivityValue({
@@ -153,6 +173,9 @@ const LineCreationDialog = ({
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
         direction: 'column',
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId2 || null,
     });
 
     const [permanentCurrentLimit1, permanentCurrentLimit1Field] =
@@ -166,6 +189,7 @@ const LineCreationDialog = ({
             },
             adornment: AmpereAdornment,
             inputForm: inputForm,
+            defaultValue: formValues?.currentLimits1.permanentLimit,
         });
 
     const [permanentCurrentLimit2, permanentCurrentLimit2Field] =
@@ -179,37 +203,70 @@ const LineCreationDialog = ({
             },
             adornment: AmpereAdornment,
             inputForm: inputForm,
+            defaultValue: formValues?.currentLimits2.permanentLimit,
         });
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            createLine(
-                studyUuid,
-                selectedNodeUuid,
-                lineId,
-                lineName,
-                seriesResistance,
-                seriesReactance,
-                shuntConductance1,
-                shuntSusceptance1,
-                shuntConductance2,
-                shuntSusceptance2,
-                connectivity1.voltageLevel.id,
-                connectivity1.busOrBusbarSection.id,
-                connectivity2.voltageLevel.id,
-                connectivity2.busOrBusbarSection.id,
-                permanentCurrentLimit1,
-                permanentCurrentLimit2
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'LineCreationError',
-                        intlRef: intlRef,
-                    },
+            if (editData) {
+                createLine(
+                    studyUuid,
+                    selectedNodeUuid,
+                    lineId,
+                    lineName,
+                    seriesResistance,
+                    seriesReactance,
+                    shuntConductance1,
+                    shuntSusceptance1,
+                    shuntConductance2,
+                    shuntSusceptance2,
+                    connectivity1.voltageLevel.id,
+                    connectivity1.busOrBusbarSection.id,
+                    connectivity2.voltageLevel.id,
+                    connectivity2.busOrBusbarSection.id,
+                    permanentCurrentLimit1,
+                    permanentCurrentLimit2,
+                    true,
+                    editData.uuid
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'LineCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
+            } else {
+                createLine(
+                    studyUuid,
+                    selectedNodeUuid,
+                    lineId,
+                    lineName,
+                    seriesResistance,
+                    seriesReactance,
+                    shuntConductance1,
+                    shuntSusceptance1,
+                    shuntConductance2,
+                    shuntSusceptance2,
+                    connectivity1.voltageLevel.id,
+                    connectivity1.busOrBusbarSection.id,
+                    connectivity2.voltageLevel.id,
+                    connectivity2.busOrBusbarSection.id,
+                    permanentCurrentLimit1,
+                    permanentCurrentLimit2
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'LineCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+            }
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
@@ -347,7 +404,7 @@ const LineCreationDialog = ({
                     <FormattedMessage id="close" />
                 </Button>
                 <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id={editData ? 'Update' : 'save'} />
                 </Button>
             </DialogActions>
         </Dialog>
@@ -355,6 +412,7 @@ const LineCreationDialog = ({
 };
 
 LineCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

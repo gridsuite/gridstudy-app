@@ -54,12 +54,12 @@ const LOAD_TYPES = [
  * @param workingNodeUuid : the node we are currently working on
  */
 const LoadCreationDialog = ({
+    editData,
     open,
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
-    editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -77,36 +77,30 @@ const LoadCreationDialog = ({
         setDialogSearchOpen(true);
     };
 
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: handleOpenSearchDialog,
     });
-
-    useEffect(() => {
-        if (editData) {
-            editData.id = editData?.equipmentId || '';
-            editData.name = editData?.equipmentName || '';
-            editData.type = editData?.equipmentType || '';
-            editData.type = editData?.loadType || '';
-            editData.p0 = editData?.activePower || '';
-            editData.q0 = editData?.reactivePower || '';
-            setFormValues(editData);
-        }
-    }, [editData]);
 
     const [loadId, loadIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.id,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [loadName, loadNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.name,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [loadType, loadTypeField] = useEnumValue({
@@ -114,7 +108,7 @@ const LoadCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
-        defaultValue: formValues ? formValues.type : '',
+        defaultValue: formValues ? formValues.loadType : '',
     });
 
     const [activePower, activePowerField] = useDoubleValue({
@@ -125,7 +119,7 @@ const LoadCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues ? String(formValues.p0) : undefined,
+        defaultValue: formValues ? String(formValues.activePower) : undefined,
     });
 
     const [reactivePower, reactivePowerField] = useDoubleValue({
@@ -136,7 +130,7 @@ const LoadCreationDialog = ({
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues ? String(formValues.q0) : undefined,
+        defaultValue: formValues ? String(formValues.reactivePower) : undefined,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
@@ -334,6 +328,7 @@ const LoadCreationDialog = ({
 };
 
 LoadCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

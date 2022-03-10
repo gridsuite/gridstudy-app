@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -71,6 +71,7 @@ const GeneratorCreationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
+    editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -82,17 +83,27 @@ const GeneratorCreationDialog = ({
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [generatorId, generatorIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [energySource, energySourceField] = useEnumValue({
@@ -103,6 +114,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: false,
         },
+        defaultValue: formValues?.energySource,
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
@@ -113,6 +125,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.maxActivePower,
     });
 
     const [minimumActivePower, minimumActivePowerField] = useDoubleValue({
@@ -125,6 +138,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.minActivePower,
     });
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
@@ -137,6 +151,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.ratedNominalPower,
     });
 
     const [activePowerSetpoint, activePowerSetpointField] = useDoubleValue({
@@ -147,13 +162,14 @@ const GeneratorCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.activePowerSetpoint,
     });
 
     const [voltageRegulation, voltageRegulationField] = useBooleanValue({
         label: 'VoltageRegulationText',
-        defaultValue: false,
         validation: { isFieldRequired: true },
         inputForm: inputForm,
+        defaultValue: formValues?.voltageRegulationOn || false,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
@@ -167,6 +183,7 @@ const GeneratorCreationDialog = ({
         adornment: VoltageAdornment,
         formProps: { disabled: !voltageRegulation },
         inputForm: inputForm,
+        defaultValue: formValues?.voltageSetpoint,
     });
 
     const [reactivePowerSetpoint, reactivePowerSetpointField] = useDoubleValue({
@@ -178,6 +195,7 @@ const GeneratorCreationDialog = ({
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         formProps: { disabled: voltageRegulation },
+        defaultValue: formValues?.reactivePowerSetpoint,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
@@ -185,35 +203,68 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId || null,
     });
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            createGenerator(
-                studyUuid,
-                selectedNodeUuid,
-                generatorId,
-                generatorName ? generatorName : null,
-                !energySource ? 'OTHER' : energySource,
-                minimumActivePower,
-                maximumActivePower,
-                ratedNominalPower ? ratedNominalPower : null,
-                activePowerSetpoint,
-                reactivePowerSetpoint ? reactivePowerSetpoint : null,
-                voltageRegulation,
-                voltageSetpoint ? voltageSetpoint : null,
-                connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'GeneratorCreationError',
-                        intlRef: intlRef,
-                    },
+            if (editData) {
+                createGenerator(
+                    studyUuid,
+                    selectedNodeUuid,
+                    generatorId,
+                    generatorName ? generatorName : null,
+                    !energySource ? 'OTHER' : energySource,
+                    minimumActivePower,
+                    maximumActivePower,
+                    ratedNominalPower ? ratedNominalPower : null,
+                    activePowerSetpoint,
+                    reactivePowerSetpoint ? reactivePowerSetpoint : null,
+                    voltageRegulation,
+                    voltageSetpoint ? voltageSetpoint : null,
+                    connectivity.voltageLevel.id,
+                    connectivity.busOrBusbarSection.id,
+                    true,
+                    editData.uuid
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'GeneratorCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
+            } else {
+                createGenerator(
+                    studyUuid,
+                    selectedNodeUuid,
+                    generatorId,
+                    generatorName ? generatorName : null,
+                    !energySource ? 'OTHER' : energySource,
+                    minimumActivePower,
+                    maximumActivePower,
+                    ratedNominalPower ? ratedNominalPower : null,
+                    activePowerSetpoint,
+                    reactivePowerSetpoint ? reactivePowerSetpoint : null,
+                    voltageRegulation,
+                    voltageSetpoint ? voltageSetpoint : null,
+                    connectivity.voltageLevel.id,
+                    connectivity.busOrBusbarSection.id
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'GeneratorCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+            }
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
@@ -301,7 +352,7 @@ const GeneratorCreationDialog = ({
                     <FormattedMessage id="close" />
                 </Button>
                 <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id={editData ? 'Update' : 'save'} />
                 </Button>
             </DialogActions>
         </Dialog>
@@ -309,6 +360,7 @@ const GeneratorCreationDialog = ({
 };
 
 GeneratorCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

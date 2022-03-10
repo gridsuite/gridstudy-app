@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -51,6 +51,7 @@ const ShuntCompensatorCreationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
+    editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -60,23 +61,32 @@ const ShuntCompensatorCreationDialog = ({
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [shuntCompensatorId, shuntCompensatorIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [shuntCompensatorName, shuntCompensatorNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [maximumNumberOfSections, maximumNumberOfSectionsField] =
         useIntegerValue({
             label: 'ShuntMaximumNumberOfSections',
-            defaultValue: 1,
             validation: {
                 isFieldRequired: true,
                 isValueGreaterThan: '0',
@@ -84,12 +94,12 @@ const ShuntCompensatorCreationDialog = ({
             },
             transformValue: toPositiveIntValue,
             inputForm: inputForm,
+            defaultValue: formValues?.maximumNumberOfSections || 1,
         });
 
     const [currentNumberOfSections, currentNumberOfSectionsField] =
         useIntegerValue({
             label: 'ShuntCurrentNumberOfSections',
-            defaultValue: 0,
             validation: {
                 isValueLessOrEqualTo: maximumNumberOfSections,
                 isValueGreaterThan: '-1',
@@ -98,14 +108,15 @@ const ShuntCompensatorCreationDialog = ({
             },
             transformValue: toPositiveIntValue,
             inputForm: inputForm,
+            defaultValue: formValues?.currentNumberOfSections || 0,
         });
 
     const [identicalSections, identicalSectionsField] = useBooleanValue({
         label: 'ShuntIdenticalSections',
-        defaultValue: true,
         validation: { isFieldRequired: true },
         formProps: disabledChecked,
         inputForm: inputForm,
+        defaultValue: formValues?.identicalSections || true,
     });
 
     const [susceptancePerSection, susceptancePerSectionField] = useDoubleValue({
@@ -113,6 +124,7 @@ const ShuntCompensatorCreationDialog = ({
         validation: { isFieldRequired: true },
         adornment: SusceptanceAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.susceptancePerSection,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
@@ -120,30 +132,58 @@ const ShuntCompensatorCreationDialog = ({
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId || null,
     });
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            createShuntCompensator(
-                studyUuid,
-                selectedNodeUuid,
-                shuntCompensatorId,
-                shuntCompensatorName ? shuntCompensatorName : null,
-                maximumNumberOfSections,
-                currentNumberOfSections,
-                identicalSections,
-                susceptancePerSection,
-                connectivity
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'ShuntCompensatorCreationError',
-                        intlRef: intlRef,
-                    },
+            if (editData) {
+                createShuntCompensator(
+                    studyUuid,
+                    selectedNodeUuid,
+                    shuntCompensatorId,
+                    shuntCompensatorName ? shuntCompensatorName : null,
+                    maximumNumberOfSections,
+                    currentNumberOfSections,
+                    identicalSections,
+                    susceptancePerSection,
+                    connectivity,
+                    true,
+                    editData.uuid
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'ShuntCompensatorCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
+            } else {
+                createShuntCompensator(
+                    studyUuid,
+                    selectedNodeUuid,
+                    shuntCompensatorId,
+                    shuntCompensatorName ? shuntCompensatorName : null,
+                    maximumNumberOfSections,
+                    currentNumberOfSections,
+                    identicalSections,
+                    susceptancePerSection,
+                    connectivity
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'ShuntCompensatorCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+            }
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

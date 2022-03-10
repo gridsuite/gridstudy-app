@@ -378,6 +378,7 @@ export const useAutocompleteField = ({
     getLabel = func_identity,
     allowNewValue = false,
     errorMsg,
+    defaultValue,
 }) => {
     const [value, setValue] = useState('');
     const [error, setError] = useState('');
@@ -407,6 +408,7 @@ export const useAutocompleteField = ({
                 size={'small'}
                 options={values}
                 getOptionLabel={getLabel}
+                defaultValue={defaultValue}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
@@ -442,6 +444,7 @@ export const useAutocompleteField = ({
     }, [
         label,
         values,
+        defaultValue,
         getLabel,
         allowNewValue,
         handleChangeValue,

@@ -113,7 +113,7 @@ const NetworkModificationDialog = ({
             dialog: () => withVoltageLevel(LineCreationDialog),
             icon: <AddIcon />,
         },
-        TWO_WINDING_TRANSFORMER_CREATION: {
+        TWO_WINDINGS_TRANSFORMER_CREATION: {
             label: 'CreateTwoWindingsTransformer',
             dialog: () =>
                 withVoltageLevel(TwoWindingsTransformerCreationDialog),
