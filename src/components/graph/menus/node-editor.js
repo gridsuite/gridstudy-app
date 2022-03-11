@@ -41,7 +41,7 @@ const NodeEditor = () => {
     const [selectedNode, setSelectedNode] = useState();
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode);
+    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode)?.id;
 
     const selectedNodeUuidRef = useRef();
 
