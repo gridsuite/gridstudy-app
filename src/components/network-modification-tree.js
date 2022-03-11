@@ -109,8 +109,12 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     const onElementClick = useCallback(
         (event, element) => {
             setSelectedNode(element);
-            dispatch(setModificationsDrawerOpen(true));
-            dispatch(selectTreeNode(element.id));
+            dispatch(
+                setModificationsDrawerOpen(
+                    element.type === 'NETWORK_MODIFICATION'
+                )
+            );
+            dispatch(selectTreeNode(element));
             if (
                 element.type === 'ROOT' ||
                 (element.type === 'MODEL' &&
@@ -323,18 +327,20 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
                         </Controls>
                     </ReactFlow>
                 </Box>
-                <StudyDrawer
-                    open={isModificationsDrawerOpen}
-                    drawerClassName={classes.nodeEditor}
-                    drawerShiftClassName={classes.nodeEditorShift}
-                    anchor={
-                        prevTreeDisplay === StudyDisplayMode.TREE
-                            ? 'right'
-                            : 'left'
-                    }
-                >
-                    <NodeEditor />
-                </StudyDrawer>
+                {selectedNode && selectedNode.type === 'NETWORK_MODIFICATION' && (
+                    <StudyDrawer
+                        open={isModificationsDrawerOpen}
+                        drawerClassName={classes.nodeEditor}
+                        drawerShiftClassName={classes.nodeEditorShift}
+                        anchor={
+                            prevTreeDisplay === StudyDisplayMode.TREE
+                                ? 'right'
+                                : 'left'
+                        }
+                    >
+                        <NodeEditor />
+                    </StudyDrawer>
+                )}
             </Box>
             {createNodeMenu.display && (
                 <CreateNodeMenu
