@@ -127,7 +127,10 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: getBusbarSectionById(fieldProps, defaultValue?.fromBBS),
+        defaultValue:
+            defaultValue && defaultValue.fromBBS
+                ? getBusbarSectionById(fieldProps, defaultValue?.fromBBS)
+                : null,
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbFrom,
@@ -140,7 +143,10 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: getBusbarSectionById(fieldProps, defaultValue?.toBBS),
+        defaultValue:
+            defaultValue && defaultValue.toBBS
+                ? getBusbarSectionById(fieldProps, defaultValue?.toBBS)
+                : '',
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbTo,

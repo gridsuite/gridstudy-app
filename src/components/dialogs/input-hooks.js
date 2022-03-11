@@ -380,7 +380,7 @@ export const useAutocompleteField = ({
     errorMsg,
     defaultValue,
 }) => {
-    const [value, setValue] = useState();
+    const [value, setValue] = useState(null);
     const [error, setError] = useState('');
     const validationRef = useRef();
     validationRef.current = validation;
@@ -611,11 +611,13 @@ export const useExpandableValues = ({
     validateItem,
 }) => {
     const classes = useStyles();
-    const [values, setValues] = useState(defaultValues);
+    const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
 
     useEffect(() => {
-        setValues(defaultValues);
+        if (defaultValues.length) {
+            setValues(defaultValues);
+        }
     }, [defaultValues]);
 
     const handleDeleteBusBarSection = useCallback((index) => {
@@ -659,7 +661,7 @@ export const useExpandableValues = ({
                             index={idx}
                             inputForm={inputForm}
                             errors={errors?.get(idx)}
-                            value={value.id}
+                            // value={value.id}
                         />
                         <Grid item xs={1}>
                             <IconButton
