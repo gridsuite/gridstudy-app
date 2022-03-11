@@ -380,10 +380,16 @@ export const useAutocompleteField = ({
     errorMsg,
     defaultValue,
 }) => {
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState();
     const [error, setError] = useState('');
     const validationRef = useRef();
     validationRef.current = validation;
+
+    useEffect(() => {
+        if(defaultValue) {
+            setValue(defaultValue);
+        }
+    }, [defaultValue]);
 
     useEffect(() => {
         function validate() {
@@ -604,9 +610,15 @@ export const useExpandableValues = ({
     fieldProps,
     validateItem,
 }) => {
+    console.info('defaultValues', defaultValues)
     const classes = useStyles();
     const [values, setValues] = useState(defaultValues);
     const [errors, setErrors] = useState();
+
+    useEffect(() => {
+        setValues(defaultValues);
+    }, [defaultValues]);
+
     const handleDeleteBusBarSection = useCallback((index) => {
         setValues((oldValues) => {
             let newValues = [...oldValues];
@@ -637,16 +649,25 @@ export const useExpandableValues = ({
     }, [inputForm, values, id, validateItem]);
 
     const field = useMemo(() => {
+        console.info('values', values);
         return (
             <Grid item container>
-                {values.map((value, idx) => (
+                {values.map((value, idx) => {
+                    console.info('value', value);
+                    console.info('id', id);
+                    console.info('idx', idx);
+                    console.info('fieldProps', fieldProps);
+                    console.info('inputForm', inputForm);
+                    return (
                     <Grid key={id + idx} container spacing={2} item>
                         <Field
                             fieldProps={fieldProps}
+                            defaultValue={value}
                             onChange={handleSetValue}
                             index={idx}
                             inputForm={inputForm}
                             errors={errors?.get(idx)}
+                            value={value.id}
                         />
                         <Grid item xs={1}>
                             <IconButton
@@ -658,7 +679,7 @@ export const useExpandableValues = ({
                             </IconButton>
                         </Grid>
                     </Grid>
-                ))}
+                )})}
                 <Grid container spacing={2}>
                     <Grid item xs={3}>
                         <Button

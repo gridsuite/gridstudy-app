@@ -1261,9 +1261,15 @@ export function createVoltageLevel(
     nominalVoltage,
     substationId,
     busBarSections,
-    connections
+    connections,
+    isUpdate,
+    uuid
 ) {
-    console.info('Creating voltage level (stub) ');
+    if (isUpdate) {
+        console.info('Updating voltage level creation');
+    } else {
+        console.info('Creating voltage level (stub)');
+    }
     const createVoltageLevelUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/voltage-levels';
@@ -1277,7 +1283,7 @@ export function createVoltageLevel(
     });
 
     return backendFetch(createVoltageLevelUrl, {
-        method: 'POST',
+        method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -1289,6 +1295,7 @@ export function createVoltageLevel(
             substationId: substationId,
             busbarSections: busBarSections,
             busbarConnections: busBarConnections,
+            uuid,
         }),
     }).then((response) =>
         response.ok

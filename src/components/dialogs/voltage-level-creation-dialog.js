@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -113,6 +113,8 @@ const BusBarConnexion = ({
     fieldProps,
     errors,
 }) => {
+    console.info('defaultValue2222', defaultValue);
+    console.info('fieldProps', fieldProps);
     const [fromBBS, fromBBSField] = useAutocompleteField({
         id: 'sjbFrom' + index,
         label: 'BusBarSection',
@@ -120,7 +122,7 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.fromBBS,
+        defaultValue: defaultValue?.fromBBS || '',
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbFrom,
@@ -133,7 +135,7 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.toBBS,
+        defaultValue: defaultValue?.toBBS || '',
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbTo,
@@ -141,7 +143,7 @@ const BusBarConnexion = ({
     });
     const [switchKind, switchKindField] = useEnumValue({
         label: 'Type',
-        defaultValue: defaultValue?.switchKind || 'BREAKER',
+            defaultValue: defaultValue?.switchKind || 'BREAKER',
         inputForm: inputForm,
         validation: { isFieldRequired: true },
         enumValues: SWITCH_TYPE,
@@ -213,6 +215,7 @@ function validateConnection(values) {
  * @param selectedNodeUuid the currently selected tree node
  */
 const VoltageLevelCreationDialog = ({
+    editData,
     open,
     onClose,
     substationOptions,
@@ -226,17 +229,27 @@ const VoltageLevelCreationDialog = ({
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [voltageLevelId, voltageLevelIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [voltageLevelName, voltageLevelNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [nominalVoltage, nominalVoltageField] = useDoubleValue({
@@ -244,6 +257,7 @@ const VoltageLevelCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.nominalVoltage,
     });
 
     const [substation, substationField] = useAutocompleteField({
@@ -254,6 +268,9 @@ const VoltageLevelCreationDialog = ({
         values: substationOptions,
         allowNewValue: true,
         getLabel: getId,
+        defaultValue: substationOptions.find(
+            (value) => value.id === formValues?.substationId
+        ),
     });
 
     const [busBarSections, busBarSectionsField] = useExpandableValues({
@@ -262,6 +279,7 @@ const VoltageLevelCreationDialog = ({
         validateItem: validateBusBarSection,
         inputForm: inputForm,
         Field: BusBarSection,
+        defaultValues: formValues?.busbarSections,
     });
 
     const [connections, connectionsField] = useExpandableValues({
@@ -271,31 +289,56 @@ const VoltageLevelCreationDialog = ({
         inputForm: inputForm,
         Field: BusBarConnexion,
         fieldProps: busBarSections,
+        defaultValues: formValues?.busbarConnections,
     });
 
     const handleSave = () => {
         // Check if error list contains an error
-        let isValid = inputForm.validate();
-        if (isValid) {
-            createVoltageLevel(
-                studyUuid,
-                selectedNodeUuid,
-                voltageLevelId,
-                voltageLevelName ? voltageLevelName : null,
-                nominalVoltage,
-                substation.id,
-                busBarSections,
-                connections
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'VoltageLevelCreationError',
-                        intlRef: intlRef,
-                    },
+        if (inputForm.validate()) {
+            console.info('substation', substation)
+            if (editData) {
+                createVoltageLevel(
+                    studyUuid,
+                    selectedNodeUuid,
+                    voltageLevelId,
+                    voltageLevelName ? voltageLevelName : null,
+                    nominalVoltage,
+                    substation.id,
+                    busBarSections,
+                    connections,
+                    true,
+                    editData.uuid
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'VoltageLevelCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
+            } else {
+                createVoltageLevel(
+                    studyUuid,
+                    selectedNodeUuid,
+                    voltageLevelId,
+                    voltageLevelName ? voltageLevelName : null,
+                    nominalVoltage,
+                    substation.id,
+                    busBarSections,
+                    connections
+                ).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'VoltageLevelCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
+            }
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
@@ -352,7 +395,7 @@ const VoltageLevelCreationDialog = ({
                     <FormattedMessage id="close" />
                 </Button>
                 <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
+                    <FormattedMessage id={editData ? 'Update' : 'save'} />
                 </Button>
             </DialogActions>
         </Dialog>
@@ -360,6 +403,7 @@ const VoltageLevelCreationDialog = ({
 };
 
 VoltageLevelCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     substationOptions: PropTypes.arrayOf(PropTypes.object),
