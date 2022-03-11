@@ -105,6 +105,13 @@ const SWITCH_TYPE = [
 
 const getId = (e) => e?.id;
 
+const getBusbarSectionById = (busbars, id) => {
+    if (id) {
+        return busbars.find((bbs) => bbs?.id === id);
+    }
+    return null;
+};
+
 const BusBarConnexion = ({
     onChange,
     index,
@@ -113,8 +120,6 @@ const BusBarConnexion = ({
     fieldProps,
     errors,
 }) => {
-    console.info('defaultValue2222', defaultValue);
-    console.info('fieldProps', fieldProps);
     const [fromBBS, fromBBSField] = useAutocompleteField({
         id: 'sjbFrom' + index,
         label: 'BusBarSection',
@@ -122,7 +127,7 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.fromBBS || '',
+        defaultValue: getBusbarSectionById(fieldProps, defaultValue?.fromBBS),
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbFrom,
@@ -135,7 +140,7 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.toBBS || '',
+        defaultValue: getBusbarSectionById(fieldProps, defaultValue?.toBBS),
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbTo,
@@ -143,7 +148,7 @@ const BusBarConnexion = ({
     });
     const [switchKind, switchKindField] = useEnumValue({
         label: 'Type',
-            defaultValue: defaultValue?.switchKind || 'BREAKER',
+        defaultValue: defaultValue?.switchKind || 'BREAKER',
         inputForm: inputForm,
         validation: { isFieldRequired: true },
         enumValues: SWITCH_TYPE,
@@ -295,7 +300,6 @@ const VoltageLevelCreationDialog = ({
     const handleSave = () => {
         // Check if error list contains an error
         if (inputForm.validate()) {
-            console.info('substation', substation)
             if (editData) {
                 createVoltageLevel(
                     studyUuid,

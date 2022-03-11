@@ -386,7 +386,7 @@ export const useAutocompleteField = ({
     validationRef.current = validation;
 
     useEffect(() => {
-        if(defaultValue) {
+        if (defaultValue) {
             setValue(defaultValue);
         }
     }, [defaultValue]);
@@ -610,7 +610,6 @@ export const useExpandableValues = ({
     fieldProps,
     validateItem,
 }) => {
-    console.info('defaultValues', defaultValues)
     const classes = useStyles();
     const [values, setValues] = useState(defaultValues);
     const [errors, setErrors] = useState();
@@ -649,16 +648,9 @@ export const useExpandableValues = ({
     }, [inputForm, values, id, validateItem]);
 
     const field = useMemo(() => {
-        console.info('values', values);
         return (
             <Grid item container>
-                {values.map((value, idx) => {
-                    console.info('value', value);
-                    console.info('id', id);
-                    console.info('idx', idx);
-                    console.info('fieldProps', fieldProps);
-                    console.info('inputForm', inputForm);
-                    return (
+                {values.map((value, idx) => (
                     <Grid key={id + idx} container spacing={2} item>
                         <Field
                             fieldProps={fieldProps}
@@ -679,7 +671,7 @@ export const useExpandableValues = ({
                             </IconButton>
                         </Grid>
                     </Grid>
-                )})}
+                ))}
                 <Grid container spacing={2}>
                     <Grid item xs={3}>
                         <Button
