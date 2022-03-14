@@ -5,13 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export function getIdFirstNodeOfType(elements, nodeType) {
-    if (elements.type === nodeType) {
-        return elements.id;
+export function getFirstNodeOfType(elements, nodeType, buildStatus) {
+    if (
+        elements.type === nodeType &&
+        (buildStatus === undefined || elements.buildStatus === buildStatus)
+    ) {
+        return {
+            id: elements.id,
+            type: elements.type,
+            data: {
+                label: elements.name,
+                description: elements.description,
+                buildStatus: elements.buildStatus,
+            },
+        };
     }
 
     for (const child of elements.children) {
-        const found = getIdFirstNodeOfType(child, nodeType);
+        const found = getFirstNodeOfType(child, nodeType, buildStatus);
         if (found) {
             return found;
         }

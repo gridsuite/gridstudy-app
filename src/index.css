@@ -63,21 +63,104 @@ code {
 
 /* components.css */
 
-.sld-busbar-section {
+.sld-disconnector {
     stroke-width: 3;
+    stroke: black;
+    fill: none;
 }
 .sld-breaker {
     stroke-width: 2;
+    stroke: blue;
     fill: white;
 }
-.sld-disconnector {
-    stroke-width: 3;
-}
 .sld-bus-connection {
+    stroke: var(--sld-vl-color, black);
     stroke-width: 4;
+    fill: none;
+}
+.sld-busbar-section {
+    stroke: var(--sld-vl-color, black);
+    stroke-width: 3;
+    fill: none;
+}
+.sld-wire {
+    stroke: var(--sld-vl-color, #c80000);
+    fill: none;
+}
+.sld-load-break-switch {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-load {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-generator {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-two-wt {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-three-wt {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-winding {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-capacitor {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-inductor {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-pst {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
+}
+.sld-pst-arrow {
+    stroke: black;
+    fill: none;
+}
+.sld-svc {
+    stroke: var(--sld-vl-color, blue);
+    fill: none;
 }
 .sld-vsc {
+    stroke: var(--sld-vl-color, blue);
     font-size: 7.43px;
+    fill: none;
+}
+.sld-node-infos {
+    stroke: none;
+    fill: var(--sld-vl-color, black);
+}
+.sld-label {
+    stroke: none;
+    fill: black;
+    font: 11px 'Verdana';
+}
+.sld-graph-label {
+    stroke: none;
+    fill: black;
+    font: 14px 'Verdana';
+}
+.sld-node {
+    stroke: none;
+    fill: black;
+}
+.sld-flash {
+    stroke: none;
+    fill: black;
+}
+.sld-lock {
+    stroke: none;
+    fill: black;
 }
 .sld-grid {
     stroke: #003700;
@@ -89,19 +172,8 @@ code {
 .sld-arrow-q {
     fill: blue;
 }
-.sld-label {
-    font: 11px 'Verdana';
-}
-.sld-graph-label {
-    font: 14px 'Verdana';
-}
-.sld-flash {
-    stroke: none;
-    fill: black;
-}
-.sld-lock {
-    stroke: none;
-    fill: black;
+.sld-frame {
+    fill: var(--sld-background-color, transparent);
 }
 
 /* tautologies.css */
@@ -121,9 +193,6 @@ code {
 .sld-hidden-node {
     visibility: hidden;
 }
-polyline {
-    fill: none;
-}
 .sld-top-feeder .sld-label {
     dominant-baseline: auto;
 }
@@ -139,221 +208,218 @@ polyline {
 
 /* topologicalBaseVoltages.css */
 
-.sld-constant-color {
-    stroke: lightgrey;
-}
 .sld-disconnected {
-    stroke: #808080;
+    --sld-vl-color: #808080;
 }
 .sld-vl300to500-0 {
-    stroke: #ff0000;
+    --sld-vl-color: #ff0000;
 }
 .sld-vl300to500-1 {
-    stroke: #7f6c00;
+    --sld-vl-color: #7f6c00;
 }
 .sld-vl300to500-2 {
-    stroke: #f6b2ff;
+    --sld-vl-color: #f6b2ff;
 }
 .sld-vl300to500-3 {
-    stroke: #996700;
+    --sld-vl-color: #996700;
 }
 .sld-vl300to500-4 {
-    stroke: #ff85eb;
+    --sld-vl-color: #ff85eb;
 }
 .sld-vl300to500-5 {
-    stroke: #b25b00;
+    --sld-vl-color: #b25b00;
 }
 .sld-vl300to500-6 {
-    stroke: #ff59b5;
+    --sld-vl-color: #ff59b5;
 }
 .sld-vl300to500-7 {
-    stroke: #cc4400;
+    --sld-vl-color: #cc4400;
 }
 .sld-vl300to500-8 {
-    stroke: #ff2c67;
+    --sld-vl-color: #ff2c67;
 }
 .sld-vl300to500-9 {
-    stroke: #e52600;
+    --sld-vl-color: #e52600;
 }
 .sld-vl180to300-0 {
-    stroke: #218b21;
+    --sld-vl-color: #218b21;
 }
 .sld-vl180to300-1 {
-    stroke: #0d4940;
+    --sld-vl-color: #0d4940;
 }
 .sld-vl180to300-2 {
-    stroke: #dfdab9;
+    --sld-vl-color: #dfdab9;
 }
 .sld-vl180to300-3 {
-    stroke: #105640;
+    --sld-vl-color: #105640;
 }
 .sld-vl180to300-4 {
-    stroke: #c2cb92;
+    --sld-vl-color: #c2cb92;
 }
 .sld-vl180to300-5 {
-    stroke: #14643c;
+    --sld-vl-color: #14643c;
 }
 .sld-vl180to300-6 {
-    stroke: #95b66b;
+    --sld-vl-color: #95b66b;
 }
 .sld-vl180to300-7 {
-    stroke: #187036;
+    --sld-vl-color: #187036;
 }
 .sld-vl180to300-8 {
-    stroke: #5fa046;
+    --sld-vl-color: #5fa046;
 }
 .sld-vl180to300-9 {
-    stroke: #1c7e2d;
+    --sld-vl-color: #1c7e2d;
 }
 .sld-vl120to180-0 {
-    stroke: #00afae;
+    --sld-vl-color: #00afae;
 }
 .sld-vl120to180-1 {
-    stroke: #000d58;
+    --sld-vl-color: #000d58;
 }
 .sld-vl120to180-2 {
-    stroke: #b8e7b2;
+    --sld-vl-color: #b8e7b2;
 }
 .sld-vl120to180-3 {
-    stroke: #002169;
+    --sld-vl-color: #002169;
 }
 .sld-vl120to180-4 {
-    stroke: #85d993;
+    --sld-vl-color: #85d993;
 }
 .sld-vl120to180-5 {
-    stroke: #003c7b;
+    --sld-vl-color: #003c7b;
 }
 .sld-vl120to180-6 {
-    stroke: #59cb8b;
+    --sld-vl-color: #59cb8b;
 }
 .sld-vl120to180-7 {
-    stroke: #005c8c;
+    --sld-vl-color: #005c8c;
 }
 .sld-vl120to180-8 {
-    stroke: #2cbd94;
+    --sld-vl-color: #2cbd94;
 }
 .sld-vl120to180-9 {
-    stroke: #00839e;
+    --sld-vl-color: #00839e;
 }
 .sld-vl70to120-0 {
-    stroke: #cc5500;
+    --sld-vl-color: #cc5500;
 }
 .sld-vl70to120-1 {
-    stroke: #4a6600;
+    --sld-vl-color: #4a6600;
 }
 .sld-vl70to120-2 {
-    stroke: #efb2dd;
+    --sld-vl-color: #efb2dd;
 }
 .sld-vl70to120-3 {
-    stroke: #6e7a00;
+    --sld-vl-color: #6e7a00;
 }
 .sld-vl70to120-4 {
-    stroke: #e685ae;
+    --sld-vl-color: #e685ae;
 }
 .sld-vl70to120-5 {
-    stroke: #8e8400;
+    --sld-vl-color: #8e8400;
 }
 .sld-vl70to120-6 {
-    stroke: #dd596b;
+    --sld-vl-color: #dd596b;
 }
 .sld-vl70to120-7 {
-    stroke: #a37b00;
+    --sld-vl-color: #a37b00;
 }
 .sld-vl70to120-8 {
-    stroke: #d4432c;
+    --sld-vl-color: #d4432c;
 }
 .sld-vl70to120-9 {
-    stroke: #b76b00;
+    --sld-vl-color: #b76b00;
 }
 .sld-vl50to70-0 {
-    stroke: #a020ef;
+    --sld-vl-color: #a020ef;
 }
 .sld-vl50to70-1 {
-    stroke: #7f0848;
+    --sld-vl-color: #7f0848;
 }
 .sld-vl50to70-2 {
-    stroke: #b7dbfe;
+    --sld-vl-color: #b7dbfe;
 }
 .sld-vl50to70-3 {
-    stroke: #960c6d;
+    --sld-vl-color: #960c6d;
 }
 .sld-vl50to70-4 {
-    stroke: #8da6fe;
+    --sld-vl-color: #8da6fe;
 }
 .sld-vl50to70-5 {
-    stroke: #ad109a;
+    --sld-vl-color: #ad109a;
 }
 .sld-vl50to70-6 {
-    stroke: #6f66fb;
+    --sld-vl-color: #6f66fb;
 }
 .sld-vl50to70-7 {
-    stroke: #bc14c4;
+    --sld-vl-color: #bc14c4;
 }
 .sld-vl50to70-8 {
-    stroke: #7f42f6;
+    --sld-vl-color: #7f42f6;
 }
 .sld-vl50to70-9 {
-    stroke: #b11ad9;
+    --sld-vl-color: #b11ad9;
 }
 .sld-vl30to50-0 {
-    stroke: #ff8290;
+    --sld-vl-color: #ff8290;
 }
 .sld-vl30to50-1 {
-    stroke: #7f6f41;
+    --sld-vl-color: #7f6f41;
 }
 .sld-vl30to50-2 {
-    stroke: #f6d9ff;
+    --sld-vl-color: #f6d9ff;
 }
 .sld-vl30to50-3 {
-    stroke: #99784e;
+    --sld-vl-color: #99784e;
 }
 .sld-vl30to50-4 {
-    stroke: #ffc3fb;
+    --sld-vl-color: #ffc3fb;
 }
 .sld-vl30to50-5 {
-    stroke: #b27d5b;
+    --sld-vl-color: #b27d5b;
 }
 .sld-vl30to50-6 {
-    stroke: #ffade3;
+    --sld-vl-color: #ffade3;
 }
 .sld-vl30to50-7 {
-    stroke: #cc7e68;
+    --sld-vl-color: #cc7e68;
 }
 .sld-vl30to50-8 {
-    stroke: #ff97bf;
+    --sld-vl-color: #ff97bf;
 }
 .sld-vl30to50-9 {
-    stroke: #e57b75;
+    --sld-vl-color: #e57b75;
 }
 .sld-vl0to30-0 {
-    stroke: #aaae27;
+    --sld-vl-color: #aaae27;
 }
 .sld-vl0to30-1 {
-    stroke: #195b0f;
+    --sld-vl-color: #195b0f;
 }
 .sld-vl0to30-2 {
-    stroke: #eababe;
+    --sld-vl-color: #eababe;
 }
 .sld-vl0to30-3 {
-    stroke: #2d6c13;
+    --sld-vl-color: #2d6c13;
 }
 .sld-vl0to30-4 {
-    stroke: #dda193;
+    --sld-vl-color: #dda193;
 }
 .sld-vl0to30-5 {
-    stroke: #477d17;
+    --sld-vl-color: #477d17;
 }
 .sld-vl0to30-6 {
-    stroke: #ce9a6e;
+    --sld-vl-color: #ce9a6e;
 }
 .sld-vl0to30-7 {
-    stroke: #648d1c;
+    --sld-vl-color: #648d1c;
 }
 .sld-vl0to30-8 {
-    stroke: #bea04a;
+    --sld-vl-color: #bea04a;
 }
 .sld-vl0to30-9 {
-    stroke: #869d22;
+    --sld-vl-color: #869d22;
 }
 
 /* highlightLineStates.css */
@@ -369,26 +435,26 @@ polyline {
     stroke-dasharray: 3, 3;
 }
 
-/* baseVoltageConstantColors.css */
+/* baseVoltages.css */
 
-.sld-constant-color {
-    fill: none;
+.sld-vl300to500 {
+    --sld-vl-color: #ff0000;
 }
-.sld-node.sld-constant-color {
-    stroke: none;
-    fill: black;
+.sld-vl180to300 {
+    --sld-vl-color: #228b22;
 }
-.sld-breaker.sld-constant-color {
-    stroke: blue;
-    fill: white;
+.sld-vl120to180 {
+    --sld-vl-color: #01afaf;
 }
-.sld-disconnector.sld-constant-color {
-    stroke: black;
+.sld-vl70to120 {
+    --sld-vl-color: #cc5500;
 }
-.sld-label {
-    fill: black;
-    stroke: none;
+.sld-vl50to70 {
+    --sld-vl-color: #a020f0;
 }
-.sld-frame {
-    fill: none;
+.sld-vl30to50 {
+    --sld-vl-color: #ff8290;
+}
+.sld-vl0to30 {
+    --sld-vl-color: #abae28;
 }
