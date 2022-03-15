@@ -445,6 +445,82 @@ export function fetchLoadInfos(studyUuid, selectedNodeUuid, loadId) {
     );
 }
 
+export function fetchLineInfos(studyUuid, selectedNodeUuid, lineId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        selectedNodeUuid,
+        'lines',
+        lineId,
+        true
+    );
+}
+
+export function fetchGeneratorInfos(studyUuid, selectedNodeUuid, generatorId) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        selectedNodeUuid,
+        'generators',
+        generatorId,
+        true
+    );
+}
+
+export function fetchTwoWindingsTransformerInfos(
+    studyUuid,
+    selectedNodeUuid,
+    twoWindingsTransformerId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        selectedNodeUuid,
+        '2-windings-transformers',
+        twoWindingsTransformerId,
+        true
+    );
+}
+
+export function fetchShuntCompensatorInfos(
+    studyUuid,
+    selectedNodeUuid,
+    shuntCompensatorId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        selectedNodeUuid,
+        'shunt-compensators',
+        shuntCompensatorId,
+        true
+    );
+}
+
+export function fetchSubstationInfos(
+    studyUuid,
+    selectedNodeUuid,
+    substationId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        selectedNodeUuid,
+        'substations',
+        substationId,
+        true
+    );
+}
+
+export function fetchVoltageLevelInfos(
+    studyUuid,
+    selectedNodeUuid,
+    voltageLevelId
+) {
+    return fetchEquipmentInfos(
+        studyUuid,
+        selectedNodeUuid,
+        'voltage-levels',
+        voltageLevelId,
+        true
+    );
+}
+
 export function fetchAllEquipments(
     studyUuid,
     selectedNodeUuid,

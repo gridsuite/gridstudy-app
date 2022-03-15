@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useEffect, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -14,7 +14,10 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { createVoltageLevel } from '../../utils/rest-api';
+import {
+    createVoltageLevel,
+    fetchVoltageLevelInfos,
+} from '../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
@@ -22,6 +25,7 @@ import {
 import { useSnackbar } from 'notistack';
 import {
     useAutocompleteField,
+    useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
     useExpandableValues,
@@ -30,6 +34,7 @@ import {
     useTextValue,
 } from './input-hooks';
 import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
 
 const numericalWithButton = {
     type: 'number',
@@ -220,23 +225,43 @@ const VoltageLevelCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
+    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+
+    const handleCloseSearchDialog = () => {
+        setDialogSearchOpen(false);
+    };
+
+    const handleOpenSearchDialog = () => {
+        setDialogSearchOpen(true);
+    };
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: handleOpenSearchDialog,
+    });
+
     const [voltageLevelId, voltageLevelIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [voltageLevelName, voltageLevelNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [nominalVoltage, nominalVoltageField] = useDoubleValue({
@@ -244,6 +269,7 @@ const VoltageLevelCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.nominalVoltage,
     });
 
     const [substation, substationField] = useAutocompleteField({
@@ -254,6 +280,12 @@ const VoltageLevelCreationDialog = ({
         values: substationOptions,
         allowNewValue: true,
         getLabel: getId,
+        defaultValue: null,
+        selectedValue: formValues
+            ? substationOptions.find(
+                  (value) => value.id === formValues.substationId
+              )
+            : null,
     });
 
     const [busBarSections, busBarSectionsField] = useExpandableValues({
@@ -262,6 +294,7 @@ const VoltageLevelCreationDialog = ({
         validateItem: validateBusBarSection,
         inputForm: inputForm,
         Field: BusBarSection,
+        defaultValues: formValues?.busbarSections,
     });
 
     const [connections, connectionsField] = useExpandableValues({
@@ -271,6 +304,7 @@ const VoltageLevelCreationDialog = ({
         inputForm: inputForm,
         Field: BusBarConnexion,
         fieldProps: busBarSections,
+        defaultValues: formValues?.busbarConnections,
     });
 
     const handleSave = () => {
@@ -301,6 +335,65 @@ const VoltageLevelCreationDialog = ({
         }
     };
 
+    const handleSelectionChange = (element) => {
+        let msg;
+        fetchVoltageLevelInfos(studyUuid, selectedNodeUuid, element.id).then(
+            (response) => {
+                if (response.status === 200) {
+                    response.json().then((voltageLevel) => {
+                        setFormValues(null);
+                        const vlFormValues = {
+                            equipmentId: voltageLevel.id + '(1)',
+                            equipmentName: voltageLevel.name,
+                            nominalVoltage: voltageLevel.nominalVoltage,
+                            substationId: voltageLevel.substationId,
+                            busbarSections: voltageLevel.busbarSections,
+                        };
+                        setFormValues(vlFormValues);
+
+                        msg = intl.formatMessage(
+                            { id: 'VoltageLevelCopied' },
+                            {
+                                voltageLevelId: element.id,
+                            }
+                        );
+                        enqueueSnackbar(msg, {
+                            variant: 'info',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        });
+                    });
+                } else {
+                    console.error(
+                        'error while fetching substation {voltageLevelId} : status = {status}',
+                        element.id,
+                        response.status
+                    );
+                    if (response.status === 404) {
+                        msg = intl.formatMessage(
+                            { id: 'VoltageLevelCopyFailed404' },
+                            {
+                                voltageLevelId: element.id,
+                            }
+                        );
+                    } else {
+                        msg = intl.formatMessage(
+                            { id: 'VoltageLevelCopyFailed' },
+                            {
+                                voltageLevelId: element.id,
+                            }
+                        );
+                    }
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: msg,
+                        enqueueSnackbar,
+                    });
+                }
+            }
+        );
+        handleCloseSearchDialog();
+    };
+
     const clearValues = () => {
         inputForm.clear();
     };
@@ -317,45 +410,55 @@ const VoltageLevelCreationDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="md" // 3 columns
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-voltage-level"
-        >
-            <DialogTitle>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid item xs={11}>
-                        <FormattedMessage id={'CreateVoltageLevel'} />
+        <>
+            <Dialog
+                fullWidth
+                maxWidth="md" // 3 columns
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-voltage-level"
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateVoltageLevel" />
+                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
-                </Grid>
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(voltageLevelIdField, 3)}
-                    {gridItem(voltageLevelNameField, 3)}
-                    {gridItem(nominalVoltageField, 3)}
-                    {gridItem(substationField, 3)}
-                </Grid>
-                <Grid container>
-                    <GridSection title={'BusBarSections'} />
-                    {busBarSectionsField}
-                </Grid>
-                <Grid container>
-                    <GridSection title={'Connectivity'} />
-                    {connectionsField}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(voltageLevelIdField, 3)}
+                        {gridItem(voltageLevelNameField, 3)}
+                        {gridItem(nominalVoltageField, 3)}
+                        {gridItem(substationField, 3)}
+                    </Grid>
+                    <Grid container>
+                        <GridSection title={'BusBarSections'} />
+                        {busBarSectionsField}
+                    </Grid>
+                    <Grid container>
+                        <GridSection title={'Connectivity'} />
+                        {connectionsField}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id="save" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={isDialogSearchOpen}
+                onClose={handleCloseSearchDialog}
+                equipmentType={'VOLTAGE_LEVEL'}
+                onSelectionChange={handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 

@@ -359,6 +359,26 @@
     "LoadCopyFailed404": "Erreur lors de la copie de la consommation : la consommation n'a pas été trouvée",
     "LoadCopyFailed": "Erreur lors de la copie de la consommation",
 
+    "LineCopied": "Données copiées depuis la ligne {lineId}",
+    "LineCopyFailed404": "Erreur lors de la copie de la ligne : la ligne n'a pas été trouvée",
+    "LineCopyFailed": "Erreur lors de la copie de la ligne",
+
+    "GeneratorCopied": "Données copiées depuis le générateur {generatorId}",
+    "GeneratorCopyFailed404": "Erreur lors de la copie du générateur : le générateur n'a pas été trouvé",
+    "GeneratorCopyFailed": "Erreur lors de la copie du générateur",
+
+    "TwoWindingsTransformerCopied": "Données copiées depuis le transformateur à 2 enroulements {twoWindingsTransformerId}",
+    "TwoWindingsTransformerCopyFailed404": "Erreur lors de la copie du transformateur à 2 enroulements : le transformateur à 2 enroulements n'a pas été trouvé",
+    "TwoWindingsTransformerCopyFailed": "Erreur lors de la copie du transformateur à 2 enroulements",
+
+    "ShuntCompensatorCopied": "Données copiées depuis la compensation statique {shuntCompensatorId}",
+    "ShuntCompensatorCopyFailed404": "Erreur lors de la copie de la compensation statique : la compensation statique n'a pas été trouvée",
+    "ShuntCompensatorCopyFailed": "Erreur lors de la copie de la compensation statique",
+
+    "VoltageLevelCopied": "Données copiées depuis le poste {voltageLevelId}",
+    "VoltageLevelCopyFailed404": "Erreur lors de la copie du poste : le poste n'a pas été trouvé",
+    "VoltageLevelCopyFailed": "Erreur lors de la copie du poste",
+
     "insertNetworkModificationNodeBefore": "Insérer un nœud de modifications de réseau au dessus",
     "insertModelNodeBefore": "Insérer un nœud modèle au dessus",
     "insertNetworkModificationNodeAfter": "Insérer un nœud de modifications de réseau en dessous",

@@ -373,8 +373,10 @@ export const useAutocompleteField = ({
     getLabel = func_identity,
     allowNewValue = false,
     errorMsg,
+    selectedValue,
+    defaultValue,
 }) => {
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState('');
     const validationRef = useRef();
     validationRef.current = validation;
@@ -392,6 +394,12 @@ export const useAutocompleteField = ({
         setValue(value);
     }, []);
 
+    useEffect(() => {
+        if (selectedValue !== null) {
+            setValue(selectedValue);
+        }
+    }, [selectedValue]);
+
     const field = useMemo(() => {
         return (
             <Autocomplete
@@ -402,6 +410,8 @@ export const useAutocompleteField = ({
                 size={'small'}
                 options={values}
                 getOptionLabel={getLabel}
+                defaultValue={value}
+                value={value}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
@@ -475,6 +485,8 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
 
 export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const [code, setCode] = useState(props.defaultCodeValue);
+
     const countriesList = useMemo(() => {
         try {
             return require('localized-countries')(
@@ -489,6 +501,27 @@ export const useCountryValue = (props) => {
         }
     }, [languageLocal]);
 
+    useEffect(() => {
+        //We only need to search for the code if we only have the label
+        if (
+            props.defaultLabelValue !== null &&
+            props.defaultCodeValue === null
+        ) {
+            let res = countriesList
+                .array()
+                .filter(
+                    (obj) =>
+                        obj.label.toLowerCase() ===
+                        props.defaultLabelValue.toLowerCase()
+                )[0];
+            setCode(res.code);
+        } else if (props.defaultCodeValue !== null) {
+            setCode(props.defaultCodeValue);
+        } else {
+            setCode(null);
+        }
+    }, [countriesList, props.defaultLabelValue, props.defaultCodeValue]);
+
     const values = useMemo(
         () => (countriesList ? Object.keys(countriesList.object()) : []),
         [countriesList]
@@ -501,6 +534,8 @@ export const useCountryValue = (props) => {
     return useAutocompleteField({
         values,
         getLabel: getOptionLabel,
+        selectedValue: code,
+        defaultValue: code,
         ...props,
     });
 };
@@ -597,8 +632,15 @@ export const useExpandableValues = ({
     validateItem,
 }) => {
     const classes = useStyles();
-    const [values, setValues] = useState(defaultValues);
+    const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
+
+    useEffect(() => {
+        if (defaultValues.length) {
+            setValues(defaultValues);
+        }
+    }, [defaultValues]);
+
     const handleDeleteBusBarSection = useCallback((index) => {
         setValues((oldValues) => {
             let newValues = [...oldValues];
@@ -635,6 +677,7 @@ export const useExpandableValues = ({
                     <Grid key={id + idx} container spacing={2} item>
                         <Field
                             fieldProps={fieldProps}
+                            defaultValue={value}
                             onChange={handleSetValue}
                             index={idx}
                             inputForm={inputForm}

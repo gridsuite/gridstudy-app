@@ -359,6 +359,30 @@
     "LoadCopyFailed404": "Load copy failed: the load was not found",
     "LoadCopyFailed": "Load copy failed",
 
+    "LineCopied": "Data successfully copied from line {lineId}",
+    "LineCopyFailed404": "Line copy failed: the line was not found",
+    "LineCopyFailed": "Line copy failed",
+
+    "GeneratorCopied": "Data successfully copied from generator {generatorId}",
+    "GeneratorCopyFailed404": "Generator copy failed: the generator was not found",
+    "GeneratorCopyFailed": "Generator copy failed",
+
+    "TwoWindingsTransformerCopied": "Data successfully copied from 2 windings transformer {twoWindingsTransformerId}",
+    "TwoWindingsTransformerCopyFailed404": "2 windings transformer copy failed: the 2 windings transformer was not found",
+    "TwoWindingsTransformerCopyFailed": "2 windings transformer copy failed",
+
+    "ShuntCompensatorCopied": "Data successfully copied from shunt compensator {shuntCompensatorId}",
+    "ShuntCompensatorCopyFailed404": "Shunt compensator copy failed: the shunt compensator was not found",
+    "ShuntCompensatorCopyFailed": "Shunt compensator copy failed",
+
+    "SubstationCopied": "Data successfully copied from substation {substationId}",
+    "SubstationCopyFailed404": "Substation copy failed: the substation was not found",
+    "SubstationCopyFailed": "Substation copy failed",
+
+    "VoltageLevelCopied": "Data successfully copied from voltage level {voltageLevelId}",
+    "VoltageLevelCopyFailed404": "Voltage level copy failed: the voltage level was not found",
+    "VoltageLevelCopyFailed": "Voltage level copy failed",
+
     "insertNetworkModificationNodeBefore": "Insert a network modification node before",
     "insertModelNodeBefore": "Insert a model node before",
     "insertNetworkModificationNodeAfter": "Insert a network modification node after",

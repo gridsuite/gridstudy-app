@@ -12,16 +12,22 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createSubstation } from '../../utils/rest-api';
-import { useCountryValue, useInputForm, useTextValue } from './input-hooks';
+import { createSubstation, fetchSubstationInfos } from '../../utils/rest-api';
+import {
+    useButtonWithTooltip,
+    useCountryValue,
+    useInputForm,
+    useTextValue,
+} from './input-hooks';
 import { filledTextField, gridItem } from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
 
 /**
  * Dialog to create a substation in the network
@@ -39,17 +45,36 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+
+    const handleCloseSearchDialog = () => {
+        setDialogSearchOpen(false);
+    };
+
+    const handleOpenSearchDialog = () => {
+        setDialogSearchOpen(true);
+    };
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: handleOpenSearchDialog,
+    });
+
     const [substationId, substationIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [substationName, substationNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [substationCountry, substationCountryField] = useCountryValue({
@@ -57,6 +82,10 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         inputForm: inputForm,
         formProps: filledTextField,
         validation: { isFieldRequired: false },
+        defaultCodeValue: formValues ? formValues.substationCountry : null,
+        defaultLabelValue: formValues
+            ? formValues.substationCountryLabel
+            : null,
     });
 
     const handleSave = () => {
@@ -82,6 +111,64 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         }
     };
 
+    const handleSelectionChange = (element) => {
+        let msg;
+        fetchSubstationInfos(studyUuid, selectedNodeUuid, element.id).then(
+            (response) => {
+                if (response.status === 200) {
+                    response.json().then((substation) => {
+                        setFormValues(null);
+                        const substationFormValues = {
+                            equipmentId: substation.id + '(1)',
+                            equipmentName: substation.name,
+                            substationCountryLabel: substation.countryName,
+                            substationCountry: null,
+                        };
+                        setFormValues(substationFormValues);
+
+                        msg = intl.formatMessage(
+                            { id: 'SubstationCopied' },
+                            {
+                                substationId: element.id,
+                            }
+                        );
+                        enqueueSnackbar(msg, {
+                            variant: 'info',
+                            persist: false,
+                            style: { whiteSpace: 'pre-line' },
+                        });
+                    });
+                } else {
+                    console.error(
+                        'error while fetching substation {substationId} : status = {status}',
+                        element.id,
+                        response.status
+                    );
+                    if (response.status === 404) {
+                        msg = intl.formatMessage(
+                            { id: 'SubstationCopyFailed404' },
+                            {
+                                substationId: element.id,
+                            }
+                        );
+                    } else {
+                        msg = intl.formatMessage(
+                            { id: 'SubstationCopyFailed' },
+                            {
+                                substationId: element.id,
+                            }
+                        );
+                    }
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: msg,
+                        enqueueSnackbar,
+                    });
+                }
+            }
+        );
+        handleCloseSearchDialog();
+    };
+
     const clearValues = useCallback(() => {
         inputForm.clear();
     }, [inputForm]);
@@ -102,31 +189,45 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-substation"
-            fullWidth={true}
-        >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'CreateSubstation' })}
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(substationIdField, 4)}
-                    {gridItem(substationNameField, 4)}
-                    {gridItem(substationCountryField, 4)}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-substation"
+                fullWidth={true}
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateSubstation" />
+                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
+                    </Grid>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(substationIdField, 4)}
+                        {gridItem(substationNameField, 4)}
+                        {gridItem(substationCountryField, 4)}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id="save" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={isDialogSearchOpen}
+                onClose={handleCloseSearchDialog}
+                equipmentType={'SUBSTATION'}
+                onSelectionChange={handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 
