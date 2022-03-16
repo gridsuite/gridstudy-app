@@ -661,7 +661,6 @@ export const useExpandableValues = ({
                             index={idx}
                             inputForm={inputForm}
                             errors={errors?.get(idx)}
-                            // value={value.id}
                         />
                         <Grid item xs={1}>
                             <IconButton
