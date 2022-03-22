@@ -435,78 +435,6 @@ export function fetchEquipmentsInfos(
     );
 }
 
-export function fetchLoadInfos(studyUuid, selectedNodeUuid, loadId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        'loads',
-        loadId,
-        true
-    );
-}
-
-export function fetchLineInfos(studyUuid, selectedNodeUuid, lineId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        'lines',
-        lineId,
-        true
-    );
-}
-
-export function fetchGeneratorInfos(studyUuid, selectedNodeUuid, generatorId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        'generators',
-        generatorId,
-        true
-    );
-}
-
-export function fetchTwoWindingsTransformerInfos(
-    studyUuid,
-    selectedNodeUuid,
-    twoWindingsTransformerId
-) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        '2-windings-transformers',
-        twoWindingsTransformerId,
-        true
-    );
-}
-
-export function fetchShuntCompensatorInfos(
-    studyUuid,
-    selectedNodeUuid,
-    shuntCompensatorId
-) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        'shunt-compensators',
-        shuntCompensatorId,
-        true
-    );
-}
-
-export function fetchSubstationInfos(
-    studyUuid,
-    selectedNodeUuid,
-    substationId
-) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        'substations',
-        substationId,
-        true
-    );
-}
-
 export function fetchVoltageLevelInfos(
     studyUuid,
     selectedNodeUuid,
@@ -554,7 +482,7 @@ function fetchEquipments(
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
-function fetchEquipmentInfos(
+export function fetchEquipmentInfos(
     studyUuid,
     selectedNodeUuid,
     equipmentPath,

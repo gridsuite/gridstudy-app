@@ -20,7 +20,7 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createLine, fetchLineInfos } from '../../utils/rest-api';
+import { createLine, fetchEquipmentInfos } from '../../utils/rest-api';
 import {
     useDoubleValue,
     useInputForm,
@@ -278,74 +278,78 @@ const LineCreationDialog = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchLineInfos(studyUuid, selectedNodeUuid, element.id).then(
-            (response) => {
-                if (response.status === 200) {
-                    response.json().then((line) => {
-                        setFormValues(null);
-                        const lineFormValues = {
-                            equipmentId: line.id + '(1)',
-                            equipmentName: line.name,
-                            seriesResistance: line.r,
-                            seriesReactance: line.x,
-                            shuntConductance1: line.g1,
-                            shuntSusceptance1: line.b1,
-                            shuntConductance2: line.g2,
-                            shuntSusceptance2: line.b2,
-                            voltageLevelId1: line.voltageLevelId1,
-                            busOrBusbarSectionId1: null,
-                            voltageLevelId2: line.voltageLevelId2,
-                            busOrBusbarSectionId2: null,
-                            currentLimits1: {
-                                permanentLimit: line.permanentLimit1,
-                            },
-                            currentLimits2: {
-                                permanentLimit: line.permanentLimit2,
-                            },
-                        };
-                        setFormValues(lineFormValues);
+        return fetchEquipmentInfos(
+            studyUuid,
+            selectedNodeUuid,
+            'lines',
+            element.id,
+            true
+        ).then((response) => {
+            if (response.status === 200) {
+                response.json().then((line) => {
+                    setFormValues(null);
+                    const lineFormValues = {
+                        equipmentId: line.id + '(1)',
+                        equipmentName: line.name,
+                        seriesResistance: line.r,
+                        seriesReactance: line.x,
+                        shuntConductance1: line.g1,
+                        shuntSusceptance1: line.b1,
+                        shuntConductance2: line.g2,
+                        shuntSusceptance2: line.b2,
+                        voltageLevelId1: line.voltageLevelId1,
+                        busOrBusbarSectionId1: null,
+                        voltageLevelId2: line.voltageLevelId2,
+                        busOrBusbarSectionId2: null,
+                        currentLimits1: {
+                            permanentLimit: line.permanentLimit1,
+                        },
+                        currentLimits2: {
+                            permanentLimit: line.permanentLimit2,
+                        },
+                    };
+                    setFormValues(lineFormValues);
 
-                        msg = intl.formatMessage(
-                            { id: 'LineCopied' },
-                            {
-                                lineId: element.id,
-                            }
-                        );
-                        enqueueSnackbar(msg, {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        });
-                    });
-                } else {
-                    console.error(
-                        'error while fetching load {loadId} : status = {status}',
-                        element.id,
-                        response.status
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopied' },
+                        {
+                            equipmentId: element.id,
+                        }
                     );
-                    if (response.status === 404) {
-                        msg = intl.formatMessage(
-                            { id: 'LineCopyFailed404' },
-                            {
-                                lineId: element.id,
-                            }
-                        );
-                    } else {
-                        msg = intl.formatMessage(
-                            { id: 'LineCopyFailed' },
-                            {
-                                lineId: element.id,
-                            }
-                        );
-                    }
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: msg,
-                        enqueueSnackbar,
+                    enqueueSnackbar(msg, {
+                        variant: 'info',
+                        persist: false,
+                        style: { whiteSpace: 'pre-line' },
                     });
+                });
+            } else {
+                console.error(
+                    'error while fetching load {loadId} : status = {status}',
+                    element.id,
+                    response.status
+                );
+                if (response.status === 404) {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed404' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
+                } else {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
                 }
+                displayErrorMessageWithSnackbar({
+                    errorMessage: msg,
+                    enqueueSnackbar,
+                });
             }
-        );
-        handleCloseSearchDialog();
+            handleCloseSearchDialog();
+        });
     };
 
     return (

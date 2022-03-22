@@ -19,7 +19,7 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createSubstation, fetchSubstationInfos } from '../../utils/rest-api';
+import { createSubstation, fetchEquipmentInfos } from '../../utils/rest-api';
 import {
     useButtonWithTooltip,
     useCountryValue,
@@ -113,60 +113,64 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchSubstationInfos(studyUuid, selectedNodeUuid, element.id).then(
-            (response) => {
-                if (response.status === 200) {
-                    response.json().then((substation) => {
-                        setFormValues(null);
-                        const substationFormValues = {
-                            equipmentId: substation.id + '(1)',
-                            equipmentName: substation.name,
-                            substationCountryLabel: substation.countryName,
-                            substationCountry: null,
-                        };
-                        setFormValues(substationFormValues);
+        return fetchEquipmentInfos(
+            studyUuid,
+            selectedNodeUuid,
+            'substations',
+            element.id,
+            true
+        ).then((response) => {
+            if (response.status === 200) {
+                response.json().then((substation) => {
+                    setFormValues(null);
+                    const substationFormValues = {
+                        equipmentId: substation.id + '(1)',
+                        equipmentName: substation.name,
+                        substationCountryLabel: substation.countryName,
+                        substationCountry: null,
+                    };
+                    setFormValues(substationFormValues);
 
-                        msg = intl.formatMessage(
-                            { id: 'SubstationCopied' },
-                            {
-                                substationId: element.id,
-                            }
-                        );
-                        enqueueSnackbar(msg, {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        });
-                    });
-                } else {
-                    console.error(
-                        'error while fetching substation {substationId} : status = {status}',
-                        element.id,
-                        response.status
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopied' },
+                        {
+                            equipmentId: element.id,
+                        }
                     );
-                    if (response.status === 404) {
-                        msg = intl.formatMessage(
-                            { id: 'SubstationCopyFailed404' },
-                            {
-                                substationId: element.id,
-                            }
-                        );
-                    } else {
-                        msg = intl.formatMessage(
-                            { id: 'SubstationCopyFailed' },
-                            {
-                                substationId: element.id,
-                            }
-                        );
-                    }
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: msg,
-                        enqueueSnackbar,
+                    enqueueSnackbar(msg, {
+                        variant: 'info',
+                        persist: false,
+                        style: { whiteSpace: 'pre-line' },
                     });
+                });
+            } else {
+                console.error(
+                    'error while fetching substation {substationId} : status = {status}',
+                    element.id,
+                    response.status
+                );
+                if (response.status === 404) {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed404' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
+                } else {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
                 }
+                displayErrorMessageWithSnackbar({
+                    errorMessage: msg,
+                    enqueueSnackbar,
+                });
             }
-        );
-        handleCloseSearchDialog();
+            handleCloseSearchDialog();
+        });
     };
 
     const clearValues = useCallback(() => {

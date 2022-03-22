@@ -14,7 +14,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { createGenerator, fetchGeneratorInfos } from '../../utils/rest-api';
+import { createGenerator, fetchEquipmentInfos } from '../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
@@ -253,68 +253,72 @@ const GeneratorCreationDialog = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchGeneratorInfos(studyUuid, selectedNodeUuid, element.id).then(
-            (response) => {
-                if (response.status === 200) {
-                    response.json().then((generator) => {
-                        setFormValues(null);
-                        const generatorFormValues = {
-                            equipmentId: generator.id + '(1)',
-                            equipmentName: generator.name,
-                            energySource: generator.energySource,
-                            maxActivePower: generator.maxP,
-                            minActivePower: generator.minP,
-                            ratedNominalPower: generator.ratedS,
-                            activePowerSetpoint: generator.targetV,
-                            voltageRegulatorOn: generator.voltageRegulatorOn,
-                            voltageSetpoint: generator.targetP,
-                            reactivePowerSetpoint: generator.targetQ,
-                            voltageLevelId: generator.voltageLevelId,
-                            busOrBusbarSectionId: null,
-                        };
-                        setFormValues(generatorFormValues);
+        return fetchEquipmentInfos(
+            studyUuid,
+            selectedNodeUuid,
+            'generators',
+            element.id,
+            true
+        ).then((response) => {
+            if (response.status === 200) {
+                response.json().then((generator) => {
+                    setFormValues(null);
+                    const generatorFormValues = {
+                        equipmentId: generator.id + '(1)',
+                        equipmentName: generator.name,
+                        energySource: generator.energySource,
+                        maxActivePower: generator.maxP,
+                        minActivePower: generator.minP,
+                        ratedNominalPower: generator.ratedS,
+                        activePowerSetpoint: generator.targetP,
+                        voltageRegulatorOn: generator.voltageRegulatorOn,
+                        voltageSetpoint: generator.targetV,
+                        reactivePowerSetpoint: generator.targetQ,
+                        voltageLevelId: generator.voltageLevelId,
+                        busOrBusbarSectionId: null,
+                    };
+                    setFormValues(generatorFormValues);
 
-                        msg = intl.formatMessage(
-                            { id: 'GeneratorCopied' },
-                            {
-                                generatorId: element.id,
-                            }
-                        );
-                        enqueueSnackbar(msg, {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        });
-                    });
-                } else {
-                    console.error(
-                        'error while fetching generator {generatorId} : status = {status}',
-                        element.id,
-                        response.status
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopied' },
+                        {
+                            equipmentId: element.id,
+                        }
                     );
-                    if (response.status === 404) {
-                        msg = intl.formatMessage(
-                            { id: 'GeneratorCopyFailed404' },
-                            {
-                                generatorId: element.id,
-                            }
-                        );
-                    } else {
-                        msg = intl.formatMessage(
-                            { id: 'GeneratorCopyFailed' },
-                            {
-                                generatorId: element.id,
-                            }
-                        );
-                    }
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: msg,
-                        enqueueSnackbar,
+                    enqueueSnackbar(msg, {
+                        variant: 'info',
+                        persist: false,
+                        style: { whiteSpace: 'pre-line' },
                     });
+                });
+            } else {
+                console.error(
+                    'error while fetching generator {generatorId} : status = {status}',
+                    element.id,
+                    response.status
+                );
+                if (response.status === 404) {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed404' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
+                } else {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
                 }
+                displayErrorMessageWithSnackbar({
+                    errorMessage: msg,
+                    enqueueSnackbar,
+                });
             }
-        );
-        handleCloseSearchDialog();
+            handleCloseSearchDialog();
+        });
     };
 
     const clearValues = useCallback(() => {

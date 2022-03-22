@@ -30,7 +30,7 @@ import {
 } from './input-hooks';
 import {
     createShuntCompensator,
-    fetchShuntCompensatorInfos,
+    fetchEquipmentInfos,
 } from '../../utils/rest-api';
 import {
     filledTextField,
@@ -182,10 +182,12 @@ const ShuntCompensatorCreationDialog = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchShuntCompensatorInfos(
+        return fetchEquipmentInfos(
             studyUuid,
             selectedNodeUuid,
-            element.id
+            'shunt-compensators',
+            element.id,
+            true
         ).then((response) => {
             if (response.status === 200) {
                 response.json().then((shuntCompensator) => {
@@ -203,9 +205,9 @@ const ShuntCompensatorCreationDialog = ({
                     setFormValues(shuntCompensatorFormValues);
 
                     msg = intl.formatMessage(
-                        { id: 'ShuntCompensatorCopied' },
+                        { id: 'EquipmentCopied' },
                         {
-                            shuntCompensatorId: element.id,
+                            equipmentId: element.id,
                         }
                     );
                     enqueueSnackbar(msg, {
@@ -222,16 +224,16 @@ const ShuntCompensatorCreationDialog = ({
                 );
                 if (response.status === 404) {
                     msg = intl.formatMessage(
-                        { id: 'ShuntCompensatorCopyFailed404' },
+                        { id: 'EquipmentCopyFailed404' },
                         {
-                            shuntCompensatorId: element.id,
+                            equipmentId: element.id,
                         }
                     );
                 } else {
                     msg = intl.formatMessage(
-                        { id: 'ShuntCompensatorCopyFailed' },
+                        { id: 'EquipmentCopyFailed' },
                         {
-                            shuntCompensatorId: element.id,
+                            equipmentId: element.id,
                         }
                     );
                 }
@@ -240,8 +242,8 @@ const ShuntCompensatorCreationDialog = ({
                     enqueueSnackbar,
                 });
             }
+            handleCloseSearchDialog();
         });
-        handleCloseSearchDialog();
     };
 
     const clearValues = useCallback(() => {

@@ -35,7 +35,7 @@ import {
     ReactivePowerAdornment,
 } from './dialogUtils';
 
-import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
+import { createLoad, fetchEquipmentInfos } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
 
 const LOAD_TYPES = [
@@ -190,56 +190,60 @@ const LoadCreationDialog = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchLoadInfos(studyUuid, selectedNodeUuid, element.id).then(
-            (response) => {
-                if (response.status === 200) {
-                    response.json().then((load) => {
-                        setFormValues(null);
-                        load.id = load.id + '(1)';
-                        load.busOrBusbarSectionId = null;
-                        setFormValues(load);
+        return fetchEquipmentInfos(
+            studyUuid,
+            selectedNodeUuid,
+            'loads',
+            element.id,
+            true
+        ).then((response) => {
+            if (response.status === 200) {
+                response.json().then((load) => {
+                    setFormValues(null);
+                    load.id = load.id + '(1)';
+                    load.busOrBusbarSectionId = null;
+                    setFormValues(load);
 
-                        msg = intl.formatMessage(
-                            { id: 'LoadCopied' },
-                            {
-                                loadId: element.id,
-                            }
-                        );
-                        enqueueSnackbar(msg, {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        });
-                    });
-                } else {
-                    console.error(
-                        'error while fetching load {loadId} : status = {status}',
-                        element.id,
-                        response.status
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopied' },
+                        {
+                            equipmentId: element.id,
+                        }
                     );
-                    if (response.status === 404) {
-                        msg = intl.formatMessage(
-                            { id: 'LoadCopyFailed404' },
-                            {
-                                loadId: element.id,
-                            }
-                        );
-                    } else {
-                        msg = intl.formatMessage(
-                            { id: 'LoadCopyFailed' },
-                            {
-                                loadId: element.id,
-                            }
-                        );
-                    }
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: msg,
-                        enqueueSnackbar,
+                    enqueueSnackbar(msg, {
+                        variant: 'info',
+                        persist: false,
+                        style: { whiteSpace: 'pre-line' },
                     });
+                });
+            } else {
+                console.error(
+                    'error while fetching load {loadId} : status = {status}',
+                    element.id,
+                    response.status
+                );
+                if (response.status === 404) {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed404' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
+                } else {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
                 }
+                displayErrorMessageWithSnackbar({
+                    errorMessage: msg,
+                    enqueueSnackbar,
+                });
             }
-        );
-        handleCloseSearchDialog();
+            handleCloseSearchDialog();
+        });
     };
 
     return (

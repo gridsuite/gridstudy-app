@@ -22,7 +22,7 @@ import {
 } from '../../utils/messages';
 import {
     createTwoWindingsTransformer,
-    fetchTwoWindingsTransformerInfos,
+    fetchEquipmentInfos,
 } from '../../utils/rest-api';
 import {
     useButtonWithTooltip,
@@ -219,10 +219,12 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchTwoWindingsTransformerInfos(
+        return fetchEquipmentInfos(
             studyUuid,
             selectedNodeUuid,
-            element.id
+            '2-windings-transformers',
+            element.id,
+            true
         ).then((response) => {
             if (response.status === 200) {
                 response.json().then((twt) => {
@@ -244,9 +246,9 @@ const TwoWindingsTransformerCreationDialog = ({
                     setFormValues(twtFormValues);
 
                     msg = intl.formatMessage(
-                        { id: 'TwoWindingsTransformerCopied' },
+                        { id: 'EquipmentCopied' },
                         {
-                            twoWindingsTransformerId: element.id,
+                            equipmentId: element.id,
                         }
                     );
                     enqueueSnackbar(msg, {
@@ -263,16 +265,16 @@ const TwoWindingsTransformerCreationDialog = ({
                 );
                 if (response.status === 404) {
                     msg = intl.formatMessage(
-                        { id: 'TwoWindingsTransformerCopyFailed404' },
+                        { id: 'EquipmentCopyFailed404' },
                         {
-                            twoWindingsTransformerId: element.id,
+                            equipmentId: element.id,
                         }
                     );
                 } else {
                     msg = intl.formatMessage(
-                        { id: 'TwoWindingsTransformerCopyFailed' },
+                        { id: 'EquipmentCopyFailed' },
                         {
-                            twoWindingsTransformerId: element.id,
+                            equipmentId: element.id,
                         }
                     );
                 }
@@ -281,8 +283,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     enqueueSnackbar,
                 });
             }
+            handleCloseSearchDialog();
         });
-        handleCloseSearchDialog();
     };
 
     const clearValues = useCallback(() => {

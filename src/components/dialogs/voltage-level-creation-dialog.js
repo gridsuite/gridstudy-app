@@ -14,10 +14,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import {
-    createVoltageLevel,
-    fetchVoltageLevelInfos,
-} from '../../utils/rest-api';
+import { createVoltageLevel, fetchEquipmentInfos } from '../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
@@ -337,61 +334,65 @@ const VoltageLevelCreationDialog = ({
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchVoltageLevelInfos(studyUuid, selectedNodeUuid, element.id).then(
-            (response) => {
-                if (response.status === 200) {
-                    response.json().then((voltageLevel) => {
-                        setFormValues(null);
-                        const vlFormValues = {
-                            equipmentId: voltageLevel.id + '(1)',
-                            equipmentName: voltageLevel.name,
-                            nominalVoltage: voltageLevel.nominalVoltage,
-                            substationId: voltageLevel.substationId,
-                            busbarSections: voltageLevel.busbarSections,
-                        };
-                        setFormValues(vlFormValues);
+        return fetchEquipmentInfos(
+            studyUuid,
+            selectedNodeUuid,
+            'voltage-levels',
+            element.id,
+            true
+        ).then((response) => {
+            if (response.status === 200) {
+                response.json().then((voltageLevel) => {
+                    setFormValues(null);
+                    const vlFormValues = {
+                        equipmentId: voltageLevel.id + '(1)',
+                        equipmentName: voltageLevel.name,
+                        nominalVoltage: voltageLevel.nominalVoltage,
+                        substationId: voltageLevel.substationId,
+                        busbarSections: voltageLevel.busbarSections,
+                    };
+                    setFormValues(vlFormValues);
 
-                        msg = intl.formatMessage(
-                            { id: 'VoltageLevelCopied' },
-                            {
-                                voltageLevelId: element.id,
-                            }
-                        );
-                        enqueueSnackbar(msg, {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        });
-                    });
-                } else {
-                    console.error(
-                        'error while fetching substation {voltageLevelId} : status = {status}',
-                        element.id,
-                        response.status
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopied' },
+                        {
+                            equipmentId: element.id,
+                        }
                     );
-                    if (response.status === 404) {
-                        msg = intl.formatMessage(
-                            { id: 'VoltageLevelCopyFailed404' },
-                            {
-                                voltageLevelId: element.id,
-                            }
-                        );
-                    } else {
-                        msg = intl.formatMessage(
-                            { id: 'VoltageLevelCopyFailed' },
-                            {
-                                voltageLevelId: element.id,
-                            }
-                        );
-                    }
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: msg,
-                        enqueueSnackbar,
+                    enqueueSnackbar(msg, {
+                        variant: 'info',
+                        persist: false,
+                        style: { whiteSpace: 'pre-line' },
                     });
+                });
+            } else {
+                console.error(
+                    'error while fetching substation {voltageLevelId} : status = {status}',
+                    element.id,
+                    response.status
+                );
+                if (response.status === 404) {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed404' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
+                } else {
+                    msg = intl.formatMessage(
+                        { id: 'EquipmentCopyFailed' },
+                        {
+                            equipmentId: element.id,
+                        }
+                    );
                 }
+                displayErrorMessageWithSnackbar({
+                    errorMessage: msg,
+                    enqueueSnackbar,
+                });
             }
-        );
-        handleCloseSearchDialog();
+            handleCloseSearchDialog();
+        });
     };
 
     const clearValues = () => {
