@@ -144,6 +144,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const workingNodeUuid = useSelector((state) => state.workingTreeNode);
 
+    const workingNodeIdRef = useRef();
+
     const [loadFlowInfos] = useNodeData(
         studyUuid,
         workingNodeUuid,
@@ -303,8 +305,9 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        loadNetwork();
-    }, [loadNetwork]);
+        loadNetwork(workingNodeUuid === workingNodeIdRef.current);
+    }, [loadNetwork, workingNodeUuid]);
+    workingNodeIdRef.current = workingNodeUuid;
 
     useEffect(() => {
         if (studyUuid) {
