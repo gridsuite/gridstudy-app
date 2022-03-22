@@ -53,6 +53,8 @@ export function validateField(value, toValidate) {
         }
     }
 
+    if (toValidate.function) return makeErrorRecord(toValidate.function(value));
+
     return makeErrorRecord(null);
 }
 

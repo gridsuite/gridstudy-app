@@ -62,6 +62,8 @@ export function MapLateralDrawers({
 }) {
     const classes = useStyles();
 
+    const selectedTreeNode = useSelector((state) => state.selectedTreeNode);
+
     const isExplorerDrawerOpen = useSelector(
         (state) => state.isExplorerDrawerOpen
     );
@@ -72,19 +74,24 @@ export function MapLateralDrawers({
 
     return (
         <>
-            <StudyDrawer
-                open={
-                    isModificationsDrawerOpen &&
-                    studyDisplayMode === StudyDisplayMode.MAP
-                }
-                drawerClassName={classes.drawerNodeEditor}
-                drawerShiftClassName={classes.drawerNodeEditorShift}
-                anchor={
-                    studyDisplayMode === StudyDisplayMode.MAP ? 'left' : 'right'
-                }
-            >
-                <NodeEditor />
-            </StudyDrawer>
+            {selectedTreeNode !== null &&
+                selectedTreeNode.type === 'NETWORK_MODIFICATION' && (
+                    <StudyDrawer
+                        open={
+                            isModificationsDrawerOpen &&
+                            studyDisplayMode === StudyDisplayMode.MAP
+                        }
+                        drawerClassName={classes.drawerNodeEditor}
+                        drawerShiftClassName={classes.drawerNodeEditorShift}
+                        anchor={
+                            studyDisplayMode === StudyDisplayMode.MAP
+                                ? 'left'
+                                : 'right'
+                        }
+                    >
+                        <NodeEditor />
+                    </StudyDrawer>
+                )}
             <StudyDrawer
                 open={isExplorerDrawerOpen}
                 drawerClassName={classes.drawerExplorer}

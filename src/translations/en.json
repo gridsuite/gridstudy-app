@@ -243,7 +243,7 @@
 
     "ComponentLibrary": "Component library selection : ",
 
-    "Optional": "(optional)",
+    "Optional": " (optional)",
     "createNetworkModificationNode": "Create a network modification node",
     "createModelNode": "Create a model node",
     "removeNode": "Remove node",
@@ -290,7 +290,7 @@
 
     "CreateGenerator": "Create generator",
     "GeneratorCreationError": "Error while creating generator",
-    "EnergySourceOptional": "Energy source (optional)",
+    "EnergySourceText": "Energy source",
     "Hydro": "Hydro",
     "Nuclear": "Nuclear",
     "Wind": "Wind",
@@ -331,7 +331,7 @@
     "Substation": "Substation",
     "BusBarSections": "Bus bar sections",
     "BusBarSectionID": "Section ID",
-    "BusBarSectionName": "Section name (optional)",
+    "BusBarSectionName": "Section name",
     "BusBarHorizPos": "Horizontal position",
     "BusBarVertPos": "Vertical position",
     "CreateBusBarSection": "Add bus bar section",
@@ -341,6 +341,7 @@
     "Breaker": "Breaker",
     "Disconnector": "Disconnector",
     "SameHorizAndVertPos": "At least two bus bar sections have same horizontal and vertical position",
+    "DuplicateId": "Duplicate id",
     "DisconnectorBetweenSameBusbar": "Forbidden to have a disconnector linking a bus bar section to itself",
 
     "PermanentCurrentLimitText": "Permanent current limit",

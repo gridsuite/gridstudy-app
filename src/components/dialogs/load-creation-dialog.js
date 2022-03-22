@@ -4,53 +4,46 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    InputLabel,
-    MenuItem,
-    Select,
-    TextField,
-    Tooltip,
-} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
+import {
+    useConnectivityValue,
+    useDoubleValue,
+    useEnumValue,
+    useInputForm,
+    useButtonWithTooltip,
+    useTextValue,
+} from './input-hooks';
+import {
+    ActivePowerAdornment,
+    filledTextField,
+    gridItem,
+    GridSection,
+    ReactivePowerAdornment,
+} from './dialogUtils';
+
 import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
-import TextFieldWithAdornment from '../util/text-field-with-adornment';
-import { makeErrorHelper, validateField } from '../util/validation-functions';
-import ConnectivityEdition from './connectivity-edition';
-import FindInPageIcon from '@material-ui/icons/FindInPage';
 import EquipmentSearchDialog from './equipment-search-dialog';
 
-const useStyles = makeStyles((theme) => ({
-    helperText: {
-        margin: 0,
-        marginTop: 4,
-    },
-    h3: {
-        marginBottom: 0,
-        paddingBottom: 1,
-    },
-    tooltip: {
-        fontSize: 18,
-        maxWidth: 'none',
-    },
-}));
-
-const DELAY = 1000;
+const LOAD_TYPES = [
+    { id: '', label: 'None' },
+    { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
+    { id: 'AUXILIARY', label: 'Auxiliary' },
+    { id: 'FICTITIOUS', label: 'Fictitious' },
+];
 
 /**
  * Dialog to create a load in the network
@@ -67,102 +60,84 @@ const LoadCreationDialog = ({
     selectedNodeUuid,
     workingNodeUuid,
 }) => {
-    const classes = useStyles();
-
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const intl = useIntl();
+
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const [loadId, setLoadId] = useState('');
+    const inputForm = useInputForm();
 
-    const [loadName, setLoadName] = useState('');
+    const [formValues, setFormValues] = useState(undefined);
 
-    const [loadType, setLoadType] = useState('');
-
-    const [activePower, setActivePower] = useState('');
-
-    const [reactivePower, setReactivePower] = useState('');
-
-    const [voltageLevel, setVoltageLevel] = useState(null);
-
-    const [busOrBusbarSection, setBusOrBusbarSection] = useState(null);
-
-    const [errors, setErrors] = useState(new Map());
-
-    const handleChangeLoadId = (event) => {
-        setLoadId(event.target.value);
+    const handleOpenSearchDialog = () => {
+        setDialogSearchOpen(true);
     };
 
-    const handleChangeLoadName = (event) => {
-        setLoadName(event.target.value);
-    };
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: handleOpenSearchDialog,
+    });
 
-    const handleChangeLoadType = (event) => {
-        setLoadType(event.target.value);
-    };
+    const [loadId, loadIdField] = useTextValue({
+        label: 'ID',
+        validation: { isFieldRequired: true },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        defaultValue: formValues?.id,
+    });
 
-    const handleChangeActivePower = (event) => {
-        // TODO: remove replace when parsing behaviour will be made according to locale
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setActivePower(event.target.value?.replace(',', '.'));
-    };
+    const [loadName, loadNameField] = useTextValue({
+        label: 'Name',
+        inputForm: inputForm,
+        formProps: filledTextField,
+        defaultValue: formValues?.name,
+    });
 
-    const handleChangeReactivePower = (event) => {
-        // TODO: remove replace when parsing behaviour will be made according to locale
-        // Replace ',' by '.' to ensure double values can be parsed correctly
-        setReactivePower(event.target.value?.replace(',', '.'));
-    };
+    const [loadType, loadTypeField] = useEnumValue({
+        label: 'Type',
+        inputForm: inputForm,
+        formProps: filledTextField,
+        enumValues: LOAD_TYPES,
+        defaultValue: formValues ? formValues.type : '',
+    });
+
+    const [activePower, activePowerField] = useDoubleValue({
+        label: 'ActivePowerText',
+        validation: {
+            isFieldRequired: true,
+            isFieldNumeric: true,
+        },
+        adornment: ActivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: formValues ? String(formValues.p0) : undefined,
+    });
+
+    const [reactivePower, reactivePowerField] = useDoubleValue({
+        label: 'ReactivePowerText',
+        validation: {
+            isFieldRequired: true,
+            isFieldNumeric: true,
+        },
+        adornment: ReactivePowerAdornment,
+        inputForm: inputForm,
+        defaultValue: formValues ? String(formValues.q0) : undefined,
+    });
+
+    const [connectivity, connectivityField] = useConnectivityValue({
+        label: 'Connectivity',
+        inputForm: inputForm,
+        voltageLevelOptions: voltageLevelOptions,
+        workingNodeUuid: workingNodeUuid,
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId || null,
+    });
 
     const handleSave = () => {
-        let tmpErrors = new Map(errors);
-
-        tmpErrors.set(
-            'load-id',
-            validateField(loadId, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'active-power',
-            validateField(activePower, {
-                isFieldRequired: true,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'reactive-power',
-            validateField(reactivePower, {
-                isFieldRequired: true,
-                isFieldNumeric: true,
-            })
-        );
-
-        tmpErrors.set(
-            'voltage-level',
-            validateField(voltageLevel, {
-                isFieldRequired: true,
-            })
-        );
-
-        tmpErrors.set(
-            'bus-bar',
-            validateField(busOrBusbarSection, {
-                isFieldRequired: true,
-            })
-        );
-
-        setErrors(tmpErrors);
-
-        // Check if error list contains an error
-        let isValid =
-            Array.from(tmpErrors.values()).findIndex((err) => err.error) === -1;
-
-        if (isValid) {
+        if (inputForm.validate()) {
             createLoad(
                 studyUuid,
                 selectedNodeUuid,
@@ -171,8 +146,8 @@ const LoadCreationDialog = ({
                 !loadType ? 'UNDEFINED' : loadType,
                 activePower,
                 reactivePower,
-                voltageLevel.id,
-                busOrBusbarSection.id
+                connectivity.voltageLevel.id,
+                connectivity.busOrBusbarSection.id
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -188,52 +163,41 @@ const LoadCreationDialog = ({
         }
     };
 
-    const clearValues = () => {
-        setLoadId('');
-        setLoadName('');
-        setLoadType('');
-        setActivePower('');
-        setReactivePower('');
-        setVoltageLevel(null);
-        setBusOrBusbarSection(null);
-    };
+    const clearValues = useCallback(() => {
+        inputForm.clear();
+    }, [inputForm]);
+
+    const handleClose = useCallback(
+        (event, reason) => {
+            if (reason !== 'backdropClick') {
+                inputForm.reset();
+                onClose();
+            }
+        },
+        [inputForm, onClose]
+    );
 
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
     };
 
-    const handleClose = (event, reason) => {
-        if (reason !== 'backdropClick') {
-            setErrors(new Map());
-            onClose();
-        }
-    };
-
     const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
 
-    const handleOpenSearchDialog = () => {
-        setDialogSearchOpen(true);
+    const handleCloseSearchDialog = () => {
+        setDialogSearchOpen(false);
     };
 
     const handleSelectionChange = (element) => {
         let msg;
-        fetchLoadInfos(studyUuid, workingNodeUuid, element.id).then(
+        fetchLoadInfos(studyUuid, selectedNodeUuid, element.id).then(
             (response) => {
                 if (response.status === 200) {
                     response.json().then((load) => {
-                        //For now we don't want to retrieve nor try to set the BusBarSection, users have to select it.
-                        setLoadId(load.id);
-                        setLoadName(load.name);
-                        setLoadType(load.type);
-                        setActivePower(String(load.p0));
-                        setReactivePower(String(load.q0));
-                        setVoltageLevel(
-                            voltageLevelOptions.find(
-                                (value) => value.id === load.voltageLevelId
-                            )
-                        );
-                        setBusOrBusbarSection(null);
+                        setFormValues(null);
+                        load.id = load.id + '(1)';
+                        load.busOrBusbarSectionId = null;
+                        setFormValues(load);
 
                         msg = intl.formatMessage(
                             { id: 'LoadCopied' },
@@ -275,209 +239,40 @@ const LoadCreationDialog = ({
                 }
             }
         );
-        setDialogSearchOpen(false);
+        handleCloseSearchDialog();
     };
 
     return (
         <>
             <Dialog
                 fullWidth
-                maxWidth="md" // 3 columns
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="dialog-create-load"
+                maxWidth={'md'}
             >
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
-                        <Grid item>
-                            {intl.formatMessage({ id: 'CreateLoad' })}
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateLoad" />
                         </Grid>
-                        <Grid item>
-                            <Tooltip
-                                title={intl.formatMessage({
-                                    id: 'CopyFromExisting',
-                                })}
-                                placement="top"
-                                arrow
-                                enterDelay={DELAY}
-                                enterNextDelay={DELAY}
-                                classes={{ tooltip: classes.tooltip }}
-                            >
-                                <Button onClick={handleOpenSearchDialog}>
-                                    <FindInPageIcon />
-                                </Button>
-                            </Tooltip>
-                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
-                            <TextField
-                                size="small"
-                                fullWidth
-                                id="load-id"
-                                label={intl.formatMessage({ id: 'ID' })}
-                                variant="filled"
-                                value={loadId}
-                                onChange={handleChangeLoadId}
-                                /* Ensures no margin for error message (as when variant "filled" is used, a margin seems to be automatically applied to error message
-                                   which is not the case when no variant is used) */
-                                FormHelperTextProps={{
-                                    className: classes.helperText,
-                                }}
-                                {...(errors.get('load-id')?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('load-id')?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <TextField
-                                size="small"
-                                fullWidth
-                                id="load-name"
-                                label={intl.formatMessage({
-                                    id: 'NameOptional',
-                                })}
-                                value={loadName}
-                                onChange={handleChangeLoadName}
-                                variant="filled"
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <FormControl fullWidth size="small">
-                                {/*This InputLabel is necessary in order to display
-                                the label describing the content of the Select*/}
-                                <InputLabel
-                                    id="load-type-label"
-                                    variant={'filled'}
-                                >
-                                    {intl.formatMessage({ id: 'TypeOptional' })}
-                                </InputLabel>
-                                <Select
-                                    id="load-type"
-                                    value={loadType}
-                                    onChange={handleChangeLoadType}
-                                    variant="filled"
-                                    fullWidth
-                                >
-                                    <MenuItem value="">
-                                        <em>
-                                            {intl.formatMessage({ id: 'None' })}
-                                        </em>
-                                    </MenuItem>
-                                    <MenuItem value={'UNDEFINED'}>
-                                        {intl.formatMessage({
-                                            id: 'UndefinedDefaultValue',
-                                        })}
-                                    </MenuItem>
-                                    <MenuItem value={'AUXILIARY'}>
-                                        {intl.formatMessage({
-                                            id: 'Auxiliary',
-                                        })}
-                                    </MenuItem>
-                                    <MenuItem value={'FICTITIOUS'}>
-                                        {intl.formatMessage({
-                                            id: 'Fictitious',
-                                        })}
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
+                        {gridItem(loadIdField, 4)}
+                        {gridItem(loadNameField, 4)}
+                        {gridItem(loadTypeField, 4)}
                     </Grid>
+                    <GridSection title="Setpoints" />
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Setpoints" />
-                            </h3>
-                        </Grid>
+                        {gridItem(activePowerField, 4)}
+                        {gridItem(reactivePowerField, 4)}
                     </Grid>
+                    <GridSection title="Connectivity" />
                     <Grid container spacing={2}>
-                        <Grid item xs={4} align="start">
-                            <TextFieldWithAdornment
-                                size="small"
-                                fullWidth
-                                id="load-active-power"
-                                label={intl.formatMessage({
-                                    id: 'ActivePowerText',
-                                })}
-                                adornmentPosition={'end'}
-                                adornmentText={'MW'}
-                                value={activePower}
-                                onChange={handleChangeActivePower}
-                                {...(errors.get('active-power')?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('active-power')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
-                        <Grid item xs={4} align="start">
-                            <TextFieldWithAdornment
-                                size="small"
-                                fullWidth
-                                id="load-reactive-power"
-                                label={intl.formatMessage({
-                                    id: 'ReactivePowerText',
-                                })}
-                                adornmentPosition={'end'}
-                                adornmentText={'MVar'}
-                                value={reactivePower}
-                                onChange={handleChangeReactivePower}
-                                {...(errors.get('reactive-power')?.error && {
-                                    error: true,
-                                    helperText: intl.formatMessage({
-                                        id: errors.get('reactive-power')
-                                            ?.errorMsgId,
-                                    }),
-                                })}
-                            />
-                        </Grid>
-                    </Grid>
-                    {/* Connectivity part */}
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Connectivity" />
-                            </h3>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={8} align="start">
-                            <ConnectivityEdition
-                                voltageLevelOptions={voltageLevelOptions}
-                                voltageLevel={voltageLevel}
-                                busOrBusbarSection={busOrBusbarSection}
-                                onChangeVoltageLevel={(value) =>
-                                    setVoltageLevel(value)
-                                }
-                                onChangeBusOrBusbarSection={(
-                                    busOrBusbarSection
-                                ) => setBusOrBusbarSection(busOrBusbarSection)}
-                                errorVoltageLevel={
-                                    errors.get('voltage-level')?.error
-                                }
-                                helperTextVoltageLevel={makeErrorHelper(
-                                    errors,
-                                    intl,
-                                    'voltage-level'
-                                )}
-                                errorBusOrBusBarSection={
-                                    errors.get('bus-bar')?.error
-                                }
-                                helperTextBusOrBusBarSection={makeErrorHelper(
-                                    errors,
-                                    intl,
-                                    'bus-bar-level'
-                                )}
-                                workingNodeUuid={workingNodeUuid}
-                            />
-                        </Grid>
+                        {gridItem(connectivityField, 8)}
                     </Grid>
                 </DialogContent>
                 <DialogActions>
@@ -491,10 +286,10 @@ const LoadCreationDialog = ({
             </Dialog>
             <EquipmentSearchDialog
                 open={isDialogSearchOpen}
-                onClose={() => setDialogSearchOpen(false)}
+                onClose={handleCloseSearchDialog}
                 equipmentType={'LOAD'}
                 onSelectionChange={handleSelectionChange}
-                workingNodeUuid={workingNodeUuid}
+                selectedNodeUuid={selectedNodeUuid}
             />
         </>
     );

@@ -38,7 +38,7 @@ import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getIdFirstNodeOfType } from './graph/util/model-functions';
+import { getFirstNodeOfType } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -79,11 +79,14 @@ export function useNodeData(
         const headers = studyUpdatedForce?.eventData?.headers;
         const updateType = headers && headers['updateType'];
         const node = headers && headers['node'];
+        const nodes = headers && headers['nodes'];
         const isUpdateForUs =
             lastUpdateRef.current !== studyUpdatedForce &&
             updateType &&
-            (node === undefined || node === nodeUuid) &&
-            invalidations.find((e) => updateType === e) !== -1;
+            ((node === undefined && nodes === undefined) ||
+                node === nodeUuid ||
+                nodes?.indexOf(nodeUuid) !== -1) &&
+            invalidations.indexOf(updateType) !== -1;
         lastUpdateRef.current = studyUpdatedForce;
         if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
             update();
@@ -120,6 +123,9 @@ function useStudy(studyUuidRequest) {
     return [studyUuid, pending, errMessage];
 }
 
+const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow'];
+const securityAnalysisStatusInvalidations = ['securityAnalysis_status'];
+
 export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
 
@@ -142,14 +148,14 @@ export function StudyContainer({ view, onChangeTab }) {
         studyUuid,
         workingNodeUuid,
         fetchLoadFlowInfos,
-        ['loadflow_status']
+        loadFlowStatusInvalidations
     );
 
     const [securityAnalysisStatus] = useNodeData(
         studyUuid,
         workingNodeUuid,
         fetchSecurityAnalysisStatus,
-        ['securityAnalysis_status'],
+        securityAnalysisStatusInvalidations,
         RunningStatus.IDLE,
         getSecurityAnalysisRunningStatus
     );
@@ -257,10 +263,14 @@ export function StudyContainer({ view, onChangeTab }) {
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
 
-                let firstModelNodeId = getIdFirstNodeOfType(tree, 'MODEL');
+                let firstBuiltModelNode = getFirstNodeOfType(
+                    tree,
+                    'MODEL',
+                    'BUILT'
+                );
                 dispatch(
                     workingTreeNode(
-                        firstModelNodeId ? firstModelNodeId : tree.id
+                        firstBuiltModelNode ? firstBuiltModelNode.id : tree.id
                     )
                 );
 
@@ -372,6 +382,12 @@ export function StudyContainer({ view, onChangeTab }) {
             ) {
                 //TODO reload data more intelligently
                 loadNetwork(true);
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'deleteStudy'
+            ) {
+                // closing window on study deletion
+                window.close();
             }
         }
         // Note: studyUuid, and loadNetwork don't change

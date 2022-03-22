@@ -243,7 +243,7 @@
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants : ",
 
-    "Optional": "(optionnel)",
+    "Optional": " (optionnel)",
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
     "createModelNode": "Créer un nœud modèle",
     "removeNode": "Supprimer nœud",
@@ -290,7 +290,7 @@
 
     "CreateGenerator": "Créer un groupe",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
-    "EnergySourceOptional": "Source d'énergie (optionnel)",
+    "EnergySourceText": "Source d'énergie",
     "Hydro": "Hydraulique",
     "Nuclear": "Nucléaire",
     "Wind": "Eolien",
@@ -331,7 +331,7 @@
     "Substation": "Site",
     "BusBarSections": "Sections de jeu de barre",
     "BusBarSectionID": "ID SJB",
-    "BusBarSectionName": "Nom de la section (optionnel)",
+    "BusBarSectionName": "Nom de la section",
     "BusBarHorizPos": "Position horizontale de la section",
     "BusBarVertPos": "Position verticale de la section",
     "CreateBusBarSection": "Ajouter une SJB",
@@ -341,6 +341,7 @@
     "Breaker": "Disjoncteur",
     "Disconnector": "Sectionneur",
     "SameHorizAndVertPos": "Au moins deux SJBs ont mêmes positions horizontale et verticale",
+    "DuplicateId": "Identifiant non unique",
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
     "PermanentCurrentLimitText": "IST",
@@ -353,7 +354,7 @@
     "TwoWindingsTransformerCreationError": "Erreur lors de la création d'un transformateur à 2 enroulements",
     "NewName": "Nouveau nom",
 
-    "CopyFromExisting": "Copier depuis un équipement existant",
+    "CopyFromExisting": "Copier depuis un ouvrage existant",
     "LoadCopied": "Données copiées depuis la consommation {loadId}",
     "LoadCopyFailed404": "Erreur lors de la copie de la consommation : la consommation n'a pas été trouvée",
     "LoadCopyFailed": "Erreur lors de la copie de la consommation",
