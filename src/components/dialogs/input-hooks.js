@@ -268,14 +268,12 @@ export const useConnectivityValue = ({
     const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
 
-    useEffect(
-        () =>
-            setConnectivity({
-                voltageLevel: null,
-                busOrBusbarSection: null,
-            }),
-        [inputForm.toggleClear]
-    );
+    useEffect(() => {
+        setConnectivity({
+            voltageLevel: null,
+            busOrBusbarSection: null,
+        });
+    }, [inputForm.toggleClear]);
 
     useEffect(() => {
         setConnectivity({
@@ -395,7 +393,7 @@ export const useAutocompleteField = ({
     }, []);
 
     useEffect(() => {
-        if (selectedValue !== null) {
+        if (selectedValue) {
             setValue(selectedValue);
         }
     }, [selectedValue]);
@@ -627,7 +625,7 @@ export const useExpandableValues = ({
     labelAddValue,
     Field,
     inputForm,
-    defaultValues = [],
+    defaultValues,
     fieldProps,
     validateItem,
 }) => {
@@ -636,8 +634,10 @@ export const useExpandableValues = ({
     const [errors, setErrors] = useState();
 
     useEffect(() => {
-        if (defaultValues.length) {
-            setValues(defaultValues);
+        if (defaultValues) {
+            setValues([...defaultValues]);
+        } else {
+            setValues([]);
         }
     }, [defaultValues]);
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -14,7 +14,7 @@ import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { createVoltageLevel, fetchEquipmentInfos } from '../../utils/rest-api';
+import { createVoltageLevel } from '../../utils/rest-api';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
@@ -32,6 +32,7 @@ import {
 } from './input-hooks';
 import { filledTextField, gridItem, GridSection } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const numericalWithButton = {
     type: 'number',
@@ -222,7 +223,6 @@ const VoltageLevelCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -231,19 +231,35 @@ const VoltageLevelCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+    const equipmentPath = 'voltage-levels';
 
-    const handleCloseSearchDialog = () => {
-        setDialogSearchOpen(false);
+    const clearValues = () => {
+        setFormValues(null);
     };
 
-    const handleOpenSearchDialog = () => {
-        setDialogSearchOpen(true);
+    const toFormValues = (voltageLevel) => {
+        return {
+            equipmentId: voltageLevel.id + '(1)',
+            equipmentName: voltageLevel.name,
+            nominalVoltage: voltageLevel.nominalVoltage,
+            substationId: voltageLevel.substationId,
+            busbarSections: voltageLevel.busbarSections,
+            busbarConnections: [],
+        };
     };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
 
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleClick: handleOpenSearchDialog,
+        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     const [voltageLevelId, voltageLevelIdField] = useTextValue({
@@ -332,73 +348,6 @@ const VoltageLevelCreationDialog = ({
         }
     };
 
-    const handleSelectionChange = (element) => {
-        let msg;
-        return fetchEquipmentInfos(
-            studyUuid,
-            selectedNodeUuid,
-            'voltage-levels',
-            element.id,
-            true
-        ).then((response) => {
-            if (response.status === 200) {
-                response.json().then((voltageLevel) => {
-                    setFormValues(null);
-                    const vlFormValues = {
-                        equipmentId: voltageLevel.id + '(1)',
-                        equipmentName: voltageLevel.name,
-                        nominalVoltage: voltageLevel.nominalVoltage,
-                        substationId: voltageLevel.substationId,
-                        busbarSections: voltageLevel.busbarSections,
-                    };
-                    setFormValues(vlFormValues);
-
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopied' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                    enqueueSnackbar(msg, {
-                        variant: 'info',
-                        persist: false,
-                        style: { whiteSpace: 'pre-line' },
-                    });
-                });
-            } else {
-                console.error(
-                    'error while fetching substation {voltageLevelId} : status = {status}',
-                    element.id,
-                    response.status
-                );
-                if (response.status === 404) {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed404' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                } else {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                }
-                displayErrorMessageWithSnackbar({
-                    errorMessage: msg,
-                    enqueueSnackbar,
-                });
-            }
-            handleCloseSearchDialog();
-        });
-    };
-
-    const clearValues = () => {
-        inputForm.clear();
-    };
-
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
@@ -453,10 +402,10 @@ const VoltageLevelCreationDialog = ({
                 </DialogActions>
             </Dialog>
             <EquipmentSearchDialog
-                open={isDialogSearchOpen}
-                onClose={handleCloseSearchDialog}
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'VOLTAGE_LEVEL'}
-                onSelectionChange={handleSelectionChange}
+                onSelectionChange={searchCopy.handleSelectionChange}
                 selectedNodeUuid={selectedNodeUuid}
             />
         </>

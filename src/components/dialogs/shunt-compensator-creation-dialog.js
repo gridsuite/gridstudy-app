@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -28,10 +28,7 @@ import {
     useIntegerValue,
     useTextValue,
 } from './input-hooks';
-import {
-    createShuntCompensator,
-    fetchEquipmentInfos,
-} from '../../utils/rest-api';
+import { createShuntCompensator } from '../../utils/rest-api';
 import {
     filledTextField,
     gridItem,
@@ -40,6 +37,7 @@ import {
     toPositiveIntValue,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const disabledChecked = { disabled: true };
 
@@ -62,27 +60,42 @@ const ShuntCompensatorCreationDialog = ({
 
     const intlRef = useIntlRef();
 
-    const intl = useIntl();
-
     const { enqueueSnackbar } = useSnackbar();
 
     const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+    const equipmentPath = 'shunt-compensators';
 
-    const handleCloseSearchDialog = () => {
-        setDialogSearchOpen(false);
+    const clearValues = () => {
+        setFormValues(null);
     };
 
-    const handleOpenSearchDialog = () => {
-        setDialogSearchOpen(true);
+    const toFormValues = (shuntCompensator) => {
+        return {
+            equipmentId: shuntCompensator.id + '(1)',
+            equipmentName: shuntCompensator.name,
+            maximumNumberOfSections: shuntCompensator.maximumSectionCount,
+            currentNumberOfSections: shuntCompensator.sectionCount,
+            susceptancePerSection: shuntCompensator.bperSection,
+            voltageLevelId: shuntCompensator.voltageLevelId,
+            busOrBusbarSectionId: null,
+        };
     };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
 
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleClick: handleOpenSearchDialog,
+        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     const [shuntCompensatorId, shuntCompensatorIdField] = useTextValue({
@@ -180,76 +193,6 @@ const ShuntCompensatorCreationDialog = ({
         }
     };
 
-    const handleSelectionChange = (element) => {
-        let msg;
-        return fetchEquipmentInfos(
-            studyUuid,
-            selectedNodeUuid,
-            'shunt-compensators',
-            element.id,
-            true
-        ).then((response) => {
-            if (response.status === 200) {
-                response.json().then((shuntCompensator) => {
-                    setFormValues(null);
-                    const shuntCompensatorFormValues = {
-                        equipmentId: shuntCompensator.id + '(1)',
-                        equipmentName: shuntCompensator.name,
-                        maximumNumberOfSections:
-                            shuntCompensator.maximumSectionCount,
-                        currentNumberOfSections: shuntCompensator.sectionCount,
-                        susceptancePerSection: shuntCompensator.bperSection,
-                        voltageLevelId: shuntCompensator.voltageLevelId,
-                        busOrBusbarSectionId: null,
-                    };
-                    setFormValues(shuntCompensatorFormValues);
-
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopied' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                    enqueueSnackbar(msg, {
-                        variant: 'info',
-                        persist: false,
-                        style: { whiteSpace: 'pre-line' },
-                    });
-                });
-            } else {
-                console.error(
-                    'error while fetching shuntCompensator {shuntCompensatorId} : status = {status}',
-                    element.id,
-                    response.status
-                );
-                if (response.status === 404) {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed404' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                } else {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                }
-                displayErrorMessageWithSnackbar({
-                    errorMessage: msg,
-                    enqueueSnackbar,
-                });
-            }
-            handleCloseSearchDialog();
-        });
-    };
-
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -310,10 +253,10 @@ const ShuntCompensatorCreationDialog = ({
                 </DialogActions>
             </Dialog>
             <EquipmentSearchDialog
-                open={isDialogSearchOpen}
-                onClose={handleCloseSearchDialog}
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'SHUNT_COMPENSATOR'}
-                onSelectionChange={handleSelectionChange}
+                onSelectionChange={searchCopy.handleSelectionChange}
                 selectedNodeUuid={selectedNodeUuid}
             />
         </>

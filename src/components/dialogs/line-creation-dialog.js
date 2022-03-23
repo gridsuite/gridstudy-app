@@ -14,13 +14,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createLine, fetchEquipmentInfos } from '../../utils/rest-api';
+import { createLine } from '../../utils/rest-api';
 import {
     useDoubleValue,
     useInputForm,
@@ -36,6 +36,7 @@ import {
     SusceptanceAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -75,8 +76,6 @@ const LineCreationDialog = ({
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
-
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -85,19 +84,47 @@ const LineCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
-
-    const handleCloseSearchDialog = () => {
-        setDialogSearchOpen(false);
+    const toFormValues = (line) => {
+        return {
+            equipmentId: line.id + '(1)',
+            equipmentName: line.name,
+            seriesResistance: line.r,
+            seriesReactance: line.x,
+            shuntConductance1: line.g1,
+            shuntSusceptance1: line.b1,
+            shuntConductance2: line.g2,
+            shuntSusceptance2: line.b2,
+            voltageLevelId1: line.voltageLevelId1,
+            busOrBusbarSectionId1: null,
+            voltageLevelId2: line.voltageLevelId2,
+            busOrBusbarSectionId2: null,
+            currentLimits1: {
+                permanentLimit: line.permanentLimit1,
+            },
+            currentLimits2: {
+                permanentLimit: line.permanentLimit2,
+            },
+        };
     };
 
-    const handleOpenSearchDialog = () => {
-        setDialogSearchOpen(true);
+    const equipmentPath = 'lines';
+
+    const clearValues = () => {
+        setFormValues(null);
     };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
 
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleClick: handleOpenSearchDialog,
+        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     const [lineId, lineIdField] = useTextValue({
@@ -257,10 +284,6 @@ const LineCreationDialog = ({
         }
     };
 
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -274,82 +297,6 @@ const LineCreationDialog = ({
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
-    };
-
-    const handleSelectionChange = (element) => {
-        let msg;
-        return fetchEquipmentInfos(
-            studyUuid,
-            selectedNodeUuid,
-            'lines',
-            element.id,
-            true
-        ).then((response) => {
-            if (response.status === 200) {
-                response.json().then((line) => {
-                    setFormValues(null);
-                    const lineFormValues = {
-                        equipmentId: line.id + '(1)',
-                        equipmentName: line.name,
-                        seriesResistance: line.r,
-                        seriesReactance: line.x,
-                        shuntConductance1: line.g1,
-                        shuntSusceptance1: line.b1,
-                        shuntConductance2: line.g2,
-                        shuntSusceptance2: line.b2,
-                        voltageLevelId1: line.voltageLevelId1,
-                        busOrBusbarSectionId1: null,
-                        voltageLevelId2: line.voltageLevelId2,
-                        busOrBusbarSectionId2: null,
-                        currentLimits1: {
-                            permanentLimit: line.permanentLimit1,
-                        },
-                        currentLimits2: {
-                            permanentLimit: line.permanentLimit2,
-                        },
-                    };
-                    setFormValues(lineFormValues);
-
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopied' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                    enqueueSnackbar(msg, {
-                        variant: 'info',
-                        persist: false,
-                        style: { whiteSpace: 'pre-line' },
-                    });
-                });
-            } else {
-                console.error(
-                    'error while fetching load {loadId} : status = {status}',
-                    element.id,
-                    response.status
-                );
-                if (response.status === 404) {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed404' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                } else {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                }
-                displayErrorMessageWithSnackbar({
-                    errorMessage: msg,
-                    enqueueSnackbar,
-                });
-            }
-            handleCloseSearchDialog();
-        });
     };
 
     return (
@@ -476,10 +423,10 @@ const LineCreationDialog = ({
                 </DialogActions>
             </Dialog>
             <EquipmentSearchDialog
-                open={isDialogSearchOpen}
-                onClose={handleCloseSearchDialog}
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'LINE'}
-                onSelectionChange={handleSelectionChange}
+                onSelectionChange={searchCopy.handleSelectionChange}
                 selectedNodeUuid={selectedNodeUuid}
             />
         </>

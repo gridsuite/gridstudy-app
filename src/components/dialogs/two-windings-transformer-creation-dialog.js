@@ -14,16 +14,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import {
-    createTwoWindingsTransformer,
-    fetchEquipmentInfos,
-} from '../../utils/rest-api';
+import { createTwoWindingsTransformer } from '../../utils/rest-api';
 import {
     useButtonWithTooltip,
     useConnectivityValue,
@@ -39,6 +36,7 @@ import {
     VoltageAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -68,7 +66,6 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -77,19 +74,41 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+    const equipmentPath = '2-windings-transformers';
 
-    const handleCloseSearchDialog = () => {
-        setDialogSearchOpen(false);
+    const clearValues = () => {
+        setFormValues(null);
     };
 
-    const handleOpenSearchDialog = () => {
-        setDialogSearchOpen(true);
+    const toFormValues = (twt) => {
+        return {
+            equipmentId: twt.id + '(1)',
+            equipmentName: twt.name,
+            seriesResistance: twt.r,
+            seriesReactance: twt.x,
+            magnetizingConductance: twt.g,
+            magnetizingSusceptance: twt.b,
+            ratedVoltage1: twt.ratedU1,
+            ratedVoltage2: twt.ratedU2,
+            voltageLevelId1: twt.voltageLevelId1,
+            busOrBusbarSectionId1: null,
+            voltageLevelId2: twt.voltageLevelId2,
+            busOrBusbarSectionId2: null,
+        };
     };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
 
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleClick: handleOpenSearchDialog,
+        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     const [twoWindingsTransformerId, twoWindingsTransformerIdField] =
@@ -217,80 +236,6 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const handleSelectionChange = (element) => {
-        let msg;
-        return fetchEquipmentInfos(
-            studyUuid,
-            selectedNodeUuid,
-            '2-windings-transformers',
-            element.id,
-            true
-        ).then((response) => {
-            if (response.status === 200) {
-                response.json().then((twt) => {
-                    setFormValues(null);
-                    const twtFormValues = {
-                        equipmentId: twt.id + '(1)',
-                        equipmentName: twt.name,
-                        seriesResistance: twt.r,
-                        seriesReactance: twt.x,
-                        magnetizingConductance: twt.g,
-                        magnetizingSusceptance: twt.b,
-                        ratedVoltage1: twt.ratedU1,
-                        ratedVoltage2: twt.ratedU2,
-                        voltageLevelId1: twt.voltageLevelId1,
-                        busOrBusbarSectionId1: null,
-                        voltageLevelId2: twt.voltageLevelId2,
-                        busOrBusbarSectionId2: null,
-                    };
-                    setFormValues(twtFormValues);
-
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopied' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                    enqueueSnackbar(msg, {
-                        variant: 'info',
-                        persist: false,
-                        style: { whiteSpace: 'pre-line' },
-                    });
-                });
-            } else {
-                console.error(
-                    'error while fetching two windings transformer {twoWindingsTransformerId} : status = {status}',
-                    element.id,
-                    response.status
-                );
-                if (response.status === 404) {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed404' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                } else {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                }
-                displayErrorMessageWithSnackbar({
-                    errorMessage: msg,
-                    enqueueSnackbar,
-                });
-            }
-            handleCloseSearchDialog();
-        });
-    };
-
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -407,10 +352,10 @@ const TwoWindingsTransformerCreationDialog = ({
                 </DialogActions>
             </Dialog>
             <EquipmentSearchDialog
-                open={isDialogSearchOpen}
-                onClose={handleCloseSearchDialog}
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'TWO_WINDINGS_TRANSFORMER'}
-                onSelectionChange={handleSelectionChange}
+                onSelectionChange={searchCopy.handleSelectionChange}
                 selectedNodeUuid={selectedNodeUuid}
             />
         </>

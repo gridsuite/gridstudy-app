@@ -435,20 +435,6 @@ export function fetchEquipmentsInfos(
     );
 }
 
-export function fetchVoltageLevelInfos(
-    studyUuid,
-    selectedNodeUuid,
-    voltageLevelId
-) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        'voltage-levels',
-        voltageLevelId,
-        true
-    );
-}
-
 export function fetchAllEquipments(
     studyUuid,
     selectedNodeUuid,

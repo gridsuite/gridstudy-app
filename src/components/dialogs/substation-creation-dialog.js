@@ -13,13 +13,13 @@ import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { createSubstation, fetchEquipmentInfos } from '../../utils/rest-api';
+import { createSubstation } from '../../utils/rest-api';
 import {
     useButtonWithTooltip,
     useCountryValue,
@@ -28,6 +28,7 @@ import {
 } from './input-hooks';
 import { filledTextField, gridItem } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 /**
  * Dialog to create a substation in the network
@@ -38,7 +39,6 @@ import EquipmentSearchDialog from './equipment-search-dialog';
 const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -47,19 +47,33 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
+    const equipmentPath = 'substations';
 
-    const handleCloseSearchDialog = () => {
-        setDialogSearchOpen(false);
+    const clearValues = () => {
+        setFormValues(null);
     };
 
-    const handleOpenSearchDialog = () => {
-        setDialogSearchOpen(true);
+    const toFormValues = (substation) => {
+        return {
+            equipmentId: substation.id + '(1)',
+            equipmentName: substation.name,
+            substationCountryLabel: substation.countryName,
+            substationCountry: null,
+        };
     };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
 
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
-        handleClick: handleOpenSearchDialog,
+        handleClick: searchCopy.handleOpenSearchDialog,
     });
 
     const [substationId, substationIdField] = useTextValue({
@@ -111,72 +125,6 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         }
     };
 
-    const handleSelectionChange = (element) => {
-        let msg;
-        return fetchEquipmentInfos(
-            studyUuid,
-            selectedNodeUuid,
-            'substations',
-            element.id,
-            true
-        ).then((response) => {
-            if (response.status === 200) {
-                response.json().then((substation) => {
-                    setFormValues(null);
-                    const substationFormValues = {
-                        equipmentId: substation.id + '(1)',
-                        equipmentName: substation.name,
-                        substationCountryLabel: substation.countryName,
-                        substationCountry: null,
-                    };
-                    setFormValues(substationFormValues);
-
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopied' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                    enqueueSnackbar(msg, {
-                        variant: 'info',
-                        persist: false,
-                        style: { whiteSpace: 'pre-line' },
-                    });
-                });
-            } else {
-                console.error(
-                    'error while fetching substation {substationId} : status = {status}',
-                    element.id,
-                    response.status
-                );
-                if (response.status === 404) {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed404' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                } else {
-                    msg = intl.formatMessage(
-                        { id: 'EquipmentCopyFailed' },
-                        {
-                            equipmentId: element.id,
-                        }
-                    );
-                }
-                displayErrorMessageWithSnackbar({
-                    errorMessage: msg,
-                    enqueueSnackbar,
-                });
-            }
-            handleCloseSearchDialog();
-        });
-    };
-
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -225,10 +173,10 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
                 </DialogActions>
             </Dialog>
             <EquipmentSearchDialog
-                open={isDialogSearchOpen}
-                onClose={handleCloseSearchDialog}
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'SUBSTATION'}
-                onSelectionChange={handleSelectionChange}
+                onSelectionChange={searchCopy.handleSelectionChange}
                 selectedNodeUuid={selectedNodeUuid}
             />
         </>
