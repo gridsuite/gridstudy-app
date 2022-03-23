@@ -79,7 +79,7 @@ export function SingleLineDiagramPane({
     isComputationRunning,
     showInSpreadsheet,
     loadFlowStatus,
-    selectedNodeUuid,
+    workingNode,
 }) {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
@@ -135,33 +135,30 @@ export function SingleLineDiagramPane({
                 switchElement.classList.replace('sld-open', 'sld-closed');
             }
 
-            updateSwitchState(
-                studyUuid,
-                selectedNodeUuid,
-                breakerId,
-                open
-            ).then((response) => {
-                if (!response.ok) {
-                    console.error(response);
-                    // revert switch position change
-                    if (open) {
-                        switchElement.classList.replace(
-                            'sld-open',
-                            'sld-closed'
-                        );
-                    } else {
-                        switchElement.classList.replace(
-                            'sld-closed',
-                            'sld-open'
+            updateSwitchState(studyUuid, workingNode?.id, breakerId, open).then(
+                (response) => {
+                    if (!response.ok) {
+                        console.error(response);
+                        // revert switch position change
+                        if (open) {
+                            switchElement.classList.replace(
+                                'sld-open',
+                                'sld-closed'
+                            );
+                        } else {
+                            switchElement.classList.replace(
+                                'sld-closed',
+                                'sld-open'
+                            );
+                        }
+                        setUpdateSwitchMsg(
+                            response.status + ' : ' + response.statusText
                         );
                     }
-                    setUpdateSwitchMsg(
-                        response.status + ' : ' + response.statusText
-                    );
                 }
-            });
+            );
         },
-        [studyUuid, selectedNodeUuid, setUpdateSwitchMsg]
+        [studyUuid, workingNode, setUpdateSwitchMsg]
     );
 
     // set single line diagram voltage level id, contained in url query parameters
@@ -259,7 +256,7 @@ export function SingleLineDiagramPane({
 
         svgUrl = getVoltageLevelSingleLineDiagram(
             studyUuid,
-            selectedNodeUuid,
+            workingNode?.id,
             displayedVoltageLevelId,
             useName,
             centerName,
@@ -279,7 +276,7 @@ export function SingleLineDiagramPane({
 
         svgUrl = getSubstationSingleLineDiagram(
             studyUuid,
-            selectedNodeUuid,
+            workingNode?.id,
             displayedSubstationId,
             useName,
             centerName,
@@ -316,7 +313,7 @@ export function SingleLineDiagramPane({
                     }
                     showInSpreadsheet={showInSpreadsheet}
                     loadFlowStatus={loadFlowStatus}
-                    selectedNodeUuid={selectedNodeUuid}
+                    workingNode={workingNode}
                 />
             </div>
         )
@@ -325,7 +322,7 @@ export function SingleLineDiagramPane({
 
 SingleLineDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
-    selectedNodeUuid: PropTypes.string,
+    workingNode: PropTypes.object,
     network: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
