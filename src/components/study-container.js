@@ -307,9 +307,9 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        loadNetwork(workingNodeUuid === workingNodeIdRef.current);
-    }, [loadNetwork, workingNodeUuid]);
-    workingNodeIdRef.current = workingNodeUuid;
+        loadNetwork(workingNode?.id === workingNodeIdRef.current);
+    }, [loadNetwork, workingNode]);
+    workingNodeIdRef.current = workingNode?.id;
 
     useEffect(() => {
         if (studyUuid) {
