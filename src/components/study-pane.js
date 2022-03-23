@@ -97,7 +97,7 @@ export const StudyDisplayMode = {
 const StudyPane = ({
     studyUuid,
     network,
-    workingNodeUuid,
+    workingNode,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -320,7 +320,7 @@ const StudyPane = ({
                                     openVoltageLevel={openVoltageLevel}
                                     centerOnSubstation={centerOnSubstation}
                                     /* TODO verif tableEquipment*/
-                                    selectedNodeUuid={workingNodeUuid}
+                                    workingNode={workingNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -363,7 +363,7 @@ const StudyPane = ({
                                     loadFlowStatus={getLoadFlowRunningStatus(
                                         loadFlowInfos?.loadFlowStatus
                                     )}
-                                    selectedNodeUuid={workingNodeUuid}
+                                    workingNode={workingNode}
                                 />
                             )}
                         </div>
@@ -379,7 +379,7 @@ const StudyPane = ({
                 <NetworkTable
                     network={network}
                     studyUuid={studyUuid}
-                    selectedNodeUuid={workingNodeUuid}
+                    workingNode={workingNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
@@ -416,7 +416,7 @@ const StudyPane = ({
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
-                    selectedNodeUuid={workingNodeUuid}
+                    workingNode={workingNode}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}

@@ -142,20 +142,20 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const dispatch = useDispatch();
 
-    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
+    const workingNode = useSelector((state) => state.workingTreeNode);
 
     const workingNodeIdRef = useRef();
 
     const [loadFlowInfos] = useNodeData(
         studyUuid,
-        workingNodeUuid,
+        workingNode?.id,
         fetchLoadFlowInfos,
         loadFlowStatusInvalidations
     );
 
     const [securityAnalysisStatus] = useNodeData(
         studyUuid,
-        workingNodeUuid,
+        workingNode?.id,
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations,
         RunningStatus.IDLE,
@@ -206,7 +206,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
                     studyUuid,
-                    workingNodeUuid,
+                    workingNode?.id,
                     (error) => {
                         console.error(error.message);
                         setNetworkLoadingFailMessage(error.message);
@@ -216,10 +216,10 @@ export function StudyContainer({ view, onChangeTab }) {
                     { equipments: [equipments.lines, equipments.substations] }
                 );
             } else {
-                if (workingNodeUuid !== null) {
+                if (workingNode !== null) {
                     const network = new Network(
                         studyUuid,
-                        workingNodeUuid,
+                        workingNode?.id,
                         (error) => {
                             console.error(error.message);
                             setNetworkLoadingFailMessage(error.message);
@@ -233,7 +233,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         },
-        [studyUuid, workingNodeUuid, dispatch]
+        [studyUuid, workingNode, dispatch]
     );
     loadNetworkRef.current = loadNetwork;
 
@@ -272,7 +272,9 @@ export function StudyContainer({ view, onChangeTab }) {
                 );
                 dispatch(
                     workingTreeNode(
-                        firstBuiltModelNode ? firstBuiltModelNode.id : tree.id
+                        firstBuiltModelNode
+                            ? firstBuiltModelNode
+                            : getFirstNodeOfType(tree, 'ROOT')
                     )
                 );
 
@@ -305,9 +307,9 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        loadNetwork(workingNodeUuid === workingNodeIdRef.current);
-    }, [loadNetwork, workingNodeUuid]);
-    workingNodeIdRef.current = workingNodeUuid;
+        loadNetwork(workingNode?.id === workingNodeIdRef.current);
+    }, [loadNetwork, workingNode]);
+    workingNodeIdRef.current = workingNode?.id;
 
     useEffect(() => {
         if (studyUuid) {
@@ -334,7 +336,7 @@ export function StudyContainer({ view, onChangeTab }) {
         (substationsIds) => {
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
-                workingNodeUuid,
+                workingNode?.id,
                 substationsIds
             );
             console.info('network update');
@@ -375,7 +377,7 @@ export function StudyContainer({ view, onChangeTab }) {
             //.finally(() => setIsNetworkPending(false));
             // Note: studyUuid don't change
         },
-        [studyUuid, workingNodeUuid, network]
+        [studyUuid, workingNode, network]
     );
 
     useEffect(() => {
@@ -446,7 +448,7 @@ export function StudyContainer({ view, onChangeTab }) {
             <StudyPane
                 studyUuid={studyUuid}
                 network={network}
-                workingNodeUuid={workingNodeUuid}
+                workingNode={workingNode}
                 view={view}
                 onChangeTab={onChangeTab}
                 updatedLines={updatedLines}

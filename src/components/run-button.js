@@ -74,6 +74,9 @@ const useStyles = makeStyles((theme) => ({
             border: '1px solid ' + theme.palette.primary,
             color: '#fdfdfd',
         },
+        '&:disabled': {
+            color: '#717171',
+        },
     },
 }));
 
@@ -127,9 +130,13 @@ const RunButton = (props) => {
         return props.getStatus(getRunnable());
     }
 
-    let disabled =
+    let buttonDisabled =
+        props.disabled ||
         (selectedIndex === 0 && getRunningStatus() !== RunningStatus.IDLE) ||
         (selectedIndex === 1 && isRunning());
+
+    let selectionDisabled =
+        props.disabled || (selectedIndex === 0 && isRunning());
 
     function handleActionOnRunnable() {
         props.actionOnRunnable.action(getRunnable());
@@ -146,8 +153,8 @@ const RunButton = (props) => {
             onSelectionChange={(index) => setSelectedIndex(index)}
             onClick={handleClick}
             className={getStyle(getRunningStatus())}
-            buttonDisabled={disabled}
-            selectionDisabled={selectedIndex === 0 && isRunning()}
+            buttonDisabled={buttonDisabled}
+            selectionDisabled={selectionDisabled}
             startIcon={props.getStartIcon(getRunningStatus())}
             text={
                 props.getText
@@ -169,6 +176,7 @@ RunButton.propTypes = {
     onStartClick: PropTypes.func,
     actionOnRunnable: PropTypes.object.isRequired,
     computationStopped: PropTypes.bool.isRequired,
+    disabled: PropTypes.bool,
 };
 
 export default RunButton;

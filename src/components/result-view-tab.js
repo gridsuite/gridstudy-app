@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * control results views
  * @param studyUuid : string uuid of study
- * @param selectedNodeUuid : string uuid of selected node
+ * @param workingNode : object selected node
  * @param loadFlowInfos : object result of load flow
  * @param network : object network
  * @param openVoltageLevelDiagram : function
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
  */
 export const ResultViewTab = ({
     studyUuid,
-    selectedNodeUuid,
+    workingNode,
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
@@ -53,7 +53,7 @@ export const ResultViewTab = ({
             <Paper className={classes.table}>
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
-                    nodeUuid={selectedNodeUuid}
+                    nodeUuid={workingNode?.id}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
@@ -89,6 +89,6 @@ ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object,
     network: PropTypes.object.isRequired,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
-    selectedNodeUuid: PropTypes.string.isRequired,
+    workingNode: PropTypes.object.isRequired,
     studyUuid: PropTypes.string.isRequired,
 };
