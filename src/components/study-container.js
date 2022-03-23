@@ -38,7 +38,7 @@ import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getIdFirstNodeOfType } from './graph/util/model-functions';
+import { getFirstNodeOfType } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -143,6 +143,8 @@ export function StudyContainer({ view, onChangeTab }) {
     const dispatch = useDispatch();
 
     const workingNodeUuid = useSelector((state) => state.workingTreeNode);
+
+    const workingNodeIdRef = useRef();
 
     const [loadFlowInfos] = useNodeData(
         studyUuid,
@@ -263,10 +265,14 @@ export function StudyContainer({ view, onChangeTab }) {
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
 
-                let firstModelNodeId = getIdFirstNodeOfType(tree, 'MODEL');
+                let firstBuiltModelNode = getFirstNodeOfType(
+                    tree,
+                    'MODEL',
+                    'BUILT'
+                );
                 dispatch(
                     workingTreeNode(
-                        firstModelNodeId ? firstModelNodeId : tree.id
+                        firstBuiltModelNode ? firstBuiltModelNode.id : tree.id
                     )
                 );
 
@@ -299,8 +305,9 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        loadNetwork();
-    }, [loadNetwork]);
+        loadNetwork(workingNodeUuid === workingNodeIdRef.current);
+    }, [loadNetwork, workingNodeUuid]);
+    workingNodeIdRef.current = workingNodeUuid;
 
     useEffect(() => {
         if (studyUuid) {

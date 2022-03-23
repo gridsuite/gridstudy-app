@@ -38,7 +38,7 @@ import {
     SingleLineDiagramPane,
     useSingleLineDiagram,
 } from './single-line-diagram-pane';
-import HorizontalToolbar from './horizontal-toobar';
+import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { useParameterState } from './parameters';
 import { ReactFlowProvider } from 'react-flow-renderer';

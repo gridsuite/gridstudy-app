@@ -45,6 +45,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
     const intl = useIntl();
     const dispatch = useDispatch();
 
+    const selectedTreeNode = useSelector((state) => state.selectedTreeNode);
+
     const isExplorerDrawerOpen = useSelector(
         (state) => state.isExplorerDrawerOpen
     );
@@ -128,6 +130,10 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                         isModificationsDrawerOpen
                             ? classes.selected
                             : classes.notSelected
+                    }
+                    disabled={
+                        selectedTreeNode === null ||
+                        selectedTreeNode.type !== 'NETWORK_MODIFICATION'
                     }
                     onClick={toggleModificationsDrawer}
                 >
