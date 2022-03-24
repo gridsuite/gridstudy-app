@@ -19,6 +19,7 @@ import { RunButtonContainer } from './run-button-container';
 import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
+import { useIntlRef } from '../utils/messages';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -74,6 +75,7 @@ export const NetworkMapTab = ({
     showInSpreadsheet,
     setErrorMessage,
 }) => {
+    const intlRef = useIntlRef();
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const displayOverloadTable = useSelector(
@@ -193,10 +195,21 @@ export const NetworkMapTab = ({
             .catch(function (error) {
                 console.error(error.message);
                 setWaitingLoadGeoData(false);
-                setErrorMessage('geoDataLoadingFail');
+                setErrorMessage(
+                    intlRef.current.formatMessage(
+                        { id: 'geoDataLoadingFail' },
+                        { studyUuid: studyUuid }
+                    )
+                );
             });
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, setWaitingLoadGeoData, setErrorMessage, setGeoData]);
+    }, [
+        studyUuid,
+        setWaitingLoadGeoData,
+        setErrorMessage,
+        setGeoData,
+        intlRef,
+    ]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
