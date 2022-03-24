@@ -23,6 +23,7 @@ import {
     fetchNetworkModificationTree,
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
+    fetchStudyName,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -312,6 +313,21 @@ export function StudyContainer({ view, onChangeTab }) {
         loadNetwork(workingNode?.id === workingNodeIdRef.current);
     }, [loadNetwork, workingNode]);
     workingNodeIdRef.current = workingNode?.id;
+
+    useEffect(() => {
+        const appName = 'GridStudy';
+
+        if (studyUuid) {
+            fetchStudyName(studyUuid).then((response) => {
+                let studyName = response.elementName;
+                if (studyName) {
+                    document.title = appName + ' - ' + studyName;
+                } else {
+                    document.title = appName;
+                }
+            });
+        }
+    }, [studyUuid]);
 
     useEffect(() => {
         if (studyUuid) {
