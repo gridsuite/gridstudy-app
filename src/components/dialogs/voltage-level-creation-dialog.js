@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -22,6 +22,7 @@ import {
 import { useSnackbar } from 'notistack';
 import {
     useAutocompleteField,
+    useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
     useExpandableValues,
@@ -30,6 +31,8 @@ import {
     useTextValue,
 } from './input-hooks';
 import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const numericalWithButton = {
     type: 'number',
@@ -226,17 +229,52 @@ const VoltageLevelCreationDialog = ({
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    const equipmentPath = 'voltage-levels';
+
+    const clearValues = () => {
+        setFormValues(null);
+    };
+
+    const toFormValues = (voltageLevel) => {
+        return {
+            equipmentId: voltageLevel.id + '(1)',
+            equipmentName: voltageLevel.name,
+            nominalVoltage: voltageLevel.nominalVoltage,
+            substationId: voltageLevel.substationId,
+            busbarSections: voltageLevel.busbarSections,
+            busbarConnections: [],
+        };
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: searchCopy.handleOpenSearchDialog,
+    });
+
     const [voltageLevelId, voltageLevelIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [voltageLevelName, voltageLevelNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [nominalVoltage, nominalVoltageField] = useDoubleValue({
@@ -244,6 +282,7 @@ const VoltageLevelCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.nominalVoltage,
     });
 
     const [substation, substationField] = useAutocompleteField({
@@ -254,6 +293,12 @@ const VoltageLevelCreationDialog = ({
         values: substationOptions,
         allowNewValue: true,
         getLabel: getId,
+        defaultValue: null,
+        selectedValue: formValues
+            ? substationOptions.find(
+                  (value) => value.id === formValues.substationId
+              )
+            : null,
     });
 
     const [busBarSections, busBarSectionsField] = useExpandableValues({
@@ -262,6 +307,7 @@ const VoltageLevelCreationDialog = ({
         validateItem: validateBusBarSection,
         inputForm: inputForm,
         Field: BusBarSection,
+        defaultValues: formValues?.busbarSections,
     });
 
     const [connections, connectionsField] = useExpandableValues({
@@ -271,6 +317,7 @@ const VoltageLevelCreationDialog = ({
         inputForm: inputForm,
         Field: BusBarConnexion,
         fieldProps: busBarSections,
+        defaultValues: formValues?.busbarConnections,
     });
 
     const handleSave = () => {
@@ -301,10 +348,6 @@ const VoltageLevelCreationDialog = ({
         }
     };
 
-    const clearValues = () => {
-        inputForm.clear();
-    };
-
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
@@ -317,45 +360,55 @@ const VoltageLevelCreationDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="md" // 3 columns
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-voltage-level"
-        >
-            <DialogTitle>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid item xs={11}>
-                        <FormattedMessage id={'CreateVoltageLevel'} />
+        <>
+            <Dialog
+                fullWidth
+                maxWidth="md" // 3 columns
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-voltage-level"
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateVoltageLevel" />
+                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
-                </Grid>
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(voltageLevelIdField, 3)}
-                    {gridItem(voltageLevelNameField, 3)}
-                    {gridItem(nominalVoltageField, 3)}
-                    {gridItem(substationField, 3)}
-                </Grid>
-                <Grid container>
-                    <GridSection title={'BusBarSections'} />
-                    {busBarSectionsField}
-                </Grid>
-                <Grid container>
-                    <GridSection title={'Connectivity'} />
-                    {connectionsField}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(voltageLevelIdField, 3)}
+                        {gridItem(voltageLevelNameField, 3)}
+                        {gridItem(nominalVoltageField, 3)}
+                        {gridItem(substationField, 3)}
+                    </Grid>
+                    <Grid container>
+                        <GridSection title={'BusBarSections'} />
+                        {busBarSectionsField}
+                    </Grid>
+                    <Grid container>
+                        <GridSection title={'Connectivity'} />
+                        {connectionsField}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id="save" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'VOLTAGE_LEVEL'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 

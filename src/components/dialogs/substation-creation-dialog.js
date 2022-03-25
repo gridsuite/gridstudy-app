@@ -12,16 +12,23 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import React, { useCallback, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
 import { createSubstation } from '../../utils/rest-api';
-import { useCountryValue, useInputForm, useTextValue } from './input-hooks';
+import {
+    useButtonWithTooltip,
+    useCountryValue,
+    useInputForm,
+    useTextValue,
+} from './input-hooks';
 import { filledTextField, gridItem } from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 /**
  * Dialog to create a substation in the network
@@ -32,24 +39,56 @@ import { filledTextField, gridItem } from './dialogUtils';
 const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    const equipmentPath = 'substations';
+
+    const clearValues = () => {
+        setFormValues(null);
+    };
+
+    const toFormValues = (substation) => {
+        return {
+            equipmentId: substation.id + '(1)',
+            equipmentName: substation.name,
+            substationCountryLabel: substation.countryName,
+            substationCountry: null,
+        };
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: searchCopy.handleOpenSearchDialog,
+    });
+
     const [substationId, substationIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [substationName, substationNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [substationCountry, substationCountryField] = useCountryValue({
@@ -57,6 +96,10 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         inputForm: inputForm,
         formProps: filledTextField,
         validation: { isFieldRequired: false },
+        defaultCodeValue: formValues ? formValues.substationCountry : null,
+        defaultLabelValue: formValues
+            ? formValues.substationCountryLabel
+            : null,
     });
 
     const handleSave = () => {
@@ -82,10 +125,6 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         }
     };
 
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -102,31 +141,45 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-substation"
-            fullWidth={true}
-        >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'CreateSubstation' })}
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(substationIdField, 4)}
-                    {gridItem(substationNameField, 4)}
-                    {gridItem(substationCountryField, 4)}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-substation"
+                fullWidth={true}
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateSubstation" />
+                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
+                    </Grid>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(substationIdField, 4)}
+                        {gridItem(substationNameField, 4)}
+                        {gridItem(substationCountryField, 4)}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id="save" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'SUBSTATION'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 

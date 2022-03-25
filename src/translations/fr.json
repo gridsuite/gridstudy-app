@@ -355,9 +355,9 @@
     "NewName": "Nouveau nom",
 
     "CopyFromExisting": "Copier depuis un ouvrage existant",
-    "LoadCopied": "Données copiées depuis la consommation {loadId}",
-    "LoadCopyFailed404": "Erreur lors de la copie de la consommation : la consommation n'a pas été trouvée",
-    "LoadCopyFailed": "Erreur lors de la copie de la consommation",
+    "EquipmentCopied": "Données copiées depuis l'ouvrage {equipmentId}",
+    "EquipmentCopyFailed404": "Erreur lors de la copie de l'ouvrage : l'ouvrage n'a pas été trouvé",
+    "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
 
     "insertNetworkModificationNodeBefore": "Insérer un nœud de modifications de réseau au dessus",
     "insertModelNodeBefore": "Insérer un nœud modèle au dessus",

@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import React, { useCallback, useState } from 'react';
+import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -23,6 +23,7 @@ import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import {
     useBooleanValue,
+    useButtonWithTooltip,
     useConnectivityValue,
     useDoubleValue,
     useEnumValue,
@@ -36,6 +37,8 @@ import {
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -64,6 +67,7 @@ const ENERGY_SOURCES = [
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
+ * @param workingNodeUuid : the node we are currently working on
  */
 const GeneratorCreationDialog = ({
     open,
@@ -75,24 +79,64 @@ const GeneratorCreationDialog = ({
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const classes = useStyles();
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    const toFormValues = (generator) => {
+        return {
+            equipmentId: generator.id + '(1)',
+            equipmentName: generator.name,
+            energySource: generator.energySource,
+            maxActivePower: generator.maxP,
+            minActivePower: generator.minP,
+            ratedNominalPower: generator.ratedS,
+            activePowerSetpoint: generator.targetP,
+            voltageRegulatorOn: generator.voltageRegulatorOn,
+            voltageSetpoint: generator.targetV,
+            reactivePowerSetpoint: generator.targetQ,
+            voltageLevelId: generator.voltageLevelId,
+            busOrBusbarSectionId: null,
+        };
+    };
+
+    const equipmentPath = 'generators';
+
+    const clearValues = () => {
+        setFormValues(null);
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: searchCopy.handleOpenSearchDialog,
+    });
+
     const [generatorId, generatorIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [energySource, energySourceField] = useEnumValue({
@@ -103,6 +147,7 @@ const GeneratorCreationDialog = ({
         validation: {
             isFieldRequired: false,
         },
+        defaultValue: formValues?.energySource,
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
@@ -113,6 +158,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.maxActivePower,
     });
 
     const [minimumActivePower, minimumActivePowerField] = useDoubleValue({
@@ -125,6 +171,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.minActivePower,
     });
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
@@ -137,6 +184,7 @@ const GeneratorCreationDialog = ({
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.ratedNominalPower,
     });
 
     const [activePowerSetpoint, activePowerSetpointField] = useDoubleValue({
@@ -147,13 +195,14 @@ const GeneratorCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
+        defaultValue: formValues?.activePowerSetpoint,
     });
 
     const [voltageRegulation, voltageRegulationField] = useBooleanValue({
         label: 'VoltageRegulationText',
-        defaultValue: false,
         validation: { isFieldRequired: true },
         inputForm: inputForm,
+        defaultValue: formValues ? formValues.voltageRegulatorOn : false,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
@@ -167,6 +216,7 @@ const GeneratorCreationDialog = ({
         adornment: VoltageAdornment,
         formProps: { disabled: !voltageRegulation },
         inputForm: inputForm,
+        defaultValue: formValues?.voltageSetpoint,
     });
 
     const [reactivePowerSetpoint, reactivePowerSetpointField] = useDoubleValue({
@@ -178,6 +228,7 @@ const GeneratorCreationDialog = ({
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
         formProps: { disabled: voltageRegulation },
+        defaultValue: formValues?.reactivePowerSetpoint,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
@@ -185,6 +236,9 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+        busOrBusbarSectionIdDefaultValue:
+            formValues?.busOrBusbarSectionId || null,
     });
 
     const handleSave = () => {
@@ -219,10 +273,6 @@ const GeneratorCreationDialog = ({
         }
     };
 
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -239,72 +289,86 @@ const GeneratorCreationDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="md" // 3 columns
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-generator"
-        >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'CreateGenerator' })}
-            </DialogTitle>
-            <DialogContent>
-                <div>
-                    <Grid container spacing={2}>
-                        {gridItem(generatorIdField, 4)}
-                        {gridItem(generatorNameField, 4)}
-                        {gridItem(energySourceField, 4)}
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Limits" />
-                            </h3>
+        <>
+            <Dialog
+                fullWidth
+                maxWidth="md" // 3 columns
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-generator"
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateGenerator" />
                         </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
-                    <Grid container spacing={2}>
-                        {gridItem(minimumActivePowerField, 4)}
-                        {gridItem(maximumActivePowerField, 4)}
-                        {gridItem(ratedNominalPowerField, 4)}
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Setpoints" />
-                            </h3>
+                </DialogTitle>
+                <DialogContent>
+                    <div>
+                        <Grid container spacing={2}>
+                            {gridItem(generatorIdField, 4)}
+                            {gridItem(generatorNameField, 4)}
+                            {gridItem(energySourceField, 4)}
                         </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        {gridItem(activePowerSetpointField, 4)}
-                        {gridItem(reactivePowerSetpointField, 4)}
-                    </Grid>
-                    <Grid container spacing={2} alignItems="center">
-                        {gridItem(voltageRegulationField, 4)}
-                        {gridItem(voltageSetpointField, 4)}
-                    </Grid>
-                    {/* Connectivity part */}
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Connectivity" />
-                            </h3>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="Limits" />
+                                </h3>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        {gridItem(connectivityField, 8)}
-                    </Grid>
-                </div>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                        <Grid container spacing={2}>
+                            {gridItem(minimumActivePowerField, 4)}
+                            {gridItem(maximumActivePowerField, 4)}
+                            {gridItem(ratedNominalPowerField, 4)}
+                        </Grid>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="Setpoints" />
+                                </h3>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {gridItem(activePowerSetpointField, 4)}
+                            {gridItem(reactivePowerSetpointField, 4)}
+                        </Grid>
+                        <Grid container spacing={2} alignItems="center">
+                            {gridItem(voltageRegulationField, 4)}
+                            {gridItem(voltageSetpointField, 4)}
+                        </Grid>
+                        {/* Connectivity part */}
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <h3 className={classes.h3}>
+                                    <FormattedMessage id="Connectivity" />
+                                </h3>
+                            </Grid>
+                        </Grid>
+                        <Grid container spacing={2}>
+                            {gridItem(connectivityField, 8)}
+                        </Grid>
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id="save" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'GENERATOR'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 
