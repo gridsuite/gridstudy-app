@@ -23,7 +23,7 @@ import {
     fetchNetworkModificationTree,
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
-    fetchStudyName,
+    fetchElementAndParentsInfo,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -316,16 +316,47 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         const appName = 'GridStudy';
+        const MAX_TITLE_LENGTH = 110;
 
         if (studyUuid) {
-            fetchStudyName(studyUuid).then((response) => {
-                let studyName = response.elementName;
-                if (studyName) {
-                    document.title = appName + ' - ' + studyName;
-                } else {
+            fetchElementAndParentsInfo(studyUuid)
+                .then((response) => {
+                    let study = response[0];
+                    let parents = response.slice(1);
+                    let titrePage = '';
+
+                    if (study && parents.length > 0) {
+                        titrePage =
+                            appName +
+                            ' - ' +
+                            study.elementName +
+                            ' - ' +
+                            parents
+                                .reverse()
+                                .reduce(
+                                    (acc, parent) =>
+                                        acc
+                                            ? acc + ' > ' + parent.elementName
+                                            : parent.elementName,
+                                    ''
+                                );
+                    } else if (study) {
+                        titrePage = appName + ' - ' + study.elementName;
+                    } else {
+                        titrePage = appName;
+                    }
+
+                    // On Edge, displayed title has a maximum of ~ 110 characters
+                    // This line makes the behaviour similar for other browsers
+                    document.title =
+                        titrePage.substring(0, MAX_TITLE_LENGTH) +
+                        (titrePage.length > MAX_TITLE_LENGTH ? ' ...' : '');
+                })
+                .catch(() => {
                     document.title = appName;
-                }
-            });
+                });
+        } else {
+            document.title = appName;
         }
     }, [studyUuid]);
 
