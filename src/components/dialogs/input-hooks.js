@@ -96,6 +96,7 @@ export const useTextValue = ({
     validation = {},
     adornment,
     transformValue = func_identity,
+    acceptValue,
     inputForm,
     formProps,
     errorMsg,
@@ -119,9 +120,10 @@ export const useTextValue = ({
 
     const handleChangeValue = useCallback(
         (event) => {
-            setValue(transformValue(event.target.value));
+            if (acceptValue === undefined || acceptValue(event.target.value))
+                setValue(transformValue(event.target.value));
         },
-        [transformValue]
+        [acceptValue, transformValue]
     );
 
     const field = useMemo(() => {
@@ -182,6 +184,10 @@ export const useIntegerValue = ({
     });
 };
 
+function isFloatNumber(val) {
+    return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
+}
+
 export const useDoubleValue = ({
     transformValue = toFloatValue,
     validation,
@@ -189,6 +195,7 @@ export const useDoubleValue = ({
 }) => {
     return useTextValue({
         ...props,
+        acceptValue: isFloatNumber,
         transformValue: transformValue,
         validation: { ...validation, isFieldNumeric: true },
     });

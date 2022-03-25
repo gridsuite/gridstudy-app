@@ -147,7 +147,7 @@ const NetworkTable = (props) => {
         return (
             <EquipmentTable
                 studyUuid={props.studyUuid}
-                selectedNodeUuid={props.selectedNodeUuid}
+                workingNode={props.workingNode}
                 rows={rows}
                 selectedColumnsNames={selectedColumnsNames}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
@@ -366,7 +366,7 @@ const NetworkTable = (props) => {
 NetworkTable.defaultProps = {
     network: null,
     studyUuid: '',
-    selectedNodeUuid: '',
+    workingNode: null,
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
@@ -375,7 +375,7 @@ NetworkTable.defaultProps = {
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
-    selectedNodeUuid: PropTypes.string,
+    workingNode: PropTypes.object,
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,

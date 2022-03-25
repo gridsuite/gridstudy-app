@@ -17,6 +17,7 @@ export function getFirstNodeOfType(elements, nodeType, buildStatus) {
                 label: elements.name,
                 description: elements.description,
                 buildStatus: elements.buildStatus,
+                readOnly: elements.readOnly,
             },
         };
     }
