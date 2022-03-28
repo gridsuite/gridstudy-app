@@ -1,5 +1,5 @@
 import NetworkMap from './network/network-map';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchLinePositions,
@@ -71,9 +71,9 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     setIsComputationRunning,
     filteredNominalVoltages,
-    centerOnSubstation,
     showInSpreadsheet,
     setErrorMessage,
+    mapRef,
 }) => {
     const intlRef = useIntlRef();
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
@@ -83,8 +83,6 @@ export const NetworkMapTab = ({
     );
 
     const [geoData, setGeoData] = useState();
-
-    const mapRef = useRef();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
@@ -171,11 +169,6 @@ export const NetworkMapTab = ({
         },
         []
     );
-
-    useEffect(() => {
-        if (centerOnSubstation)
-            mapRef.current.centerSubstation(centerOnSubstation);
-    }, [mapRef, centerOnSubstation]);
 
     useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
@@ -355,6 +348,7 @@ NetworkMapTab.propTypes = {
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
+    mapRef: PropTypes.any,
 };
 
 export default NetworkMapTab;
