@@ -199,24 +199,29 @@ export function StudyContainer({ view, onChangeTab }) {
         (isUpdate) => {
             console.info(`Loading network of study '${studyUuid}'...`);
 
-            if (isUpdate) {
-                // After a load flow, network has to be recreated.
-                // In order to avoid glitches during sld and map rendering,
-                // lines and substations have to be prefetched and set before network creation event is dispatched
-                // Network creation event is dispatched directly in the network constructor
-                new Network(
-                    studyUuid,
-                    workingNode?.id,
-                    (error) => {
-                        console.error(error.message);
-                        setNetworkLoadingFailMessage(error.message);
-                        //setIsNetworkPending(false);
-                    },
-                    dispatch,
-                    { equipments: [equipments.lines, equipments.substations] }
-                );
-            } else {
-                if (workingNode !== null) {
+            if (workingNode && studyUuid) {
+                if (isUpdate) {
+                    // After a load flow, network has to be recreated.
+                    // In order to avoid glitches during sld and map rendering,
+                    // lines and substations have to be prefetched and set before network creation event is dispatched
+                    // Network creation event is dispatched directly in the network constructor
+                    new Network(
+                        studyUuid,
+                        workingNode?.id,
+                        (error) => {
+                            console.error(error.message);
+                            setNetworkLoadingFailMessage(error.message);
+                            //setIsNetworkPending(false);
+                        },
+                        dispatch,
+                        {
+                            equipments: [
+                                equipments.lines,
+                                equipments.substations,
+                            ],
+                        }
+                    );
+                } else {
                     const network = new Network(
                         studyUuid,
                         workingNode?.id,
