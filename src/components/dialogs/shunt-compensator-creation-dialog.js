@@ -21,6 +21,7 @@ import {
 import { useSnackbar } from 'notistack';
 import {
     useBooleanValue,
+    useButtonWithTooltip,
     useConnectivityValue,
     useDoubleValue,
     useInputForm,
@@ -35,6 +36,8 @@ import {
     SusceptanceAdornment,
     toPositiveIntValue,
 } from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const disabledChecked = { disabled: true };
 
@@ -44,6 +47,7 @@ const disabledChecked = { disabled: true };
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
+ * @param workingNodeUuid : the node we are currently working on
  */
 const ShuntCompensatorCreationDialog = ({
     open,
@@ -62,6 +66,38 @@ const ShuntCompensatorCreationDialog = ({
     const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
+
+    const equipmentPath = 'shunt-compensators';
+
+    const clearValues = () => {
+        setFormValues(null);
+    };
+
+    const toFormValues = (shuntCompensator) => {
+        return {
+            equipmentId: shuntCompensator.id + '(1)',
+            equipmentName: shuntCompensator.name,
+            maximumNumberOfSections: shuntCompensator.maximumSectionCount,
+            currentNumberOfSections: shuntCompensator.sectionCount,
+            susceptancePerSection: shuntCompensator.bperSection,
+            voltageLevelId: shuntCompensator.voltageLevelId,
+            busOrBusbarSectionId: null,
+        };
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: searchCopy.handleOpenSearchDialog,
+    });
 
     useEffect(() => {
         if (editData) {
@@ -189,10 +225,6 @@ const ShuntCompensatorCreationDialog = ({
         }
     };
 
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -209,43 +241,57 @@ const ShuntCompensatorCreationDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-shuntCompensator"
-        >
-            <DialogTitle>
-                <FormattedMessage id="CreateShuntCompensator" />
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(shuntCompensatorIdField)}
-                    {gridItem(shuntCompensatorNameField)}
-                </Grid>
-                <GridSection title="Characteristics" />
-                <Grid container spacing={2}>
-                    {gridItem(maximumNumberOfSectionsField)}
-                    {gridItem(currentNumberOfSectionsField)}
-                </Grid>
-                <Grid container spacing={2}>
-                    {gridItem(identicalSectionsField)}
-                    {gridItem(susceptancePerSectionField)}
-                </Grid>
-                <GridSection title="Connectivity" />
-                <Grid container spacing={2}>
-                    {gridItem(connectivityField, 12)}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            <Dialog
+                fullWidth
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-shuntCompensator"
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateShuntCompensator" />
+                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
+                    </Grid>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(shuntCompensatorIdField)}
+                        {gridItem(shuntCompensatorNameField)}
+                    </Grid>
+                    <GridSection title="Characteristics" />
+                    <Grid container spacing={2}>
+                        {gridItem(maximumNumberOfSectionsField)}
+                        {gridItem(currentNumberOfSectionsField)}
+                    </Grid>
+                    <Grid container spacing={2}>
+                        {gridItem(identicalSectionsField)}
+                        {gridItem(susceptancePerSectionField)}
+                    </Grid>
+                    <GridSection title="Connectivity" />
+                    <Grid container spacing={2}>
+                        {gridItem(connectivityField, 12)}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id="save" />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'SHUNT_COMPENSATOR'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 

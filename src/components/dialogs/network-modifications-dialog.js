@@ -24,6 +24,7 @@ import TwoWindingsTransformerCreationDialog from './two-windings-transformer-cre
 import SubstationCreationDialog from './substation-creation-dialog';
 import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import ShuntCompensatorCreationDialog from './shunt-compensator-creation-dialog';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -167,9 +168,9 @@ const NetworkModificationDialog = ({
                                     startIcon={values.icon}
                                     onClick={() => openDialog(id)}
                                 >
-                                    {intl.formatMessage({
-                                        id: values.label,
-                                    })}
+                                    <Typography align="left">
+                                        <FormattedMessage id={values.label} />
+                                    </Typography>
                                 </Button>
                             </Grid>
                         ))}

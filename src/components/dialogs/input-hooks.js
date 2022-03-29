@@ -96,6 +96,7 @@ export const useTextValue = ({
     validation = {},
     adornment,
     transformValue = func_identity,
+    acceptValue,
     inputForm,
     formProps,
     errorMsg,
@@ -119,9 +120,10 @@ export const useTextValue = ({
 
     const handleChangeValue = useCallback(
         (event) => {
-            setValue(transformValue(event.target.value));
+            if (acceptValue === undefined || acceptValue(event.target.value))
+                setValue(transformValue(event.target.value));
         },
-        [transformValue]
+        [acceptValue, transformValue]
     );
 
     const field = useMemo(() => {
@@ -182,6 +184,10 @@ export const useIntegerValue = ({
     });
 };
 
+function isFloatNumber(val) {
+    return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
+}
+
 export const useDoubleValue = ({
     transformValue = toFloatValue,
     validation,
@@ -189,6 +195,7 @@ export const useDoubleValue = ({
 }) => {
     return useTextValue({
         ...props,
+        acceptValue: isFloatNumber,
         transformValue: transformValue,
         validation: { ...validation, isFieldNumeric: true },
     });
@@ -268,14 +275,12 @@ export const useConnectivityValue = ({
     const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
 
-    useEffect(
-        () =>
-            setConnectivity({
-                voltageLevel: null,
-                busOrBusbarSection: null,
-            }),
-        [inputForm.toggleClear]
-    );
+    useEffect(() => {
+        setConnectivity({
+            voltageLevel: null,
+            busOrBusbarSection: null,
+        });
+    }, [inputForm.toggleClear]);
 
     useEffect(() => {
         setConnectivity({
@@ -378,9 +383,10 @@ export const useAutocompleteField = ({
     getLabel = func_identity,
     allowNewValue = false,
     errorMsg,
+    selectedValue,
     defaultValue,
 }) => {
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState('');
     const validationRef = useRef();
     validationRef.current = validation;
@@ -404,6 +410,12 @@ export const useAutocompleteField = ({
         setValue(value);
     }, []);
 
+    useEffect(() => {
+        if (selectedValue) {
+            setValue(selectedValue);
+        }
+    }, [selectedValue]);
+
     const field = useMemo(() => {
         return (
             <Autocomplete
@@ -414,7 +426,8 @@ export const useAutocompleteField = ({
                 size={'small'}
                 options={values}
                 getOptionLabel={getLabel}
-                defaultValue={defaultValue}
+                defaultValue={value}
+                value={value}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
@@ -450,7 +463,6 @@ export const useAutocompleteField = ({
     }, [
         label,
         values,
-        defaultValue,
         getLabel,
         allowNewValue,
         handleChangeValue,
@@ -489,6 +501,8 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
 
 export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const [code, setCode] = useState(props.defaultCodeValue);
+
     const countriesList = useMemo(() => {
         try {
             return require('localized-countries')(
@@ -503,6 +517,27 @@ export const useCountryValue = (props) => {
         }
     }, [languageLocal]);
 
+    useEffect(() => {
+        //We only need to search for the code if we only have the label
+        if (
+            props.defaultLabelValue !== null &&
+            props.defaultCodeValue === null
+        ) {
+            let res = countriesList
+                .array()
+                .filter(
+                    (obj) =>
+                        obj.label.toLowerCase() ===
+                        props.defaultLabelValue.toLowerCase()
+                )[0];
+            setCode(res.code);
+        } else if (props.defaultCodeValue !== null) {
+            setCode(props.defaultCodeValue);
+        } else {
+            setCode(null);
+        }
+    }, [countriesList, props.defaultLabelValue, props.defaultCodeValue]);
+
     const values = useMemo(
         () => (countriesList ? Object.keys(countriesList.object()) : []),
         [countriesList]
@@ -515,6 +550,8 @@ export const useCountryValue = (props) => {
     return useAutocompleteField({
         values,
         getLabel: getOptionLabel,
+        selectedValue: code,
+        defaultValue: code,
         ...props,
     });
 };
@@ -606,7 +643,7 @@ export const useExpandableValues = ({
     labelAddValue,
     Field,
     inputForm,
-    defaultValues = [],
+    defaultValues,
     fieldProps,
     validateItem,
 }) => {
@@ -615,8 +652,10 @@ export const useExpandableValues = ({
     const [errors, setErrors] = useState();
 
     useEffect(() => {
-        if (defaultValues.length) {
-            setValues(defaultValues);
+        if (defaultValues) {
+            setValues([...defaultValues]);
+        } else {
+            setValues([]);
         }
     }, [defaultValues]);
 

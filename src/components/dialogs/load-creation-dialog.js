@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
@@ -35,8 +35,9 @@ import {
     ReactivePowerAdornment,
 } from './dialogUtils';
 
-import { createLoad, fetchLoadInfos } from '../../utils/rest-api';
+import { createLoad } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const LOAD_TYPES = [
     { id: '', label: 'None' },
@@ -63,8 +64,6 @@ const LoadCreationDialog = ({
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
-
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -73,20 +72,43 @@ const LoadCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const handleOpenSearchDialog = () => {
-        setDialogSearchOpen(true);
+    const equipmentPath = 'loads';
+
+    const clearValues = () => {
+        setFormValues(null);
     };
+
+    const toFormValues = (load) => {
+        return {
+            equipmentId: load.id + '(1)',
+            equipmentName: load.name,
+            loadType: load.type,
+            activePower: load.p0,
+            reactivePower: load.q0,
+            voltageLevelId: load.voltageLevelId,
+            busOrBusbarSectionId: null,
+        };
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: searchCopy.handleOpenSearchDialog,
+    });
 
     useEffect(() => {
         if (editData) {
             setFormValues(editData);
         }
     }, [editData]);
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: handleOpenSearchDialog,
-    });
 
     const [loadId, loadIdField] = useTextValue({
         label: 'ID',
@@ -195,10 +217,6 @@ const LoadCreationDialog = ({
         }
     };
 
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -212,66 +230,6 @@ const LoadCreationDialog = ({
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
-    };
-
-    const [isDialogSearchOpen, setDialogSearchOpen] = useState(false);
-
-    const handleCloseSearchDialog = () => {
-        setDialogSearchOpen(false);
-    };
-
-    const handleSelectionChange = (element) => {
-        let msg;
-        fetchLoadInfos(studyUuid, selectedNodeUuid, element.id).then(
-            (response) => {
-                if (response.status === 200) {
-                    response.json().then((load) => {
-                        setFormValues(null);
-                        load.id = load.id + '(1)';
-                        load.busOrBusbarSectionId = null;
-                        setFormValues(load);
-
-                        msg = intl.formatMessage(
-                            { id: 'LoadCopied' },
-                            {
-                                loadId: element.id,
-                            }
-                        );
-                        enqueueSnackbar(msg, {
-                            variant: 'info',
-                            persist: false,
-                            style: { whiteSpace: 'pre-line' },
-                        });
-                    });
-                } else {
-                    console.error(
-                        'error while fetching load {loadId} : status = {status}',
-                        element.id,
-                        response.status
-                    );
-                    if (response.status === 404) {
-                        msg = intl.formatMessage(
-                            { id: 'LoadCopyFailed404' },
-                            {
-                                loadId: element.id,
-                            }
-                        );
-                    } else {
-                        msg = intl.formatMessage(
-                            { id: 'LoadCopyFailed' },
-                            {
-                                loadId: element.id,
-                            }
-                        );
-                    }
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: msg,
-                        enqueueSnackbar,
-                    });
-                }
-            }
-        );
-        handleCloseSearchDialog();
     };
 
     return (
@@ -317,10 +275,10 @@ const LoadCreationDialog = ({
                 </DialogActions>
             </Dialog>
             <EquipmentSearchDialog
-                open={isDialogSearchOpen}
-                onClose={handleCloseSearchDialog}
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'LOAD'}
-                onSelectionChange={handleSelectionChange}
+                onSelectionChange={searchCopy.handleSelectionChange}
                 selectedNodeUuid={selectedNodeUuid}
             />
         </>

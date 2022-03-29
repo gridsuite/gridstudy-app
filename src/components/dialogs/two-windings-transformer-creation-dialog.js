@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
     displayErrorMessageWithSnackbar,
@@ -22,6 +22,7 @@ import {
 } from '../../utils/messages';
 import { createTwoWindingsTransformer } from '../../utils/rest-api';
 import {
+    useButtonWithTooltip,
     useConnectivityValue,
     useDoubleValue,
     useInputForm,
@@ -34,6 +35,8 @@ import {
     SusceptanceAdornment,
     VoltageAdornment,
 } from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -64,7 +67,6 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const intl = useIntl();
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -72,6 +74,43 @@ const TwoWindingsTransformerCreationDialog = ({
     const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
+
+    const equipmentPath = '2-windings-transformers';
+
+    const clearValues = () => {
+        setFormValues(null);
+    };
+
+    const toFormValues = (twt) => {
+        return {
+            equipmentId: twt.id + '(1)',
+            equipmentName: twt.name,
+            seriesResistance: twt.r,
+            seriesReactance: twt.x,
+            magnetizingConductance: twt.g,
+            magnetizingSusceptance: twt.b,
+            ratedVoltage1: twt.ratedU1,
+            ratedVoltage2: twt.ratedU2,
+            voltageLevelId1: twt.voltageLevelId1,
+            busOrBusbarSectionId1: null,
+            voltageLevelId2: twt.voltageLevelId2,
+            busOrBusbarSectionId2: null,
+        };
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: searchCopy.handleOpenSearchDialog,
+    });
 
     useEffect(() => {
         if (editData) {
@@ -236,10 +275,6 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const clearValues = useCallback(() => {
-        inputForm.clear();
-    }, [inputForm]);
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -256,99 +291,113 @@ const TwoWindingsTransformerCreationDialog = ({
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-two-windings-transformer"
-            fullWidth={true}
-        >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'CreateTwoWindingsTransformer' })}
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(twoWindingsTransformerIdField)}
-                    {gridItem(twoWindingsTransformerNameField)}
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <h3 className={classes.h3}>
-                            <FormattedMessage id="Characteristics" />
-                        </h3>
+        <>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-two-windings-transformer"
+                fullWidth={true}
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateTwoWindingsTransformer" />
+                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    {gridItem(seriesResistanceField)}
-                    {gridItem(seriesReactanceField)}
-                    {gridItem(magnetizingConductanceField)}
-                    {gridItem(magnetizingSusceptanceField)}
-                </Grid>
-                {/* <br /> */}
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <h3 className={classes.h3}>
-                            <FormattedMessage id="Limits" />
-                        </h3>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(twoWindingsTransformerIdField)}
+                        {gridItem(twoWindingsTransformerNameField)}
                     </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <h4 className={classes.h4}>
-                            <FormattedMessage id="Side1" />
-                        </h4>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <h4 className={classes.h4}>
-                            <FormattedMessage id="Side2" />
-                        </h4>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    {gridItem(ratedVoltage1Field)}
-                    {gridItem(ratedVoltage2Field)}
-                </Grid>
-                {/* <br /> */}
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <h3 className={classes.h3}>
-                            <FormattedMessage id="Connectivity" />
-                        </h3>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                        <h4 className={classes.h4}>
-                            <FormattedMessage id="Side1" />
-                        </h4>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <h4 className={classes.h4}>
-                            <FormattedMessage id="Side2" />
-                        </h4>
-                    </Grid>
-                </Grid>
-                <Grid container spacing={2}>
-                    <Grid item container xs={6} direction="column">
-                        <Grid container direction="column" spacing={2}>
-                            {gridItem(connectivity1Field, 'column')}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <h3 className={classes.h3}>
+                                <FormattedMessage id="Characteristics" />
+                            </h3>
                         </Grid>
                     </Grid>
-                    <Grid item container direction="column" xs={6}>
-                        <Grid container direction="column" spacing={2}>
-                            {gridItem(connectivity2Field, 'column')}
+                    <Grid container spacing={2}>
+                        {gridItem(seriesResistanceField)}
+                        {gridItem(seriesReactanceField)}
+                        {gridItem(magnetizingConductanceField)}
+                        {gridItem(magnetizingSusceptanceField)}
+                    </Grid>
+                    {/* <br /> */}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <h3 className={classes.h3}>
+                                <FormattedMessage id="Limits" />
+                            </h3>
                         </Grid>
                     </Grid>
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id={editData ? 'Update' : 'save'} />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <h4 className={classes.h4}>
+                                <FormattedMessage id="Side1" />
+                            </h4>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <h4 className={classes.h4}>
+                                <FormattedMessage id="Side2" />
+                            </h4>
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
+                        {gridItem(ratedVoltage1Field)}
+                        {gridItem(ratedVoltage2Field)}
+                    </Grid>
+                    {/* <br /> */}
+                    <Grid container spacing={2}>
+                        <Grid item xs={12}>
+                            <h3 className={classes.h3}>
+                                <FormattedMessage id="Connectivity" />
+                            </h3>
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <h4 className={classes.h4}>
+                                <FormattedMessage id="Side1" />
+                            </h4>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <h4 className={classes.h4}>
+                                <FormattedMessage id="Side2" />
+                            </h4>
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
+                        <Grid item container xs={6} direction="column">
+                            <Grid container direction="column" spacing={2}>
+                                {gridItem(connectivity1Field, 12)}
+                            </Grid>
+                        </Grid>
+                        <Grid item container direction="column" xs={6}>
+                            <Grid container direction="column" spacing={2}>
+                                {gridItem(connectivity2Field, 12)}
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'TWO_WINDINGS_TRANSFORMER'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 

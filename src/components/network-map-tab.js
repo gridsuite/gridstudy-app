@@ -1,5 +1,5 @@
 import NetworkMap from './network/network-map';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchLinePositions,
@@ -19,6 +19,7 @@ import { RunButtonContainer } from './run-button-container';
 import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
+import { useIntlRef } from '../utils/messages';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -52,7 +53,7 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     network,
-    selectedNodeUuid,
+    workingNode,
     /* results*/
     securityAnalysisStatus,
     runnable,
@@ -70,10 +71,11 @@ export const NetworkMapTab = ({
     openVoltageLevel,
     setIsComputationRunning,
     filteredNominalVoltages,
-    centerOnSubstation,
     showInSpreadsheet,
     setErrorMessage,
+    mapRef,
 }) => {
+    const intlRef = useIntlRef();
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
 
     const displayOverloadTable = useSelector(
@@ -81,8 +83,6 @@ export const NetworkMapTab = ({
     );
 
     const [geoData, setGeoData] = useState();
-
-    const mapRef = useRef();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
         position: [-1, -1],
@@ -171,11 +171,6 @@ export const NetworkMapTab = ({
     );
 
     useEffect(() => {
-        if (centerOnSubstation)
-            mapRef.current.centerSubstation(centerOnSubstation);
-    }, [mapRef, centerOnSubstation]);
-
-    useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
 
         const substationPositions = fetchSubstationPositions(studyUuid);
@@ -193,10 +188,21 @@ export const NetworkMapTab = ({
             .catch(function (error) {
                 console.error(error.message);
                 setWaitingLoadGeoData(false);
-                setErrorMessage('geoDataLoadingFail');
+                setErrorMessage(
+                    intlRef.current.formatMessage(
+                        { id: 'geoDataLoadingFail' },
+                        { studyUuid: studyUuid }
+                    )
+                );
             });
         // Note: studyUuid and dispatch don't change
-    }, [studyUuid, setWaitingLoadGeoData, setErrorMessage, setGeoData]);
+    }, [
+        studyUuid,
+        setWaitingLoadGeoData,
+        setErrorMessage,
+        setGeoData,
+        intlRef,
+    ]);
 
     let choiceVoltageLevelsSubstation = null;
     if (choiceVoltageLevelsSubstationId) {
@@ -212,7 +218,7 @@ export const NetworkMapTab = ({
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
                     withEquipment(MenuLine, {
-                        selectedNodeUuid: selectedNodeUuid,
+                        workingNode: workingNode,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
@@ -318,7 +324,7 @@ export const NetworkMapTab = ({
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
-                    selectedNodeUuid={selectedNodeUuid}
+                    workingNode={workingNode}
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}
@@ -342,6 +348,7 @@ NetworkMapTab.propTypes = {
     view: PropTypes.any,
     onSubstationClickChooseVoltageLevel: PropTypes.func,
     onSubstationMenuClick: PropTypes.func,
+    mapRef: PropTypes.any,
 };
 
 export default NetworkMapTab;

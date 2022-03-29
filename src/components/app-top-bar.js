@@ -85,7 +85,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
+    const workingNode = useSelector((state) => state.workingTreeNode);
 
     const [showParameters, setShowParameters] = useState(false);
 
@@ -95,7 +95,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (searchTerm) => {
             fetchEquipmentsInfos(
                 studyUuid,
-                workingNodeUuid,
+                workingNode?.id,
                 searchTerm,
                 useNameLocal
             )
@@ -115,7 +115,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     })
                 );
         },
-        [studyUuid, workingNodeUuid, useNameLocal, enqueueSnackbar, intlRef]
+        [studyUuid, workingNode, useNameLocal, enqueueSnackbar, intlRef]
     );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook

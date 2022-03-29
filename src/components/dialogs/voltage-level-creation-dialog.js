@@ -22,6 +22,7 @@ import {
 import { useSnackbar } from 'notistack';
 import {
     useAutocompleteField,
+    useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
     useExpandableValues,
@@ -30,6 +31,8 @@ import {
     useTextValue,
 } from './input-hooks';
 import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const numericalWithButton = {
     type: 'number',
@@ -242,6 +245,37 @@ const VoltageLevelCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
+    const equipmentPath = 'voltage-levels';
+
+    const clearValues = () => {
+        setFormValues(null);
+    };
+
+    const toFormValues = (voltageLevel) => {
+        return {
+            equipmentId: voltageLevel.id + '(1)',
+            equipmentName: voltageLevel.name,
+            nominalVoltage: voltageLevel.nominalVoltage,
+            substationId: voltageLevel.substationId,
+            busbarSections: voltageLevel.busbarSections,
+            busbarConnections: [],
+        };
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: searchCopy.handleOpenSearchDialog,
+    });
+
     useEffect(() => {
         if (editData) {
             setFormValues(editData);
@@ -279,9 +313,12 @@ const VoltageLevelCreationDialog = ({
         values: substationOptions,
         allowNewValue: true,
         getLabel: getId,
-        defaultValue: substationOptions.find(
-            (value) => value.id === formValues?.substationId
-        ),
+        defaultValue: null,
+        selectedValue: formValues
+            ? substationOptions.find(
+                  (value) => value.id === formValues.substationId
+              )
+            : null,
     });
 
     const [busBarSections, busBarSectionsField] = useExpandableValues({
@@ -354,10 +391,6 @@ const VoltageLevelCreationDialog = ({
         }
     };
 
-    const clearValues = () => {
-        inputForm.clear();
-    };
-
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
@@ -370,45 +403,55 @@ const VoltageLevelCreationDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="md" // 3 columns
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-voltage-level"
-        >
-            <DialogTitle>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid item xs={11}>
-                        <FormattedMessage id={'CreateVoltageLevel'} />
+        <>
+            <Dialog
+                fullWidth
+                maxWidth="md" // 3 columns
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-voltage-level"
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateVoltageLevel" />
+                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
-                </Grid>
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(voltageLevelIdField, 3)}
-                    {gridItem(voltageLevelNameField, 3)}
-                    {gridItem(nominalVoltageField, 3)}
-                    {gridItem(substationField, 3)}
-                </Grid>
-                <Grid container>
-                    <GridSection title={'BusBarSections'} />
-                    {busBarSectionsField}
-                </Grid>
-                <Grid container>
-                    <GridSection title={'Connectivity'} />
-                    {connectionsField}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id={editData ? 'Update' : 'save'} />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(voltageLevelIdField, 3)}
+                        {gridItem(voltageLevelNameField, 3)}
+                        {gridItem(nominalVoltageField, 3)}
+                        {gridItem(substationField, 3)}
+                    </Grid>
+                    <Grid container>
+                        <GridSection title={'BusBarSections'} />
+                        {busBarSectionsField}
+                    </Grid>
+                    <Grid container>
+                        <GridSection title={'Connectivity'} />
+                        {connectionsField}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear} variant="text">
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave} variant="text">
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'VOLTAGE_LEVEL'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 

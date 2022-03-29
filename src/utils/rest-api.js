@@ -435,16 +435,6 @@ export function fetchEquipmentsInfos(
     );
 }
 
-export function fetchLoadInfos(studyUuid, selectedNodeUuid, loadId) {
-    return fetchEquipmentInfos(
-        studyUuid,
-        selectedNodeUuid,
-        'loads',
-        loadId,
-        true
-    );
-}
-
 export function fetchAllEquipments(
     studyUuid,
     selectedNodeUuid,
@@ -478,7 +468,7 @@ function fetchEquipments(
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
 
-function fetchEquipmentInfos(
+export function fetchEquipmentInfos(
     studyUuid,
     selectedNodeUuid,
     equipmentPath,

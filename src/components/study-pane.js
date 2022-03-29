@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -97,7 +97,7 @@ export const StudyDisplayMode = {
 const StudyPane = ({
     studyUuid,
     network,
-    workingNodeUuid,
+    workingNode,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -142,8 +142,6 @@ const StudyPane = ({
         changed: false,
     });
 
-    const [centerOnSubstation, setCenterOnSubstation] = useState();
-
     const dispatch = useDispatch();
 
     const classes = useStyles();
@@ -153,6 +151,15 @@ const StudyPane = ({
         showVoltageLevelDiagram,
         showSubstationDiagram,
     ] = useSingleLineDiagram(studyUuid);
+
+    const mapRef = useRef();
+
+    const setCenterOnSubstation = useCallback(
+        (substationId) => {
+            mapRef.current.centerSubstation(substationId);
+        },
+        [mapRef]
+    );
 
     useEffect(() => {
         if (
@@ -318,9 +325,8 @@ const StudyPane = ({
                                         filteredNominalVoltages
                                     }
                                     openVoltageLevel={openVoltageLevel}
-                                    centerOnSubstation={centerOnSubstation}
                                     /* TODO verif tableEquipment*/
-                                    selectedNodeUuid={workingNodeUuid}
+                                    workingNode={workingNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -334,6 +340,7 @@ const StudyPane = ({
                                     }
                                     runnable={runnable}
                                     setErrorMessage={setErrorMessage}
+                                    mapRef={mapRef}
                                 />
                             </div>
 
@@ -363,7 +370,7 @@ const StudyPane = ({
                                     loadFlowStatus={getLoadFlowRunningStatus(
                                         loadFlowInfos?.loadFlowStatus
                                     )}
-                                    selectedNodeUuid={workingNodeUuid}
+                                    workingNode={workingNode}
                                 />
                             )}
                         </div>
@@ -379,7 +386,7 @@ const StudyPane = ({
                 <NetworkTable
                     network={network}
                     studyUuid={studyUuid}
-                    selectedNodeUuid={workingNodeUuid}
+                    workingNode={workingNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
@@ -416,7 +423,7 @@ const StudyPane = ({
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
-                    selectedNodeUuid={workingNodeUuid}
+                    workingNode={workingNode}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}

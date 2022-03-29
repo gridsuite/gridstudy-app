@@ -22,6 +22,7 @@ export default class NetworkModificationTreeModel {
                 label: newElement.name,
                 description: newElement.description,
                 buildStatus: newElement.buildStatus,
+                readOnly: newElement.readOnly,
             },
         });
         // Add edge between node and its parent
@@ -114,6 +115,7 @@ export default class NetworkModificationTreeModel {
                     ...this.treeElements[indexModifiedNode].data,
                     label: node.name,
                     buildStatus: node.buildStatus,
+                    readOnly: node.readOnly,
                 };
             }
         });
@@ -129,6 +131,7 @@ export default class NetworkModificationTreeModel {
                 label: elements.name,
                 description: elements.description,
                 buildStatus: elements.buildStatus,
+                readOnly: elements.readOnly,
             },
         });
         // handle root children

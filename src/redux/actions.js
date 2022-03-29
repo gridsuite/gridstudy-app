@@ -331,7 +331,10 @@ export const WORKING_TREE_NODE = 'WORKING_TREE_NODE';
 export function workingTreeNode(workingTreeNode) {
     return {
         type: WORKING_TREE_NODE,
-        workingTreeNode: workingTreeNode,
+        workingTreeNode: {
+            id: workingTreeNode?.id,
+            readOnly: workingTreeNode?.data?.readOnly,
+        },
     };
 }
 
