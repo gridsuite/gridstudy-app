@@ -316,49 +316,89 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         const appName = 'GridStudy';
-        const MAX_TITLE_LENGTH = 110;
+        const MAX_TITLE_LENGTH = 106;
 
         if (studyUuid) {
             fetchElementAndParentsInfo(studyUuid)
                 .then((response) => {
                     let study = response[0];
-                    let parents = response.slice(1);
+                    let parents = response
+                        .slice(1)
+                        .map((parent) => parent.elementName);
                     let titrePage = '';
 
-                    if (study && parents.length > 0) {
-                        titrePage =
-                            appName +
-                            ' - ' +
-                            study.elementName +
-                            ' - ' +
-                            parents
-                                .reverse()
-                                .reduce(
-                                    (acc, parent) =>
-                                        acc
-                                            ? acc + ' > ' + parent.elementName
-                                            : parent.elementName,
-                                    ''
-                                );
-                    } else if (study) {
-                        titrePage = appName + ' - ' + study.elementName;
+                    if (study) {
+                        titrePage = appName + ' | ' + study.elementName;
+                        if (parents.length > 0) {
+                            titrePage = titrePage + ' | ';
+                            // Rule 1 : if first repository causes exceeding of the maximum number of characters, truncates the repository name
+                            if (
+                                (
+                                    titrePage +
+                                    (parents[0].length > 1 ? '...' : '') +
+                                    '/' +
+                                    parents[0]
+                                ).length > MAX_TITLE_LENGTH
+                            ) {
+                                titrePage =
+                                    (
+                                        titrePage +
+                                        (parents.length > 1 ? '...' : '') +
+                                        '/' +
+                                        parents[0]
+                                    ).substring(
+                                        0,
+                                        MAX_TITLE_LENGTH - ' ...'.length
+                                    ) + ' ...';
+                            } else {
+                                // Rule 2 : Otherwise, display the path to the study up to the allowed character limit
+                                let maxAllowedPathSize =
+                                    MAX_TITLE_LENGTH -
+                                    titrePage.length -
+                                    '...'.length;
+                                let testedPath = '';
+                                let path = '';
+
+                                for (let i = 0; i < parents.length; i++) {
+                                    testedPath = '/' + parents[i] + testedPath;
+                                    if (
+                                        testedPath.length < maxAllowedPathSize
+                                    ) {
+                                        path = testedPath;
+                                    } else {
+                                        path = '...' + path;
+                                        break;
+                                    }
+                                }
+
+                                titrePage = titrePage + path;
+                            }
+                        }
                     } else {
-                        titrePage = appName;
+                        titrePage =
+                            titrePage.substring(0, MAX_TITLE_LENGTH) +
+                            (titrePage.length > MAX_TITLE_LENGTH ? ' ...' : '');
                     }
 
                     // On Edge, displayed title has a maximum of ~ 110 characters
                     // This line makes the behaviour similar for other browsers
-                    document.title =
-                        titrePage.substring(0, MAX_TITLE_LENGTH) +
-                        (titrePage.length > MAX_TITLE_LENGTH ? ' ...' : '');
+                    document.title = titrePage;
                 })
-                .catch(() => {
+                .catch((errorMessage) => {
                     document.title = appName;
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'LoadStudyAndParentsInfoError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
         } else {
             document.title = appName;
         }
-    }, [studyUuid]);
+    }, [studyUuid, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         if (studyUuid) {

@@ -152,8 +152,10 @@ export function fetchElementAndParentsInfo(studyUuid) {
         getElementAndParentsInfoUrl(studyUuid);
     console.debug(fetchElementAndParentsInfoUrl);
     return backendFetch(fetchElementAndParentsInfoUrl).then((response) =>
-        response.json()
-    );
+    response.ok
+        ? response.json()
+        : response.text().then((text) => Promise.reject(text))
+);
 }
 
 export function getVoltageLevelSingleLineDiagram(
