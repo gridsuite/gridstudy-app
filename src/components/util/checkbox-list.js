@@ -6,9 +6,8 @@
  */
 import React, { useEffect, useState } from 'react';
 import List from '@material-ui/core/List';
-import ListItemWithDeleteButton from './list-item-with-delete-button';
 
-const CheckboxList = (props) => {
+const CheckboxList = ({ itemRenderer, ...props }) => {
     const [checked, setChecked] = useState(new Set(props.initialSelection));
 
     /* remove non absent selected items */
@@ -36,25 +35,9 @@ const CheckboxList = (props) => {
 
     return (
         <List>
-            {props.values.map((item) => {
-                return (
-                    <ListItemWithDeleteButton
-                        key={props.id(item)}
-                        onClick={() => handleToggle(props.id(item), false)}
-                        set={checked}
-                        value={props.id(item)}
-                        primary={props.label(item)}
-                        removeFromList={
-                            props.removeFromList
-                                ? (e) => {
-                                      e.stopPropagation();
-                                      props.removeFromList(props.id(item));
-                                  }
-                                : undefined
-                        }
-                    />
-                );
-            })}
+            {props.values.map((item) =>
+                itemRenderer(item, checked, (id) => handleToggle(id, false))
+            )}
         </List>
     );
 };

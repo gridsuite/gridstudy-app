@@ -27,7 +27,7 @@ const ListItemWithDeleteButton = (props) => {
                 <Checkbox
                     color={'primary'}
                     edge="start"
-                    checked={props.set.has(props.value)}
+                    checked={props.checked}
                     tabIndex={-1}
                     disableRipple
                 />

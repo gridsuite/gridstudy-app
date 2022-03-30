@@ -32,6 +32,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
+import ListItemWithDeleteButton from '../util/list-item-with-delete-button';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -235,6 +236,23 @@ const ContingencyListSelector = (props) => {
                                 id={(item) => item.id}
                                 removeFromList={(e) => removeFromFavorite([e])}
                                 selection={checkedContingencyListUuids}
+                                itemRenderer={(
+                                    { id, name },
+                                    checked,
+                                    toggle
+                                ) => (
+                                    <ListItemWithDeleteButton
+                                        key={id}
+                                        value={id}
+                                        checked={checked.has(id)}
+                                        primary={name}
+                                        onClick={() => toggle(id)}
+                                        removeFromList={(e) => {
+                                            e.stopPropagation();
+                                            removeFromFavorite([id]);
+                                        }}
+                                    />
+                                )}
                             />
                         </Grid>
                         <Grid item>
