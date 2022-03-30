@@ -14,14 +14,17 @@ import {
 import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
-import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
-import { Fab, Typography } from '@material-ui/core';
+import { Checkbox, Fab, Paper, Toolbar, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
+import CheckboxList from '../../util/checkbox-list';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -40,7 +43,38 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: 'white',
     },
+    toolbar: {
+        padding: theme.spacing(0),
+        paddingLeft: theme.spacing(1),
+        border: theme.spacing(1),
+        minHeight: 0,
+        margin: 0,
+    },
+
+    toolbarCheck: {
+        padding: theme.spacing(1),
+        minWidth: 0,
+        flexGrow: 1,
+        justifyContent: 'flex-start',
+    },
+    toolbarIcon: {
+        padding: theme.spacing(1),
+        margin: 0,
+        border: 0,
+    },
+    dividerTool: {
+        background: theme.palette.primary.main,
+    },
 }));
+
+function isChecked(s1, s2) {
+    return s1 !== 0;
+}
+
+function isPartial(s1, s2) {
+    if (s1 === 0) return false;
+    return s1 !== s2;
+}
 
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
@@ -50,6 +84,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const [modifications, setModifications] = useState(undefined);
     const { enqueueSnackbar } = useSnackbar();
     const selectedNodeRef = useRef(); // initial empty to get first update
+
+    const [selectedItems, setSelectedItems] = useState(new Set());
+    const [toggleSelectAll, setToggleSelectAll] = useState();
 
     useEffect(() => {
         if (selectedNode !== selectedNodeRef.current) {
@@ -84,8 +121,12 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         setOpenNetworkModificationsDialog(false);
     };
 
-    const doDeleteModification = (uuid) => {
-        deleteModification(studyUuid, selectedNode, uuid);
+    const doDeleteModification = () => {
+        deleteModification(
+            studyUuid,
+            selectedNode,
+            [...selectedItems.values()].map((item) => item.uuid)
+        );
     };
 
     return (
@@ -96,15 +137,40 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     values={{ count: modifications?.length }}
                 />
             </Typography>
-            <List className={classes.list}>
-                {modifications?.map((item) => (
-                    <ModificationListItem
-                        key={item.uuid}
-                        modification={item}
-                        onDelete={doDeleteModification}
-                    />
-                ))}
-            </List>
+            <Toolbar className={classes.toolbar}>
+                <Checkbox
+                    className={classes.toolbarCheck}
+                    color={'primary'}
+                    edge="start"
+                    checked={isChecked(
+                        selectedItems.size,
+                        modifications?.length
+                    )}
+                    indeterminate={isPartial(
+                        selectedItems.size,
+                        modifications?.length
+                    )}
+                    disableRipple
+                    onClick={() => setToggleSelectAll((oldVal) => !oldVal)}
+                />
+                <IconButton
+                    onClick={doDeleteModification}
+                    size={'small'}
+                    className={classes.toolbarIcon}
+                    disabled={selectedItems?.size < 1}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            </Toolbar>
+            <Divider className={classes.dividerTool} />
+            <CheckboxList
+                onChecked={setSelectedItems}
+                className={classes.list}
+                values={modifications}
+                setChecked={setSelectedItems}
+                itemRenderer={(props) => <ModificationListItem {...props} />}
+                toggleSelectAll={toggleSelectAll}
+            />
 
             <Fab
                 className={classes.addButton}

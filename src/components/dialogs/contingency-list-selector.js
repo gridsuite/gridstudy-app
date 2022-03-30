@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 
@@ -79,9 +79,9 @@ const ContingencyListSelector = (props) => {
         props.onStart(checkedContingencyListUuids);
     };
 
-    const handleChecked = (checked) => {
-        setCheckedContingencyListUuids(checked);
-    };
+    const handleChecked = useCallback((checked) => {
+        setCheckedContingencyListUuids([...checked].map((item) => item.id));
+    }, []);
 
     const saveFavorite = (newList) => {
         updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
@@ -178,7 +178,7 @@ const ContingencyListSelector = (props) => {
             (item) => !toDelete.has(item)
         );
         if (newChecked.length !== checkedContingencyListUuids.length)
-            setCheckedContingencyListUuids(newChecked);
+            setCheckedContingencyListUuids(new Set(newChecked));
     };
 
     const addFavorites = (favorites) => {
@@ -234,22 +234,21 @@ const ContingencyListSelector = (props) => {
                                 onChecked={handleChecked}
                                 label={(item) => item.name}
                                 id={(item) => item.id}
-                                removeFromList={(e) => removeFromFavorite([e])}
                                 selection={checkedContingencyListUuids}
-                                itemRenderer={(
-                                    { id, name },
+                                itemRenderer={({
+                                    item,
                                     checked,
-                                    toggle
-                                ) => (
+                                    handleToggle,
+                                }) => (
                                     <ListItemWithDeleteButton
-                                        key={id}
-                                        value={id}
-                                        checked={checked.has(id)}
-                                        primary={name}
-                                        onClick={() => toggle(id)}
+                                        key={item.id}
+                                        value={item.id}
+                                        checked={checked}
+                                        primary={item.name}
+                                        onClick={() => handleToggle(item)}
                                         removeFromList={(e) => {
                                             e.stopPropagation();
-                                            removeFromFavorite([id]);
+                                            removeFromFavorite([item.id]);
                                         }}
                                     />
                                 )}

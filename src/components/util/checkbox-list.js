@@ -4,39 +4,66 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import List from '@material-ui/core/List';
 
-const CheckboxList = ({ itemRenderer, ...props }) => {
+const CheckboxList = ({
+    itemRenderer,
+    toggleSelectAll,
+    values,
+    onChecked,
+    ...props
+}) => {
     const [checked, setChecked] = useState(new Set(props.initialSelection));
 
     /* remove non absent selected items */
     useEffect(() => {
-        const existingValues = new Set(props.values.map(props.id));
+        const existingValues = new Set(values);
         const newChecked = new Set(
             [...checked].filter((id) => existingValues.has(id))
         );
         if (newChecked.size !== checked.size) {
             setChecked(newChecked);
         }
-    }, [props.values, props.id, checked, setChecked]);
+    }, [values, checked, setChecked]);
 
-    const handleToggle = (value) => {
-        const newChecked = new Set(checked);
-        if (!newChecked.delete(value)) {
-            newChecked.add(value);
-        }
-        setChecked(newChecked);
+    const refVals = useRef({ values: onChecked });
+    refVals.current = { values, onChecked };
 
-        if (props.onChecked) {
-            props.onChecked([...newChecked]);
-        }
-    };
+    useEffect(() => {
+        if (toggleSelectAll === undefined) return;
+        setChecked((oldVals) => {
+            return oldVals.size > 0
+                ? new Set()
+                : new Set(refVals.current.values);
+        });
+    }, [toggleSelectAll]);
+
+    const handleToggle = useCallback(
+        (value) => {
+            const newChecked = new Set(checked);
+            if (!newChecked.delete(value)) {
+                newChecked.add(value);
+            }
+            setChecked(newChecked);
+
+            if (onChecked) {
+                onChecked([...newChecked]);
+            }
+        },
+        [checked, onChecked]
+    );
+
+    useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
     return (
         <List>
-            {props.values.map((item) =>
-                itemRenderer(item, checked, (id) => handleToggle(id, false))
+            {values?.map((item) =>
+                itemRenderer({
+                    item,
+                    checked: checked.has(item),
+                    handleToggle,
+                })
             )}
         </List>
     );
