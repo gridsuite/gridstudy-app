@@ -31,7 +31,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import { PARAM_USE_NAME } from '../../utils/config-params';
-import { selectItemNetwork } from '../../redux/actions';
+import { centerOnSubstation, selectItemNetwork } from '../../redux/actions';
 
 const itemSize = 48;
 
@@ -84,7 +84,6 @@ const NetworkExplorer = ({
     substations,
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
-    onSubstationFocus,
     visibleSubstation,
     visible,
 }) => {
@@ -199,9 +198,8 @@ const NetworkExplorer = ({
 
     function onDisplaySubstationFocusHandler(event, substation) {
         event.stopPropagation();
-        if (onSubstationFocus !== null) {
-            onSubstationFocus(substation.id);
-        }
+        console.info('jbo zut', substation);
+        dispatch(centerOnSubstation(substation.id));
     }
 
     const voltagelevelInfo = (vl) => {

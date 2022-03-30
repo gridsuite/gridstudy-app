@@ -56,7 +56,6 @@ export function MapLateralDrawers({
     network,
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
-    onSubstationFocus,
     visibleSubstation,
     studyDisplayMode,
 }) {
@@ -102,7 +101,6 @@ export function MapLateralDrawers({
                     substations={network ? network.substations : []}
                     onVoltageLevelDisplayClick={onVoltageLevelDisplayClick}
                     onSubstationDisplayClick={onSubstationDisplayClick}
-                    onSubstationFocus={onSubstationFocus}
                     visibleSubstation={visibleSubstation}
                 />
             </StudyDrawer>

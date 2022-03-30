@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -151,15 +151,6 @@ const StudyPane = ({
         showVoltageLevelDiagram,
         showSubstationDiagram,
     ] = useSingleLineDiagram(studyUuid);
-
-    const mapRef = useRef();
-
-    const setCenterOnSubstation = useCallback(
-        (substationId) => {
-            mapRef.current.centerSubstation(substationId);
-        },
-        [mapRef]
-    );
 
     useEffect(() => {
         if (
@@ -340,7 +331,6 @@ const StudyPane = ({
                                     }
                                     runnable={runnable}
                                     setErrorMessage={setErrorMessage}
-                                    mapRef={mapRef}
                                 />
                             </div>
 
@@ -351,7 +341,6 @@ const StudyPane = ({
                                     showVoltageLevelDiagram
                                 }
                                 onSubstationDisplayClick={showSubstationDiagram}
-                                onSubstationFocus={setCenterOnSubstation}
                                 visibleSubstation={visibleSubstation}
                             />
 
