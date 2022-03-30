@@ -309,6 +309,65 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUuid, loadTree]);
 
+    const computePageTitleWithFirstDirectory = (pageTitle, parents) => {
+        return pageTitle + (parents.length > 1 ? '...' : '') + '/' + parents[0];
+    };
+
+    const computePageTitleWithFullPath = (
+        pageTitle,
+        parents,
+        maxTitleLength
+    ) => {
+        let maxAllowedPathSize =
+            maxTitleLength - pageTitle.length - '...'.length;
+        let testedPath = '';
+        let path = '';
+
+        for (let i = 0; i < parents.length; i++) {
+            testedPath = '/' + parents[i] + testedPath;
+            if (testedPath.length <= maxAllowedPathSize) {
+                path = testedPath;
+            } else {
+                path = '...' + path;
+                break;
+            }
+        }
+
+        pageTitle = pageTitle + path;
+
+        return pageTitle;
+    };
+
+    const computePageTitle = useCallback(
+        (appName, study, parents, maxTitleLength) => {
+            let pageTitle = appName + ' | ' + study.elementName;
+            if (parents.length > 0) {
+                pageTitle = pageTitle + ' | ';
+                // Rule 1 : if first repository causes exceeding of the maximum number of characters, truncates this repository name
+                if (
+                    computePageTitleWithFirstDirectory(pageTitle, parents)
+                        .length > maxTitleLength
+                ) {
+                    pageTitle =
+                        computePageTitleWithFirstDirectory(
+                            pageTitle,
+                            parents
+                        ).substring(0, maxTitleLength - ' ...'.length) + ' ...';
+                } else {
+                    // Rule 2 : Otherwise, display the path to the study up to the allowed character limit
+                    pageTitle = computePageTitleWithFullPath(
+                        pageTitle,
+                        parents,
+                        maxTitleLength
+                    );
+                }
+            }
+
+            return pageTitle;
+        },
+        []
+    );
+
     useEffect(() => {
         loadNetwork(workingNode?.id === workingNodeIdRef.current);
     }, [loadNetwork, workingNode]);
@@ -325,64 +384,20 @@ export function StudyContainer({ view, onChangeTab }) {
                     let parents = response
                         .slice(1)
                         .map((parent) => parent.elementName);
-                    let titrePage = '';
+                    let pageTitle = '';
 
-                    if (study) {
-                        titrePage = appName + ' | ' + study.elementName;
-                        if (parents.length > 0) {
-                            titrePage = titrePage + ' | ';
-                            // Rule 1 : if first repository causes exceeding of the maximum number of characters, truncates the repository name
-                            if (
-                                (
-                                    titrePage +
-                                    (parents[0].length > 1 ? '...' : '') +
-                                    '/' +
-                                    parents[0]
-                                ).length > MAX_TITLE_LENGTH
-                            ) {
-                                titrePage =
-                                    (
-                                        titrePage +
-                                        (parents.length > 1 ? '...' : '') +
-                                        '/' +
-                                        parents[0]
-                                    ).substring(
-                                        0,
-                                        MAX_TITLE_LENGTH - ' ...'.length
-                                    ) + ' ...';
-                            } else {
-                                // Rule 2 : Otherwise, display the path to the study up to the allowed character limit
-                                let maxAllowedPathSize =
-                                    MAX_TITLE_LENGTH -
-                                    titrePage.length -
-                                    '...'.length;
-                                let testedPath = '';
-                                let path = '';
-
-                                for (let i = 0; i < parents.length; i++) {
-                                    testedPath = '/' + parents[i] + testedPath;
-                                    if (
-                                        testedPath.length < maxAllowedPathSize
-                                    ) {
-                                        path = testedPath;
-                                    } else {
-                                        path = '...' + path;
-                                        break;
-                                    }
-                                }
-
-                                titrePage = titrePage + path;
-                            }
-                        }
+                    if (!study) {
+                        pageTitle = appName;
                     } else {
-                        titrePage =
-                            titrePage.substring(0, MAX_TITLE_LENGTH) +
-                            (titrePage.length > MAX_TITLE_LENGTH ? ' ...' : '');
+                        pageTitle = computePageTitle(
+                            appName,
+                            study,
+                            parents,
+                            MAX_TITLE_LENGTH
+                        );
                     }
 
-                    // On Edge, displayed title has a maximum of ~ 110 characters
-                    // This line makes the behaviour similar for other browsers
-                    document.title = titrePage;
+                    document.title = pageTitle;
                 })
                 .catch((errorMessage) => {
                     document.title = appName;
@@ -398,7 +413,7 @@ export function StudyContainer({ view, onChangeTab }) {
         } else {
             document.title = appName;
         }
-    }, [studyUuid, enqueueSnackbar, intlRef]);
+    }, [studyUuid, computePageTitle, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         if (studyUuid) {
