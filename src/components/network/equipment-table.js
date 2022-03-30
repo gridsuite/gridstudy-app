@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { requestNetworkChange } from '../../utils/rest-api';
-import { IconButton, TextField } from '@material-ui/core';
-import CreateIcon from '@material-ui/icons/Create';
-import Grid from '@material-ui/core/Grid';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
-import TableCell from '@material-ui/core/TableCell';
+import { IconButton, TextField } from '@mui/material';
+import CreateIcon from '@mui/icons-material/Create';
+import Grid from '@mui/material/Grid';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import TableCell from '@mui/material/TableCell';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 import VirtualizedTable from '../util/virtualized-table';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
 
@@ -111,6 +111,7 @@ export const EquipmentTable = ({
                                 tableDefinition.modifiableEquipmentType,
                         })
                     }
+                    size="large"
                 >
                     <CreateIcon alignmentBaseline={'middle'} />
                 </IconButton>

@@ -9,22 +9,22 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from './network';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
-import { IconButton, TextField } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
+import { IconButton, TextField } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { updateConfigParameter } from '../../utils/rest-api';
 
-import ViewColumnIcon from '@material-ui/icons/ViewColumn';
+import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { SelectOptionsDialog } from '../../utils/dialogs';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Checkbox from '@material-ui/core/Checkbox';
-import ListItemText from '@material-ui/core/ListItemText';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
 import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
@@ -33,7 +33,7 @@ import {
     TABLES_NAMES,
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import {
     displayErrorMessageWithSnackbar,
@@ -339,6 +339,7 @@ const NetworkTable = (props) => {
                             <IconButton
                                 aria-label="dialog"
                                 onClick={handleOpenPopupSelectColumnNames}
+                                size="large"
                             >
                                 <ViewColumnIcon />
                             </IconButton>

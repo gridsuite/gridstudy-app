@@ -16,11 +16,11 @@ import {
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
-import Tabs from '@material-ui/core/Tabs';
+import Tabs from '@mui/material/Tabs';
 import { StudyView } from './study-pane';
-import { Badge } from '@material-ui/core';
+import { Badge } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Tab from '@material-ui/core/Tab';
+import Tab from '@mui/material/Tab';
 import Parameters, { useParameterState } from './parameters';
 import {
     PARAM_LANGUAGE,
@@ -29,7 +29,7 @@ import {
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';

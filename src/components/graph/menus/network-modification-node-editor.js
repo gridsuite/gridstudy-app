@@ -15,12 +15,12 @@ import {
 import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
-import List from '@material-ui/core/List';
-import { makeStyles } from '@material-ui/core/styles';
+import List from '@mui/material/List';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
-import { Fab, Typography } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Fab, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../dialogs/load-creation-dialog';

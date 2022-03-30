@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import List from '@material-ui/core/List';
-import LinearScaleIcon from '@material-ui/icons/LinearScale';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import PublicIcon from '@material-ui/icons/Public';
-import IconButton from '@material-ui/core/IconButton';
-import ListIcon from '@material-ui/icons/List';
+import List from '@mui/material/List';
+import LinearScaleIcon from '@mui/icons-material/LinearScale';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import PublicIcon from '@mui/icons-material/Public';
+import IconButton from '@mui/material/IconButton';
+import ListIcon from '@mui/icons-material/List';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './study-pane';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 import {
     setExplorerDrawerOpen,
     setModificationsDrawerOpen,

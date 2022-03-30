@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useEffect, useState } from 'react';
-import List from '@material-ui/core/List';
+import List from '@mui/material/List';
 import ListItemWithDeleteButton from './list-item-with-delete-button';
 
 const CheckboxList = (props) => {

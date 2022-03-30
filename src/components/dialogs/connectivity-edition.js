@@ -6,9 +6,10 @@
  */
 
 import { useIntl } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-import { Popper, TextField } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Autocomplete } from '@mui/material';
+import { createFilterOptions } from '@mui/material/useAutocomplete';
+import { Popper, TextField } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -16,7 +17,7 @@ import {
     fetchBusesForVoltageLevel,
 } from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component

@@ -10,19 +10,19 @@ import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
 import CheckboxList from '../util/checkbox-list';
 import {
     fetchContingencyCount,
     fetchContingencyLists,
     updateConfigParameter,
 } from '../../utils/rest-api';
-import Button from '@material-ui/core/Button';
-import Alert from '@material-ui/lab/Alert';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
 import DirectoryItemSelector from '../directory-item-selector';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';

@@ -7,14 +7,14 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import VirtualizedTable from './util/virtualized-table';
 import { useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import { TableCell } from '@material-ui/core';
-import { Lens } from '@material-ui/icons';
-import Grid from '@material-ui/core/Grid';
-import { green, red } from '@material-ui/core/colors';
+import makeStyles from '@mui/styles/makeStyles';
+import { TableCell } from '@mui/material';
+import { Lens } from '@mui/icons-material';
+import Grid from '@mui/material/Grid';
+import { green, red } from '@mui/material/colors';
 
 const LoadFlowResult = ({ result }) => {
     const useStyles = makeStyles((theme) => ({

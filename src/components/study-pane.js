@@ -9,10 +9,11 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { darken, makeStyles } from '@material-ui/core/styles';
+import { darken } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { filteredNominalVoltagesUpdated } from '../redux/actions';
 import { equipments } from './network/network-equipments';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import NetworkTable from './network/network-table';
 import clsx from 'clsx';

@@ -6,13 +6,13 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
+import makeStyles from '@mui/styles/makeStyles';
+import MenuItem from '@mui/material/MenuItem';
 
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import TableChartIcon from '@material-ui/icons/TableChart';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import TableChartIcon from '@mui/icons-material/TableChart';
 import NestedMenuItem from 'material-ui-nested-menu-item';
 
 import { useIntl } from 'react-intl';

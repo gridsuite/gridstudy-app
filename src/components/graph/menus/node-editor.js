@@ -7,7 +7,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
 import ModelNodeEditor from './model-node-editor';
 import {

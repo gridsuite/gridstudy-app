@@ -6,11 +6,12 @@
  */
 
 import React, { useState } from 'react';
-import { IconButton, Typography } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import CloseIcon from '@material-ui/icons/Close';
+import { IconButton, Typography } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
 import AskTextDialog from '../../util/ask-text-dialog';
-import { darken, makeStyles } from '@material-ui/core/styles';
+import { darken } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 

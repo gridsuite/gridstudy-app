@@ -12,24 +12,25 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useIntl } from 'react-intl';
 
-import Grid from '@material-ui/core/Grid';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { darken, lighten, makeStyles } from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
-import SearchIcon from '@material-ui/icons/Search';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@mui/material/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import { darken, lighten } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import ListItem from '@mui/material/ListItem';
+import SearchIcon from '@mui/icons-material/Search';
+import TextField from '@mui/material/TextField';
 
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 import {
     AutoSizer,
     CellMeasurer,
     CellMeasurerCache,
     List,
 } from 'react-virtualized';
-import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import GpsFixedIcon from '@material-ui/icons/GpsFixed';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { selectItemNetwork } from '../../redux/actions';
 
@@ -68,14 +69,14 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#ababab !important',
         textIndent: 16,
         '& p': {
-            color: theme.palette.type === 'dark' ? '#000' : '',
+            color: theme.palette.mode === 'dark' ? '#000' : '',
         },
     },
     selectedSubstation: {
         height: (itemSize * 3) / 4,
         backgroundColor: '#7c7c7c !important',
         '& p': {
-            color: theme.palette.type === 'dark' ? '#000' : '#FFF',
+            color: theme.palette.mode === 'dark' ? '#000' : '#FFF',
         },
     },
 }));
@@ -313,6 +314,7 @@ const NetworkExplorer = ({
                                         substation
                                     )
                                 }
+                                size="large"
                             >
                                 <GpsFixedIcon />
                             </IconButton>
