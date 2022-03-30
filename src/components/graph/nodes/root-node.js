@@ -44,7 +44,6 @@ const RootNode = (props) => {
             <IconButton
                 variant="outlined"
                 className={props.selected ? classes.rootSelected : classes.root}
-                size="large"
             >
                 {props.data.buildStatus === 'BUILDING' ? (
                     <CircularProgress size={24} />

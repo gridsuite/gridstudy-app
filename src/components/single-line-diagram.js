@@ -886,7 +886,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     <IconButton
                         className={classes.close}
                         onClick={onCloseHandler}
-                        size="large"
                     >
                         <CloseIcon />
                     </IconButton>

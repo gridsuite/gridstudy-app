@@ -53,7 +53,6 @@ const ModelNode = (props) => {
                 className={
                     props.selected ? classes.modelSelected : classes.model
                 }
-                size="large"
             >
                 {props.data.buildStatus === 'BUILDING' ? (
                     <CircularProgress size={24} />

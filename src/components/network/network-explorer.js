@@ -314,7 +314,6 @@ const NetworkExplorer = ({
                                         substation
                                     )
                                 }
-                                size="large"
                             >
                                 <GpsFixedIcon />
                             </IconButton>

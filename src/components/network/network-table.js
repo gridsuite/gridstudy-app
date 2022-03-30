@@ -339,7 +339,6 @@ const NetworkTable = (props) => {
                             <IconButton
                                 aria-label="dialog"
                                 onClick={handleOpenPopupSelectColumnNames}
-                                size="large"
                             >
                                 <ViewColumnIcon />
                             </IconButton>

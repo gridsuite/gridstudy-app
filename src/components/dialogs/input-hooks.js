@@ -491,11 +491,7 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
                 enterNextDelay={DELAY}
                 classes={{ tooltip: classes.tooltip }}
             >
-                <IconButton
-                    style={{ padding: '2px' }}
-                    onClick={handleClick}
-                    size="large"
-                >
+                <IconButton style={{ padding: '2px' }} onClick={handleClick}>
                     <FindInPageIcon />
                 </IconButton>
             </Tooltip>
@@ -710,7 +706,6 @@ export const useExpandableValues = ({
                                 className={classes.icon}
                                 key={id + idx}
                                 onClick={() => handleDeleteBusBarSection(idx)}
-                                size="large"
                             >
                                 <DeleteIcon />
                             </IconButton>

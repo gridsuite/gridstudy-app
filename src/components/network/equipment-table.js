@@ -111,7 +111,6 @@ export const EquipmentTable = ({
                                 tableDefinition.modifiableEquipmentType,
                         })
                     }
-                    size="large"
                 >
                     <CreateIcon alignmentBaseline={'middle'} />
                 </IconButton>
