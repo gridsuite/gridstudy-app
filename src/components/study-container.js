@@ -342,7 +342,7 @@ export function StudyContainer({ view, onChangeTab }) {
         } else {
             document.title = appName;
         }
-    }, [studyUuid, computePageTitle, enqueueSnackbar, intlRef]);
+    }, [studyUuid, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         if (studyUuid) {
