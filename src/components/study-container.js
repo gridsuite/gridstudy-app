@@ -46,6 +46,7 @@ import {
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
+import { computePageTitle } from '../utils/compute-title';
 
 export function useNodeData(
     studyUuid,
@@ -309,65 +310,6 @@ export function StudyContainer({ view, onChangeTab }) {
         }
     }, [studyUuid, loadTree]);
 
-    const computePageTitleWithFirstDirectory = (pageTitle, parents) => {
-        return pageTitle + (parents.length > 1 ? '...' : '') + '/' + parents[0];
-    };
-
-    const computePageTitleWithFullPath = (
-        pageTitle,
-        parents,
-        maxTitleLength
-    ) => {
-        let maxAllowedPathSize =
-            maxTitleLength - pageTitle.length - '...'.length;
-        let testedPath = '';
-        let path = '';
-
-        for (let i = 0; i < parents.length; i++) {
-            testedPath = '/' + parents[i] + testedPath;
-            if (testedPath.length <= maxAllowedPathSize) {
-                path = testedPath;
-            } else {
-                path = '...' + path;
-                break;
-            }
-        }
-
-        pageTitle = pageTitle + path;
-
-        return pageTitle;
-    };
-
-    const computePageTitle = useCallback(
-        (appName, study, parents, maxTitleLength) => {
-            let pageTitle = appName + ' | ' + study.elementName;
-            if (parents.length > 0) {
-                pageTitle = pageTitle + ' | ';
-                // Rule 1 : if first repository causes exceeding of the maximum number of characters, truncates this repository name
-                if (
-                    computePageTitleWithFirstDirectory(pageTitle, parents)
-                        .length > maxTitleLength
-                ) {
-                    pageTitle =
-                        computePageTitleWithFirstDirectory(
-                            pageTitle,
-                            parents
-                        ).substring(0, maxTitleLength - ' ...'.length) + ' ...';
-                } else {
-                    // Rule 2 : Otherwise, display the path to the study up to the allowed character limit
-                    pageTitle = computePageTitleWithFullPath(
-                        pageTitle,
-                        parents,
-                        maxTitleLength
-                    );
-                }
-            }
-
-            return pageTitle;
-        },
-        []
-    );
-
     useEffect(() => {
         loadNetwork(workingNode?.id === workingNodeIdRef.current);
     }, [loadNetwork, workingNode]);
@@ -375,29 +317,16 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         const appName = 'GridStudy';
-        const MAX_TITLE_LENGTH = 106;
 
         if (studyUuid) {
             fetchElementAndParentsInfo(studyUuid)
                 .then((response) => {
-                    let study = response[0];
-                    let parents = response
+                    const study = response[0];
+                    const parents = response
                         .slice(1)
                         .map((parent) => parent.elementName);
-                    let pageTitle = '';
 
-                    if (!study) {
-                        pageTitle = appName;
-                    } else {
-                        pageTitle = computePageTitle(
-                            appName,
-                            study,
-                            parents,
-                            MAX_TITLE_LENGTH
-                        );
-                    }
-
-                    document.title = pageTitle;
+                    document.title = computePageTitle(appName, study, parents);
                 })
                 .catch((errorMessage) => {
                     document.title = appName;
