@@ -131,6 +131,12 @@ const LineCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            //remove all null values to avoid showing a "null" in the form
+            Object.keys(editData).forEach((key) => {
+                if (editData[key] === null) {
+                    delete editData[key];
+                }
+            });
             setFormValues(editData);
         }
     }, [editData]);
@@ -256,65 +262,35 @@ const LineCreationDialog = ({
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            if (editData) {
-                createLine(
-                    studyUuid,
-                    selectedNodeUuid,
-                    lineId,
-                    lineName,
-                    seriesResistance,
-                    seriesReactance,
-                    shuntConductance1,
-                    shuntSusceptance1,
-                    shuntConductance2,
-                    shuntSusceptance2,
-                    connectivity1.voltageLevel.id,
-                    connectivity1.busOrBusbarSection.id,
-                    connectivity2.voltageLevel.id,
-                    connectivity2.busOrBusbarSection.id,
-                    permanentCurrentLimit1,
-                    permanentCurrentLimit2,
-                    true,
-                    editData.uuid
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LineCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            createLine(
+                studyUuid,
+                selectedNodeUuid,
+                lineId,
+                lineName,
+                seriesResistance,
+                seriesReactance,
+                shuntConductance1,
+                shuntSusceptance1,
+                shuntConductance2,
+                shuntSusceptance2,
+                connectivity1.voltageLevel.id,
+                connectivity1.busOrBusbarSection.id,
+                connectivity2.voltageLevel.id,
+                connectivity2.busOrBusbarSection.id,
+                permanentCurrentLimit1,
+                permanentCurrentLimit2,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LineCreationError',
+                        intlRef: intlRef,
+                    },
                 });
-            } else {
-                createLine(
-                    studyUuid,
-                    selectedNodeUuid,
-                    lineId,
-                    lineName,
-                    seriesResistance,
-                    seriesReactance,
-                    shuntConductance1,
-                    shuntSusceptance1,
-                    shuntConductance2,
-                    shuntSusceptance2,
-                    connectivity1.voltageLevel.id,
-                    connectivity1.busOrBusbarSection.id,
-                    connectivity2.voltageLevel.id,
-                    connectivity2.busOrBusbarSection.id,
-                    permanentCurrentLimit1,
-                    permanentCurrentLimit2
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LineCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

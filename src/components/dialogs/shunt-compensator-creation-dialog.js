@@ -101,6 +101,12 @@ const ShuntCompensatorCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            //remove all null values to avoid showing a "null" in the form
+            Object.keys(editData).forEach((key) => {
+                if (editData[key] === null) {
+                    delete editData[key];
+                }
+            });
             setFormValues(editData);
         }
     }, [editData]);
@@ -175,51 +181,28 @@ const ShuntCompensatorCreationDialog = ({
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            if (editData) {
-                createShuntCompensator(
-                    studyUuid,
-                    selectedNodeUuid,
-                    shuntCompensatorId,
-                    shuntCompensatorName ? shuntCompensatorName : null,
-                    maximumNumberOfSections,
-                    currentNumberOfSections,
-                    identicalSections,
-                    susceptancePerSection,
-                    connectivity,
-                    true,
-                    editData.uuid
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'ShuntCompensatorCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            createShuntCompensator(
+                studyUuid,
+                selectedNodeUuid,
+                shuntCompensatorId,
+                shuntCompensatorName ? shuntCompensatorName : null,
+                maximumNumberOfSections,
+                currentNumberOfSections,
+                identicalSections,
+                susceptancePerSection,
+                connectivity,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'ShuntCompensatorCreationError',
+                        intlRef: intlRef,
+                    },
                 });
-            } else {
-                createShuntCompensator(
-                    studyUuid,
-                    selectedNodeUuid,
-                    shuntCompensatorId,
-                    shuntCompensatorName ? shuntCompensatorName : null,
-                    maximumNumberOfSections,
-                    currentNumberOfSections,
-                    identicalSections,
-                    susceptancePerSection,
-                    connectivity
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'ShuntCompensatorCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

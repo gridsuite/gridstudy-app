@@ -15,6 +15,7 @@ import PropTypes from 'prop-types';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
@@ -73,22 +74,22 @@ export const ModificationListItem = ({
                         <EditIcon />
                     </IconButton>
                 )}
-                <OverflowableText
-                    className={classes.label}
-                    text={getLabel()}
-                    style={{
-                        paddingLeft:
-                            !equipmentCreationModificationsType.has(
-                                modification.type
-                            ) && '30px',
-                    }}
-                />
-                <IconButton
-                    onClick={() => onDelete(modification.uuid)}
-                    size={'small'}
-                >
-                    <DeleteIcon />
-                </IconButton>
+                <Grid container>
+                    <Grid item xs={11}>
+                        <OverflowableText
+                            className={classes.label}
+                            text={getLabel()}
+                        />
+                    </Grid>
+                    <Grid item xs={1}>
+                        <IconButton
+                            onClick={() => onDelete(modification.uuid)}
+                            size={'small'}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Grid>
+                </Grid>
             </ListItem>
             <Divider />
         </>

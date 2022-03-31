@@ -127,6 +127,12 @@ const GeneratorCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            //remove all null values to avoid showing a "null" in the form
+            Object.keys(editData).forEach((key) => {
+                if (editData[key] === null) {
+                    delete editData[key];
+                }
+            });
             setFormValues(editData);
         }
     }, [editData]);
@@ -250,61 +256,33 @@ const GeneratorCreationDialog = ({
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            if (editData) {
-                createGenerator(
-                    studyUuid,
-                    selectedNodeUuid,
-                    generatorId,
-                    generatorName ? generatorName : null,
-                    !energySource ? 'OTHER' : energySource,
-                    minimumActivePower,
-                    maximumActivePower,
-                    ratedNominalPower ? ratedNominalPower : null,
-                    activePowerSetpoint,
-                    reactivePowerSetpoint ? reactivePowerSetpoint : null,
-                    voltageRegulation,
-                    voltageSetpoint ? voltageSetpoint : null,
-                    connectivity.voltageLevel.id,
-                    connectivity.busOrBusbarSection.id,
-                    true,
-                    editData.uuid
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'GeneratorCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            createGenerator(
+                studyUuid,
+                selectedNodeUuid,
+                generatorId,
+                generatorName ? generatorName : null,
+                !energySource ? 'OTHER' : energySource,
+                minimumActivePower,
+                maximumActivePower,
+                ratedNominalPower ? ratedNominalPower : null,
+                activePowerSetpoint,
+                reactivePowerSetpoint ? reactivePowerSetpoint : null,
+                voltageRegulation,
+                voltageSetpoint ? voltageSetpoint : null,
+                connectivity.voltageLevel.id,
+                connectivity.busOrBusbarSection.id,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'GeneratorCreationError',
+                        intlRef: intlRef,
+                    },
                 });
-            } else {
-                createGenerator(
-                    studyUuid,
-                    selectedNodeUuid,
-                    generatorId,
-                    generatorName ? generatorName : null,
-                    !energySource ? 'OTHER' : energySource,
-                    minimumActivePower,
-                    maximumActivePower,
-                    ratedNominalPower ? ratedNominalPower : null,
-                    activePowerSetpoint,
-                    reactivePowerSetpoint ? reactivePowerSetpoint : null,
-                    voltageRegulation,
-                    voltageSetpoint ? voltageSetpoint : null,
-                    connectivity.voltageLevel.id,
-                    connectivity.busOrBusbarSection.id
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'GeneratorCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

@@ -278,6 +278,12 @@ const VoltageLevelCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            //remove all null values to avoid showing a "null" in the form
+            Object.keys(editData).forEach((key) => {
+                if (editData[key] === null) {
+                    delete editData[key];
+                }
+            });
             setFormValues(editData);
         }
     }, [editData]);
@@ -343,49 +349,27 @@ const VoltageLevelCreationDialog = ({
     const handleSave = () => {
         // Check if error list contains an error
         if (inputForm.validate()) {
-            if (editData) {
-                createVoltageLevel(
-                    studyUuid,
-                    selectedNodeUuid,
-                    voltageLevelId,
-                    voltageLevelName ? voltageLevelName : null,
-                    nominalVoltage,
-                    substation.id,
-                    busBarSections,
-                    connections,
-                    true,
-                    editData.uuid
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'VoltageLevelCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            createVoltageLevel(
+                studyUuid,
+                selectedNodeUuid,
+                voltageLevelId,
+                voltageLevelName ? voltageLevelName : null,
+                nominalVoltage,
+                substation.id,
+                busBarSections,
+                connections,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'VoltageLevelCreationError',
+                        intlRef: intlRef,
+                    },
                 });
-            } else {
-                createVoltageLevel(
-                    studyUuid,
-                    selectedNodeUuid,
-                    voltageLevelId,
-                    voltageLevelName ? voltageLevelName : null,
-                    nominalVoltage,
-                    substation.id,
-                    busBarSections,
-                    connections
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'VoltageLevelCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

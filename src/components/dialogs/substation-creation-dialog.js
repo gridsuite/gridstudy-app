@@ -12,7 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -81,6 +81,18 @@ const SubstationCreationDialog = ({
         handleClick: searchCopy.handleOpenSearchDialog,
     });
 
+    useEffect(() => {
+        if (editData) {
+            //remove all null values to avoid showing a "null" in the form
+            Object.keys(editData).forEach((key) => {
+                if (editData[key] === null) {
+                    delete editData[key];
+                }
+            });
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [substationId, substationIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
@@ -109,44 +121,24 @@ const SubstationCreationDialog = ({
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            if (editData) {
-                createSubstation(
-                    studyUuid,
-                    selectedNodeUuid,
-                    substationId,
-                    substationName,
-                    substationCountry,
-                    true,
-                    editData.uuid
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'SubstationCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            createSubstation(
+                studyUuid,
+                selectedNodeUuid,
+                substationId,
+                substationName,
+                substationCountry,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'SubstationCreationError',
+                        intlRef: intlRef,
+                    },
                 });
-            } else {
-                createSubstation(
-                    studyUuid,
-                    selectedNodeUuid,
-                    substationId,
-                    substationName,
-                    substationCountry
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'SubstationCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
-
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

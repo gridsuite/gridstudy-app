@@ -114,6 +114,12 @@ const TwoWindingsTransformerCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            //remove all null values to avoid showing a "null" in the form
+            Object.keys(editData).forEach((key) => {
+                if (editData[key] === null) {
+                    delete editData[key];
+                }
+            });
             setFormValues(editData);
         }
     }, [editData]);
@@ -213,63 +219,33 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            if (editData) {
-                createTwoWindingsTransformer(
-                    studyUuid,
-                    selectedNodeUuid,
-                    twoWindingsTransformerId,
-                    twoWindingsTransformerName,
-                    seriesResistance,
-                    seriesReactance,
-                    magnetizingConductance,
-                    magnetizingSusceptance,
-                    ratedVoltage1,
-                    ratedVoltage2,
-                    connectivity1.voltageLevel.id,
-                    connectivity1.busOrBusbarSection.id,
-                    connectivity2.voltageLevel.id,
-                    connectivity2.busOrBusbarSection.id,
-                    true,
-                    editData.uuid
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId:
-                                'TwoWindingsTransformerCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            createTwoWindingsTransformer(
+                studyUuid,
+                selectedNodeUuid,
+                twoWindingsTransformerId,
+                twoWindingsTransformerName,
+                seriesResistance,
+                seriesReactance,
+                magnetizingConductance,
+                magnetizingSusceptance,
+                ratedVoltage1,
+                ratedVoltage2,
+                connectivity1.voltageLevel.id,
+                connectivity1.busOrBusbarSection.id,
+                connectivity2.voltageLevel.id,
+                connectivity2.busOrBusbarSection.id,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'TwoWindingsTransformerCreationError',
+                        intlRef: intlRef,
+                    },
                 });
-            } else {
-                createTwoWindingsTransformer(
-                    studyUuid,
-                    selectedNodeUuid,
-                    twoWindingsTransformerId,
-                    twoWindingsTransformerName,
-                    seriesResistance,
-                    seriesReactance,
-                    magnetizingConductance,
-                    magnetizingSusceptance,
-                    ratedVoltage1,
-                    ratedVoltage2,
-                    connectivity1.voltageLevel.id,
-                    connectivity1.busOrBusbarSection.id,
-                    connectivity2.voltageLevel.id,
-                    connectivity2.busOrBusbarSection.id
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId:
-                                'TwoWindingsTransformerCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

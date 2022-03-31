@@ -106,6 +106,12 @@ const LoadCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
+            //remove all null values to avoid showing a "null" in the form
+            Object.keys(editData).forEach((key) => {
+                if (editData[key] === null) {
+                    delete editData[key];
+                }
+            });
             setFormValues(editData);
         }
     }, [editData]);
@@ -167,51 +173,28 @@ const LoadCreationDialog = ({
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            if (editData) {
-                createLoad(
-                    studyUuid,
-                    selectedNodeUuid,
-                    loadId,
-                    loadName ? loadName : null,
-                    !loadType ? 'UNDEFINED' : loadType,
-                    activePower,
-                    reactivePower,
-                    connectivity.voltageLevel.id,
-                    connectivity.busOrBusbarSection.id,
-                    true,
-                    editData.uuid
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LoadCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            createLoad(
+                studyUuid,
+                selectedNodeUuid,
+                loadId,
+                loadName ? loadName : null,
+                !loadType ? 'UNDEFINED' : loadType,
+                activePower,
+                reactivePower,
+                connectivity.voltageLevel.id,
+                connectivity.busOrBusbarSection.id,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LoadCreationError',
+                        intlRef: intlRef,
+                    },
                 });
-            } else {
-                createLoad(
-                    studyUuid,
-                    selectedNodeUuid,
-                    loadId,
-                    loadName ? loadName : null,
-                    !loadType ? 'UNDEFINED' : loadType,
-                    activePower,
-                    reactivePower,
-                    connectivity.voltageLevel.id,
-                    connectivity.busOrBusbarSection.id
-                ).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LoadCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
