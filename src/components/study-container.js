@@ -199,6 +199,8 @@ export function StudyContainer({ view, onChangeTab }) {
         (isUpdate) => {
             console.info(`Loading network of study '${studyUuid}'...`);
 
+            if (!workingNode || !studyUuid) return;
+
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
                 // In order to avoid glitches during sld and map rendering,
@@ -213,24 +215,24 @@ export function StudyContainer({ view, onChangeTab }) {
                         //setIsNetworkPending(false);
                     },
                     dispatch,
-                    { equipments: [equipments.lines, equipments.substations] }
+                    {
+                        equipments: [equipments.lines, equipments.substations],
+                    }
                 );
             } else {
-                if (workingNode !== null) {
-                    const network = new Network(
-                        studyUuid,
-                        workingNode?.id,
-                        (error) => {
-                            console.error(error.message);
-                            setNetworkLoadingFailMessage(error.message);
-                            //setIsNetworkPending(false);
-                        },
-                        dispatch
-                    );
-                    // For initial network loading, no need to initialize lines and substations at first,
-                    // lazy loading will do the job (no glitches to avoid)
-                    dispatch(networkCreated(network));
-                }
+                const network = new Network(
+                    studyUuid,
+                    workingNode?.id,
+                    (error) => {
+                        console.error(error.message);
+                        setNetworkLoadingFailMessage(error.message);
+                        //setIsNetworkPending(false);
+                    },
+                    dispatch
+                );
+                // For initial network loading, no need to initialize lines and substations at first,
+                // lazy loading will do the job (no glitches to avoid)
+                dispatch(networkCreated(network));
             }
         },
         [studyUuid, workingNode, dispatch]
