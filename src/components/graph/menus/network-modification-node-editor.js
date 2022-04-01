@@ -17,7 +17,7 @@ import NetworkModificationDialog from '../../dialogs/network-modifications-dialo
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
-import { Checkbox, Fab, Paper, Toolbar, Typography } from '@material-ui/core';
+import { Checkbox, Fab, Toolbar, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -51,16 +51,12 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
     },
 
-    toolbarCheck: {
-        padding: theme.spacing(1),
-        minWidth: 0,
-        flexGrow: 1,
-        justifyContent: 'flex-start',
-    },
     toolbarIcon: {
         padding: theme.spacing(1),
-        margin: 0,
-        border: 0,
+        minWidth: 0,
+    },
+    filler: {
+        flexGrow: 1,
     },
     dividerTool: {
         background: theme.palette.primary.main,
@@ -139,7 +135,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             </Typography>
             <Toolbar className={classes.toolbar}>
                 <Checkbox
-                    className={classes.toolbarCheck}
+                    className={classes.toolbarIcon}
                     color={'primary'}
                     edge="start"
                     checked={isChecked(
@@ -153,14 +149,16 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     disableRipple
                     onClick={() => setToggleSelectAll((oldVal) => !oldVal)}
                 />
-                <IconButton
-                    onClick={doDeleteModification}
-                    size={'small'}
-                    className={classes.toolbarIcon}
-                    disabled={selectedItems?.size < 1}
-                >
-                    <DeleteIcon />
-                </IconButton>
+                <div className={classes.filler} />
+                {selectedItems?.size > 0 && (
+                    <IconButton
+                        onClick={doDeleteModification}
+                        size={'small'}
+                        className={classes.toolbarIcon}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                )}
             </Toolbar>
             <Divider className={classes.dividerTool} />
             <CheckboxList

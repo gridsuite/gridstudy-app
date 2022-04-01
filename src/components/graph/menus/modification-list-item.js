@@ -25,8 +25,11 @@ const useStyles = makeStyles((theme) => ({
     label: {
         flexGrow: '1',
     },
-    checkBox: {
+    icon: {
         minWidth: 0,
+    },
+    checkbox: {
+        padding: theme.spacing(1),
     },
 }));
 
@@ -62,8 +65,9 @@ export const ModificationListItem = ({
     return (
         <>
             <ListItem key={item.uuid} {...props} className={classes.listItem}>
-                <ListItemIcon className={classes.checkBox}>
+                <ListItemIcon className={classes.icon}>
                     <Checkbox
+                        className={classes.checkbox}
                         color={'primary'}
                         edge="start"
                         checked={checked}
