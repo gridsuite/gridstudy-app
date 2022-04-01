@@ -198,7 +198,6 @@ const NetworkExplorer = ({
 
     function onDisplaySubstationFocusHandler(event, substation) {
         event.stopPropagation();
-        console.info('jbo zut', substation);
         dispatch(centerOnSubstation(substation.id));
     }
 
