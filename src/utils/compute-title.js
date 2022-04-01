@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 const MAX_TITLE_LENGTH = 106;
 const SEPARATOR = ' | ';
 
@@ -30,9 +37,9 @@ const computePageTitleWithFullPath = (pageTitle, parents) => {
     return pageTitle;
 };
 
-export const computePageTitle = (appName, study, parents) => {
-    if (!study) return appName;
-    let pageTitle = appName + SEPARATOR + study.elementName;
+export const computePageTitle = (appName, studyName, parents) => {
+    if (!studyName) return appName;
+    let pageTitle = appName + SEPARATOR + studyName;
     if (!parents?.length) return pageTitle;
 
     pageTitle = pageTitle + SEPARATOR;

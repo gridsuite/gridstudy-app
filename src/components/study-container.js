@@ -142,6 +142,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const [errorMessage, setErrorMessage] = useState(undefined);
 
+    const [initialTitle] = useState(document.title);
+
     const dispatch = useDispatch();
 
     const workingNode = useSelector((state) => state.workingTreeNode);
@@ -311,38 +313,45 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
+<<<<<<< HEAD
         loadNetwork(workingNode?.id === workingNodeIdRef.current);
     }, [loadNetwork, workingNode]);
     workingNodeIdRef.current = workingNode?.id;
 
     useEffect(() => {
         const appName = 'GridStudy';
-
-        if (studyUuid) {
-            fetchElementAndParentsInfo(studyUuid)
-                .then((response) => {
-                    const study = response[0];
-                    const parents = response
-                        .slice(1)
-                        .map((parent) => parent.elementName);
-
-                    document.title = computePageTitle(appName, study, parents);
-                })
-                .catch((errorMessage) => {
-                    document.title = appName;
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LoadStudyAndParentsInfoError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-        } else {
-            document.title = appName;
+=======
+        if (!studyUuid) {
+            document.title = initialTitle;
+            return;
         }
-    }, [studyUuid, enqueueSnackbar, intlRef]);
+>>>>>>> fix: initial page title is now saved in state on component loading instead of being hard coded
+
+        fetchElementAndParentsInfo(studyUuid)
+            .then((response) => {
+                const study = response[0];
+                const parents = response
+                    .slice(1)
+                    .map((parent) => parent.elementName);
+
+                document.title = computePageTitle(
+                    initialTitle,
+                    study?.elementName,
+                    parents
+                );
+            })
+            .catch((errorMessage) => {
+                document.title = initialTitle;
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LoadStudyAndParentsInfoError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }, [studyUuid, initialTitle, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         if (studyUuid) {
