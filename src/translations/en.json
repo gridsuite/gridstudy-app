@@ -364,5 +364,5 @@
     "insertNetworkModificationNodeAfter": "Insert a network modification node after",
     "insertModelNodeAfter": "Insert a model node after",
 
-    "LoadStudyAndParentsInfoError": "An error occured while loading current study's metadata"
+    "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path"
 }
