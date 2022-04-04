@@ -227,6 +227,7 @@ function validateConnection(values) {
  * @param {EventListener} onClose Event to close the dialog
  * @param substationOptions the available network sites
  * @param selectedNodeUuid the currently selected tree node
+ * @param editData the data to edit
  */
 const VoltageLevelCreationDialog = ({
     editData,
@@ -278,12 +279,6 @@ const VoltageLevelCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            //remove all null values to avoid showing a "null" in the form
-            Object.keys(editData).forEach((key) => {
-                if (editData[key] === null) {
-                    delete editData[key];
-                }
-            });
             setFormValues(editData);
         }
     }, [editData]);

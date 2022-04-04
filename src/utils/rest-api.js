@@ -957,16 +957,23 @@ export function createLoad(
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    uuid
+    modificationUuid
 ) {
+    let createLoadUrl;
     if (isUpdate) {
         console.info('Updating load creation');
+        createLoadUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/' +
+            encodeURIComponent(modificationUuid) +
+            '/loads-creation';
     } else {
         console.info('Creating load ');
+        createLoadUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/loads';
     }
-    const createLoadUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/loads';
+
     return backendFetch(createLoadUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -981,7 +988,6 @@ export function createLoad(
             reactivePower: reactivePower,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
-            uuid: uuid,
         }),
     }).then((response) =>
         response.ok
@@ -1006,16 +1012,22 @@ export function createGenerator(
     voltageLevelId,
     busOrBusbarSectionId,
     isUpdate = false,
-    uuid
+    modificationUuid
 ) {
+    let createGeneratorUrl;
     if (isUpdate) {
         console.info('Updating generator creation');
+        createGeneratorUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/' +
+            encodeURIComponent(modificationUuid) +
+            '/generators-creation';
     } else {
         console.info('Creating generator ');
+        createGeneratorUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/generators';
     }
-    const createGeneratorUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/generators';
     return backendFetch(createGeneratorUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1035,7 +1047,6 @@ export function createGenerator(
             voltageSetpoint: voltageSetpoint,
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
-            uuid: uuid,
         }),
     }).then((response) =>
         response.ok
@@ -1055,17 +1066,24 @@ export function createShuntCompensator(
     susceptancePerSection,
     connectivity,
     isUpdate,
-    uuid
+    modificationUuid
 ) {
+    let createShuntUrl;
     if (isUpdate) {
-        console.info('Updating line creation');
+        console.info('Updating shunt compensator creation');
+        createShuntUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/' +
+            encodeURIComponent(modificationUuid) +
+            '/shunt-compensators-creation';
     } else {
-        console.info('Creating line ');
+        console.info('Creating shunt compensator ');
+        createShuntUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/shunt-compensators';
     }
-    const createLineUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/shunt-compensators';
-    return backendFetch(createLineUrl, {
+
+    return backendFetch(createShuntUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',
@@ -1080,7 +1098,6 @@ export function createShuntCompensator(
             susceptancePerSection: susceptancePerSection,
             voltageLevelId: connectivity.voltageLevel.id,
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
-            uuid: uuid,
         }),
     }).then((response) =>
         response.ok
@@ -1107,16 +1124,22 @@ export function createLine(
     permanentCurrentLimit1,
     permanentCurrentLimit2,
     isUpdate,
-    uuid
+    modificationUuid
 ) {
+    let createLineUrl;
     if (isUpdate) {
         console.info('Updating line creation');
+        createLineUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/' +
+            encodeURIComponent(modificationUuid) +
+            '/lines-creation';
     } else {
         console.info('Creating line ');
+        createLineUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/lines';
     }
-    const createLineUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/lines';
     return backendFetch(createLineUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1142,7 +1165,6 @@ export function createLine(
             currentLimits2: {
                 permanentLimit: permanentCurrentLimit2,
             },
-            uuid: uuid,
         }),
     }).then((response) =>
         response.ok
@@ -1167,16 +1189,22 @@ export function createTwoWindingsTransformer(
     voltageLevelId2,
     busOrBusbarSectionId2,
     isUpdate,
-    uuid
+    modificationUuid
 ) {
+    let createTwoWindingsTransformerUrl;
     if (isUpdate) {
         console.info('Updating two windings transformer creation');
+        createTwoWindingsTransformerUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/' +
+            encodeURIComponent(modificationUuid) +
+            '/two-windings-transformers-creation';
     } else {
         console.info('Creating two windings transformer ');
+        createTwoWindingsTransformerUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/two-windings-transformers';
     }
-    const createTwoWindingsTransformerUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/two-windings-transformer';
     return backendFetch(createTwoWindingsTransformerUrl, {
         method: isUpdate ? 'PUT' : 'POST',
         headers: {
@@ -1196,7 +1224,6 @@ export function createTwoWindingsTransformer(
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            uuid,
         }),
     }).then((response) =>
         response.ok
@@ -1212,16 +1239,22 @@ export function createSubstation(
     substationName,
     substationCountry,
     isUpdate = false,
-    uuid
+    modificationUuid
 ) {
+    let createSubstationUrl;
     if (isUpdate) {
         console.info('Updating substation creation');
+        createSubstationUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/' +
+            encodeURIComponent(modificationUuid) +
+            '/substations-creation';
     } else {
         console.info('Creating substation ');
+        createSubstationUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/substations';
     }
-    const createSubstationUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/substations';
 
     return backendFetch(createSubstationUrl, {
         method: isUpdate ? 'PUT' : 'POST',
@@ -1234,7 +1267,6 @@ export function createSubstation(
             equipmentName: substationName,
             substationCountry:
                 substationCountry === '' ? null : substationCountry,
-            uuid: uuid,
         }),
     }).then((response) =>
         response.ok
@@ -1253,17 +1285,22 @@ export function createVoltageLevel(
     busBarSections,
     connections,
     isUpdate,
-    uuid
+    modificationUuid
 ) {
+    let createVoltageLevelUrl;
     if (isUpdate) {
         console.info('Updating voltage level creation');
+        createVoltageLevelUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/' +
+            encodeURIComponent(modificationUuid) +
+            '/voltage-levels-creation';
     } else {
         console.info('Creating voltage level (stub)');
+        createVoltageLevelUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/voltage-levels';
     }
-    const createVoltageLevelUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/voltage-levels';
-
     let busBarConnections = connections.map((c) => {
         return {
             fromBBS: c.fromBBS.id,
@@ -1285,7 +1322,6 @@ export function createVoltageLevel(
             substationId: substationId,
             busbarSections: busBarSections,
             busbarConnections: busBarConnections,
-            uuid,
         }),
     }).then((response) =>
         response.ok

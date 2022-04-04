@@ -48,6 +48,7 @@ const disabledChecked = { disabled: true };
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
+ * @param editData the data to edit
  */
 const ShuntCompensatorCreationDialog = ({
     open,
@@ -101,12 +102,6 @@ const ShuntCompensatorCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            //remove all null values to avoid showing a "null" in the form
-            Object.keys(editData).forEach((key) => {
-                if (editData[key] === null) {
-                    delete editData[key];
-                }
-            });
             setFormValues(editData);
         }
     }, [editData]);
@@ -279,6 +274,7 @@ const ShuntCompensatorCreationDialog = ({
 };
 
 ShuntCompensatorCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

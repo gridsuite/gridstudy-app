@@ -54,6 +54,8 @@ const useStyles = makeStyles((theme) => ({
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
+ * @param workingNodeUuid : the node we are currently working on
+ * @param editData the data to edit
  */
 const TwoWindingsTransformerCreationDialog = ({
     editData,
@@ -114,12 +116,6 @@ const TwoWindingsTransformerCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            //remove all null values to avoid showing a "null" in the form
-            Object.keys(editData).forEach((key) => {
-                if (editData[key] === null) {
-                    delete editData[key];
-                }
-            });
             setFormValues(editData);
         }
     }, [editData]);

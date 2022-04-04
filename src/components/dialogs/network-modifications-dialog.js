@@ -26,21 +26,17 @@ const useStyles = makeStyles((theme) => ({
  * Dialog to select network modification to create
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param setDialogOpen to control the opening of dialogs
+ * @param onOpenDialog handle the opening of dialogs
  * @param dialogs the list of dialog
  */
 const NetworkModificationDialog = ({
     open,
     onClose,
-    setDialogOpen,
+    onOpenDialog,
     dialogs,
 }) => {
     const classes = useStyles();
     const intl = useIntl();
-
-    const openDialog = (dialogId) => {
-        setDialogOpen(dialogId);
-    };
 
     const handleClose = () => {
         onClose();
@@ -67,7 +63,7 @@ const NetworkModificationDialog = ({
                                     className={classes.button}
                                     variant="outlined"
                                     startIcon={values.icon}
-                                    onClick={() => openDialog(id)}
+                                    onClick={() => onOpenDialog(id)}
                                 >
                                     <Typography align="left">
                                         <FormattedMessage id={values.label} />

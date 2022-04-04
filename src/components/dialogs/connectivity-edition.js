@@ -129,13 +129,7 @@ const ConnectivityEdition = ({
                 setBusOrBusbarSectionOptions([]);
                 break;
         }
-    }, [
-        voltageLevel,
-        handleChangeVoltageLevel,
-        studyUuid,
-        workingNodeUuid,
-        setBusOrBusbarSectionOptions,
-    ]);
+    }, [voltageLevel, handleChangeVoltageLevel, studyUuid, workingNodeUuid]);
 
     useEffect(() => {
         setCurrentBBS(

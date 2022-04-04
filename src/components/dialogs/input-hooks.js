@@ -292,7 +292,6 @@ export const useConnectivityValue = ({
             busOrBusbarSection: busOrBusbarSectionIdDefaultValue
                 ? {
                       id: busOrBusbarSectionIdDefaultValue,
-                      name: '',
                   }
                 : null,
         });

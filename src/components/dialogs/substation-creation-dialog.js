@@ -35,6 +35,7 @@ import { useFormSearchCopy } from './form-search-copy-hook';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param selectedNodeUuid : the currently selected tree node
+ * @param editData the data to edit
  */
 const SubstationCreationDialog = ({
     open,
@@ -83,12 +84,6 @@ const SubstationCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            //remove all null values to avoid showing a "null" in the form
-            Object.keys(editData).forEach((key) => {
-                if (editData[key] === null) {
-                    delete editData[key];
-                }
-            });
             setFormValues(editData);
         }
     }, [editData]);
@@ -203,6 +198,7 @@ const SubstationCreationDialog = ({
 };
 
 SubstationCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     selectedNodeUuid: PropTypes.string,

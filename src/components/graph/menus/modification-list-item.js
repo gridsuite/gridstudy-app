@@ -66,16 +66,20 @@ export const ModificationListItem = ({
     return (
         <>
             <ListItem {...props} className={classes.listItem}>
-                {equipmentCreationModificationsType.has(modification.type) && (
-                    <IconButton
-                        onClick={() => onEdit(modification.uuid)}
-                        size={'small'}
-                    >
-                        <EditIcon />
-                    </IconButton>
-                )}
                 <Grid container>
-                    <Grid item xs={11}>
+                    <Grid item xs={1}>
+                        {equipmentCreationModificationsType.has(
+                            modification.type
+                        ) && (
+                            <IconButton
+                                onClick={() => onEdit(modification.uuid)}
+                                size={'small'}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        )}
+                    </Grid>
+                    <Grid item xs={10}>
                         <OverflowableText
                             className={classes.label}
                             text={getLabel()}

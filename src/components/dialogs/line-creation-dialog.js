@@ -65,6 +65,7 @@ const useStyles = makeStyles((theme) => ({
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
+ * @param editData the data to edit
  */
 const LineCreationDialog = ({
     editData,
@@ -131,12 +132,6 @@ const LineCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            //remove all null values to avoid showing a "null" in the form
-            Object.keys(editData).forEach((key) => {
-                if (editData[key] === null) {
-                    delete editData[key];
-                }
-            });
             setFormValues(editData);
         }
     }, [editData]);
