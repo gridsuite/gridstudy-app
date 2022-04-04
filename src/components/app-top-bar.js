@@ -58,7 +58,7 @@ const useEquipmentStyles = makeStyles(equipmentStyles);
 const CustomTagRenderer = ({ props, element, close }) => {
     const dispatch = useDispatch();
     const equipmentClasses = useEquipmentStyles();
-    const enterOnSubstationCB = useCallback(
+    const centerOnSubstationCB = useCallback(
         (e, element) => {
             dispatch(centerOnSubstation(element.id));
             close && close();
@@ -72,7 +72,7 @@ const CustomTagRenderer = ({ props, element, close }) => {
         element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
     )
         return (
-            <IconButton onClick={(e) => enterOnSubstationCB(e, element)}>
+            <IconButton onClick={(e) => centerOnSubstationCB(e, element)}>
                 <GpsFixedIcon />
             </IconButton>
         );
