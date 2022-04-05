@@ -363,6 +363,8 @@
     "insertModelNodeBefore": "Insérer un nœud modèle au dessus",
     "insertNetworkModificationNodeAfter": "Insérer un nœud de modifications de réseau en dessous",
     "insertModelNodeAfter": "Insérer un nœud modèle en dessous",
+  
+    "Update": "Mettre à jour",
 
-    "Update": "Mettre à jour"
+    "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours"
 }
