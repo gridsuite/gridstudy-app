@@ -13,7 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import TableChartIcon from '@mui/icons-material/TableChart';
-import NestedMenuItem from 'material-ui-nested-menu-item';
+import { NestedMenuItem } from 'mui-nested-menu';
 
 import { useIntl } from 'react-intl';
 import { equipments } from '../network/network-equipments';
