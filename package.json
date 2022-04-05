@@ -28,7 +28,7 @@
         "material-ui-nested-menu-item": "1.0.2",
         "memoize-one": "^5.1.1",
         "mjolnir.js": "^2.4.0",
-        "notistack": "^1.0.1",
+        "notistack": "^2.0.3",
         "prop-types": "15.7.2",
         "qs": "^6.9.1",
         "react": "^17.0.0",
