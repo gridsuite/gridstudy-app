@@ -313,19 +313,15 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-<<<<<<< HEAD
         loadNetwork(workingNode?.id === workingNodeIdRef.current);
     }, [loadNetwork, workingNode]);
     workingNodeIdRef.current = workingNode?.id;
 
     useEffect(() => {
-        const appName = 'GridStudy';
-=======
         if (!studyUuid) {
             document.title = initialTitle;
             return;
         }
->>>>>>> fix: initial page title is now saved in state on component loading instead of being hard coded
 
         fetchPath(studyUuid)
             .then((response) => {
