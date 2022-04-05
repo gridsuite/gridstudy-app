@@ -129,7 +129,11 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
 
     const onNodeDoubleClick = useCallback(
         (event, node) => {
-            if (node.type === 'MODEL' && node.data.buildStatus !== 'BUILT') {
+            if (
+                node.type === 'MODEL' &&
+                node.data.buildStatus !== 'BUILT' &&
+                node.data.buildStatus !== 'BUILDING'
+            ) {
                 buildNode(studyUuid, node.id);
             }
         },
