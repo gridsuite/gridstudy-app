@@ -23,7 +23,7 @@ import {
     fetchNetworkModificationTree,
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
-    fetchElementAndParentsInfo,
+    fetchPath,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -327,7 +327,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
 >>>>>>> fix: initial page title is now saved in state on component loading instead of being hard coded
 
-        fetchElementAndParentsInfo(studyUuid)
+        fetchPath(studyUuid)
             .then((response) => {
                 const study = response[0];
                 const parents = response

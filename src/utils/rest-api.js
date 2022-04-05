@@ -137,21 +137,20 @@ export function fetchStudyExists(studyUuid) {
     return backendFetch(fetchStudiesUrl, { method: 'head' });
 }
 
-function getElementAndParentsInfoUrl(studyUuid) {
+function getPathUrl(studyUuid) {
     return (
         PREFIX_DIRECTORY_SERVER_QUERIES +
         '/v1/elements/' +
         encodeURIComponent(studyUuid) +
-        '/parents'
+        '/path'
     );
 }
 
-export function fetchElementAndParentsInfo(studyUuid) {
+export function fetchPath(studyUuid) {
     console.info(`Fetching element '${studyUuid}' and its parents info ...`);
-    const fetchElementAndParentsInfoUrl =
-        getElementAndParentsInfoUrl(studyUuid);
-    console.debug(fetchElementAndParentsInfoUrl);
-    return backendFetch(fetchElementAndParentsInfoUrl).then((response) =>
+    const fetchPathUrl = getPathUrl(studyUuid);
+    console.debug(fetchPathUrl);
+    return backendFetch(fetchPathUrl).then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
