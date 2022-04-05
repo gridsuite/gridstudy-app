@@ -137,6 +137,26 @@ export function fetchStudyExists(studyUuid) {
     return backendFetch(fetchStudiesUrl, { method: 'head' });
 }
 
+function getPathUrl(studyUuid) {
+    return (
+        PREFIX_DIRECTORY_SERVER_QUERIES +
+        '/v1/elements/' +
+        encodeURIComponent(studyUuid) +
+        '/path'
+    );
+}
+
+export function fetchPath(studyUuid) {
+    console.info(`Fetching element '${studyUuid}' and its parents info ...`);
+    const fetchPathUrl = getPathUrl(studyUuid);
+    console.debug(fetchPathUrl);
+    return backendFetch(fetchPathUrl).then((response) =>
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getVoltageLevelSingleLineDiagram(
     studyUuid,
     selectedNodeUuid,
