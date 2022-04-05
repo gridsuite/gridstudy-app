@@ -23,6 +23,7 @@ import {
     fetchNetworkModificationTree,
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
+    fetchPath,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -45,6 +46,7 @@ import {
     RunningStatus,
 } from './util/running-status';
 import { useIntl } from 'react-intl';
+import { computePageTitle } from '../utils/compute-title';
 
 export function useNodeData(
     studyUuid,
@@ -139,6 +141,8 @@ export function StudyContainer({ view, onChangeTab }) {
         useState(undefined);
 
     const [errorMessage, setErrorMessage] = useState(undefined);
+
+    const [initialTitle] = useState(document.title);
 
     const dispatch = useDispatch();
 
@@ -312,6 +316,38 @@ export function StudyContainer({ view, onChangeTab }) {
         loadNetwork(workingNode?.id === workingNodeIdRef.current);
     }, [loadNetwork, workingNode]);
     workingNodeIdRef.current = workingNode?.id;
+
+    useEffect(() => {
+        if (!studyUuid) {
+            document.title = initialTitle;
+            return;
+        }
+
+        fetchPath(studyUuid)
+            .then((response) => {
+                const study = response[0];
+                const parents = response
+                    .slice(1)
+                    .map((parent) => parent.elementName);
+
+                document.title = computePageTitle(
+                    initialTitle,
+                    study?.elementName,
+                    parents
+                );
+            })
+            .catch((errorMessage) => {
+                document.title = initialTitle;
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LoadStudyAndParentsInfoError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }, [studyUuid, initialTitle, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         if (studyUuid) {
