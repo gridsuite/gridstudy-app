@@ -1341,9 +1341,5 @@ export function buildNode(studyUuid, selectedNodeUuid) {
     );
     const url = getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/build';
     console.debug(url);
-    return backendFetch(url, { method: 'post' }).then((response) =>
-        response.ok
-            ? response.text()
-            : response.text().then((text) => Promise.reject(text))
-    );
+    return backendFetch(url, { method: 'post' });
 }

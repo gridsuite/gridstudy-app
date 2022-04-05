@@ -130,23 +130,10 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     const onNodeDoubleClick = useCallback(
         (event, node) => {
             if (node.type === 'MODEL' && node.data.buildStatus !== 'BUILT') {
-                buildNode(studyUuid, node.id)
-                    .then((resp) => {
-                        node.data.buildStatus = 'BUILDING';
-                    })
-                    .catch((errorMessage) => {
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'NodeBuildingError',
-                                intlRef: intlRef,
-                            },
-                        });
-                    });
+                buildNode(studyUuid, node.id);
             }
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid]
     );
 
     const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
