@@ -13,7 +13,8 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -64,8 +65,10 @@ const useStyles = makeStyles((theme) => ({
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
+ * @param editData the data to edit
  */
 const LineCreationDialog = ({
+    editData,
     open,
     onClose,
     voltageLevelOptions,
@@ -126,6 +129,12 @@ const LineCreationDialog = ({
         label: 'CopyFromExisting',
         handleClick: searchCopy.handleOpenSearchDialog,
     });
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
 
     const [lineId, lineIdField] = useTextValue({
         label: 'ID',
@@ -229,9 +238,7 @@ const LineCreationDialog = ({
             },
             adornment: AmpereAdornment,
             inputForm: inputForm,
-            defaultValue: formValues
-                ? formValues.currentLimits1.permanentLimit
-                : undefined,
+            defaultValue: formValues?.currentLimits1.permanentLimit,
         });
 
     const [permanentCurrentLimit2, permanentCurrentLimit2Field] =
@@ -245,9 +252,7 @@ const LineCreationDialog = ({
             },
             adornment: AmpereAdornment,
             inputForm: inputForm,
-            defaultValue: formValues
-                ? formValues.currentLimits2.permanentLimit
-                : undefined,
+            defaultValue: formValues?.currentLimits2.permanentLimit,
         });
 
     const handleSave = () => {
@@ -268,7 +273,9 @@ const LineCreationDialog = ({
                 connectivity2.voltageLevel.id,
                 connectivity2.busOrBusbarSection.id,
                 permanentCurrentLimit1,
-                permanentCurrentLimit2
+                permanentCurrentLimit2,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -344,11 +351,11 @@ const LineCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item container xs={6} direction="column">
+                        <Grid item container xs={6}>
                             {gridItem(shuntConductance1Field, 12)}
                             {gridItem(shuntSusceptance1Field, 12)}
                         </Grid>
-                        <Grid item container xs={6} direction="column">
+                        <Grid item container xs={6}>
                             {gridItem(shuntConductance2Field, 12)}
                             {gridItem(shuntSusceptance2Field, 12)}
                         </Grid>
@@ -418,7 +425,7 @@ const LineCreationDialog = ({
                         <FormattedMessage id="close" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -434,6 +441,7 @@ const LineCreationDialog = ({
 };
 
 LineCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

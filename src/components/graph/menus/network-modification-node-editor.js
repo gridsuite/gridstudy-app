@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import {
     fetchNetworkModifications,
     deleteModification,
+    fetchNetworkModification,
 } from '../../../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
@@ -22,6 +23,15 @@ import { Fab, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
+import LoadCreationDialog from '../../dialogs/load-creation-dialog';
+import GeneratorCreationDialog from '../../dialogs/generator-creation-dialog';
+import ShuntCompensatorCreationDialog from '../../dialogs/shunt-compensator-creation-dialog';
+import LineCreationDialog from '../../dialogs/line-creation-dialog';
+import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-transformer-creation-dialog';
+import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
+import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
+import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -50,6 +60,89 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const [modifications, setModifications] = useState(undefined);
     const { enqueueSnackbar } = useSnackbar();
     const selectedNodeRef = useRef(); // initial empty to get first update
+
+    const [editDialogOpen, setEditDialogOpen] = useState(undefined);
+    const [editData, setEditData] = useState(undefined);
+
+    const closeDialog = () => {
+        setEditDialogOpen(undefined);
+        setEditData(undefined);
+    };
+
+    function withDefaultParams(Dialog, props) {
+        return (
+            <Dialog
+                open={true}
+                onClose={closeDialog}
+                selectedNodeUuid={selectedNode.id}
+                workingNodeUuid={workingNode.id}
+                editData={editData}
+                {...props}
+            />
+        );
+    }
+
+    function withVoltageLevel(Dialog, props) {
+        return withDefaultParams(Dialog, {
+            ...props,
+            voltageLevelOptions: network?.voltageLevels,
+        });
+    }
+
+    function withSubstationOption(Dialog, props) {
+        return withDefaultParams(Dialog, {
+            ...props,
+            substationOptions: network?.substations,
+        });
+    }
+
+    const dialogs = {
+        LOAD_CREATION: {
+            label: 'CreateLoad',
+            dialog: () => withVoltageLevel(LoadCreationDialog),
+            icon: <AddIcon />,
+        },
+        GENERATOR_CREATION: {
+            label: 'CreateGenerator',
+            dialog: () => withVoltageLevel(GeneratorCreationDialog),
+            icon: <AddIcon />,
+        },
+        SHUNT_COMPENSATOR_CREATION: {
+            label: 'CreateShuntCompensator',
+            dialog: () => withVoltageLevel(ShuntCompensatorCreationDialog),
+            icon: <AddIcon />,
+        },
+        LINE_CREATION: {
+            label: 'CreateLine',
+            dialog: () => withVoltageLevel(LineCreationDialog),
+            icon: <AddIcon />,
+        },
+        TWO_WINDINGS_TRANSFORMER_CREATION: {
+            label: 'CreateTwoWindingsTransformer',
+            dialog: () =>
+                withVoltageLevel(TwoWindingsTransformerCreationDialog),
+            icon: <AddIcon />,
+        },
+        SUBSTATION_CREATION: {
+            label: 'CreateSubstation',
+            dialog: () => withVoltageLevel(SubstationCreationDialog),
+            icon: <AddIcon />,
+        },
+        VOLTAGE_LEVEL_CREATION: {
+            label: 'CreateVoltageLevel',
+            dialog: () => withSubstationOption(VoltageLevelCreationDialog),
+            icon: <AddIcon />,
+        },
+        deleteEquipment: {
+            label: 'DeleteEquipment',
+            dialog: () => withDefaultParams(EquipmentDeletionDialog),
+            icon: <DeleteIcon />,
+        },
+    };
+
+    useEffect(() => {
+        setEditDialogOpen(editData?.type);
+    }, [editData]);
 
     useEffect(() => {
         if (selectedNode !== selectedNodeRef.current) {
@@ -82,10 +175,30 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const closeNetworkModificationConfiguration = () => {
         setOpenNetworkModificationsDialog(false);
+        setEditData(undefined);
     };
 
     const doDeleteModification = (uuid) => {
         deleteModification(studyUuid, selectedNode, uuid);
+    };
+
+    const doEditModification = (modificationUuid) => {
+        const modification = fetchNetworkModification(modificationUuid);
+        modification.then((res) => {
+            res.json().then((data) => {
+                //remove all null values to avoid showing a "null" in the forms
+                Object.keys(data[0]).forEach((key) => {
+                    if (data[0][key] === null) {
+                        delete data[0][key];
+                    }
+                });
+                setEditData(data[0]);
+            });
+        });
+    };
+
+    const renderDialog = () => {
+        return dialogs[editDialogOpen].dialog();
     };
 
     return (
@@ -102,6 +215,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                         key={item.uuid}
                         modification={item}
                         onDelete={doDeleteModification}
+                        onEdit={doEditModification}
                     />
                 ))}
             </List>
@@ -120,7 +234,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 network={network}
                 selectedNodeUuid={selectedNode.id}
                 workingNodeUuid={workingNode?.id}
+                onOpenDialog={setEditDialogOpen}
+                dialogs={dialogs}
             />
+            {editDialogOpen && renderDialog()}
         </>
     );
 };

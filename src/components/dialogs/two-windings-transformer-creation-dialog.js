@@ -13,7 +13,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -54,8 +54,11 @@ const useStyles = makeStyles((theme) => ({
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
+ * @param workingNodeUuid : the node we are currently working on
+ * @param editData the data to edit
  */
 const TwoWindingsTransformerCreationDialog = ({
+    editData,
     open,
     onClose,
     voltageLevelOptions,
@@ -110,6 +113,12 @@ const TwoWindingsTransformerCreationDialog = ({
         label: 'CopyFromExisting',
         handleClick: searchCopy.handleOpenSearchDialog,
     });
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
 
     const [twoWindingsTransformerId, twoWindingsTransformerIdField] =
         useTextValue({
@@ -220,7 +229,9 @@ const TwoWindingsTransformerCreationDialog = ({
                 connectivity1.voltageLevel.id,
                 connectivity1.busOrBusbarSection.id,
                 connectivity2.voltageLevel.id,
-                connectivity2.busOrBusbarSection.id
+                connectivity2.busOrBusbarSection.id,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -347,7 +358,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         <FormattedMessage id="close" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -363,6 +374,7 @@ const TwoWindingsTransformerCreationDialog = ({
 };
 
 TwoWindingsTransformerCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

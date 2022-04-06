@@ -12,7 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -53,8 +53,10 @@ const LOAD_TYPES = [
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
+ * @param editData the data to edit
  */
 const LoadCreationDialog = ({
+    editData,
     open,
     onClose,
     voltageLevelOptions,
@@ -78,9 +80,15 @@ const LoadCreationDialog = ({
     };
 
     const toFormValues = (load) => {
-        load.id = load.id + '(1)';
-        load.busOrBusbarSectionId = null;
-        return load;
+        return {
+            equipmentId: load.id + '(1)',
+            equipmentName: load.name,
+            loadType: load.type,
+            activePower: load.p0,
+            reactivePower: load.q0,
+            voltageLevelId: load.voltageLevelId,
+            busOrBusbarSectionId: null,
+        };
     };
 
     const searchCopy = useFormSearchCopy({
@@ -97,19 +105,25 @@ const LoadCreationDialog = ({
         handleClick: searchCopy.handleOpenSearchDialog,
     });
 
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [loadId, loadIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.id,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [loadName, loadNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.name,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [loadType, loadTypeField] = useEnumValue({
@@ -117,7 +131,7 @@ const LoadCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
-        defaultValue: formValues ? formValues.type : '',
+        defaultValue: formValues ? formValues.loadType : '',
     });
 
     const [activePower, activePowerField] = useDoubleValue({
@@ -128,7 +142,7 @@ const LoadCreationDialog = ({
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues ? String(formValues.p0) : undefined,
+        defaultValue: formValues ? String(formValues.activePower) : undefined,
     });
 
     const [reactivePower, reactivePowerField] = useDoubleValue({
@@ -139,7 +153,7 @@ const LoadCreationDialog = ({
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues ? String(formValues.q0) : undefined,
+        defaultValue: formValues ? String(formValues.reactivePower) : undefined,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
@@ -163,7 +177,9 @@ const LoadCreationDialog = ({
                 activePower,
                 reactivePower,
                 connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id
+                connectivity.busOrBusbarSection.id,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -232,7 +248,7 @@ const LoadCreationDialog = ({
                         <FormattedMessage id="close" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -248,6 +264,7 @@ const LoadCreationDialog = ({
 };
 
 LoadCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

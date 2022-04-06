@@ -13,7 +13,9 @@ import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from 'prop-types';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
@@ -24,10 +26,25 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const ModificationListItem = ({ modification, onDelete, ...props }) => {
+export const ModificationListItem = ({
+    modification,
+    onDelete,
+    onEdit,
+    ...props
+}) => {
     const intl = useIntl();
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
+
+    const equipmentCreationModificationsType = new Set([
+        'GENERATOR_CREATION',
+        'LINE_CREATION',
+        'LOAD_CREATION',
+        'SHUNT_COMPENSATOR_CREATION',
+        'SUBSTATION_CREATION',
+        'TWO_WINDINGS_TRANSFORMER_CREATION',
+        'VOLTAGE_LEVEL_CREATION',
+    ]);
 
     const getComputedLabel = useCallback(() => {
         return useName && modification.equipmentName
@@ -49,13 +66,34 @@ export const ModificationListItem = ({ modification, onDelete, ...props }) => {
     return (
         <>
             <ListItem {...props} className={classes.listItem}>
-                <OverflowableText className={classes.label} text={getLabel()} />
-                <IconButton
-                    onClick={() => onDelete(modification.uuid)}
-                    size={'small'}
-                >
-                    <DeleteIcon />
-                </IconButton>
+                <Grid container>
+                    <Grid item xs={1}>
+                        {equipmentCreationModificationsType.has(
+                            modification.type
+                        ) && (
+                            <IconButton
+                                onClick={() => onEdit(modification.uuid)}
+                                size={'small'}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        )}
+                    </Grid>
+                    <Grid item xs={10}>
+                        <OverflowableText
+                            className={classes.label}
+                            text={getLabel()}
+                        />
+                    </Grid>
+                    <Grid item xs={1}>
+                        <IconButton
+                            onClick={() => onDelete(modification.uuid)}
+                            size={'small'}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Grid>
+                </Grid>
             </ListItem>
             <Divider />
         </>
@@ -64,4 +102,6 @@ export const ModificationListItem = ({ modification, onDelete, ...props }) => {
 
 ModificationListItem.propTypes = {
     modification: PropTypes.object,
+    onDelete: PropTypes.func,
+    onEdit: PropTypes.func,
 };
