@@ -134,10 +134,19 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
                 node.data.buildStatus !== 'BUILT' &&
                 node.data.buildStatus !== 'BUILDING'
             ) {
-                buildNode(studyUuid, node.id);
+                buildNode(studyUuid, node.id).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NodeBuildingError',
+                            intlRef: intlRef,
+                        },
+                    });
+                });
             }
         },
-        [studyUuid]
+        [studyUuid, enqueueSnackbar, intlRef]
     );
 
     const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
