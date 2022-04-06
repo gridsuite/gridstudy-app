@@ -984,7 +984,7 @@ export function createLoad(
         console.info('Updating load creation');
         createLoadUrl =
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-            '/network-modification/' +
+            '/network-modification/modifications/' +
             encodeURIComponent(modificationUuid) +
             '/loads-creation';
     } else {
@@ -1039,7 +1039,7 @@ export function createGenerator(
         console.info('Updating generator creation');
         createGeneratorUrl =
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-            '/network-modification/' +
+            '/network-modification/modifications/' +
             encodeURIComponent(modificationUuid) +
             '/generators-creation';
     } else {
@@ -1093,7 +1093,7 @@ export function createShuntCompensator(
         console.info('Updating shunt compensator creation');
         createShuntUrl =
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-            '/network-modification/' +
+            '/network-modification/modifications/' +
             encodeURIComponent(modificationUuid) +
             '/shunt-compensators-creation';
     } else {
@@ -1151,7 +1151,7 @@ export function createLine(
         console.info('Updating line creation');
         createLineUrl =
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-            '/network-modification/' +
+            '/network-modification/modifications/' +
             encodeURIComponent(modificationUuid) +
             '/lines-creation';
     } else {
@@ -1216,7 +1216,7 @@ export function createTwoWindingsTransformer(
         console.info('Updating two windings transformer creation');
         createTwoWindingsTransformerUrl =
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-            '/network-modification/' +
+            '/network-modification/modifications/' +
             encodeURIComponent(modificationUuid) +
             '/two-windings-transformers-creation';
     } else {
@@ -1266,7 +1266,7 @@ export function createSubstation(
         console.info('Updating substation creation');
         createSubstationUrl =
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-            '/network-modification/' +
+            '/network-modification/modifications/' +
             encodeURIComponent(modificationUuid) +
             '/substations-creation';
     } else {
@@ -1312,7 +1312,7 @@ export function createVoltageLevel(
         console.info('Updating voltage level creation');
         createVoltageLevelUrl =
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-            '/network-modification/' +
+            '/network-modification/modifications/' +
             encodeURIComponent(modificationUuid) +
             '/voltage-levels-creation';
     } else {
