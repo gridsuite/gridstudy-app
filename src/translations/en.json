@@ -287,6 +287,7 @@
     "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load",
     "LineCreationError": "Error while creating line",
+    "ShuntCompensatorCreationError": "Error while creating shunt compensator",
 
     "CreateGenerator": "Create generator",
     "GeneratorCreationError": "Error while creating generator",

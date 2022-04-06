@@ -287,6 +287,7 @@
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
     "LineCreationError": "Erreur lors de la création d'une ligne",
+    "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 
     "CreateGenerator": "Créer un groupe",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
