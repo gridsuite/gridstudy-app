@@ -351,11 +351,11 @@ const LineCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item container xs={6} direction="column">
+                        <Grid item container xs={6}>
                             {gridItem(shuntConductance1Field, 12)}
                             {gridItem(shuntSusceptance1Field, 12)}
                         </Grid>
-                        <Grid item container xs={6} direction="column">
+                        <Grid item container xs={6}>
                             {gridItem(shuntConductance2Field, 12)}
                             {gridItem(shuntSusceptance2Field, 12)}
                         </Grid>
