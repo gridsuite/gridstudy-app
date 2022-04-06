@@ -129,21 +129,21 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
 
     const onNodeDoubleClick = useCallback(
         (event, node) => {
-            if (node.type === 'MODEL' && node.data.buildStatus !== 'BUILT') {
-                buildNode(studyUuid, node.id)
-                    .then((resp) => {
-                        node.data.buildStatus = 'BUILDING';
-                    })
-                    .catch((errorMessage) => {
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'NodeBuildingError',
-                                intlRef: intlRef,
-                            },
-                        });
+            if (
+                node.type === 'MODEL' &&
+                node.data.buildStatus !== 'BUILT' &&
+                node.data.buildStatus !== 'BUILDING'
+            ) {
+                buildNode(studyUuid, node.id).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NodeBuildingError',
+                            intlRef: intlRef,
+                        },
                     });
+                });
             }
         },
         [studyUuid, enqueueSnackbar, intlRef]
