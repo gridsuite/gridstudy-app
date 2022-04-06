@@ -12,7 +12,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -35,8 +35,14 @@ import { useFormSearchCopy } from './form-search-copy-hook';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param selectedNodeUuid : the currently selected tree node
+ * @param editData the data to edit
  */
-const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
+const SubstationCreationDialog = ({
+    open,
+    onClose,
+    selectedNodeUuid,
+    editData,
+}) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const intlRef = useIntlRef();
@@ -76,6 +82,12 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
         handleClick: searchCopy.handleOpenSearchDialog,
     });
 
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [substationId, substationIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
@@ -109,7 +121,9 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
                 selectedNodeUuid,
                 substationId,
                 substationName,
-                substationCountry
+                substationCountry,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -168,7 +182,7 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
                         <FormattedMessage id="close" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -184,6 +198,7 @@ const SubstationCreationDialog = ({ open, onClose, selectedNodeUuid }) => {
 };
 
 SubstationCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     selectedNodeUuid: PropTypes.string,
