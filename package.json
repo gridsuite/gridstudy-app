@@ -26,6 +26,7 @@
         "prop-types": "15.7.2",
         "qs": "^6.9.1",
         "react": "^17.0.0",
+        "react-beautiful-dnd": "^13.1.0",
         "react-dom": "^17.0.0",
         "react-flow-renderer": "^9.6.7",
         "react-intl": "^5.0.0",

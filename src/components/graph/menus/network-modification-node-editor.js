@@ -5,11 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchNetworkModifications,
     deleteModification,
+    changeNetworkModificationOrder,
 } from '../../../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
@@ -25,6 +26,7 @@ import CheckboxList from '../../util/checkbox-list';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -125,6 +127,30 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         );
     };
 
+    const commit = useCallback(
+        ({ source, destination }) => {
+            if (destination === null) return;
+            const res = [...modifications];
+            const [item] = res.splice(source.index, 1);
+            const before = res[destination.index]?.uuid;
+            res.splice(
+                destination ? destination.index : modifications.length,
+                0,
+                item
+            );
+
+            /* doing the local change before update to server */
+            setModifications(res);
+            changeNetworkModificationOrder(
+                studyUuid,
+                workingNode.id,
+                item.uuid,
+                before
+            );
+        },
+        [workingNode.id, studyUuid, modifications]
+    );
+
     return (
         <>
             <Typography className={classes.modificationCount}>
@@ -161,15 +187,31 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 )}
             </Toolbar>
             <Divider className={classes.dividerTool} />
-            <CheckboxList
-                onChecked={setSelectedItems}
-                className={classes.list}
-                values={modifications}
-                setChecked={setSelectedItems}
-                itemRenderer={(props) => <ModificationListItem {...props} />}
-                toggleSelectAll={toggleSelectAll}
-            />
-
+            <DragDropContext onDragEnd={commit}>
+                <Droppable droppableId="network-modification-list">
+                    {(provided) => (
+                        <div
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                        >
+                            <CheckboxList
+                                onChecked={setSelectedItems}
+                                className={classes.list}
+                                values={modifications}
+                                setChecked={setSelectedItems}
+                                itemRenderer={(props) => (
+                                    <ModificationListItem
+                                        key={props.item.uuid}
+                                        {...props}
+                                    />
+                                )}
+                                toggleSelectAll={toggleSelectAll}
+                            />
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
             <Fab
                 className={classes.addButton}
                 color="primary"

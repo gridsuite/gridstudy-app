@@ -15,6 +15,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
+import { Draggable } from 'react-beautiful-dnd';
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
@@ -37,6 +38,7 @@ export const ModificationListItem = ({
     item,
     checked,
     handleToggle,
+    index,
     ...props
 }) => {
     const intl = useIntl();
@@ -63,22 +65,37 @@ export const ModificationListItem = ({
         [item, getComputedLabel, intl]
     );
     return (
-        <>
-            <ListItem key={item.uuid} {...props} className={classes.listItem}>
-                <ListItemIcon className={classes.icon}>
-                    <Checkbox
-                        className={classes.checkbox}
-                        color={'primary'}
-                        edge="start"
-                        checked={checked}
-                        onClick={toggle}
-                        disableRipple
-                    />
-                </ListItemIcon>
-                <OverflowableText className={classes.label} text={getLabel()} />
-            </ListItem>
-            <Divider />
-        </>
+        <Draggable draggableId={item.uuid} index={index}>
+            {(provided) => (
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                >
+                    <ListItem
+                        key={item.uuid}
+                        {...props}
+                        className={classes.listItem}
+                    >
+                        <ListItemIcon className={classes.icon}>
+                            <Checkbox
+                                className={classes.checkbox}
+                                color={'primary'}
+                                edge="start"
+                                checked={checked}
+                                onClick={toggle}
+                                disableRipple
+                            />
+                        </ListItemIcon>
+                        <OverflowableText
+                            className={classes.label}
+                            text={getLabel()}
+                        />
+                    </ListItem>
+                    <Divider />
+                </div>
+            )}
+        </Draggable>
     );
 };
 
