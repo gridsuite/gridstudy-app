@@ -12,7 +12,6 @@ import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from 'prop-types';
-import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
