@@ -359,6 +359,6 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
 export default NetworkModificationTree;
 
 NetworkModificationTree.propTypes = {
-    treeModel: PropTypes.object.isRequired,
+    treeModel: PropTypes.object,
     studyMapTreeDisplay: PropTypes.string.isRequired,
 };
