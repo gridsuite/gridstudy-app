@@ -89,9 +89,9 @@ const ConnectivityEdition = ({
 
     const handleChangeVoltageLevel = useCallback(
         (event, value, reason) => {
-            if (reason === 'select-option') {
+            if (reason === 'selectOption') {
                 onChangeVoltageLevel(value);
-                onChangeBusOrBusbarSection(null);
+                onChangeBusOrBusbarSection('');
             } else if (reason === 'clear') {
                 onChangeVoltageLevel(null);
                 onChangeBusOrBusbarSection(null);
@@ -233,7 +233,11 @@ const ConnectivityEdition = ({
                         id="bus"
                         disabled={!voltageLevel}
                         options={busOrBusbarSectionOptions}
-                        getOptionLabel={(bbs) => bbs?.id || ''}
+                        getOptionLabel={(bbs) => {
+                            return bbs === ''
+                                ? '' // to clear field
+                                : bbs?.id || '';
+                        }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
                         */
