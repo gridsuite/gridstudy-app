@@ -6,6 +6,7 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import List from '@material-ui/core/List';
+import PropTypes from 'prop-types';
 
 const CheckboxList = ({
     itemRenderer,
@@ -27,7 +28,7 @@ const CheckboxList = ({
         }
     }, [values, checked, setChecked]);
 
-    const refVals = useRef({ values: onChecked });
+    const refVals = useRef();
     refVals.current = { values, onChecked };
 
     useEffect(() => {
@@ -71,3 +72,11 @@ const CheckboxList = ({
 };
 
 export default CheckboxList;
+
+CheckboxList.propTypes = {
+    initialSelection: PropTypes.array,
+    itemRenderer: PropTypes.func.isRequired,
+    onChecked: PropTypes.func.isRequired,
+    toggleSelectAll: PropTypes.bool,
+    values: PropTypes.array,
+};

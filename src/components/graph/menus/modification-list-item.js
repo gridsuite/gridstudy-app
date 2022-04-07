@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ListItem } from '@material-ui/core';
+import { Checkbox, ListItem, ListItemIcon } from '@material-ui/core';
 import { useIntl } from 'react-intl';
 import React, { useCallback } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
@@ -12,7 +12,10 @@ import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from 'prop-types';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Draggable } from 'react-beautiful-dnd';
@@ -29,21 +32,35 @@ const useStyles = makeStyles((theme) => ({
     icon: {
         minWidth: 0,
     },
+    iconEdit: {
+        padding: theme.spacing(0),
+    },
     checkbox: {
         padding: theme.spacing(1),
     },
 }));
 
 export const ModificationListItem = ({
-    item,
+    item: modification,
+    onEdit,
     checked,
-    handleToggle,
     index,
+    handleToggle,
     ...props
 }) => {
     const intl = useIntl();
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
+
+    const equipmentCreationModificationsType = new Set([
+        'GENERATOR_CREATION',
+        'LINE_CREATION',
+        'LOAD_CREATION',
+        'SHUNT_COMPENSATOR_CREATION',
+        'SUBSTATION_CREATION',
+        'TWO_WINDINGS_TRANSFORMER_CREATION',
+        'VOLTAGE_LEVEL_CREATION',
+    ]);
 
     const getComputedLabel = useCallback(() => {
         return useName && item.equipmentName
@@ -51,7 +68,10 @@ export const ModificationListItem = ({
             : item.equipmentId;
     }, [item, useName]);
 
-    const toggle = useCallback(() => handleToggle(item), [item, handleToggle]);
+    const toggle = useCallback(
+        () => handleToggle(modification),
+        [modification, handleToggle]
+    );
 
     const getLabel = useCallback(
         () =>
@@ -91,6 +111,17 @@ export const ModificationListItem = ({
                             className={classes.label}
                             text={getLabel()}
                         />
+                        {equipmentCreationModificationsType.has(
+                            modification.type
+                        ) && (
+                            <IconButton
+                                onClick={() => onEdit(modification.uuid)}
+                                size={'small'}
+                                className={classes.iconEdit}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        )}
                     </ListItem>
                     <Divider />
                 </div>
@@ -103,4 +134,5 @@ ModificationListItem.propTypes = {
     item: PropTypes.object,
     checked: PropTypes.bool,
     handleToggle: PropTypes.func,
+    onEdit: PropTypes.func,
 };

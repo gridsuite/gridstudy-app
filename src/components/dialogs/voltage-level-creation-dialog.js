@@ -108,6 +108,13 @@ const SWITCH_TYPE = [
 
 const getId = (e) => e?.id;
 
+const getBusbarSectionById = (busbars, id) => {
+    if (id) {
+        return busbars.find((bbs) => bbs?.id === id);
+    }
+    return null;
+};
+
 const BusBarConnexion = ({
     onChange,
     index,
@@ -123,7 +130,10 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.fromBBS,
+        defaultValue:
+            defaultValue && defaultValue.fromBBS
+                ? getBusbarSectionById(fieldProps, defaultValue?.fromBBS)
+                : null,
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbFrom,
@@ -136,7 +146,10 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.toBBS,
+        defaultValue:
+            defaultValue && defaultValue.toBBS
+                ? getBusbarSectionById(fieldProps, defaultValue?.toBBS)
+                : '',
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbTo,
@@ -214,8 +227,10 @@ function validateConnection(values) {
  * @param {EventListener} onClose Event to close the dialog
  * @param substationOptions the available network sites
  * @param selectedNodeUuid the currently selected tree node
+ * @param editData the data to edit
  */
 const VoltageLevelCreationDialog = ({
+    editData,
     open,
     onClose,
     substationOptions,
@@ -261,6 +276,12 @@ const VoltageLevelCreationDialog = ({
         label: 'CopyFromExisting',
         handleClick: searchCopy.handleOpenSearchDialog,
     });
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
 
     const [voltageLevelId, voltageLevelIdField] = useTextValue({
         label: 'ID',
@@ -322,8 +343,7 @@ const VoltageLevelCreationDialog = ({
 
     const handleSave = () => {
         // Check if error list contains an error
-        let isValid = inputForm.validate();
-        if (isValid) {
+        if (inputForm.validate()) {
             createVoltageLevel(
                 studyUuid,
                 selectedNodeUuid,
@@ -332,7 +352,9 @@ const VoltageLevelCreationDialog = ({
                 nominalVoltage,
                 substation.id,
                 busBarSections,
-                connections
+                connections,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -397,7 +419,7 @@ const VoltageLevelCreationDialog = ({
                         <FormattedMessage id="close" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -413,6 +435,7 @@ const VoltageLevelCreationDialog = ({
 };
 
 VoltageLevelCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     substationOptions: PropTypes.arrayOf(PropTypes.object),
