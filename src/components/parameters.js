@@ -257,7 +257,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         checked={prop}
                         onChange={callback}
                         value={prop}
-                        color="primary"
                         inputProps={{ 'aria-label': 'primary checkbox' }}
                     />
                 </Grid>

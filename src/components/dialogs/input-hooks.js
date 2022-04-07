@@ -233,7 +233,6 @@ export const useBooleanValue = ({
                         checked={value}
                         onChange={(e) => handleChangeValue(e)}
                         value="checked"
-                        color="primary"
                         inputProps={{
                             'aria-label': 'primary checkbox',
                         }}
