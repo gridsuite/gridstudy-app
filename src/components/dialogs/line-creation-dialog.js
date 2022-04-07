@@ -421,10 +421,10 @@ const LineCreationDialog = ({
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseAndClear} variant="text">
+                    <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="close" />
                     </Button>
-                    <Button onClick={handleSave} variant="text">
+                    <Button onClick={handleSave}>
                         <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>

@@ -26,7 +26,7 @@ const SelectOptionsDialog = ({ open, onClose, onClick, title, child }) => {
                 {child}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} variant="text">
+                <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
                 <Button onClick={onClick} variant="outlined">

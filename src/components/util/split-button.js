@@ -101,12 +101,7 @@ const SplitButton = (props) => {
 
     return (
         <>
-            <ButtonGroup
-                className={props.className}
-                variant="outlined"
-                color="primary"
-                ref={anchorRef}
-            >
+            <ButtonGroup className={props.className} ref={anchorRef}>
                 <Button
                     variant="outlined"
                     startIcon={props.startIcon}
@@ -118,7 +113,6 @@ const SplitButton = (props) => {
                 </Button>
                 <Button
                     variant="outlined"
-                    color="primary"
                     size="small"
                     onClick={handleToggle}
                     className={props.className}

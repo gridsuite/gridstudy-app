@@ -294,7 +294,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 <Button
                     onClick={callback}
                     variant="contained"
-                    color="primary"
                     className={classes.button}
                 >
                     <FormattedMessage id={label} />
@@ -732,7 +731,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         <Button
                             onClick={hideParameters}
                             variant="contained"
-                            color="primary"
                             className={classes.button}
                         >
                             <FormattedMessage id="close" />

@@ -36,12 +36,7 @@ import { useSnackbar } from 'notistack';
 function makeButton(onClick, message, disabled) {
     return (
         <Grid item>
-            <Button
-                onClick={onClick}
-                variant="contained"
-                color="primary"
-                disabled={disabled}
-            >
+            <Button onClick={onClick} variant="contained" disabled={disabled}>
                 <FormattedMessage id={message} />
             </Button>
         </Grid>

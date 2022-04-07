@@ -74,7 +74,7 @@ const NetworkModificationDialog = ({
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant="text">
+                    <Button onClick={handleClose}>
                         <FormattedMessage id="close" />
                     </Button>
                 </DialogActions>

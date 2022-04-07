@@ -82,7 +82,6 @@ const NominalVoltageFilter = (props) => {
                 <ListItem className={classes.nominalVoltageItem}>
                     <Button
                         size={'small'}
-                        variant={'text'}
                         className={classes.nominalVoltageSelectionControl}
                         onClick={handleToggle(
                             network.getNominalVoltages(),
@@ -97,7 +96,6 @@ const NominalVoltageFilter = (props) => {
                     />
                     <Button
                         size={'small'}
-                        variant={'text'}
                         className={classes.nominalVoltageSelectionControl}
                         onClick={handleToggle([], false)}
                     >

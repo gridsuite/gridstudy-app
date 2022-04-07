@@ -213,10 +213,10 @@ const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
+                <Button onClick={handleCloseAndClear}>
                     <FormattedMessage id="close" />
                 </Button>
-                <Button onClick={handleSave} variant="text">
+                <Button onClick={handleSave}>
                     <FormattedMessage id="save" />
                 </Button>
             </DialogActions>
