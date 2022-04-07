@@ -314,7 +314,6 @@ const NetworkTable = (props) => {
                                     intl.formatMessage({ id: 'filter' }) + '...'
                                 }
                                 onChange={setFilter}
-                                variant="outlined"
                                 fullWidth
                                 InputProps={{
                                     classes: {
