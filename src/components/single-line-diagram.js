@@ -860,7 +860,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     return !svg.error ? (
         <Paper
             elevation={1}
-            variant="outlined"
             square={true}
             style={{
                 pointerEvents: 'auto',
