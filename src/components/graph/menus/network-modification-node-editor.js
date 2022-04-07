@@ -64,6 +64,7 @@ const useStyles = makeStyles((theme) => ({
 
     toolbarIcon: {
         padding: theme.spacing(1),
+        paddingLeft: theme.spacing(3),
         minWidth: 0,
     },
     filler: {

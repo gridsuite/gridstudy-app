@@ -12,19 +12,17 @@ import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from 'prop-types';
-import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Checkbox from '@material-ui/core/Checkbox';
 import { Draggable } from 'react-beautiful-dnd';
+import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
         paddingRight: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
+        //paddingLeft: theme.spacing(1),
     },
     label: {
         flexGrow: '1',
@@ -37,6 +35,15 @@ const useStyles = makeStyles((theme) => ({
     },
     checkbox: {
         padding: theme.spacing(1),
+    },
+    dragIcon: {
+        padding: theme.spacing(0),
+        border: theme.spacing(1),
+        zIndex: 90,
+        opacity: 0,
+        '&:hover': {
+            opacity: 1,
+        },
     },
 }));
 
@@ -63,10 +70,10 @@ export const ModificationListItem = ({
     ]);
 
     const getComputedLabel = useCallback(() => {
-        return useName && item.equipmentName
-            ? item.equipmentName
-            : item.equipmentId;
-    }, [item, useName]);
+        return useName && modification.equipmentName
+            ? modification.equipmentName
+            : modification.equipmentId;
+    }, [modification, useName]);
 
     const toggle = useCallback(
         () => handleToggle(modification),
@@ -76,27 +83,30 @@ export const ModificationListItem = ({
     const getLabel = useCallback(
         () =>
             intl.formatMessage(
-                { id: 'network_modifications/' + item.type },
+                { id: 'network_modifications/' + modification.type },
                 {
-                    ...item,
+                    ...modification,
                     computedLabel: <strong>{getComputedLabel()}</strong>,
                 }
             ),
-        [item, getComputedLabel, intl]
+        [modification, getComputedLabel, intl]
     );
     return (
-        <Draggable draggableId={item.uuid} index={index}>
+        <Draggable draggableId={modification.uuid} index={index}>
             {(provided) => (
-                <div
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                >
+                <div ref={provided.innerRef} {...provided.draggableProps}>
                     <ListItem
-                        key={item.uuid}
+                        key={modification.uuid}
                         {...props}
                         className={classes.listItem}
                     >
+                        <IconButton
+                            {...provided.dragHandleProps}
+                            className={classes.dragIcon}
+                            size={'small'}
+                        >
+                            <DragIndicatorIcon edge="start" spacing={0} />
+                        </IconButton>
                         <ListItemIcon className={classes.icon}>
                             <Checkbox
                                 className={classes.checkbox}
