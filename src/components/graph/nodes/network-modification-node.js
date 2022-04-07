@@ -14,11 +14,13 @@ const useStyles = makeStyles((theme) => ({
         variant: 'contained',
         background: 'steelblue',
         textTransform: 'none',
+        color: theme.palette.grey[200],
     },
     networkModification: {
         variant: 'outlined',
         background: 'lightsteelblue',
         textTransform: 'none',
+        color: theme.palette.grey[800],
     },
 }));
 
