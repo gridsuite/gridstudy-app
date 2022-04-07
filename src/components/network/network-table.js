@@ -257,7 +257,6 @@ const NetworkTable = (props) => {
                     <Checkbox
                         checked={isAllChecked}
                         indeterminate={isSomeChecked}
-                        color="primary"
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
@@ -271,7 +270,6 @@ const NetworkTable = (props) => {
                         <ListItemIcon>
                             <Checkbox
                                 checked={selectedColumnsNames.has(value)}
-                                color="primary"
                             />
                         </ListItemIcon>
                         <ListItemText
