@@ -766,7 +766,7 @@ export function updateTreeNode(studyUuid, node) {
     );
 }
 
-export function deleteModification(studyUuid, node, modificationUuid) {
+export function deleteModifications(studyUuid, node, modificationUuid) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +

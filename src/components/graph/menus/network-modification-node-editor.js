@@ -9,7 +9,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchNetworkModifications,
-    deleteModification,
+    deleteModifications,
 } from '../../../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function isChecked(s1, s2) {
+function isChecked(s1) {
     return s1 !== 0;
 }
 
@@ -118,7 +118,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     };
 
     const doDeleteModification = () => {
-        deleteModification(
+        deleteModifications(
             studyUuid,
             selectedNode,
             [...selectedItems.values()].map((item) => item.uuid)
@@ -138,10 +138,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     className={classes.toolbarIcon}
                     color={'primary'}
                     edge="start"
-                    checked={isChecked(
-                        selectedItems.size,
-                        modifications?.length
-                    )}
+                    checked={isChecked(selectedItems.size)}
                     indeterminate={isPartial(
                         selectedItems.size,
                         modifications?.length
