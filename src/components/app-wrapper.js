@@ -11,7 +11,6 @@ import {
     createTheme,
     ThemeProvider,
     StyledEngineProvider,
-    adaptV4Theme,
 } from '@mui/material/styles';
 import {
     LIGHT_THEME,
@@ -42,29 +41,25 @@ import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PARAM_THEME } from '../utils/config-params';
 
-const lightTheme = createTheme(
-    adaptV4Theme({
-        palette: {
-            mode: 'light',
-        },
-        link: {
-            color: 'blue',
-        },
-        mapboxStyle: 'mapbox://styles/mapbox/light-v9',
-    })
-);
+const lightTheme = createTheme({
+    palette: {
+        mode: 'light',
+    },
+    link: {
+        color: 'blue',
+    },
+    mapboxStyle: 'mapbox://styles/mapbox/light-v9',
+});
 
-const darkTheme = createTheme(
-    adaptV4Theme({
-        palette: {
-            mode: 'dark',
-        },
-        link: {
-            color: 'green',
-        },
-        mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
-    })
-);
+const darkTheme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+    link: {
+        color: 'green',
+    },
+    mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
+});
 
 const getMuiTheme = (theme) => {
     if (theme === LIGHT_THEME) {
