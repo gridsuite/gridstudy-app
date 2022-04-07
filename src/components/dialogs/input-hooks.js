@@ -289,7 +289,11 @@ export const useConnectivityValue = ({
                       (value) => value.id === voltageLevelIdDefaultValue
                   )
                 : null,
-            busOrBusbarSection: busOrBusbarSectionIdDefaultValue,
+            busOrBusbarSection: busOrBusbarSectionIdDefaultValue
+                ? {
+                      id: busOrBusbarSectionIdDefaultValue,
+                  }
+                : null,
         });
     }, [
         voltageLevelOptions,
@@ -385,6 +389,12 @@ export const useAutocompleteField = ({
     const [error, setError] = useState('');
     const validationRef = useRef();
     validationRef.current = validation;
+
+    useEffect(() => {
+        if (defaultValue) {
+            setValue(defaultValue);
+        }
+    }, [defaultValue]);
 
     useEffect(() => {
         function validate() {

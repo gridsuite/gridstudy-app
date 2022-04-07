@@ -72,6 +72,8 @@ const ConnectivityEdition = ({
         []
     );
 
+    const [currentBBS, setCurrentBBS] = useState(null);
+
     // Specific Popper component to be used with Autocomplete
     // This allows the popper to fit its content, which is not the case by default
     const FittingPopper = (props) => {
@@ -128,6 +130,16 @@ const ConnectivityEdition = ({
                 break;
         }
     }, [voltageLevel, handleChangeVoltageLevel, studyUuid, workingNodeUuid]);
+
+    useEffect(() => {
+        setCurrentBBS(
+            busOrBusbarSection && busOrBusbarSectionOptions.length
+                ? busOrBusbarSectionOptions.find(
+                      (value) => value.id === busOrBusbarSection.id
+                  )
+                : ''
+        );
+    }, [busOrBusbarSectionOptions, busOrBusbarSection]);
 
     return (
         <>
@@ -220,9 +232,7 @@ const ConnectivityEdition = ({
                         id="bus"
                         disabled={!voltageLevel}
                         options={busOrBusbarSectionOptions}
-                        getOptionLabel={(busOrBusbarSection) =>
-                            busOrBusbarSection?.id
-                        }
+                        getOptionLabel={(bbs) => bbs?.id || ''}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
                         */
@@ -242,7 +252,7 @@ const ConnectivityEdition = ({
                             }
                             return filtered;
                         }}
-                        value={busOrBusbarSection}
+                        value={currentBBS}
                         onChange={handleChangeBus}
                         renderInput={(params) => (
                             <TextField

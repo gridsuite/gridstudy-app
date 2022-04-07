@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -48,6 +48,7 @@ const disabledChecked = { disabled: true };
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
+ * @param editData the data to edit
  */
 const ShuntCompensatorCreationDialog = ({
     open,
@@ -55,6 +56,7 @@ const ShuntCompensatorCreationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
+    editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -98,6 +100,12 @@ const ShuntCompensatorCreationDialog = ({
         handleClick: searchCopy.handleOpenSearchDialog,
     });
 
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [shuntCompensatorId, shuntCompensatorIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
@@ -123,7 +131,7 @@ const ShuntCompensatorCreationDialog = ({
             },
             transformValue: toPositiveIntValue,
             inputForm: inputForm,
-            defaultValue: formValues ? formValues.maximumNumberOfSections : 1,
+            defaultValue: formValues?.maximumNumberOfSections || 1,
         });
 
     const [currentNumberOfSections, currentNumberOfSectionsField] =
@@ -137,15 +145,15 @@ const ShuntCompensatorCreationDialog = ({
             },
             transformValue: toPositiveIntValue,
             inputForm: inputForm,
-            defaultValue: formValues ? formValues.currentNumberOfSections : 0,
+            defaultValue: formValues?.currentNumberOfSections || 0,
         });
 
     const [identicalSections, identicalSectionsField] = useBooleanValue({
         label: 'ShuntIdenticalSections',
-        defaultValue: true,
         validation: { isFieldRequired: true },
         formProps: disabledChecked,
         inputForm: inputForm,
+        defaultValue: formValues?.identicalSections || true,
     });
 
     const [susceptancePerSection, susceptancePerSectionField] = useDoubleValue({
@@ -177,7 +185,9 @@ const ShuntCompensatorCreationDialog = ({
                 currentNumberOfSections,
                 identicalSections,
                 susceptancePerSection,
-                connectivity
+                connectivity,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -264,6 +274,7 @@ const ShuntCompensatorCreationDialog = ({
 };
 
 ShuntCompensatorCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

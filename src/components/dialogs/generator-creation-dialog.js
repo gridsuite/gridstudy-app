@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -68,6 +68,7 @@ const ENERGY_SOURCES = [
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
+ * @param editData the data to edit
  */
 const GeneratorCreationDialog = ({
     open,
@@ -75,6 +76,7 @@ const GeneratorCreationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
+    editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -123,6 +125,12 @@ const GeneratorCreationDialog = ({
         label: 'CopyFromExisting',
         handleClick: searchCopy.handleOpenSearchDialog,
     });
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
 
     const [generatorId, generatorIdField] = useTextValue({
         label: 'ID',
@@ -202,7 +210,7 @@ const GeneratorCreationDialog = ({
         label: 'VoltageRegulationText',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        defaultValue: formValues ? formValues.voltageRegulatorOn : false,
+        defaultValue: formValues?.voltageRegulationOn || false,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
@@ -257,7 +265,9 @@ const GeneratorCreationDialog = ({
                 voltageRegulation,
                 voltageSetpoint ? voltageSetpoint : null,
                 connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id
+                connectivity.busOrBusbarSection.id,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -357,7 +367,7 @@ const GeneratorCreationDialog = ({
                         <FormattedMessage id="close" />
                     </Button>
                     <Button onClick={handleSave} variant="text">
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -373,6 +383,7 @@ const GeneratorCreationDialog = ({
 };
 
 GeneratorCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),

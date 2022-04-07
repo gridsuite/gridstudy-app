@@ -73,9 +73,9 @@ const CheckboxList = ({
 export default CheckboxList;
 
 CheckboxList.propTypes = {
-    initialSelection: PropTypes.array.isRequired,
+    initialSelection: PropTypes.array,
     itemRenderer: PropTypes.func.isRequired,
     onChecked: PropTypes.func.isRequired,
     toggleSelectAll: PropTypes.bool,
-    values: PropTypes.array.isRequired,
+    values: PropTypes.array,
 };

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ListItem } from '@material-ui/core';
+import { Checkbox, ListItem, ListItemIcon } from '@material-ui/core';
 import { useIntl } from 'react-intl';
 import React, { useCallback } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
@@ -12,9 +12,10 @@ import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
 import Divider from '@material-ui/core/Divider';
 import PropTypes from 'prop-types';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Checkbox from '@material-ui/core/Checkbox';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
@@ -28,13 +29,18 @@ const useStyles = makeStyles((theme) => ({
     icon: {
         minWidth: 0,
     },
+    iconEdit: {
+        padding: theme.spacing(0),
+    },
     checkbox: {
         padding: theme.spacing(1),
     },
 }));
 
 export const ModificationListItem = ({
-    item,
+    item: modification,
+    onDelete,
+    onEdit,
     checked,
     handleToggle,
     ...props
@@ -43,28 +49,45 @@ export const ModificationListItem = ({
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
 
-    const getComputedLabel = useCallback(() => {
-        return useName && item.equipmentName
-            ? item.equipmentName
-            : item.equipmentId;
-    }, [item, useName]);
+    const equipmentCreationModificationsType = new Set([
+        'GENERATOR_CREATION',
+        'LINE_CREATION',
+        'LOAD_CREATION',
+        'SHUNT_COMPENSATOR_CREATION',
+        'SUBSTATION_CREATION',
+        'TWO_WINDINGS_TRANSFORMER_CREATION',
+        'VOLTAGE_LEVEL_CREATION',
+    ]);
 
-    const toggle = useCallback(() => handleToggle(item), [item, handleToggle]);
+    const getComputedLabel = useCallback(() => {
+        return useName && modification.equipmentName
+            ? modification.equipmentName
+            : modification.equipmentId;
+    }, [modification, useName]);
+
+    const toggle = useCallback(
+        () => handleToggle(modification),
+        [modification, handleToggle]
+    );
 
     const getLabel = useCallback(
         () =>
             intl.formatMessage(
-                { id: 'network_modifications/' + item.type },
+                { id: 'network_modifications/' + modification.type },
                 {
-                    ...item,
+                    ...modification,
                     computedLabel: <strong>{getComputedLabel()}</strong>,
                 }
             ),
-        [item, getComputedLabel, intl]
+        [modification, getComputedLabel, intl]
     );
     return (
         <>
-            <ListItem key={item.uuid} {...props} className={classes.listItem}>
+            <ListItem
+                key={modification.uuid}
+                {...props}
+                className={classes.listItem}
+            >
                 <ListItemIcon className={classes.icon}>
                     <Checkbox
                         className={classes.checkbox}
@@ -76,6 +99,15 @@ export const ModificationListItem = ({
                     />
                 </ListItemIcon>
                 <OverflowableText className={classes.label} text={getLabel()} />
+                {equipmentCreationModificationsType.has(modification.type) && (
+                    <IconButton
+                        onClick={() => onEdit(modification.uuid)}
+                        size={'small'}
+                        className={classes.iconEdit}
+                    >
+                        <EditIcon />
+                    </IconButton>
+                )}
             </ListItem>
             <Divider />
         </>
@@ -86,4 +118,5 @@ ModificationListItem.propTypes = {
     item: PropTypes.object,
     checked: PropTypes.bool,
     handleToggle: PropTypes.func,
+    onEdit: PropTypes.func,
 };
