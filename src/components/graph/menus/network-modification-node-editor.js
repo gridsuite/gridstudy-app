@@ -31,7 +31,7 @@ import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-tra
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const useStyles = makeStyles((theme) => ({
     list: {

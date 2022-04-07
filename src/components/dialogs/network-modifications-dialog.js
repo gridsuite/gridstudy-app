@@ -14,7 +14,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Typography } from '@mui/core';
+import Typography from '@mui/material/Typography';
 
 const useStyles = makeStyles((theme) => ({
     button: {
