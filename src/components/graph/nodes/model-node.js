@@ -49,7 +49,6 @@ const ModelNode = (props) => {
                 isConnectable={false}
             />
             <IconButton
-                variant="outlined"
                 className={
                     props.selected ? classes.modelSelected : classes.model
                 }
