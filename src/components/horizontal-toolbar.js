@@ -124,21 +124,23 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                     marginLeft: '20px',
                 }}
             >
-                <IconButton
-                    size={'small'}
-                    className={
-                        isModificationsDrawerOpen
-                            ? classes.selected
-                            : classes.notSelected
-                    }
-                    disabled={
-                        selectedTreeNode === null ||
-                        selectedTreeNode.type !== 'NETWORK_MODIFICATION'
-                    }
-                    onClick={toggleModificationsDrawer}
-                >
-                    <ListIcon />
-                </IconButton>
+                <span>
+                    <IconButton
+                        size={'small'}
+                        className={
+                            isModificationsDrawerOpen
+                                ? classes.selected
+                                : classes.notSelected
+                        }
+                        disabled={
+                            selectedTreeNode === null ||
+                            selectedTreeNode.type !== 'NETWORK_MODIFICATION'
+                        }
+                        onClick={toggleModificationsDrawer}
+                    >
+                        <ListIcon />
+                    </IconButton>
+                </span>
             </Tooltip>
             <Divider orientation="vertical" flexItem />
             <Tooltip
