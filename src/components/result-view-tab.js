@@ -65,7 +65,6 @@ export const ResultViewTab = ({
         <div className={clsx('singlestretch-child', classes.table)}>
             <Tabs
                 value={tabIndex}
-                indicatorColor="primary"
                 onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
             >
                 <Tab

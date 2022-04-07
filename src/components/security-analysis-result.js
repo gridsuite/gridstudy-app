@@ -447,7 +447,6 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                     <div className={classes.tabs}>
                         <Tabs
                             value={tabIndex}
-                            indicatorColor="primary"
                             onChange={(event, newTabIndex) =>
                                 setTabIndex(newTabIndex)
                             }

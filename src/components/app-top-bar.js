@@ -197,9 +197,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 {studyUuid && (
                     <Tabs
                         value={tabIndex}
-                        indicatorColor="primary"
                         variant="scrollable"
-                        scrollButtons="auto"
                         onChange={(event, newTabIndex) => {
                             onChangeTab(newTabIndex);
                         }}

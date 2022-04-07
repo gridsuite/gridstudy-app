@@ -288,9 +288,7 @@ const NetworkTable = (props) => {
                     <Grid container justifyContent={'space-between'} item>
                         <Tabs
                             value={tabIndex}
-                            indicatorColor="primary"
                             variant="scrollable"
-                            scrollButtons="auto"
                             onChange={(event, newValue) => {
                                 setTabIndex(newValue);
                                 setManualTabSwitch(true);

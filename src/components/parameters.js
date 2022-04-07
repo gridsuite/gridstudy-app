@@ -701,9 +701,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 <Container maxWidth="md">
                     <Tabs
                         value={tabIndex}
-                        indicatorColor="primary"
                         variant="scrollable"
-                        scrollButtons="auto"
                         onChange={(event, newValue) => setTabIndex(newValue)}
                         aria-label="parameters"
                     >
