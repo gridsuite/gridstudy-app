@@ -110,6 +110,7 @@ const CreateNodeMenu = ({
                             onClick={item.action}
                         >
                             <ListItemText
+                                key={item.id}
                                 className={classes.listItemText}
                                 primary={
                                     <Typography noWrap>
