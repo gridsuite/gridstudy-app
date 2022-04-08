@@ -9,17 +9,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchNetworkModifications,
-    deleteModification,
+    deleteModifications,
     fetchNetworkModification,
 } from '../../../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
-import List from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
-import { Fab, Typography } from '@material-ui/core';
+import { Checkbox, Fab, Toolbar, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -32,6 +31,9 @@ import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckboxList from '../../util/checkbox-list';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -50,7 +52,34 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.primary.main,
         color: 'white',
     },
+    toolbar: {
+        padding: theme.spacing(0),
+        paddingLeft: theme.spacing(1),
+        border: theme.spacing(1),
+        minHeight: 0,
+        margin: 0,
+    },
+
+    toolbarIcon: {
+        padding: theme.spacing(1),
+        minWidth: 0,
+    },
+    filler: {
+        flexGrow: 1,
+    },
+    dividerTool: {
+        background: theme.palette.primary.main,
+    },
 }));
+
+function isChecked(s1) {
+    return s1 !== 0;
+}
+
+function isPartial(s1, s2) {
+    if (s1 === 0) return false;
+    return s1 !== s2;
+}
 
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
@@ -60,6 +89,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const [modifications, setModifications] = useState(undefined);
     const { enqueueSnackbar } = useSnackbar();
     const selectedNodeRef = useRef(); // initial empty to get first update
+
+    const [selectedItems, setSelectedItems] = useState(new Set());
+    const [toggleSelectAll, setToggleSelectAll] = useState();
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
@@ -178,8 +210,12 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         setEditData(undefined);
     };
 
-    const doDeleteModification = (uuid) => {
-        deleteModification(studyUuid, selectedNode, uuid);
+    const doDeleteModification = () => {
+        deleteModifications(
+            studyUuid,
+            selectedNode,
+            [...selectedItems.values()].map((item) => item.uuid)
+        );
     };
 
     const doEditModification = (modificationUuid) => {
@@ -209,16 +245,45 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     values={{ count: modifications?.length }}
                 />
             </Typography>
-            <List className={classes.list}>
-                {modifications?.map((item) => (
+            <Toolbar className={classes.toolbar}>
+                <Checkbox
+                    className={classes.toolbarIcon}
+                    color={'primary'}
+                    edge="start"
+                    checked={isChecked(selectedItems.size)}
+                    indeterminate={isPartial(
+                        selectedItems.size,
+                        modifications?.length
+                    )}
+                    disableRipple
+                    onClick={() => setToggleSelectAll((oldVal) => !oldVal)}
+                />
+                <div className={classes.filler} />
+                {selectedItems?.size > 0 && (
+                    <IconButton
+                        onClick={doDeleteModification}
+                        size={'small'}
+                        className={classes.toolbarIcon}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                )}
+            </Toolbar>
+            <Divider className={classes.dividerTool} />
+            <CheckboxList
+                onChecked={setSelectedItems}
+                className={classes.list}
+                values={modifications}
+                setChecked={setSelectedItems}
+                itemRenderer={(props) => (
                     <ModificationListItem
-                        key={item.uuid}
-                        modification={item}
-                        onDelete={doDeleteModification}
+                        key={props.item.uuid}
                         onEdit={doEditModification}
+                        {...props}
                     />
-                ))}
-            </List>
+                )}
+                toggleSelectAll={toggleSelectAll}
+            />
 
             <Fab
                 className={classes.addButton}
