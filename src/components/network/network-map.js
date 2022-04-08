@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+    forwardRef,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import PropTypes from 'prop-types';
 
 import {
@@ -25,7 +31,6 @@ import LineLayer, { LineFlowColorMode, LineFlowMode } from './line-layer';
 import SubstationLayer from './substation-layer';
 import { getNominalVoltageColor } from '../../utils/colors';
 import { RunningStatus } from '../util/running-status';
-import { useSelector } from 'react-redux';
 
 const MAPBOX_TOKEN =
     'pk.eyJ1IjoiZ2VvZmphbWciLCJhIjoiY2pwbnRwcm8wMDYzMDQ4b2pieXd0bDMxNSJ9.Q4aL20nBo5CzGkrWtxroug';
@@ -34,7 +39,7 @@ const SUBSTATION_LAYER_PREFIX = 'substationLayer';
 const LINE_LAYER_PREFIX = 'lineLayer';
 const LABEL_SIZE = 12;
 
-const NetworkMap = (props) => {
+const NetworkMap = forwardRef((props, ref) => {
     const [labelsVisible, setLabelsVisible] = useState(false);
 
     const [showLineFlow, setShowLineFlow] = useState(true);
@@ -58,15 +63,19 @@ const NetworkMap = (props) => {
 
     const [cursorType, setCursorType] = useState('grab');
 
-    const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
-
-    useEffect(() => {
-        setCentered({
-            lastCenteredSubstation: null,
-            centeredSubstationId: centerOnSubstation?.to,
-            centered: true,
-        });
-    }, [centerOnSubstation]);
+    useImperativeHandle(
+        ref,
+        () => ({
+            centerSubstation: (substationId) => {
+                setCentered({
+                    lastCenteredSubstation: null,
+                    centeredSubstationId: substationId,
+                    centered: true,
+                });
+            },
+        }),
+        [setCentered]
+    );
 
     // Do this in onAfterRender because when doing it in useEffect (triggered by calling setDeck()),
     // it doesn't work in the case of using the browser backward/forward buttons (because in this particular case,
@@ -379,7 +388,7 @@ const NetworkMap = (props) => {
             <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
         </DeckGL>
     );
-};
+});
 
 NetworkMap.defaultProps = {
     network: null,

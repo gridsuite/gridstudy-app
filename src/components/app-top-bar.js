@@ -11,8 +11,7 @@ import {
     getEquipmentsInfosForSearchBar,
     LIGHT_THEME,
     logout,
-    RenderEquipmentForSearchBar,
-    TagRenderer,
+    renderEquipmentForSearchBar,
     TopBar,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
@@ -35,9 +34,7 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { stringify } from 'qs';
-import { centerOnSubstation, selectItemNetwork } from '../redux/actions';
-import GpsFixedIcon from '@material-ui/icons/GpsFixed';
-import IconButton from '@material-ui/core/IconButton';
+import { selectItemNetwork } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(() => ({
@@ -54,37 +51,6 @@ const STUDY_VIEWS = [
 ];
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
-
-const CustomTagRenderer = ({ props, element, close }) => {
-    const dispatch = useDispatch();
-    const equipmentClasses = useEquipmentStyles();
-    const centerOnSubstationCB = useCallback(
-        (e, element) => {
-            dispatch(centerOnSubstation(element.id));
-            close && close();
-            e.stopPropagation();
-        },
-        [close, dispatch]
-    );
-
-    if (
-        element.type === EQUIPMENT_TYPE.SUBSTATION.name ||
-        element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
-    )
-        return (
-            <IconButton onClick={(e) => centerOnSubstationCB(e, element)}>
-                <GpsFixedIcon />
-            </IconButton>
-        );
-
-    return (
-        <TagRenderer
-            classes={equipmentClasses}
-            props={props}
-            element={element}
-        />
-    );
-};
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
@@ -221,15 +187,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onSearchTermChange={searchMatchingEquipments}
                 onSelectionChange={showVoltageLevelDiagram}
                 elementsFound={equipmentsFound}
-                renderElement={(props) => {
-                    return (
-                        <RenderEquipmentForSearchBar
-                            classes={equipmentClasses}
-                            {...props}
-                            tagRenderer={CustomTagRenderer}
-                        />
-                    );
-                }}
+                renderElement={renderEquipmentForSearchBar(
+                    equipmentClasses,
+                    intl
+                )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             >

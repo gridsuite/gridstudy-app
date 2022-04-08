@@ -355,12 +355,3 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
         isModificationsDrawerOpen: isModificationsDrawerOpen,
     };
 }
-
-export const CENTER_ON_SUBSTATION = 'CENTER_ON_SUBSTATION';
-
-export function centerOnSubstation(substationId) {
-    return {
-        type: CENTER_ON_SUBSTATION,
-        centerOnSubstation: { to: substationId },
-    };
-}

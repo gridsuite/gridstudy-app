@@ -31,7 +31,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import GpsFixedIcon from '@material-ui/icons/GpsFixed';
 import { PARAM_USE_NAME } from '../../utils/config-params';
-import { centerOnSubstation, selectItemNetwork } from '../../redux/actions';
+import { selectItemNetwork } from '../../redux/actions';
 
 const itemSize = 48;
 
@@ -84,6 +84,7 @@ const NetworkExplorer = ({
     substations,
     onVoltageLevelDisplayClick,
     onSubstationDisplayClick,
+    onSubstationFocus,
     visibleSubstation,
     visible,
 }) => {
@@ -198,7 +199,9 @@ const NetworkExplorer = ({
 
     function onDisplaySubstationFocusHandler(event, substation) {
         event.stopPropagation();
-        dispatch(centerOnSubstation(substation.id));
+        if (onSubstationFocus !== null) {
+            onSubstationFocus(substation.id);
+        }
     }
 
     const voltagelevelInfo = (vl) => {

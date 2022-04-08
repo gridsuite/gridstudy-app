@@ -73,9 +73,11 @@ export const NetworkMapTab = ({
     filteredNominalVoltages,
     showInSpreadsheet,
     setErrorMessage,
+    mapRef,
 }) => {
     const intlRef = useIntlRef();
     const [waitingLoadGeoData, setWaitingLoadGeoData] = useState(true);
+
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
@@ -278,6 +280,7 @@ export const NetworkMapTab = ({
             lineFlowColorMode={lineFlowColorMode}
             lineFlowAlertThreshold={lineFlowAlertThreshold}
             loadFlowStatus={loadFlowStatus}
+            ref={mapRef}
             onSubstationClick={openVoltageLevel}
             onLineMenuClick={(equipment, x, y) =>
                 showEquipmentMenu(equipment, x, y, equipments.lines)
