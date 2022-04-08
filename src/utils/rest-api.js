@@ -786,15 +786,16 @@ export function updateTreeNode(studyUuid, node) {
     );
 }
 
-export function deleteModification(studyUuid, node, modificationUuid) {
+export function deleteModifications(studyUuid, node, modificationUuid) {
     const modificationDeleteUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(node.id) +
-        '/network-modification/' +
-        encodeURIComponent(modificationUuid);
+        '/network-modification?' +
+        new URLSearchParams({ modificationsUuids: modificationUuid });
+
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
         method: 'delete',

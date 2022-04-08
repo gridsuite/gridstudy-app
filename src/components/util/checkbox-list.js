@@ -4,59 +4,79 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import List from '@mui/material/List';
-import ListItemWithDeleteButton from './list-item-with-delete-button';
+import PropTypes from 'prop-types';
 
-const CheckboxList = (props) => {
-    const [checked, setChecked] = useState(new Set(props.initialSelection));
+const CheckboxList = ({
+    itemRenderer,
+    toggleSelectAll,
+    values,
+    onChecked,
+    initialSelection,
+    ...props
+}) => {
+    const [checked, setChecked] = useState(new Set(initialSelection));
 
     /* remove non absent selected items */
     useEffect(() => {
-        const existingValues = new Set(props.values.map(props.id));
+        const existingValues = new Set(values);
         const newChecked = new Set(
             [...checked].filter((id) => existingValues.has(id))
         );
         if (newChecked.size !== checked.size) {
             setChecked(newChecked);
         }
-    }, [props.values, props.id, checked, setChecked]);
+    }, [values, checked, setChecked]);
 
-    const handleToggle = (value) => {
-        const newChecked = new Set(checked);
-        if (!newChecked.delete(value)) {
-            newChecked.add(value);
-        }
-        setChecked(newChecked);
+    const refVals = useRef();
+    refVals.current = { values, onChecked };
 
-        if (props.onChecked) {
-            props.onChecked([...newChecked]);
-        }
-    };
+    useEffect(() => {
+        if (toggleSelectAll === undefined) return;
+        setChecked((oldVals) => {
+            return oldVals.size > 0
+                ? new Set()
+                : new Set(refVals.current.values);
+        });
+    }, [toggleSelectAll]);
+
+    const handleToggle = useCallback(
+        (value) => {
+            const newChecked = new Set(checked);
+            if (!newChecked.delete(value)) {
+                newChecked.add(value);
+            }
+            setChecked(newChecked);
+
+            if (onChecked) {
+                onChecked([...newChecked]);
+            }
+        },
+        [checked, onChecked]
+    );
+
+    useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
     return (
-        <List>
-            {props.values.map((item) => {
-                return (
-                    <ListItemWithDeleteButton
-                        key={props.id(item)}
-                        onClick={() => handleToggle(props.id(item), false)}
-                        set={checked}
-                        value={props.id(item)}
-                        primary={props.label(item)}
-                        removeFromList={
-                            props.removeFromList
-                                ? (e) => {
-                                      e.stopPropagation();
-                                      props.removeFromList(props.id(item));
-                                  }
-                                : undefined
-                        }
-                    />
-                );
-            })}
+        <List {...props}>
+            {values?.map((item) =>
+                itemRenderer({
+                    item,
+                    checked: checked.has(item),
+                    handleToggle,
+                })
+            )}
         </List>
     );
 };
 
 export default CheckboxList;
+
+CheckboxList.propTypes = {
+    initialSelection: PropTypes.array,
+    itemRenderer: PropTypes.func.isRequired,
+    onChecked: PropTypes.func.isRequired,
+    toggleSelectAll: PropTypes.bool,
+    values: PropTypes.array,
+};
