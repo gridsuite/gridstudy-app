@@ -13,11 +13,10 @@ import {
     fetchNetworkModification,
     changeNetworkModificationOrder,
 } from '../../../utils/rest-api';
-import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
+import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import { makeStyles } from '@material-ui/core/styles';
-import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
 import { Checkbox, Fab, Toolbar, Typography } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
@@ -88,9 +87,8 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
     const workingNode = useSelector((state) => state.workingTreeNode);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-
+    const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const { enqueueSnackbar } = useSnackbar();
     const selectedNodeRef = useRef(); // initial empty to get first update
 
     const [selectedItems, setSelectedItems] = useState(new Set());
@@ -189,15 +187,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                         if (selectedNodeRef.current === selectedNode)
                             setModifications(res.status ? [] : res);
                     })
-                    .catch((err) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: err.message,
-                            enqueueSnackbar,
-                        })
-                    );
+                    .catch((err) => snackError(err.message));
             }
         }
-    }, [selectedNode, setModifications, enqueueSnackbar, selectedNodeRef]);
+    }, [selectedNode, setModifications, selectedNodeRef, snackError]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -252,6 +245,14 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 item
             );
 
+            const zut = {
+                timestamp: '2022-04-08T14:00:49.495+0000',
+                path: '/v1/studies/62a9cc56-af19-4497-9723-e1988f7d9253/nodes/d85b95e1-3cd8-4b44-a135-eaefdf2a930d/network-modification/119be3a3-4517-4dea-8517-de4395bea6c9',
+                status: 404,
+                error: 'Not Found',
+                message: 'No matching handler',
+                requestId: 'a94200ce-41',
+            };
             /* doing the local change before update to server */
             setModifications(res);
             changeNetworkModificationOrder(
@@ -259,9 +260,13 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 workingNode.id,
                 item.uuid,
                 before
-            );
+            ).catch((e) => {
+                console.info('jbo', e);
+                snackError(e.message, 'errReorderModificationMsg');
+                setModifications(modifications); // rollback
+            });
         },
-        [workingNode.id, studyUuid, modifications]
+        [modifications, studyUuid, workingNode.id, snackError]
     );
 
     return (
