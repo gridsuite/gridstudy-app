@@ -133,7 +133,7 @@ const BusBarConnexion = ({
         defaultValue:
             defaultValue && defaultValue.fromBBS
                 ? getBusbarSectionById(fieldProps, defaultValue?.fromBBS)
-                : null,
+                : '',
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbFrom,
