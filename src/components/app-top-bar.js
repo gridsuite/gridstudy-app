@@ -33,9 +33,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
+import { useSnackbar } from 'notistack';
 import { stringify } from 'qs';
 import { selectItemNetwork } from '../redux/actions';
-import { useSnackbar } from 'notistack';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -43,14 +43,14 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+const useEquipmentStyles = makeStyles(equipmentStyles);
+
 const STUDY_VIEWS = [
     StudyView.MAP,
     StudyView.SPREADSHEET,
     StudyView.RESULTS,
     StudyView.LOGS,
 ];
-
-const useEquipmentStyles = makeStyles(equipmentStyles);
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();

@@ -213,6 +213,14 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         setEditData(undefined);
     };
 
+    const doDeleteModification = () => {
+        deleteModifications(
+            studyUuid,
+            selectedNode,
+            [...selectedItems.values()].map((item) => item.uuid)
+        ).then();
+    };
+
     const doEditModification = (modificationUuid) => {
         const modification = fetchNetworkModification(modificationUuid);
         modification.then((res) => {
@@ -230,14 +238,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const renderDialog = () => {
         return dialogs[editDialogOpen].dialog();
-    };
-
-    const doDeleteModification = () => {
-        deleteModifications(
-            studyUuid,
-            selectedNode,
-            [...selectedItems.values()].map((item) => item.uuid)
-        ).then();
     };
 
     const commit = useCallback(
