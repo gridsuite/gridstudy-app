@@ -57,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(1),
         border: theme.spacing(1),
         minHeight: 0,
+        flexShrink: 0,
         margin: 0,
     },
 
@@ -245,7 +246,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     values={{ count: modifications?.length }}
                 />
             </Typography>
-            <Toolbar className={classes.toolbar}>
+            <Toolbar className={classes.toolbar} variant={'dense'}>
                 <Checkbox
                     className={classes.toolbarIcon}
                     color={'primary'}
