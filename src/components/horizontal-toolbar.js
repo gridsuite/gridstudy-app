@@ -6,7 +6,6 @@
  */
 
 import List from '@mui/material/List';
-import LinearScaleIcon from '@mui/icons-material/LinearScale';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import PublicIcon from '@mui/icons-material/Public';
 import IconButton from '@mui/material/IconButton';
@@ -18,10 +17,7 @@ import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './study-pane';
 import Divider from '@mui/material/Divider';
-import {
-    setExplorerDrawerOpen,
-    setModificationsDrawerOpen,
-} from '../redux/actions';
+import { setModificationsDrawerOpen } from '../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     selected: {
@@ -47,16 +43,9 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
 
     const selectedTreeNode = useSelector((state) => state.selectedTreeNode);
 
-    const isExplorerDrawerOpen = useSelector(
-        (state) => state.isExplorerDrawerOpen
-    );
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
-
-    const toggleExplorerDrawer = () => {
-        dispatch(setExplorerDrawerOpen(!isExplorerDrawerOpen));
-    };
 
     const toggleModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(!isModificationsDrawerOpen));
@@ -83,35 +72,6 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 flexDirection: 'row',
             }}
         >
-            {!(studyDisplayMode === StudyDisplayMode.TREE) && (
-                <>
-                    <Tooltip
-                        title={intl.formatMessage({ id: 'SubstationList' })}
-                        placement="right"
-                        arrow
-                        enterDelay={DELAY}
-                        enterNextDelay={DELAY}
-                        classes={{ tooltip: classes.tooltip }}
-                        style={{
-                            marginRight: '20px',
-                            marginLeft: '20px',
-                        }}
-                    >
-                        <IconButton
-                            size={'small'}
-                            className={
-                                isExplorerDrawerOpen
-                                    ? classes.selected
-                                    : classes.notSelected
-                            }
-                            onClick={toggleExplorerDrawer}
-                        >
-                            <LinearScaleIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Divider orientation="vertical" flexItem />
-                </>
-            )}
             <Tooltip
                 title={intl.formatMessage({ id: 'NetworkModifications' })}
                 placement="right"

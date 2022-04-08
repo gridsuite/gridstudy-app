@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -29,7 +29,6 @@ import {
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
 import {
-    DRAWER_EXPLORER_WIDTH,
     DRAWER_NODE_EDITOR_WIDTH,
     MapLateralDrawers,
 } from './map-lateral-drawers';
@@ -135,8 +134,6 @@ const StudyPane = ({
 
     const [isComputationRunning, setIsComputationRunning] = useState(false);
 
-    const [visibleSubstation, setVisibleSubstation] = useState(null);
-
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -147,20 +144,10 @@ const StudyPane = ({
 
     const classes = useStyles();
 
-    const [
-        closeVoltageLevelDiagram,
-        showVoltageLevelDiagram,
-        showSubstationDiagram,
-    ] = useSingleLineDiagram(studyUuid);
+    const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
+        useSingleLineDiagram(studyUuid);
 
     const mapRef = useRef();
-
-    const setCenterOnSubstation = useCallback(
-        (substationId) => {
-            mapRef.current.centerSubstation(substationId);
-        },
-        [mapRef]
-    );
 
     useEffect(() => {
         if (
@@ -180,13 +167,8 @@ const StudyPane = ({
         (state) => state.isModificationsDrawerOpen
     );
 
-    const isExplorerDrawerOpen = useSelector(
-        (state) => state.isExplorerDrawerOpen
-    );
-
     useEffect(() => {
         let shift = 0;
-        if (isExplorerDrawerOpen) shift += DRAWER_EXPLORER_WIDTH;
         if (
             isModificationsDrawerOpen &&
             studyDisplayMode === StudyDisplayMode.MAP
@@ -194,19 +176,13 @@ const StudyPane = ({
             shift += DRAWER_NODE_EDITOR_WIDTH;
         }
         setDrawerShift(shift);
-    }, [
-        setDrawerShift,
-        isExplorerDrawerOpen,
-        isModificationsDrawerOpen,
-        studyDisplayMode,
-    ]);
+    }, [setDrawerShift, isModificationsDrawerOpen, studyDisplayMode]);
 
     function openVoltageLevelDiagram(vlId, substationId) {
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
             props.onChangeTab(0); // switch to map view
             showVoltageLevelDiagram(vlId); // show voltage level
-            setVisibleSubstation(substationId);
         }
     }
 
@@ -345,16 +321,7 @@ const StudyPane = ({
                                 />
                             </div>
 
-                            <MapLateralDrawers
-                                network={network}
-                                studyDisplayMode={studyDisplayMode}
-                                onVoltageLevelDisplayClick={
-                                    showVoltageLevelDiagram
-                                }
-                                onSubstationDisplayClick={showSubstationDiagram}
-                                onSubstationFocus={setCenterOnSubstation}
-                                visibleSubstation={visibleSubstation}
-                            />
+                            <MapLateralDrawers />
 
                             {/*
                 Rendering single line diagram only in map view and if
