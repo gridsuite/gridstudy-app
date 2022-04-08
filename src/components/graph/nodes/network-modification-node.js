@@ -12,15 +12,21 @@ import makeStyles from '@mui/styles/makeStyles';
 const useStyles = makeStyles((theme) => ({
     networkModificationSelected: {
         variant: 'contained',
-        background: 'steelblue',
+        background: theme.palette.primary.main,
         textTransform: 'none',
-        color: theme.palette.grey[200],
+        color: theme.palette.primary.contrastText,
+        '&:hover': {
+            background: theme.palette.primary.main,
+        },
     },
     networkModification: {
         variant: 'outlined',
-        background: 'lightsteelblue',
+        background: theme.palette.primary.light,
         textTransform: 'none',
-        color: theme.palette.grey[800],
+        color: theme.palette.primary.contrastText,
+        '&:hover': {
+            background: theme.palette.primary.main,
+        },
     },
 }));
 
