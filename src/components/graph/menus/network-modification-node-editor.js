@@ -245,14 +245,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 item
             );
 
-            const zut = {
-                timestamp: '2022-04-08T14:00:49.495+0000',
-                path: '/v1/studies/62a9cc56-af19-4497-9723-e1988f7d9253/nodes/d85b95e1-3cd8-4b44-a135-eaefdf2a930d/network-modification/119be3a3-4517-4dea-8517-de4395bea6c9',
-                status: 404,
-                error: 'Not Found',
-                message: 'No matching handler',
-                requestId: 'a94200ce-41',
-            };
             /* doing the local change before update to server */
             setModifications(res);
             changeNetworkModificationOrder(
@@ -261,7 +253,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 item.uuid,
                 before
             ).catch((e) => {
-                console.info('jbo', e);
                 snackError(e.message, 'errReorderModificationMsg');
                 setModifications(modifications); // rollback
             });
