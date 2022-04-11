@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -46,7 +46,6 @@ import {
     SELECTED_TREE_NODE,
     SELECT_MAP_TREE_DISPLAY,
     WORKING_TREE_NODE,
-    SET_EXPLORER_DRAWER_OPEN,
     SET_MODIFICATIONS_DRAWER_OPEN,
 } from './actions';
 import {
@@ -306,9 +305,6 @@ export const reducer = createReducer(initialState, {
     },
     [WORKING_TREE_NODE]: (state, action) => {
         state.workingTreeNode = action.workingTreeNode;
-    },
-    [SET_EXPLORER_DRAWER_OPEN]: (state, action) => {
-        state.isExplorerDrawerOpen = action.isExplorerDrawerOpen;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;

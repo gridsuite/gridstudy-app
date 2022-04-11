@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
         paddingRight: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
     },
     label: {
         flexGrow: '1',

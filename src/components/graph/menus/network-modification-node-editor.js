@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
         border: theme.spacing(1),
         minHeight: 0,
         margin: 0,
+        flexShrink: 0,
     },
 
     toolbarIcon: {

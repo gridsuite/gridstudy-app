@@ -13,9 +13,10 @@ const CheckboxList = ({
     toggleSelectAll,
     values,
     onChecked,
+    initialSelection,
     ...props
 }) => {
-    const [checked, setChecked] = useState(new Set(props.initialSelection));
+    const [checked, setChecked] = useState(new Set(initialSelection));
 
     /* remove non absent selected items */
     useEffect(() => {
@@ -58,11 +59,10 @@ const CheckboxList = ({
     useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
     return (
-        <List>
-            {values?.map((item, index) =>
+        <List {...props}>
+            {values?.map((item) =>
                 itemRenderer({
                     item,
-                    index,
                     checked: checked.has(item),
                     handleToggle,
                 })
