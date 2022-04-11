@@ -20,7 +20,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_MAP_TREE_DISPLAY,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -107,15 +106,6 @@ export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
 
 export function selectLanguage(language) {
     return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
-}
-
-export const SELECT_MAP_TREE_DISPLAY = 'SELECT_MAP_TREE_DISPLAY';
-
-export function selectMapTreeDisplay(mapTreeDisplay) {
-    return {
-        type: SELECT_MAP_TREE_DISPLAY,
-        [PARAM_MAP_TREE_DISPLAY]: mapTreeDisplay,
-    };
 }
 
 export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';

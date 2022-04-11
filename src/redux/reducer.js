@@ -44,7 +44,6 @@ import {
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     SELECTED_TREE_NODE,
-    SELECT_MAP_TREE_DISPLAY,
     WORKING_TREE_NODE,
     SET_MODIFICATIONS_DRAWER_OPEN,
 } from './actions';
@@ -71,14 +70,12 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_MAP_TREE_DISPLAY,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
-    [PARAM_MAP_TREE_DISPLAY]: 'Map',
     [PARAM_USE_NAME]: true,
     [PARAM_LINE_FULL_PATH]: true,
     [PARAM_LINE_PARALLEL_PATH]: true,
@@ -195,10 +192,6 @@ export const reducer = createReducer(initialState, {
     [SELECT_LANGUAGE]: (state, action) => {
         state[PARAM_LANGUAGE] = action[PARAM_LANGUAGE];
         saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
-    },
-
-    [SELECT_MAP_TREE_DISPLAY]: (state, action) => {
-        state[PARAM_MAP_TREE_DISPLAY] = action[PARAM_MAP_TREE_DISPLAY];
     },
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {

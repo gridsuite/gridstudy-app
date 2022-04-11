@@ -23,7 +23,6 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_USE_NAME,
-    PARAM_MAP_TREE_DISPLAY,
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
@@ -39,7 +38,6 @@ import {
 } from './single-line-diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
-import { useParameterState } from './parameters';
 import { ReactFlowProvider } from 'react-flow-renderer';
 
 const useStyles = makeStyles((theme) => ({
@@ -123,8 +121,8 @@ const StudyPane = ({
         Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
-    const [studyDisplayMode, setStudyDisplayMode] = useParameterState(
-        PARAM_MAP_TREE_DISPLAY
+    const [studyDisplayMode, setStudyDisplayMode] = useState(
+        StudyDisplayMode.HYBRID
     );
 
     const filteredNominalVoltages = useSelector(
