@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import List from '@material-ui/core/List';
+import List from '@mui/material/List';
 import PropTypes from 'prop-types';
 
 const CheckboxList = ({

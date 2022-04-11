@@ -6,10 +6,10 @@
  */
 
 import React, { useState } from 'react';
-import { NativeSelect, TextField } from '@material-ui/core';
+import { NativeSelect, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import { useIntl } from 'react-intl';
 import { updateTreeNode } from '../../../utils/rest-api';
 import { useSnackbar } from 'notistack';

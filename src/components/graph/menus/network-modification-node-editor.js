@@ -15,11 +15,11 @@ import {
 import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
-import { Checkbox, Fab, Toolbar, Typography } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Checkbox, Fab, Toolbar, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../dialogs/load-creation-dialog';
@@ -30,9 +30,9 @@ import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-tra
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
         padding: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
-        color: 'white',
+        color: theme.palette.primary.contrastText,
     },
     toolbar: {
         padding: theme.spacing(0),

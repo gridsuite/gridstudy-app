@@ -22,8 +22,8 @@ import {
 import { FlyToInterpolator } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react';
 
-import { useTheme } from '@material-ui/styles';
-import { decomposeColor } from '@material-ui/core/styles/colorManipulator';
+import { useTheme } from '@mui/styles';
+import { decomposeColor } from '@mui/material/styles';
 
 import Network from './network';
 import GeoData from './geo-data';

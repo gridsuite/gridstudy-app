@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { TextField, Tooltip } from '@material-ui/core';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 export const TapChangerSelector = ({
