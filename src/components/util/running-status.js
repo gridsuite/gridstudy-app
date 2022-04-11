@@ -29,8 +29,10 @@ export function getLoadFlowRunningStatus(status) {
 
 export function getSecurityAnalysisRunningStatus(securityAnalysisStatus) {
     switch (securityAnalysisStatus) {
-        case 'COMPLETED':
+        case 'CONVERGED':
             return RunningStatus.SUCCEED;
+        case 'DIVERGED':
+            return RunningStatus.FAILED;
         case 'RUNNING':
             return RunningStatus.RUNNING;
         case 'NOT_DONE':
