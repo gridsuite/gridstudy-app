@@ -32,7 +32,6 @@ import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dia
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 
 const useStyles = makeStyles((theme) => ({
@@ -240,12 +239,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     return (
         <>
-            <Typography className={classes.modificationCount}>
-                <FormattedMessage
-                    id={'network_modification/modificationsCount'}
-                    values={{ count: modifications?.length }}
-                />
-            </Typography>
             <Toolbar className={classes.toolbar} variant={'dense'}>
                 <Checkbox
                     className={classes.toolbarIcon}
@@ -260,17 +253,21 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     onClick={() => setToggleSelectAll((oldVal) => !oldVal)}
                 />
                 <div className={classes.filler} />
-                {selectedItems?.size > 0 && (
-                    <IconButton
-                        onClick={doDeleteModification}
-                        size={'small'}
-                        className={classes.toolbarIcon}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                )}
+                <IconButton
+                    onClick={doDeleteModification}
+                    size={'small'}
+                    className={classes.toolbarIcon}
+                    disabled={!(selectedItems?.size > 0)}
+                >
+                    <DeleteIcon />
+                </IconButton>
             </Toolbar>
-            <Divider className={classes.dividerTool} />
+            <Typography className={classes.modificationCount}>
+                <FormattedMessage
+                    id={'network_modification/modificationsCount'}
+                    values={{ count: modifications?.length }}
+                />
+            </Typography>
             <CheckboxList
                 onChecked={setSelectedItems}
                 className={classes.list}
