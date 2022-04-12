@@ -295,12 +295,12 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 <Droppable droppableId="network-modification-list">
                     {(provided) => (
                         <div
+                            className={classes.list}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
                             <CheckboxList
                                 onChecked={setSelectedItems}
-                                className={classes.list}
                                 values={modifications}
                                 itemRenderer={(props) => (
                                     <ModificationListItem
