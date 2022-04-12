@@ -7,7 +7,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { fetchReport } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar } from '../utils/messages';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import clsx from 'clsx';
 import { ReportViewer } from '@gridsuite/commons-ui';
 import { useSnackbar } from 'notistack';

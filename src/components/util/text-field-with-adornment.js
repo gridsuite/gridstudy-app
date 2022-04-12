@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { TextField } from '@material-ui/core';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import { TextField } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme) => ({
     inputRight: {

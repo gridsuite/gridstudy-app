@@ -1,6 +1,6 @@
 import React from 'react';
-import { CircularProgress } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { CircularProgress } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 
 const useStyles = makeStyles((theme) => ({

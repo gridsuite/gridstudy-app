@@ -4,19 +4,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Checkbox, ListItem, ListItemIcon } from '@material-ui/core';
+import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
 import React, { useCallback } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 import PropTypes from 'prop-types';
-import EditIcon from '@material-ui/icons/Edit';
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
-import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 const useStyles = makeStyles((theme) => ({
     listItem: {

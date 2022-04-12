@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import CenterFocusIcon from '@material-ui/icons/CenterFocusStrong';
+import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import React, { useCallback } from 'react';
 import {
     ControlButton,

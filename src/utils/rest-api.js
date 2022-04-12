@@ -1485,7 +1485,7 @@ export function changeNetworkModificationOrder(
         (idBefore !== undefined ? '?before=' + idBefore : '');
     console.debug(url);
     return backendFetch(url, { method: 'put' }).then((response) => {
-        if (response.ok) return response.json();
-        throw new Error(response.status + ' ' + response.statusText);
+        if (!response.ok)
+            throw new Error(response.status + ' ' + response.statusText);
     });
 }

@@ -16,10 +16,10 @@ import {
 import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { ModificationListItem } from './modification-list-item';
-import { Checkbox, Fab, Toolbar, Typography } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { Checkbox, Fab, Toolbar, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from '../../dialogs/load-creation-dialog';
@@ -30,10 +30,9 @@ import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-tra
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const useStyles = makeStyles((theme) => ({
@@ -51,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
         padding: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
-        color: 'white',
+        color: theme.palette.primary.contrastText,
     },
     toolbar: {
         padding: theme.spacing(0),
@@ -250,7 +249,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             setModifications(res);
             changeNetworkModificationOrder(
                 studyUuid,
-                workingNode.id,
+                selectedNode.id,
                 item.uuid,
                 before
             ).catch((e) => {
@@ -258,17 +257,11 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 setModifications(modifications); // rollback
             });
         },
-        [modifications, studyUuid, workingNode.id, snackError]
+        [modifications, studyUuid, selectedNode.id, snackError]
     );
 
     return (
         <>
-            <Typography className={classes.modificationCount}>
-                <FormattedMessage
-                    id={'network_modification/modificationsCount'}
-                    values={{ count: modifications?.length }}
-                />
-            </Typography>
             <Toolbar className={classes.toolbar}>
                 <Checkbox
                     className={classes.toolbarIcon}
@@ -283,17 +276,21 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     onClick={() => setToggleSelectAll((oldVal) => !oldVal)}
                 />
                 <div className={classes.filler} />
-                {selectedItems?.size > 0 && (
-                    <IconButton
-                        onClick={doDeleteModification}
-                        size={'small'}
-                        className={classes.toolbarIcon}
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                )}
+                <IconButton
+                    onClick={doDeleteModification}
+                    size={'small'}
+                    className={classes.toolbarIcon}
+                    disabled={!(selectedItems?.size > 0)}
+                >
+                    <DeleteIcon />
+                </IconButton>
             </Toolbar>
-            <Divider className={classes.dividerTool} />
+            <Typography className={classes.modificationCount}>
+                <FormattedMessage
+                    id={'network_modification/modificationsCount'}
+                    values={{ count: modifications?.length }}
+                />
+            </Typography>
             <DragDropContext onDragEnd={commit}>
                 <Droppable droppableId="network-modification-list">
                     {(provided) => (
@@ -305,7 +302,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                                 onChecked={setSelectedItems}
                                 className={classes.list}
                                 values={modifications}
-                                setChecked={setSelectedItems}
                                 itemRenderer={(props) => (
                                     <ModificationListItem
                                         key={props.item.uuid}
