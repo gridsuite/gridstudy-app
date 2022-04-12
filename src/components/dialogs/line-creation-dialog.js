@@ -238,7 +238,7 @@ const LineCreationDialog = ({
             },
             adornment: AmpereAdornment,
             inputForm: inputForm,
-            defaultValue: formValues?.currentLimits1.permanentLimit,
+            defaultValue: formValues?.currentLimits1?.permanentLimit,
         });
 
     const [permanentCurrentLimit2, permanentCurrentLimit2Field] =
@@ -252,7 +252,7 @@ const LineCreationDialog = ({
             },
             adornment: AmpereAdornment,
             inputForm: inputForm,
-            defaultValue: formValues?.currentLimits2.permanentLimit,
+            defaultValue: formValues?.currentLimits2?.permanentLimit,
         });
 
     const handleSave = () => {
