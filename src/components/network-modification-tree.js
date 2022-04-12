@@ -157,7 +157,7 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     const onPaneClick = useCallback(() => {
         setSelectedNode(null);
         dispatch(selectTreeNode(null));
-    }, []);
+    }, [dispatch]);
 
     const onMove = useCallback((flowTransform) => {
         setIsMoving(true);
