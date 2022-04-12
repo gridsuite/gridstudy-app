@@ -58,6 +58,7 @@ const ConnectivityEdition = ({
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
     direction,
+    disabled = false,
     errorVoltageLevel,
     helperTextVoltageLevel,
     errorBusOrBusBarSection,
@@ -166,6 +167,7 @@ const ConnectivityEdition = ({
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
+                        disabled={disabled}
                         id="voltage-level"
                         options={voltageLevelOptions}
                         getOptionLabel={(vl) => vl.id}
@@ -231,7 +233,7 @@ const ConnectivityEdition = ({
                         autoHighlight
                         selectOnFocus
                         id="bus"
-                        disabled={!voltageLevel}
+                        disabled={!voltageLevel || disabled}
                         options={busOrBusbarSectionOptions}
                         getOptionLabel={(bbs) => {
                             return bbs === ''

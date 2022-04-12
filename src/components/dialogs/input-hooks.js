@@ -260,6 +260,7 @@ export const useConnectivityValue = ({
     validation = {
         isFieldRequired: true,
     },
+    disabled = false,
     inputForm,
     voltageLevelOptions,
     workingNodeUuid,
@@ -330,6 +331,7 @@ export const useConnectivityValue = ({
     const render = useMemo(() => {
         return (
             <ConnectivityEdition
+                disabled={disabled}
                 voltageLevelOptions={voltageLevelOptions}
                 voltageLevel={connectivity.voltageLevel}
                 busOrBusbarSection={connectivity.busOrBusbarSection}
@@ -357,6 +359,7 @@ export const useConnectivityValue = ({
         );
     }, [
         connectivity,
+        disabled,
         direction,
         errorBusBarSection,
         errorVoltageLevel,

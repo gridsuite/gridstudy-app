@@ -138,7 +138,6 @@ const LoadModificationDialog = ({
     const [activePower, activePowerField] = useDoubleValue({
         label: 'ActivePowerText',
         validation: {
-            isFieldRequired: true,
             isFieldNumeric: true,
         },
         adornment: ActivePowerAdornment,
@@ -151,7 +150,6 @@ const LoadModificationDialog = ({
     const [reactivePower, reactivePowerField] = useDoubleValue({
         label: 'ReactivePowerText',
         validation: {
-            isFieldRequired: true,
             isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
@@ -163,6 +161,10 @@ const LoadModificationDialog = ({
 
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
+        validation: {
+            isFieldRequired: false,
+        },
+        disabled: true,
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
@@ -181,8 +183,8 @@ const LoadModificationDialog = ({
                 !loadType ? 'UNDEFINED' : loadType,
                 activePower,
                 reactivePower,
-                connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id,
+                connectivity?.voltageLevel?.id,
+                connectivity?.busOrBusbarSection?.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
