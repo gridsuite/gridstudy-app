@@ -91,7 +91,7 @@ const usePreviousTreeDisplay = (display, width) => {
 const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     const dispatch = useDispatch();
 
-    const [selectedNode, setSelectedNode] = useState(null);
+    const selectedNode = useSelector((state) => state.selectedTreeNode);
 
     const [isMoving, setIsMoving] = useState(false);
 
@@ -109,7 +109,6 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
 
     const onElementClick = useCallback(
         (event, element) => {
-            setSelectedNode(element);
             dispatch(
                 setModificationsDrawerOpen(
                     element.type === 'NETWORK_MODIFICATION'
@@ -155,7 +154,6 @@ const NetworkModificationTree = ({ treeModel, studyMapTreeDisplay }) => {
     );
 
     const onPaneClick = useCallback(() => {
-        setSelectedNode(null);
         dispatch(selectTreeNode(null));
     }, [dispatch]);
 
