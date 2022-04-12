@@ -6,7 +6,7 @@
  */
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
@@ -90,10 +90,22 @@ export const ModificationListItem = ({
             ),
         [modification, getComputedLabel, intl]
     );
+
+    const [hover, setHover] = useState(false);
+
+    const handleMouseEnter = useCallback(() => setHover(true), []);
+
+    const handleMouseLeave = useCallback(() => setHover(false), []);
+
     return (
         <Draggable draggableId={modification.uuid} index={index}>
             {(provided) => (
-                <div ref={provided.innerRef} {...provided.draggableProps}>
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                >
                     <ListItem
                         key={modification.uuid}
                         {...props}
@@ -122,15 +134,16 @@ export const ModificationListItem = ({
                         />
                         {equipmentCreationModificationsType.has(
                             modification.type
-                        ) && (
-                            <IconButton
-                                onClick={() => onEdit(modification.uuid)}
-                                size={'small'}
-                                className={classes.iconEdit}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                        )}
+                        ) &&
+                            hover && (
+                                <IconButton
+                                    onClick={() => onEdit(modification.uuid)}
+                                    size={'small'}
+                                    className={classes.iconEdit}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            )}
                     </ListItem>
                     <Divider />
                 </div>
