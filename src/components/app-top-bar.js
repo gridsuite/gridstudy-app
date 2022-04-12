@@ -64,7 +64,7 @@ const CustomTagRenderer = ({ props, element }) => {
             props.onClose && props.onClose();
             e.stopPropagation();
         },
-        [props.onClose, dispatch]
+        [dispatch, props]
     );
 
     if (
