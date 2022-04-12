@@ -11,10 +11,10 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { getNominalVoltageColor } from '../../utils/colors';
 import VirtualizedTable from '../util/virtualized-table';
-import TableCell from '@material-ui/core/TableCell';
+import TableCell from '@mui/material/TableCell';
 
 import 'react-virtualized/styles.css';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({

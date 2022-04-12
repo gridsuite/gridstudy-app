@@ -6,14 +6,14 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import makeStyles from '@mui/styles/makeStyles';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
 
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import ListItemText from '@mui/material/ListItemText';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { useSelector } from 'react-redux';
 import { getNominalVoltageColor } from '../utils/colors';
 import { PARAM_USE_NAME } from '../utils/config-params';

@@ -5,21 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Grow from '@mui/material/Grow';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import StopIcon from '@material-ui/icons/Stop';
-import ListItemText from '@material-ui/core/ListItemText';
+import makeStyles from '@mui/styles/makeStyles';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import StopIcon from '@mui/icons-material/Stop';
+import ListItemText from '@mui/material/ListItemText';
 
 const useStyles = makeStyles((theme) => ({
     expand: {
@@ -101,12 +101,7 @@ const SplitButton = (props) => {
 
     return (
         <>
-            <ButtonGroup
-                className={props.className}
-                variant="outlined"
-                color="primary"
-                ref={anchorRef}
-            >
+            <ButtonGroup className={props.className} ref={anchorRef}>
                 <Button
                     variant="outlined"
                     startIcon={props.startIcon}
@@ -118,7 +113,6 @@ const SplitButton = (props) => {
                 </Button>
                 <Button
                     variant="outlined"
-                    color="primary"
                     size="small"
                     onClick={handleToggle}
                     className={props.className}
