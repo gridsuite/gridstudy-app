@@ -1046,10 +1046,14 @@ export function modifyLoad(
             equipmentId: id,
             equipmentName: name ? { value: name, op: 'SET' } : null,
             loadType: loadType ? { value: loadType, op: 'SET' } : null,
-            activePower: activePower ? { value: activePower, op: 'SET' } : null,
-            reactivePower: reactivePower
-                ? { value: reactivePower, op: 'SET' }
-                : null,
+            activePower:
+                activePower === 0 || activePower
+                    ? { value: activePower, op: 'SET' }
+                    : null,
+            reactivePower:
+                reactivePower === 0 || reactivePower
+                    ? { value: reactivePower, op: 'SET' }
+                    : null,
             voltageLevelId: voltageLevelId
                 ? { value: voltageLevelId, op: 'SET' }
                 : null,
