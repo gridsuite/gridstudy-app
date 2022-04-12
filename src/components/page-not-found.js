@@ -7,9 +7,9 @@
 
 import React from 'react';
 
-import Container from '@material-ui/core/Container';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import { makeStyles } from '@material-ui/core/styles';
+import Container from '@mui/material/Container';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(() => ({
     error: {
