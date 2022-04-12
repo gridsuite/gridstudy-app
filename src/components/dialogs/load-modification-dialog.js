@@ -109,7 +109,7 @@ const LoadModificationDialog = ({
         }
     }, [editData]);
 
-    const [loadId, loadIdField] = useAutocompleteField({
+    const [loadInfos, loadIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
@@ -125,6 +125,7 @@ const LoadModificationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName?.value,
+        previousValue: loadInfos?.name,
     });
 
     const [loadType, loadTypeField] = useEnumValue({
@@ -133,6 +134,7 @@ const LoadModificationDialog = ({
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
         defaultValue: formValues ? formValues.loadType?.value : '',
+        previousValue: loadInfos?.type,
     });
 
     const [activePower, activePowerField] = useDoubleValue({
@@ -141,6 +143,7 @@ const LoadModificationDialog = ({
             isFieldNumeric: true,
         },
         adornment: ActivePowerAdornment,
+        previousValue: loadInfos?.p0,
         inputForm: inputForm,
         defaultValue: formValues
             ? String(formValues.activePower?.value)
@@ -153,6 +156,7 @@ const LoadModificationDialog = ({
             isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
+        previousValue: loadInfos?.q0,
         inputForm: inputForm,
         defaultValue: formValues
             ? String(formValues.reactivePower?.value)
@@ -169,6 +173,7 @@ const LoadModificationDialog = ({
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId?.value || null,
+        voltageLevelPreviousValue: loadInfos?.voltageLevelId,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId?.value || null,
     });
@@ -178,7 +183,7 @@ const LoadModificationDialog = ({
             modifyLoad(
                 studyUuid,
                 selectedNodeUuid,
-                loadId?.id,
+                loadInfos?.id,
                 loadName ? loadName : null,
                 !loadType ? 'UNDEFINED' : loadType,
                 activePower,

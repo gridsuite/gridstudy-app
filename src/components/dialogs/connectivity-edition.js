@@ -54,7 +54,9 @@ const useStyles = makeStyles((theme) => ({
 const ConnectivityEdition = ({
     voltageLevelOptions,
     voltageLevel,
+    voltageLevelPreviousValue,
     busOrBusbarSection,
+    busOrBusbarSectionPreviousValue,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
     direction,
@@ -191,6 +193,7 @@ const ConnectivityEdition = ({
                             return filtered;
                         }}
                         value={voltageLevel}
+                        previousValue={voltageLevelPreviousValue}
                         onChange={handleChangeVoltageLevel}
                         renderInput={(params) => (
                             <TextField
@@ -202,6 +205,10 @@ const ConnectivityEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...(voltageLevelPreviousValue && {
+                                    error: false,
+                                    helperText: voltageLevelPreviousValue,
+                                })}
                                 {...(errorVoltageLevel && {
                                     error: true,
                                     helperText: helperTextVoltageLevel,
@@ -260,6 +267,7 @@ const ConnectivityEdition = ({
                             return filtered;
                         }}
                         value={currentBBS}
+                        previousValue={busOrBusbarSectionPreviousValue}
                         onChange={handleChangeBus}
                         renderInput={(params) => (
                             <TextField
@@ -271,6 +279,10 @@ const ConnectivityEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...(busOrBusbarSectionPreviousValue && {
+                                    error: false,
+                                    helperText: busOrBusbarSectionPreviousValue,
+                                })}
                                 {...(errorBusOrBusBarSection && {
                                     error: true,
                                     helperText: helperTextBusOrBusBarSection,

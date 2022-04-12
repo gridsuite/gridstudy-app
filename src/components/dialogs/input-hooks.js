@@ -15,6 +15,7 @@ import React, {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../util/validation-functions';
 import {
+    FormHelperText,
     InputLabel,
     MenuItem,
     Select,
@@ -70,6 +71,15 @@ export const useInputForm = () => {
         reset,
     };
 };
+function genHelperPreviousValue(previousValue, adornment) {
+    return {
+        ...(previousValue && {
+            error: false,
+            helperText:
+                previousValue + (adornment ? ' ' + adornment?.text : ''),
+        }),
+    };
+}
 
 function genHelperError(...errors) {
     const inError = errors.find((e) => e);
@@ -101,6 +111,7 @@ export const useTextValue = ({
     inputForm,
     formProps,
     errorMsg,
+    previousValue,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
@@ -149,6 +160,7 @@ export const useTextValue = ({
                 FormHelperTextProps={{
                     className: classes.helperText,
                 }}
+                {...genHelperPreviousValue(previousValue, adornment)}
                 {...genHelperError(error, errorMsg)}
                 {...formProps}
             />
@@ -159,6 +171,7 @@ export const useTextValue = ({
         label,
         validation.isFieldRequired,
         value,
+        previousValue,
         handleChangeValue,
         classes.helperText,
         error,
@@ -266,7 +279,9 @@ export const useConnectivityValue = ({
     workingNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
+    voltageLevelPreviousValue,
     busOrBusbarSectionIdDefaultValue,
+    busOrBusbarSectionPreviousValue,
 }) => {
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
@@ -334,7 +349,11 @@ export const useConnectivityValue = ({
                 disabled={disabled}
                 voltageLevelOptions={voltageLevelOptions}
                 voltageLevel={connectivity.voltageLevel}
+                voltageLevelPreviousValue={voltageLevelPreviousValue}
                 busOrBusbarSection={connectivity.busOrBusbarSection}
+                busOrBusbarSectionPreviousValue={
+                    busOrBusbarSectionPreviousValue
+                }
                 onChangeVoltageLevel={(value) => setVoltageLevel(value)}
                 onChangeBusOrBusbarSection={(busOrBusbarSection) =>
                     setBusOrBusbarSection(busOrBusbarSection)
@@ -368,6 +387,8 @@ export const useConnectivityValue = ({
         setVoltageLevel,
         voltageLevelOptions,
         workingNodeUuid,
+        voltageLevelPreviousValue,
+        busOrBusbarSectionPreviousValue,
     ]);
 
     return [connectivity, render];
@@ -387,6 +408,7 @@ export const useAutocompleteField = ({
     errorMsg,
     selectedValue,
     defaultValue,
+    previousValue,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState('');
@@ -430,6 +452,7 @@ export const useAutocompleteField = ({
                 getOptionLabel={getLabel}
                 defaultValue={value}
                 value={value}
+                previousValue={previousValue}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
@@ -457,6 +480,7 @@ export const useAutocompleteField = ({
                             />
                         }
                         value={value}
+                        {...genHelperPreviousValue(previousValue)}
                         {...genHelperError(error, errorMsg)}
                     />
                 )}
@@ -470,6 +494,7 @@ export const useAutocompleteField = ({
         handleChangeValue,
         validation.isFieldRequired,
         value,
+        previousValue,
         error,
         errorMsg,
         formProps,
@@ -564,6 +589,7 @@ const getLabel = (e) => e.label;
 export const useEnumValue = ({
     label,
     defaultValue,
+    previousValue,
     validation = {},
     inputForm,
     formProps,
@@ -615,6 +641,9 @@ export const useEnumValue = ({
                         </MenuItem>
                     ))}
                 </Select>
+                {previousValue && (
+                    <FormHelperText>{previousValue}</FormHelperText>
+                )}
             </FormControl>
         );
     }, [
@@ -622,6 +651,7 @@ export const useEnumValue = ({
         getEnumLabel,
         label,
         value,
+        previousValue,
         handleChangeValue,
         formProps,
         enumValues,
