@@ -6,18 +6,18 @@
  */
 
 import React, { useCallback } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import makeStyles from '@mui/styles/makeStyles';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import PlayIcon from '@material-ui/icons/PlayArrow';
-import OfflineBoltOutlinedIcon from '@material-ui/icons/OfflineBoltOutlined';
-import EnergiseOneSideIcon from '@material-ui/icons/LastPage';
-import EnergiseOtherSideIcon from '@material-ui/icons/FirstPage';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import PlayIcon from '@mui/icons-material/PlayArrow';
+import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
+import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
+import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
 import { useParameterState } from '../parameters';
 import { PARAM_USE_NAME } from '../../utils/config-params';

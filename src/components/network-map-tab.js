@@ -13,7 +13,7 @@ import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
 import LoaderWithOverlay from './util/loader-with-overlay';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import OverloadedLinesView from './network/overloaded-lines-view';
 import { RunButtonContainer } from './run-button-container';
 import { useSelector } from 'react-redux';

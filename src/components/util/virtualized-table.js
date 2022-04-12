@@ -1,7 +1,7 @@
 /**
  * This class has been taken from 'Virtualized Table' example at https://material-ui.com/components/tables/
  */
-import { withStyles } from '@material-ui/core/styles';
+import withStyles from '@mui/styles/withStyles';
 import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
 
 const cellPadding = 16;

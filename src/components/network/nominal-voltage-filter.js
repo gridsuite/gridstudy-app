@@ -7,15 +7,15 @@
 
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import Checkbox from '@material-ui/core/Checkbox';
-import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { filteredNominalVoltagesUpdated } from '../../redux/actions';
 
@@ -82,7 +82,6 @@ const NominalVoltageFilter = (props) => {
                 <ListItem className={classes.nominalVoltageItem}>
                     <Button
                         size={'small'}
-                        variant={'text'}
                         className={classes.nominalVoltageSelectionControl}
                         onClick={handleToggle(
                             network.getNominalVoltages(),
@@ -97,7 +96,6 @@ const NominalVoltageFilter = (props) => {
                     />
                     <Button
                         size={'small'}
-                        variant={'text'}
                         className={classes.nominalVoltageSelectionControl}
                         onClick={handleToggle([], false)}
                     >

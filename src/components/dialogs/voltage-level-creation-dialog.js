@@ -6,12 +6,12 @@
  */
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { createVoltageLevel } from '../../utils/rest-api';
@@ -133,7 +133,7 @@ const BusBarConnexion = ({
         defaultValue:
             defaultValue && defaultValue.fromBBS
                 ? getBusbarSectionById(fieldProps, defaultValue?.fromBBS)
-                : null,
+                : '',
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbFrom,
@@ -415,10 +415,10 @@ const VoltageLevelCreationDialog = ({
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseAndClear} variant="text">
+                    <Button onClick={handleCloseAndClear}>
                         <FormattedMessage id="close" />
                     </Button>
-                    <Button onClick={handleSave} variant="text">
+                    <Button onClick={handleSave}>
                         <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
