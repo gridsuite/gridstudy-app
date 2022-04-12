@@ -1472,8 +1472,8 @@ export function buildNode(studyUuid, selectedNodeUuid) {
 export function changeNetworkModificationOrder(
     studyUuid,
     selectedNodeUuid,
-    itemId,
-    idBefore
+    itemUuid,
+    beforeUuid
 ) {
     console.info(
         'reorder node ' + selectedNodeUuid + ' of study ' + studyUuid + ' ...'
@@ -1481,9 +1481,9 @@ export function changeNetworkModificationOrder(
     const url =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/' +
-        itemId +
-        (idBefore !== undefined
-            ? '?' + new URLSearchParams({ before: idBefore }).toString()
+        itemUuid +
+        (beforeUuid !== undefined
+            ? '?' + new URLSearchParams({ before: beforeUuid }).toString()
             : '');
     console.debug(url);
     return backendFetch(url, { method: 'put' }).then((response) => {

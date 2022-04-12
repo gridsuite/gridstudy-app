@@ -267,7 +267,7 @@
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
-    "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du noeud",
+    "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du noeud : ",
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
     "SUBSTATION": "Site",
