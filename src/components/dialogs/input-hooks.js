@@ -20,18 +20,19 @@ import {
     Select,
     TextField,
     Tooltip,
-} from '@material-ui/core';
+} from '@mui/material';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import ConnectivityEdition from './connectivity-edition';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/ControlPoint';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import { Autocomplete } from '@mui/material';
+import { createFilterOptions } from '@mui/material/useAutocomplete';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import {
     func_identity,
     toFloatValue,
@@ -41,7 +42,7 @@ import {
 import { getComputedLanguage } from '../../utils/language';
 import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import FindInPageIcon from '@material-ui/icons/FindInPage';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -232,7 +233,6 @@ export const useBooleanValue = ({
                         checked={value}
                         onChange={(e) => handleChangeValue(e)}
                         value="checked"
-                        color="primary"
                         inputProps={{
                             'aria-label': 'primary checkbox',
                         }}
