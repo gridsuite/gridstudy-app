@@ -11,7 +11,8 @@ import {
     getEquipmentsInfosForSearchBar,
     LIGHT_THEME,
     logout,
-    renderEquipmentForSearchBar,
+    EquipmentItem,
+    TagRenderer,
     TopBar,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
@@ -33,9 +34,11 @@ import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useSnackbar } from 'notistack';
 import { stringify } from 'qs';
-import { selectItemNetwork } from '../redux/actions';
+import { centerOnSubstation, selectItemNetwork } from '../redux/actions';
+import { useSnackbar } from 'notistack';
+import IconButton from '@mui/material/IconButton';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -43,14 +46,45 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const useEquipmentStyles = makeStyles(equipmentStyles);
-
 const STUDY_VIEWS = [
     StudyView.MAP,
     StudyView.SPREADSHEET,
     StudyView.RESULTS,
     StudyView.LOGS,
 ];
+
+const useEquipmentStyles = makeStyles(equipmentStyles);
+
+const CustomTagRenderer = ({ props, element }) => {
+    const dispatch = useDispatch();
+    const equipmentClasses = useEquipmentStyles();
+    const enterOnSubstationCB = useCallback(
+        (e, element) => {
+            dispatch(centerOnSubstation(element.id));
+            props.onClose && props.onClose();
+            e.stopPropagation();
+        },
+        [props.onClose, dispatch]
+    );
+
+    if (
+        element.type === EQUIPMENT_TYPE.SUBSTATION.name ||
+        element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
+    )
+        return (
+            <IconButton onClick={(e) => enterOnSubstationCB(e, element)}>
+                <GpsFixedIcon />
+            </IconButton>
+        );
+
+    return (
+        <TagRenderer
+            classes={equipmentClasses}
+            props={props}
+            element={element}
+        />
+    );
+};
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
@@ -187,10 +221,15 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onSearchTermChange={searchMatchingEquipments}
                 onSelectionChange={showVoltageLevelDiagram}
                 elementsFound={equipmentsFound}
-                renderElement={renderEquipmentForSearchBar(
-                    equipmentClasses,
-                    intl
-                )}
+                renderElement={(props) => {
+                    return (
+                        <EquipmentItem
+                            classes={equipmentClasses}
+                            {...props}
+                            suffixRenderer={CustomTagRenderer}
+                        />
+                    );
+                }}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             >

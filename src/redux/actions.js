@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2020, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -344,5 +344,14 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
         isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}
+
+export const CENTER_ON_SUBSTATION = 'CENTER_ON_SUBSTATION';
+
+export function centerOnSubstation(substationId) {
+    return {
+        type: CENTER_ON_SUBSTATION,
+        centerOnSubstation: { to: substationId },
     };
 }

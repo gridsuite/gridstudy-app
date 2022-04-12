@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2020, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -47,6 +47,7 @@ import {
     SELECT_MAP_TREE_DISPLAY,
     WORKING_TREE_NODE,
     SET_MODIFICATIONS_DRAWER_OPEN,
+    CENTER_ON_SUBSTATION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -112,6 +113,7 @@ const initialState = {
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    centerOnSubstation: null,
     ...paramsInitialState,
 };
 
@@ -308,5 +310,8 @@ export const reducer = createReducer(initialState, {
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
+    },
+    [CENTER_ON_SUBSTATION]: (state, action) => {
+        state.centerOnSubstation = action.centerOnSubstation;
     },
 });
