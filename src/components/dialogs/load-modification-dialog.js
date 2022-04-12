@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material//Button';
+import Dialog from '@mui/material//Dialog';
+import DialogActions from '@mui/material//DialogActions';
+import DialogContent from '@mui/material//DialogContent';
+import DialogTitle from '@mui/material//DialogTitle';
 import Grid from '@mui/material/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
