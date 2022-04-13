@@ -210,7 +210,7 @@ const GeneratorCreationDialog = ({
         label: 'VoltageRegulationText',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        defaultValue: formValues?.voltageRegulationOn || false,
+        defaultValue: formValues?.voltageRegulatorOn || false,
     });
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({

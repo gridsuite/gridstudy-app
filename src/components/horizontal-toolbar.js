@@ -93,6 +93,7 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                                 : classes.notSelected
                         }
                         disabled={
+                            studyDisplayMode === StudyDisplayMode.MAP ||
                             selectedTreeNode === null ||
                             selectedTreeNode.type !== 'NETWORK_MODIFICATION'
                         }
