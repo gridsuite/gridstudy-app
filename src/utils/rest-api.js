@@ -1033,8 +1033,7 @@ export function modifyLoad(
     console.info('Modifying load ');
     let modifyLoadUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/loads/' +
-        id;
+        '/network-modification/loads';
 
     return backendFetch(modifyLoadUrl, {
         method: 'PUT',
