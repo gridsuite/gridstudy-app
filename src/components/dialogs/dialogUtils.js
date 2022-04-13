@@ -11,10 +11,6 @@ import { FormattedMessage } from 'react-intl';
 import React from 'react';
 
 export const useStyles = makeStyles((theme) => ({
-    h3: {
-        marginBottom: 0,
-        paddingBottom: 1,
-    },
     helperText: {
         margin: 0,
         marginTop: 4,
