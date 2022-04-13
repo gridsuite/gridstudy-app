@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { Box } from '@mui/material';
 import ReactFlow, {
     Controls,
@@ -24,13 +31,6 @@ import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 
-/**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 // snapGrid value set to [15, 15] which is the default value for ReactFlow
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
@@ -54,11 +54,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ReactFlowTree = ({
+    studyMapTreeDisplay,
+    prevTreeDisplay,
     onNodeContextMenu,
     studyUuid,
-    studyMapTreeDisplay,
     isModificationsDrawerOpen,
-    prevTreeDisplay,
 }) => {
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
