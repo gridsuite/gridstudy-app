@@ -1482,9 +1482,8 @@ export function changeNetworkModificationOrder(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification/' +
         itemUuid +
-        (beforeUuid !== undefined
-            ? '?' + new URLSearchParams({ before: beforeUuid }).toString()
-            : '');
+        '?' +
+        new URLSearchParams({ before: beforeUuid || '' }).toString();
     console.debug(url);
     return backendFetch(url, { method: 'put' }).then((response) => {
         if (!response.ok)
