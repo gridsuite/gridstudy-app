@@ -235,7 +235,8 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const commit = useCallback(
         ({ source, destination }) => {
-            if (destination === null) return;
+            if (destination === null || source.index === destination.index)
+                return;
             const res = [...modifications];
             const [item] = res.splice(source.index, 1);
             const before = res[destination.index]?.uuid;
