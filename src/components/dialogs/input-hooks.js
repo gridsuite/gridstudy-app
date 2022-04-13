@@ -587,17 +587,17 @@ export const useEnumValue = ({
             <FormControl fullWidth size="small">
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
-                <InputLabel id="enum-type-label" variant={'filled'}>
+                <InputLabel id="enum-type-label">
                     <FieldLabel
                         label={label}
                         optional={!validation.isFieldRequired}
                     />
                 </InputLabel>
                 <Select
+                    label={label}
                     id={label}
                     value={value || ''}
                     onChange={handleChangeValue}
-                    variant="filled"
                     fullWidth
                     {...formProps}
                 >

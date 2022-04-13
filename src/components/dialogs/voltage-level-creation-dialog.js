@@ -405,11 +405,11 @@ const VoltageLevelCreationDialog = ({
                         {gridItem(nominalVoltageField, 3)}
                         {gridItem(substationField, 3)}
                     </Grid>
-                    <Grid container>
+                    <Grid container rowSpacing={1}>
                         <GridSection title={'BusBarSections'} />
                         {busBarSectionsField}
                     </Grid>
-                    <Grid container>
+                    <Grid container rowSpacing={1}>
                         <GridSection title={'Connectivity'} />
                         {connectionsField}
                     </Grid>
