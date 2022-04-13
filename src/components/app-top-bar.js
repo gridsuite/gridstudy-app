@@ -55,7 +55,7 @@ const STUDY_VIEWS = [
 
 const useEquipmentStyles = makeStyles(equipmentStyles);
 
-const CustomTagRenderer = ({ props, element }) => {
+const CustomSuffixRenderer = ({ props, element }) => {
     const dispatch = useDispatch();
     const equipmentClasses = useEquipmentStyles();
     const enterOnSubstationCB = useCallback(
@@ -221,15 +221,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onSearchTermChange={searchMatchingEquipments}
                 onSelectionChange={showVoltageLevelDiagram}
                 elementsFound={equipmentsFound}
-                renderElement={(props) => {
-                    return (
-                        <EquipmentItem
-                            classes={equipmentClasses}
-                            {...props}
-                            suffixRenderer={CustomTagRenderer}
-                        />
-                    );
-                }}
+                renderElement={(props) => (
+                    <EquipmentItem
+                        classes={equipmentClasses}
+                        {...props}
+                        suffixRenderer={CustomSuffixRenderer}
+                    />
+                )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             >
