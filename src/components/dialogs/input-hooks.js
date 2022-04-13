@@ -73,7 +73,7 @@ export const useInputForm = () => {
 };
 function genHelperPreviousValue(previousValue, adornment) {
     return {
-        ...(previousValue && {
+        ...((previousValue || previousValue === 0) && {
             error: false,
             helperText:
                 previousValue + (adornment ? ' ' + adornment?.text : ''),
