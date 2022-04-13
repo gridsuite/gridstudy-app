@@ -20,10 +20,6 @@ export const NetworkModificationTreePane = ({
     studyUuid,
     studyMapTreeDisplay,
 }) => {
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
-
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -77,10 +73,7 @@ export const NetworkModificationTreePane = ({
     }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
 
     return (
-        <NetworkModificationTree
-            treeModel={treeModel}
-            studyMapTreeDisplay={studyMapTreeDisplay}
-        />
+        <NetworkModificationTree studyMapTreeDisplay={studyMapTreeDisplay} />
     );
 };
 
