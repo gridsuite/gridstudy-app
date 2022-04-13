@@ -45,10 +45,6 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
         marginTop: 4,
     },
-    h3: {
-        marginBottom: 0,
-        paddingBottom: 1,
-    },
 }));
 
 const ENERGY_SOURCES = [
@@ -344,8 +340,7 @@ const GeneratorCreationDialog = ({
                         <Grid container spacing={2}>
                             {gridItem(activePowerSetpointField, 4)}
                             {gridItem(reactivePowerSetpointField, 4)}
-                        </Grid>
-                        <Grid container spacing={2} alignItems="center">
+                            <Grid xs={4} />
                             {gridItem(voltageRegulationField, 4)}
                             {gridItem(voltageSetpointField, 4)}
                         </Grid>
