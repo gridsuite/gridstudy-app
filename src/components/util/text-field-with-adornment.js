@@ -39,11 +39,13 @@ const TextFieldWithAdornment = (props) => {
                       <InputAdornment
                           position="end"
                           // hack to circumviate centering of adornment
-                          // when TextField has variant 'filled' with 'end' position
+                          // when TextField has variant 'filled' or 'standard' with 'end' position
                           className={
                               variant === 'filled'
                                   ? classes.adornRightFilled
-                                  : classes.adornRightOther
+                                  : variant === 'standard'
+                                  ? classes.adornRightOther
+                                  : null
                           }
                       >
                           {adornmentText}
