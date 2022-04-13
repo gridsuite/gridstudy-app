@@ -28,10 +28,7 @@ import {
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
-import {
-    DRAWER_NODE_EDITOR_WIDTH,
-    MapLateralDrawers,
-} from './map-lateral-drawers';
+import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import {
@@ -159,23 +156,6 @@ const StudyPane = ({
         }
     }, [network, filteredNominalVoltages, dispatch]);
 
-    const [drawerShift, setDrawerShift] = useState(0);
-
-    const isModificationsDrawerOpen = useSelector(
-        (state) => state.isModificationsDrawerOpen
-    );
-
-    useEffect(() => {
-        let shift = 0;
-        if (
-            isModificationsDrawerOpen &&
-            studyDisplayMode === StudyDisplayMode.MAP
-        ) {
-            shift += DRAWER_NODE_EDITOR_WIDTH;
-        }
-        setDrawerShift(shift);
-    }, [setDrawerShift, isModificationsDrawerOpen, studyDisplayMode]);
-
     function openVoltageLevelDiagram(vlId, substationId) {
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
@@ -277,7 +257,7 @@ const StudyPane = ({
                                     position: 'absolute',
                                     top: 0,
                                     bottom: 0,
-                                    left: drawerShift,
+                                    left: 0,
                                     right: 0,
                                 }}
                             >
