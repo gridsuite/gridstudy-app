@@ -93,9 +93,13 @@ export const ModificationListItem = ({
 
     const [hover, setHover] = useState(false);
 
-    const handleMouseEnter = useCallback(() => setHover(true), []);
+    const handleMouseEnter = () => {
+        return setHover(true);
+    };
 
-    const handleMouseLeave = useCallback(() => setHover(false), []);
+    const handleMouseLeave = () => {
+        return setHover(false);
+    };
 
     return (
         <Draggable draggableId={modification.uuid} index={index}>
