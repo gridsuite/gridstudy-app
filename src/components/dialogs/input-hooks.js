@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import InputAdornment from '@mui/material/InputAdornment';
 import React, {
     useCallback,
     useEffect,
@@ -32,6 +33,7 @@ import { Autocomplete } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ClearIcon from '@mui/icons-material/Clear';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import {
@@ -112,6 +114,7 @@ export const useTextValue = ({
     formProps,
     errorMsg,
     previousValue,
+    clearable,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
@@ -138,6 +141,10 @@ export const useTextValue = ({
         [acceptValue, transformValue]
     );
 
+    const handleClearValue = useCallback(() => {
+        setValue(defaultValue);
+    }, [defaultValue]);
+
     const field = useMemo(() => {
         const Field = adornment ? TextFieldWithAdornment : TextField;
         return (
@@ -160,6 +167,18 @@ export const useTextValue = ({
                 FormHelperTextProps={{
                     className: classes.helperText,
                 }}
+                InputProps={
+                    clearable &&
+                    value && {
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleClearValue}>
+                                    <ClearIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }
+                }
                 {...genHelperPreviousValue(previousValue, adornment)}
                 {...genHelperError(error, errorMsg)}
                 {...formProps}
@@ -177,6 +196,8 @@ export const useTextValue = ({
         error,
         errorMsg,
         formProps,
+        clearable,
+        handleClearValue,
     ]);
 
     useEffect(

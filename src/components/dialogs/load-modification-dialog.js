@@ -126,6 +126,7 @@ const LoadModificationDialog = ({
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName?.value,
         previousValue: loadInfos?.name,
+        clearable: true,
     });
 
     const [loadType, loadTypeField] = useEnumValue({
@@ -148,6 +149,7 @@ const LoadModificationDialog = ({
         defaultValue: formValues
             ? String(formValues.activePower?.value)
             : undefined,
+        clearable: true,
     });
 
     const [reactivePower, reactivePowerField] = useDoubleValue({
@@ -161,6 +163,7 @@ const LoadModificationDialog = ({
         defaultValue: formValues
             ? String(formValues.reactivePower?.value)
             : undefined,
+        clearable: true,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
