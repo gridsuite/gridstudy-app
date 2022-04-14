@@ -173,7 +173,7 @@ const ContingencyListSelector = (props) => {
             (item) => !toDelete.has(item)
         );
         if (newChecked.length !== checkedContingencyListUuids.length)
-            setCheckedContingencyListUuids(newChecked);
+            setCheckedContingencyListUuids(new Set(newChecked));
     };
 
     const addFavorites = (favorites) => {
