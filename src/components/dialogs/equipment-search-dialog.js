@@ -11,7 +11,7 @@ import {
     ElementSearchDialog,
     equipmentStyles,
     getEquipmentsInfosForSearchBar,
-    renderEquipmentForSearchBar,
+    EquipmentItem,
 } from '@gridsuite/commons-ui';
 import React, { useCallback, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
@@ -99,7 +99,13 @@ const EquipmentSearchDialog = ({
                 onSelectionChange(element);
             }}
             elementsFound={equipmentsFound}
-            renderElement={renderEquipmentForSearchBar(equipmentClasses, intl)}
+            renderElement={(props) => (
+                <EquipmentItem
+                    classes={equipmentClasses}
+                    {...props}
+                    key={props.element.key}
+                />
+            )}
         />
     );
 };
