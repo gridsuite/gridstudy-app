@@ -49,7 +49,7 @@ const LOAD_TYPES = [
 const getId = (e) => e?.id;
 
 /**
- * Dialog to create a load in the network
+ * Dialog to modify a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
@@ -117,7 +117,9 @@ const LoadModificationDialog = ({
         values: equipmentOptions,
         allowNewValue: true,
         getLabel: getId,
-        defaultValue: null,
+        defaultValue:
+            equipmentOptions.find((e) => e.id === formValues?.equipmentId) ||
+            formValues?.equipmentId,
     });
 
     const [loadName, loadNameField] = useTextValue({
@@ -231,13 +233,13 @@ const LoadModificationDialog = ({
                 fullWidth
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="dialog-create-load"
+                aria-labelledby="dialog-modify-load"
                 maxWidth={'md'}
             >
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
                         <Grid item xs={12}>
-                            <FormattedMessage id="CreateLoad" />
+                            <FormattedMessage id="ModifyLoad" />
                         </Grid>
                     </Grid>
                 </DialogTitle>
