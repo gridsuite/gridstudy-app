@@ -15,12 +15,13 @@ import PropTypes from 'prop-types';
 import EditIcon from '@mui/icons-material/Edit';
 import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
+import { Draggable } from 'react-beautiful-dnd';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
         paddingRight: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
     },
     label: {
         flexGrow: '1',
@@ -34,13 +35,22 @@ const useStyles = makeStyles((theme) => ({
     checkbox: {
         padding: theme.spacing(1),
     },
+    dragIcon: {
+        padding: theme.spacing(0),
+        border: theme.spacing(1),
+        zIndex: 90,
+        opacity: 0,
+        '&:hover': {
+            opacity: 1,
+        },
+    },
 }));
 
 export const ModificationListItem = ({
     item: modification,
-    onDelete,
     onEdit,
     checked,
+    index,
     handleToggle,
     ...props
 }) => {
@@ -81,35 +91,51 @@ export const ModificationListItem = ({
         [modification, getComputedLabel, intl]
     );
     return (
-        <>
-            <ListItem
-                key={modification.uuid}
-                {...props}
-                className={classes.listItem}
-            >
-                <ListItemIcon className={classes.icon}>
-                    <Checkbox
-                        className={classes.checkbox}
-                        color={'primary'}
-                        edge="start"
-                        checked={checked}
-                        onClick={toggle}
-                        disableRipple
-                    />
-                </ListItemIcon>
-                <OverflowableText className={classes.label} text={getLabel()} />
-                {equipmentCreationModificationsType.has(modification.type) && (
-                    <IconButton
-                        onClick={() => onEdit(modification.uuid)}
-                        size={'small'}
-                        className={classes.iconEdit}
+        <Draggable draggableId={modification.uuid} index={index}>
+            {(provided) => (
+                <div ref={provided.innerRef} {...provided.draggableProps}>
+                    <ListItem
+                        key={modification.uuid}
+                        {...props}
+                        className={classes.listItem}
                     >
-                        <EditIcon />
-                    </IconButton>
-                )}
-            </ListItem>
-            <Divider />
-        </>
+                        <IconButton
+                            {...provided.dragHandleProps}
+                            className={classes.dragIcon}
+                            size={'small'}
+                        >
+                            <DragIndicatorIcon edge="start" spacing={0} />
+                        </IconButton>
+                        <ListItemIcon className={classes.icon}>
+                            <Checkbox
+                                className={classes.checkbox}
+                                color={'primary'}
+                                edge="start"
+                                checked={checked}
+                                onClick={toggle}
+                                disableRipple
+                            />
+                        </ListItemIcon>
+                        <OverflowableText
+                            className={classes.label}
+                            text={getLabel()}
+                        />
+                        {equipmentCreationModificationsType.has(
+                            modification.type
+                        ) && (
+                            <IconButton
+                                onClick={() => onEdit(modification.uuid)}
+                                size={'small'}
+                                className={classes.iconEdit}
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        )}
+                    </ListItem>
+                    <Divider />
+                </div>
+            )}
+        </Draggable>
     );
 };
 

@@ -60,9 +60,10 @@ const CheckboxList = ({
 
     return (
         <List {...props}>
-            {values?.map((item) =>
+            {values?.map((item, index) =>
                 itemRenderer({
                     item,
+                    index,
                     checked: checked.has(item),
                     handleToggle,
                 })
