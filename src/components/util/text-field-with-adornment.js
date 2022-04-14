@@ -4,7 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import ClearIcon from '@mui/icons-material/Clear';
 import { TextField } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -28,42 +30,52 @@ const useStyles = makeStyles((theme) => ({
 
 const TextFieldWithAdornment = (props) => {
     const classes = useStyles();
-    const { adornmentPosition, adornmentText, value, variant, ...otherProps } =
-        props;
+    const {
+        adornmentPosition,
+        adornmentText,
+        value,
+        variant,
+        clearable,
+        handleClearValue,
+        ...otherProps
+    } = props;
     const [isFocused, setIsFocused] = useState(false);
 
-    const endAdornment =
-        isFocused || value
-            ? {
-                  endAdornment: (
-                      <InputAdornment
-                          position="end"
-                          // hack to circumviate centering of adornment
-                          // when TextField has variant 'filled' with 'end' position
-                          className={
-                              variant === 'filled'
-                                  ? classes.adornRightFilled
-                                  : classes.adornRightOther
-                          }
-                      >
-                          {adornmentText}
-                      </InputAdornment>
-                  ),
-                  classes: { input: classes.inputRight },
-              }
-            : {};
+    const withEndAdornmentText = value
+        ? {
+              startAdornment: clearable && (
+                  <InputAdornment position="start">
+                      <IconButton onClick={handleClearValue}>
+                          <ClearIcon />
+                      </IconButton>
+                  </InputAdornment>
+              ),
+              endAdornment: isFocused && (
+                  <InputAdornment position="end">
+                      {adornmentText}
+                  </InputAdornment>
+              ),
+              classes: { input: classes.inputRight },
+          }
+        : {};
 
-    const startAdornment =
-        isFocused || value
-            ? {
-                  startAdornment: (
-                      <InputAdornment position="start">
-                          {adornmentText}
-                      </InputAdornment>
-                  ),
-                  classes: { input: classes.inputLeft },
-              }
-            : {};
+    const withStartAdornmentText = value
+        ? {
+              startAdornment: isFocused && (
+                  <InputAdornment position="start">
+                      {adornmentText}
+                  </InputAdornment>
+              ),
+              endAdornment: clearable && (
+                  <InputAdornment position="end">
+                      <IconButton onClick={handleClearValue}>
+                          <ClearIcon />
+                      </IconButton>
+                  </InputAdornment>
+              ),
+              classes: { input: classes.inputLeft },
+          }
+        : {};
 
     return (
         <TextField
@@ -71,7 +83,9 @@ const TextFieldWithAdornment = (props) => {
             variant={variant}
             value={value}
             InputProps={
-                adornmentPosition === 'start' ? startAdornment : endAdornment
+                adornmentPosition === 'start'
+                    ? withStartAdornmentText
+                    : withEndAdornmentText
             }
             onFocus={(e) => setIsFocused(true)}
             onBlur={(e) => setIsFocused(false)}

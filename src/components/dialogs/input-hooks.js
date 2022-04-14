@@ -179,6 +179,8 @@ export const useTextValue = ({
                         ),
                     }
                 }
+                clearable={clearable}
+                handleClearValue={handleClearValue}
                 {...genHelperPreviousValue(previousValue, adornment)}
                 {...genHelperError(error, errorMsg)}
                 {...formProps}
