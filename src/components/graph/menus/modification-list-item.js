@@ -39,10 +39,6 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0),
         border: theme.spacing(1),
         zIndex: 90,
-        opacity: 0,
-        '&:hover': {
-            opacity: 1,
-        },
     },
 }));
 
@@ -119,6 +115,7 @@ export const ModificationListItem = ({
                             {...provided.dragHandleProps}
                             className={classes.dragIcon}
                             size={'small'}
+                            style={{ opacity: hover ? '1' : '0' }}
                         >
                             <DragIndicatorIcon edge="start" spacing={0} />
                         </IconButton>
