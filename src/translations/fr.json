@@ -123,16 +123,16 @@
     "LoadFlow": "Calcul de répartition",
     "SecurityAnalysis": "Analyse de sécurité",
 
-    "ContingencyListsSelection": "Sélection des listes de défauts",
+    "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",
     "DeleteContingencyList": "Supprimer",
-    "getContingencyListError": "Impossible de récuperer les listes de défauts",
-    "xContingenciesWillBeSimulated": "{x} défauts seront simulées",
+    "getContingencyListError": "Impossible de récuperer les listes d'aléas",
+    "xContingenciesWillBeSimulated": "{x} aléas seront simulées",
 
     "LimitType": "Type de limite",
     "Value": "Valeur",
-    "ContingencyId": "ID défaut",
+    "ContingencyId": "ID aléa",
     "ComputationOk": "Calcul OK",
     "true": "oui",
     "false": "non",
@@ -176,8 +176,8 @@
     "SmartWithVerticalCompactionSubstationLayout": "Smart avec compaction verticale",
     "openSubstation": "Ouvrir le site",
 
-    "ConstraintsFromContingencies": "Défauts -> contraintes",
-    "ContingenciesFromConstraints": "Contraintes -> défauts",
+    "ConstraintsFromContingencies": "Aléas -> contraintes",
+    "ContingenciesFromConstraints": "Contraintes -> aléas",
 
     "Equipment": "Ouvrage",
     "Constraint": "Contrainte",
