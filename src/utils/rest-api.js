@@ -1483,7 +1483,7 @@ export function changeNetworkModificationOrder(
         '/network-modification/' +
         itemUuid +
         '?' +
-        new URLSearchParams({ before: beforeUuid || '' }).toString();
+        new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
     console.debug(url);
     return backendFetch(url, { method: 'put' }).then((response) => {
         if (!response.ok)
