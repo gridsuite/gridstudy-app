@@ -6,7 +6,7 @@
  */
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
@@ -39,10 +39,6 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0),
         border: theme.spacing(1),
         zIndex: 90,
-        opacity: 0,
-        '&:hover': {
-            opacity: 1,
-        },
     },
 }));
 
@@ -52,6 +48,7 @@ export const ModificationListItem = ({
     checked,
     index,
     handleToggle,
+    isDragging,
     ...props
 }) => {
     const intl = useIntl();
@@ -90,10 +87,18 @@ export const ModificationListItem = ({
             ),
         [modification, getComputedLabel, intl]
     );
+
+    const [hover, setHover] = useState(false);
+
     return (
         <Draggable draggableId={modification.uuid} index={index}>
             {(provided) => (
-                <div ref={provided.innerRef} {...provided.draggableProps}>
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                >
                     <ListItem
                         key={modification.uuid}
                         {...props}
@@ -103,6 +108,9 @@ export const ModificationListItem = ({
                             {...provided.dragHandleProps}
                             className={classes.dragIcon}
                             size={'small'}
+                            style={{
+                                opacity: hover && !isDragging ? '1' : '0',
+                            }}
                         >
                             <DragIndicatorIcon edge="start" spacing={0} />
                         </IconButton>
@@ -122,15 +130,17 @@ export const ModificationListItem = ({
                         />
                         {equipmentCreationModificationsType.has(
                             modification.type
-                        ) && (
-                            <IconButton
-                                onClick={() => onEdit(modification.uuid)}
-                                size={'small'}
-                                className={classes.iconEdit}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                        )}
+                        ) &&
+                            hover &&
+                            !isDragging && (
+                                <IconButton
+                                    onClick={() => onEdit(modification.uuid)}
+                                    size={'small'}
+                                    className={classes.iconEdit}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            )}
                     </ListItem>
                     <Divider />
                 </div>
@@ -144,4 +154,5 @@ ModificationListItem.propTypes = {
     checked: PropTypes.bool,
     handleToggle: PropTypes.func,
     onEdit: PropTypes.func,
+    isDragging: PropTypes.bool,
 };
