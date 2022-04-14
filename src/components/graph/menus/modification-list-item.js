@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-const useStyles = makeStyles((theme, draggableStyle) => ({
+const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
         paddingRight: theme.spacing(1),
