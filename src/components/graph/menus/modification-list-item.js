@@ -89,22 +89,14 @@ export const ModificationListItem = ({
 
     const [hover, setHover] = useState(false);
 
-    const handleMouseEnter = () => {
-        return setHover(true);
-    };
-
-    const handleMouseLeave = () => {
-        return setHover(false);
-    };
-
     return (
         <Draggable draggableId={modification.uuid} index={index}>
             {(provided) => (
                 <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
                 >
                     <ListItem
                         key={modification.uuid}
