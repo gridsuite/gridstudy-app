@@ -94,6 +94,8 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
 
+    const [isDragging, setIsDragging] = useState(false);
+
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
 
@@ -235,6 +237,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const commit = useCallback(
         ({ source, destination }) => {
+            setIsDragging(false);
             if (destination === null || source.index === destination.index)
                 return;
             const res = [...modifications];
@@ -292,7 +295,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     values={{ count: modifications?.length }}
                 />
             </Typography>
-            <DragDropContext onDragEnd={commit}>
+            <DragDropContext
+                onDragEnd={commit}
+                onDragStart={() => setIsDragging(true)}
+            >
                 <Droppable droppableId="network-modification-list">
                     {(provided) => (
                         <div
@@ -307,6 +313,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                                     <ModificationListItem
                                         key={props.item.uuid}
                                         onEdit={doEditModification}
+                                        isDragging={isDragging}
                                         {...props}
                                     />
                                 )}
