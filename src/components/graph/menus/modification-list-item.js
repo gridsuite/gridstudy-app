@@ -154,4 +154,5 @@ ModificationListItem.propTypes = {
     checked: PropTypes.bool,
     handleToggle: PropTypes.func,
     onEdit: PropTypes.func,
+    isDragging: PropTypes.bool,
 };
