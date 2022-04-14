@@ -18,7 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme, draggableStyle) => ({
     listItem: {
         padding: theme.spacing(0),
         paddingRight: theme.spacing(1),
@@ -48,6 +48,7 @@ export const ModificationListItem = ({
     checked,
     index,
     handleToggle,
+    isDragging,
     ...props
 }) => {
     const intl = useIntl();
@@ -107,7 +108,9 @@ export const ModificationListItem = ({
                             {...provided.dragHandleProps}
                             className={classes.dragIcon}
                             size={'small'}
-                            style={{ opacity: hover ? '1' : '0' }}
+                            style={{
+                                opacity: hover && !isDragging ? '1' : '0',
+                            }}
                         >
                             <DragIndicatorIcon edge="start" spacing={0} />
                         </IconButton>
@@ -128,7 +131,8 @@ export const ModificationListItem = ({
                         {equipmentCreationModificationsType.has(
                             modification.type
                         ) &&
-                            hover && (
+                            hover &&
+                            !isDragging && (
                                 <IconButton
                                     onClick={() => onEdit(modification.uuid)}
                                     size={'small'}
