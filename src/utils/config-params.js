@@ -21,7 +21,6 @@ export const PARAM_DISPLAY_OVERLOAD_TABLE = 'displayOverloadTable';
 export const PARAM_SUBSTATION_LAYOUT = 'substationLayout';
 export const PARAM_COMPONENT_LIBRARY = 'componentLibrary';
 export const PARAM_LANGUAGE = 'language';
-export const PARAM_MAP_TREE_DISPLAY = 'mapTreeDisplay';
 
 export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
 
