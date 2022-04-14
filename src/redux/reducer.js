@@ -46,6 +46,7 @@ import {
     SELECTED_TREE_NODE,
     WORKING_TREE_NODE,
     SET_MODIFICATIONS_DRAWER_OPEN,
+    CENTER_ON_SUBSTATION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -109,6 +110,7 @@ const initialState = {
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    centerOnSubstation: null,
     ...paramsInitialState,
 };
 
@@ -301,5 +303,8 @@ export const reducer = createReducer(initialState, {
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
+    },
+    [CENTER_ON_SUBSTATION]: (state, action) => {
+        state.centerOnSubstation = action.centerOnSubstation;
     },
 });

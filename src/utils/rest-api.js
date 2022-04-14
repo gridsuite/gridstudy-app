@@ -1468,3 +1468,25 @@ export function buildNode(studyUuid, selectedNodeUuid) {
             : response.text().then((text) => Promise.reject(text))
     );
 }
+
+export function changeNetworkModificationOrder(
+    studyUuid,
+    selectedNodeUuid,
+    itemUuid,
+    beforeUuid
+) {
+    console.info(
+        'reorder node ' + selectedNodeUuid + ' of study ' + studyUuid + ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/' +
+        itemUuid +
+        '?' +
+        new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
+    console.debug(url);
+    return backendFetch(url, { method: 'put' }).then((response) => {
+        if (!response.ok)
+            throw new Error(response.status + ' ' + response.statusText);
+    });
+}

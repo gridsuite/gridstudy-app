@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,10 +27,7 @@ import {
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
-import {
-    DRAWER_NODE_EDITOR_WIDTH,
-    MapLateralDrawers,
-} from './map-lateral-drawers';
+import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import {
@@ -145,8 +142,6 @@ const StudyPane = ({
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
 
-    const mapRef = useRef();
-
     useEffect(() => {
         if (
             network &&
@@ -158,23 +153,6 @@ const StudyPane = ({
             );
         }
     }, [network, filteredNominalVoltages, dispatch]);
-
-    const [drawerShift, setDrawerShift] = useState(0);
-
-    const isModificationsDrawerOpen = useSelector(
-        (state) => state.isModificationsDrawerOpen
-    );
-
-    useEffect(() => {
-        let shift = 0;
-        if (
-            isModificationsDrawerOpen &&
-            studyDisplayMode === StudyDisplayMode.MAP
-        ) {
-            shift += DRAWER_NODE_EDITOR_WIDTH;
-        }
-        setDrawerShift(shift);
-    }, [setDrawerShift, isModificationsDrawerOpen, studyDisplayMode]);
 
     function openVoltageLevelDiagram(vlId, substationId) {
         // TODO code factorization for displaying a VL via a hook
@@ -277,7 +255,7 @@ const StudyPane = ({
                                     position: 'absolute',
                                     top: 0,
                                     bottom: 0,
-                                    left: drawerShift,
+                                    left: 0,
                                     right: 0,
                                 }}
                             >
@@ -315,7 +293,6 @@ const StudyPane = ({
                                     }
                                     runnable={runnable}
                                     setErrorMessage={setErrorMessage}
-                                    mapRef={mapRef}
                                 />
                             </div>
 
