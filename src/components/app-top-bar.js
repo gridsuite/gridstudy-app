@@ -58,13 +58,19 @@ const useEquipmentStyles = makeStyles(equipmentStyles);
 const CustomSuffixRenderer = ({ props, element }) => {
     const dispatch = useDispatch();
     const equipmentClasses = useEquipmentStyles();
+    const network = useSelector((state) => state.network);
+
     const enterOnSubstationCB = useCallback(
         (e, element) => {
-            dispatch(centerOnSubstation(element.id));
+            const substationId =
+                element.type === EQUIPMENT_TYPE.SUBSTATION.name
+                    ? element.id
+                    : network.getVoltageLevel(element.id).substationId;
+            dispatch(centerOnSubstation(substationId));
             props.onClose && props.onClose();
             e.stopPropagation();
         },
-        [dispatch, props]
+        [dispatch, props, network]
     );
 
     if (
@@ -224,6 +230,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 renderElement={(props) => (
                     <EquipmentItem
                         classes={equipmentClasses}
+                        key={'ei' + props.element.key}
                         {...props}
                         suffixRenderer={CustomSuffixRenderer}
                     />
