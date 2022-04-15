@@ -47,6 +47,7 @@ import {
     SELECT_MAP_TREE_DISPLAY,
     WORKING_TREE_NODE,
     SET_MODIFICATIONS_DRAWER_OPEN,
+    FLUX_CONVENTION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -72,8 +73,10 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_MAP_TREE_DISPLAY,
+    PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
+import { FluxConventions } from "../components/parameters";
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -91,6 +94,7 @@ const paramsInitialState = {
     [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
     [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
+    [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
 };
 
 const initialState = {
@@ -231,6 +235,10 @@ export const reducer = createReducer(initialState, {
 
     [LINE_FLOW_MODE]: (state, action) => {
         state[PARAM_LINE_FLOW_MODE] = action[PARAM_LINE_FLOW_MODE];
+    },
+
+    [FLUX_CONVENTION]: (state, action) => {
+        state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
     },
 
     [LINE_FLOW_COLOR_MODE]: (state, action) => {

@@ -12,6 +12,8 @@ import VirtualizedTable from '../util/virtualized-table';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
+import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 
 const ROW_HEIGHT = 50;
 
@@ -52,6 +54,8 @@ export const EquipmentTable = ({
     );
 
     useEffect(() => setLineEdit({}), [tableDefinition]);
+
+    const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     function startEdition(lineInfo) {
         setLineEdit(lineInfo);
@@ -136,20 +140,20 @@ export const EquipmentTable = ({
     }
 
     const formatCell = useCallback(
-        (cellData, isNumeric, fractionDigit) => {
+        (cellData, isNumeric, fractionDigit, normed = undefined) => {
             let value = cellData.cellData;
             if (typeof value === 'function') value = cellData.cellData(network);
-
+            if (normed) value = normed(fluxConvention, value);
             return value && isNumeric && fractionDigit
                 ? parseFloat(value).toFixed(fractionDigit)
                 : value;
         },
-        [network]
+        [fluxConvention, network]
     );
 
     const defaultCellRender = useCallback(
-        (cellData, numeric, fractionDigit) => {
-            const text = formatCell(cellData, numeric, fractionDigit);
+        (cellData, numeric, fractionDigit, normed = undefined) => {
+            const text = formatCell(cellData, numeric, fractionDigit, normed);
             return (
                 <TableCell
                     component="div"
@@ -255,7 +259,12 @@ export const EquipmentTable = ({
                     );
             } else {
                 column.cellRenderer = (cell) =>
-                    defaultCellRender(cell, c.numeric, c.fractionDigits);
+                    defaultCellRender(
+                        cell,
+                        c.numeric,
+                        c.fractionDigits,
+                        c.normed
+                    );
             }
             delete column.changeCmd;
             return column;

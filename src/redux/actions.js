@@ -21,6 +21,7 @@ import {
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_MAP_TREE_DISPLAY,
+    PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -188,6 +189,12 @@ export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
 
 export function selectLineFlowMode(lineFlowMode) {
     return { type: LINE_FLOW_MODE, [PARAM_LINE_FLOW_MODE]: lineFlowMode };
+}
+
+export const FLUX_CONVENTION = 'FLUX_CONVENTION';
+
+export function selectFluxConvention(fluxConvention) {
+    return { type: FLUX_CONVENTION, [PARAM_FLUX_CONVENTION]: fluxConvention };
 }
 
 export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';

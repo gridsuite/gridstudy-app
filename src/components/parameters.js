@@ -51,6 +51,7 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_COMPONENT_LIBRARY,
+    PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
@@ -68,6 +69,11 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '30px',
     },
 }));
+
+export const FluxConventions = {
+    IIDM: 'iidm',
+    TARGET: 'target',
+};
 
 export function useParameterState(paramName) {
     const intlRef = useIntlRef();
@@ -151,6 +157,9 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const [componentLibraryLocal, handleChangeComponentLibrary] =
         useParameterState(PARAM_COMPONENT_LIBRARY);
+
+    const [fluxConventionLocal, handleChangeFluxConvention] =
+        useParameterState(PARAM_FLUX_CONVENTION);
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
@@ -423,6 +432,36 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                                 </MenuItem>
                             );
                         })}
+                    </Select>
+                </Grid>
+            </Grid>
+        );
+    }
+
+    function NetworkParameters() {
+        return (
+            <Grid container spacing={2} className={classes.grid}>
+                <Grid item xs={8}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id="FluxConvention" />
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={4} className={classes.controlItem}>
+                    <Select
+                        labelId="flux-convention-select-label"
+                        value={fluxConventionLocal}
+                        onChange={(event) => {
+                            handleChangeFluxConvention(event.target.value);
+                        }}
+                    >
+                        <MenuItem value={FluxConventions.IIDM}>
+                            <FormattedMessage id="FluxConvention.iidm" />
+                        </MenuItem>
+                        <MenuItem value={FluxConventions.TARGET}>
+                            <FormattedMessage id="FluxConvention.target" />
+                        </MenuItem>
                     </Select>
                 </Grid>
             </Grid>
@@ -713,6 +752,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
+                        <Tab label={<FormattedMessage id="Network" />} />
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
@@ -723,6 +763,9 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     </TabPanel>
                     <TabPanel value={tabIndex} index={2}>
                         {studyUuid && <LoadFlow />}
+                    </TabPanel>
+                    <TabPanel value={tabIndex} index={3}>
+                        <NetworkParameters />
                     </TabPanel>
                     <Grid item xs={12}>
                         <Button
