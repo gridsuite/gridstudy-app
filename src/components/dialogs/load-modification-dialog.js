@@ -36,9 +36,6 @@ import {
     ReactivePowerAdornment,
 } from './dialogUtils';
 
-import EquipmentSearchDialog from './equipment-search-dialog';
-import { useFormSearchCopy } from './form-search-copy-hook';
-
 const LOAD_TYPES = [
     { id: '', label: 'None' },
     { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
@@ -76,32 +73,9 @@ const LoadModificationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const equipmentPath = 'loads';
-
     const clearValues = () => {
         setFormValues(null);
     };
-
-    const toFormValues = (load) => {
-        return {
-            equipmentId: load.id + '(1)',
-            equipmentName: load.name,
-            loadType: load.type,
-            activePower: load.p0,
-            reactivePower: load.q0,
-            voltageLevelId: load.voltageLevelId,
-            busOrBusbarSectionId: null,
-        };
-    };
-
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        selectedNodeUuid,
-        equipmentPath,
-        toFormValues,
-        setFormValues,
-        clearValues,
-    });
 
     useEffect(() => {
         if (editData) {
@@ -268,13 +242,6 @@ const LoadModificationDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <EquipmentSearchDialog
-                open={searchCopy.isDialogSearchOpen}
-                onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'LOAD'}
-                onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
-            />
         </>
     );
 };
