@@ -26,6 +26,7 @@ const equipmentCreationModificationsType = new Set([
     'SUBSTATION_CREATION',
     'TWO_WINDINGS_TRANSFORMER_CREATION',
     'VOLTAGE_LEVEL_CREATION',
+    'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
 ]);
 
 const equipmentModificationModificationsType = new Set(['LOAD_MODIFICATION']);

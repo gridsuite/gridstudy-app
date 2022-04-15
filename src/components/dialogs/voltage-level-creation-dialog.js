@@ -233,6 +233,18 @@ function validateConnection(values) {
  * @param substationOptions the available network sites
  * @param selectedNodeUuid the currently selected tree node
  * @param editData the data to edit
+ * @param onCreateVoltageLevel callback when OK is triggered,
+ *   defaults to create creation hypothesis on server side.
+ *   Called with : {
+ *     studyUuid,
+ *     selectedNodeUuid,
+ *     voltageLevelId,
+ *     voltageLevelName,
+ *     nominalVoltage,
+ *     substationId,
+ *     busBarSections,
+ *     connections
+ *     }
  */
 const VoltageLevelCreationDialog = ({
     editData,
@@ -240,6 +252,7 @@ const VoltageLevelCreationDialog = ({
     onClose,
     substationOptions,
     selectedNodeUuid,
+    onCreateVoltageLevel = createVoltageLevel,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -351,18 +364,19 @@ const VoltageLevelCreationDialog = ({
     const handleSave = () => {
         // Check if error list contains an error
         if (inputForm.validate()) {
-            createVoltageLevel(
+            onCreateVoltageLevel({
                 studyUuid,
                 selectedNodeUuid,
                 voltageLevelId,
-                voltageLevelName ? voltageLevelName : null,
+                voltageLevelName: voltageLevelName ? voltageLevelName : null,
                 nominalVoltage,
-                substation.id,
+                substationId: substation.id,
                 busBarSections,
                 connections,
-                editData ? true : false,
-                editData ? editData.uuid : undefined
-            ).catch((errorMessage) => {
+                isUpdate: editData ? true : false,
+                modificationUuid: editData ? editData.uuid : undefined,
+            }).catch((errorMessage) => {
+                console.error('while edit/create VL', errorMessage);
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,

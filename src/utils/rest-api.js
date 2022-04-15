@@ -1369,7 +1369,7 @@ export function createSubstation(
     );
 }
 
-export function createVoltageLevel(
+export function createVoltageLevel({
     studyUuid,
     selectedNodeUuid,
     voltageLevelId,
@@ -1379,8 +1379,8 @@ export function createVoltageLevel(
     busBarSections,
     connections,
     isUpdate,
-    modificationUuid
-) {
+    modificationUuid,
+}) {
     let createVoltageLevelUrl;
     if (isUpdate) {
         console.info('Updating voltage level creation');
@@ -1417,6 +1417,60 @@ export function createVoltageLevel(
             busbarSections: busBarSections,
             busbarConnections: busBarConnections,
         }),
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function divideLine(
+    studyUuid,
+    selectedNodeUuid,
+    modificationUuid,
+    lineToDividelId,
+    percentage,
+    newVoltageLevel,
+    voltageLevelId,
+    bbsOrNodeId,
+    newLine1Id,
+    newLine1Name,
+    newLine2Id,
+    newLine2Name
+) {
+    const body = JSON.stringify({
+        lineToSplitId: lineToDividelId,
+        percent: percentage,
+        mayNewVoltageLevelInfos: newVoltageLevel,
+        existingVoltageLevelId: voltageLevelId,
+        bbsOrBusId: bbsOrNodeId,
+        newLine1Id,
+        newLine1Name,
+        newLine2Id,
+        newLine2Name,
+    });
+    let lineSplitUrl;
+    if (modificationUuid) {
+        console.info('Line split with voltage level update', body);
+        lineSplitUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/line-splits';
+    } else {
+        console.info('Line split with voltage level', body);
+        lineSplitUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/line-splits';
+    }
+
+    return backendFetch(lineSplitUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
     }).then((response) =>
         response.ok
             ? response.text()

@@ -16,7 +16,6 @@ import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
 } from '../../utils/rest-api';
-import { useParams } from 'react-router-dom';
 import makeStyles from '@mui/styles/makeStyles';
 
 // Factory used to create a filter method that is used to change the default
@@ -35,6 +34,44 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+/**
+ * Creates a callback for _getting_ bus or busbar section for a given voltage level.
+ * Usable firstly for giving to hereunder ConnectivityEdition.
+ * @param studyUuid uuid of the study where to look for the voltage level bus(bar section)s.
+ * @param workingNodeUuid uuid of the node of the study where to look for the voltage level bus(bar section)s.
+ * @returns {(function(*, *): void)|*}
+ */
+export function makeRefreshBusOrBusbarSectionsCallback(
+    studyUuid,
+    workingNodeUuid
+) {
+    return (voltageLevel, putter) => {
+        switch (voltageLevel?.topologyKind) {
+            case 'NODE_BREAKER':
+                fetchBusbarSectionsForVoltageLevel(
+                    studyUuid,
+                    workingNodeUuid,
+                    voltageLevel.id
+                ).then((busbarSections) => {
+                    putter(busbarSections);
+                });
+                break;
+
+            case 'BUS_BREAKER':
+                fetchBusesForVoltageLevel(
+                    studyUuid,
+                    workingNodeUuid,
+                    voltageLevel.id
+                ).then((buses) => putter(buses));
+                break;
+
+            default:
+                putter([]);
+                break;
+        }
+    };
+}
+
 /*
  * Component to edit the connection of an equipment (voltage level and bus or busbar section)
  *
@@ -49,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
  * @param helperTextVoltageLevel: helperText to display in cas of error for VoltageLevel input.
  * @param errorBusOrBusBarSection: If true, the BusOrBusBarSection input will be displayed in an error state.
  * @param helperTextBusOrBusBarSection: helperText to display in cas of error for BusOrBusBarSection input.
- * @param selectedNodeUuid : the currently selected tree node
+ * @param voltageLevelBusOrBBSCallback {(vl, putter) => } callback
  */
 const ConnectivityEdition = ({
     voltageLevelOptions,
@@ -65,10 +102,9 @@ const ConnectivityEdition = ({
     helperTextVoltageLevel,
     errorBusOrBusBarSection,
     helperTextBusOrBusBarSection,
-    workingNodeUuid,
+    voltageLevelBusOrBBSCallback,
 }) => {
     const classes = useStyles();
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const intl = useIntl();
 
@@ -109,31 +145,12 @@ const ConnectivityEdition = ({
     };
 
     useEffect(() => {
-        //To force the update of busbar choices when voltageLevel change is not triggered by this component
-        switch (voltageLevel?.topologyKind) {
-            case 'NODE_BREAKER':
-                fetchBusbarSectionsForVoltageLevel(
-                    studyUuid,
-                    workingNodeUuid,
-                    voltageLevel.id
-                ).then((busbarSections) => {
-                    setBusOrBusbarSectionOptions(busbarSections);
-                });
-                break;
-
-            case 'BUS_BREAKER':
-                fetchBusesForVoltageLevel(
-                    studyUuid,
-                    workingNodeUuid,
-                    voltageLevel.id
-                ).then((buses) => setBusOrBusbarSectionOptions(buses));
-                break;
-
-            default:
-                setBusOrBusbarSectionOptions([]);
-                break;
+        if (voltageLevelBusOrBBSCallback) {
+            voltageLevelBusOrBBSCallback(voltageLevel, (bobbss) =>
+                setBusOrBusbarSectionOptions(bobbss)
+            );
         }
-    }, [voltageLevel, handleChangeVoltageLevel, studyUuid, workingNodeUuid]);
+    }, [voltageLevel, voltageLevelBusOrBBSCallback]); //, studyUuid, workingNodeUuid]);
 
     useEffect(() => {
         setCurrentBBS(

@@ -353,6 +353,18 @@
     "DuplicateId": "Duplicate id",
     "DisconnectorBetweenSameBusbar": "Forbidden to have a disconnector linking a bus bar section to itself",
 
+    "CreateVoltageLevelAmidstALine" : "Create a voltage level on a line",
+    "LineToDivide" : "Exisitng line",
+    "Percentage" : "% long",
+    "OutOfBoundsPercentage" : "Percentage out of bounds",
+    "BusbarOrNodeID" : "SJB or node ID",
+    "Line1" : "Line 1",
+    "Line2" : "Line 2",
+    "VoltageLevel1" : "Voltage level 1",
+    "VoltageLevel2" : "Voltage level 2",
+    "NewVoltageLevel" : "New voltage level",
+    "LineDivisionError" : "Error while puting a voltage level amidst a line",
+
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
 
