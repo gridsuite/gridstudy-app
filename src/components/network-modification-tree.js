@@ -31,16 +31,16 @@ import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 
-// snapGrid value set to [15, 15] which is the default value for ReactFlow
-// it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
-// in order to avoid unwanted tree nodes rendering (react-flow bug ?)
-const snapGrid = [15, 15];
-
 const nodeTypes = {
     ROOT: RootNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
     MODEL: ModelNode,
 };
+
+// snapGrid value set to [15, 15] which is the default value for ReactFlow
+// it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
+// in order to avoid unwanted tree nodes rendering (react-flow bug ?)
+const snapGrid = [15, 15];
 
 const useStyles = makeStyles((theme) => ({
     controls: {
@@ -131,10 +131,6 @@ const NetworkModificationTree = ({
         setIsMoving(false);
     }, []);
 
-    const onLoad = useCallback((reactFlowInstance) => {
-        reactFlowInstance.fitView();
-    }, []);
-
     const [x, y, zoom] = useStoreState((state) => state.transform);
 
     const { transform } = useZoomPanHelper();
@@ -194,6 +190,10 @@ const NetworkModificationTree = ({
             });
         }
     }, [isModificationsDrawerOpen]);
+
+    const onLoad = useCallback((reactFlowInstance) => {
+        reactFlowInstance.fitView();
+    }, []);
 
     return (
         <Box flexGrow={1}>
