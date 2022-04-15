@@ -95,7 +95,7 @@ const BusBarSection = ({
         <>
             {gridItem(idField, 3)}
             {gridItem(nameField, 3)}
-            {gridItem(horizPosField, 3)}
+            {gridItem(horizPosField, 2)}
             {gridItem(vertPosField, 2)}
         </>
     );

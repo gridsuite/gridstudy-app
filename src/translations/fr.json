@@ -267,7 +267,7 @@
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
-
+    "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du noeud",
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
     "SUBSTATION": "Site",
@@ -333,8 +333,8 @@
     "BusBarSections": "Sections de jeu de barre",
     "BusBarSectionID": "ID SJB",
     "BusBarSectionName": "Nom de la section",
-    "BusBarHorizPos": "Position horizontale de la section",
-    "BusBarVertPos": "Position verticale de la section",
+    "BusBarHorizPos": "Position horizontale",
+    "BusBarVertPos": "Position verticale",
     "CreateBusBarSection": "Ajouter une SJB",
     "CreateLink": "Ajouter un lien",
     "BusBarSection": "SJB",
@@ -364,7 +364,7 @@
     "insertModelNodeBefore": "Insérer un nœud modèle au dessus",
     "insertNetworkModificationNodeAfter": "Insérer un nœud de modifications de réseau en dessous",
     "insertModelNodeAfter": "Insérer un nœud modèle en dessous",
-  
+
     "Update": "Mettre à jour",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours"

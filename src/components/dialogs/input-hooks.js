@@ -716,7 +716,6 @@ export const useExpandableValues = ({
                         <Button
                             fullWidth
                             className={classes.button}
-                            variant="outlined"
                             startIcon={<AddIcon />}
                             onClick={handleAddValue}
                         >
