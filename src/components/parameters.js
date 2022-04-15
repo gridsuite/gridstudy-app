@@ -158,8 +158,9 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
     const [componentLibraryLocal, handleChangeComponentLibrary] =
         useParameterState(PARAM_COMPONENT_LIBRARY);
 
-    const [fluxConventionLocal, handleChangeFluxConvention] =
-        useParameterState(PARAM_FLUX_CONVENTION);
+    const [fluxConventionLocal, handleChangeFluxConvention] = useParameterState(
+        PARAM_FLUX_CONVENTION
+    );
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
