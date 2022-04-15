@@ -258,7 +258,7 @@ const ShuntCompensatorCreationDialog = ({
                         <FormattedMessage id="close" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>
