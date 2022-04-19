@@ -13,7 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
 
-const ROW_HEIGHT = 50;
+const ROW_HEIGHT = 54;
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -21,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'right',
         textAlign: 'right',
         boxSizing: 'border-box',
+        padding: theme.spacing(2),
         flex: 1,
         minWidth: 0,
         height: ROW_HEIGHT + 'px',
@@ -100,6 +101,7 @@ export const EquipmentTable = ({
         return (
             (!isLineOnEditMode(cellData) && (
                 <IconButton
+                    size="small"
                     disabled={lineEdit && lineEdit.id && true}
                     onClick={() =>
                         startEdition({
