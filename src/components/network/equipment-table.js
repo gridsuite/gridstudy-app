@@ -12,8 +12,10 @@ import VirtualizedTable from '../util/virtualized-table';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import Paper from '@mui/material/Paper';
 
 const ROW_HEIGHT = 38;
+const MIN_COLUMN_WIDTH = 160;
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -239,6 +241,24 @@ export const EquipmentTable = ({
         return selectedColumnsNames.has(key) ? '' : 'none';
     };
 
+    const generateMinWidthTable = (table) => {
+        return table.columns
+            .filter((c) => {
+                // Only keep the displayed columns
+                return selectedColumnsNames.has(c.id);
+            })
+            .map((c) => {
+                // Get all the displayed columns' widths
+                return c.columnWidth !== undefined
+                    ? c.columnWidth
+                    : MIN_COLUMN_WIDTH;
+            })
+            .reduce(function (sum, currentWidth) {
+                // Sum the widths
+                return sum + currentWidth;
+            }, 0);
+    };
+
     const generateTableColumns = (table) => {
         return table.columns.map((c) => {
             let column = {
@@ -292,25 +312,37 @@ export const EquipmentTable = ({
                     loadingMessageText={'LoadingRemoteData'}
                 />
             )}
-            <VirtualizedTable
-                rows={rows}
-                rowHeight={ROW_HEIGHT}
-                filter={filter}
-                columns={
-                    tableDefinition.modifiableEquipmentType &&
-                    !workingNode?.readOnly
-                        ? [
-                              makeHeaderCell(),
-                              ...generateTableColumns(tableDefinition),
-                          ]
-                        : generateTableColumns(tableDefinition)
-                }
-                scrollToIndex={scrollToIndex}
-                scrollToAlignment={scrollToAlignment}
-                enableExportCSV={true}
-                exportCSVDataKeys={selectedDataKey}
-                sortable={true}
-            />
+            <Paper
+                style={{
+                    height: 100 + '%',
+                    width: 100 + '%',
+                    overflowX: 'auto',
+                }}
+            >
+                <VirtualizedTable
+                    width={
+                        generateMinWidthTable(tableDefinition) +
+                        makeHeaderCell().width
+                    }
+                    rows={rows}
+                    rowHeight={ROW_HEIGHT}
+                    filter={filter}
+                    columns={
+                        tableDefinition.modifiableEquipmentType &&
+                        !workingNode?.readOnly
+                            ? [
+                                  makeHeaderCell(),
+                                  ...generateTableColumns(tableDefinition),
+                              ]
+                            : generateTableColumns(tableDefinition)
+                    }
+                    scrollToIndex={scrollToIndex}
+                    scrollToAlignment={scrollToAlignment}
+                    enableExportCSV={true}
+                    exportCSVDataKeys={selectedDataKey}
+                    sortable={true}
+                />
+            </Paper>
         </>
     );
 };

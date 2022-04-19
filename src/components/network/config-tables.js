@@ -74,10 +74,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
+                columnWidth: 220,
             },
             {
                 id: 'Name',
                 dataKey: 'name',
+                columnWidth: 220,
             },
             {
                 id: 'VoltageLevelIdSide1',
@@ -431,6 +433,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
+                columnWidth: 220,
             },
             {
                 id: 'Name',
@@ -491,10 +494,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
+                columnWidth: 220,
             },
             {
                 id: 'Name',
                 dataKey: 'name',
+                columnWidth: 220,
             },
             {
                 id: 'LoadType',
@@ -553,10 +558,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
+                columnWidth: 220,
             },
             {
                 id: 'Name',
                 dataKey: 'name',
+                columnWidth: 220,
             },
             {
                 id: 'VoltageLevelId',
@@ -722,22 +729,27 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
+                columnWidth: 220,
             },
             {
                 id: 'Name',
                 dataKey: 'name',
+                columnWidth: 220,
             },
             {
                 id: 'ConvertersMode',
                 dataKey: 'convertersMode',
+                columnWidth: 340,
             },
             {
                 id: 'ConverterStationId1',
                 dataKey: 'converterStationId1',
+                columnWidth: 340,
             },
             {
                 id: 'ConverterStationId2',
                 dataKey: 'converterStationId2',
+                columnWidth: 340,
             },
             {
                 id: 'R',
@@ -830,6 +842,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
+                columnWidth: 220,
             },
             {
                 id: 'Name',
