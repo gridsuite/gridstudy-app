@@ -65,21 +65,39 @@ const TextFieldWithAdornment = (props) => {
         [adornmentText]
     );
 
-    const withEndAdornmentText = value
-        ? {
-              startAdornment: clearable && getClearAdornment('start'),
-              endAdornment: isFocused && getTextAdornment('end'),
-              classes: { input: classes.inputRight },
-          }
-        : {};
+    const withEndAdornmentText = useCallback(() => {
+        return value
+            ? {
+                  startAdornment: clearable && getClearAdornment('start'),
+                  endAdornment: isFocused && getTextAdornment('end'),
+                  classes: { input: classes.inputRight },
+              }
+            : {};
+    }, [
+        value,
+        clearable,
+        getClearAdornment,
+        isFocused,
+        getTextAdornment,
+        classes,
+    ]);
 
-    const withStartAdornmentText = value
-        ? {
-              startAdornment: isFocused && getTextAdornment('start'),
-              endAdornment: clearable && getClearAdornment('end'),
-              classes: { input: classes.inputLeft },
-          }
-        : {};
+    const withStartAdornmentText = useCallback(() => {
+        return value
+            ? {
+                  startAdornment: isFocused && getTextAdornment('start'),
+                  endAdornment: clearable && getClearAdornment('end'),
+                  classes: { input: classes.inputLeft },
+              }
+            : {};
+    }, [
+        value,
+        clearable,
+        getClearAdornment,
+        isFocused,
+        getTextAdornment,
+        classes,
+    ]);
 
     return (
         <TextField
@@ -88,8 +106,8 @@ const TextFieldWithAdornment = (props) => {
             value={value}
             InputProps={
                 adornmentPosition === 'start'
-                    ? withStartAdornmentText
-                    : withEndAdornmentText
+                    ? withStartAdornmentText()
+                    : withEndAdornmentText()
             }
             onFocus={(e) => setIsFocused(true)}
             onBlur={(e) => setIsFocused(false)}
