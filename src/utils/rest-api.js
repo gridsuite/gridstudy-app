@@ -1026,9 +1026,7 @@ export function modifyLoad(
     activePower,
     reactivePower,
     voltageLevelId,
-    busOrBusbarSectionId,
-    isUpdate = false,
-    modificationUuid
+    busOrBusbarSectionId
 ) {
     console.info('Modifying load ');
     let modifyLoadUrl =
