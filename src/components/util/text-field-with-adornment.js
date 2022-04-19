@@ -8,7 +8,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -41,38 +41,42 @@ const TextFieldWithAdornment = (props) => {
     } = props;
     const [isFocused, setIsFocused] = useState(false);
 
+    const getClearAdornment = useCallback(
+        (position) => {
+            return (
+                <InputAdornment position={position}>
+                    <IconButton onClick={handleClearValue}>
+                        <ClearIcon />
+                    </IconButton>
+                </InputAdornment>
+            );
+        },
+        [handleClearValue]
+    );
+
+    const getTextAdornment = useCallback(
+        (position) => {
+            return (
+                <InputAdornment position={position}>
+                    {adornmentText}
+                </InputAdornment>
+            );
+        },
+        [adornmentText]
+    );
+
     const withEndAdornmentText = value
         ? {
-              startAdornment: clearable && (
-                  <InputAdornment position="start">
-                      <IconButton onClick={handleClearValue}>
-                          <ClearIcon />
-                      </IconButton>
-                  </InputAdornment>
-              ),
-              endAdornment: isFocused && (
-                  <InputAdornment position="end">
-                      {adornmentText}
-                  </InputAdornment>
-              ),
+              startAdornment: clearable && getClearAdornment('start'),
+              endAdornment: isFocused && getTextAdornment('end'),
               classes: { input: classes.inputRight },
           }
         : {};
 
     const withStartAdornmentText = value
         ? {
-              startAdornment: isFocused && (
-                  <InputAdornment position="start">
-                      {adornmentText}
-                  </InputAdornment>
-              ),
-              endAdornment: clearable && (
-                  <InputAdornment position="end">
-                      <IconButton onClick={handleClearValue}>
-                          <ClearIcon />
-                      </IconButton>
-                  </InputAdornment>
-              ),
+              startAdornment: isFocused && getTextAdornment('start'),
+              endAdornment: clearable && getClearAdornment('end'),
               classes: { input: classes.inputLeft },
           }
         : {};
