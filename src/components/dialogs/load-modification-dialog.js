@@ -20,6 +20,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { modifyLoad } from '../../utils/rest-api';
+import { LOAD_TYPES } from '../network/constants';
 import {
     useAutocompleteField,
     useConnectivityValue,
@@ -36,19 +37,13 @@ import {
     ReactivePowerAdornment,
 } from './dialogUtils';
 
-const LOAD_TYPES = [
-    { id: '', label: 'None' },
-    { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
-    { id: 'AUXILIARY', label: 'Auxiliary' },
-    { id: 'FICTITIOUS', label: 'Fictitious' },
-];
-
 const getId = (e) => e?.id;
 
 /**
  * Dialog to modify a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param equipmentOptions List of loads that can be modified
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
@@ -253,6 +248,7 @@ LoadModificationDialog.propTypes = {
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
     workingNodeUuid: PropTypes.string,
+    equipmentOptions: PropTypes.arrayOf(PropTypes.object),
 };
 
 export default LoadModificationDialog;

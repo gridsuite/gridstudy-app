@@ -19,6 +19,7 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
+import { LOAD_TYPES } from '../network/constants';
 import {
     useConnectivityValue,
     useDoubleValue,
@@ -38,13 +39,6 @@ import {
 import { createLoad } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
-
-const LOAD_TYPES = [
-    { id: '', label: 'None' },
-    { id: 'UNDEFINED', label: 'UndefinedDefaultValue' },
-    { id: 'AUXILIARY', label: 'Auxiliary' },
-    { id: 'FICTITIOUS', label: 'Fictitious' },
-];
 
 /**
  * Dialog to create a load in the network
