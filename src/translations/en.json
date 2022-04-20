@@ -47,6 +47,7 @@
     "parameters": "Parameters",
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
+    "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
 
     "close": "Close",
     "validate": "Validate",
@@ -374,5 +375,4 @@
     "Update": "Update",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path"
-
 }

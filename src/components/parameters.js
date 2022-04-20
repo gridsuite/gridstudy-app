@@ -38,6 +38,7 @@ import {
     setLoadFlowProvider,
     updateConfigParameter,
     getAvailableComponentLibraries,
+    getDefaultLoadFlowProvider,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
@@ -609,6 +610,19 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     },
                 })
             );
+
+        getDefaultLoadFlowProvider()
+            .then((defaultLFProvider) => updateLfProvider(defaultLFProvider))
+            .catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'defaultLoadflowRetrievingError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
     };
 
     const commitLFParameter = (newParams) => {
@@ -627,8 +641,11 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         });
     };
 
-    const updateLfProvider = (evt) => {
-        const newProvider = evt.target.value;
+    const updateLfProviderCallback = (evt) => {
+        updateLfProvider(evt.target.value);
+    };
+
+    const updateLfProvider = (newProvider) => {
         const oldProvider = lfProvider;
         setLfProvider(newProvider);
         setLoadFlowProvider(
@@ -660,7 +677,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         lfProvider,
                         'Provider',
                         LF_PROVIDER_VALUES,
-                        updateLfProvider
+                        updateLfProviderCallback
                     )}
                 </Grid>
                 <MakeLineSeparator />

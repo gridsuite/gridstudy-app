@@ -1432,6 +1432,16 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
     );
 }
 
+export function getDefaultLoadFlowProvider() {
+    console.info('get default load flow provier');
+    const getDefaultLoadFlowProviderUrl =
+        PREFIX_STUDY_QUERIES + '/v1/loadflow-default-provider';
+    console.debug(getDefaultLoadFlowProviderUrl);
+    return backendFetch(getDefaultLoadFlowProviderUrl, {
+        method: 'GET',
+    }).then((response) => response.text());
+}
+
 export function getAvailableComponentLibraries() {
     console.info('get available component libraries for diagrams');
     const getAvailableComponentLibrariesUrl =
