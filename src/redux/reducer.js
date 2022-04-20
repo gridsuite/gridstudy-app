@@ -44,10 +44,10 @@ import {
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     SELECTED_TREE_NODE,
-    SELECT_MAP_TREE_DISPLAY,
     WORKING_TREE_NODE,
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
+    CENTER_ON_SUBSTATION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -72,7 +72,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_MAP_TREE_DISPLAY,
     PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
@@ -81,7 +80,6 @@ import { FluxConventions } from '../components/parameters';
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
-    [PARAM_MAP_TREE_DISPLAY]: 'Map',
     [PARAM_USE_NAME]: true,
     [PARAM_LINE_FULL_PATH]: true,
     [PARAM_LINE_PARALLEL_PATH]: true,
@@ -116,6 +114,7 @@ const initialState = {
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    centerOnSubstation: null,
     ...paramsInitialState,
 };
 
@@ -199,10 +198,6 @@ export const reducer = createReducer(initialState, {
     [SELECT_LANGUAGE]: (state, action) => {
         state[PARAM_LANGUAGE] = action[PARAM_LANGUAGE];
         saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
-    },
-
-    [SELECT_MAP_TREE_DISPLAY]: (state, action) => {
-        state[PARAM_MAP_TREE_DISPLAY] = action[PARAM_MAP_TREE_DISPLAY];
     },
 
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
@@ -316,5 +311,8 @@ export const reducer = createReducer(initialState, {
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
+    },
+    [CENTER_ON_SUBSTATION]: (state, action) => {
+        state.centerOnSubstation = action.centerOnSubstation;
     },
 });

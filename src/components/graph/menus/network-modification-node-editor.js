@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchNetworkModifications,
     deleteModifications,
     fetchNetworkModification,
+    changeNetworkModificationOrder,
 } from '../../../utils/rest-api';
-import { displayErrorMessageWithSnackbar } from '../../../utils/messages';
+import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSnackbar } from 'notistack';
 import { ModificationListItem } from './modification-list-item';
 import { Checkbox, Fab, Toolbar, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -33,6 +33,7 @@ import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -56,12 +57,13 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(1),
         border: theme.spacing(1),
         minHeight: 0,
-        flexShrink: 0,
         margin: 0,
+        flexShrink: 0,
     },
 
     toolbarIcon: {
         padding: theme.spacing(1),
+        paddingLeft: theme.spacing(3),
         minWidth: 0,
     },
     filler: {
@@ -85,13 +87,14 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
     const workingNode = useSelector((state) => state.workingTreeNode);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-
+    const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const { enqueueSnackbar } = useSnackbar();
     const selectedNodeRef = useRef(); // initial empty to get first update
 
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
+
+    const [isDragging, setIsDragging] = useState(false);
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
@@ -186,15 +189,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                         if (selectedNodeRef.current === selectedNode)
                             setModifications(res.status ? [] : res);
                     })
-                    .catch((err) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: err.message,
-                            enqueueSnackbar,
-                        })
-                    );
+                    .catch((err) => snackError(err.message));
             }
         }
-    }, [selectedNode, setModifications, enqueueSnackbar, selectedNodeRef]);
+    }, [selectedNode, setModifications, selectedNodeRef, snackError]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -215,7 +213,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             studyUuid,
             selectedNode,
             [...selectedItems.values()].map((item) => item.uuid)
-        );
+        ).then();
     };
 
     const doEditModification = (modificationUuid) => {
@@ -237,9 +235,38 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         return dialogs[editDialogOpen].dialog();
     };
 
+    const commit = useCallback(
+        ({ source, destination }) => {
+            setIsDragging(false);
+            if (destination === null || source.index === destination.index)
+                return;
+            const res = [...modifications];
+            const [item] = res.splice(source.index, 1);
+            const before = res[destination.index]?.uuid;
+            res.splice(
+                destination ? destination.index : modifications.length,
+                0,
+                item
+            );
+
+            /* doing the local change before update to server */
+            setModifications(res);
+            changeNetworkModificationOrder(
+                studyUuid,
+                selectedNode.id,
+                item.uuid,
+                before
+            ).catch((e) => {
+                snackError(e.message, 'errReorderModificationMsg');
+                setModifications(modifications); // rollback
+            });
+        },
+        [modifications, studyUuid, selectedNode.id, snackError]
+    );
+
     return (
         <>
-            <Toolbar className={classes.toolbar} variant={'dense'}>
+            <Toolbar className={classes.toolbar}>
                 <Checkbox
                     className={classes.toolbarIcon}
                     color={'primary'}
@@ -268,20 +295,35 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     values={{ count: modifications?.length }}
                 />
             </Typography>
-            <CheckboxList
-                onChecked={setSelectedItems}
-                className={classes.list}
-                values={modifications}
-                setChecked={setSelectedItems}
-                itemRenderer={(props) => (
-                    <ModificationListItem
-                        key={props.item.uuid}
-                        onEdit={doEditModification}
-                        {...props}
-                    />
-                )}
-                toggleSelectAll={toggleSelectAll}
-            />
+            <DragDropContext
+                onDragEnd={commit}
+                onDragStart={() => setIsDragging(true)}
+            >
+                <Droppable droppableId="network-modification-list">
+                    {(provided) => (
+                        <div
+                            className={classes.list}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                        >
+                            <CheckboxList
+                                onChecked={setSelectedItems}
+                                values={modifications}
+                                itemRenderer={(props) => (
+                                    <ModificationListItem
+                                        key={props.item.uuid}
+                                        onEdit={doEditModification}
+                                        isDragging={isDragging}
+                                        {...props}
+                                    />
+                                )}
+                                toggleSelectAll={toggleSelectAll}
+                            />
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
 
             <Fab
                 className={classes.addButton}

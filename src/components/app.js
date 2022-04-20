@@ -37,7 +37,6 @@ import {
     selectSubstationLayout,
     selectTheme,
     selectUseName,
-    selectMapTreeDisplay,
     selectFluxConvention,
 } from '../redux/actions';
 
@@ -70,7 +69,6 @@ import {
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_TREE_DISPLAY,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
@@ -132,9 +130,6 @@ const App = () => {
                                 getComputedLanguage(param.value)
                             )
                         );
-                        break;
-                    case PARAM_MAP_TREE_DISPLAY:
-                        dispatch(selectMapTreeDisplay(param.value));
                         break;
                     case PARAM_CENTER_LABEL:
                         dispatch(

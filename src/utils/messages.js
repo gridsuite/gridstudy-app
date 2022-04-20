@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useIntl } from 'react-intl';
+import { useSnackbar } from 'notistack';
 
 //This useEffect must be at the beginning to be executed before other useEffects which use intlRef.
 //This ref is used to avoid redoing other useEffects when the language (intl) is changed for things that produce temporary messages using the snackbar.
@@ -56,4 +57,40 @@ export function displayErrorMessageWithSnackbar({ ...args }) {
 
 export function displayInfoMessageWithSnackbar({ ...args }) {
     displayMessageWithSnackbar({ ...args, level: 'info', persistent: false });
+}
+export function useSnackMessage() {
+    const intlRef = useIntlRef();
+    const { enqueueSnackbar } = useSnackbar();
+
+    const snackError = useCallback(
+        (msg, headerMessageId, headerValues) =>
+            displayErrorMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: headerMessageId,
+                    intlRef: intlRef,
+                    headerMessageValues: headerValues,
+                },
+            }),
+
+        [enqueueSnackbar, intlRef]
+    );
+
+    const snackInfo = useCallback(
+        (msg, headerMessageId, headerValues) =>
+            displayInfoMessageWithSnackbar({
+                errorMessage: msg,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: headerMessageId,
+                    intlRef: intlRef,
+                    headerMessageValues: headerValues,
+                },
+            }),
+
+        [enqueueSnackbar, intlRef]
+    );
+
+    return { snackError, snackInfo };
 }

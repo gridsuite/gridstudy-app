@@ -20,7 +20,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_MAP_TREE_DISPLAY,
     PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 
@@ -108,15 +107,6 @@ export const SELECT_LANGUAGE = 'SELECT_LANGUAGE';
 
 export function selectLanguage(language) {
     return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
-}
-
-export const SELECT_MAP_TREE_DISPLAY = 'SELECT_MAP_TREE_DISPLAY';
-
-export function selectMapTreeDisplay(mapTreeDisplay) {
-    return {
-        type: SELECT_MAP_TREE_DISPLAY,
-        [PARAM_MAP_TREE_DISPLAY]: mapTreeDisplay,
-    };
 }
 
 export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
@@ -351,5 +341,14 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
         isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}
+
+export const CENTER_ON_SUBSTATION = 'CENTER_ON_SUBSTATION';
+
+export function centerOnSubstation(substationId) {
+    return {
+        type: CENTER_ON_SUBSTATION,
+        centerOnSubstation: { to: substationId },
     };
 }
