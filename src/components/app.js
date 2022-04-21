@@ -37,6 +37,7 @@ import {
     selectSubstationLayout,
     selectTheme,
     selectUseName,
+    selectFluxConvention,
 } from '../redux/actions';
 
 import {
@@ -71,6 +72,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
+    PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -147,6 +149,9 @@ const App = () => {
                         break;
                     case PARAM_LINE_FLOW_MODE:
                         dispatch(selectLineFlowMode(param.value));
+                        break;
+                    case PARAM_FLUX_CONVENTION:
+                        dispatch(selectFluxConvention(param.value));
                         break;
                     case PARAM_LINE_FULL_PATH:
                         dispatch(

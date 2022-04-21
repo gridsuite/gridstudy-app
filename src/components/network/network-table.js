@@ -39,6 +39,7 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
+import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 
 const useStyles = makeStyles(() => ({
     searchSection: {
@@ -74,6 +75,8 @@ const NetworkTable = (props) => {
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
     );
+    const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
+
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
     const [rowFilter, setRowFilter] = useState(undefined);
     const [tabIndex, setTabIndex] = useState(0);
@@ -157,6 +160,7 @@ const NetworkTable = (props) => {
                 scrollToAlignment="start"
                 network={props.network}
                 selectedDataKey={Array.from(selectedDataKey)}
+                fluxConvention={fluxConvention}
             />
         );
     }
