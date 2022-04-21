@@ -12,8 +12,6 @@ import VirtualizedTable from '../util/virtualized-table';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
-import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 
 const ROW_HEIGHT = 50;
 
@@ -42,6 +40,7 @@ export const EquipmentTable = ({
     scrollToAlignment,
     network,
     selectedDataKey,
+    fluxConvention,
 }) => {
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
@@ -54,8 +53,6 @@ export const EquipmentTable = ({
     );
 
     useEffect(() => setLineEdit({}), [tableDefinition]);
-
-    const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     function startEdition(lineInfo) {
         setLineEdit(lineInfo);
