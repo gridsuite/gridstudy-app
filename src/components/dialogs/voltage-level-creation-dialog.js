@@ -111,7 +111,7 @@ const SWITCH_TYPE = [
     { id: 'DISCONNECTOR', label: 'Disconnector' },
 ];
 
-const getId = (e) => e?.id;
+const getId = (e) => e?.id || e;
 
 const getBusbarSectionById = (busbars, id) => {
     if (id) {

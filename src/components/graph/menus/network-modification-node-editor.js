@@ -32,7 +32,7 @@ import LineCreationDialog from '../../dialogs/line-creation-dialog';
 import TwoWindingsTransformerCreationDialog from '../../dialogs/two-windings-transformer-creation-dialog';
 import SubstationCreationDialog from '../../dialogs/substation-creation-dialog';
 import VoltageLevelCreationDialog from '../../dialogs/voltage-level-creation-dialog';
-import VoltageLevelAmidstLineDialog from '../../dialogs/voltage-level-amist-a-line-dialog';
+import LineSplitWithVoltageLevelDialog from '../../dialogs/line-split-with-voltage-level-dialog';
 import EquipmentDeletionDialog from '../../dialogs/equipment-deletion-dialog';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
@@ -215,10 +215,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             icon: <AddIcon />,
         },
         LINE_SPLIT_WITH_VOLTAGE_LEVEL: {
-            label: 'CreateVoltageLevelAmidstALine',
+            label: 'LineSplitWithVoltageLevel',
             dialog: () =>
                 adapt(
-                    VoltageLevelAmidstLineDialog,
+                    LineSplitWithVoltageLevelDialog,
                     withVLs,
                     withLines,
                     withSubstations
@@ -233,6 +233,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     };
 
     useEffect(() => {
+        console.log('editData', editData);
         setEditDialogOpen(editData?.type);
     }, [editData]);
 
@@ -277,6 +278,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         const modification = fetchNetworkModification(modificationUuid);
         modification.then((res) => {
             res.json().then((data) => {
+                console.log('modification res json', data);
                 //remove all null values to avoid showing a "null" in the forms
                 Object.keys(data[0]).forEach((key) => {
                     if (data[0][key] === null) {
@@ -289,6 +291,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     };
 
     const renderDialog = () => {
+        console.log('dialogs', editDialogOpen, dialogs);
         return dialogs[editDialogOpen].dialog();
     };
 

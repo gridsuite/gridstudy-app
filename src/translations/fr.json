@@ -353,7 +353,7 @@
     "DuplicateId": "Identifiant non unique",
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
-    "CreateVoltageLevelAmidstALine" : "Créer une coupure",
+    "LineSplitWithVoltageLevel" : "Créer une coupure",
     "LineToDivide" : "Liaison coupée",
     "LengthPercentage" : "% long.",
     "OutOfBoundsPercentage" : "Pourcentage en dehors des limites",

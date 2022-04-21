@@ -353,7 +353,7 @@
     "DuplicateId": "Duplicate id",
     "DisconnectorBetweenSameBusbar": "Forbidden to have a disconnector linking a bus bar section to itself",
 
-    "CreateVoltageLevelAmidstALine" : "Create a voltage level on a line",
+    "LineSplitWithVoltageLevel" : "Create a voltage level on a line",
     "LineToDivide" : "Exisitng line",
     "Percentage" : "% long",
     "OutOfBoundsPercentage" : "Percentage out of bounds",

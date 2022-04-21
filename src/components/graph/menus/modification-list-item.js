@@ -18,9 +18,10 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-const equipmentCreationModificationsType = new Set([
+const editableModificationTypes = new Set([
     'GENERATOR_CREATION',
     'LINE_CREATION',
+    'LOAD_MODIFICATION',
     'LOAD_CREATION',
     'SHUNT_COMPENSATOR_CREATION',
     'SUBSTATION_CREATION',
@@ -28,8 +29,6 @@ const equipmentCreationModificationsType = new Set([
     'VOLTAGE_LEVEL_CREATION',
     'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
 ]);
-
-const equipmentModificationModificationsType = new Set(['LOAD_MODIFICATION']);
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
@@ -69,11 +68,17 @@ export const ModificationListItem = ({
     const classes = useStyles();
 
     const getComputedLabel = useCallback(() => {
-        return equipmentModificationModificationsType.has(modification.type)
-            ? modification.equipmentId
-            : useName && modification.equipmentName
-            ? modification.equipmentName
-            : modification.equipmentId;
+        if (useName && modification.equipmentName) {
+            return modification.equipmentName;
+        } else if (modification.equipmentId) {
+            return modification.equipmentId;
+        } else if (modification.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
+            if (modification.mayNewVoltageLevelInfos)
+                return modification.mayNewVoltageLevelInfos.equipmentId;
+            if (modification.existingVoltageLevelId)
+                return modification.existingVoltageLevelId;
+        }
+        return '';
     }, [modification, useName]);
 
     const toggle = useCallback(
@@ -133,9 +138,7 @@ export const ModificationListItem = ({
                             className={classes.label}
                             text={getLabel()}
                         />
-                        {equipmentCreationModificationsType.has(
-                            modification.type
-                        ) &&
+                        {editableModificationTypes.has(modification.type) &&
                             hover &&
                             !isDragging && (
                                 <IconButton

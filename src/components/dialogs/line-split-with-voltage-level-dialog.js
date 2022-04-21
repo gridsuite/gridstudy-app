@@ -105,12 +105,21 @@ const useComplementaryPercentage = ({
     label,
     ...props
 }) => {
+    function initValue(defaultValue) {
+        return typeof defaultValue === 'number'
+            ? defaultValue.toFixed(maxDecimals)
+            : '50';
+    }
+
     //const classes = useStyles();
     const [mostlyFloatStrValue, setMostlyFloatStrValue] = useState(
-        typeof defaultValue == 'number'
-            ? defaultValue.toFixed(maxDecimals)
-            : '50'
+        initValue(defaultValue)
     );
+
+    useEffect(() => {
+        setMostlyFloatStrValue(initValue(defaultValue));
+    }, [defaultValue]);
+
     const [error, setError] = useState();
     const validationRef = useRef();
     validationRef.current = validation;
@@ -217,7 +226,7 @@ function makeVoltageLevelCreationParams(vlId, bobbsId, vl) {
  * @param lineOptions the available network lines
  * @param selectedNodeUuid the currently selected tree node
  */
-const VoltageLevelAmidstLineDialog = ({
+const LineSplitWithVoltageLevelDialog = ({
     open,
     onClose,
     lineOptions,
@@ -249,7 +258,7 @@ const VoltageLevelAmidstLineDialog = ({
 
     const toFormValues = (lineSplit) => {
         return {
-            lineToDivideId: lineSplit.id + '(1)',
+            lineToSplitId: lineSplit.id + '(1)',
             percentage: lineSplit.percentage,
         };
     };
@@ -270,13 +279,23 @@ const VoltageLevelAmidstLineDialog = ({
         handleClick: searchCopy.handleOpenSearchDialog,
     });
 
+    const [newVoltageLevel, setNewVoltageLevel] = useState(null);
+
     useEffect(() => {
         if (editData) {
             setFormValues(editData);
         }
     }, [editData]);
 
-    const [newVoltageLevel, setNewVoltageLevel] = useState(null);
+    const extractDefaultVoltageLevelId = (fv) => {
+        if (fv) {
+            if (fv.existingVoltageLevelId) return fv.existingVoltageLevelId;
+            if (fv.mayNewVoltageLevelInfos)
+                return fv.mayNewVoltageLevelInfos.equipmentId;
+        }
+        return '';
+    };
+    const defaultVoltageLevelId = extractDefaultVoltageLevelId(formValues);
 
     const [lineToDivide, lineToDivideField] = useAutocompleteField({
         id: 'lineToDivide',
@@ -287,11 +306,9 @@ const VoltageLevelAmidstLineDialog = ({
         values: lineOptions,
         allowNewValue: true,
         getLabel: getId,
-        defaultValue: formValues?.lineToDivideId || '',
+        defaultValue: formValues?.lineToSplitId || '',
         selectedValue: formValues
-            ? lineOptions.find(
-                  (value) => value.id === formValues.lineToDivideId
-              )
+            ? lineOptions.find((value) => value.id === formValues.lineToSplitId)
             : '',
     });
 
@@ -306,7 +323,7 @@ const VoltageLevelAmidstLineDialog = ({
         upperRightText: <FormattedMessage id="Line2"></FormattedMessage>,
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.percentage,
+        defaultValue: formValues?.percent,
     });
 
     const [voltageLevelOrId, voltageLevelIdField, setVoltageLevelOrId] =
@@ -319,10 +336,10 @@ const VoltageLevelAmidstLineDialog = ({
             values: voltageLevelOptions,
             allowNewValue: true,
             getLabel: getId,
-            defaultValue: formValues?.voltageLevelId || '',
+            defaultValue: defaultVoltageLevelId,
             selectedValue: formValues
                 ? voltageLevelOptions.find(
-                      (value) => value.id === formValues.voltageLevelId
+                      (value) => value.id === defaultVoltageLevelId
                   )
                 : '',
         });
@@ -346,13 +363,20 @@ const VoltageLevelAmidstLineDialog = ({
                   )
                 : '',
         });
+    console.log('meuh3', bbsOrNodeId);
 
     useEffect(() => {
-        if (!voltageLevelOrId?.id) {
+        if (!voltageLevelOrId?.id && !voltageLevelOrId) {
+            console.log('meuh4', voltageLevelOrId);
             setBbsOrNodeId('');
             setBusOrBusbarSectionOptions([]);
         } else {
+            console.log('meuh5', voltageLevelOrId);
             bobbsCb(voltageLevelOrId, (bobbss) => {
+                console.log('meuh6', bobbss, voltageLevelOrId);
+                if (voltageLevelOrId?.busbarSections) {
+                    bobbss.push(...voltageLevelOrId.busbarSections);
+                }
                 setBbsOrNodeId(bobbss?.length ? bobbss[0] : '');
                 setBusOrBusbarSectionOptions(bobbss);
             });
@@ -416,7 +440,12 @@ const VoltageLevelAmidstLineDialog = ({
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
 
     const handleSave = () => {
-        console.log('handleSave ', newVoltageLevel);
+        console.log(
+            'handleSave newVoltageLevel:',
+            newVoltageLevel,
+            'voltageLevelOrId:',
+            voltageLevelOrId
+        );
         if (inputForm.validate()) {
             divideLine(
                 studyUuid,
@@ -425,7 +454,9 @@ const VoltageLevelAmidstLineDialog = ({
                 lineToDivide.id,
                 parseFloat(percentage),
                 newVoltageLevel,
-                voltageLevelOrId?.id || voltageLevelOrId,
+                newVoltageLevel
+                    ? null
+                    : voltageLevelOrId?.id || voltageLevelOrId,
                 bbsOrNodeId?.id || bbsOrNodeId,
                 newLine1Id,
                 newLine1Name || null,
@@ -486,13 +517,21 @@ const VoltageLevelAmidstLineDialog = ({
                     busbarSections: busBarSections,
                     connections: connections,
                 };
+                console.log(
+                    'vl',
+                    preparedVoltageLevel,
+                    bbsOrNodeId,
+                    typeof bbsOrNodeId
+                );
                 setNewVoltageLevel(preparedVoltageLevel);
                 setVoltageLevelOrId(voltageLevelId);
                 if (busBarSections.length) {
+                    console.log('meuh1');
                     if (
                         typeof bbsOrNodeId !== 'string' ||
                         !busBarSections.find((bbs) => bbs.id === bbsOrNodeId)
                     ) {
+                        console.log('meuh2');
                         setBbsOrNodeId(busBarSections[0].id);
                     }
                 }
@@ -531,7 +570,7 @@ const VoltageLevelAmidstLineDialog = ({
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
                         <Grid item xs={11}>
-                            <FormattedMessage id="CreateVoltageLevelAmidstALine" />
+                            <FormattedMessage id="LineSplitWithVoltageLevel" />
                         </Grid>
                         <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
@@ -608,11 +647,11 @@ const VoltageLevelAmidstLineDialog = ({
     );
 };
 
-VoltageLevelAmidstLineDialog.propTypes = {
+LineSplitWithVoltageLevelDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
 };
 
-export default VoltageLevelAmidstLineDialog;
+export default LineSplitWithVoltageLevelDialog;
