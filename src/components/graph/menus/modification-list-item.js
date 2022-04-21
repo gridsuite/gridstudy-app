@@ -18,6 +18,18 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
+const equipmentCreationModificationsType = new Set([
+    'GENERATOR_CREATION',
+    'LINE_CREATION',
+    'LOAD_CREATION',
+    'SHUNT_COMPENSATOR_CREATION',
+    'SUBSTATION_CREATION',
+    'TWO_WINDINGS_TRANSFORMER_CREATION',
+    'VOLTAGE_LEVEL_CREATION',
+]);
+
+const equipmentModificationModificationsType = new Set(['LOAD_MODIFICATION']);
+
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
@@ -55,18 +67,10 @@ export const ModificationListItem = ({
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
 
-    const equipmentCreationModificationsType = new Set([
-        'GENERATOR_CREATION',
-        'LINE_CREATION',
-        'LOAD_CREATION',
-        'SHUNT_COMPENSATOR_CREATION',
-        'SUBSTATION_CREATION',
-        'TWO_WINDINGS_TRANSFORMER_CREATION',
-        'VOLTAGE_LEVEL_CREATION',
-    ]);
-
     const getComputedLabel = useCallback(() => {
-        return useName && modification.equipmentName
+        return equipmentModificationModificationsType.has(modification.type)
+            ? modification.equipmentId
+            : useName && modification.equipmentName
             ? modification.equipmentName
             : modification.equipmentId;
     }, [modification, useName]);

@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material//Button';
+import Dialog from '@mui/material//Dialog';
+import DialogActions from '@mui/material//DialogActions';
+import DialogContent from '@mui/material//DialogContent';
+import DialogTitle from '@mui/material//DialogTitle';
 import Grid from '@mui/material/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
@@ -19,13 +19,14 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
+import { modifyLoad } from '../../utils/rest-api';
 import { LOAD_TYPES } from '../network/constants';
 import {
+    useAutocompleteField,
     useConnectivityValue,
     useDoubleValue,
     useEnumValue,
     useInputForm,
-    useButtonWithTooltip,
     useTextValue,
 } from './input-hooks';
 import {
@@ -36,26 +37,26 @@ import {
     ReactivePowerAdornment,
 } from './dialogUtils';
 
-import { createLoad } from '../../utils/rest-api';
-import EquipmentSearchDialog from './equipment-search-dialog';
-import { useFormSearchCopy } from './form-search-copy-hook';
+const getId = (e) => e?.id;
 
 /**
- * Dialog to create a load in the network
+ * Dialog to modify a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
+ * @param equipmentOptions List of loads that can be modified
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
-const LoadCreationDialog = ({
+const LoadModificationDialog = ({
     editData,
     open,
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
+    equipmentOptions,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -67,37 +68,9 @@ const LoadCreationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
-    const equipmentPath = 'loads';
-
     const clearValues = () => {
         setFormValues(null);
     };
-
-    const toFormValues = (load) => {
-        return {
-            equipmentId: load.id + '(1)',
-            equipmentName: load.name,
-            loadType: load.type,
-            activePower: load.p0,
-            reactivePower: load.q0,
-            voltageLevelId: load.voltageLevelId,
-            busOrBusbarSectionId: null,
-        };
-    };
-
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        selectedNodeUuid,
-        equipmentPath,
-        toFormValues,
-        setFormValues,
-        clearValues,
-    });
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
-    });
 
     useEffect(() => {
         if (editData) {
@@ -105,19 +78,26 @@ const LoadCreationDialog = ({
         }
     }, [editData]);
 
-    const [loadId, loadIdField] = useTextValue({
+    const [loadInfos, loadIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
+        values: equipmentOptions,
+        allowNewValue: true,
+        getLabel: getId,
+        defaultValue:
+            equipmentOptions.find((e) => e.id === formValues?.equipmentId) ||
+            formValues?.equipmentId,
     });
 
     const [loadName, loadNameField] = useTextValue({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
+        defaultValue: formValues?.equipmentName?.value,
+        previousValue: loadInfos?.name,
+        clearable: true,
     });
 
     const [loadType, loadTypeField] = useEnumValue({
@@ -125,53 +105,65 @@ const LoadCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
-        defaultValue: formValues ? formValues.loadType : '',
+        defaultValue: formValues ? formValues.loadType?.value : '',
+        previousValue: loadInfos?.type,
     });
 
     const [activePower, activePowerField] = useDoubleValue({
         label: 'ActivePowerText',
         validation: {
-            isFieldRequired: true,
             isFieldNumeric: true,
         },
         adornment: ActivePowerAdornment,
+        previousValue: loadInfos?.p0,
         inputForm: inputForm,
-        defaultValue: formValues ? String(formValues.activePower) : undefined,
+        defaultValue: formValues
+            ? String(formValues.activePower?.value)
+            : undefined,
+        clearable: true,
     });
 
     const [reactivePower, reactivePowerField] = useDoubleValue({
         label: 'ReactivePowerText',
         validation: {
-            isFieldRequired: true,
             isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
+        previousValue: loadInfos?.q0,
         inputForm: inputForm,
-        defaultValue: formValues ? String(formValues.reactivePower) : undefined,
+        defaultValue: formValues
+            ? String(formValues.reactivePower?.value)
+            : undefined,
+        clearable: true,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
+        validation: {
+            isFieldRequired: false,
+        },
+        disabled: true,
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
-        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+        voltageLevelIdDefaultValue: formValues?.voltageLevelId?.value || null,
+        voltageLevelPreviousValue: loadInfos?.voltageLevelId,
         busOrBusbarSectionIdDefaultValue:
-            formValues?.busOrBusbarSectionId || null,
+            formValues?.busOrBusbarSectionId?.value || null,
     });
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            createLoad(
+            modifyLoad(
                 studyUuid,
                 selectedNodeUuid,
-                loadId,
-                loadName ? loadName : null,
-                !loadType ? 'UNDEFINED' : loadType,
+                loadInfos?.id,
+                loadName,
+                loadType,
                 activePower,
                 reactivePower,
-                connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id,
+                connectivity?.voltageLevel?.id,
+                connectivity?.busOrBusbarSection?.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
@@ -179,7 +171,7 @@ const LoadCreationDialog = ({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,
                     headerMessage: {
-                        headerMessageId: 'LoadCreationError',
+                        headerMessageId: 'LoadModificationError',
                         intlRef: intlRef,
                     },
                 });
@@ -210,15 +202,14 @@ const LoadCreationDialog = ({
                 fullWidth
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="dialog-create-load"
+                aria-labelledby="dialog-modify-load"
                 maxWidth={'md'}
             >
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
-                            <FormattedMessage id="CreateLoad" />
+                        <Grid item xs={12}>
+                            <FormattedMessage id="ModifyLoad" />
                         </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
@@ -238,32 +229,26 @@ const LoadCreationDialog = ({
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseAndClear}>
+                    <Button onClick={handleCloseAndClear} variant="text">
                         <FormattedMessage id="close" />
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button onClick={handleSave} variant="text">
                         <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>
-            <EquipmentSearchDialog
-                open={searchCopy.isDialogSearchOpen}
-                onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'LOAD'}
-                onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
-            />
         </>
     );
 };
 
-LoadCreationDialog.propTypes = {
+LoadModificationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
     workingNodeUuid: PropTypes.string,
+    equipmentOptions: PropTypes.arrayOf(PropTypes.object),
 };
 
-export default LoadCreationDialog;
+export default LoadModificationDialog;

@@ -54,10 +54,13 @@ const useStyles = makeStyles((theme) => ({
 const ConnectivityEdition = ({
     voltageLevelOptions,
     voltageLevel,
+    voltageLevelPreviousValue,
     busOrBusbarSection,
+    busOrBusbarSectionPreviousValue,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
     direction,
+    disabled = false,
     errorVoltageLevel,
     helperTextVoltageLevel,
     errorBusOrBusBarSection,
@@ -166,6 +169,7 @@ const ConnectivityEdition = ({
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
+                        disabled={disabled}
                         id="voltage-level"
                         options={voltageLevelOptions}
                         getOptionLabel={(vl) => vl.id}
@@ -189,6 +193,7 @@ const ConnectivityEdition = ({
                             return filtered;
                         }}
                         value={voltageLevel}
+                        previousValue={voltageLevelPreviousValue}
                         onChange={handleChangeVoltageLevel}
                         renderInput={(params) => (
                             <TextField
@@ -200,6 +205,10 @@ const ConnectivityEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...(voltageLevelPreviousValue && {
+                                    error: false,
+                                    helperText: voltageLevelPreviousValue,
+                                })}
                                 {...(errorVoltageLevel && {
                                     error: true,
                                     helperText: helperTextVoltageLevel,
@@ -231,7 +240,7 @@ const ConnectivityEdition = ({
                         autoHighlight
                         selectOnFocus
                         id="bus"
-                        disabled={!voltageLevel}
+                        disabled={!voltageLevel || disabled}
                         options={busOrBusbarSectionOptions}
                         getOptionLabel={(bbs) => {
                             return bbs === ''
@@ -258,6 +267,7 @@ const ConnectivityEdition = ({
                             return filtered;
                         }}
                         value={currentBBS}
+                        previousValue={busOrBusbarSectionPreviousValue}
                         onChange={handleChangeBus}
                         renderInput={(params) => (
                             <TextField
@@ -269,6 +279,10 @@ const ConnectivityEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...(busOrBusbarSectionPreviousValue && {
+                                    error: false,
+                                    helperText: busOrBusbarSectionPreviousValue,
+                                })}
                                 {...(errorBusOrBusBarSection && {
                                     error: true,
                                     helperText: helperTextBusOrBusBarSection,

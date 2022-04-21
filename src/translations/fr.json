@@ -258,6 +258,7 @@
     "NodeBuildingError": "Une erreur est survenue lors de la construction du nœud",
     "NetworkModifications": "Modifications de réseau",
     "CreateLoad": "Créer une consommation",
+    "ModifyLoad": "Modifier une consommation",
     "NameOptional": "Nom (optionnel)",
     "TypeOptional": "Type (optionnel)",
     "UndefinedDefaultValue": "Non défini (valeur par défaut)",
@@ -290,6 +291,7 @@
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
+    "LoadModificationError": "Erreur lors de la modification d'une consommation",
     "LineCreationError": "Erreur lors de la création d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 
