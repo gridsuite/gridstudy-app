@@ -16,6 +16,7 @@ import Paper from '@mui/material/Paper';
 
 const ROW_HEIGHT = 38;
 const MIN_COLUMN_WIDTH = 160;
+const HEADER_CELL_WIDTH = 65;
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -260,11 +261,19 @@ export const EquipmentTable = ({
     };
 
     const generateTableColumns = (table) => {
-        return table.columns.map((c) => {
+        let generatedTableColumns = table.columns.map((c) => {
+            let columnWidth =
+                c.columnWidth !== undefined ? c.columnWidth : MIN_COLUMN_WIDTH;
             let column = {
                 label: intl.formatMessage({ id: c.id }),
-                headerStyle: { display: columnDisplayStyle(c.id) },
-                style: { display: columnDisplayStyle(c.id) },
+                headerStyle: {
+                    display: columnDisplayStyle(c.id),
+                    width: columnWidth + 'px',
+                },
+                style: {
+                    display: columnDisplayStyle(c.id),
+                    width: columnWidth + 'px',
+                },
                 ...c,
             };
             if (c.changeCmd !== undefined) {
@@ -288,12 +297,38 @@ export const EquipmentTable = ({
             delete column.changeCmd;
             return column;
         });
+        let firstColumnWidth =
+            generatedTableColumns[0].columnWidth !== undefined
+                ? generatedTableColumns[0].columnWidth
+                : MIN_COLUMN_WIDTH;
+        generatedTableColumns[0].style = {
+            position: 'fixed',
+            width: firstColumnWidth + 'px',
+            backgroundColor: '#224433',
+            ...generatedTableColumns[0].style,
+        };
+        generatedTableColumns[0].headerStyle = {
+            position: 'fixed',
+            width: firstColumnWidth + 'px',
+            backgroundColor: '#224433',
+            zIndex: '2',
+            ...generatedTableColumns[0].headerStyle,
+        };
+        generatedTableColumns[1].style = {
+            marginLeft: firstColumnWidth + 'px',
+            ...generatedTableColumns[1].style,
+        };
+        generatedTableColumns[1].headerStyle = {
+            marginLeft: firstColumnWidth + 'px',
+            ...generatedTableColumns[1].headerStyle,
+        };
+        return generatedTableColumns;
     };
 
     function makeHeaderCell() {
         return {
-            width: 65,
-            maxWidth: 65,
+            width: HEADER_CELL_WIDTH,
+            maxWidth: HEADER_CELL_WIDTH,
             label: '',
             dataKey: '',
             style: {
@@ -322,7 +357,10 @@ export const EquipmentTable = ({
                 <VirtualizedTable
                     width={
                         generateMinWidthTable(tableDefinition) +
-                        makeHeaderCell().width
+                        (tableDefinition.modifiableEquipmentType &&
+                        !workingNode?.readOnly
+                            ? HEADER_CELL_WIDTH
+                            : 0)
                     }
                     rows={rows}
                     rowHeight={ROW_HEIGHT}
