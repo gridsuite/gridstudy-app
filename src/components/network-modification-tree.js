@@ -24,7 +24,6 @@ import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-cli
 import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
-import ModelNode from './graph/nodes/model-node';
 import { useSnackbar } from 'notistack';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
@@ -34,7 +33,6 @@ import PropTypes from 'prop-types';
 const nodeTypes = {
     ROOT: RootNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
-    MODEL: ModelNode,
 };
 
 // snapGrid value set to [15, 15] which is the default value for ReactFlow
@@ -83,7 +81,7 @@ const NetworkModificationTree = ({
             dispatch(selectTreeNode(element));
             if (
                 element.type === 'ROOT' ||
-                (element.type === 'MODEL' &&
+                (element.type === 'NETWORK_MODIFICATION' &&
                     element.data.buildStatus === 'BUILT')
             ) {
                 dispatch(workingTreeNode(element));
@@ -95,7 +93,7 @@ const NetworkModificationTree = ({
     const onNodeDoubleClick = useCallback(
         (event, node) => {
             if (
-                node.type === 'MODEL' &&
+                node.type === 'NETWORK_MODIFICATION' &&
                 node.data.buildStatus !== 'BUILT' &&
                 node.data.buildStatus !== 'BUILDING'
             ) {
