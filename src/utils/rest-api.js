@@ -226,16 +226,18 @@ export function getNetworkAreaDiagramUrl(
     console.info(
         `Getting url of network area diagram of study '${studyUuid}' and node '${selectedNodeUuid}'...`
     );
+    console.info('voltageLevelsIds', voltageLevelsIds);
+    console.info(
+        'toto',
+        getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds')
+    );
     return (
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network/network-area-diagram?' +
         new URLSearchParams({
             depth: depth,
-            voltageLevelsIds: getQueryParamsList(
-                voltageLevelsIds,
-                'voltageLevelsIds'
-            ),
-        }).toString()
+        }) +
+        getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()
     );
 }
 
@@ -278,6 +280,16 @@ function getQueryParamsList(params, paramName) {
     if (params !== undefined && params.length > 0) {
         const urlSearchParams = new URLSearchParams();
         params.forEach((id) => urlSearchParams.append(paramName, id));
+        return urlSearchParams.toString();
+    }
+    return '';
+}
+function getSubstationsIdsListsQueryParams(substationsIds) {
+    if (substationsIds !== undefined && substationsIds.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        substationsIds.forEach((substationId) =>
+            urlSearchParams.append('substationId', substationId)
+        );
         return '?' + urlSearchParams.toString();
     }
     return '';
@@ -516,6 +528,7 @@ function fetchEquipments(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +
         equipmentPath +
+        '?' +
         getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());

@@ -54,7 +54,7 @@ export function NetworkAreaDiagramPane({
         svgUrl = getNetworkAreaDiagramUrl(
             studyUuid,
             workingNode?.id,
-            displayedVoltageLevelId,
+            [displayedVoltageLevelId],
             3
         );
     }
