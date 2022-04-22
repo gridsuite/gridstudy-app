@@ -309,7 +309,30 @@ const App = () => {
                 );
 
             fetchConfigParameters(APP_NAME)
-                .then((params) => updateParams(params))
+                .then((params) => {
+                    fetch('defaultParametersValues.json')
+                        .then((res) => res.json())
+                        .then((defaultValues) => {
+                            // Browsing defaultParametersValues entries
+                            Object.entries(defaultValues).forEach(
+                                ([key, defaultValue]) => {
+                                    // Checking if keys defined in defaultParametersValues file are already defined in config server
+                                    // If they are not defined, values are taken from default values file
+                                    if (
+                                        !params.find(
+                                            (param) => param.name === key
+                                        )
+                                    ) {
+                                        params.push({
+                                            name: key,
+                                            value: defaultValue,
+                                        });
+                                    }
+                                }
+                            );
+                            updateParams(params);
+                        });
+                })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,

@@ -1439,7 +1439,10 @@ export function getDefaultLoadFlowProvider() {
     console.debug(getDefaultLoadFlowProviderUrl);
     return backendFetch(getDefaultLoadFlowProviderUrl, {
         method: 'GET',
-    }).then((response) => response.text());
+    }).then((response) => {
+        if (response.ok) return response.text();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
 }
 
 export function getAvailableComponentLibraries() {

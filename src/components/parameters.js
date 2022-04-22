@@ -117,7 +117,6 @@ export function useParameterState(paramName) {
 }
 
 const LF_PROVIDER_VALUES = {
-    Default: 'Default',
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
 };
@@ -179,6 +178,50 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const [componentLibraries, setComponentLibraries] = useState([]);
 
+    const updateLfProvider = useCallback(
+        (newProvider) => {
+            const oldProvider = lfProvider;
+            setLfProvider(newProvider);
+            setLoadFlowProvider(studyUuid, newProvider).catch(
+                (errorMessage) => {
+                    setLfProvider(oldProvider); // restore old value
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'setLoadFlowProviderError',
+                            intlRef: intlRef,
+                        },
+                    });
+                }
+            );
+        },
+        [studyUuid, lfProvider, enqueueSnackbar, intlRef]
+    );
+
+    const setLoadFlowProviderToDefault = useCallback(() => {
+        getDefaultLoadFlowProvider()
+            .then((defaultLFProvider) => {
+                console.log(defaultLFProvider);
+                updateLfProvider(
+                    defaultLFProvider in LF_PROVIDER_VALUES
+                        ? defaultLFProvider
+                        : LF_PROVIDER_VALUES.OpenLoadFlow
+                );
+            })
+            .catch((errorMessage) => {
+                console.log('ERROR', errorMessage);
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'defaultLoadflowRetrievingError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }, [updateLfProvider, enqueueSnackbar, intlRef]);
+
     useEffect(() => {
         if (studyUuid) {
             getLoadFlowParameters(studyUuid)
@@ -195,7 +238,12 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 );
             getLoadFlowProvider(studyUuid)
                 .then((provider) => {
-                    setLfProvider(provider === '' ? 'Default' : provider);
+                    // if provider is not defined or not among allowed values, it's set to default value
+                    if (!(provider in LF_PROVIDER_VALUES)) {
+                        setLoadFlowProviderToDefault();
+                    } else {
+                        setLfProvider(provider);
+                    }
                 })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
@@ -208,7 +256,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     })
                 );
         }
-    }, [studyUuid, enqueueSnackbar, intlRef]);
+    }, [studyUuid, enqueueSnackbar, intlRef, setLoadFlowProviderToDefault]);
 
     useEffect(() => {
         if (user !== null) {
@@ -611,18 +659,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 })
             );
 
-        getDefaultLoadFlowProvider()
-            .then((defaultLFProvider) => updateLfProvider(defaultLFProvider))
-            .catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'defaultLoadflowRetrievingError',
-                        intlRef: intlRef,
-                    },
-                });
-            });
+        setLoadFlowProviderToDefault();
     };
 
     const commitLFParameter = (newParams) => {
@@ -643,25 +680,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const updateLfProviderCallback = (evt) => {
         updateLfProvider(evt.target.value);
-    };
-
-    const updateLfProvider = (newProvider) => {
-        const oldProvider = lfProvider;
-        setLfProvider(newProvider);
-        setLoadFlowProvider(
-            studyUuid,
-            newProvider === 'Default' ? '' : newProvider
-        ).catch((errorMessage) => {
-            setLfProvider(oldProvider); // restore old value
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'setLoadFlowProviderError',
-                    intlRef: intlRef,
-                },
-            });
-        });
     };
 
     const LoadFlow = () => {
