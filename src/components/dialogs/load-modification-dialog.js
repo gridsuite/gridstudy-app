@@ -39,6 +39,7 @@ import {
 
 const getId = (e) => e?.id;
 
+const compareById = (a, b) => a?.id?.localeCompare(b?.id);
 /**
  * Dialog to modify a load in the network
  * @param {Boolean} open Is the dialog open ?
@@ -83,7 +84,7 @@ const LoadModificationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        values: equipmentOptions,
+        values: equipmentOptions?.sort(compareById),
         allowNewValue: true,
         getLabel: getId,
         defaultValue:
