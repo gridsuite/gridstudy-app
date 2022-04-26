@@ -54,6 +54,7 @@ import {
     connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchDefaultParametersValues,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -310,8 +311,7 @@ const App = () => {
 
             fetchConfigParameters(APP_NAME)
                 .then((params) => {
-                    fetch('defaultParametersValues.json')
-                        .then((res) => res.json())
+                    fetchDefaultParametersValues()
                         .then((defaultValues) => {
                             // Browsing defaultParametersValues entries
                             Object.entries(defaultValues).forEach(
@@ -331,6 +331,16 @@ const App = () => {
                                 }
                             );
                             updateParams(params);
+                        })
+                        .catch((errorMessage) => {
+                            displayErrorMessageWithSnackbar({
+                                errorMessage: errorMessage,
+                                enqueueSnackbar: enqueueSnackbar,
+                                headerMessage: {
+                                    headerMessageId: 'paramsRetrievingError',
+                                    intlRef: intlRef,
+                                },
+                            });
                         });
                 })
                 .catch((errorMessage) =>

@@ -37,6 +37,22 @@ function backendFetch(url, init) {
     return fetch(url, initCopy);
 }
 
+export function fetchDefaultParametersValues() {
+    return fetchAppsAndUrls().then((res) => {
+        console.info(
+            'fecthing default parameters values from apps-metadata file'
+        );
+        const studyMetadata = res.find((metadata) => metadata.name === 'Study');
+        if (!studyMetadata) {
+            return Promise.reject(
+                'Study entry could not be found in metadatas'
+            );
+        }
+
+        return studyMetadata.defaultParametersValues;
+    });
+}
+
 export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams =
