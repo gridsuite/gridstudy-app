@@ -35,7 +35,7 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { stringify } from 'qs';
-import { centerOnSubstation, selectItemNetwork } from '../redux/actions';
+import { centerOnSubstation } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
@@ -171,7 +171,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     voltageLevelId: substationOrVlId,
                 };
             }
-            dispatch(selectItemNetwork(substationOrVlId));
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
             history.replace(
                 // show voltage level
@@ -180,7 +179,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     stringify(requestParam, { addQueryPrefix: true })
             );
         },
-        [studyUuid, history, onChangeTab, dispatch]
+        [studyUuid, history, onChangeTab]
     );
 
     useEffect(() => {

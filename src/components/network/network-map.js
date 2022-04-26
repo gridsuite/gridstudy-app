@@ -91,6 +91,7 @@ const NetworkMap = (props) => {
                     const geodata = props.geoData.substationPositionsById.get(
                         centered.centeredSubstationId
                     );
+                    if (!geodata) return; // can't center on substation if no coordinate.
                     const copyViewState =
                         lastViewStateRef.current || deck.viewState;
                     const newViewState = {

@@ -274,15 +274,6 @@ export function selectComponentLibrary(componentLibrary) {
     };
 }
 
-export const SELECTED_ITEM_NETWORK = 'SELECTED_ITEM_NETWORK';
-
-export function selectItemNetwork(selectItemNetwork) {
-    return {
-        type: SELECTED_ITEM_NETWORK,
-        selectItemNetwork: selectItemNetwork,
-    };
-}
-
 export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
 
 export function fullScreenSingleLineDiagram(fullScreen) {
