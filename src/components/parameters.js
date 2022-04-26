@@ -39,6 +39,7 @@ import {
     updateConfigParameter,
     getAvailableComponentLibraries,
     getDefaultLoadFlowProvider,
+    fetchDefaultParametersValues,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
@@ -72,8 +73,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const FluxConventions = {
-    IIDM: 'iidm',
-    TARGET: 'target',
+    iidm: 'iidm',
+    target: 'target',
 };
 
 export function useParameterState(paramName) {
@@ -202,7 +203,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
     const setLoadFlowProviderToDefault = useCallback(() => {
         getDefaultLoadFlowProvider()
             .then((defaultLFProvider) => {
-                console.log(defaultLFProvider);
                 updateLfProvider(
                     defaultLFProvider in LF_PROVIDER_VALUES
                         ? defaultLFProvider
@@ -210,7 +210,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 );
             })
             .catch((errorMessage) => {
-                console.log('ERROR', errorMessage);
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,
@@ -490,30 +489,39 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function NetworkParameters() {
         return (
-            <Grid container spacing={2} className={classes.grid}>
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="FluxConvention" />
-                        </Box>
-                    </Typography>
+            <Grid
+                container
+                spacing={2}
+                className={classes.grid}
+                justifyContent="flex-end"
+            >
+                <Grid container>
+                    <Grid item xs={8}>
+                        <Typography component="span" variant="body1">
+                            <Box fontWeight="fontWeightBold" m={1}>
+                                <FormattedMessage id="FluxConvention" />
+                            </Box>
+                        </Typography>
+                    </Grid>
+                    <Grid item container xs={4} className={classes.controlItem}>
+                        <Select
+                            labelId="flux-convention-select-label"
+                            value={fluxConventionLocal}
+                            onChange={(event) => {
+                                handleChangeFluxConvention(event.target.value);
+                            }}
+                        >
+                            <MenuItem value={FluxConventions.iidm}>
+                                <FormattedMessage id="FluxConvention.iidm" />
+                            </MenuItem>
+                            <MenuItem value={FluxConventions.target}>
+                                <FormattedMessage id="FluxConvention.target" />
+                            </MenuItem>
+                        </Select>
+                    </Grid>
+                    <MakeLineSeparator />
                 </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Select
-                        labelId="flux-convention-select-label"
-                        value={fluxConventionLocal}
-                        onChange={(event) => {
-                            handleChangeFluxConvention(event.target.value);
-                        }}
-                    >
-                        <MenuItem value={FluxConventions.IIDM}>
-                            <FormattedMessage id="FluxConvention.iidm" />
-                        </MenuItem>
-                        <MenuItem value={FluxConventions.TARGET}>
-                            <FormattedMessage id="FluxConvention.target" />
-                        </MenuItem>
-                    </Select>
-                </Grid>
+                {MakeButton(resetNetworkParameters, 'resetToDefault')}
             </Grid>
         );
     }
@@ -631,6 +639,15 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
             </Grid>
         ));
     }
+
+    const resetNetworkParameters = () => {
+        fetchDefaultParametersValues().then((defaultValues) => {
+            const defaultFluxConvention = defaultValues.fluxConvention;
+            if (defaultFluxConvention in FluxConventions) {
+                handleChangeFluxConvention(defaultFluxConvention);
+            }
+        });
+    };
 
     const resetLfParameters = () => {
         setLoadFlowParameters(studyUuid, null)
