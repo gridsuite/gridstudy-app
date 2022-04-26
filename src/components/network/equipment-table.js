@@ -40,6 +40,7 @@ export const EquipmentTable = ({
     scrollToAlignment,
     network,
     selectedDataKey,
+    fluxConvention,
 }) => {
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
@@ -136,20 +137,20 @@ export const EquipmentTable = ({
     }
 
     const formatCell = useCallback(
-        (cellData, isNumeric, fractionDigit) => {
+        (cellData, isNumeric, fractionDigit, normed = undefined) => {
             let value = cellData.cellData;
             if (typeof value === 'function') value = cellData.cellData(network);
-
+            if (normed) value = normed(fluxConvention, value);
             return value && isNumeric && fractionDigit
                 ? parseFloat(value).toFixed(fractionDigit)
                 : value;
         },
-        [network]
+        [fluxConvention, network]
     );
 
     const defaultCellRender = useCallback(
-        (cellData, numeric, fractionDigit) => {
-            const text = formatCell(cellData, numeric, fractionDigit);
+        (cellData, numeric, fractionDigit, normed = undefined) => {
+            const text = formatCell(cellData, numeric, fractionDigit, normed);
             return (
                 <TableCell
                     component="div"
@@ -255,7 +256,12 @@ export const EquipmentTable = ({
                     );
             } else {
                 column.cellRenderer = (cell) =>
-                    defaultCellRender(cell, c.numeric, c.fractionDigits);
+                    defaultCellRender(
+                        cell,
+                        c.numeric,
+                        c.fractionDigits,
+                        c.normed
+                    );
             }
             delete column.changeCmd;
             return column;

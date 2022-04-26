@@ -7,9 +7,15 @@
 
 import { equipments } from './network-equipments';
 import { NumericalField, TapChangerSelector } from './equipment-table-editors';
+import { FluxConventions } from '../parameters';
 
 const nominalVoltage = (network, voltageLevelId) => {
     return network.getVoltageLevel(voltageLevelId)?.nominalVoltage;
+};
+
+const applyFluxConvention = (convention, val) => {
+    if (convention === FluxConventions.TARGET && val !== undefined) return -val;
+    return val;
 };
 
 export const TABLES_DEFINITIONS = {
@@ -453,6 +459,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'p',
                 numeric: true,
                 fractionDigits: 1,
+                normed: applyFluxConvention,
             },
             {
                 id: 'ReactivePower',
@@ -684,6 +691,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'p',
                 numeric: true,
                 fractionDigits: 1,
+                normed: applyFluxConvention,
             },
             {
                 id: 'ReactivePower',

@@ -121,6 +121,7 @@
     "displayOverloadTable": "Afficher la table des surcharges en cas de dépassement de seuil : ",
 
     "LoadFlow": "Calcul de répartition",
+    "Network" : "Réseau",
     "SecurityAnalysis": "Analyse de sécurité",
 
     "ContingencyListsSelection": "Sélection des listes d'aléas",
@@ -242,6 +243,9 @@
     "loadingReport": "Chargement des logs en cours...",
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants : ",
+    "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs : ",
+    "FluxConvention.iidm": "IIDM",
+    "FluxConvention.target": "Métier",
 
     "Optional": " (optionnel)",
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
@@ -254,6 +258,7 @@
     "NodeBuildingError": "Une erreur est survenue lors de la construction du nœud",
     "NetworkModifications": "Modifications de réseau",
     "CreateLoad": "Créer une consommation",
+    "ModifyLoad": "Modifier une consommation",
     "NameOptional": "Nom (optionnel)",
     "TypeOptional": "Type (optionnel)",
     "UndefinedDefaultValue": "Non défini (valeur par défaut)",
@@ -286,6 +291,7 @@
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
+    "LoadModificationError": "Erreur lors de la modification d'une consommation",
     "LineCreationError": "Erreur lors de la création d'une ligne",
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 

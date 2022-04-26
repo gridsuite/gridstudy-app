@@ -1017,6 +1017,54 @@ export function createLoad(
     );
 }
 
+export function modifyLoad(
+    studyUuid,
+    selectedNodeUuid,
+    id,
+    name,
+    loadType,
+    activePower,
+    reactivePower,
+    voltageLevelId,
+    busOrBusbarSectionId
+) {
+    console.info('Modifying load ');
+    let modifyLoadUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/loads';
+
+    return backendFetch(modifyLoadUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            equipmentId: id,
+            equipmentName: name ? { value: name, op: 'SET' } : null,
+            loadType: loadType ? { value: loadType, op: 'SET' } : null,
+            activePower:
+                activePower === 0 || activePower
+                    ? { value: activePower, op: 'SET' }
+                    : null,
+            reactivePower:
+                reactivePower === 0 || reactivePower
+                    ? { value: reactivePower, op: 'SET' }
+                    : null,
+            voltageLevelId: voltageLevelId
+                ? { value: voltageLevelId, op: 'SET' }
+                : null,
+            busOrBusbarSectionId: busOrBusbarSectionId
+                ? { value: busOrBusbarSectionId, op: 'SET' }
+                : null,
+        }),
+    }).then((response) => {
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text));
+    });
+}
+
 export function createGenerator(
     studyUuid,
     selectedNodeUuid,

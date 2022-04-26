@@ -121,6 +121,7 @@
     "displayOverloadTable": "Display the overload table when threshold is exceeded: ",
 
     "LoadFlow": "LoadFlow",
+    "Network" : "Network",
     "SecurityAnalysis": "Security analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
@@ -242,6 +243,9 @@
     "loadingReport": "Loading logs in progress...",
 
     "ComponentLibrary": "Component library selection : ",
+    "FluxConvention": "Active and reactive flux convention used in spreadsheets : ",
+    "FluxConvention.iidm": "IIDM",
+    "FluxConvention.target": "Target",
 
     "Optional": " (optional)",
     "createNetworkModificationNode": "Create a network modification node",
@@ -254,6 +258,7 @@
     "NodeBuildingError": "An error occured while building node",
     "NetworkModifications": "Network modifications",
     "CreateLoad": "Create load",
+    "ModifyLoad": "Modify load",
     "NameOptional": "Name (optional)",
     "TypeOptional": "Type (optional)",
     "UndefinedDefaultValue": "Undefined (default value)",
@@ -286,6 +291,7 @@
     "STATIC_VAR_COMPENSATOR": "Static Var Compensator",
     "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load",
+    "LoadModificationError": "Error while modifying load",
     "LineCreationError": "Error while creating line",
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
 

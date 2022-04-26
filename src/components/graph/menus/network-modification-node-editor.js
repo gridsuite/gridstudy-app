@@ -15,8 +15,10 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
+import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
+import { equipments } from '../../network/network-equipments';
 import { ModificationListItem } from './modification-list-item';
 import { Checkbox, Fab, Toolbar, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -131,10 +133,27 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         });
     }
 
+    function withEquipmentModificationOptions(Dialog, resource, props) {
+        network.useEquipment(resource);
+        return withVoltageLevel(Dialog, {
+            ...props,
+            equipmentOptions: network[resource],
+        });
+    }
+
     const dialogs = {
         LOAD_CREATION: {
             label: 'CreateLoad',
             dialog: () => withVoltageLevel(LoadCreationDialog),
+            icon: <AddIcon />,
+        },
+        LOAD_MODIFICATION: {
+            label: 'ModifyLoad',
+            dialog: () =>
+                withEquipmentModificationOptions(
+                    LoadModificationDialog,
+                    equipments.loads
+                ),
             icon: <AddIcon />,
         },
         GENERATOR_CREATION: {
