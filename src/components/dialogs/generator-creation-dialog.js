@@ -34,6 +34,7 @@ import {
     ActivePowerAdornment,
     filledTextField,
     gridItem,
+    MVAPowerAdornment,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';
@@ -190,7 +191,7 @@ const GeneratorCreationDialog = ({
             isValueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
-        adornment: ReactivePowerAdornment,
+        adornment: MVAPowerAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.ratedNominalPower,
     });

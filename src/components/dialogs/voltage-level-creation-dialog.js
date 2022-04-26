@@ -30,7 +30,12 @@ import {
     useIntegerValue,
     useTextValue,
 } from './input-hooks';
-import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import {
+    filledTextField,
+    gridItem,
+    GridSection,
+    VoltageAdornment,
+} from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 
@@ -303,6 +308,7 @@ const VoltageLevelCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        adornment: VoltageAdornment,
         defaultValue: formValues?.nominalVoltage,
     });
 
