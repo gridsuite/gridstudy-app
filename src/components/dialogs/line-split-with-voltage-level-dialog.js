@@ -363,7 +363,7 @@ const LineSplitWithVoltageLevelDialog = ({
                   )
                 : '',
         });
-    console.log('meuh3', bbsOrNodeId);
+    console.log('meuh3', bbsOrNodeId, formValues);
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
@@ -377,8 +377,10 @@ const LineSplitWithVoltageLevelDialog = ({
                 if (voltageLevelOrId?.busbarSections) {
                     bobbss.push(...voltageLevelOrId.busbarSections);
                 }
-                setBbsOrNodeId(bobbss?.length ? bobbss[0] : '');
-                setBusOrBusbarSectionOptions(bobbss);
+                if (bobbss?.length) {
+                    setBusOrBusbarSectionOptions(bobbss);
+                    setBbsOrNodeId(bobbss[0]);
+                }
             });
         }
     }, [voltageLevelOrId, bobbsCb, setBbsOrNodeId]);
@@ -525,15 +527,23 @@ const LineSplitWithVoltageLevelDialog = ({
                 );
                 setNewVoltageLevel(preparedVoltageLevel);
                 setVoltageLevelOrId(voltageLevelId);
-                if (busBarSections.length) {
-                    console.log('meuh1');
-                    if (
-                        typeof bbsOrNodeId !== 'string' ||
-                        !busBarSections.find((bbs) => bbs.id === bbsOrNodeId)
-                    ) {
-                        console.log('meuh2');
-                        setBbsOrNodeId(busBarSections[0].id);
-                    }
+                if (!busBarSections.length) {
+                    console.log('no busbar to selection');
+                } else if (
+                    busBarSections.find(
+                        (bbs) => bbs.id === (bbsOrNodeId?.id || bbsOrNodeId)
+                    )
+                ) {
+                    setBusOrBusbarSectionOptions(busBarSections);
+                    console.log('busbar already selectionned');
+                } else {
+                    console.log(
+                        'tries to selection first bbs ',
+                        busBarSections[0].id,
+                        bbsOrNodeId
+                    );
+                    setBusOrBusbarSectionOptions(busBarSections);
+                    setBbsOrNodeId(busBarSections[0].id);
                 }
             });
         },

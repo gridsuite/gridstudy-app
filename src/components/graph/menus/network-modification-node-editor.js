@@ -162,7 +162,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             true
         );
 
-        return withVoltageLevel(Dialog, {
+        return withVLs(Dialog, {
             ...props,
             fetchedEquipmentOptions: fetchedEquipmentOptions,
         });
