@@ -292,16 +292,22 @@ export function SingleLineDiagramPane({
 
     const handleOpenView = useCallback(
         (id, type = SvgType.VOLTAGE_LEVEL) => {
-            if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
-            else if (type === SvgType.SUBSTATION) openSubstation(id);
             setViewState((oldState) => {
-                if (oldState.get(id) === ViewState.MINIMIZED) {
-                    const newMap = new Map(oldState);
-                    newMap.delete(id);
+                const oldViewState = oldState.get(id);
+                if (
+                    oldViewState !== ViewState.PINNED &&
+                    oldViewState !== ViewState.VIEWED
+                ) {
+                    const newMap = new Map(
+                        [...oldState].filter(([k, v]) => v !== ViewState.VIEWED)
+                    );
+                    newMap.set(id, ViewState.VIEWED);
                     return newMap;
                 }
                 return oldState;
             });
+            if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
+            else if (type === SvgType.SUBSTATION) openSubstation(id);
         },
         [openSubstation, openVoltageLevel]
     );
@@ -349,7 +355,12 @@ export function SingleLineDiagramPane({
         let toDisplay = views.filter(
             ({ id }) => viewState.get(id) === ViewState.PINNED
         );
-        const more = views.find(({ id }) => !viewState.get(id));
+        let more = views.find(
+            ({ id }) => viewState.get(id) === ViewState.VIEWED
+        );
+        if (!more) {
+            more = views.reverse().find(({ id }) => !viewState.get(id));
+        }
         if (more) {
             toDisplay.push(more);
         }
