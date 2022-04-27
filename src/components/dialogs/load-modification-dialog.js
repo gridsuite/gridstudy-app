@@ -99,9 +99,9 @@ const LoadModificationDialog = ({
         values: equipmentOptions?.sort(compareById),
         allowNewValue: true,
         getLabel: getId,
-        defaultValue:
-            equipmentOptions?.find((e) => e.id === formValues?.equipmentId) ||
-            formValues?.equipmentId,
+        defaultValue: equipmentOptions.find(
+            (e) => e.id === formValues?.equipmentId
+        ) || { id: formValues?.equipmentId },
         loading: loadingEquipmentOptions,
     });
 
@@ -109,7 +109,9 @@ const LoadModificationDialog = ({
         label: 'Name',
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName?.value,
+        defaultValue: formValues?.equipmentName
+            ? formValues.equipmentName.value
+            : undefined,
         previousValue: loadInfos?.name,
         clearable: true,
     });
@@ -119,7 +121,7 @@ const LoadModificationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
-        defaultValue: formValues ? formValues.loadType?.value : '',
+        defaultValue: formValues?.loadType ? formValues.loadType.value : '',
         previousValue: loadInfos?.type,
     });
 
@@ -131,8 +133,8 @@ const LoadModificationDialog = ({
         adornment: ActivePowerAdornment,
         previousValue: loadInfos?.p0,
         inputForm: inputForm,
-        defaultValue: formValues
-            ? String(formValues.activePower?.value)
+        defaultValue: formValues?.activePower
+            ? formValues.activePower.value
             : undefined,
         clearable: true,
     });
@@ -145,8 +147,8 @@ const LoadModificationDialog = ({
         adornment: ReactivePowerAdornment,
         previousValue: loadInfos?.q0,
         inputForm: inputForm,
-        defaultValue: formValues
-            ? String(formValues.reactivePower?.value)
+        defaultValue: formValues?.reactivePower
+            ? formValues.reactivePower.value
             : undefined,
         clearable: true,
     });
