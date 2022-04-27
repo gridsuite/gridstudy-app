@@ -30,11 +30,11 @@ import NetworkMapTab from './network-map-tab';
 import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
-import { SingleLineDiagramPane } from './singleLineDiagram/single-line-diagram-pane';
+import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useSingleLineDiagram } from './singleLineDiagram/utils';
+import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 
 const useStyles = makeStyles((theme) => ({
     map: {
