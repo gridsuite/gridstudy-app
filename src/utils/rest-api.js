@@ -226,17 +226,13 @@ export function getNetworkAreaDiagramUrl(
     console.info(
         `Getting url of network area diagram of study '${studyUuid}' and node '${selectedNodeUuid}'...`
     );
-    console.info('voltageLevelsIds', voltageLevelsIds);
-    console.info(
-        'toto',
-        getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds')
-    );
     return (
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network/network-area-diagram?' +
         new URLSearchParams({
             depth: depth,
         }) +
+        '&' +
         getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()
     );
 }

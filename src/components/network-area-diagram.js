@@ -459,7 +459,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 });
 
 const NetworkAreaDiagram = forwardRef((props, ref) => {
-    console.info('props', props)
     return (
         <AutoSizer>
             {({ width, height }) => (
