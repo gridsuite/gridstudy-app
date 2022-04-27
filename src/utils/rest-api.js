@@ -1404,7 +1404,6 @@ export function createVoltageLevel({
         busbarSections: busbarSections,
         busbarConnections: busbarConnections,
     });
-    console.log('body', body);
 
     return backendFetch(createVoltageLevelUrl, {
         method: isUpdate ? 'PUT' : 'POST',
@@ -1445,7 +1444,6 @@ export function divideLine(
         newLine2Id,
         newLine2Name,
     });
-    console.log('divide body', body);
     let lineSplitUrl;
     if (modificationUuid) {
         console.info('Line split with voltage level update', body);
