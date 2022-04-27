@@ -13,6 +13,9 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import Paper from '@mui/material/Paper';
+import MultiGrid from 'react-virtualized/dist/commonjs/MultiGrid/MultiGrid';
+import { AutoSizer } from 'react-virtualized';
+//import { CharlyDebug } from '../util/charly';
 
 const ROW_HEIGHT = 38;
 const MIN_COLUMN_WIDTH = 160;
@@ -46,6 +49,12 @@ export const EquipmentTable = ({
     selectedDataKey,
     fluxConvention,
 }) => {
+    /*const [charlyTime, setCharlyTime] = useState(
+        useEffect(() => {
+            setCharlyTime(Date.now());
+        }, [])
+    );*/
+
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
     const intl = useIntl();
@@ -142,9 +151,9 @@ export const EquipmentTable = ({
     }
 
     const formatCell = useCallback(
-        (cellData, isNumeric, fractionDigit, normed = undefined) => {
-            let value = cellData.cellData;
-            if (typeof value === 'function') value = cellData.cellData(network);
+        (cellData, dataKey, isNumeric, fractionDigit, normed = undefined) => {
+            let value = cellData[dataKey];
+            if (typeof value === 'function') value = cellData.dataKey(network);
             if (normed) value = normed(fluxConvention, value);
             return value && isNumeric && fractionDigit
                 ? parseFloat(value).toFixed(fractionDigit)
@@ -154,10 +163,10 @@ export const EquipmentTable = ({
     );
 
     const defaultCellRender = useCallback(
-        (cellData, numeric, fractionDigit, normed = undefined) => {
-            const text = formatCell(cellData, numeric, fractionDigit, normed);
+        (cellData, dataKey, numeric, fractionDigit, normed = undefined) => {
+            const text = formatCell(cellData, dataKey, numeric, fractionDigit, normed);
             return (
-                <TableCell
+                /*<TableCell
                     component="div"
                     variant="body"
                     style={{ width: cellData.width }}
@@ -165,7 +174,8 @@ export const EquipmentTable = ({
                     align={numeric ? 'right' : 'left'}
                 >
                     <OverflowableText text={text} />
-                </TableCell>
+                </TableCell>*/
+                <span>{text}</span>
             );
         },
         [classes.tableCell, formatCell]
@@ -286,9 +296,10 @@ export const EquipmentTable = ({
                         c.editor
                     );
             } else {
-                column.cellRenderer = (cell) =>
+                column.cellRenderer = (cell, dataKey) =>
                     defaultCellRender(
                         cell,
+                        dataKey,
                         c.numeric,
                         c.fractionDigits,
                         c.normed
@@ -297,7 +308,7 @@ export const EquipmentTable = ({
             delete column.changeCmd;
             return column;
         });
-        let firstColumnWidth =
+        /*let firstColumnWidth =
             generatedTableColumns[0].columnWidth !== undefined
                 ? generatedTableColumns[0].columnWidth
                 : MIN_COLUMN_WIDTH;
@@ -321,9 +332,23 @@ export const EquipmentTable = ({
         generatedTableColumns[1].headerStyle = {
             marginLeft: firstColumnWidth + 'px',
             ...generatedTableColumns[1].headerStyle,
-        };
+        };*/
         return generatedTableColumns;
     };
+
+    /*const generateCell = (rowIndex, columnIndex) => {
+        //return rows[rowIndex][columnIndex].cellRenderer;
+        //return formatCell(rows[rowIndex][columnIndex], numeric, fractionDigit, normed);
+        return '[' + rowIndex + '_' + columnIndex + ']';
+        //return {
+        //    width: MIN_COLUMN_WIDTH,
+        //    maxWidth: MIN_COLUMN_WIDTH,
+        //    label: 'label',
+        //   dataKey: 'dataKey',
+        //   style: {},
+        //   cellRenderer: defaultCellRender,
+        //};
+    };*/
 
     function makeHeaderCell() {
         return {
@@ -338,6 +363,83 @@ export const EquipmentTable = ({
         };
     }
 
+    // CHARLY TEST BELOW
+    // https://bvaughn.github.io/react-virtualized/#/components/MultiGrid
+    // https://codesandbox.io/s/react-virtualized-multigrid-y9e08?from-embed=&file=/src/Gridtable.js:2358-2977
+    // https://github.com/bvaughn/react-virtualized/blob/master/source/MultiGrid/MultiGrid.example.js
+    // https://github.com/bvaughn/react-virtualized/blob/master/docs/MultiGrid.md
+
+    function cellRenderer({ columnIndex, key, rowIndex, style }) {
+        //style = {backgroundColor: getBackgroundColor(), ...style};
+        let col = columns[columnIndex];
+        if (rowIndex === 0) {
+            return (
+                <div key={key} style={style}>
+                    {col.label}
+                </div>
+            );
+        } else {
+            let cell = rows[rowIndex-1];
+            console.error("cellRender cell.dataKey="+cell.dataKey+", col.dataKey="+col.dataKey);
+            //console.error(col.cellRenderer);
+            //col.cellRenderer(cell);
+
+            return (
+                <div key={key} style={style}>
+                    {
+                        col.cellRenderer(cell, col.dataKey)
+                    }
+                </div>
+            );
+            //col.cellRenderer(rows[rowIndex][columnIndex]);
+        }
+    }
+
+    function getColumnWidth(index) {
+        return tableDefinition.columns[index].columnWidth !== undefined
+            ? tableDefinition.columns[index].columnWidth
+            : MIN_COLUMN_WIDTH;
+    }
+
+    const columns = generateTableColumns(tableDefinition);
+
+    /*
+    <CharlyDebug
+                charlyTime={charlyTime}
+                show={'lignes ' + rows.length}
+            />
+     */
+
+    return (
+        <>
+
+
+            {!fetched && (
+                <LoaderWithOverlay
+                    color="inherit"
+                    loaderSize={70}
+                    loadingMessageText={'LoadingRemoteData'}
+                />
+            )}
+            <AutoSizer>
+                {({ width, height }) => (
+                    <MultiGrid
+                        cellRenderer={cellRenderer}
+                        fixedColumnCount={1}
+                        fixedRowCount={1}
+                        height={height}
+                        width={width}
+                        columnCount={tableDefinition.columns.length}
+                        columnWidth={({ index }) => getColumnWidth(index)}
+                        rowCount={rows.length + 1}
+                        rowHeight={40}
+                    />
+                )}
+            </AutoSizer>
+        </>
+    );
+
+    /*
     return (
         <>
             {!fetched && (
@@ -383,4 +485,5 @@ export const EquipmentTable = ({
             </Paper>
         </>
     );
+*/
 };
