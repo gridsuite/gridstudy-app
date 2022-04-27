@@ -141,6 +141,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     }
 
     function withSubstations(p) {
+        console.log('with substations', network?.substations);
         return {
             ...p,
             substationOptions: network?.substations,

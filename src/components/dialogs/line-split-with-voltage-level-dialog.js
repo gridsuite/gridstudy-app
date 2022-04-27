@@ -211,6 +211,7 @@ const useComplementaryPercentage = ({
 function makeVoltageLevelCreationParams(vlId, bobbsId, vl) {
     if (!vlId) return null;
     if (!bobbsId) return { id: vlId };
+    console.log('makeVoltageLevelCreationParams', vlId, bobbsId, vl);
     return {
         ...(vl || {}),
         equipmentId: vlId,
@@ -293,10 +294,12 @@ const LineSplitWithVoltageLevelDialog = ({
         };
         return [asVL, ...voltageLevelOptions];
     }, [newVoltageLevel, voltageLevelOptions]);
+    console.log('allVoltageLevelOptions', allVoltageLevelOptions);
 
     useEffect(() => {
         if (editData) {
             setFormValues(editData);
+            setNewVoltageLevel(editData.mayNewVoltageLevelInfos);
         }
     }, [editData]);
 
@@ -377,7 +380,14 @@ const LineSplitWithVoltageLevelDialog = ({
                   )
                 : '',
         });
-    console.log('meuh3', bbsOrNodeId, formValues);
+    console.log(
+        'meuh3 bbsOrNodeId',
+        bbsOrNodeId,
+        'formValues',
+        formValues,
+        'options',
+        busbarSectionOptions
+    );
 
     useEffect(() => {
         if (!voltageLevelOrId?.id && !voltageLevelOrId) {
@@ -401,6 +411,12 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [voltageLevelOrId, bobbsCb, setBbsOrNodeId]);
 
     const voltageLevelToEdit = useMemo(() => {
+        console.log(
+            'voltageLevelToEdit',
+            voltageLevelOrId,
+            newVoltageLevel,
+            formValues
+        );
 
         if (
             typeof voltageLevelOrId === 'string' &&
@@ -412,6 +428,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 bbsOrNodeId?.id || bbsOrNodeId,
                 newVoltageLevel
             );
+            // console.log('synth vl', ret);
             return ret;
         }
 
@@ -421,6 +438,7 @@ const LineSplitWithVoltageLevelDialog = ({
 
         return newVoltageLevel;
     }, [voltageLevelOrId, bbsOrNodeId, newVoltageLevel, formValues]);
+    console.log('to edit', voltageLevelToEdit);
 
     const [newLine1Id, newLine1IdField] = useTextValue({
         id: 'newLine1Id',

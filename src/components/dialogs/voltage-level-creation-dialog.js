@@ -341,6 +341,13 @@ const VoltageLevelCreationDialog = ({
               )
             : formValues?.substationId || '',
     });
+    console.log(
+        'substation',
+        substation,
+        'options',
+        substationOptions,
+        formValues
+    );
 
     const [busBarSections, busBarSectionsField] = useExpandableValues({
         id: 'bbs',
@@ -351,6 +358,12 @@ const VoltageLevelCreationDialog = ({
         defaultValues: formValues?.busbarSections,
     });
 
+    console.log(
+        'vl formValues',
+        formValues,
+        'connections',
+        formValues?.busbarConnections
+    );
     const [connections, connectionsField] = useExpandableValues({
         id: 'connections',
         labelAddValue: 'CreateLink',
@@ -371,6 +384,7 @@ const VoltageLevelCreationDialog = ({
                     switchKind: c.switchKind,
                 };
             });
+            console.log('substation', substation);
 
             onCreateVoltageLevel({
                 studyUuid,
