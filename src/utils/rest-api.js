@@ -469,16 +469,25 @@ export function fetchAllEquipments(
     );
 }
 
-function fetchEquipments(
+export function fetchEquipments(
     studyUuid,
     selectedNodeUuid,
     substationsIds,
     equipmentType,
-    equipmentPath
+    equipmentPath,
+    inUpstreamBuiltParentNode
 ) {
     console.info(
         `Fetching equipments '${equipmentType}' of study '${studyUuid}' and node '${selectedNodeUuid}' with substations ids '${substationsIds}'...`
     );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +

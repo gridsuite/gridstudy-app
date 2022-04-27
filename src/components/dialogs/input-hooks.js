@@ -432,6 +432,7 @@ export const useAutocompleteField = ({
     selectedValue,
     defaultValue,
     previousValue,
+    loading = false,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState('');
@@ -476,6 +477,8 @@ export const useAutocompleteField = ({
                 defaultValue={value}
                 value={value}
                 previousValue={previousValue}
+                loading={loading}
+                loadingText={<FormattedMessage id="loadingOptions" />}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
@@ -521,6 +524,7 @@ export const useAutocompleteField = ({
         error,
         errorMsg,
         formProps,
+        loading,
     ]);
 
     return [value, field];

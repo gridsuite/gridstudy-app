@@ -44,7 +44,7 @@ const compareById = (a, b) => a?.id?.localeCompare(b?.id);
  * Dialog to modify a load in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param equipmentOptions List of loads that can be modified
+ * @param equipmentOptions Promise handling list of loads that can be modified
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
@@ -57,7 +57,7 @@ const LoadModificationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
-    equipmentOptions,
+    fetchedEquipmentOptions,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -69,9 +69,21 @@ const LoadModificationDialog = ({
 
     const [formValues, setFormValues] = useState(undefined);
 
+    const [equipmentOptions, setEquipmentOptions] = useState([]);
+
+    const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
+        useState(true);
+
     const clearValues = () => {
         setFormValues(null);
     };
+
+    useEffect(() => {
+        fetchedEquipmentOptions.then((values) => {
+            setEquipmentOptions(values);
+            setLoadingEquipmentOptions(false);
+        });
+    }, [fetchedEquipmentOptions]);
 
     useEffect(() => {
         if (editData) {
@@ -88,8 +100,9 @@ const LoadModificationDialog = ({
         allowNewValue: true,
         getLabel: getId,
         defaultValue:
-            equipmentOptions.find((e) => e.id === formValues?.equipmentId) ||
+            equipmentOptions?.find((e) => e.id === formValues?.equipmentId) ||
             formValues?.equipmentId,
+        loading: loadingEquipmentOptions,
     });
 
     const [loadName, loadNameField] = useTextValue({
