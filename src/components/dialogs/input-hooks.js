@@ -156,7 +156,8 @@ export const useTextValue = ({
                 label={FieldLabel({
                     label,
                     optional:
-                        !validation.isFieldRequired && !formProps?.disabled,
+                        validation.isFieldRequired === false &&
+                        !formProps?.disabled,
                 })}
                 {...(adornment && {
                     adornmentPosition: adornment.position,
@@ -502,7 +503,7 @@ export const useAutocompleteField = ({
                         label={
                             <FieldLabel
                                 label={label}
-                                optional={!validation.isFieldRequired}
+                                optional={validation.isFieldRequired === false}
                             />
                         }
                         value={value}
@@ -646,7 +647,7 @@ export const useEnumValue = ({
                 <InputLabel id="enum-type-label" variant={'filled'}>
                     <FieldLabel
                         label={label}
-                        optional={!validation.isFieldRequired}
+                        optional={validation.isFieldRequired === false}
                     />
                 </InputLabel>
                 <Select
