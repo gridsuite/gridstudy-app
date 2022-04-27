@@ -526,8 +526,8 @@ const LineSplitWithVoltageLevelDialog = ({
             voltageLevelName,
             nominalVoltage,
             substationId,
-            busBarSections,
-            connections,
+            busbarSections,
+            busbarConnections,
         }) => {
             return new Promise(() => {
                 const preparedVoltageLevel = {
@@ -535,20 +535,20 @@ const LineSplitWithVoltageLevelDialog = ({
                     voltageLevelName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
                     substationId: substationId,
-                    busbarSections: busBarSections,
-                    connections: connections,
+                    busbarSections: busbarSections,
+                    busbarConnections: busbarConnections,
                 };
                 setNewVoltageLevel(preparedVoltageLevel);
                 setVoltageLevelOrId(voltageLevelId);
                 if (
-                    busBarSections.find(
+                    busbarSections.find(
                         (bbs) => bbs.id === (bbsOrNodeId?.id || bbsOrNodeId)
                     )
                 ) {
-                    setBusOrBusbarSectionOptions(busBarSections);
+                    setBusOrBusbarSectionOptions(busbarSections);
                 } else {
-                    setBusOrBusbarSectionOptions(busBarSections);
-                    setBbsOrNodeId(busBarSections[0].id);
+                    setBusOrBusbarSectionOptions(busbarSections);
+                    setBbsOrNodeId(busbarSections[0].id);
                 }
             });
         },

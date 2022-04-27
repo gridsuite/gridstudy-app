@@ -1376,8 +1376,8 @@ export function createVoltageLevel({
     name,
     nominalVoltage,
     substationId,
-    busBarSections,
-    connections,
+    busbarSections,
+    busbarConnections,
     isUpdate,
     modificationUuid,
 }) {
@@ -1395,12 +1395,14 @@ export function createVoltageLevel({
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
             '/network-modification/voltage-levels';
     }
-    let busBarConnections = connections.map((c) => {
-        return {
-            fromBBS: c.fromBBS.id,
-            toBBS: c.toBBS.id,
-            switchKind: c.switchKind,
-        };
+
+    const body = JSON.stringify({
+        equipmentId: voltageLevelId,
+        equipmentName: name,
+        nominalVoltage: nominalVoltage,
+        substationId: substationId,
+        busbarSections: busbarSections,
+        busbarConnections: busbarConnections,
     });
 
     return backendFetch(createVoltageLevelUrl, {
@@ -1409,14 +1411,7 @@ export function createVoltageLevel({
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            equipmentId: voltageLevelId,
-            equipmentName: name,
-            nominalVoltage: nominalVoltage,
-            substationId: substationId,
-            busbarSections: busBarSections,
-            busbarConnections: busBarConnections,
-        }),
+        body: body,
     }).then((response) =>
         response.ok
             ? response.text()

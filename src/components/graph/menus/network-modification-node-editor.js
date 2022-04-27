@@ -278,7 +278,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         const modification = fetchNetworkModification(modificationUuid);
         modification.then((res) => {
             res.json().then((data) => {
-                console.log('modification res json', data);
                 //remove all null values to avoid showing a "null" in the forms
                 Object.keys(data[0]).forEach((key) => {
                     if (data[0][key] === null) {
@@ -291,7 +290,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     };
 
     const renderDialog = () => {
-        console.log('dialogs', editDialogOpen, dialogs);
         return dialogs[editDialogOpen].dialog();
     };
 

@@ -115,7 +115,7 @@ const getId = (e) => e?.id || e;
 
 const getBusbarSectionById = (busbars, id) => {
     if (id) {
-        return busbars.find((bbs) => bbs?.id === id);
+        return busbars.find((bbs) => bbs?.id === id || bbs?.id === id?.id);
     }
     return null;
 };
@@ -243,7 +243,7 @@ function validateConnection(values) {
  *     nominalVoltage,
  *     substationId,
  *     busBarSections,
- *     connections
+ *     busbarConnections
  *     }
  */
 const VoltageLevelCreationDialog = ({
@@ -277,7 +277,7 @@ const VoltageLevelCreationDialog = ({
             nominalVoltage: voltageLevel.nominalVoltage,
             substationId: voltageLevel.substationId,
             busbarSections: voltageLevel.busbarSections,
-            busbarConnections: [],
+            busbarConnections: voltageLevel.busbarConnections,
         };
     };
 
@@ -364,6 +364,14 @@ const VoltageLevelCreationDialog = ({
     const handleSave = () => {
         // Check if error list contains an error
         if (inputForm.validate()) {
+            let busbarConnections = connections.map((c) => {
+                return {
+                    fromBBS: c.fromBBS.id,
+                    toBBS: c.toBBS.id,
+                    switchKind: c.switchKind,
+                };
+            });
+
             onCreateVoltageLevel({
                 studyUuid,
                 selectedNodeUuid,
@@ -371,8 +379,8 @@ const VoltageLevelCreationDialog = ({
                 voltageLevelName: voltageLevelName ? voltageLevelName : null,
                 nominalVoltage,
                 substationId: substation.id,
-                busBarSections,
-                connections,
+                busbarSections: busBarSections,
+                busbarConnections: busbarConnections,
                 isUpdate: editData ? true : false,
                 modificationUuid: editData ? editData.uuid : undefined,
             }).catch((errorMessage) => {
