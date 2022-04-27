@@ -314,7 +314,7 @@ const VoltageLevelCreationDialog = ({
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
+        defaultValue: formValues?.equipmentName || '',
     });
 
     const [nominalVoltage, nominalVoltageField] = useDoubleValue({
@@ -339,7 +339,7 @@ const VoltageLevelCreationDialog = ({
             ? substationOptions.find(
                   (value) => value.id === formValues.substationId
               )
-            : null,
+            : formValues?.substationId || '',
     });
 
     const [busBarSections, busBarSectionsField] = useExpandableValues({

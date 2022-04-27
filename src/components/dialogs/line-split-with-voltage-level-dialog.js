@@ -401,13 +401,11 @@ const LineSplitWithVoltageLevelDialog = ({
     }, [voltageLevelOrId, bobbsCb, setBbsOrNodeId]);
 
     const voltageLevelToEdit = useMemo(() => {
-        if (!voltageLevelOrId) {
-            return null;
-        }
 
         if (
             typeof voltageLevelOrId === 'string' &&
-            newVoltageLevel?.equipmentId !== voltageLevelOrId
+            newVoltageLevel &&
+            newVoltageLevel.equipmentId !== voltageLevelOrId
         ) {
             const ret = makeVoltageLevelCreationParams(
                 voltageLevelOrId,
