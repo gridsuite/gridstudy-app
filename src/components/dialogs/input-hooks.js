@@ -443,7 +443,6 @@ export const useAutocompleteField = ({
     previousValue,
     loading = false,
 }) => {
-    console.debug('useAutocompleteField', id, label, validation);
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState('');
     const validationRef = useRef();

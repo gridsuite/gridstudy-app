@@ -281,6 +281,19 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
 
+    const allVoltageLevelOptions = useMemo(() => {
+        if (!newVoltageLevel)
+            if (voltageLevelOptions?.length) return voltageLevelOptions;
+            else return [];
+        const asVL = {
+            id: newVoltageLevel.equipmentId,
+            name: newVoltageLevel.equipmentName,
+            substationId: newVoltageLevel.substationId,
+            busbarSections: newVoltageLevel.busbarSections,
+        };
+        return [asVL, ...voltageLevelOptions];
+    }, [newVoltageLevel, voltageLevelOptions]);
+
     useEffect(() => {
         if (editData) {
             setFormValues(editData);
@@ -333,15 +346,16 @@ const LineSplitWithVoltageLevelDialog = ({
             validation: { isFieldRequired: true },
             inputForm: inputForm,
             formProps: filledTextField,
-            values: voltageLevelOptions,
+            values: allVoltageLevelOptions,
             allowNewValue: true,
             getLabel: getId,
             defaultValue: defaultVoltageLevelId,
-            selectedValue: formValues
-                ? voltageLevelOptions.find(
-                      (value) => value.id === defaultVoltageLevelId
-                  )
-                : '',
+            selectedValue:
+                formValues && allVoltageLevelOptions
+                    ? allVoltageLevelOptions.find(
+                          (value) => value.id === defaultVoltageLevelId
+                      )
+                    : '',
         });
 
     const [busbarSectionOptions, setBusOrBusbarSectionOptions] = useState([]);
@@ -374,8 +388,9 @@ const LineSplitWithVoltageLevelDialog = ({
             console.log('meuh5', voltageLevelOrId);
             bobbsCb(voltageLevelOrId, (bobbss) => {
                 console.log('meuh6', bobbss, voltageLevelOrId);
-                if (voltageLevelOrId?.busbarSections) {
+                if (!bobbss?.length && voltageLevelOrId?.busbarSections) {
                     bobbss.push(...voltageLevelOrId.busbarSections);
+                    bobbss = [...bobbss, ...voltageLevelOrId.busbarSections];
                 }
                 if (bobbss?.length) {
                     setBusOrBusbarSectionOptions(bobbss);
@@ -563,7 +578,7 @@ const LineSplitWithVoltageLevelDialog = ({
         const vlId = isFirst
             ? lineToDivide.voltageLevelId1
             : lineToDivide.voltageLevelId2;
-        const mayVl = voltageLevelOptions.filter((vl) => vl.id === vlId);
+        const mayVl = allVoltageLevelOptions.filter((vl) => vl.id === vlId);
         if (mayVl && mayVl.length) return mayVl[0].name;
         return '';
     };
