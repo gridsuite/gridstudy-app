@@ -534,29 +534,15 @@ const LineSplitWithVoltageLevelDialog = ({
                     busbarSections: busBarSections,
                     connections: connections,
                 };
-                console.log(
-                    'vl',
-                    preparedVoltageLevel,
-                    bbsOrNodeId,
-                    typeof bbsOrNodeId
-                );
                 setNewVoltageLevel(preparedVoltageLevel);
                 setVoltageLevelOrId(voltageLevelId);
-                if (!busBarSections.length) {
-                    console.log('no busbar to selection');
-                } else if (
+                if (
                     busBarSections.find(
                         (bbs) => bbs.id === (bbsOrNodeId?.id || bbsOrNodeId)
                     )
                 ) {
                     setBusOrBusbarSectionOptions(busBarSections);
-                    console.log('busbar already selectionned');
                 } else {
-                    console.log(
-                        'tries to selection first bbs ',
-                        busBarSections[0].id,
-                        bbsOrNodeId
-                    );
                     setBusOrBusbarSectionOptions(busBarSections);
                     setBbsOrNodeId(busBarSections[0].id);
                 }
