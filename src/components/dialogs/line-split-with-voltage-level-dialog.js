@@ -417,8 +417,12 @@ const LineSplitWithVoltageLevelDialog = ({
             return ret;
         }
 
+        if (!newVoltageLevel && formValues?.mayNewVoltageLevelInfos) {
+            return formValues?.mayNewVoltageLevelInfos;
+        }
+
         return newVoltageLevel;
-    }, [voltageLevelOrId, bbsOrNodeId, newVoltageLevel]);
+    }, [voltageLevelOrId, bbsOrNodeId, newVoltageLevel, formValues]);
 
     const [newLine1Id, newLine1IdField] = useTextValue({
         id: 'newLine1Id',
