@@ -98,6 +98,7 @@ const SubstationCreationDialog = ({
 
     const [substationName, substationNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,
