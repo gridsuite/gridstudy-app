@@ -99,9 +99,9 @@ const LoadModificationDialog = ({
         values: equipmentOptions?.sort(compareById),
         allowNewValue: true,
         getLabel: getId,
-        defaultValue: equipmentOptions.find(
-            (e) => e.id === formValues?.equipmentId
-        ) || { id: formValues?.equipmentId },
+        defaultValue:
+            equipmentOptions.find((e) => e.id === formValues?.equipmentId) ||
+            formValues?.equipmentId,
         loading: loadingEquipmentOptions,
     });
 
