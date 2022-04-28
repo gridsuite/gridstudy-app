@@ -86,9 +86,8 @@ const TextFieldWithAdornment = (props) => {
     const withStartAdornmentText = useCallback(() => {
         return value !== '' || isFocused
             ? {
-                  startAdornment:
-                      value && isFocused && getTextAdornment('start'),
-                  endAdornment: clearable && getClearAdornment('end'),
+                  startAdornment: getTextAdornment('start'),
+                  endAdornment: value && clearable && getClearAdornment('end'),
                   classes: { input: classes.inputLeft },
               }
             : {};
