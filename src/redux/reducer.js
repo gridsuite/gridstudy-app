@@ -47,6 +47,7 @@ import {
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
+    OPEN_NETWORK_AREA_DIAGRAM,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -308,5 +309,8 @@ export const reducer = createReducer(initialState, {
     },
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
+    },
+    [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
+        state.openNetworkAreaDiagram = action.openNetworkAreaDiagram;
     },
 });

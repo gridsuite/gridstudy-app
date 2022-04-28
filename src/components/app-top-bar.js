@@ -35,10 +35,11 @@ import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { stringify } from 'qs';
-import { centerOnSubstation } from '../redux/actions';
+import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import TimelineIcon from '@mui/icons-material/Timeline';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -73,14 +74,32 @@ const CustomSuffixRenderer = ({ props, element }) => {
         [dispatch, props, network]
     );
 
+    const openNetworkAreaDiagramCB = useCallback(
+        (e, element) => {
+            dispatch(openNetworkAreaDiagram(element.id));
+            props.onClose && props.onClose();
+            e.stopPropagation();
+        },
+        [dispatch, props]
+    );
+
     if (
         element.type === EQUIPMENT_TYPE.SUBSTATION.name ||
         element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
     )
         return (
-            <IconButton onClick={(e) => enterOnSubstationCB(e, element)}>
-                <GpsFixedIcon />
-            </IconButton>
+            <>
+                {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
+                    <IconButton
+                        onClick={(e) => openNetworkAreaDiagramCB(e, element)}
+                    >
+                        <TimelineIcon />
+                    </IconButton>
+                )}
+                <IconButton onClick={(e) => enterOnSubstationCB(e, element)}>
+                    <GpsFixedIcon />
+                </IconButton>
+            </>
         );
 
     return (

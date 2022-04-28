@@ -35,6 +35,7 @@ import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
+import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -139,6 +140,8 @@ const StudyPane = ({
 
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
+
+    const [isNadOpen, setIsNadOpen] = useState(false);
 
     useEffect(() => {
         if (
@@ -312,6 +315,14 @@ const StudyPane = ({
                                         loadFlowInfos?.loadFlowStatus
                                     )}
                                     workingNode={workingNode}
+                                />
+                            )}
+                            {props.view === StudyView.MAP /*&& isNadOpen*/ && (
+                                <NetworkAreaDiagramPane
+                                    studyUuid={studyUuid}
+                                    network={network}
+                                    workingNode={workingNode}
+                                    onClose={() => setIsNadOpen(false)}
                                 />
                             )}
                         </div>
