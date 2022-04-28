@@ -115,6 +115,7 @@ const LoadCreationDialog = ({
 
     const [loadName, loadNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,
@@ -122,6 +123,7 @@ const LoadCreationDialog = ({
 
     const [loadType, loadTypeField] = useEnumValue({
         label: 'Type',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
