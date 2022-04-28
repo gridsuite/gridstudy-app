@@ -146,6 +146,7 @@ const LineCreationDialog = ({
 
     const [lineName, lineNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,
