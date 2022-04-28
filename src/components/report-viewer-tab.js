@@ -21,22 +21,18 @@ import WaitingLoader from './util/waiting-loader';
  * @returns {*} node
  * @constructor
  */
-export const ReportViewerTab = ({ reportId, visible }) => {
+export const ReportViewerTab = ({ reportId, visible, workingNode }) => {
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
 
-    const reportIdRef = useRef();
-
     useEffect(() => {
-        if (visible && reportIdRef.current !== reportId) {
+        if (visible) {
             setWaitingLoadReport(true);
-            reportIdRef.current = reportId;
-            fetchReport(reportId)
+            fetchReport(reportId, workingNode?.id)
                 .then((fetchedReport) => {
-                    if (reportIdRef.current === reportId)
-                        // set the report only if it's the last expected/fetched report
-                        setReport(fetchedReport);
+                    // set the report only if it's the last expected/fetched report
+                    setReport(fetchedReport);
                 })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
@@ -48,7 +44,7 @@ export const ReportViewerTab = ({ reportId, visible }) => {
                     setWaitingLoadReport(false);
                 });
         }
-    }, [visible, reportId, enqueueSnackbar]);
+    }, [visible, reportId, workingNode, enqueueSnackbar]);
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>

@@ -217,9 +217,9 @@ export function getSubstationSingleLineDiagram(
     );
 }
 
-export function fetchReport(studyUuid) {
-    console.info('get report for study : ' + studyUuid);
-    return backendFetch(getStudyUrl(studyUuid) + '/report').then((response) =>
+export function fetchReport(studyUuid, selectedNodeUuid) {
+    console.info('get report for node : ' + selectedNodeUuid + ' in study ' + studyUuid);
+    return backendFetch(getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/report').then((response) =>
         response.ok
             ? response.json()
             : response.text().then((text) => Promise.reject(text))
