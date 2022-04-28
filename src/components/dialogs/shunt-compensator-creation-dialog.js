@@ -116,6 +116,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const [shuntCompensatorName, shuntCompensatorNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,

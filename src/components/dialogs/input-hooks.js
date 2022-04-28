@@ -156,7 +156,8 @@ export const useTextValue = ({
                 label={FieldLabel({
                     label,
                     optional:
-                        !validation.isFieldRequired && !formProps?.disabled,
+                        validation.isFieldRequired === false &&
+                        !formProps?.disabled,
                 })}
                 {...(adornment && {
                     adornmentPosition: adornment.position,
@@ -432,6 +433,7 @@ export const useAutocompleteField = ({
     selectedValue,
     defaultValue,
     previousValue,
+    loading = false,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState('');
@@ -476,6 +478,8 @@ export const useAutocompleteField = ({
                 defaultValue={value}
                 value={value}
                 previousValue={previousValue}
+                loading={loading}
+                loadingText={<FormattedMessage id="loadingOptions" />}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
@@ -499,7 +503,7 @@ export const useAutocompleteField = ({
                         label={
                             <FieldLabel
                                 label={label}
-                                optional={!validation.isFieldRequired}
+                                optional={validation.isFieldRequired === false}
                             />
                         }
                         value={value}
@@ -521,6 +525,7 @@ export const useAutocompleteField = ({
         error,
         errorMsg,
         formProps,
+        loading,
     ]);
 
     return [value, field];
@@ -642,7 +647,7 @@ export const useEnumValue = ({
                 <InputLabel id="enum-type-label" variant={'filled'}>
                     <FieldLabel
                         label={label}
-                        optional={!validation.isFieldRequired}
+                        optional={validation.isFieldRequired === false}
                     />
                 </InputLabel>
                 <Select
