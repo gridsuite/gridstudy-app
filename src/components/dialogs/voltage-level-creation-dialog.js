@@ -298,6 +298,7 @@ const VoltageLevelCreationDialog = ({
 
     const [voltageLevelName, voltageLevelNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,

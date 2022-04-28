@@ -143,6 +143,7 @@ const GeneratorCreationDialog = ({
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,

@@ -132,6 +132,7 @@ const TwoWindingsTransformerCreationDialog = ({
     const [twoWindingsTransformerName, twoWindingsTransformerNameField] =
         useTextValue({
             label: 'Name',
+            validation: { isFieldRequired: false },
             inputForm: inputForm,
             formProps: filledTextField,
             defaultValue: formValues?.equipmentName,
