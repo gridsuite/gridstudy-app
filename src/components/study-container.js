@@ -271,15 +271,15 @@ export function StudyContainer({ view, onChangeTab }) {
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
 
-                let firstBuiltModelNode = getFirstNodeOfType(
+                let firstBuiltNode = getFirstNodeOfType(
                     tree,
-                    'MODEL',
+                    'NETWORK_MODIFICATION',
                     'BUILT'
                 );
                 dispatch(
                     workingTreeNode(
-                        firstBuiltModelNode
-                            ? firstBuiltModelNode
+                        firstBuiltNode
+                            ? firstBuiltNode
                             : getFirstNodeOfType(tree, 'ROOT')
                     )
                 );
