@@ -106,7 +106,7 @@ const LoadModificationDialog = ({
         allowNewValue: true,
         getLabel: getId,
         defaultValue:
-            equipmentOptions.find((e) => e.id === formValueEquipmentId) ||
+            equipmentOptions.find((e) => e.id === formValueEquipmentId?.id) ||
             formValueEquipmentId,
         loading: loadingEquipmentOptions,
     });
