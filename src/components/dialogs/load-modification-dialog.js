@@ -12,7 +12,7 @@ import DialogTitle from '@mui/material//DialogTitle';
 import Grid from '@mui/material/Grid';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import {
@@ -91,6 +91,12 @@ const LoadModificationDialog = ({
         }
     }, [editData]);
 
+    const formValueEquipmentId = useMemo(() => {
+        return formValues?.equipmentId
+            ? { id: formValues?.equipmentId }
+            : { id: '' };
+    }, [formValues]);
+
     const [loadInfos, loadIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
@@ -100,8 +106,8 @@ const LoadModificationDialog = ({
         allowNewValue: true,
         getLabel: getId,
         defaultValue:
-            equipmentOptions.find((e) => e.id === formValues?.equipmentId) ||
-            formValues?.equipmentId,
+            equipmentOptions.find((e) => e.id === formValueEquipmentId) ||
+            formValueEquipmentId,
         loading: loadingEquipmentOptions,
     });
 
