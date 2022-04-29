@@ -209,8 +209,9 @@ export function SingleLineDiagramPane({
 
     const updateSld = useCallback(
         (id) => {
-            if (id) views.find((sld) => sld.id === id)?.ref.current.reloadSvg();
-            else views.forEach((sld) => sld.ref.current.reloadSvg());
+            if (id)
+                views.find((sld) => sld.id === id)?.ref?.current?.reloadSvg();
+            else views.forEach((sld) => sld?.ref?.current?.reloadSvg());
         },
         [views]
     );
@@ -421,7 +422,8 @@ export function SingleLineDiagramPane({
                     )
                     .map((view) => (
                         <Chip
-                            key={view.id}
+                            k
+                            ey={view.id}
                             icon={<ArrowUpwardIcon />}
                             label={view.name}
                             onClick={() => handleOpenView(view.id, view.type)}
