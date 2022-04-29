@@ -480,6 +480,7 @@ export const useAutocompleteField = ({
                 previousValue={previousValue}
                 loading={loading}
                 loadingText={<FormattedMessage id="loadingOptions" />}
+                freeSolo={allowNewValue}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
