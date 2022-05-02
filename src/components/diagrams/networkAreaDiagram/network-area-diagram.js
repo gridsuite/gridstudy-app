@@ -66,8 +66,6 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
 const maxHeightVoltageLevel = 700;
-const maxWidthSubstation = 1200;
-const maxHeightSubstation = 700;
 const errorWidth = maxWidthVoltageLevel;
 
 const useStyles = makeStyles((theme) => ({
@@ -170,6 +168,9 @@ const computePaperAndSvgSizesIfReady = (
     console.info('svgPreferredWidth', svgPreferredWidth);
     console.info('svgPreferredHeight', svgPreferredHeight);
     console.info('headerPreferredHeight', headerPreferredHeight);
+    console.info('maxWidthVoltageLevel', maxWidthVoltageLevel);
+    console.info('maxHeightVoltageLevel', maxHeightVoltageLevel);
+
     if (
         typeof svgPreferredWidth != 'undefined' &&
         typeof headerPreferredHeight != 'undefined'
@@ -181,18 +182,15 @@ const computePaperAndSvgSizesIfReady = (
             svgWidth = totalWidth - borders;
             svgHeight = totalHeight - headerPreferredHeight - borders;
         } else {
-            let maxWidth, maxHeight;
-                maxWidth = maxWidthVoltageLevel;
-                maxHeight = maxHeightVoltageLevel;
             svgWidth = Math.min(
                 svgPreferredWidth,
                 totalWidth - mapRightOffset,
-                maxWidth
+                maxWidthVoltageLevel
             );
             svgHeight = Math.min(
                 svgPreferredHeight,
                 totalHeight - mapBottomOffset - headerPreferredHeight,
-                maxHeight
+                maxHeightVoltageLevel
             );
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
@@ -254,16 +252,14 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
             fullScreen,
-            svgType,
             totalWidth,
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
             headerPreferredHeight,
         );
+        console.info('sizes', sizes)
         if (typeof sizes != 'undefined') {
-            console.info('totalWidth', totalWidth);
-            console.info('sizes', sizes);
             setSvgFinalWidth(sizes.svgWidth);
             setSvgFinalHeight(sizes.svgHeight);
             setFinalPaperWidth(sizes.paperWidth);
@@ -311,69 +307,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 
 
     useLayoutEffect(() => {
-        function createSvgArrow(element, position, x, highestY, lowestY) {
-            let svgInsert = document.getElementById(element.id).parentElement;
-            let group = document.createElementNS(SVG_NS, 'g');
-
-            let y;
-            if (position === 'TOP') {
-                y = lowestY - 65;
-                x = x - 22;
-            } else {
-                y = highestY + 65;
-                x = x + 22;
-            }
-
-            if (position === 'BOTTOM') {
-                group.setAttribute(
-                    'transform',
-                    'translate(' + x + ',' + y + ') rotate(180)'
-                );
-            } else {
-                group.setAttribute(
-                    'transform',
-                    'translate(' + x + ',' + y + ')'
-                );
-            }
-
-            group.innerHTML = arrowSvg + arrowHoverSvg;
-
-            svgInsert.appendChild(group);
-
-            // handling the navigation between voltage levels
-            group.style.cursor = 'pointer';
-            let dragged = false;
-            group.addEventListener('mousedown', function (event) {
-                dragged = false;
-            });
-            group.addEventListener('mousemove', function (event) {
-                dragged = true;
-            });
-            group.addEventListener('mouseup', function (event) {
-                if (dragged || event.button !== 0) {
-                    return;
-                }
-                const id = document.getElementById(element.id).id;
-                const meta = svg.metadata.nodes.find(
-                    (other) => other.id === id
-                );
-                // onNextVoltageLevelClick(meta.nextVId);
-            });
-
-            //handling the color changes when hovering
-            group.addEventListener('mouseenter', function (e) {
-                e.target.querySelector('.arrow').style.fill =
-                    theme.palette.background.paper;
-                e.target.querySelector('.arrow-hover').style.fill =
-                    'currentColor';
-            });
-
-            group.addEventListener('mouseleave', function (e) {
-                e.target.querySelector('.arrow').style.fill = 'currentColor';
-                e.target.querySelector('.arrow-hover').style.fill =
-                    theme.palette.background.paper;
-            });
-        }
 
         if (svg.svg) {
             const divElt = svgRef.current;
@@ -388,37 +321,39 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             const svgHeight = bbox.height + 40;
 
             console.info('divElt', divElt   )
+            console.info('bbox', bbox   )
 
             const svgTmp = divElt.getElementsByTagName('svg')[0];
             const width = svgTmp.getAttribute('width');
             const height = svgTmp.getAttribute('height')
 
-            setSvgFinalWidth(width);
-            setSvgFinalHeight(height);
+            console.info('width', width)
+            console.info('height', height)
 
-            svgTmp.removeAttribute('width', );
-            svgTmp.removeAttribute('height', )
+            setSvgPreferredHeight(height);
+            setSvgPreferredWidth(width)
 
+            svgTmp.removeAttribute('width');
+            svgTmp.removeAttribute('height');
 
-            setSvgPreferredWidth(svgWidth);
-            setSvgPreferredHeight(svgHeight);
+            // setSvgPreferredWidth(svgWidth);
+            // setSvgPreferredHeight(svgHeight);
 
             let viewboxMaxWidth = maxWidthVoltageLevel;
             let viewboxMaxHeight =maxHeightVoltageLevel;
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
-            console.info('svgType',svgType);
             const draw = SVG()
                 .addTo(divElt)
-                .size(svgWidth, svgHeight)
+                .size(width, height)
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
                     zoomMin: 0.5,
                     zoomMax: 80,
                     zoomFactor: 0.3,
-                    margins: { top: 10, left: 10, right: 10, bottom: 10 },
+                    margins: { top: 0, left: 0, right: 0, bottom: 0 },
                 });
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
 
@@ -481,9 +416,10 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             const divElt = svgRef.current;
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
+
                 if (svgEl != null) {
-                    svgEl.setAttribute('width', svgFinalWidth);
-                    svgEl.setAttribute('height', svgFinalHeight);
+                    svgEl.setAttribute('width', svgPreferredWidth);
+                    svgEl.setAttribute('height', svgPreferredHeight);
                 }
             }
         } else {
@@ -503,7 +439,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     const onCloseHandler = () => {
         if (props.onClose !== null) {
             dispatch(fullScreenSingleLineDiagram(undefined));
-            console.info(props);
             props.onClose(sldId);
         }
     };
@@ -531,15 +466,19 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         sizeWidth = totalWidth; // happens during initalization
     }
 
+    console.info('finalPaperWidth', finalPaperWidth)
+    console.info('finalPaperHeight', finalPaperHeight)
+    console.info('sizeWidth', sizeWidth)
+    console.info('sizeHeight', sizeHeight)
     return !svg.error ? (
         <Paper
             elevation={1}
             square={true}
             style={{
                 pointerEvents: 'auto',
-                width: sizeWidth,
+                width: svgPreferredWidth,
                 minWidth: loadingWidth,
-                height: sizeHeight,
+                height: svgPreferredHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
             }}
         >

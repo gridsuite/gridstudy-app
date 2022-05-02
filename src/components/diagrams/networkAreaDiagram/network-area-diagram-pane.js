@@ -164,7 +164,7 @@ export function NetworkAreaDiagramPane({
                         position: 'relative',
                         display: 'flex',
                         pointerEvents: 'none',
-                        flexDirection: 'column',
+                        // flexDirection: 'column',
                     }}
                 >
                     <NetworkAreaDiagram
