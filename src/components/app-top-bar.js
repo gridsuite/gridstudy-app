@@ -34,7 +34,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { stringify } from 'qs';
 import { centerOnSubstation } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
@@ -97,8 +96,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
 
     const equipmentClasses = useEquipmentStyles();
-
-    const history = useHistory();
 
     const dispatch = useDispatch();
 
