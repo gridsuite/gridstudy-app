@@ -13,7 +13,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
 
-const ROW_HEIGHT = 54;
+const ROW_HEIGHT = 38;
 
 const useStyles = makeStyles((theme) => ({
     tableCell: {
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'right',
         textAlign: 'right',
         boxSizing: 'border-box',
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
         flex: 1,
         minWidth: 0,
         height: ROW_HEIGHT + 'px',
