@@ -10,7 +10,6 @@ import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 import { lighten, darken } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
-import ModelNodeEditor from './model-node-editor';
 import {
     fetchNetworkModificationTreeNode,
     updateTreeNode,
@@ -116,13 +115,10 @@ const NodeEditor = () => {
                         onChange={changeNodeName}
                     />
                     <>
-                        {selectedNode && selectedNode.type !== 'MODEL' && (
+                        {selectedNode && (
                             <NetworkModificationNodeEditor
                                 selectedNode={selectedNode}
                             />
-                        )}
-                        {selectedNode && selectedNode.type === 'MODEL' && (
-                            <ModelNodeEditor selectedNode={selectedNode} />
                         )}
                     </>
                 </div>

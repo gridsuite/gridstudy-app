@@ -248,6 +248,7 @@
     "FluxConvention.target": "Target",
 
     "Optional": " (optional)",
+    "loadingOptions": "Loading...",
     "createNetworkModificationNode": "Create a network modification node",
     "createModelNode": "Create a model node",
     "removeNode": "Remove node",
