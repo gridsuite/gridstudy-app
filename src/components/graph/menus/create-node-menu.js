@@ -42,11 +42,6 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
-    function createModelNode(insertMode) {
-        handleNodeCreation(activeNode, 'MODEL', insertMode);
-        handleClose();
-    }
-
     function removeNode() {
         handleNodeRemoval(activeNode);
         handleClose();
@@ -58,30 +53,15 @@ const CreateNodeMenu = ({
             action: () => createNetworkModificationNode('CHILD'),
             id: 'createNetworkModificationNode',
         },
-        CREATE_MODEL_NODE: {
-            onRoot: true,
-            action: () => createModelNode('CHILD'),
-            id: 'createModelNode',
-        },
         INSERT_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
             action: () => createNetworkModificationNode('BEFORE'),
             id: 'insertNetworkModificationNodeBefore',
         },
-        INSERT_MODEL_NODE_BEFORE: {
-            onRoot: false,
-            action: () => createModelNode('BEFORE'),
-            id: 'insertModelNodeBefore',
-        },
         INSERT_MODIFICATION_NODE_AFTER: {
             onRoot: true,
             action: () => createNetworkModificationNode('AFTER'),
             id: 'insertNetworkModificationNodeAfter',
-        },
-        INSERT_MODEL_NODE_AFTER: {
-            onRoot: true,
-            action: () => createModelNode('AFTER'),
-            id: 'insertModelNodeAfter',
         },
         REMOVE_NODE: {
             onRoot: false,
