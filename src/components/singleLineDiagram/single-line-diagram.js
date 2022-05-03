@@ -102,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
             stroke: 'none',
             fill: theme.palette.text.primary,
         },
+        overflow: 'hidden',
     },
     divInvalid: {
         '& .sld-arrow-p, .sld-arrow-q': {
@@ -225,7 +226,7 @@ const computePaperAndSvgSizesIfReady = (
                 maxHeight
             );
             if (numberToDisplay > 1) {
-                svgWidth = totalWidth - borders;
+                svgWidth = Math.min(totalWidth - borders, svgPreferredWidth);
             }
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;

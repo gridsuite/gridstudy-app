@@ -17,33 +17,31 @@ export const ViewState = {
 
 export function getArray(value) {
     if (value === undefined) return [];
-    if (!Array.isArray(value.id)) return [value];
-    return value.id.map((id, n) => {
-        return { id, type: value.type[n] };
-    });
+    return !Array.isArray(value) ? [value] : value;
 }
+
+const arrayFormat = 'indices';
 
 export const useSingleLineDiagram = () => {
     const history = useHistory();
     const location = useLocation();
-    /*
-     * http://localhost:3000/studies/62a9cc56-af19-4497-9723-e1988f7d9253?
-     * views%5Btype%5D=voltage-level&views%5Bid%5D=_c1d5bfde8f8011e08e4d00247eb1f55e&views%5Btype%5D=voltage-level&views%5Bid%5D=_c1d5bfea8f8011e08e4d00247eb1f55e
-     * */
+
     const addToSearchParams = useCallback(
         (type, id) => {
             const queryParams = parse(location.search, {
                 ignoreQueryPrefix: true,
             });
-            const current = getArray(queryParams['views']).filter(
-                (item) => item.id !== id
-            );
-            current.push({ id, type });
+            const current = getArray(queryParams['views'])
+                .filter((item) => item.id !== id)
+                .map(({ id, type }) => {
+                    return { id, type }; // filter to only id, type
+                });
+            current.push({ id, type, lastOpen: true });
             history.replace(
                 location.pathname +
                     stringify(
                         { views: current },
-                        { arrayFormat: 'repeat', addQueryPrefix: true }
+                        { arrayFormat, addQueryPrefix: true }
                     )
             );
         },
@@ -73,6 +71,7 @@ export const useSingleLineDiagram = () => {
             );
             const queryParams = parse(location.search, {
                 ignoreQueryPrefix: true,
+                arrayFormat,
             });
             if (idsToRemove === undefined) {
                 history.replace(location.pathname);
@@ -86,7 +85,7 @@ export const useSingleLineDiagram = () => {
                             { views },
                             {
                                 addQueryPrefix: true,
-                                arrayFormat: 'repeat',
+                                arrayFormat,
                             }
                         ).toString()
                 );
