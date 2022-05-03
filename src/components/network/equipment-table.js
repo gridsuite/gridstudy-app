@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useIntl } from 'react-intl';
 import { requestNetworkChange } from '../../utils/rest-api';
 import { IconButton, TextField } from '@mui/material';
@@ -6,16 +6,14 @@ import CreateIcon from '@mui/icons-material/Create';
 import Grid from '@mui/material/Grid';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
-import TableCell from '@mui/material/TableCell';
 import LoaderWithOverlay from '../util/loader-with-overlay';
-import VirtualizedTable from '../util/virtualized-table';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import Paper from '@mui/material/Paper';
-import MultiGrid from 'react-virtualized/dist/commonjs/MultiGrid/MultiGrid';
-import { AutoSizer } from 'react-virtualized';
-//import { CharlyDebug } from '../util/charly';
+import { MultiGrid, AutoSizer } from 'react-virtualized';
+import LockIcon from "@mui/icons-material/Lock";
+import { render } from "react-dom";
+import { TABLES_DEFINITION_INDEXES } from "./config-tables";
 
 const ROW_HEIGHT = 38;
 const MIN_COLUMN_WIDTH = 160;
@@ -40,7 +38,8 @@ export const EquipmentTable = ({
     studyUuid,
     workingNode,
     rows,
-    selectedColumnsNames,
+    visibleColumnsNames,
+    lockedColumnsNames,
     tableDefinition,
     filter,
     scrollToIndex,
@@ -48,27 +47,39 @@ export const EquipmentTable = ({
     network,
     selectedDataKey,
     fluxConvention,
+    tabIndex,
+    // TODO CHARLY extraire columns et le passer en state depuis network-table
 }) => {
-    /*const [charlyTime, setCharlyTime] = useState(
-        useEffect(() => {
-            setCharlyTime(Date.now());
-        }, [])
-    );*/
 
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
+    let columns = [];
     const intl = useIntl();
     const isLineOnEditMode = useCallback(
         (cellData) => {
-            return lineEdit && cellData.rowData.id === lineEdit.id;
+            return lineEdit && cellData.id === lineEdit.id;
         },
         [lineEdit]
     );
 
     useEffect(() => setLineEdit({}), [tableDefinition]);
 
+    useEffect(() => { // used to force a MultiGrid re-render
+        if(gridRef && gridRef.current)
+        {
+            gridRef.current.forceUpdateGrids();
+            gridRef.current.recomputeGridSize();
+        }
+    }, [tabIndex]);
+
     function startEdition(lineInfo) {
         setLineEdit(lineInfo);
+    }
+
+    function isEditColumnVisible() {
+        return (
+            tableDefinition.modifiableEquipmentType && !workingNode?.readOnly
+        );
     }
 
     function capitaliseFirst(str) {
@@ -111,6 +122,7 @@ export const EquipmentTable = ({
     }
 
     function createEditableRow(cellData) {
+        // TODO CHARLY maybe unshift d'une case, si on a la colonne d'édition
         return (
             (!isLineOnEditMode(cellData) && (
                 <IconButton
@@ -121,7 +133,7 @@ export const EquipmentTable = ({
                             line: cellData.rowIndex,
                             oldValues: {},
                             newValues: {},
-                            id: cellData.rowData['id'],
+                            id: cellData.rowData['id'], // TODO CHARLY potentiellement à remplacer seulement par cellData.id, si ça plante.
                             equipmentType:
                                 tableDefinition.modifiableEquipmentType,
                         })
@@ -134,13 +146,13 @@ export const EquipmentTable = ({
                     <Grid item>
                         <IconButton
                             size={'small'}
-                            onClick={() => commitChanges(cellData.rowData)}
+                            onClick={() => commitChanges(cellData.rowData)} // TODO CHARLY potentiellement à remplacer seulement par cellData.id, si ça plante.
                         >
                             <CheckIcon />
                         </IconButton>
                         <IconButton
                             size={'small'}
-                            onClick={() => resetChanges(cellData.rowData)}
+                            onClick={() => resetChanges(cellData.rowData)} // TODO CHARLY potentiellement à remplacer seulement par cellData.id, si ça plante.
                         >
                             <ClearIcon />
                         </IconButton>
@@ -151,22 +163,28 @@ export const EquipmentTable = ({
     }
 
     const formatCell = useCallback(
-        (cellData, dataKey, isNumeric, fractionDigit, normed = undefined) => {
-            let value = cellData[dataKey];
-            if (typeof value === 'function') value = cellData.dataKey(network);
-            if (normed) value = normed(fluxConvention, value);
-            return value && isNumeric && fractionDigit
-                ? parseFloat(value).toFixed(fractionDigit)
+        (cellData, columnDefinition) => {
+            let value = cellData[columnDefinition.dataKey];
+            if (columnDefinition.cellDataGetter) {
+                value = columnDefinition.cellDataGetter(cellData, network);
+            }
+            if (columnDefinition.normed) {
+                console.error("CHARLY fluxconvention "+fluxConvention); // TODO CHARLY ne fonctionne pas quand on change le param (maybe d'autres soucis)
+                value = columnDefinition.normed(fluxConvention, value);
+            }
+            return value &&
+                columnDefinition.numeric &&
+                columnDefinition.fractionDigits
+                ? parseFloat(value).toFixed(columnDefinition.fractionDigits)
                 : value;
         },
         [fluxConvention, network]
     );
 
     const defaultCellRender = useCallback(
-        (cellData, dataKey, numeric, fractionDigit, normed = undefined) => {
-            const text = formatCell(cellData, dataKey, numeric, fractionDigit, normed);
-            return (
-                /*<TableCell
+        (cellData, columnDefinition) => {
+            const text = formatCell(cellData, columnDefinition);
+            /*<TableCell
                     component="div"
                     variant="body"
                     style={{ width: cellData.width }}
@@ -175,8 +193,8 @@ export const EquipmentTable = ({
                 >
                     <OverflowableText text={text} />
                 </TableCell>*/
-                <span>{text}</span>
-            );
+            //return (<span style={columnDefinition.style}>{text}</span>);
+            return text;
         },
         [classes.tableCell, formatCell]
     );
@@ -196,27 +214,28 @@ export const EquipmentTable = ({
     );
 
     const EditableCellRender = useCallback(
-        (cellData, numeric, changeCmd, fractionDigit, Editor) => {
+        (cellData, columnDefinition) => {
             if (
                 !isLineOnEditMode(cellData) ||
-                cellData.rowData[cellData.dataKey] === undefined
+                cellData.rowData[cellData.dataKey] === undefined // TODO CHARLY potentiellement à remplacer seulement par cellData.id, si ça plante.
             ) {
-                return defaultCellRender(cellData, numeric, fractionDigit);
+                return defaultCellRender(cellData, columnDefinition);
             } else {
                 const ref = React.createRef();
-                const text = formatCell(cellData, numeric, fractionDigit);
+                const text = formatCell(cellData, columnDefinition);
                 const changeRequest = (value) =>
-                    registerChangeRequest(cellData, changeCmd, value);
+                    registerChangeRequest(
+                        cellData,
+                        columnDefinition.changeCmd,
+                        value
+                    );
+                const Editor = columnDefinition.editor;
                 return Editor ? (
                     <Editor
-                        key={cellData.dataKey + cellData.rowData.id}
+                        key={cellData.dataKey + cellData.rowData.id} // TODO CHARLY potentiellement à remplacer seulement par cellData.id, si ça plante.
                         className={classes.tableCell}
-                        equipment={cellData.rowData}
-                        defaultValue={formatCell(
-                            cellData,
-                            numeric,
-                            fractionDigit
-                        )}
+                        equipment={cellData.rowData} // TODO CHARLY potentiellement à remplacer seulement par cellData.id, si ça plante.
+                        defaultValue={formatCell(cellData, columnDefinition)}
                         setter={(val) => changeRequest(val)}
                     />
                 ) : (
@@ -248,119 +267,57 @@ export const EquipmentTable = ({
         ]
     );
 
-    const columnDisplayStyle = (key) => {
-        return selectedColumnsNames.has(key) ? '' : 'none';
-    };
+    const generateTableColumns = useCallback (() => {
+            let generatedTableColumns = tableDefinition.columns.filter((c) => {
+                return visibleColumnsNames.has(c.id);
+            }).map((c) => {
+                let column = {
+                    label: intl.formatMessage({ id: c.id }),
+                    ...c,
+                };
+                if (lockedColumnsNames.has(c.id)) {
+                    column.locked = true;
+                }
+                if (c.changeCmd !== undefined) {
+                    console.error("ATTENTION code pas terminé ici");
+                    column.cellRenderer = (cell, columnDefinition) =>
+                        EditableCellRender(cell, columnDefinition);
+                } else {
+                    column.cellRenderer = (cell, columnDefinition) =>
+                        defaultCellRender(cell, columnDefinition);
+                }
+                delete column.changeCmd;
+                return column;
+            });
 
-    const generateMinWidthTable = (table) => {
-        return table.columns
-            .filter((c) => {
-                // Only keep the displayed columns
-                return selectedColumnsNames.has(c.id);
-            })
-            .map((c) => {
-                // Get all the displayed columns' widths
-                return c.columnWidth !== undefined
-                    ? c.columnWidth
-                    : MIN_COLUMN_WIDTH;
-            })
-            .reduce(function (sum, currentWidth) {
-                // Sum the widths
-                return sum + currentWidth;
-            }, 0);
-    };
-
-    const generateTableColumns = (table) => {
-        let generatedTableColumns = table.columns.map((c) => {
-            let columnWidth =
-                c.columnWidth !== undefined ? c.columnWidth : MIN_COLUMN_WIDTH;
-            let column = {
-                label: intl.formatMessage({ id: c.id }),
-                headerStyle: {
-                    display: columnDisplayStyle(c.id),
-                    width: columnWidth + 'px',
-                },
-                style: {
-                    display: columnDisplayStyle(c.id),
-                    width: columnWidth + 'px',
-                },
-                ...c,
-            };
-            if (c.changeCmd !== undefined) {
-                column.cellRenderer = (cell) =>
-                    EditableCellRender(
-                        cell,
-                        c.numeric,
-                        c.changeCmd,
-                        c.fractionDigits,
-                        c.editor
-                    );
-            } else {
-                column.cellRenderer = (cell, dataKey) =>
-                    defaultCellRender(
-                        cell,
-                        dataKey,
-                        c.numeric,
-                        c.fractionDigits,
-                        c.normed
-                    );
+            if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
+                generatedTableColumns.unshift({
+                    style: { display: '', width: HEADER_CELL_WIDTH },
+                    label: 'Edit',
+                    cellRenderer: (cell, columnDefinition) =>
+                        defaultCellRender(cell, columnDefinition),
+                });
             }
-            delete column.changeCmd;
-            return column;
-        });
-        /*let firstColumnWidth =
-            generatedTableColumns[0].columnWidth !== undefined
-                ? generatedTableColumns[0].columnWidth
-                : MIN_COLUMN_WIDTH;
-        generatedTableColumns[0].style = {
-            position: 'fixed',
-            width: firstColumnWidth + 'px',
-            backgroundColor: '#224433',
-            ...generatedTableColumns[0].style,
-        };
-        generatedTableColumns[0].headerStyle = {
-            position: 'fixed',
-            width: firstColumnWidth + 'px',
-            backgroundColor: '#224433',
-            zIndex: '2',
-            ...generatedTableColumns[0].headerStyle,
-        };
-        generatedTableColumns[1].style = {
-            marginLeft: firstColumnWidth + 'px',
-            ...generatedTableColumns[1].style,
-        };
-        generatedTableColumns[1].headerStyle = {
-            marginLeft: firstColumnWidth + 'px',
-            ...generatedTableColumns[1].headerStyle,
-        };*/
-        return generatedTableColumns;
-    };
+            return generatedTableColumns;
 
-    /*const generateCell = (rowIndex, columnIndex) => {
-        //return rows[rowIndex][columnIndex].cellRenderer;
-        //return formatCell(rows[rowIndex][columnIndex], numeric, fractionDigit, normed);
-        return '[' + rowIndex + '_' + columnIndex + ']';
-        //return {
-        //    width: MIN_COLUMN_WIDTH,
-        //    maxWidth: MIN_COLUMN_WIDTH,
-        //    label: 'label',
-        //   dataKey: 'dataKey',
-        //   style: {},
-        //   cellRenderer: defaultCellRender,
-        //};
-    };*/
+        }, [rows, tableDefinition, visibleColumnsNames, lockedColumnsNames]
+    );
 
-    function makeHeaderCell() {
+    /*function makeHeaderCell() {
         return {
             width: HEADER_CELL_WIDTH,
             maxWidth: HEADER_CELL_WIDTH,
             label: '',
             dataKey: '',
             style: {
-                display: selectedColumnsNames.size > 0 ? '' : 'none',
+                display: visibleColumnsNames.size > 0 ? '' : 'none',
             },
             cellRenderer: createEditableRow,
         };
+    }*/
+
+    const lockIcon = () => {
+        return (<LockIcon style={{fontSize: 'small'}}/>);
     }
 
     // CHARLY TEST BELOW
@@ -370,50 +327,51 @@ export const EquipmentTable = ({
     // https://github.com/bvaughn/react-virtualized/blob/master/docs/MultiGrid.md
 
     function cellRenderer({ columnIndex, key, rowIndex, style }) {
-        //style = {backgroundColor: getBackgroundColor(), ...style};
-        let col = columns[columnIndex];
+        if(!columns || !columns[columnIndex])
+        {
+            return (<div>MISSING COLUMN DEF</div>);
+        }
+        let columnDefinition = columns[columnIndex];
+        style = {
+            ...style,
+            backgroundColor: 'black',
+            border: 'solid 1px red',
+            fontSize: 'smaller',
+        };
+
         if (rowIndex === 0) {
             return (
                 <div key={key} style={style}>
-                    {col.label}
+                    {columnDefinition.locked ? lockIcon() : ''}
+                    {columnDefinition.label}
                 </div>
             );
         } else {
-            let cell = rows[rowIndex-1];
-            console.error("cellRender cell.dataKey="+cell.dataKey+", col.dataKey="+col.dataKey);
-            //console.error(col.cellRenderer);
-            //col.cellRenderer(cell);
-
-            return (
-                <div key={key} style={style}>
-                    {
-                        col.cellRenderer(cell, col.dataKey)
-                    }
-                </div>
-            );
-            //col.cellRenderer(rows[rowIndex][columnIndex]);
+            let cell = rows[rowIndex - 1];
+            if(columnDefinition.cellRenderer)
+            {
+                return (
+                    <div key={key} style={style}>
+                        {columnDefinition.cellRenderer(cell, columnDefinition)}
+                    </div>
+                );
+            } else {
+                return (<div>NO CELL RENDERER</div>);
+            }
         }
     }
 
-    function getColumnWidth(index) {
-        return tableDefinition.columns[index].columnWidth !== undefined
-            ? tableDefinition.columns[index].columnWidth
+    /*function getColumnWidth(columnsParam, index) {
+        return columnsParam[index].style.width !== undefined
+            ? columnsParam[index].style.width
             : MIN_COLUMN_WIDTH;
-    }
+    }*/
 
-    const columns = generateTableColumns(tableDefinition);
+    const headerLinesCount = 1;
+    const fixedColumnsCount = parseInt(1) + parseInt(isEditColumnVisible() ? 1 : 0); // We need to use parseInt to do additions in javascript (even if the IDE is not happy).
 
-    /*
-    <CharlyDebug
-                charlyTime={charlyTime}
-                show={'lignes ' + rows.length}
-            />
-     */
-
-    return (
+    /*return (
         <>
-
-
             {!fetched && (
                 <LoaderWithOverlay
                     color="inherit"
@@ -425,65 +383,54 @@ export const EquipmentTable = ({
                 {({ width, height }) => (
                     <MultiGrid
                         cellRenderer={cellRenderer}
-                        fixedColumnCount={1}
-                        fixedRowCount={1}
+                        fixedColumnCount={fixedColumnsCount}
+                        fixedRowCount={headerLinesCount}
                         height={height}
                         width={width}
-                        columnCount={tableDefinition.columns.length}
-                        columnWidth={({ index }) => getColumnWidth(index)}
-                        rowCount={rows.length + 1}
+                        columnCount={columns.length}
+                        //columnWidth={({ index }) => getColumnWidth(columns, index)}
+                        columnWidth={MIN_COLUMN_WIDTH}
+                        rowCount={rows.length + headerLinesCount}
                         rowHeight={40}
                     />
                 )}
             </AutoSizer>
         </>
-    );
+    );*/
+    const gridRef = useRef();
 
-    /*
-    return (
-        <>
-            {!fetched && (
-                <LoaderWithOverlay
-                    color="inherit"
-                    loaderSize={70}
-                    loadingMessageText={'LoadingRemoteData'}
-                />
-            )}
-            <Paper
-                style={{
-                    height: 100 + '%',
-                    width: 100 + '%',
-                    overflowX: 'auto',
-                }}
-            >
-                <VirtualizedTable
-                    width={
-                        generateMinWidthTable(tableDefinition) +
-                        (tableDefinition.modifiableEquipmentType &&
-                        !workingNode?.readOnly
-                            ? HEADER_CELL_WIDTH
-                            : 0)
-                    }
-                    rows={rows}
-                    rowHeight={ROW_HEIGHT}
-                    filter={filter}
-                    columns={
-                        tableDefinition.modifiableEquipmentType &&
-                        !workingNode?.readOnly
-                            ? [
-                                  makeHeaderCell(),
-                                  ...generateTableColumns(tableDefinition),
-                              ]
-                            : generateTableColumns(tableDefinition)
-                    }
-                    scrollToIndex={scrollToIndex}
-                    scrollToAlignment={scrollToAlignment}
-                    enableExportCSV={true}
-                    exportCSVDataKeys={selectedDataKey}
-                    sortable={true}
-                />
-            </Paper>
-        </>
-    );
-*/
+
+    function render() {
+        columns = generateTableColumns();
+        if(!columns || columns.length ==0) return (<div>NOT LOADED YET</div>);
+        return (
+            <>
+                {!fetched && (
+                    <LoaderWithOverlay
+                        color="inherit"
+                        loaderSize={70}
+                        loadingMessageText={'LoadingRemoteData'}
+                    />
+                )}
+                <AutoSizer>
+                    {({ width, height }) => (
+                        <MultiGrid
+                            ref={gridRef}
+                            cellRenderer={cellRenderer}
+                            fixedColumnCount={fixedColumnsCount}
+                            fixedRowCount={headerLinesCount}
+                            height={height}
+                            width={width}
+                            columnCount={columns.length}
+                            //columnWidth={({ index }) => getColumnWidth(columns, index)}
+                            columnWidth={MIN_COLUMN_WIDTH}
+                            rowCount={rows.length + headerLinesCount}
+                            rowHeight={40}
+                        />
+                    )}
+                </AutoSizer>
+            </>
+        );
+    }
+    return (render());
 };

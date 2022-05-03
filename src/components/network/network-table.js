@@ -18,15 +18,19 @@ import { IconButton, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { updateConfigParameter } from '../../utils/rest-api';
 
+//import { CharlyDebug } from '../util/charly';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { SelectOptionsDialog } from '../../utils/dialogs';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ListItemText from '@mui/material/ListItemText';
 import {
-    COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
     TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
@@ -68,6 +72,14 @@ const useStyles = makeStyles(() => ({
 }));
 
 const NetworkTable = (props) => {
+
+
+    /*const [charlyTime, setCharlyTime] = useState(
+        useEffect(() => {
+            setCharlyTime(Date.now());
+        }, [])
+    );*/
+
     const classes = useStyles();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -81,6 +93,7 @@ const NetworkTable = (props) => {
     const [rowFilter, setRowFilter] = useState(undefined);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
+    const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
     const [scrollToIndex, setScrollToIndex] = useState(-1);
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
@@ -91,6 +104,9 @@ const NetworkTable = (props) => {
 
     useEffect(() => {
         setSelectedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
+        setLockedColumnsNames(
             new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
         );
     }, [tabIndex, allDisplayedColumnsNames]);
@@ -149,10 +165,12 @@ const NetworkTable = (props) => {
         const rows = getRows(tabIndex);
         return (
             <EquipmentTable
+                tabIndex={tabIndex}
                 studyUuid={props.studyUuid}
                 workingNode={props.workingNode}
                 rows={rows}
-                selectedColumnsNames={selectedColumnsNames}
+                visibleColumnsNames={selectedColumnsNames}
+                lockedColumnsNames={lockedColumnsNames}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 filter={filter}
                 fetched={props.network.isResourceFetched(resource)}
@@ -200,15 +218,34 @@ const NetworkTable = (props) => {
         setSelectedColumnsNames(
             new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
         );
+        setLockedColumnsNames(
+            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+        );
         setPopupSelectColumnNames(false);
     }, [tabIndex, allDisplayedColumnsNames]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
-            COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
         ).catch((errorMessage) => {
             setSelectedColumnsNames(
+                new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+            );
+            displayErrorMessageWithSnackbar({
+                errorMessage: errorMessage,
+                enqueueSnackbar: enqueueSnackbar,
+                headerMessage: {
+                    headerMessageId: 'paramsChangingError',
+                    intlRef: intlRef,
+                },
+            });
+        });
+        updateConfigParameter(
+            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            JSON.stringify([...lockedColumnsNames])
+        ).catch((errorMessage) => {
+            setLockedColumnsNames(
                 new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
             );
             displayErrorMessageWithSnackbar({
@@ -225,6 +262,7 @@ const NetworkTable = (props) => {
     }, [
         tabIndex,
         selectedColumnsNames,
+        lockedColumnsNames,
         allDisplayedColumnsNames,
         enqueueSnackbar,
         intlRef,
@@ -248,10 +286,34 @@ const NetworkTable = (props) => {
         );
     };
 
-    const checkListColumnsNames = () => {
+    const handleClickOnLock = (value) => () => {
+        // If we need to check for double-click, we need to use :
+        // const handleClickOnLock = (value) => (event) => {
+        // and then :
+        // if(event.detail > 1) {/*DOUBLE CLICK*/}
+        const newLocked = new Set(lockedColumnsNames.values());
+        if (lockedColumnsNames.has(value)) {
+            newLocked.delete(value);
+        } else {
+            newLocked.add(value);
+        }
+        setLockedColumnsNames(newLocked);
+    };
+
+    const checkListColumnsNames = () => { // TODO CHARLY ici se construit la popup des colonnes
         let isAllChecked =
             selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
+
+        const renderLockIcon = (value) => {
+            if (lockedColumnsNames.has(value)) {
+                return <LockIcon style={{fontSize:'1.2em'}}/>;
+            } else {
+                return <LockOpenIcon style={{fontSize:'1.2em', opacity: 0.33 }} />; // TODO CHARLY en fonction du theme jour/nuit, en JOUR=50% et en NUIT=33%
+                // TODO CHARLY et aussi mettre le style dans du CSS plutôt qu'ici
+            }
+        };
+
         return (
             <List>
                 <ListItem
@@ -259,6 +321,7 @@ const NetworkTable = (props) => {
                     onClick={handleToggleAll}
                 >
                     <Checkbox
+                        style={{ marginLeft: '21px' }}
                         checked={isAllChecked}
                         indeterminate={isSomeChecked}
                     />
@@ -268,15 +331,17 @@ const NetworkTable = (props) => {
                     <ListItem
                         key={tabIndex + '-' + index}
                         className={classes.checkboxItem}
-                        onClick={handleToggle(value)}
                         style={{ padding: '0 16px' }}
                     >
-                        <ListItemIcon>
+                        <ListItemIcon onClick={handleClickOnLock(value)} style={{minWidth:0, width:'20px'}}>
+                            {renderLockIcon(value)}
+                        </ListItemIcon>
+                        <ListItemIcon onClick={handleToggle(value)}>
                             <Checkbox
                                 checked={selectedColumnsNames.has(value)}
                             />
                         </ListItemIcon>
-                        <ListItemText
+                        <ListItemText onClick={handleToggle(value)}
                             primary={intl.formatMessage({ id: `${value}` })}
                         />
                     </ListItem>
@@ -284,7 +349,12 @@ const NetworkTable = (props) => {
             </List>
         );
     };
-
+/*
+<CharlyDebug
+                charlyTime={charlyTime}
+                show={[selectedColumnsNames, '\n', lockedColumnsNames]}
+            />
+ */
     return (
         props.network && (
             <>
