@@ -77,8 +77,11 @@ const CustomSuffixRenderer = ({ props, element }) => {
         element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
     )
         return (
-            <IconButton onClick={(e) => enterOnSubstationCB(e, element)}>
-                <GpsFixedIcon />
+            <IconButton
+                onClick={(e) => enterOnSubstationCB(e, element)}
+                size={'small'}
+            >
+                <GpsFixedIcon fontSize={'small'} />
             </IconButton>
         );
 
