@@ -32,7 +32,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { centerOnSubstation } from '../redux/actions';
 import { useSnackbar } from 'notistack';
