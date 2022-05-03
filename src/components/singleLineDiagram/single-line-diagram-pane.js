@@ -276,15 +276,21 @@ export function SingleLineDiagramPane({
         setUpdateSwitchMsg('');
     }, [createView, location.search]);
 
-    const toggleState = useCallback((id, state) => {
-        setViewState((oldValue) => {
-            const newVal = new Map(oldValue);
-            const oldState = oldValue.get(id);
-            if (oldState === state) newVal.delete(id);
-            else newVal.set(id, state);
-            return newVal;
-        });
-    }, []);
+    const toggleState = useCallback(
+        (id, state) => {
+            setViewState((oldValue) => {
+                const newVal = new Map(oldValue);
+                const oldState = oldValue.get(id);
+                if (oldState === state) newVal.delete(id);
+                else newVal.set(id, state);
+                if (state === ViewState.PINNED) {
+                    openVoltageLevel(id);
+                }
+                return newVal;
+            });
+        },
+        [openVoltageLevel]
+    );
 
     const handleCloseSLD = useCallback(
         (id) => {
@@ -350,12 +356,9 @@ export function SingleLineDiagramPane({
         let toDisplay = views.filter(
             ({ id }) => viewState.get(id) === ViewState.PINNED
         );
-        const more = views
-            .reverse()
-            .find(
-                ({ id, lastOpen }) =>
-                    lastOpen && viewState.get(id) === undefined
-            );
+        const more = views.find(
+            ({ id, lastOpen }) => lastOpen && viewState.get(id) === undefined
+        );
         if (more) {
             toDisplay.push(more);
         }

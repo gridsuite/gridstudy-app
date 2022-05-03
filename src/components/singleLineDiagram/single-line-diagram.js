@@ -226,7 +226,7 @@ const computePaperAndSvgSizesIfReady = (
                 maxHeight
             );
             if (numberToDisplay > 1) {
-                svgWidth = Math.min(totalWidth - borders, svgPreferredWidth);
+                svgWidth = totalWidth - borders;
             }
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
