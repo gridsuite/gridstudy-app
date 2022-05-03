@@ -58,6 +58,10 @@ export const ReactivePowerAdornment = {
     position: 'end',
     text: 'MVar',
 };
+export const MVAPowerAdornment = {
+    position: 'end',
+    text: 'MVA',
+};
 export const VoltageAdornment = {
     position: 'end',
     text: 'kV',
@@ -79,6 +83,7 @@ export function toPositiveIntValue(val) {
 
 export const toFloatValue = (val) => {
     if (val === '-') return val;
+    if (val === '') return '';
     // TODO: remove replace when parsing behaviour will be made according to locale
     // Replace ',' by '.' to ensure double values can be parsed correctly
     const tmp = val?.replace(',', '.') || '';
