@@ -373,5 +373,7 @@
   
     "Update": "Mettre à jour",
 
-    "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours"
+    "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
+
+    "depth": "Profondeur"
 }

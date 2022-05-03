@@ -14,8 +14,7 @@ import NetworkAreaDiagram, { SvgType } from './network-area-diagram';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 
-const useDisplayView = (network, studyUuid, workingNode) => {
-
+const useDisplayView = (network, studyUuid, workingNode, depth) => {
     return useCallback(
         (view) => {
             function createVoltageLevelNAD(vlId) {
@@ -72,7 +71,9 @@ export function NetworkAreaDiagramPane({
 
     const [viewState, setViewState] = useState(new Map());
 
-    const createView = useDisplayView(network, studyUuid, workingNode);
+    const [depth, setDepth] = useState(0);
+
+    const createView = useDisplayView(network, studyUuid, workingNode, depth);
 
     const dispatch = useDispatch();
 
@@ -114,7 +115,7 @@ export function NetworkAreaDiagramPane({
             studyUuid,
             workingNode?.id,
             [displayedVoltageLevelId],
-            2
+            depth
         );
     }
 
@@ -150,6 +151,7 @@ export function NetworkAreaDiagramPane({
         studyUuid,
         updateSld,
         views,
+        depth,
     ]);
 
     const viewStateRef = useRef();
@@ -164,7 +166,7 @@ export function NetworkAreaDiagramPane({
                         position: 'relative',
                         display: 'flex',
                         pointerEvents: 'none',
-                        // flexDirection: 'column',
+                        flexDirection: 'column',
                     }}
                 >
                     <NetworkAreaDiagram
@@ -178,6 +180,8 @@ export function NetworkAreaDiagramPane({
                         showInSpreadsheet={showInSpreadsheet}
                         loadFlowStatus={loadFlowStatus}
                         workingNode={workingNode}
+                        depth={depth}
+                        setDepth={setDepth}
                     />
                 </div>
             )}

@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import { filteredNominalVoltagesUpdated } from '../redux/actions';
+import { filteredNominalVoltagesUpdated, openNetworkAreaDiagram } from '../redux/actions';
 import { equipments } from './network/network-equipments';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
@@ -141,7 +141,7 @@ const StudyPane = ({
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
 
-    const [isNadOpen, setIsNadOpen] = useState(false);
+    const openedNad = useSelector((state) => state.openNetworkAreaDiagram);
 
     useEffect(() => {
         if (
@@ -317,12 +317,12 @@ const StudyPane = ({
                                     workingNode={workingNode}
                                 />
                             )}
-                            {props.view === StudyView.MAP /*&& isNadOpen*/ && (
+                            {props.view === StudyView.MAP && openedNad && (
                                 <NetworkAreaDiagramPane
                                     studyUuid={studyUuid}
                                     network={network}
                                     workingNode={workingNode}
-                                    onClose={() => setIsNadOpen(false)}
+                                    onClose={() => dispatch(openNetworkAreaDiagram(undefined))}
                                 />
                             )}
                         </div>

@@ -373,6 +373,7 @@
 
     "Update": "Update",
 
-    "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path"
+    "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
 
+    "depth": "Depth"
 }

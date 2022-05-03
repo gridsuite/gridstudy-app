@@ -34,9 +34,11 @@ import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
 import Arrow from '../../../images/arrow.svg';
 import ArrowHover from '../../../images/arrow_hover.svg';
-import { fullScreenSingleLineDiagram } from '../../../redux/actions';
+import { fullScreenSingleLineDiagram, openNetworkAreaDiagram } from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 import { AutoSizer } from 'react-virtualized';
 
@@ -47,6 +49,7 @@ import { useIntlRef, useSnackMessage } from '../../../utils/messages';
 
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
+import { useIntl } from 'react-intl';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -124,6 +127,23 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         cursor: 'pointer',
     },
+    plusIcon: {
+        bottom: 5,
+        left: 30,
+        position: 'absolute',
+        cursor: 'pointer',
+    },
+    lessIcon: {
+        bottom: 5,
+        left: 5,
+        position: 'absolute',
+        cursor: 'pointer',
+    },
+    depth: {
+        bottom: 25,
+        left: 5,
+        position: 'absolute',
+    },
 }));
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
@@ -160,17 +180,8 @@ const computePaperAndSvgSizesIfReady = (
     totalHeight,
     svgPreferredWidth,
     svgPreferredHeight,
-    headerPreferredHeight,
+    headerPreferredHeight
 ) => {
-    console.info('fullScreen', fullScreen);
-    console.info('totalWidth', totalWidth);
-    console.info('totalHeight', totalHeight);
-    console.info('svgPreferredWidth', svgPreferredWidth);
-    console.info('svgPreferredHeight', svgPreferredHeight);
-    console.info('headerPreferredHeight', headerPreferredHeight);
-    console.info('maxWidthVoltageLevel', maxWidthVoltageLevel);
-    console.info('maxHeightVoltageLevel', maxHeightVoltageLevel);
-
     if (
         typeof svgPreferredWidth != 'undefined' &&
         typeof headerPreferredHeight != 'undefined'
@@ -256,9 +267,8 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
-            headerPreferredHeight,
+            headerPreferredHeight
         );
-        console.info('sizes', sizes)
         if (typeof sizes != 'undefined') {
             setSvgFinalWidth(sizes.svgWidth);
             setSvgFinalHeight(sizes.svgHeight);
@@ -305,9 +315,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         }
     }, [props.svgUrl, forceState, snackError, intlRef]);
 
-
     useLayoutEffect(() => {
-
         if (svg.svg) {
             const divElt = svgRef.current;
             divElt.innerHTML = svg.svg;
@@ -320,18 +328,12 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             const svgWidth = bbox.width + 40;
             const svgHeight = bbox.height + 40;
 
-            console.info('divElt', divElt   )
-            console.info('bbox', bbox   )
-
             const svgTmp = divElt.getElementsByTagName('svg')[0];
             const width = svgTmp.getAttribute('width');
-            const height = svgTmp.getAttribute('height')
-
-            console.info('width', width)
-            console.info('height', height)
+            const height = svgTmp.getAttribute('height');
 
             setSvgPreferredHeight(height);
-            setSvgPreferredWidth(width)
+            setSvgPreferredWidth(width);
 
             svgTmp.removeAttribute('width');
             svgTmp.removeAttribute('height');
@@ -340,7 +342,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             // setSvgPreferredHeight(svgHeight);
 
             let viewboxMaxWidth = maxWidthVoltageLevel;
-            let viewboxMaxHeight =maxHeightVoltageLevel;
+            let viewboxMaxHeight = maxHeightVoltageLevel;
 
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
@@ -351,7 +353,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 .panZoom({
                     panning: true,
                     zoomMin: 0.5,
-                    zoomMax: 80,
+                    zoomMax: 200,
                     zoomFactor: 0.3,
                     margins: { top: 0, left: 0, right: 0, bottom: 0 },
                 });
@@ -361,28 +363,28 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
             draw.node.firstChild.removeAttribute('viewBox');
 
-            if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
-                //The svg is too big, display only the top left corner because that's
-                //better for users than zooming out. Keep the same aspect ratio
-                //so that panzoom's margins still work correctly.
-                //I am not sure the offsetX and offsetY thing is correct. It seems
-                //to help. When someone finds a big problem, then we can fix it.
-                const newLvlX = svgWidth / viewboxMaxWidth;
-                const newLvlY = svgHeight / viewboxMaxHeight;
-                if (newLvlX > newLvlY) {
-                    const offsetY = (viewboxMaxHeight - svgHeight) / newLvlX;
-                    draw.zoom(newLvlX, {
-                        x: xOrigin,
-                        y: (yOrigin + viewboxMaxHeight - offsetY) / 2,
-                    });
-                } else {
-                    const offsetX = (viewboxMaxWidth - svgWidth) / newLvlY;
-                    draw.zoom(newLvlY, {
-                        x: (xOrigin + viewboxMaxWidth - offsetX) / 2,
-                        y: yOrigin,
-                    });
-                }
-            }
+            // if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
+            //     //The svg is too big, display only the top left corner because that's
+            //     //better for users than zooming out. Keep the same aspect ratio
+            //     //so that panzoom's margins still work correctly.
+            //     //I am not sure the offsetX and offsetY thing is correct. It seems
+            //     //to help. When someone finds a big problem, then we can fix it.
+            //     const newLvlX = svgWidth / viewboxMaxWidth;
+            //     const newLvlY = svgHeight / viewboxMaxHeight;
+            //     if (newLvlX > newLvlY) {
+            //         const offsetY = (viewboxMaxHeight - svgHeight) / newLvlX;
+            //         draw.zoom(newLvlX, {
+            //             x: xOrigin,
+            //             y: (yOrigin + viewboxMaxHeight - offsetY) / 2,
+            //         });
+            //     } else {
+            //         const offsetX = (viewboxMaxWidth - svgWidth) / newLvlY;
+            //         draw.zoom(newLvlY, {
+            //             x: (xOrigin + viewboxMaxWidth - offsetX) / 2,
+            //             y: yOrigin,
+            //         });
+            //     }
+            // }
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
             });
@@ -398,15 +400,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
-    }, [
-        network,
-        svg,
-        workingNode,
-        svgType,
-        theme,
-        sldId,
-        ref,
-    ]);
+    }, [network, svg, workingNode, svgType, theme, sldId, ref]);
 
     useLayoutEffect(() => {
         if (
@@ -418,11 +412,16 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
 
                 if (svgEl != null) {
-                    svgEl.setAttribute('width', svgPreferredWidth);
-                    svgEl.setAttribute('height', svgPreferredHeight);
+                    svgEl.setAttribute(
+                        'width',
+                        fullScreen ? totalWidth - 40 : svgPreferredWidth
+                    );
+                    svgEl.setAttribute(
+                        'height',
+                        fullScreen ? totalHeight - 40 : svgPreferredHeight
+                    );
                 }
             }
-        } else {
         }
     }, [
         svgFinalWidth,
@@ -435,6 +434,8 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     ]);
 
     const classes = useStyles();
+
+    const intl = useIntl();
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
@@ -466,19 +467,15 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         sizeWidth = totalWidth; // happens during initalization
     }
 
-    console.info('finalPaperWidth', finalPaperWidth)
-    console.info('finalPaperHeight', finalPaperHeight)
-    console.info('sizeWidth', sizeWidth)
-    console.info('sizeHeight', sizeHeight)
     return !svg.error ? (
         <Paper
             elevation={1}
             square={true}
             style={{
                 pointerEvents: 'auto',
-                width: svgPreferredWidth,
+                width: sizeWidth,
                 minWidth: loadingWidth,
-                height: svgPreferredHeight,
+                height: sizeHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
             }}
         >
@@ -526,18 +523,37 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 }
-                {!loadingState &&
-                    (fullScreen ? (
-                        <FullscreenExitIcon
-                            onClick={hideFullScreen}
-                            className={classes.fullScreenIcon}
+                {!loadingState && (
+                    <>
+                        <Typography className={classes.depth}>
+                            {intl.formatMessage({
+                                id: 'depth',
+                            }) + ' : ' +
+                            props.depth}
+                        </Typography>
+                        <AddCircleIcon
+                            onClick={() => props.setDepth(props.depth + 1)}
+                            className={classes.plusIcon}
                         />
-                    ) : (
-                        <FullscreenIcon
-                            onClick={showFullScreen}
-                            className={classes.fullScreenIcon}
+                        <RemoveCircleIcon
+                            onClick={() =>
+                                props.setDepth(props.depth === 0 ? 0 : props.depth - 1)
+                            }
+                            className={classes.lessIcon}
                         />
-                    ))}
+                        {fullScreen ? (
+                            <FullscreenExitIcon
+                                onClick={hideFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ) : (
+                            <FullscreenIcon
+                                onClick={showFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        )}
+                    </>
+                )}
             </Box>
         </Paper>
     ) : (
@@ -568,6 +584,8 @@ NetworkAreaDiagram.propTypes = {
     isComputationRunning: PropTypes.bool.isRequired,
     svgType: PropTypes.string.isRequired,
     workingNode: PropTypes.object,
+    depth: PropTypes.number.isRequired,
+    setDepth: PropTypes.func.isRequired,
 };
 
 export default NetworkAreaDiagram;
