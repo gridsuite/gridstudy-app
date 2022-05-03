@@ -5,56 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {  useSelector } from 'react-redux';
+import React, { useRef, useState } from 'react';
 import {
     getNetworkAreaDiagramUrl,
 } from '../../../utils/rest-api';
-import NetworkAreaDiagram, { SvgType } from './network-area-diagram';
+import NetworkAreaDiagram from './network-area-diagram';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
-
-const useDisplayView = (network, studyUuid, workingNode, depth) => {
-    return useCallback(
-        (view) => {
-            function createVoltageLevelNAD(vlId) {
-                const vl = network.getVoltageLevel(vlId);
-                if (!vl) return;
-                let name = vl.name;
-
-                const svgUrl = getNetworkAreaDiagramUrl(
-                    studyUuid,
-                    workingNode?.id,
-                    [vl.id],
-                    1
-                );
-
-                return {
-                    id: vlId,
-                    ref: React.createRef(),
-                    name,
-                    svgUrl,
-                    type: SvgType.VOLTAGE_LEVEL,
-                };
-            }
-
-            if (!network) return;
-            if (view.type === SvgType.VOLTAGE_LEVEL)
-                return createVoltageLevelNAD(view.id);
-        },
-        [
-            network,
-            getNetworkAreaDiagramUrl,
-        ]
-    );
-};
-
-const useStyles = makeStyles(() => ({
-    minimizedSLD: {
-        bottom: '60px',
-        position: 'absolute',
-    },
-}));
 
 export function NetworkAreaDiagramPane({
     studyUuid,
@@ -65,28 +22,7 @@ export function NetworkAreaDiagramPane({
     workingNode,
     onClose,
 }) {
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-
-    const [views, setViews] = useState([]);
-
-    const [viewState, setViewState] = useState(new Map());
-
     const [depth, setDepth] = useState(0);
-
-    const createView = useDisplayView(network, studyUuid, workingNode, depth);
-
-    const dispatch = useDispatch();
-
-
-    const updateSld = useCallback(
-        (id) => {
-            if (id) views.find((sld) => sld.id === id)?.ref.current.reloadSvg();
-            else views.forEach((sld) => sld.ref.current.reloadSvg());
-        },
-        [views]
-    );
-
-    const classes = useStyles();
 
     const openNetworkAreaDiagram = useSelector(
         (state) => state.openNetworkAreaDiagram
@@ -119,44 +55,6 @@ export function NetworkAreaDiagramPane({
         );
     }
 
-    useEffect(() => {
-        setViews((oldVal) => oldVal.map(createView));
-    }, [createView]);
-
-    useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
-            ) {
-                //TODO reload data more intelligently
-                updateSld();
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'study'
-            ) {
-                //If the SLD of the deleted substation is open, we close it
-                if (studyUpdatedForce.eventData.headers['deletedEquipmentId']) {
-                    const deletedId =
-                        studyUpdatedForce.eventData.headers[
-                            'deletedEquipmentId'
-                        ];
-                } else {
-                    updateSld();
-                }
-            }
-        }
-        // Note: studyUuid, and loadNetwork don't change
-    }, [
-        studyUpdatedForce,
-        dispatch,
-        studyUuid,
-        updateSld,
-        views,
-        depth,
-    ]);
-
-    const viewStateRef = useRef();
-    viewStateRef.current = viewState;
-
     return (
         <>
             {displayedVoltageLevelId && (
@@ -175,7 +73,6 @@ export function NetworkAreaDiagramPane({
                         svgUrl={svgUrl}
                         sldId={displayedVoltageLevel?.id}
                         ref={displayedVoltageLevelIdRef}
-                        svgType={SvgType.VOLTAGE_LEVEL}
                         isComputationRunning={isComputationRunning}
                         showInSpreadsheet={showInSpreadsheet}
                         loadFlowStatus={loadFlowStatus}

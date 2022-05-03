@@ -25,7 +25,6 @@ import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchNADSvg, fetchSvg } from '../../../utils/rest-api';
@@ -34,7 +33,7 @@ import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
 import Arrow from '../../../images/arrow.svg';
 import ArrowHover from '../../../images/arrow_hover.svg';
-import { fullScreenSingleLineDiagram, openNetworkAreaDiagram } from '../../../redux/actions';
+import { fullScreenSingleLineDiagram } from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -43,28 +42,10 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { AutoSizer } from 'react-virtualized';
 
 import { RunningStatus } from '../../util/running-status';
-import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 
 import { useIntlRef, useSnackMessage } from '../../../utils/messages';
 
-import MinimizeIcon from '@mui/icons-material/Minimize';
-import { ViewState } from './utils';
 import { useIntl } from 'react-intl';
-
-export const SubstationLayout = {
-    HORIZONTAL: 'horizontal',
-    VERTICAL: 'vertical',
-    SMART: 'smart',
-    SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
-    SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
-};
-
-export const SvgType = {
-    VOLTAGE_LEVEL: 'voltage-level',
-    SUBSTATION: 'substation',
-};
-
-const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
@@ -72,48 +53,16 @@ const maxHeightVoltageLevel = 700;
 const errorWidth = maxWidthVoltageLevel;
 
 const useStyles = makeStyles((theme) => ({
-    divSld: {
+    divNad: {
         '& svg': {
             // necessary because the default (inline-block) adds vertical space
             // to our otherwise pixel accurate computations (this makes a
             // scrollbar appear in fullscreen mode)
             display: 'block',
         },
-        '& polyline': {
-            pointerEvents: 'none',
-        },
-        '& .sld-label, .sld-graph-label': {
-            fill: theme.palette.text.primary,
-            'font-family': theme.typography.fontFamily,
-        },
-        // '& .sld-disconnector.sld-constant-color, :not(.sld-breaker).sld-disconnected, .sld-feeder-disconnected, .sld-feeder-disconnected-connected':
-        //     {
-        //         stroke: theme.palette.text.primary,
-        //     },
-        // '& .arrow': {
-        //     fill: theme.palette.text.primary,
-        // },
-        // '& .sld-flash, .sld-lock': {
-        //     stroke: 'none',
-        //     fill: theme.palette.text.primary,
-        // },
-    },
-    divInvalid: {
-        '& .sld-arrow-p, .sld-arrow-q': {
-            opacity: INVALID_LOADFLOW_OPACITY,
-        },
     },
     close: {
         padding: 0,
-    },
-    actionIcon: {
-        padding: 0,
-        borderRight: theme.spacing(1),
-    },
-    pinRotate: {
-        padding: 0,
-        borderRight: theme.spacing(1),
-        transform: 'rotate(45deg)',
     },
     header: {
         padding: 5,
@@ -221,7 +170,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     const {
         totalWidth,
         totalHeight,
-        svgType,
         loadFlowStatus,
         workingNode,
         sldId,
@@ -279,7 +227,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         fullScreen,
         totalWidth,
         totalHeight,
-        svgType,
         svgPreferredWidth,
         svgPreferredHeight,
         headerPreferredHeight,
@@ -338,12 +285,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             svgTmp.removeAttribute('width');
             svgTmp.removeAttribute('height');
 
-            // setSvgPreferredWidth(svgWidth);
-            // setSvgPreferredHeight(svgHeight);
-
-            let viewboxMaxWidth = maxWidthVoltageLevel;
-            let viewboxMaxHeight = maxHeightVoltageLevel;
-
             // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
@@ -400,7 +341,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
-    }, [network, svg, workingNode, svgType, theme, sldId, ref]);
+    }, [network, svg, workingNode, theme, sldId, ref]);
 
     useLayoutEffect(() => {
         if (
@@ -429,7 +370,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         //TODO, these are from the previous useLayoutEffect
         //how to refactor to avoid repeating them here ?
         svg,
-        svgType,
         theme,
     ]);
 
@@ -441,6 +381,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         if (props.onClose !== null) {
             dispatch(fullScreenSingleLineDiagram(undefined));
             props.onClose(sldId);
+            props.setDepth(0);
         }
     };
 
@@ -507,9 +448,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                             <LinearProgress />
                         </Box>
                     )}
-                    {props.updateSwitchMsg && (
-                        <Alert severity="error">{props.updateSwitchMsg}</Alert>
-                    )}
                 </Box>
                 {
                     <div
@@ -517,8 +455,8 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                         ref={svgRef}
                         className={
                             loadFlowStatus !== RunningStatus.SUCCEED
-                                ? classes.divSld + ' ' + classes.divInvalid
-                                : classes.divSld
+                                ? classes.divNad + ' ' + classes.divInvalid
+                                : classes.divNad
                         }
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
@@ -582,7 +520,6 @@ NetworkAreaDiagram.propTypes = {
     sldId: PropTypes.string,
     onClose: PropTypes.func,
     isComputationRunning: PropTypes.bool.isRequired,
-    svgType: PropTypes.string.isRequired,
     workingNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
