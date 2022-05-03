@@ -73,10 +73,7 @@ export const ModificationListItem = ({
         } else if (modification.equipmentId) {
             return modification.equipmentId;
         } else if (modification.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
-            if (modification.mayNewVoltageLevelInfos)
-                return modification.mayNewVoltageLevelInfos.equipmentId;
-            if (modification.existingVoltageLevelId)
-                return modification.existingVoltageLevelId;
+            return modification.lineToSplitId;
         }
         return '';
     }, [modification, useName]);
