@@ -11,7 +11,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import { filteredNominalVoltagesUpdated, openNetworkAreaDiagram } from '../redux/actions';
+import {
+    filteredNominalVoltagesUpdated,
+    openNetworkAreaDiagram,
+} from '../redux/actions';
 import { equipments } from './network/network-equipments';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
@@ -322,7 +325,11 @@ const StudyPane = ({
                                     studyUuid={studyUuid}
                                     network={network}
                                     workingNode={workingNode}
-                                    onClose={() => dispatch(openNetworkAreaDiagram(undefined))}
+                                    onClose={() =>
+                                        dispatch(
+                                            openNetworkAreaDiagram(undefined)
+                                        )
+                                    }
                                 />
                             )}
                         </div>

@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {  useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import React, { useRef, useState } from 'react';
-import {
-    getNetworkAreaDiagramUrl,
-} from '../../../utils/rest-api';
+import { getNetworkAreaDiagramUrl } from '../../../utils/rest-api';
 import NetworkAreaDiagram from './network-area-diagram';
 import PropTypes from 'prop-types';
 
@@ -71,7 +69,7 @@ export function NetworkAreaDiagramPane({
                         onClose={onClose}
                         diagramTitle={nadTitle}
                         svgUrl={svgUrl}
-                        sldId={displayedVoltageLevel?.id}
+                        nadId={displayedVoltageLevel?.id}
                         ref={displayedVoltageLevelIdRef}
                         isComputationRunning={isComputationRunning}
                         showInSpreadsheet={showInSpreadsheet}

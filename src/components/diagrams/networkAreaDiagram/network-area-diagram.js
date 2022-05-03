@@ -27,12 +27,10 @@ import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 
-import { fetchNADSvg, fetchSvg } from '../../../utils/rest-api';
+import { fetchNADSvg } from '../../../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
-import Arrow from '../../../images/arrow.svg';
-import ArrowHover from '../../../images/arrow_hover.svg';
 import { fullScreenSingleLineDiagram } from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
@@ -97,25 +95,6 @@ const useStyles = makeStyles((theme) => ({
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
-let arrowSvg;
-let arrowHoverSvg;
-
-fetch(Arrow)
-    .then((data) => {
-        return data.text();
-    })
-    .then((data) => {
-        arrowSvg = data;
-    });
-
-fetch(ArrowHover)
-    .then((data) => {
-        return data.text();
-    })
-    .then((data) => {
-        arrowHoverSvg = data;
-    });
-
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
 const mapRightOffset = 120;
@@ -167,13 +146,8 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
     const svgRef = useRef();
-    const {
-        totalWidth,
-        totalHeight,
-        loadFlowStatus,
-        workingNode,
-        sldId,
-    } = props;
+    const { totalWidth, totalHeight, loadFlowStatus, workingNode, nadId } =
+        props;
 
     const network = useSelector((state) => state.network);
 
@@ -230,7 +204,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         svgPreferredWidth,
         svgPreferredHeight,
         headerPreferredHeight,
-        sldId,
+        nadId,
     ]);
 
     useEffect(() => {
@@ -300,32 +274,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 });
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
 
-            // PowSyBl SLD introduced server side calculated SVG viewbox
-            // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
-            draw.node.firstChild.removeAttribute('viewBox');
-
-            // if (svgWidth > viewboxMaxWidth || svgHeight > viewboxMaxHeight) {
-            //     //The svg is too big, display only the top left corner because that's
-            //     //better for users than zooming out. Keep the same aspect ratio
-            //     //so that panzoom's margins still work correctly.
-            //     //I am not sure the offsetX and offsetY thing is correct. It seems
-            //     //to help. When someone finds a big problem, then we can fix it.
-            //     const newLvlX = svgWidth / viewboxMaxWidth;
-            //     const newLvlY = svgHeight / viewboxMaxHeight;
-            //     if (newLvlX > newLvlY) {
-            //         const offsetY = (viewboxMaxHeight - svgHeight) / newLvlX;
-            //         draw.zoom(newLvlX, {
-            //             x: xOrigin,
-            //             y: (yOrigin + viewboxMaxHeight - offsetY) / 2,
-            //         });
-            //     } else {
-            //         const offsetX = (viewboxMaxWidth - svgWidth) / newLvlY;
-            //         draw.zoom(newLvlY, {
-            //             x: (xOrigin + viewboxMaxWidth - offsetX) / 2,
-            //             y: yOrigin,
-            //         });
-            //     }
-            // }
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
             });
@@ -341,7 +289,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             svgDraw.current = draw;
         }
         // Note: onNextVoltageLevelClick and onBreakerClick don't change
-    }, [network, svg, workingNode, theme, sldId, ref]);
+    }, [network, svg, workingNode, theme, nadId, ref]);
 
     useLayoutEffect(() => {
         if (
@@ -365,10 +313,13 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             }
         }
     }, [
+        fullScreen,
         svgFinalWidth,
         svgFinalHeight,
-        //TODO, these are from the previous useLayoutEffect
-        //how to refactor to avoid repeating them here ?
+        svgPreferredWidth,
+        svgPreferredHeight,
+        totalWidth,
+        totalHeight,
         svg,
         theme,
     ]);
@@ -380,13 +331,13 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     const onCloseHandler = () => {
         if (props.onClose !== null) {
             dispatch(fullScreenSingleLineDiagram(undefined));
-            props.onClose(sldId);
+            props.onClose(nadId);
             props.setDepth(0);
         }
     };
 
     const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(sldId));
+        dispatch(fullScreenSingleLineDiagram(nadId));
     };
 
     const hideFullScreen = () => {
@@ -466,8 +417,9 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                         <Typography className={classes.depth}>
                             {intl.formatMessage({
                                 id: 'depth',
-                            }) + ' : ' +
-                            props.depth}
+                            }) +
+                                ' : ' +
+                                props.depth}
                         </Typography>
                         <AddCircleIcon
                             onClick={() => props.setDepth(props.depth + 1)}
@@ -475,7 +427,9 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                         />
                         <RemoveCircleIcon
                             onClick={() =>
-                                props.setDepth(props.depth === 0 ? 0 : props.depth - 1)
+                                props.setDepth(
+                                    props.depth === 0 ? 0 : props.depth - 1
+                                )
                             }
                             className={classes.lessIcon}
                         />
@@ -517,7 +471,7 @@ const NetworkAreaDiagram = forwardRef((props, ref) => {
 NetworkAreaDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
-    sldId: PropTypes.string,
+    nadId: PropTypes.string,
     onClose: PropTypes.func,
     isComputationRunning: PropTypes.bool.isRequired,
     workingNode: PropTypes.object,
