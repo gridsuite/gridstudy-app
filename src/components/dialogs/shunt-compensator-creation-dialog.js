@@ -116,6 +116,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const [shuntCompensatorName, shuntCompensatorNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,
@@ -256,7 +257,7 @@ const ShuntCompensatorCreationDialog = ({
                         <FormattedMessage id="close" />
                     </Button>
                     <Button onClick={handleSave}>
-                        <FormattedMessage id="save" />
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,7 +24,6 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_USE_NAME,
-    PARAM_MAP_TREE_DISPLAY,
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
@@ -37,7 +36,6 @@ import {
 } from './single-line-diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
-import { useParameterState } from './parameters';
 import { ReactFlowProvider } from 'react-flow-renderer';
 
 const useStyles = makeStyles((theme) => ({
@@ -121,8 +119,8 @@ const StudyPane = ({
         Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
-    const [studyDisplayMode, setStudyDisplayMode] = useParameterState(
-        PARAM_MAP_TREE_DISPLAY
+    const [studyDisplayMode, setStudyDisplayMode] = useState(
+        StudyDisplayMode.HYBRID
     );
 
     const filteredNominalVoltages = useSelector(
@@ -143,8 +141,6 @@ const StudyPane = ({
 
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
-
-    const mapRef = useRef();
 
     useEffect(() => {
         if (
@@ -297,7 +293,6 @@ const StudyPane = ({
                                     }
                                     runnable={runnable}
                                     setErrorMessage={setErrorMessage}
-                                    mapRef={mapRef}
                                 />
                             </div>
 

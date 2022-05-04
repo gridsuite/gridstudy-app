@@ -37,7 +37,7 @@ import {
     selectSubstationLayout,
     selectTheme,
     selectUseName,
-    selectMapTreeDisplay,
+    selectFluxConvention,
 } from '../redux/actions';
 
 import {
@@ -54,6 +54,7 @@ import {
     connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchDefaultParametersValues,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -69,10 +70,10 @@ import {
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_TREE_DISPLAY,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
+    PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -131,9 +132,6 @@ const App = () => {
                             )
                         );
                         break;
-                    case PARAM_MAP_TREE_DISPLAY:
-                        dispatch(selectMapTreeDisplay(param.value));
-                        break;
                     case PARAM_CENTER_LABEL:
                         dispatch(
                             selectCenterLabelState(param.value === 'true')
@@ -152,6 +150,9 @@ const App = () => {
                         break;
                     case PARAM_LINE_FLOW_MODE:
                         dispatch(selectLineFlowMode(param.value));
+                        break;
+                    case PARAM_FLUX_CONVENTION:
+                        dispatch(selectFluxConvention(param.value));
                         break;
                     case PARAM_LINE_FULL_PATH:
                         dispatch(
@@ -309,7 +310,39 @@ const App = () => {
                 );
 
             fetchConfigParameters(APP_NAME)
-                .then((params) => updateParams(params))
+                .then((params) => {
+                    fetchDefaultParametersValues()
+                        .then((defaultValues) => {
+                            // Browsing defaultParametersValues entries
+                            Object.entries(defaultValues).forEach(
+                                ([key, defaultValue]) => {
+                                    // Checking if keys defined in defaultParametersValues file are already defined in config server
+                                    // If they are not defined, values are taken from default values file
+                                    if (
+                                        !params.find(
+                                            (param) => param.name === key
+                                        )
+                                    ) {
+                                        params.push({
+                                            name: key,
+                                            value: defaultValue,
+                                        });
+                                    }
+                                }
+                            );
+                            updateParams(params);
+                        })
+                        .catch((errorMessage) => {
+                            displayErrorMessageWithSnackbar({
+                                errorMessage: errorMessage,
+                                enqueueSnackbar: enqueueSnackbar,
+                                headerMessage: {
+                                    headerMessageId: 'paramsRetrievingError',
+                                    intlRef: intlRef,
+                                },
+                            });
+                        });
+                })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,

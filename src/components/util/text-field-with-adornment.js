@@ -4,9 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import ClearIcon from '@mui/icons-material/Clear';
 import { TextField } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -28,44 +30,75 @@ const useStyles = makeStyles((theme) => ({
 
 const TextFieldWithAdornment = (props) => {
     const classes = useStyles();
-    const { adornmentPosition, adornmentText, value, variant, ...otherProps } =
-        props;
+    const {
+        adornmentPosition,
+        adornmentText,
+        value,
+        variant,
+        clearable,
+        handleClearValue,
+        ...otherProps
+    } = props;
     const [isFocused, setIsFocused] = useState(false);
 
-    const endAdornment =
-        isFocused || value
+    const getClearAdornment = useCallback(
+        (position) => {
+            return (
+                <InputAdornment position={position}>
+                    <IconButton onClick={handleClearValue}>
+                        <ClearIcon />
+                    </IconButton>
+                </InputAdornment>
+            );
+        },
+        [handleClearValue]
+    );
+
+    const getTextAdornment = useCallback(
+        (position) => {
+            return (
+                <InputAdornment position={position}>
+                    {adornmentText}
+                </InputAdornment>
+            );
+        },
+        [adornmentText]
+    );
+
+    const withEndAdornmentText = useCallback(() => {
+        return value !== '' || isFocused
             ? {
-                  endAdornment: (
-                      <InputAdornment
-                          position="end"
-                          // hack to circumviate centering of adornment
-                          // when TextField has variant 'filled' or 'standard' with 'end' position
-                          className={
-                              variant === 'filled'
-                                  ? classes.adornRightFilled
-                                  : variant === 'standard'
-                                  ? classes.adornRightOther
-                                  : null
-                          }
-                      >
-                          {adornmentText}
-                      </InputAdornment>
-                  ),
+                  startAdornment:
+                      value && clearable && getClearAdornment('start'),
+                  endAdornment: getTextAdornment('end'),
                   classes: { input: classes.inputRight },
               }
             : {};
+    }, [
+        value,
+        clearable,
+        getClearAdornment,
+        isFocused,
+        getTextAdornment,
+        classes.inputRight,
+    ]);
 
-    const startAdornment =
-        isFocused || value
+    const withStartAdornmentText = useCallback(() => {
+        return value !== '' || isFocused
             ? {
-                  startAdornment: (
-                      <InputAdornment position="start">
-                          {adornmentText}
-                      </InputAdornment>
-                  ),
+                  startAdornment: getTextAdornment('start'),
+                  endAdornment: value && clearable && getClearAdornment('end'),
                   classes: { input: classes.inputLeft },
               }
             : {};
+    }, [
+        value,
+        clearable,
+        getClearAdornment,
+        isFocused,
+        getTextAdornment,
+        classes,
+    ]);
 
     return (
         <TextField
@@ -73,7 +106,9 @@ const TextFieldWithAdornment = (props) => {
             variant={variant}
             value={value}
             InputProps={
-                adornmentPosition === 'start' ? startAdornment : endAdornment
+                adornmentPosition === 'start'
+                    ? withStartAdornmentText()
+                    : withEndAdornmentText()
             }
             onFocus={(e) => setIsFocused(true)}
             onBlur={(e) => setIsFocused(false)}
