@@ -52,7 +52,6 @@ export const useSingleLineDiagram = () => {
         (voltageLevelId) => {
             addToSearchParams(SvgType.VOLTAGE_LEVEL, voltageLevelId);
         },
-        // Note: studyUuid and history don't change
         [addToSearchParams]
     );
 
@@ -60,11 +59,10 @@ export const useSingleLineDiagram = () => {
         (substationId) => {
             addToSearchParams(SvgType.SUBSTATION, substationId);
         },
-        // Note: studyUuid and history don't change
         [addToSearchParams]
     );
 
-    const closeVoltageLevelDiagram = useCallback(
+    const closeDiagram = useCallback(
         (idsToRemove) => {
             const toRemove = new Set(
                 Array.isArray(idsToRemove) ? idsToRemove : [idsToRemove]
@@ -94,9 +92,5 @@ export const useSingleLineDiagram = () => {
         [history, location]
     );
 
-    return [
-        closeVoltageLevelDiagram,
-        showVoltageLevelDiagram,
-        showSubstationDiagram,
-    ];
+    return [closeDiagram, showVoltageLevelDiagram, showSubstationDiagram];
 };
