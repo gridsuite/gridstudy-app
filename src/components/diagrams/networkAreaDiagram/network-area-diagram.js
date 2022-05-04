@@ -39,7 +39,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 import { AutoSizer } from 'react-virtualized';
 
-import { useIntlRef, useSnackMessage } from '../../../utils/messages';
+import { useSnackMessage } from '../../../utils/messages';
 
 import { useIntl } from 'react-intl';
 
@@ -142,7 +142,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     const svgDraw = useRef();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-    const intlRef = useIntlRef();
     const svgRef = useRef();
     const theme = useTheme();
     const classes = useStyles();
@@ -242,7 +241,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [svgUrl, forceState, snackError, intlRef]);
+    }, [svgUrl, forceState, snackError]);
 
     useLayoutEffect(() => {
         if (svg.svg) {
