@@ -39,6 +39,7 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { Box } from '@mui/system';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -340,7 +341,7 @@ const GeneratorCreationDialog = ({
                         <Grid container spacing={2}>
                             {gridItem(activePowerSetpointField, 4)}
                             {gridItem(reactivePowerSetpointField, 4)}
-                            <Grid xs={4} />
+                            <Box sx={{ width: '100%' }} />
                             {gridItem(voltageRegulationField, 4)}
                             {gridItem(voltageSetpointField, 4)}
                         </Grid>
