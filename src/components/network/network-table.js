@@ -17,7 +17,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import { IconButton, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { updateConfigParameter } from '../../utils/rest-api';
-
 //import { CharlyDebug } from '../util/charly';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { SelectOptionsDialog } from '../../utils/dialogs';
@@ -44,6 +43,10 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
+
+const ROW_HEIGHT = 50;
+const MIN_COLUMN_WIDTH = 160;
+const HEADER_CELL_WIDTH = 65;
 
 const useStyles = makeStyles(() => ({
     searchSection: {
@@ -102,11 +105,9 @@ const NetworkTable = (props) => {
 
     const intlRef = useIntlRef();
 
+    // TODO CHARLY il faut pouvoir garder dans les configs les locks sélectionnés
     useEffect(() => {
         setSelectedColumnsNames(
-            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
-        );
-        setLockedColumnsNames(
             new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
         );
     }, [tabIndex, allDisplayedColumnsNames]);
@@ -160,17 +161,92 @@ const NetworkTable = (props) => {
         manualTabSwitch,
     ]);
 
+    const formatCell = useCallback(
+        (cellData, columnDefinition) => {
+            let value = cellData[columnDefinition.dataKey];
+            if (columnDefinition.cellDataGetter) {
+                value = columnDefinition.cellDataGetter(cellData, props.network);
+            }
+            if (columnDefinition.normed) {
+                console.error("CHARLY fluxconvention "+fluxConvention); // TODO CHARLY ne fonctionne pas quand on change le param (maybe d'autres soucis)
+                value = columnDefinition.normed(fluxConvention, value);
+            }
+            return value &&
+            columnDefinition.numeric &&
+            columnDefinition.fractionDigits
+                ? parseFloat(value).toFixed(columnDefinition.fractionDigits)
+                : value;
+        },
+        [fluxConvention, props.network]
+    );
+
+    function isEditColumnVisible() {
+        return (
+            TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType && !props.workingNode?.readOnly
+        );
+    }
+
+    function sortByLock(a, b) {
+        if(a.locked && !b.locked) return -1;
+        if(!a.locked && b.locked) return 1;
+        return 0;
+    }
+
+    function generateTableColumns(tabIndex) {
+        let generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex).columns.filter((c) => {
+            return selectedColumnsNames.has(c.id);
+        }).map((c) => {
+            let column = {
+                ...c,
+                //label: intl.formatMessage({ id: c.id }),// TODO CHARLY remettre ça
+                label: c.id, // TODO CHARLY supprimer ça
+                locked: lockedColumnsNames.has(c.id),
+                style: {
+                    display: '',
+                    width: c.columnWidth ? c.columnWidth : MIN_COLUMN_WIDTH,
+                },
+            };
+            if (c.changeCmd !== undefined) {
+                console.error("ATTENTION code pas terminé ici");
+                column.cellRenderer = (cell, columnDefinition) =>
+                    //EditableCellRender(cell, columnDefinition);
+                    formatCell(cell, columnDefinition);
+            } else {
+                column.cellRenderer = (cell, columnDefinition) =>
+                    //defaultCellRender(cell, columnDefinition);
+                    formatCell(cell, columnDefinition);
+            }
+            delete column.changeCmd;
+            return column;
+        });
+        if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
+            generatedTableColumns.unshift({
+                style: {
+                    display: '',
+                    width: HEADER_CELL_WIDTH
+                },
+                locked: true,
+                label: 'Edit',
+                cellRenderer: (cell, columnDefinition) =>
+                    //defaultCellRender(cell, columnDefinition),
+                    formatCell(cell, columnDefinition),
+            });
+        }
+        generatedTableColumns.sort(sortByLock);
+        return generatedTableColumns;
+    }
+
     function renderTable() {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
         const rows = getRows(tabIndex);
+        const columns = generateTableColumns(tabIndex)
         return (
             <EquipmentTable
                 tabIndex={tabIndex}
                 studyUuid={props.studyUuid}
                 workingNode={props.workingNode}
                 rows={rows}
-                visibleColumnsNames={selectedColumnsNames}
-                lockedColumnsNames={lockedColumnsNames}
+                columns={columns}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 filter={filter}
                 fetched={props.network.isResourceFetched(resource)}
@@ -178,7 +254,6 @@ const NetworkTable = (props) => {
                 scrollToAlignment="start"
                 network={props.network}
                 selectedDataKey={Array.from(selectedDataKey)}
-                fluxConvention={fluxConvention}
             />
         );
     }
@@ -415,9 +490,15 @@ const NetworkTable = (props) => {
                                 open={popupSelectColumnNames}
                                 onClose={handleCancelPopupSelectColumnNames}
                                 onClick={handleSaveSelectedColumnNames}
-                                title={intl.formatMessage({
-                                    id: 'ColumnsList',
-                                })}
+                            //    title={intl.formatMessage({ // TODO CHARLY remettre ça
+                            //        id: 'ColumnsList',
+                            //    })}
+                                title={ // TODO CHARLY supprimer ça
+                                    [
+                                        intl.formatMessage({id: 'ColumnsList',}),
+                                        ' ',
+                                        intl.formatMessage({id: TABLES_DEFINITION_INDEXES.get(tabIndex).name}),
+                                    ]}
                                 child={checkListColumnsNames()}
                             />
                         </Grid>

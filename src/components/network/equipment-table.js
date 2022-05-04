@@ -33,27 +33,11 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export const EquipmentTable = ({
-    fetched,
-    studyUuid,
-    workingNode,
-    rows,
-    visibleColumnsNames,
-    lockedColumnsNames,
-    tableDefinition,
-    filter,
-    scrollToIndex,
-    scrollToAlignment,
-    network,
-    selectedDataKey,
-    fluxConvention,
-    tabIndex,
-    // TODO CHARLY extraire columns et le passer en state depuis network-table
-}) => {
+export const EquipmentTable = (props) => {
 
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
-    let columns = [];
+    const gridRef = useRef();
     const intl = useIntl();
     const isLineOnEditMode = useCallback(
         (cellData) => {
@@ -61,25 +45,22 @@ export const EquipmentTable = ({
         },
         [lineEdit]
     );
+    const [fixedColumnsCount, setFixedColumnsCount] = useState(0);
+    useEffect(() => setLineEdit({}), [props.tableDefinition]);
 
-    useEffect(() => setLineEdit({}), [tableDefinition]);
+    useEffect(() => {
+        const count = props.columns.filter((c) => c.locked).length
+        setFixedColumnsCount(count);
 
-    useEffect(() => { // used to force a MultiGrid re-render
-        if(gridRef && gridRef.current)
-        {
-            gridRef.current.forceUpdateGrids();
+        // Used to recalculate the grid's width
+        if(gridRef && gridRef.current) {
+            //gridRef.current.forceUpdateGrids();
             gridRef.current.recomputeGridSize();
         }
-    }, [tabIndex]);
+    }, [props.columns]);
 
     function startEdition(lineInfo) {
         setLineEdit(lineInfo);
-    }
-
-    function isEditColumnVisible() {
-        return (
-            tableDefinition.modifiableEquipmentType && !workingNode?.readOnly
-        );
     }
 
     function capitaliseFirst(str) {
@@ -89,14 +70,14 @@ export const EquipmentTable = ({
     function commitChanges(rowData) {
         let groovyCr =
             'equipment = network.get' +
-            capitaliseFirst(tableDefinition.modifiableEquipmentType) +
+            capitaliseFirst(props.tableDefinition.modifiableEquipmentType) +
             "('" +
             lineEdit.id.replace(/'/g, "\\'") +
             "')\n";
         Object.values(lineEdit.newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(studyUuid, workingNode?.id, groovyCr).then(
+        requestNetworkChange(props.studyUuid, props.workingNode?.id, groovyCr).then(
             (response) => {
                 if (response.ok) {
                     Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
@@ -134,8 +115,7 @@ export const EquipmentTable = ({
                             oldValues: {},
                             newValues: {},
                             id: cellData.rowData['id'], // TODO CHARLY potentiellement à remplacer seulement par cellData.id, si ça plante.
-                            equipmentType:
-                                tableDefinition.modifiableEquipmentType,
+                            equipmentType: props.tableDefinition.modifiableEquipmentType,
                         })
                     }
                 >
@@ -162,28 +142,9 @@ export const EquipmentTable = ({
         );
     }
 
-    const formatCell = useCallback(
-        (cellData, columnDefinition) => {
-            let value = cellData[columnDefinition.dataKey];
-            if (columnDefinition.cellDataGetter) {
-                value = columnDefinition.cellDataGetter(cellData, network);
-            }
-            if (columnDefinition.normed) {
-                console.error("CHARLY fluxconvention "+fluxConvention); // TODO CHARLY ne fonctionne pas quand on change le param (maybe d'autres soucis)
-                value = columnDefinition.normed(fluxConvention, value);
-            }
-            return value &&
-                columnDefinition.numeric &&
-                columnDefinition.fractionDigits
-                ? parseFloat(value).toFixed(columnDefinition.fractionDigits)
-                : value;
-        },
-        [fluxConvention, network]
-    );
-
-    const defaultCellRender = useCallback(
-        (cellData, columnDefinition) => {
-            const text = formatCell(cellData, columnDefinition);
+    //const defaultCellRender = useCallback(
+    //    (cellData, columnDefinition) => {
+    //        const text = formatCell(cellData, columnDefinition);
             /*<TableCell
                     component="div"
                     variant="body"
@@ -194,10 +155,10 @@ export const EquipmentTable = ({
                     <OverflowableText text={text} />
                 </TableCell>*/
             //return (<span style={columnDefinition.style}>{text}</span>);
-            return text;
-        },
-        [classes.tableCell, formatCell]
-    );
+    //        return text;
+    //    },
+    //    [classes.tableCell, formatCell]
+    //);
 
     const registerChangeRequest = useCallback(
         (data, changeCmd, value) => {
@@ -213,7 +174,7 @@ export const EquipmentTable = ({
         [lineEdit]
     );
 
-    const EditableCellRender = useCallback(
+    /*const EditableCellRender = useCallback(
         (cellData, columnDefinition) => {
             if (
                 !isLineOnEditMode(cellData) ||
@@ -265,73 +226,29 @@ export const EquipmentTable = ({
             registerChangeRequest,
             formatCell,
         ]
-    );
-
-    const generateTableColumns = useCallback (() => {
-            let generatedTableColumns = tableDefinition.columns.filter((c) => {
-                return visibleColumnsNames.has(c.id);
-            }).map((c) => {
-                let column = {
-                    label: intl.formatMessage({ id: c.id }),
-                    ...c,
-                };
-                if (lockedColumnsNames.has(c.id)) {
-                    column.locked = true;
-                }
-                if (c.changeCmd !== undefined) {
-                    console.error("ATTENTION code pas terminé ici");
-                    column.cellRenderer = (cell, columnDefinition) =>
-                        EditableCellRender(cell, columnDefinition);
-                } else {
-                    column.cellRenderer = (cell, columnDefinition) =>
-                        defaultCellRender(cell, columnDefinition);
-                }
-                delete column.changeCmd;
-                return column;
-            });
-
-            if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
-                generatedTableColumns.unshift({
-                    style: { display: '', width: HEADER_CELL_WIDTH },
-                    label: 'Edit',
-                    cellRenderer: (cell, columnDefinition) =>
-                        defaultCellRender(cell, columnDefinition),
-                });
-            }
-            return generatedTableColumns;
-
-        }, [rows, tableDefinition, visibleColumnsNames, lockedColumnsNames]
-    );
-
-    /*function makeHeaderCell() {
-        return {
-            width: HEADER_CELL_WIDTH,
-            maxWidth: HEADER_CELL_WIDTH,
-            label: '',
-            dataKey: '',
-            style: {
-                display: visibleColumnsNames.size > 0 ? '' : 'none',
-            },
-            cellRenderer: createEditableRow,
-        };
-    }*/
+    );*/
 
     const lockIcon = () => {
         return (<LockIcon style={{fontSize: 'small'}}/>);
     }
 
-    // CHARLY TEST BELOW
     // https://bvaughn.github.io/react-virtualized/#/components/MultiGrid
     // https://codesandbox.io/s/react-virtualized-multigrid-y9e08?from-embed=&file=/src/Gridtable.js:2358-2977
     // https://github.com/bvaughn/react-virtualized/blob/master/source/MultiGrid/MultiGrid.example.js
     // https://github.com/bvaughn/react-virtualized/blob/master/docs/MultiGrid.md
 
     function cellRenderer({ columnIndex, key, rowIndex, style }) {
-        if(!columns || !columns[columnIndex])
+        if(!props.columns || !props.columns[columnIndex])
         {
-            return (<div>MISSING COLUMN DEF</div>);
+            //console.error("MISSING DEF : col["+columnIndex+"]row["+rowIndex+"]");
+            return (<div style={{
+                ...style,
+                backgroundColor: 'yellow',
+                color:'black',
+                zIndex: 99999,
+            }}>MISSING_DEF:{columnIndex}-{rowIndex}</div>);
         }
-        let columnDefinition = columns[columnIndex];
+        let columnDefinition = props.columns[columnIndex];
         style = {
             ...style,
             backgroundColor: 'black',
@@ -347,7 +264,7 @@ export const EquipmentTable = ({
                 </div>
             );
         } else {
-            let cell = rows[rowIndex - 1];
+            let cell = props.rows[rowIndex - 1];
             if(columnDefinition.cellRenderer)
             {
                 return (
@@ -361,18 +278,19 @@ export const EquipmentTable = ({
         }
     }
 
-    /*function getColumnWidth(columnsParam, index) {
-        return columnsParam[index].style.width !== undefined
-            ? columnsParam[index].style.width
-            : MIN_COLUMN_WIDTH;
-    }*/
+    function getColumnWidth(index) {
+        const width = props.columns[index]?.style?.width;
+        if(width) {
+            return width;
+        }
+        return MIN_COLUMN_WIDTH;
+    }
 
     const headerLinesCount = 1;
-    const fixedColumnsCount = parseInt(1) + parseInt(isEditColumnVisible() ? 1 : 0); // We need to use parseInt to do additions in javascript (even if the IDE is not happy).
 
-    /*return (
+    return (
         <>
-            {!fetched && (
+            {!props.fetched && (
                 <LoaderWithOverlay
                     color="inherit"
                     loaderSize={70}
@@ -382,55 +300,19 @@ export const EquipmentTable = ({
             <AutoSizer>
                 {({ width, height }) => (
                     <MultiGrid
+                        ref={gridRef}
                         cellRenderer={cellRenderer}
                         fixedColumnCount={fixedColumnsCount}
                         fixedRowCount={headerLinesCount}
                         height={height}
                         width={width}
-                        columnCount={columns.length}
-                        //columnWidth={({ index }) => getColumnWidth(columns, index)}
-                        columnWidth={MIN_COLUMN_WIDTH}
-                        rowCount={rows.length + headerLinesCount}
+                        columnCount={props.columns.length}
+                        columnWidth={({ index }) => getColumnWidth(index)}
+                        rowCount={props.rows.length + headerLinesCount}
                         rowHeight={40}
                     />
                 )}
             </AutoSizer>
         </>
-    );*/
-    const gridRef = useRef();
-
-
-    function render() {
-        columns = generateTableColumns();
-        if(!columns || columns.length ==0) return (<div>NOT LOADED YET</div>);
-        return (
-            <>
-                {!fetched && (
-                    <LoaderWithOverlay
-                        color="inherit"
-                        loaderSize={70}
-                        loadingMessageText={'LoadingRemoteData'}
-                    />
-                )}
-                <AutoSizer>
-                    {({ width, height }) => (
-                        <MultiGrid
-                            ref={gridRef}
-                            cellRenderer={cellRenderer}
-                            fixedColumnCount={fixedColumnsCount}
-                            fixedRowCount={headerLinesCount}
-                            height={height}
-                            width={width}
-                            columnCount={columns.length}
-                            //columnWidth={({ index }) => getColumnWidth(columns, index)}
-                            columnWidth={MIN_COLUMN_WIDTH}
-                            rowCount={rows.length + headerLinesCount}
-                            rowHeight={40}
-                        />
-                    )}
-                </AutoSizer>
-            </>
-        );
-    }
-    return (render());
+    );
 };
