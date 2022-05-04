@@ -39,8 +39,6 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 
 import { AutoSizer } from 'react-virtualized';
 
-import { RunningStatus } from '../../util/running-status';
-
 import { useIntlRef, useSnackMessage } from '../../../utils/messages';
 
 import { useIntl } from 'react-intl';
@@ -140,14 +138,26 @@ const computePaperAndSvgSizesIfReady = (
 
 const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     const [svg, setSvg] = useState(noSvg);
-    const svgUrl = useRef('');
+    const svgUrlRef = useRef('');
     const svgDraw = useRef();
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
     const svgRef = useRef();
-    const { totalWidth, totalHeight, loadFlowStatus, workingNode, nadId } =
-        props;
+    const theme = useTheme();
+    const classes = useStyles();
+    const intl = useIntl();
+    const {
+        totalWidth,
+        totalHeight,
+        workingNode,
+        nadId,
+        diagramTitle,
+        svgUrl,
+        onClose,
+        depth,
+        setDepth,
+    } = props;
 
     const network = useSelector((state) => state.network);
 
@@ -156,8 +166,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     const [forceState, updateState] = useState(false);
 
     const [loadingState, updateLoadingState] = useState(false);
-
-    const theme = useTheme();
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
@@ -208,15 +216,15 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     ]);
 
     useEffect(() => {
-        if (props.svgUrl) {
+        if (svgUrl) {
             updateLoadingState(true);
-            fetchNADSvg(props.svgUrl)
+            fetchNADSvg(svgUrl)
                 .then((svg) => {
                     setSvg({
                         svg: svg,
                         metadata: null,
                         error: null,
-                        svgUrl: props.svgUrl,
+                        svgUrl: svgUrl,
                     });
                     updateLoadingState(false);
                 })
@@ -226,7 +234,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                         svg: null,
                         metadata: null,
                         error: errorMessage,
-                        svgUrl: props.svgUrl,
+                        svgUrl: svgUrl,
                     });
                     snackError(errorMessage);
                     updateLoadingState(false);
@@ -234,7 +242,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [svgUrl, forceState, snackError, intlRef]);
 
     useLayoutEffect(() => {
         if (svg.svg) {
@@ -274,6 +282,8 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 });
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
 
+            draw.node.firstChild.removeAttribute('viewBox');
+
             draw.on('panStart', function (evt) {
                 divElt.style.cursor = 'move';
             });
@@ -281,10 +291,10 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 divElt.style.cursor = 'default';
             });
 
-            if (svgDraw.current && svgUrl.current === svg.svgUrl) {
+            if (svgDraw.current && svgUrlRef.current === svg.svgUrl) {
                 draw.viewbox(svgDraw.current.viewbox());
             }
-            svgUrl.current = svg.svgUrl;
+            svgUrlRef.current = svg.svgUrl;
 
             svgDraw.current = draw;
         }
@@ -324,15 +334,11 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         theme,
     ]);
 
-    const classes = useStyles();
-
-    const intl = useIntl();
-
     const onCloseHandler = () => {
-        if (props.onClose !== null) {
+        if (onClose !== null) {
             dispatch(fullScreenSingleLineDiagram(undefined));
-            props.onClose(nadId);
-            props.setDepth(0);
+            onClose(nadId);
+            setDepth(0);
         }
     };
 
@@ -368,7 +374,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 width: sizeWidth,
                 minWidth: loadingWidth,
                 height: sizeHeight,
-                position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
+                position: 'relative',
             }}
         >
             <Box>
@@ -382,7 +388,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 
                 <Box className={classes.header}>
                     <Box flexGrow={1}>
-                        <Typography>{props.diagramTitle}</Typography>
+                        <Typography>{diagramTitle}</Typography>
                     </Box>
                     <IconButton
                         className={classes.close}
@@ -404,11 +410,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                     <div
                         id="sld-svg"
                         ref={svgRef}
-                        className={
-                            loadFlowStatus !== RunningStatus.SUCCEED
-                                ? classes.divNad + ' ' + classes.divInvalid
-                                : classes.divNad
-                        }
+                        className={classes.divNad}
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 }
@@ -419,17 +421,15 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                                 id: 'depth',
                             }) +
                                 ' : ' +
-                                props.depth}
+                                depth}
                         </Typography>
                         <AddCircleIcon
-                            onClick={() => props.setDepth(props.depth + 1)}
+                            onClick={() => setDepth(depth + 1)}
                             className={classes.plusIcon}
                         />
                         <RemoveCircleIcon
                             onClick={() =>
-                                props.setDepth(
-                                    props.depth === 0 ? 0 : props.depth - 1
-                                )
+                                setDepth(depth === 0 ? 0 : depth - 1)
                             }
                             className={classes.lessIcon}
                         />
@@ -473,7 +473,6 @@ NetworkAreaDiagram.propTypes = {
     svgUrl: PropTypes.string.isRequired,
     nadId: PropTypes.string,
     onClose: PropTypes.func,
-    isComputationRunning: PropTypes.bool.isRequired,
     workingNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
