@@ -73,8 +73,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const FluxConventions = {
-    iidm: 'iidm',
-    target: 'target',
+    IIDM: 'iidm',
+    TARGET: 'target',
 };
 
 export function useParameterState(paramName) {
@@ -511,10 +511,10 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                                 handleChangeFluxConvention(event.target.value);
                             }}
                         >
-                            <MenuItem value={FluxConventions.iidm}>
+                            <MenuItem value={FluxConventions.IIDM}>
                                 <FormattedMessage id="FluxConvention.iidm" />
                             </MenuItem>
-                            <MenuItem value={FluxConventions.target}>
+                            <MenuItem value={FluxConventions.TARGET}>
                                 <FormattedMessage id="FluxConvention.target" />
                             </MenuItem>
                         </Select>
@@ -643,7 +643,9 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
     const resetNetworkParameters = () => {
         fetchDefaultParametersValues().then((defaultValues) => {
             const defaultFluxConvention = defaultValues.fluxConvention;
-            if (defaultFluxConvention in FluxConventions) {
+            if (
+                Object.values(FluxConventions).includes(defaultFluxConvention)
+            ) {
                 handleChangeFluxConvention(defaultFluxConvention);
             }
         });
@@ -695,9 +697,12 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         });
     };
 
-    const updateLfProviderCallback = (evt) => {
-        updateLfProvider(evt.target.value);
-    };
+    const updateLfProviderCallback = useCallback(
+        (evt) => {
+            updateLfProvider(evt.target.value);
+        },
+        [updateLfProvider]
+    );
 
     const LoadFlow = () => {
         return (
