@@ -249,6 +249,7 @@
     "FluxConvention.target": "Métier",
 
     "Optional": " (optionnel)",
+    "loadingOptions": "Chargement...",
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
     "createModelNode": "Créer un nœud modèle",
     "removeNode": "Supprimer nœud",

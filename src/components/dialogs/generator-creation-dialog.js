@@ -34,6 +34,7 @@ import {
     ActivePowerAdornment,
     filledTextField,
     gridItem,
+    MVAPowerAdornment,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';
@@ -142,6 +143,7 @@ const GeneratorCreationDialog = ({
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,
@@ -190,7 +192,7 @@ const GeneratorCreationDialog = ({
             isValueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
-        adornment: ReactivePowerAdornment,
+        adornment: MVAPowerAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.ratedNominalPower,
     });
