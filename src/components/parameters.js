@@ -38,6 +38,8 @@ import {
     setLoadFlowProvider,
     updateConfigParameter,
     getAvailableComponentLibraries,
+    getDefaultLoadFlowProvider,
+    fetchDefaultParametersValues,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
@@ -116,7 +118,6 @@ export function useParameterState(paramName) {
 }
 
 const LF_PROVIDER_VALUES = {
-    Default: 'Default',
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
 };
@@ -178,6 +179,48 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const [componentLibraries, setComponentLibraries] = useState([]);
 
+    const updateLfProvider = useCallback(
+        (newProvider) => {
+            const oldProvider = lfProvider;
+            setLfProvider(newProvider);
+            setLoadFlowProvider(studyUuid, newProvider).catch(
+                (errorMessage) => {
+                    setLfProvider(oldProvider); // restore old value
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'setLoadFlowProviderError',
+                            intlRef: intlRef,
+                        },
+                    });
+                }
+            );
+        },
+        [studyUuid, lfProvider, enqueueSnackbar, intlRef]
+    );
+
+    const setLoadFlowProviderToDefault = useCallback(() => {
+        getDefaultLoadFlowProvider()
+            .then((defaultLFProvider) => {
+                updateLfProvider(
+                    defaultLFProvider in LF_PROVIDER_VALUES
+                        ? defaultLFProvider
+                        : LF_PROVIDER_VALUES.OpenLoadFlow
+                );
+            })
+            .catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'defaultLoadflowRetrievingError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }, [updateLfProvider, enqueueSnackbar, intlRef]);
+
     useEffect(() => {
         if (studyUuid) {
             getLoadFlowParameters(studyUuid)
@@ -194,7 +237,12 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 );
             getLoadFlowProvider(studyUuid)
                 .then((provider) => {
-                    setLfProvider(provider === '' ? 'Default' : provider);
+                    // if provider is not defined or not among allowed values, it's set to default value
+                    if (!(provider in LF_PROVIDER_VALUES)) {
+                        setLoadFlowProviderToDefault();
+                    } else {
+                        setLfProvider(provider);
+                    }
                 })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
@@ -207,7 +255,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     })
                 );
         }
-    }, [studyUuid, enqueueSnackbar, intlRef]);
+    }, [studyUuid, enqueueSnackbar, intlRef, setLoadFlowProviderToDefault]);
 
     useEffect(() => {
         if (user !== null) {
@@ -441,30 +489,39 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function NetworkParameters() {
         return (
-            <Grid container spacing={2} className={classes.grid}>
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id="FluxConvention" />
-                        </Box>
-                    </Typography>
+            <Grid
+                container
+                spacing={2}
+                className={classes.grid}
+                justifyContent="flex-end"
+            >
+                <Grid container>
+                    <Grid item xs={8}>
+                        <Typography component="span" variant="body1">
+                            <Box fontWeight="fontWeightBold" m={1}>
+                                <FormattedMessage id="FluxConvention" />
+                            </Box>
+                        </Typography>
+                    </Grid>
+                    <Grid item container xs={4} className={classes.controlItem}>
+                        <Select
+                            labelId="flux-convention-select-label"
+                            value={fluxConventionLocal}
+                            onChange={(event) => {
+                                handleChangeFluxConvention(event.target.value);
+                            }}
+                        >
+                            <MenuItem value={FluxConventions.IIDM}>
+                                <FormattedMessage id="FluxConvention.iidm" />
+                            </MenuItem>
+                            <MenuItem value={FluxConventions.TARGET}>
+                                <FormattedMessage id="FluxConvention.target" />
+                            </MenuItem>
+                        </Select>
+                    </Grid>
+                    <MakeLineSeparator />
                 </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Select
-                        labelId="flux-convention-select-label"
-                        value={fluxConventionLocal}
-                        onChange={(event) => {
-                            handleChangeFluxConvention(event.target.value);
-                        }}
-                    >
-                        <MenuItem value={FluxConventions.IIDM}>
-                            <FormattedMessage id="FluxConvention.iidm" />
-                        </MenuItem>
-                        <MenuItem value={FluxConventions.TARGET}>
-                            <FormattedMessage id="FluxConvention.target" />
-                        </MenuItem>
-                    </Select>
-                </Grid>
+                {MakeButton(resetNetworkParameters, 'resetToDefault')}
             </Grid>
         );
     }
@@ -583,6 +640,17 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         ));
     }
 
+    const resetNetworkParameters = () => {
+        fetchDefaultParametersValues().then((defaultValues) => {
+            const defaultFluxConvention = defaultValues.fluxConvention;
+            if (
+                Object.values(FluxConventions).includes(defaultFluxConvention)
+            ) {
+                handleChangeFluxConvention(defaultFluxConvention);
+            }
+        });
+    };
+
     const resetLfParameters = () => {
         setLoadFlowParameters(studyUuid, null)
             .then(() => {
@@ -609,6 +677,8 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     },
                 })
             );
+
+        setLoadFlowProviderToDefault();
     };
 
     const commitLFParameter = (newParams) => {
@@ -627,25 +697,12 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         });
     };
 
-    const updateLfProvider = (evt) => {
-        const newProvider = evt.target.value;
-        const oldProvider = lfProvider;
-        setLfProvider(newProvider);
-        setLoadFlowProvider(
-            studyUuid,
-            newProvider === 'Default' ? '' : newProvider
-        ).catch((errorMessage) => {
-            setLfProvider(oldProvider); // restore old value
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'setLoadFlowProviderError',
-                    intlRef: intlRef,
-                },
-            });
-        });
-    };
+    const updateLfProviderCallback = useCallback(
+        (evt) => {
+            updateLfProvider(evt.target.value);
+        },
+        [updateLfProvider]
+    );
 
     const LoadFlow = () => {
         return (
@@ -660,7 +717,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         lfProvider,
                         'Provider',
                         LF_PROVIDER_VALUES,
-                        updateLfProvider
+                        updateLfProviderCallback
                     )}
                 </Grid>
                 <MakeLineSeparator />
