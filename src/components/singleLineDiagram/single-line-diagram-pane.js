@@ -204,7 +204,7 @@ export function SingleLineDiagramPane({
 
     const dispatch = useDispatch();
 
-    const [closeSingleLineDiagram, openVoltageLevel, openSubstation] =
+    const [closeViwe, openVoltageLevel, openSubstation] =
         useSingleLineDiagram();
 
     const location = useLocation();
@@ -277,27 +277,26 @@ export function SingleLineDiagramPane({
     }, [createView, location.search]);
 
     const toggleState = useCallback(
-        (id, state) => {
+        (id, type, state) => {
             setViewState((oldValue) => {
                 const newVal = new Map(oldValue);
                 const oldState = oldValue.get(id);
                 if (oldState === state) newVal.delete(id);
                 else newVal.set(id, state);
-                if (state === ViewState.PINNED) {
-                    openVoltageLevel(id);
-                }
+                if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
+                else if (type === SvgType.SUBSTATION) openSubstation(id);
                 return newVal;
             });
         },
-        [openVoltageLevel]
+        [openSubstation, openVoltageLevel]
     );
 
     const handleCloseSLD = useCallback(
         (id) => {
             setViewState((oldVal) => removeFromMap(oldVal, id));
-            closeSingleLineDiagram(id);
+            closeViwe(id);
         },
-        [closeSingleLineDiagram]
+        [closeViwe]
     );
 
     const handleOpenView = useCallback(
@@ -336,21 +335,14 @@ export function SingleLineDiagramPane({
                         (vl) =>
                             vl.substationId === deletedId || vl.id === deletedId
                     );
-                    closeSingleLineDiagram([...vlToClose, deletedId]);
+                    closeViwe([...vlToClose, deletedId]);
                 } else {
                     updateSld();
                 }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [
-        studyUpdatedForce,
-        dispatch,
-        studyUuid,
-        updateSld,
-        views,
-        closeSingleLineDiagram,
-    ]);
+    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, views, closeViwe]);
 
     useEffect(() => {
         let toDisplay = views.filter(
