@@ -80,7 +80,7 @@ export function NetworkAreaDiagramPane({
 
 NetworkAreaDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
-    workingNode: PropTypes.object,
     network: PropTypes.object,
+    workingNode: PropTypes.object,
     onClose: PropTypes.func,
 };

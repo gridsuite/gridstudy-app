@@ -97,8 +97,7 @@ const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 // (but they are still hidden in fullscreen mode)
 const mapRightOffset = 120;
 const mapBottomOffset = 80;
-const borders = 2;
-// we use content-size: border-box so this needs to be included..
+const borders = 2; // we use content-size: border-box so this needs to be included..
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
 const computePaperAndSvgSizesIfReady = (
     fullScreen,
@@ -281,6 +280,8 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 });
             draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
 
+            // PowSyBl NAD introduced server side calculated SVG viewbox
+            // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
             draw.node.firstChild.removeAttribute('viewBox');
 
             draw.on('panStart', function (evt) {
@@ -297,8 +298,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 
             svgDraw.current = draw;
         }
-        // Note: onNextVoltageLevelClick and onBreakerClick don't change
-    }, [network, svg, workingNode, theme, nadId, ref]);
+    }, [network, svg, workingNode, theme, nadId, ref, svgUrl]);
 
     useLayoutEffect(() => {
         if (
@@ -308,7 +308,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             const divElt = svgRef.current;
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
-
                 if (svgEl != null) {
                     svgEl.setAttribute(
                         'width',
@@ -468,10 +467,10 @@ const NetworkAreaDiagram = forwardRef((props, ref) => {
 });
 
 NetworkAreaDiagram.propTypes = {
+    onClose: PropTypes.func,
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
     nadId: PropTypes.string,
-    onClose: PropTypes.func,
     workingNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
