@@ -886,11 +886,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const pinSld = useCallback(
         () => toggleState(sldId, svgType, ViewState.PINNED),
-        [sldId, toggleState]
+        [sldId, svgType, toggleState]
     );
     const minimizeSld = useCallback(
         () => toggleState(sldId, svgType, ViewState.MINIMIZED),
-        [toggleState, sldId]
+        [toggleState, sldId, svgType]
     );
 
     return !svg.error ? (
