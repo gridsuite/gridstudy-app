@@ -43,9 +43,6 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 0,
         paddingBottom: 1,
     },
-    h4: {
-        marginBottom: 0,
-    },
 }));
 
 /**
@@ -286,7 +283,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <h3 className={classes.h3}>
+                            <h3>
                                 <FormattedMessage id="Characteristics" />
                             </h3>
                         </Grid>
