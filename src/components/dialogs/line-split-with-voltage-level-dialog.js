@@ -460,7 +460,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 studyUuid,
                 selectedNodeUuid,
                 editData ? editData.uuid : undefined,
-                lineToDivide.id,
+                lineToDivide.id || lineToDivide,
                 parseFloat(percentage),
                 newVoltageLevel,
                 newVoltageLevel
