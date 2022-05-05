@@ -644,17 +644,17 @@ export const useEnumValue = ({
             <FormControl fullWidth size="small">
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
-                <InputLabel id="enum-type-label" variant={'filled'}>
+                <InputLabel id="enum-type-label" {...formProps}>
                     <FieldLabel
                         label={label}
                         optional={validation.isFieldRequired === false}
                     />
                 </InputLabel>
                 <Select
+                    label={label}
                     id={label}
                     value={value || ''}
                     onChange={handleChangeValue}
-                    variant="filled"
                     fullWidth
                     {...formProps}
                 >
@@ -750,7 +750,7 @@ export const useExpandableValues = ({
 
     const field = useMemo(() => {
         return (
-            <Grid item container>
+            <Grid item container spacing={2}>
                 {values.map((value, idx) => (
                     <Grid key={id + idx} container spacing={2} item>
                         <Field
@@ -777,7 +777,6 @@ export const useExpandableValues = ({
                         <Button
                             fullWidth
                             className={classes.button}
-                            variant="outlined"
                             startIcon={<AddIcon />}
                             onClick={handleAddValue}
                         >

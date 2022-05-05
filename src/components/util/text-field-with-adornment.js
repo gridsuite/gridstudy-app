@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '0.4em',
     },
     adornRightOther: {
-        marginBottom: '0.2em',
+        marginBottom: '0.3em',
     },
 }));
 
@@ -40,6 +40,15 @@ const TextFieldWithAdornment = (props) => {
         ...otherProps
     } = props;
     const [isFocused, setIsFocused] = useState(false);
+
+    const getAdornmentClassName = useCallback(
+        (variant) => {
+            if (variant === 'filled') return classes.adornRightFilled;
+            else if (variant === 'standard') return classes.adornRightOther;
+            else return null;
+        },
+        [classes.adornRightFilled, classes.adornRightOther]
+    );
 
     const getClearAdornment = useCallback(
         (position) => {
@@ -57,12 +66,15 @@ const TextFieldWithAdornment = (props) => {
     const getTextAdornment = useCallback(
         (position) => {
             return (
-                <InputAdornment position={position}>
+                <InputAdornment
+                    position={position}
+                    className={getAdornmentClassName(variant)}
+                >
                     {adornmentText}
                 </InputAdornment>
             );
         },
-        [adornmentText]
+        [adornmentText, variant, getAdornmentClassName]
     );
 
     const withEndAdornmentText = useCallback(() => {
