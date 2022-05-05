@@ -46,7 +46,6 @@ import { getComputedLanguage } from '../../utils/language';
 import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import makeStyles from '@mui/styles/makeStyles';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());

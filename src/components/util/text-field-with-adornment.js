@@ -41,6 +41,15 @@ const TextFieldWithAdornment = (props) => {
     } = props;
     const [isFocused, setIsFocused] = useState(false);
 
+    const adornmentClass = useCallback(
+        (variant) => {
+            if (variant === 'filled') return classes.adornRightFilled;
+            else if (variant === 'standard') return classes.adornRightOther;
+            else return null;
+        },
+        [classes.adornRightFilled, classes.adornRightOther]
+    );
+
     const getClearAdornment = useCallback(
         (position) => {
             return (
@@ -59,19 +68,13 @@ const TextFieldWithAdornment = (props) => {
             return (
                 <InputAdornment
                     position={position}
-                    className={
-                        variant === 'filled'
-                            ? classes.adornRightFilled
-                            : variant === 'standard'
-                            ? classes.adornRightOther
-                            : null
-                    }
+                    className={adornmentClass(variant)}
                 >
                     {adornmentText}
                 </InputAdornment>
             );
         },
-        [adornmentText]
+        [adornmentText, variant, adornmentClass]
     );
 
     const withEndAdornmentText = useCallback(() => {
