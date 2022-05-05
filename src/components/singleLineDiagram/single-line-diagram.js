@@ -823,7 +823,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const onCloseHandler = () => {
         if (props.onClose !== null) {
             dispatch(fullScreenSingleLineDiagram(undefined));
-            console.info(props);
             props.onClose(sldId);
         }
     };
