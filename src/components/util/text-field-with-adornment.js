@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '0.4em',
     },
     adornRightOther: {
-        marginBottom: '0.2em',
+        marginBottom: '0.3em',
     },
 }));
 
@@ -57,7 +57,16 @@ const TextFieldWithAdornment = (props) => {
     const getTextAdornment = useCallback(
         (position) => {
             return (
-                <InputAdornment position={position}>
+                <InputAdornment
+                    position={position}
+                    className={
+                        variant === 'filled'
+                            ? classes.adornRightFilled
+                            : variant === 'standard'
+                            ? classes.adornRightOther
+                            : null
+                    }
+                >
                     {adornmentText}
                 </InputAdornment>
             );
