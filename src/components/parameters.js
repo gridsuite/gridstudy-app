@@ -11,22 +11,22 @@ import { FormattedMessage } from 'react-intl';
 
 import { useSelector } from 'react-redux';
 
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Switch from '@material-ui/core/Switch';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Container from '@mui/material/Container';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import Typography from '@mui/material/Typography';
+import Slider from '@mui/material/Slider';
 import { useSnackbar } from 'notistack';
 
 import { LineFlowMode } from './network/line-layer';
@@ -38,6 +38,8 @@ import {
     setLoadFlowProvider,
     updateConfigParameter,
     getAvailableComponentLibraries,
+    getDefaultLoadFlowProvider,
+    fetchDefaultParametersValues,
 } from '../utils/rest-api';
 import { SubstationLayout } from './single-line-diagram';
 import {
@@ -51,6 +53,7 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_COMPONENT_LIBRARY,
+    PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 
@@ -68,6 +71,11 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '30px',
     },
 }));
+
+export const FluxConventions = {
+    IIDM: 'iidm',
+    TARGET: 'target',
+};
 
 export function useParameterState(paramName) {
     const intlRef = useIntlRef();
@@ -110,7 +118,6 @@ export function useParameterState(paramName) {
 }
 
 const LF_PROVIDER_VALUES = {
-    Default: 'Default',
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
 };
@@ -152,6 +159,10 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
     const [componentLibraryLocal, handleChangeComponentLibrary] =
         useParameterState(PARAM_COMPONENT_LIBRARY);
 
+    const [fluxConventionLocal, handleChangeFluxConvention] = useParameterState(
+        PARAM_FLUX_CONVENTION
+    );
+
     const studyUuid = useSelector((state) => state.studyUuid);
 
     const [lfProvider, setLfProvider] = useState(null);
@@ -167,6 +178,48 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const [componentLibraries, setComponentLibraries] = useState([]);
+
+    const updateLfProvider = useCallback(
+        (newProvider) => {
+            const oldProvider = lfProvider;
+            setLfProvider(newProvider);
+            setLoadFlowProvider(studyUuid, newProvider).catch(
+                (errorMessage) => {
+                    setLfProvider(oldProvider); // restore old value
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'setLoadFlowProviderError',
+                            intlRef: intlRef,
+                        },
+                    });
+                }
+            );
+        },
+        [studyUuid, lfProvider, enqueueSnackbar, intlRef]
+    );
+
+    const setLoadFlowProviderToDefault = useCallback(() => {
+        getDefaultLoadFlowProvider()
+            .then((defaultLFProvider) => {
+                updateLfProvider(
+                    defaultLFProvider in LF_PROVIDER_VALUES
+                        ? defaultLFProvider
+                        : LF_PROVIDER_VALUES.OpenLoadFlow
+                );
+            })
+            .catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'defaultLoadflowRetrievingError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+    }, [updateLfProvider, enqueueSnackbar, intlRef]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -184,7 +237,12 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 );
             getLoadFlowProvider(studyUuid)
                 .then((provider) => {
-                    setLfProvider(provider === '' ? 'Default' : provider);
+                    // if provider is not defined or not among allowed values, it's set to default value
+                    if (!(provider in LF_PROVIDER_VALUES)) {
+                        setLoadFlowProviderToDefault();
+                    } else {
+                        setLfProvider(provider);
+                    }
                 })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
@@ -197,7 +255,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     })
                 );
         }
-    }, [studyUuid, enqueueSnackbar, intlRef]);
+    }, [studyUuid, enqueueSnackbar, intlRef, setLoadFlowProviderToDefault]);
 
     useEffect(() => {
         if (user !== null) {
@@ -257,7 +315,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         checked={prop}
                         onChange={callback}
                         value={prop}
-                        color="primary"
                         inputProps={{ 'aria-label': 'primary checkbox' }}
                     />
                 </Grid>
@@ -294,7 +351,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 <Button
                     onClick={callback}
                     variant="contained"
-                    color="primary"
                     className={classes.button}
                 >
                     <FormattedMessage id={label} />
@@ -431,6 +487,45 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         );
     }
 
+    function NetworkParameters() {
+        return (
+            <Grid
+                container
+                spacing={2}
+                className={classes.grid}
+                justifyContent="flex-end"
+            >
+                <Grid container>
+                    <Grid item xs={8}>
+                        <Typography component="span" variant="body1">
+                            <Box fontWeight="fontWeightBold" m={1}>
+                                <FormattedMessage id="FluxConvention" />
+                            </Box>
+                        </Typography>
+                    </Grid>
+                    <Grid item container xs={4} className={classes.controlItem}>
+                        <Select
+                            labelId="flux-convention-select-label"
+                            value={fluxConventionLocal}
+                            onChange={(event) => {
+                                handleChangeFluxConvention(event.target.value);
+                            }}
+                        >
+                            <MenuItem value={FluxConventions.IIDM}>
+                                <FormattedMessage id="FluxConvention.iidm" />
+                            </MenuItem>
+                            <MenuItem value={FluxConventions.TARGET}>
+                                <FormattedMessage id="FluxConvention.target" />
+                            </MenuItem>
+                        </Select>
+                    </Grid>
+                    <MakeLineSeparator />
+                </Grid>
+                {MakeButton(resetNetworkParameters, 'resetToDefault')}
+            </Grid>
+        );
+    }
+
     const MapParameters = () => {
         return (
             <Grid container spacing={2} className={classes.grid}>
@@ -545,6 +640,17 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         ));
     }
 
+    const resetNetworkParameters = () => {
+        fetchDefaultParametersValues().then((defaultValues) => {
+            const defaultFluxConvention = defaultValues.fluxConvention;
+            if (
+                Object.values(FluxConventions).includes(defaultFluxConvention)
+            ) {
+                handleChangeFluxConvention(defaultFluxConvention);
+            }
+        });
+    };
+
     const resetLfParameters = () => {
         setLoadFlowParameters(studyUuid, null)
             .then(() => {
@@ -571,6 +677,8 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     },
                 })
             );
+
+        setLoadFlowProviderToDefault();
     };
 
     const commitLFParameter = (newParams) => {
@@ -589,25 +697,12 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         });
     };
 
-    const updateLfProvider = (evt) => {
-        const newProvider = evt.target.value;
-        const oldProvider = lfProvider;
-        setLfProvider(newProvider);
-        setLoadFlowProvider(
-            studyUuid,
-            newProvider === 'Default' ? '' : newProvider
-        ).catch((errorMessage) => {
-            setLfProvider(oldProvider); // restore old value
-            displayErrorMessageWithSnackbar({
-                errorMessage: errorMessage,
-                enqueueSnackbar: enqueueSnackbar,
-                headerMessage: {
-                    headerMessageId: 'setLoadFlowProviderError',
-                    intlRef: intlRef,
-                },
-            });
-        });
-    };
+    const updateLfProviderCallback = useCallback(
+        (evt) => {
+            updateLfProvider(evt.target.value);
+        },
+        [updateLfProvider]
+    );
 
     const LoadFlow = () => {
         return (
@@ -622,7 +717,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         lfProvider,
                         'Provider',
                         LF_PROVIDER_VALUES,
-                        updateLfProvider
+                        updateLfProviderCallback
                     )}
                 </Grid>
                 <MakeLineSeparator />
@@ -703,9 +798,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 <Container maxWidth="md">
                     <Tabs
                         value={tabIndex}
-                        indicatorColor="primary"
                         variant="scrollable"
-                        scrollButtons="auto"
                         onChange={(event, newValue) => setTabIndex(newValue)}
                         aria-label="parameters"
                     >
@@ -717,6 +810,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                             disabled={!studyUuid}
                             label={<FormattedMessage id="LoadFlow" />}
                         />
+                        <Tab label={<FormattedMessage id="Network" />} />
                     </Tabs>
 
                     <TabPanel value={tabIndex} index={0}>
@@ -728,11 +822,13 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     <TabPanel value={tabIndex} index={2}>
                         {studyUuid && <LoadFlow />}
                     </TabPanel>
+                    <TabPanel value={tabIndex} index={3}>
+                        <NetworkParameters />
+                    </TabPanel>
                     <Grid item xs={12}>
                         <Button
                             onClick={hideParameters}
                             variant="contained"
-                            color="primary"
                             className={classes.button}
                         >
                             <FormattedMessage id="close" />

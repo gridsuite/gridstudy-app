@@ -9,10 +9,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { darken, makeStyles } from '@material-ui/core/styles';
+import { darken } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { filteredNominalVoltagesUpdated } from '../redux/actions';
 import { equipments } from './network/network-equipments';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import NetworkTable from './network/network-table';
 import clsx from 'clsx';
@@ -23,15 +24,10 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
     PARAM_USE_NAME,
-    PARAM_MAP_TREE_DISPLAY,
 } from '../utils/config-params';
 import { getLoadFlowRunningStatus } from './util/running-status';
 import NetworkMapTab from './network-map-tab';
-import {
-    DRAWER_EXPLORER_WIDTH,
-    DRAWER_NODE_EDITOR_WIDTH,
-    MapLateralDrawers,
-} from './map-lateral-drawers';
+import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
 import {
@@ -40,7 +36,6 @@ import {
 } from './single-line-diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
-import { useParameterState } from './parameters';
 import { ReactFlowProvider } from 'react-flow-renderer';
 
 const useStyles = makeStyles((theme) => ({
@@ -97,7 +92,7 @@ export const StudyDisplayMode = {
 const StudyPane = ({
     studyUuid,
     network,
-    workingNodeUuid,
+    workingNode,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -124,8 +119,8 @@ const StudyPane = ({
         Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
     );
 
-    const [studyDisplayMode, setStudyDisplayMode] = useParameterState(
-        PARAM_MAP_TREE_DISPLAY
+    const [studyDisplayMode, setStudyDisplayMode] = useState(
+        StudyDisplayMode.HYBRID
     );
 
     const filteredNominalVoltages = useSelector(
@@ -134,25 +129,18 @@ const StudyPane = ({
 
     const [isComputationRunning, setIsComputationRunning] = useState(false);
 
-    const [visibleSubstation, setVisibleSubstation] = useState(null);
-
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
         changed: false,
     });
 
-    const [centerOnSubstation, setCenterOnSubstation] = useState();
-
     const dispatch = useDispatch();
 
     const classes = useStyles();
 
-    const [
-        closeVoltageLevelDiagram,
-        showVoltageLevelDiagram,
-        showSubstationDiagram,
-    ] = useSingleLineDiagram(studyUuid);
+    const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
+        useSingleLineDiagram(studyUuid);
 
     useEffect(() => {
         if (
@@ -166,39 +154,11 @@ const StudyPane = ({
         }
     }, [network, filteredNominalVoltages, dispatch]);
 
-    const [drawerShift, setDrawerShift] = useState(0);
-
-    const isModificationsDrawerOpen = useSelector(
-        (state) => state.isModificationsDrawerOpen
-    );
-
-    const isExplorerDrawerOpen = useSelector(
-        (state) => state.isExplorerDrawerOpen
-    );
-
-    useEffect(() => {
-        let shift = 0;
-        if (isExplorerDrawerOpen) shift += DRAWER_EXPLORER_WIDTH;
-        if (
-            isModificationsDrawerOpen &&
-            studyDisplayMode === StudyDisplayMode.MAP
-        ) {
-            shift += DRAWER_NODE_EDITOR_WIDTH;
-        }
-        setDrawerShift(shift);
-    }, [
-        setDrawerShift,
-        isExplorerDrawerOpen,
-        isModificationsDrawerOpen,
-        studyDisplayMode,
-    ]);
-
     function openVoltageLevelDiagram(vlId, substationId) {
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
             props.onChangeTab(0); // switch to map view
             showVoltageLevelDiagram(vlId); // show voltage level
-            setVisibleSubstation(substationId);
         }
     }
 
@@ -295,7 +255,7 @@ const StudyPane = ({
                                     position: 'absolute',
                                     top: 0,
                                     bottom: 0,
-                                    left: drawerShift,
+                                    left: 0,
                                     right: 0,
                                 }}
                             >
@@ -318,9 +278,8 @@ const StudyPane = ({
                                         filteredNominalVoltages
                                     }
                                     openVoltageLevel={openVoltageLevel}
-                                    centerOnSubstation={centerOnSubstation}
                                     /* TODO verif tableEquipment*/
-                                    selectedNodeUuid={workingNodeUuid}
+                                    workingNode={workingNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -337,16 +296,7 @@ const StudyPane = ({
                                 />
                             </div>
 
-                            <MapLateralDrawers
-                                network={network}
-                                studyDisplayMode={studyDisplayMode}
-                                onVoltageLevelDisplayClick={
-                                    showVoltageLevelDiagram
-                                }
-                                onSubstationDisplayClick={showSubstationDiagram}
-                                onSubstationFocus={setCenterOnSubstation}
-                                visibleSubstation={visibleSubstation}
-                            />
+                            <MapLateralDrawers />
 
                             {/*
                 Rendering single line diagram only in map view and if
@@ -363,7 +313,7 @@ const StudyPane = ({
                                     loadFlowStatus={getLoadFlowRunningStatus(
                                         loadFlowInfos?.loadFlowStatus
                                     )}
-                                    selectedNodeUuid={workingNodeUuid}
+                                    workingNode={workingNode}
                                 />
                             )}
                         </div>
@@ -379,7 +329,7 @@ const StudyPane = ({
                 <NetworkTable
                     network={network}
                     studyUuid={studyUuid}
-                    selectedNodeUuid={workingNodeUuid}
+                    workingNode={workingNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
@@ -416,7 +366,7 @@ const StudyPane = ({
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
-                    selectedNodeUuid={workingNodeUuid}
+                    workingNode={workingNode}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}

@@ -5,25 +5,47 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { Handle } from 'react-flow-renderer';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import { useSelector } from 'react-redux';
+import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import BuildIcon from '@mui/icons-material/Build';
+import LockIcon from '@mui/icons-material/Lock';
 
 const useStyles = makeStyles((theme) => ({
     networkModificationSelected: {
         variant: 'contained',
-        background: 'steelblue',
+        background: theme.palette.primary.main,
         textTransform: 'none',
+        color: theme.palette.primary.contrastText,
+        '&:hover': {
+            background: theme.palette.primary.main,
+        },
     },
     networkModification: {
         variant: 'outlined',
-        background: 'lightsteelblue',
+        background: theme.palette.primary.light,
         textTransform: 'none',
+        color: theme.palette.primary.contrastText,
+        '&:hover': {
+            background: theme.palette.primary.main,
+        },
+    },
+    buildStatusOk: {
+        color: 'green',
+    },
+    buildStatusInvalid: {
+        color: 'indianred',
     },
 }));
 
 const NetworkModificationNode = (props) => {
     const classes = useStyles();
+
+    const workingNode = useSelector((state) => state.workingTreeNode);
 
     return (
         <>
@@ -49,6 +71,30 @@ const NetworkModificationNode = (props) => {
                 disableElevation
             >
                 {props.data.label}
+                <IconButton
+                    className={
+                        props.selected
+                            ? classes.networkModificationSelected
+                            : classes.networkModification
+                    }
+                >
+                    {props.data.buildStatus === 'BUILDING' ? (
+                        <CircularProgress size={24} color="secondary" />
+                    ) : props.id === workingNode?.id ? (
+                        <VisibilityIcon />
+                    ) : (
+                        props.data.buildStatus !== 'NOT_BUILT' && (
+                            <BuildIcon
+                                className={
+                                    props.data.buildStatus === 'BUILT'
+                                        ? classes.buildStatusOk
+                                        : classes.buildStatusInvalid
+                                }
+                            />
+                        )
+                    )}
+                </IconButton>
+                {props.data.readOnly && <LockIcon />}
             </Button>
         </>
     );

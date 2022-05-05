@@ -11,7 +11,7 @@ import {
     ElementSearchDialog,
     equipmentStyles,
     getEquipmentsInfosForSearchBar,
-    renderEquipmentForSearchBar,
+    EquipmentItem,
 } from '@gridsuite/commons-ui';
 import React, { useCallback, useState } from 'react';
 import { fetchEquipmentsInfos } from '../../utils/rest-api';
@@ -21,7 +21,7 @@ import {
 } from '../../utils/messages';
 import { useParams } from 'react-router-dom';
 import { PARAM_USE_NAME } from '../../utils/config-params';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
 
@@ -99,7 +99,13 @@ const EquipmentSearchDialog = ({
                 onSelectionChange(element);
             }}
             elementsFound={equipmentsFound}
-            renderElement={renderEquipmentForSearchBar(equipmentClasses, intl)}
+            renderElement={(props) => (
+                <EquipmentItem
+                    classes={equipmentClasses}
+                    {...props}
+                    key={props.element.key}
+                />
+            )}
         />
     );
 };

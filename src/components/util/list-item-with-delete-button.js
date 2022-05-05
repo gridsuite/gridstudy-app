@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Checkbox from '@material-ui/core/Checkbox';
-import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 import * as PropTypes from 'prop-types';
 
 const ListItemWithDeleteButton = (props) => {
@@ -25,9 +25,8 @@ const ListItemWithDeleteButton = (props) => {
         >
             <ListItemIcon>
                 <Checkbox
-                    color={'primary'}
                     edge="start"
-                    checked={props.set.has(props.value)}
+                    checked={props.checked}
                     tabIndex={-1}
                     disableRipple
                 />

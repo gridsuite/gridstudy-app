@@ -47,6 +47,7 @@
     "parameters": "Paramètres",
     "paramsChangingError": "Une erreur est survenue lors de la modification des paramètres",
     "paramsRetrievingError": "Une erreur est survenue lors de la récupération des paramètres",
+    "defaultLoadflowRetrievingError": "Une erreur est survenue lors de la récupération du fournisseur de load flow par défaut",
 
     "close": "Fermer",
     "validate": "Valider",
@@ -121,18 +122,19 @@
     "displayOverloadTable": "Afficher la table des surcharges en cas de dépassement de seuil : ",
 
     "LoadFlow": "Calcul de répartition",
+    "Network" : "Réseau",
     "SecurityAnalysis": "Analyse de sécurité",
 
-    "ContingencyListsSelection": "Sélection des listes de contingences",
+    "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",
     "DeleteContingencyList": "Supprimer",
-    "getContingencyListError": "Impossible de récuperer les listes de contingences",
-    "xContingenciesWillBeSimulated": "{x} contingences seront simulées",
+    "getContingencyListError": "Impossible de récuperer les listes d'aléas",
+    "xContingenciesWillBeSimulated": "{x} aléas seront simulées",
 
     "LimitType": "Type de limite",
     "Value": "Valeur",
-    "ContingencyId": "ID contingence",
+    "ContingencyId": "ID aléa",
     "ComputationOk": "Calcul OK",
     "true": "oui",
     "false": "non",
@@ -176,8 +178,8 @@
     "SmartWithVerticalCompactionSubstationLayout": "Smart avec compaction verticale",
     "openSubstation": "Ouvrir le site",
 
-    "ConstraintsFromContingencies": "Contingences -> contraintes",
-    "ContingenciesFromConstraints": "Contraintes -> contingences",
+    "ConstraintsFromContingencies": "Aléas -> contraintes",
+    "ContingenciesFromConstraints": "Contraintes -> aléas",
 
     "Equipment": "Ouvrage",
     "Constraint": "Contrainte",
@@ -242,8 +244,12 @@
     "loadingReport": "Chargement des logs en cours...",
 
     "ComponentLibrary": "Sélection de la bibliothèque de composants : ",
+    "FluxConvention": "Convention des flux actifs et réactifs dans les tableurs : ",
+    "FluxConvention.iidm": "IIDM",
+    "FluxConvention.target": "Métier",
 
     "Optional": " (optionnel)",
+    "loadingOptions": "Chargement...",
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
     "createModelNode": "Créer un nœud modèle",
     "removeNode": "Supprimer nœud",
@@ -254,6 +260,7 @@
     "NodeBuildingError": "Une erreur est survenue lors de la construction du nœud",
     "NetworkModifications": "Modifications de réseau",
     "CreateLoad": "Créer une consommation",
+    "ModifyLoad": "Modifier une consommation",
     "NameOptional": "Nom (optionnel)",
     "TypeOptional": "Type (optionnel)",
     "UndefinedDefaultValue": "Non défini (valeur par défaut)",
@@ -267,7 +274,7 @@
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
-
+    "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du noeud : ",
     "DeleteEquipment": "Supprimer ouvrage",
     "Type": "Type",
     "SUBSTATION": "Site",
@@ -286,7 +293,9 @@
     "STATIC_VAR_COMPENSATOR": "CSPR",
     "UnableToDeleteEquipment": "Impossible de supprimer l'ouvrage",
     "LoadCreationError": "Erreur lors de la création d'une consommation",
+    "LoadModificationError": "Erreur lors de la modification d'une consommation",
     "LineCreationError": "Erreur lors de la création d'une ligne",
+    "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 
     "CreateGenerator": "Créer un groupe",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
@@ -355,12 +364,16 @@
     "NewName": "Nouveau nom",
 
     "CopyFromExisting": "Copier depuis un ouvrage existant",
-    "LoadCopied": "Données copiées depuis la consommation {loadId}",
-    "LoadCopyFailed404": "Erreur lors de la copie de la consommation : la consommation n'a pas été trouvée",
-    "LoadCopyFailed": "Erreur lors de la copie de la consommation",
+    "EquipmentCopied": "Données copiées depuis l'ouvrage {equipmentId}",
+    "EquipmentCopyFailed404": "Erreur lors de la copie de l'ouvrage : l'ouvrage n'a pas été trouvé",
+    "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
 
     "insertNetworkModificationNodeBefore": "Insérer un nœud de modifications de réseau au dessus",
     "insertModelNodeBefore": "Insérer un nœud modèle au dessus",
     "insertNetworkModificationNodeAfter": "Insérer un nœud de modifications de réseau en dessous",
-    "insertModelNodeAfter": "Insérer un nœud modèle en dessous"
+    "insertModelNodeAfter": "Insérer un nœud modèle en dessous",
+
+    "Update": "Mettre à jour",
+
+    "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours"
 }

@@ -7,9 +7,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { lighten, darken } from '@mui/material/styles';
 import NetworkModificationNodeEditor from './network-modification-node-editor';
-import ModelNodeEditor from './model-node-editor';
 import {
     fetchNetworkModificationTreeNode,
     updateTreeNode,
@@ -30,6 +30,10 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
+        background:
+            theme.palette.mode === 'light'
+                ? darken(theme.palette.background.paper, 0.1)
+                : lighten(theme.palette.background.paper, 0.2),
     },
 }));
 
@@ -111,13 +115,10 @@ const NodeEditor = () => {
                         onChange={changeNodeName}
                     />
                     <>
-                        {selectedNode && selectedNode.type !== 'MODEL' && (
+                        {selectedNode && (
                             <NetworkModificationNodeEditor
                                 selectedNode={selectedNode}
                             />
-                        )}
-                        {selectedNode && selectedNode.type === 'MODEL' && (
-                            <ModelNodeEditor selectedNode={selectedNode} />
                         )}
                     </>
                 </div>

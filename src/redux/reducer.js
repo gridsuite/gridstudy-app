@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -44,10 +44,10 @@ import {
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
     SELECTED_TREE_NODE,
-    SELECT_MAP_TREE_DISPLAY,
     WORKING_TREE_NODE,
-    SET_EXPLORER_DRAWER_OPEN,
     SET_MODIFICATIONS_DRAWER_OPEN,
+    FLUX_CONVENTION,
+    CENTER_ON_SUBSTATION,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -72,14 +72,14 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_MAP_TREE_DISPLAY,
+    PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
+import { FluxConventions } from '../components/parameters';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
-    [PARAM_MAP_TREE_DISPLAY]: 'Map',
     [PARAM_USE_NAME]: true,
     [PARAM_LINE_FULL_PATH]: true,
     [PARAM_LINE_PARALLEL_PATH]: true,
@@ -92,6 +92,7 @@ const paramsInitialState = {
     [PARAM_SUBSTATION_LAYOUT]: 'horizontal',
     [PARAM_COMPONENT_LIBRARY]: null,
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
+    [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
 };
 
 const initialState = {
@@ -113,6 +114,7 @@ const initialState = {
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    centerOnSubstation: null,
     ...paramsInitialState,
 };
 
@@ -198,10 +200,6 @@ export const reducer = createReducer(initialState, {
         saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
     },
 
-    [SELECT_MAP_TREE_DISPLAY]: (state, action) => {
-        state[PARAM_MAP_TREE_DISPLAY] = action[PARAM_MAP_TREE_DISPLAY];
-    },
-
     [SELECT_COMPUTED_LANGUAGE]: (state, action) => {
         state.computedLanguage = action.computedLanguage;
     },
@@ -232,6 +230,10 @@ export const reducer = createReducer(initialState, {
 
     [LINE_FLOW_MODE]: (state, action) => {
         state[PARAM_LINE_FLOW_MODE] = action[PARAM_LINE_FLOW_MODE];
+    },
+
+    [FLUX_CONVENTION]: (state, action) => {
+        state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
     },
 
     [LINE_FLOW_COLOR_MODE]: (state, action) => {
@@ -307,10 +309,10 @@ export const reducer = createReducer(initialState, {
     [WORKING_TREE_NODE]: (state, action) => {
         state.workingTreeNode = action.workingTreeNode;
     },
-    [SET_EXPLORER_DRAWER_OPEN]: (state, action) => {
-        state.isExplorerDrawerOpen = action.isExplorerDrawerOpen;
-    },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
+    },
+    [CENTER_ON_SUBSTATION]: (state, action) => {
+        state.centerOnSubstation = action.centerOnSubstation;
     },
 });

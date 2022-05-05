@@ -1,9 +1,9 @@
 import clsx from 'clsx';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Paper from '@mui/material/Paper';
 import LoadFlowResult from './loadflow-result';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * control results views
  * @param studyUuid : string uuid of study
- * @param selectedNodeUuid : string uuid of selected node
+ * @param workingNode : object selected node
  * @param loadFlowInfos : object result of load flow
  * @param network : object network
  * @param openVoltageLevelDiagram : function
@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
  */
 export const ResultViewTab = ({
     studyUuid,
-    selectedNodeUuid,
+    workingNode,
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
@@ -53,7 +53,7 @@ export const ResultViewTab = ({
             <Paper className={classes.table}>
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
-                    nodeUuid={selectedNodeUuid}
+                    nodeUuid={workingNode?.id}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
@@ -62,10 +62,9 @@ export const ResultViewTab = ({
     }
 
     return (
-        <div className={clsx('singlestretch-child', classes.table)}>
+        <Paper className={clsx('singlestretch-child', classes.table)}>
             <Tabs
                 value={tabIndex}
-                indicatorColor="primary"
                 onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
             >
                 <Tab
@@ -81,7 +80,7 @@ export const ResultViewTab = ({
             </Tabs>
             {tabIndex === 0 && renderLoadFlowResult()}
             {tabIndex === 1 && renderSecurityAnalysisResult()}
-        </div>
+        </Paper>
     );
 };
 
@@ -89,6 +88,6 @@ ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object,
     network: PropTypes.object.isRequired,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
-    selectedNodeUuid: PropTypes.string.isRequired,
+    workingNode: PropTypes.object.isRequired,
     studyUuid: PropTypes.string.isRequired,
 };

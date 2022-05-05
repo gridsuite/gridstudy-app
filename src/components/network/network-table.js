@@ -9,22 +9,22 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from './network';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import SearchIcon from '@material-ui/icons/Search';
-import { IconButton, TextField } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
+import { IconButton, TextField } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { updateConfigParameter } from '../../utils/rest-api';
 
-import ViewColumnIcon from '@material-ui/icons/ViewColumn';
+import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { SelectOptionsDialog } from '../../utils/dialogs';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Checkbox from '@material-ui/core/Checkbox';
-import ListItemText from '@material-ui/core/ListItemText';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
 import {
     COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_COLUMNS_NAMES,
@@ -33,12 +33,13 @@ import {
     TABLES_NAMES,
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from 'notistack';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
+import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 
 const useStyles = makeStyles(() => ({
     searchSection: {
@@ -74,6 +75,8 @@ const NetworkTable = (props) => {
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
     );
+    const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
+
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
     const [rowFilter, setRowFilter] = useState(undefined);
     const [tabIndex, setTabIndex] = useState(0);
@@ -147,7 +150,7 @@ const NetworkTable = (props) => {
         return (
             <EquipmentTable
                 studyUuid={props.studyUuid}
-                selectedNodeUuid={props.selectedNodeUuid}
+                workingNode={props.workingNode}
                 rows={rows}
                 selectedColumnsNames={selectedColumnsNames}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
@@ -157,6 +160,7 @@ const NetworkTable = (props) => {
                 scrollToAlignment="start"
                 network={props.network}
                 selectedDataKey={Array.from(selectedDataKey)}
+                fluxConvention={fluxConvention}
             />
         );
     }
@@ -257,7 +261,6 @@ const NetworkTable = (props) => {
                     <Checkbox
                         checked={isAllChecked}
                         indeterminate={isSomeChecked}
-                        color="primary"
                     />
                     <FormattedMessage id="CheckAll" />
                 </ListItem>
@@ -271,7 +274,6 @@ const NetworkTable = (props) => {
                         <ListItemIcon>
                             <Checkbox
                                 checked={selectedColumnsNames.has(value)}
-                                color="primary"
                             />
                         </ListItemIcon>
                         <ListItemText
@@ -290,9 +292,7 @@ const NetworkTable = (props) => {
                     <Grid container justifyContent={'space-between'} item>
                         <Tabs
                             value={tabIndex}
-                            indicatorColor="primary"
                             variant="scrollable"
-                            scrollButtons="auto"
                             onChange={(event, newValue) => {
                                 setTabIndex(newValue);
                                 setManualTabSwitch(true);
@@ -318,7 +318,6 @@ const NetworkTable = (props) => {
                                     intl.formatMessage({ id: 'filter' }) + '...'
                                 }
                                 onChange={setFilter}
-                                variant="outlined"
                                 fullWidth
                                 InputProps={{
                                     classes: {
@@ -366,7 +365,7 @@ const NetworkTable = (props) => {
 NetworkTable.defaultProps = {
     network: null,
     studyUuid: '',
-    selectedNodeUuid: '',
+    workingNode: null,
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
@@ -375,7 +374,7 @@ NetworkTable.defaultProps = {
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
-    selectedNodeUuid: PropTypes.string,
+    workingNode: PropTypes.object,
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,

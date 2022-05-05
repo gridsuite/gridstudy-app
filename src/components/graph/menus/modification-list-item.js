@@ -4,36 +4,81 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { IconButton, ListItem } from '@material-ui/core';
+import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 import PropTypes from 'prop-types';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { makeStyles } from '@material-ui/core/styles';
+import EditIcon from '@mui/icons-material/Edit';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
+import { Draggable } from 'react-beautiful-dnd';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+
+const equipmentCreationModificationsType = new Set([
+    'GENERATOR_CREATION',
+    'LINE_CREATION',
+    'LOAD_CREATION',
+    'SHUNT_COMPENSATOR_CREATION',
+    'SUBSTATION_CREATION',
+    'TWO_WINDINGS_TRANSFORMER_CREATION',
+    'VOLTAGE_LEVEL_CREATION',
+]);
+
+const equipmentModificationModificationsType = new Set(['LOAD_MODIFICATION']);
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
+        padding: theme.spacing(0),
         paddingRight: theme.spacing(1),
     },
     label: {
         flexGrow: '1',
     },
+    icon: {
+        minWidth: 0,
+    },
+    iconEdit: {
+        padding: theme.spacing(0),
+    },
+    checkbox: {
+        padding: theme.spacing(1),
+    },
+    dragIcon: {
+        padding: theme.spacing(0),
+        border: theme.spacing(1),
+        zIndex: 90,
+    },
 }));
 
-export const ModificationListItem = ({ modification, onDelete, ...props }) => {
+export const ModificationListItem = ({
+    item: modification,
+    onEdit,
+    checked,
+    index,
+    handleToggle,
+    isDragging,
+    ...props
+}) => {
     const intl = useIntl();
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
 
     const getComputedLabel = useCallback(() => {
-        return useName && modification.equipmentName
+        return equipmentModificationModificationsType.has(modification.type)
+            ? modification.equipmentId
+            : useName && modification.equipmentName
             ? modification.equipmentName
             : modification.equipmentId;
     }, [modification, useName]);
+
+    const toggle = useCallback(
+        () => handleToggle(modification),
+        [modification, handleToggle]
+    );
 
     const getLabel = useCallback(
         () =>
@@ -46,22 +91,72 @@ export const ModificationListItem = ({ modification, onDelete, ...props }) => {
             ),
         [modification, getComputedLabel, intl]
     );
+
+    const [hover, setHover] = useState(false);
+
     return (
-        <>
-            <ListItem {...props} className={classes.listItem}>
-                <OverflowableText className={classes.label} text={getLabel()} />
-                <IconButton
-                    onClick={() => onDelete(modification.uuid)}
-                    size={'small'}
+        <Draggable draggableId={modification.uuid} index={index}>
+            {(provided) => (
+                <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
                 >
-                    <DeleteIcon />
-                </IconButton>
-            </ListItem>
-            <Divider />
-        </>
+                    <ListItem
+                        key={modification.uuid}
+                        {...props}
+                        className={classes.listItem}
+                    >
+                        <IconButton
+                            {...provided.dragHandleProps}
+                            className={classes.dragIcon}
+                            size={'small'}
+                            style={{
+                                opacity: hover && !isDragging ? '1' : '0',
+                            }}
+                        >
+                            <DragIndicatorIcon edge="start" spacing={0} />
+                        </IconButton>
+                        <ListItemIcon className={classes.icon}>
+                            <Checkbox
+                                className={classes.checkbox}
+                                color={'primary'}
+                                edge="start"
+                                checked={checked}
+                                onClick={toggle}
+                                disableRipple
+                            />
+                        </ListItemIcon>
+                        <OverflowableText
+                            className={classes.label}
+                            text={getLabel()}
+                        />
+                        {equipmentCreationModificationsType.has(
+                            modification.type
+                        ) &&
+                            hover &&
+                            !isDragging && (
+                                <IconButton
+                                    onClick={() => onEdit(modification.uuid)}
+                                    size={'small'}
+                                    className={classes.iconEdit}
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            )}
+                    </ListItem>
+                    <Divider />
+                </div>
+            )}
+        </Draggable>
     );
 };
 
 ModificationListItem.propTypes = {
-    modification: PropTypes.object,
+    item: PropTypes.object,
+    checked: PropTypes.bool,
+    handleToggle: PropTypes.func,
+    onEdit: PropTypes.func,
+    isDragging: PropTypes.bool,
 };

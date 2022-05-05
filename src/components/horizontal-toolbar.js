@@ -5,23 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import List from '@material-ui/core/List';
-import LinearScaleIcon from '@material-ui/icons/LinearScale';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import PublicIcon from '@material-ui/icons/Public';
-import IconButton from '@material-ui/core/IconButton';
-import ListIcon from '@material-ui/icons/List';
+import List from '@mui/material/List';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import PublicIcon from '@mui/icons-material/Public';
+import IconButton from '@mui/material/IconButton';
+import ListIcon from '@mui/icons-material/List';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+import makeStyles from '@mui/styles/makeStyles';
+import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './study-pane';
-import Divider from '@material-ui/core/Divider';
-import {
-    setExplorerDrawerOpen,
-    setModificationsDrawerOpen,
-} from '../redux/actions';
+import Divider from '@mui/material/Divider';
+import { setModificationsDrawerOpen } from '../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     selected: {
@@ -47,16 +43,9 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
 
     const selectedTreeNode = useSelector((state) => state.selectedTreeNode);
 
-    const isExplorerDrawerOpen = useSelector(
-        (state) => state.isExplorerDrawerOpen
-    );
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
-
-    const toggleExplorerDrawer = () => {
-        dispatch(setExplorerDrawerOpen(!isExplorerDrawerOpen));
-    };
 
     const toggleModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(!isModificationsDrawerOpen));
@@ -83,35 +72,6 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 flexDirection: 'row',
             }}
         >
-            {!(studyDisplayMode === StudyDisplayMode.TREE) && (
-                <>
-                    <Tooltip
-                        title={intl.formatMessage({ id: 'SubstationList' })}
-                        placement="right"
-                        arrow
-                        enterDelay={DELAY}
-                        enterNextDelay={DELAY}
-                        classes={{ tooltip: classes.tooltip }}
-                        style={{
-                            marginRight: '20px',
-                            marginLeft: '20px',
-                        }}
-                    >
-                        <IconButton
-                            size={'small'}
-                            className={
-                                isExplorerDrawerOpen
-                                    ? classes.selected
-                                    : classes.notSelected
-                            }
-                            onClick={toggleExplorerDrawer}
-                        >
-                            <LinearScaleIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Divider orientation="vertical" flexItem />
-                </>
-            )}
             <Tooltip
                 title={intl.formatMessage({ id: 'NetworkModifications' })}
                 placement="right"
@@ -124,21 +84,24 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                     marginLeft: '20px',
                 }}
             >
-                <IconButton
-                    size={'small'}
-                    className={
-                        isModificationsDrawerOpen
-                            ? classes.selected
-                            : classes.notSelected
-                    }
-                    disabled={
-                        selectedTreeNode === null ||
-                        selectedTreeNode.type !== 'NETWORK_MODIFICATION'
-                    }
-                    onClick={toggleModificationsDrawer}
-                >
-                    <ListIcon />
-                </IconButton>
+                <span>
+                    <IconButton
+                        size={'small'}
+                        className={
+                            isModificationsDrawerOpen
+                                ? classes.selected
+                                : classes.notSelected
+                        }
+                        disabled={
+                            studyDisplayMode === StudyDisplayMode.MAP ||
+                            selectedTreeNode === null ||
+                            selectedTreeNode.type !== 'NETWORK_MODIFICATION'
+                        }
+                        onClick={toggleModificationsDrawer}
+                    >
+                        <ListIcon />
+                    </IconButton>
+                </span>
             </Tooltip>
             <Divider orientation="vertical" flexItem />
             <Tooltip

@@ -19,25 +19,25 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectItemNetwork } from '../redux/actions';
 
-import Box from '@material-ui/core/Box';
-import CloseIcon from '@material-ui/icons/Close';
-import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Alert from '@material-ui/lab/Alert';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import Box from '@mui/material/Box';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
+import { useTheme } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchSvg } from '../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
-import useTheme from '@material-ui/core/styles/useTheme';
 import Arrow from '../images/arrow.svg';
 import ArrowHover from '../images/arrow_hover.svg';
 import { fullScreenSingleLineDiagram } from '../redux/actions';
-import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
-import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
@@ -226,13 +226,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const { enqueueSnackbar } = useSnackbar();
     const intlRef = useIntlRef();
 
-    const {
-        totalWidth,
-        totalHeight,
-        svgType,
-        loadFlowStatus,
-        selectedNodeUuid,
-    } = props;
+    const { totalWidth, totalHeight, svgType, loadFlowStatus, workingNode } =
+        props;
 
     const network = useSelector((state) => state.network);
 
@@ -718,7 +713,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
 
             // handling the click on a switch
-            if (!isComputationRunning) {
+            if (!isComputationRunning && !workingNode?.readOnly) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
                 );
@@ -754,6 +749,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, [
         network,
         svg,
+        workingNode,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -821,7 +817,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    selectedNodeUuid={selectedNodeUuid}
+                    workingNode={workingNode}
                 />
             )
         );
@@ -864,7 +860,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     return !svg.error ? (
         <Paper
             elevation={1}
-            variant="outlined"
             square={true}
             style={{
                 pointerEvents: 'auto',
@@ -991,7 +986,7 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
-    selectedNodeUuid: PropTypes.string,
+    workingNode: PropTypes.object,
 };
 
 export default SingleLineDiagram;

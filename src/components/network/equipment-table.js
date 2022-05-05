@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { requestNetworkChange } from '../../utils/rest-api';
-import { IconButton, TextField } from '@material-ui/core';
-import CreateIcon from '@material-ui/icons/Create';
-import Grid from '@material-ui/core/Grid';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
-import TableCell from '@material-ui/core/TableCell';
+import { IconButton, TextField } from '@mui/material';
+import CreateIcon from '@mui/icons-material/Create';
+import Grid from '@mui/material/Grid';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import TableCell from '@mui/material/TableCell';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 import VirtualizedTable from '../util/virtualized-table';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
 
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 export const EquipmentTable = ({
     fetched,
     studyUuid,
-    selectedNodeUuid,
+    workingNode,
     rows,
     selectedColumnsNames,
     tableDefinition,
@@ -40,6 +40,7 @@ export const EquipmentTable = ({
     scrollToAlignment,
     network,
     selectedDataKey,
+    fluxConvention,
 }) => {
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
@@ -71,7 +72,7 @@ export const EquipmentTable = ({
         Object.values(lineEdit.newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(studyUuid, selectedNodeUuid, groovyCr).then(
+        requestNetworkChange(studyUuid, workingNode?.id, groovyCr).then(
             (response) => {
                 if (response.ok) {
                     Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
@@ -136,20 +137,20 @@ export const EquipmentTable = ({
     }
 
     const formatCell = useCallback(
-        (cellData, isNumeric, fractionDigit) => {
+        (cellData, isNumeric, fractionDigit, normed = undefined) => {
             let value = cellData.cellData;
             if (typeof value === 'function') value = cellData.cellData(network);
-
+            if (normed) value = normed(fluxConvention, value);
             return value && isNumeric && fractionDigit
                 ? parseFloat(value).toFixed(fractionDigit)
                 : value;
         },
-        [network]
+        [fluxConvention, network]
     );
 
     const defaultCellRender = useCallback(
-        (cellData, numeric, fractionDigit) => {
-            const text = formatCell(cellData, numeric, fractionDigit);
+        (cellData, numeric, fractionDigit, normed = undefined) => {
+            const text = formatCell(cellData, numeric, fractionDigit, normed);
             return (
                 <TableCell
                     component="div"
@@ -255,7 +256,12 @@ export const EquipmentTable = ({
                     );
             } else {
                 column.cellRenderer = (cell) =>
-                    defaultCellRender(cell, c.numeric, c.fractionDigits);
+                    defaultCellRender(
+                        cell,
+                        c.numeric,
+                        c.fractionDigits,
+                        c.normed
+                    );
             }
             delete column.changeCmd;
             return column;
@@ -289,7 +295,8 @@ export const EquipmentTable = ({
                 rowHeight={ROW_HEIGHT}
                 filter={filter}
                 columns={
-                    tableDefinition.modifiableEquipmentType
+                    tableDefinition.modifiableEquipmentType &&
+                    !workingNode?.readOnly
                         ? [
                               makeHeaderCell(),
                               ...generateTableColumns(tableDefinition),

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import InputAdornment from '@mui/material/InputAdornment';
 import React, {
     useCallback,
     useEffect,
@@ -15,23 +16,26 @@ import React, {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../util/validation-functions';
 import {
+    FormHelperText,
     InputLabel,
     MenuItem,
     Select,
     TextField,
     Tooltip,
-} from '@material-ui/core';
+} from '@mui/material';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import ConnectivityEdition from './connectivity-edition';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/ControlPoint';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import { Autocomplete } from '@mui/material';
+import { createFilterOptions } from '@mui/material/useAutocomplete';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ClearIcon from '@mui/icons-material/Clear';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import {
     func_identity,
     toFloatValue,
@@ -41,7 +45,7 @@ import {
 import { getComputedLanguage } from '../../utils/language';
 import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
-import FindInPageIcon from '@material-ui/icons/FindInPage';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -69,6 +73,15 @@ export const useInputForm = () => {
         reset,
     };
 };
+function genHelperPreviousValue(previousValue, adornment) {
+    return {
+        ...((previousValue || previousValue === 0) && {
+            error: false,
+            helperText:
+                previousValue + (adornment ? ' ' + adornment?.text : ''),
+        }),
+    };
+}
 
 function genHelperError(...errors) {
     const inError = errors.find((e) => e);
@@ -96,9 +109,12 @@ export const useTextValue = ({
     validation = {},
     adornment,
     transformValue = func_identity,
+    acceptValue,
     inputForm,
     formProps,
     errorMsg,
+    previousValue,
+    clearable,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState();
@@ -110,7 +126,7 @@ export const useTextValue = ({
 
     useEffect(() => {
         function validate() {
-            const res = validateField('' + value, validationRef.current);
+            const res = validateField(value, validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
@@ -119,10 +135,15 @@ export const useTextValue = ({
 
     const handleChangeValue = useCallback(
         (event) => {
-            setValue(transformValue(event.target.value));
+            if (acceptValue === undefined || acceptValue(event.target.value))
+                setValue(transformValue(event.target.value));
         },
-        [transformValue]
+        [acceptValue, transformValue]
     );
+
+    const handleClearValue = useCallback(() => {
+        setValue(defaultValue);
+    }, [defaultValue]);
 
     const field = useMemo(() => {
         const Field = adornment ? TextFieldWithAdornment : TextField;
@@ -135,7 +156,8 @@ export const useTextValue = ({
                 label={FieldLabel({
                     label,
                     optional:
-                        !validation.isFieldRequired && !formProps?.disabled,
+                        validation.isFieldRequired === false &&
+                        !formProps?.disabled,
                 })}
                 {...(adornment && {
                     adornmentPosition: adornment.position,
@@ -146,6 +168,21 @@ export const useTextValue = ({
                 FormHelperTextProps={{
                     className: classes.helperText,
                 }}
+                InputProps={
+                    clearable &&
+                    value && {
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton onClick={handleClearValue}>
+                                    <ClearIcon />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }
+                }
+                clearable={clearable}
+                handleClearValue={handleClearValue}
+                {...genHelperPreviousValue(previousValue, adornment)}
                 {...genHelperError(error, errorMsg)}
                 {...formProps}
             />
@@ -156,11 +193,14 @@ export const useTextValue = ({
         label,
         validation.isFieldRequired,
         value,
+        previousValue,
         handleChangeValue,
         classes.helperText,
         error,
         errorMsg,
         formProps,
+        clearable,
+        handleClearValue,
     ]);
 
     useEffect(
@@ -182,6 +222,10 @@ export const useIntegerValue = ({
     });
 };
 
+function isFloatNumber(val) {
+    return /^-?[0-9]*[.,]?[0-9]*$/.test(val);
+}
+
 export const useDoubleValue = ({
     transformValue = toFloatValue,
     validation,
@@ -189,6 +233,7 @@ export const useDoubleValue = ({
 }) => {
     return useTextValue({
         ...props,
+        acceptValue: isFloatNumber,
         transformValue: transformValue,
         validation: { ...validation, isFieldNumeric: true },
     });
@@ -225,7 +270,6 @@ export const useBooleanValue = ({
                         checked={value}
                         onChange={(e) => handleChangeValue(e)}
                         value="checked"
-                        color="primary"
                         inputProps={{
                             'aria-label': 'primary checkbox',
                         }}
@@ -253,12 +297,15 @@ export const useConnectivityValue = ({
     validation = {
         isFieldRequired: true,
     },
+    disabled = false,
     inputForm,
     voltageLevelOptions,
     workingNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
+    voltageLevelPreviousValue,
     busOrBusbarSectionIdDefaultValue,
+    busOrBusbarSectionPreviousValue,
 }) => {
     const [connectivity, setConnectivity] = useState({
         voltageLevel: null,
@@ -268,14 +315,12 @@ export const useConnectivityValue = ({
     const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
 
-    useEffect(
-        () =>
-            setConnectivity({
-                voltageLevel: null,
-                busOrBusbarSection: null,
-            }),
-        [inputForm.toggleClear]
-    );
+    useEffect(() => {
+        setConnectivity({
+            voltageLevel: null,
+            busOrBusbarSection: null,
+        });
+    }, [inputForm.toggleClear]);
 
     useEffect(() => {
         setConnectivity({
@@ -284,7 +329,11 @@ export const useConnectivityValue = ({
                       (value) => value.id === voltageLevelIdDefaultValue
                   )
                 : null,
-            busOrBusbarSection: busOrBusbarSectionIdDefaultValue,
+            busOrBusbarSection: busOrBusbarSectionIdDefaultValue
+                ? {
+                      id: busOrBusbarSectionIdDefaultValue,
+                  }
+                : null,
         });
     }, [
         voltageLevelOptions,
@@ -321,9 +370,14 @@ export const useConnectivityValue = ({
     const render = useMemo(() => {
         return (
             <ConnectivityEdition
+                disabled={disabled}
                 voltageLevelOptions={voltageLevelOptions}
                 voltageLevel={connectivity.voltageLevel}
+                voltageLevelPreviousValue={voltageLevelPreviousValue}
                 busOrBusbarSection={connectivity.busOrBusbarSection}
+                busOrBusbarSectionPreviousValue={
+                    busOrBusbarSectionPreviousValue
+                }
                 onChangeVoltageLevel={(value) => setVoltageLevel(value)}
                 onChangeBusOrBusbarSection={(busOrBusbarSection) =>
                     setBusOrBusbarSection(busOrBusbarSection)
@@ -348,6 +402,7 @@ export const useConnectivityValue = ({
         );
     }, [
         connectivity,
+        disabled,
         direction,
         errorBusBarSection,
         errorVoltageLevel,
@@ -356,6 +411,8 @@ export const useConnectivityValue = ({
         setVoltageLevel,
         voltageLevelOptions,
         workingNodeUuid,
+        voltageLevelPreviousValue,
+        busOrBusbarSectionPreviousValue,
     ]);
 
     return [connectivity, render];
@@ -373,15 +430,25 @@ export const useAutocompleteField = ({
     getLabel = func_identity,
     allowNewValue = false,
     errorMsg,
+    selectedValue,
+    defaultValue,
+    previousValue,
+    loading = false,
 }) => {
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState('');
     const validationRef = useRef();
     validationRef.current = validation;
 
     useEffect(() => {
+        if (defaultValue) {
+            setValue(defaultValue);
+        }
+    }, [defaultValue]);
+
+    useEffect(() => {
         function validate() {
-            const res = validateField('' + value, validationRef.current);
+            const res = validateField(value, validationRef.current);
             setError(res?.errorMsgId);
             return !res.error;
         }
@@ -391,6 +458,12 @@ export const useAutocompleteField = ({
     const handleChangeValue = useCallback((value) => {
         setValue(value);
     }, []);
+
+    useEffect(() => {
+        if (selectedValue) {
+            setValue(selectedValue);
+        }
+    }, [selectedValue]);
 
     const field = useMemo(() => {
         return (
@@ -402,6 +475,11 @@ export const useAutocompleteField = ({
                 size={'small'}
                 options={values}
                 getOptionLabel={getLabel}
+                defaultValue={value}
+                value={value}
+                previousValue={previousValue}
+                loading={loading}
+                loadingText={<FormattedMessage id="loadingOptions" />}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
@@ -425,10 +503,11 @@ export const useAutocompleteField = ({
                         label={
                             <FieldLabel
                                 label={label}
-                                optional={!validation.isFieldRequired}
+                                optional={validation.isFieldRequired === false}
                             />
                         }
                         value={value}
+                        {...genHelperPreviousValue(previousValue)}
                         {...genHelperError(error, errorMsg)}
                     />
                 )}
@@ -442,9 +521,11 @@ export const useAutocompleteField = ({
         handleChangeValue,
         validation.isFieldRequired,
         value,
+        previousValue,
         error,
         errorMsg,
         formProps,
+        loading,
     ]);
 
     return [value, field];
@@ -475,6 +556,8 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
 
 export const useCountryValue = (props) => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const [code, setCode] = useState(props.defaultCodeValue);
+
     const countriesList = useMemo(() => {
         try {
             return require('localized-countries')(
@@ -489,6 +572,27 @@ export const useCountryValue = (props) => {
         }
     }, [languageLocal]);
 
+    useEffect(() => {
+        //We only need to search for the code if we only have the label
+        if (
+            props.defaultLabelValue !== null &&
+            props.defaultCodeValue === null
+        ) {
+            let res = countriesList
+                .array()
+                .filter(
+                    (obj) =>
+                        obj.label.toLowerCase() ===
+                        props.defaultLabelValue.toLowerCase()
+                )[0];
+            setCode(res.code);
+        } else if (props.defaultCodeValue !== null) {
+            setCode(props.defaultCodeValue);
+        } else {
+            setCode(null);
+        }
+    }, [countriesList, props.defaultLabelValue, props.defaultCodeValue]);
+
     const values = useMemo(
         () => (countriesList ? Object.keys(countriesList.object()) : []),
         [countriesList]
@@ -501,6 +605,8 @@ export const useCountryValue = (props) => {
     return useAutocompleteField({
         values,
         getLabel: getOptionLabel,
+        selectedValue: code,
+        defaultValue: code,
         ...props,
     });
 };
@@ -511,6 +617,7 @@ const getLabel = (e) => e.label;
 export const useEnumValue = ({
     label,
     defaultValue,
+    previousValue,
     validation = {},
     inputForm,
     formProps,
@@ -540,7 +647,7 @@ export const useEnumValue = ({
                 <InputLabel id="enum-type-label" variant={'filled'}>
                     <FieldLabel
                         label={label}
-                        optional={!validation.isFieldRequired}
+                        optional={validation.isFieldRequired === false}
                     />
                 </InputLabel>
                 <Select
@@ -562,6 +669,9 @@ export const useEnumValue = ({
                         </MenuItem>
                     ))}
                 </Select>
+                {previousValue && (
+                    <FormHelperText>{previousValue}</FormHelperText>
+                )}
             </FormControl>
         );
     }, [
@@ -569,6 +679,7 @@ export const useEnumValue = ({
         getEnumLabel,
         label,
         value,
+        previousValue,
         handleChangeValue,
         formProps,
         enumValues,
@@ -592,13 +703,22 @@ export const useExpandableValues = ({
     labelAddValue,
     Field,
     inputForm,
-    defaultValues = [],
+    defaultValues,
     fieldProps,
     validateItem,
 }) => {
     const classes = useStyles();
-    const [values, setValues] = useState(defaultValues);
+    const [values, setValues] = useState([]);
     const [errors, setErrors] = useState();
+
+    useEffect(() => {
+        if (defaultValues) {
+            setValues([...defaultValues]);
+        } else {
+            setValues([]);
+        }
+    }, [defaultValues]);
+
     const handleDeleteBusBarSection = useCallback((index) => {
         setValues((oldValues) => {
             let newValues = [...oldValues];
@@ -635,6 +755,7 @@ export const useExpandableValues = ({
                     <Grid key={id + idx} container spacing={2} item>
                         <Field
                             fieldProps={fieldProps}
+                            defaultValue={value}
                             onChange={handleSetValue}
                             index={idx}
                             inputForm={inputForm}

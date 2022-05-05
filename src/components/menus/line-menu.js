@@ -6,18 +6,18 @@
  */
 
 import React, { useCallback } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import makeStyles from '@mui/styles/makeStyles';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import PlayIcon from '@material-ui/icons/PlayArrow';
-import OfflineBoltOutlinedIcon from '@material-ui/icons/OfflineBoltOutlined';
-import EnergiseOneSideIcon from '@material-ui/icons/LastPage';
-import EnergiseOtherSideIcon from '@material-ui/icons/FirstPage';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import PlayIcon from '@mui/icons-material/PlayArrow';
+import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
+import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
+import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
 import { useParameterState } from '../parameters';
 import { PARAM_USE_NAME } from '../../utils/config-params';
@@ -51,13 +51,7 @@ const useStyles = makeStyles((theme) => ({
 
 const withLineMenu =
     (BaseMenu) =>
-    ({
-        id,
-        position,
-        handleClose,
-        handleViewInSpreadsheet,
-        selectedNodeUuid,
-    }) => {
+    ({ id, position, handleClose, handleViewInSpreadsheet, workingNode }) => {
         const classes = useStyles();
         const intl = useIntl();
         const intlRef = useIntlRef();
@@ -99,7 +93,7 @@ const withLineMenu =
         function handleLockout() {
             if (line.branchStatus === 'PLANNED_OUTAGE') return;
             handleClose();
-            lockoutLine(studyUuid, selectedNodeUuid, line.id).then(
+            lockoutLine(studyUuid, workingNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -114,7 +108,7 @@ const withLineMenu =
         function handleTrip() {
             if (line.branchStatus === 'FORCED_OUTAGE') return;
             handleClose();
-            tripLine(studyUuid, selectedNodeUuid, line.id).then((response) => {
+            tripLine(studyUuid, workingNode?.id, line.id).then((response) => {
                 if (response.status !== 200) {
                     handleLineChangesResponse(response, 'UnableToTripLine');
                 }
@@ -132,7 +126,7 @@ const withLineMenu =
             )
                 return;
             handleClose();
-            energiseLineEnd(studyUuid, selectedNodeUuid, line.id, side).then(
+            energiseLineEnd(studyUuid, workingNode?.id, line.id, side).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -147,7 +141,7 @@ const withLineMenu =
         function handleSwitchOn() {
             if (line.terminal1Connected && line.terminal2Connected) return;
             handleClose();
-            switchOnLine(studyUuid, selectedNodeUuid, line.id).then(
+            switchOnLine(studyUuid, workingNode?.id, line.id).then(
                 (response) => {
                     if (response.status !== 200) {
                         handleLineChangesResponse(
@@ -182,6 +176,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
                     selected={line.branchStatus === 'PLANNED_OUTAGE'}
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -201,6 +196,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     selected={line.branchStatus === 'FORCED_OUTAGE'}
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -222,6 +218,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && !line.terminal2Connected
                     }
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -250,6 +247,7 @@ const withLineMenu =
                     selected={
                         line.terminal2Connected && !line.terminal1Connected
                     }
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -278,6 +276,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && line.terminal2Connected
                     }
+                    disabled={workingNode?.readOnly}
                 >
                     <ListItemIcon>
                         <PlayIcon />
@@ -301,7 +300,7 @@ withLineMenu.propTypes = {
     position: PropTypes.arrayOf(PropTypes.number).isRequired,
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
-    selectedNodeUuid: PropTypes.string,
+    workingNode: PropTypes.object,
 };
 
 export default withLineMenu;

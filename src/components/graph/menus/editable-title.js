@@ -6,18 +6,27 @@
  */
 
 import React, { useState } from 'react';
-import { IconButton, Typography } from '@material-ui/core';
-import EditIcon from '@material-ui/icons/Edit';
-import CloseIcon from '@material-ui/icons/Close';
+import { IconButton, Typography } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
 import AskTextDialog from '../../util/ask-text-dialog';
-import { darken, makeStyles } from '@material-ui/core/styles';
+import { lighten, darken } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
     header: {
-        backgroundColor: darken(theme.palette.background.default, 0.2),
+        backgroundColor:
+            theme.palette.mode === 'light'
+                ? darken(theme.palette.background.paper, 0.1)
+                : lighten(theme.palette.background.paper, 0.2),
         padding: theme.spacing(1),
+        color: theme.palette.getContrastText(
+            theme.palette.mode === 'light'
+                ? darken(theme.palette.background.paper, 0.1)
+                : lighten(theme.palette.background.paper, 0.2)
+        ),
     },
 }));
 

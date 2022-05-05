@@ -5,24 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
 import CheckboxList from '../util/checkbox-list';
 import {
     fetchContingencyCount,
     fetchContingencyLists,
     updateConfigParameter,
 } from '../../utils/rest-api';
-import Button from '@material-ui/core/Button';
-import Alert from '@material-ui/lab/Alert';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid';
 import DirectoryItemSelector from '../directory-item-selector';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
@@ -32,16 +32,12 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
+import ListItemWithDeleteButton from '../util/list-item-with-delete-button';
 
 function makeButton(onClick, message, disabled) {
     return (
         <Grid item>
-            <Button
-                onClick={onClick}
-                variant="contained"
-                color="primary"
-                disabled={disabled}
-            >
+            <Button onClick={onClick} variant="contained" disabled={disabled}>
                 <FormattedMessage id={message} />
             </Button>
         </Grid>
@@ -78,9 +74,9 @@ const ContingencyListSelector = (props) => {
         props.onStart(checkedContingencyListUuids);
     };
 
-    const handleChecked = (checked) => {
-        setCheckedContingencyListUuids(checked);
-    };
+    const handleChecked = useCallback((checked) => {
+        setCheckedContingencyListUuids([...checked].map((item) => item.id));
+    }, []);
 
     const saveFavorite = (newList) => {
         updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
@@ -177,7 +173,7 @@ const ContingencyListSelector = (props) => {
             (item) => !toDelete.has(item)
         );
         if (newChecked.length !== checkedContingencyListUuids.length)
-            setCheckedContingencyListUuids(newChecked);
+            setCheckedContingencyListUuids(new Set(newChecked));
     };
 
     const addFavorites = (favorites) => {
@@ -233,8 +229,24 @@ const ContingencyListSelector = (props) => {
                                 onChecked={handleChecked}
                                 label={(item) => item.name}
                                 id={(item) => item.id}
-                                removeFromList={(e) => removeFromFavorite([e])}
                                 selection={checkedContingencyListUuids}
+                                itemRenderer={({
+                                    item,
+                                    checked,
+                                    handleToggle,
+                                }) => (
+                                    <ListItemWithDeleteButton
+                                        key={item.id}
+                                        value={item.id}
+                                        checked={checked}
+                                        primary={item.name}
+                                        onClick={() => handleToggle(item)}
+                                        removeFromList={(e) => {
+                                            e.stopPropagation();
+                                            removeFromFavorite([item.id]);
+                                        }}
+                                    />
+                                )}
                             />
                         </Grid>
                         <Grid item>

@@ -6,9 +6,10 @@
  */
 
 import { useIntl } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
-import { Autocomplete, createFilterOptions } from '@material-ui/lab';
-import { Popper, TextField } from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import { Autocomplete } from '@mui/material';
+import { createFilterOptions } from '@mui/material/useAutocomplete';
+import { Popper, TextField } from '@mui/material';
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -16,7 +17,7 @@ import {
     fetchBusesForVoltageLevel,
 } from '../../utils/rest-api';
 import { useParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 // Factory used to create a filter method that is used to change the default
 // option filter behaviour of the Autocomplete component
@@ -53,10 +54,13 @@ const useStyles = makeStyles((theme) => ({
 const ConnectivityEdition = ({
     voltageLevelOptions,
     voltageLevel,
+    voltageLevelPreviousValue,
     busOrBusbarSection,
+    busOrBusbarSectionPreviousValue,
     onChangeVoltageLevel,
     onChangeBusOrBusbarSection,
     direction,
+    disabled = false,
     errorVoltageLevel,
     helperTextVoltageLevel,
     errorBusOrBusBarSection,
@@ -72,6 +76,8 @@ const ConnectivityEdition = ({
         []
     );
 
+    const [currentBBS, setCurrentBBS] = useState(null);
+
     // Specific Popper component to be used with Autocomplete
     // This allows the popper to fit its content, which is not the case by default
     const FittingPopper = (props) => {
@@ -86,9 +92,9 @@ const ConnectivityEdition = ({
 
     const handleChangeVoltageLevel = useCallback(
         (event, value, reason) => {
-            if (reason === 'select-option') {
+            if (reason === 'selectOption') {
                 onChangeVoltageLevel(value);
-                onChangeBusOrBusbarSection(null);
+                onChangeBusOrBusbarSection('');
             } else if (reason === 'clear') {
                 onChangeVoltageLevel(null);
                 onChangeBusOrBusbarSection(null);
@@ -129,6 +135,16 @@ const ConnectivityEdition = ({
         }
     }, [voltageLevel, handleChangeVoltageLevel, studyUuid, workingNodeUuid]);
 
+    useEffect(() => {
+        setCurrentBBS(
+            busOrBusbarSection && busOrBusbarSectionOptions.length
+                ? busOrBusbarSectionOptions.find(
+                      (value) => value.id === busOrBusbarSection.id
+                  )
+                : ''
+        );
+    }, [busOrBusbarSectionOptions, busOrBusbarSection]);
+
     return (
         <>
             <Grid container direction={direction || 'row'} spacing={2}>
@@ -153,6 +169,7 @@ const ConnectivityEdition = ({
                         forcePopupIcon
                         autoHighlight
                         selectOnFocus
+                        disabled={disabled}
                         id="voltage-level"
                         options={voltageLevelOptions}
                         getOptionLabel={(vl) => vl.id}
@@ -176,6 +193,7 @@ const ConnectivityEdition = ({
                             return filtered;
                         }}
                         value={voltageLevel}
+                        previousValue={voltageLevelPreviousValue}
                         onChange={handleChangeVoltageLevel}
                         renderInput={(params) => (
                             <TextField
@@ -187,6 +205,10 @@ const ConnectivityEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...(voltageLevelPreviousValue && {
+                                    error: false,
+                                    helperText: voltageLevelPreviousValue,
+                                })}
                                 {...(errorVoltageLevel && {
                                     error: true,
                                     helperText: helperTextVoltageLevel,
@@ -218,11 +240,13 @@ const ConnectivityEdition = ({
                         autoHighlight
                         selectOnFocus
                         id="bus"
-                        disabled={!voltageLevel}
+                        disabled={!voltageLevel || disabled}
                         options={busOrBusbarSectionOptions}
-                        getOptionLabel={(busOrBusbarSection) =>
-                            busOrBusbarSection?.id
-                        }
+                        getOptionLabel={(bbs) => {
+                            return bbs === ''
+                                ? '' // to clear field
+                                : bbs?.id || '';
+                        }}
                         /* Modifies the filter option method so that when a value is directly entered in the text field, a new option
                            is created in the options list with a value equal to the input value
                         */
@@ -242,7 +266,8 @@ const ConnectivityEdition = ({
                             }
                             return filtered;
                         }}
-                        value={busOrBusbarSection}
+                        value={currentBBS}
+                        previousValue={busOrBusbarSectionPreviousValue}
                         onChange={handleChangeBus}
                         renderInput={(params) => (
                             <TextField
@@ -254,6 +279,10 @@ const ConnectivityEdition = ({
                                 FormHelperTextProps={{
                                     className: classes.helperText,
                                 }}
+                                {...(busOrBusbarSectionPreviousValue && {
+                                    error: false,
+                                    helperText: busOrBusbarSectionPreviousValue,
+                                })}
                                 {...(errorBusOrBusBarSection && {
                                     error: true,
                                     helperText: helperTextBusOrBusBarSection,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -20,7 +20,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_MAP_TREE_DISPLAY,
+    PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 
 export const NETWORK_CREATED = 'NETWORK_CREATED';
@@ -109,15 +109,6 @@ export function selectLanguage(language) {
     return { type: SELECT_LANGUAGE, [PARAM_LANGUAGE]: language };
 }
 
-export const SELECT_MAP_TREE_DISPLAY = 'SELECT_MAP_TREE_DISPLAY';
-
-export function selectMapTreeDisplay(mapTreeDisplay) {
-    return {
-        type: SELECT_MAP_TREE_DISPLAY,
-        [PARAM_MAP_TREE_DISPLAY]: mapTreeDisplay,
-    };
-}
-
 export const SELECT_COMPUTED_LANGUAGE = 'SELECT_COMPUTED_LANGUAGE';
 
 export function selectComputedLanguage(computedLanguage) {
@@ -188,6 +179,12 @@ export const LINE_FLOW_MODE = 'LINE_FLOW_MODE';
 
 export function selectLineFlowMode(lineFlowMode) {
     return { type: LINE_FLOW_MODE, [PARAM_LINE_FLOW_MODE]: lineFlowMode };
+}
+
+export const FLUX_CONVENTION = 'FLUX_CONVENTION';
+
+export function selectFluxConvention(fluxConvention) {
+    return { type: FLUX_CONVENTION, [PARAM_FLUX_CONVENTION]: fluxConvention };
 }
 
 export const LINE_FLOW_COLOR_MODE = 'LINE_FLOW_COLOR_MODE';
@@ -331,16 +328,10 @@ export const WORKING_TREE_NODE = 'WORKING_TREE_NODE';
 export function workingTreeNode(workingTreeNode) {
     return {
         type: WORKING_TREE_NODE,
-        workingTreeNode: workingTreeNode,
-    };
-}
-
-export const SET_EXPLORER_DRAWER_OPEN = 'SET_EXPLORER_DRAWER_OPEN';
-
-export function setExplorerDrawerOpen(isExplorerDrawerOpen) {
-    return {
-        type: SET_EXPLORER_DRAWER_OPEN,
-        isExplorerDrawerOpen: isExplorerDrawerOpen,
+        workingTreeNode: {
+            id: workingTreeNode?.id,
+            readOnly: workingTreeNode?.data?.readOnly,
+        },
     };
 }
 
@@ -350,5 +341,14 @@ export function setModificationsDrawerOpen(isModificationsDrawerOpen) {
     return {
         type: SET_MODIFICATIONS_DRAWER_OPEN,
         isModificationsDrawerOpen: isModificationsDrawerOpen,
+    };
+}
+
+export const CENTER_ON_SUBSTATION = 'CENTER_ON_SUBSTATION';
+
+export function centerOnSubstation(substationId) {
+    return {
+        type: CENTER_ON_SUBSTATION,
+        centerOnSubstation: { to: substationId },
     };
 }

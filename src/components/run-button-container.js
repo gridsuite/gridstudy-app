@@ -7,12 +7,12 @@ import {
     stopSecurityAnalysis,
 } from '../utils/rest-api';
 import { RunningStatus } from './util/running-status';
-import LoopIcon from '@material-ui/icons/Loop';
-import DoneIcon from '@material-ui/icons/Done';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import PlayIcon from '@material-ui/icons/PlayArrow';
+import LoopIcon from '@mui/icons-material/Loop';
+import DoneIcon from '@mui/icons-material/Done';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import PlayIcon from '@mui/icons-material/PlayArrow';
 import ContingencyListSelector from './dialogs/contingency-list-selector';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { addLoadflowNotif, addSANotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function RunButtonContainer({
     studyUuid,
-    selectedNodeUuid,
+    workingNode,
     loadFlowStatus,
     securityAnalysisStatus,
     setIsComputationRunning,
@@ -66,7 +66,7 @@ export function RunButtonContainer({
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
             if (action === runnable.SECURITY_ANALYSIS) {
-                stopSecurityAnalysis(studyUuid, selectedNodeUuid);
+                stopSecurityAnalysis(studyUuid, workingNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -79,16 +79,12 @@ export function RunButtonContainer({
         setComputationStopped(false);
 
         // start server side security analysis
-        startSecurityAnalysis(
-            studyUuid,
-            selectedNodeUuid,
-            contingencyListNames
-        );
+        startSecurityAnalysis(studyUuid, workingNode?.id, contingencyListNames);
     };
 
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
-            startLoadFlow(studyUuid, selectedNodeUuid);
+            startLoadFlow(studyUuid, workingNode?.id);
             setRanLoadflow(true);
         } else if (action === runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
@@ -148,12 +144,13 @@ export function RunButtonContainer({
                 getText={getRunningText}
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
+                disabled={workingNode?.readOnly}
             />
             <ContingencyListSelector
                 open={showContingencyListSelector}
                 onClose={() => setShowContingencyListSelector(false)}
                 onStart={handleStartSecurityAnalysis}
-                selectedNodeUuid={selectedNodeUuid}
+                selectedNodeUuid={workingNode?.id}
             />
         </>
     );
@@ -165,6 +162,7 @@ RunButtonContainer.propTypes = {
         action: PropTypes.func,
         text: PropTypes.string,
     }),
+    workingNode: PropTypes.object,
     status: PropTypes.func,
     onStartClick: PropTypes.func,
     text: PropTypes.func,

@@ -47,6 +47,7 @@
     "parameters": "Parameters",
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
+    "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
 
     "close": "Close",
     "validate": "Validate",
@@ -121,6 +122,7 @@
     "displayOverloadTable": "Display the overload table when threshold is exceeded: ",
 
     "LoadFlow": "LoadFlow",
+    "Network" : "Network",
     "SecurityAnalysis": "Security analysis",
 
     "ContingencyListsSelection": "Contingency lists selection",
@@ -242,8 +244,12 @@
     "loadingReport": "Loading logs in progress...",
 
     "ComponentLibrary": "Component library selection : ",
+    "FluxConvention": "Active and reactive flux convention used in spreadsheets : ",
+    "FluxConvention.iidm": "IIDM",
+    "FluxConvention.target": "Target",
 
     "Optional": " (optional)",
+    "loadingOptions": "Loading...",
     "createNetworkModificationNode": "Create a network modification node",
     "createModelNode": "Create a model node",
     "removeNode": "Remove node",
@@ -254,6 +260,7 @@
     "NodeBuildingError": "An error occured while building node",
     "NetworkModifications": "Network modifications",
     "CreateLoad": "Create load",
+    "ModifyLoad": "Modify load",
     "NameOptional": "Name (optional)",
     "TypeOptional": "Type (optional)",
     "UndefinedDefaultValue": "Undefined (default value)",
@@ -267,7 +274,7 @@
     "Connectivity": "Connectivity",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
-
+    "errReorderModificationMsg": "Reorder network modification error :",
     "DeleteEquipment": "Delete equipment",
     "Type": "Type",
     "SUBSTATION": "Substation",
@@ -286,7 +293,9 @@
     "STATIC_VAR_COMPENSATOR": "Static Var Compensator",
     "UnableToDeleteEquipment": "Unable to delete the equipment",
     "LoadCreationError": "Error while creating load",
+    "LoadModificationError": "Error while modifying load",
     "LineCreationError": "Error while creating line",
+    "ShuntCompensatorCreationError": "Error while creating shunt compensator",
 
     "CreateGenerator": "Create generator",
     "GeneratorCreationError": "Error while creating generator",
@@ -355,12 +364,16 @@
     "NewName": "New name",
 
     "CopyFromExisting": "Copy from existing equipment",
-    "LoadCopied": "Data successfully copied from load {loadId}",
-    "LoadCopyFailed404": "Load copy failed: the load was not found",
-    "LoadCopyFailed": "Load copy failed",
+    "EquipmentCopied": "Data successfully copied from equipment {equipmentId}",
+    "EquipmentCopyFailed404": "Equipment copy failed: the equipment was not found",
+    "EquipmentCopyFailed": "Equipment copy failed",
 
     "insertNetworkModificationNodeBefore": "Insert a network modification node before",
     "insertModelNodeBefore": "Insert a model node before",
     "insertNetworkModificationNodeAfter": "Insert a network modification node after",
-    "insertModelNodeAfter": "Insert a model node after"
+    "insertModelNodeAfter": "Insert a model node after",
+
+    "Update": "Update",
+
+    "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path"
 }

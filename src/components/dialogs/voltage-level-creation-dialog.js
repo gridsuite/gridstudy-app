@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
 import { createVoltageLevel } from '../../utils/rest-api';
@@ -22,6 +22,7 @@ import {
 import { useSnackbar } from 'notistack';
 import {
     useAutocompleteField,
+    useButtonWithTooltip,
     useDoubleValue,
     useEnumValue,
     useExpandableValues,
@@ -29,7 +30,14 @@ import {
     useIntegerValue,
     useTextValue,
 } from './input-hooks';
-import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import {
+    filledTextField,
+    gridItem,
+    GridSection,
+    VoltageAdornment,
+} from './dialogUtils';
+import EquipmentSearchDialog from './equipment-search-dialog';
+import { useFormSearchCopy } from './form-search-copy-hook';
 
 const numericalWithButton = {
     type: 'number',
@@ -105,6 +113,13 @@ const SWITCH_TYPE = [
 
 const getId = (e) => e?.id;
 
+const getBusbarSectionById = (busbars, id) => {
+    if (id) {
+        return busbars.find((bbs) => bbs?.id === id);
+    }
+    return null;
+};
+
 const BusBarConnexion = ({
     onChange,
     index,
@@ -120,7 +135,10 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.fromBBS,
+        defaultValue:
+            defaultValue && defaultValue.fromBBS
+                ? getBusbarSectionById(fieldProps, defaultValue?.fromBBS)
+                : '',
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbFrom,
@@ -133,7 +151,10 @@ const BusBarConnexion = ({
         validation: {
             isFieldRequired: true,
         },
-        defaultValue: defaultValue?.toBBS,
+        defaultValue:
+            defaultValue && defaultValue.toBBS
+                ? getBusbarSectionById(fieldProps, defaultValue?.toBBS)
+                : '',
         values: fieldProps,
         getLabel: getId,
         errorMsg: errors?.sjbTo,
@@ -211,8 +232,10 @@ function validateConnection(values) {
  * @param {EventListener} onClose Event to close the dialog
  * @param substationOptions the available network sites
  * @param selectedNodeUuid the currently selected tree node
+ * @param editData the data to edit
  */
 const VoltageLevelCreationDialog = ({
+    editData,
     open,
     onClose,
     substationOptions,
@@ -226,17 +249,59 @@ const VoltageLevelCreationDialog = ({
 
     const inputForm = useInputForm();
 
+    const [formValues, setFormValues] = useState(undefined);
+
+    const equipmentPath = 'voltage-levels';
+
+    const clearValues = () => {
+        setFormValues(null);
+    };
+
+    const toFormValues = (voltageLevel) => {
+        return {
+            equipmentId: voltageLevel.id + '(1)',
+            equipmentName: voltageLevel.name,
+            nominalVoltage: voltageLevel.nominalVoltage,
+            substationId: voltageLevel.substationId,
+            busbarSections: voltageLevel.busbarSections,
+            busbarConnections: [],
+        };
+    };
+
+    const searchCopy = useFormSearchCopy({
+        studyUuid,
+        selectedNodeUuid,
+        equipmentPath,
+        toFormValues,
+        setFormValues,
+        clearValues,
+    });
+
+    const copyEquipmentButton = useButtonWithTooltip({
+        label: 'CopyFromExisting',
+        handleClick: searchCopy.handleOpenSearchDialog,
+    });
+
+    useEffect(() => {
+        if (editData) {
+            setFormValues(editData);
+        }
+    }, [editData]);
+
     const [voltageLevelId, voltageLevelIdField] = useTextValue({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentId,
     });
 
     const [voltageLevelName, voltageLevelNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
+        defaultValue: formValues?.equipmentName,
     });
 
     const [nominalVoltage, nominalVoltageField] = useDoubleValue({
@@ -244,6 +309,8 @@ const VoltageLevelCreationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
+        adornment: VoltageAdornment,
+        defaultValue: formValues?.nominalVoltage,
     });
 
     const [substation, substationField] = useAutocompleteField({
@@ -254,6 +321,12 @@ const VoltageLevelCreationDialog = ({
         values: substationOptions,
         allowNewValue: true,
         getLabel: getId,
+        defaultValue: null,
+        selectedValue: formValues
+            ? substationOptions.find(
+                  (value) => value.id === formValues.substationId
+              )
+            : null,
     });
 
     const [busBarSections, busBarSectionsField] = useExpandableValues({
@@ -262,6 +335,7 @@ const VoltageLevelCreationDialog = ({
         validateItem: validateBusBarSection,
         inputForm: inputForm,
         Field: BusBarSection,
+        defaultValues: formValues?.busbarSections,
     });
 
     const [connections, connectionsField] = useExpandableValues({
@@ -271,12 +345,12 @@ const VoltageLevelCreationDialog = ({
         inputForm: inputForm,
         Field: BusBarConnexion,
         fieldProps: busBarSections,
+        defaultValues: formValues?.busbarConnections,
     });
 
     const handleSave = () => {
         // Check if error list contains an error
-        let isValid = inputForm.validate();
-        if (isValid) {
+        if (inputForm.validate()) {
             createVoltageLevel(
                 studyUuid,
                 selectedNodeUuid,
@@ -285,7 +359,9 @@ const VoltageLevelCreationDialog = ({
                 nominalVoltage,
                 substation.id,
                 busBarSections,
-                connections
+                connections,
+                editData ? true : false,
+                editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
@@ -301,10 +377,6 @@ const VoltageLevelCreationDialog = ({
         }
     };
 
-    const clearValues = () => {
-        inputForm.clear();
-    };
-
     const handleCloseAndClear = () => {
         clearValues();
         handleClose();
@@ -317,49 +389,60 @@ const VoltageLevelCreationDialog = ({
     };
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="md" // 3 columns
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-create-voltage-level"
-        >
-            <DialogTitle>
-                <Grid container justifyContent={'space-between'}>
-                    <Grid item xs={11}>
-                        <FormattedMessage id={'CreateVoltageLevel'} />
+        <>
+            <Dialog
+                fullWidth
+                maxWidth="md" // 3 columns
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="dialog-create-voltage-level"
+            >
+                <DialogTitle>
+                    <Grid container justifyContent={'space-between'}>
+                        <Grid item xs={11}>
+                            <FormattedMessage id="CreateVoltageLevel" />
+                        </Grid>
+                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
-                </Grid>
-            </DialogTitle>
-            <DialogContent>
-                <Grid container spacing={2}>
-                    {gridItem(voltageLevelIdField, 3)}
-                    {gridItem(voltageLevelNameField, 3)}
-                    {gridItem(nominalVoltageField, 3)}
-                    {gridItem(substationField, 3)}
-                </Grid>
-                <Grid container>
-                    <GridSection title={'BusBarSections'} />
-                    {busBarSectionsField}
-                </Grid>
-                <Grid container>
-                    <GridSection title={'Connectivity'} />
-                    {connectionsField}
-                </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseAndClear} variant="text">
-                    <FormattedMessage id="close" />
-                </Button>
-                <Button onClick={handleSave} variant="text">
-                    <FormattedMessage id="save" />
-                </Button>
-            </DialogActions>
-        </Dialog>
+                </DialogTitle>
+                <DialogContent>
+                    <Grid container spacing={2}>
+                        {gridItem(voltageLevelIdField, 3)}
+                        {gridItem(voltageLevelNameField, 3)}
+                        {gridItem(nominalVoltageField, 3)}
+                        {gridItem(substationField, 3)}
+                    </Grid>
+                    <Grid container>
+                        <GridSection title={'BusBarSections'} />
+                        {busBarSectionsField}
+                    </Grid>
+                    <Grid container>
+                        <GridSection title={'Connectivity'} />
+                        {connectionsField}
+                    </Grid>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseAndClear}>
+                        <FormattedMessage id="close" />
+                    </Button>
+                    <Button onClick={handleSave}>
+                        <FormattedMessage id={editData ? 'Update' : 'save'} />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <EquipmentSearchDialog
+                open={searchCopy.isDialogSearchOpen}
+                onClose={searchCopy.handleCloseSearchDialog}
+                equipmentType={'VOLTAGE_LEVEL'}
+                onSelectionChange={searchCopy.handleSelectionChange}
+                selectedNodeUuid={selectedNodeUuid}
+            />
+        </>
     );
 };
 
 VoltageLevelCreationDialog.propTypes = {
+    editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     substationOptions: PropTypes.arrayOf(PropTypes.object),

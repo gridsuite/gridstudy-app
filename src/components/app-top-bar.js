@@ -11,16 +11,17 @@ import {
     getEquipmentsInfosForSearchBar,
     LIGHT_THEME,
     logout,
-    renderEquipmentForSearchBar,
+    EquipmentItem,
+    TagRenderer,
     TopBar,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
-import Tabs from '@material-ui/core/Tabs';
+import Tabs from '@mui/material/Tabs';
 import { StudyView } from './study-pane';
-import { Badge } from '@material-ui/core';
+import { Badge } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Tab from '@material-ui/core/Tab';
+import Tab from '@mui/material/Tab';
 import Parameters, { useParameterState } from './parameters';
 import {
     PARAM_LANGUAGE,
@@ -29,13 +30,15 @@ import {
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useSnackbar } from 'notistack';
 import { stringify } from 'qs';
-import { selectItemNetwork } from '../redux/actions';
+import { centerOnSubstation, selectItemNetwork } from '../redux/actions';
+import { useSnackbar } from 'notistack';
+import IconButton from '@mui/material/IconButton';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -43,14 +46,54 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const useEquipmentStyles = makeStyles(equipmentStyles);
-
 const STUDY_VIEWS = [
     StudyView.MAP,
     StudyView.SPREADSHEET,
     StudyView.RESULTS,
     StudyView.LOGS,
 ];
+
+const useEquipmentStyles = makeStyles(equipmentStyles);
+
+const CustomSuffixRenderer = ({ props, element }) => {
+    const dispatch = useDispatch();
+    const equipmentClasses = useEquipmentStyles();
+    const network = useSelector((state) => state.network);
+
+    const enterOnSubstationCB = useCallback(
+        (e, element) => {
+            const substationId =
+                element.type === EQUIPMENT_TYPE.SUBSTATION.name
+                    ? element.id
+                    : network.getVoltageLevel(element.id).substationId;
+            dispatch(centerOnSubstation(substationId));
+            props.onClose && props.onClose();
+            e.stopPropagation();
+        },
+        [dispatch, props, network]
+    );
+
+    if (
+        element.type === EQUIPMENT_TYPE.SUBSTATION.name ||
+        element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
+    )
+        return (
+            <IconButton
+                onClick={(e) => enterOnSubstationCB(e, element)}
+                size={'small'}
+            >
+                <GpsFixedIcon fontSize={'small'} />
+            </IconButton>
+        );
+
+    return (
+        <TagRenderer
+            classes={equipmentClasses}
+            props={props}
+            element={element}
+        />
+    );
+};
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
@@ -85,7 +128,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const workingNodeUuid = useSelector((state) => state.workingTreeNode);
+    const workingNode = useSelector((state) => state.workingTreeNode);
 
     const [showParameters, setShowParameters] = useState(false);
 
@@ -95,7 +138,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (searchTerm) => {
             fetchEquipmentsInfos(
                 studyUuid,
-                workingNodeUuid,
+                workingNode?.id,
                 searchTerm,
                 useNameLocal
             )
@@ -115,7 +158,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     })
                 );
         },
-        [studyUuid, workingNodeUuid, useNameLocal, enqueueSnackbar, intlRef]
+        [studyUuid, workingNode, useNameLocal, enqueueSnackbar, intlRef]
     );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -187,9 +230,13 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onSearchTermChange={searchMatchingEquipments}
                 onSelectionChange={showVoltageLevelDiagram}
                 elementsFound={equipmentsFound}
-                renderElement={renderEquipmentForSearchBar(
-                    equipmentClasses,
-                    intl
+                renderElement={(props) => (
+                    <EquipmentItem
+                        classes={equipmentClasses}
+                        key={'ei' + props.element.key}
+                        {...props}
+                        suffixRenderer={CustomSuffixRenderer}
+                    />
                 )}
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
@@ -197,9 +244,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 {studyUuid && (
                     <Tabs
                         value={tabIndex}
-                        indicatorColor="primary"
                         variant="scrollable"
-                        scrollButtons="auto"
                         onChange={(event, newTabIndex) => {
                             onChangeTab(newTabIndex);
                         }}

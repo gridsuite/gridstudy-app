@@ -6,12 +6,12 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import makeStyles from '@mui/styles/makeStyles';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
@@ -42,11 +42,6 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
-    function createModelNode(insertMode) {
-        handleNodeCreation(activeNode, 'MODEL', insertMode);
-        handleClose();
-    }
-
     function removeNode() {
         handleNodeRemoval(activeNode);
         handleClose();
@@ -58,30 +53,15 @@ const CreateNodeMenu = ({
             action: () => createNetworkModificationNode('CHILD'),
             id: 'createNetworkModificationNode',
         },
-        CREATE_MODEL_NODE: {
-            onRoot: true,
-            action: () => createModelNode('CHILD'),
-            id: 'createModelNode',
-        },
         INSERT_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
             action: () => createNetworkModificationNode('BEFORE'),
             id: 'insertNetworkModificationNodeBefore',
         },
-        INSERT_MODEL_NODE_BEFORE: {
-            onRoot: false,
-            action: () => createModelNode('BEFORE'),
-            id: 'insertModelNodeBefore',
-        },
         INSERT_MODIFICATION_NODE_AFTER: {
             onRoot: true,
             action: () => createNetworkModificationNode('AFTER'),
             id: 'insertNetworkModificationNodeAfter',
-        },
-        INSERT_MODEL_NODE_AFTER: {
-            onRoot: true,
-            action: () => createModelNode('AFTER'),
-            id: 'insertModelNodeAfter',
         },
         REMOVE_NODE: {
             onRoot: false,
@@ -110,6 +90,7 @@ const CreateNodeMenu = ({
                             onClick={item.action}
                         >
                             <ListItemText
+                                key={item.id}
                                 className={classes.listItemText}
                                 primary={
                                     <Typography noWrap>
