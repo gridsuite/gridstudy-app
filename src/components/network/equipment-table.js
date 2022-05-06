@@ -7,36 +7,15 @@ import Grid from '@mui/material/Grid';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import LoaderWithOverlay from '../util/loader-with-overlay';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
-import { OverflowableText } from '@gridsuite/commons-ui';
 import { MultiGrid, AutoSizer } from 'react-virtualized';
-import LockIcon from "@mui/icons-material/Lock";
-import { render } from "react-dom";
-import { TABLES_DEFINITION_INDEXES } from "./config-tables";
 
 const ROW_HEIGHT = 38;
+const HEADER_ROW_HEIGHT = 64;
 const MIN_COLUMN_WIDTH = 160;
-const HEADER_CELL_WIDTH = 65;
-
-const useStyles = makeStyles((theme) => ({
-    tableCell: {
-        display: 'flex',
-        alignItems: 'right',
-        textAlign: 'right',
-        boxSizing: 'border-box',
-        padding: theme.spacing(1),
-        flex: 1,
-        minWidth: 0,
-        height: ROW_HEIGHT + 'px',
-        cursor: 'initial',
-    },
-}));
 
 export const EquipmentTable = (props) => {
 
     const [lineEdit, setLineEdit] = useState(undefined);
-    const classes = useStyles();
     const gridRef = useRef();
     const intl = useIntl();
     const isLineOnEditMode = useCallback(
@@ -107,7 +86,6 @@ export const EquipmentTable = (props) => {
         return (
             (!isLineOnEditMode(cellData) && (
                 <IconButton
-                    size="small"
                     disabled={lineEdit && lineEdit.id && true}
                     onClick={() =>
                         startEdition({
@@ -141,24 +119,6 @@ export const EquipmentTable = (props) => {
             )
         );
     }
-
-    //const defaultCellRender = useCallback(
-    //    (cellData, columnDefinition) => {
-    //        const text = formatCell(cellData, columnDefinition);
-            /*<TableCell
-                    component="div"
-                    variant="body"
-                    style={{ width: cellData.width }}
-                    className={classes.tableCell}
-                    align={numeric ? 'right' : 'left'}
-                >
-                    <OverflowableText text={text} />
-                </TableCell>*/
-            //return (<span style={columnDefinition.style}>{text}</span>);
-    //        return text;
-    //    },
-    //    [classes.tableCell, formatCell]
-    //);
 
     const registerChangeRequest = useCallback(
         (data, changeCmd, value) => {
@@ -228,9 +188,6 @@ export const EquipmentTable = (props) => {
         ]
     );*/
 
-    const lockIcon = () => {
-        return (<LockIcon style={{fontSize: 'small'}}/>);
-    }
 
     // https://bvaughn.github.io/react-virtualized/#/components/MultiGrid
     // https://codesandbox.io/s/react-virtualized-multigrid-y9e08?from-embed=&file=/src/Gridtable.js:2358-2977
@@ -240,7 +197,6 @@ export const EquipmentTable = (props) => {
     function cellRenderer({ columnIndex, key, rowIndex, style }) {
         if(!props.columns || !props.columns[columnIndex])
         {
-            //console.error("MISSING DEF : col["+columnIndex+"]row["+rowIndex+"]");
             return (<div style={{
                 ...style,
                 backgroundColor: 'yellow',
@@ -249,29 +205,14 @@ export const EquipmentTable = (props) => {
             }}>MISSING_DEF:{columnIndex}-{rowIndex}</div>);
         }
         let columnDefinition = props.columns[columnIndex];
-        style = {
-            ...style,
-            backgroundColor: 'black',
-            border: 'solid 1px red',
-            fontSize: 'smaller',
-        };
 
         if (rowIndex === 0) {
-            return (
-                <div key={key} style={style}>
-                    {columnDefinition.locked ? lockIcon() : ''}
-                    {columnDefinition.label}
-                </div>
-            );
+            return (props.columns.headerCellRender(columnDefinition, key, style));
         } else {
             let cell = props.rows[rowIndex - 1];
             if(columnDefinition.cellRenderer)
             {
-                return (
-                    <div key={key} style={style}>
-                        {columnDefinition.cellRenderer(cell, columnDefinition)}
-                    </div>
-                );
+                return (columnDefinition.cellRenderer(cell, columnDefinition, key, style));
             } else {
                 return (<div>NO CELL RENDERER</div>);
             }
@@ -279,14 +220,19 @@ export const EquipmentTable = (props) => {
     }
 
     function getColumnWidth(index) {
-        const width = props.columns[index]?.style?.width;
+        const width = props.columns[index]?.columnWidth;
         if(width) {
             return width;
         }
         return MIN_COLUMN_WIDTH;
     }
 
-    const headerLinesCount = 1;
+    function getRowHeight(index) {
+        if(index==0) {
+            return HEADER_ROW_HEIGHT;
+        }
+        return ROW_HEIGHT;
+    }
 
     return (
         <>
@@ -303,13 +249,17 @@ export const EquipmentTable = (props) => {
                         ref={gridRef}
                         cellRenderer={cellRenderer}
                         fixedColumnCount={fixedColumnsCount}
-                        fixedRowCount={headerLinesCount}
+                        fixedRowCount={1}
                         height={height}
                         width={width}
                         columnCount={props.columns.length}
                         columnWidth={({ index }) => getColumnWidth(index)}
-                        rowCount={props.rows.length + headerLinesCount}
-                        rowHeight={40}
+                        rowCount={props.rows.length + 1}
+                        rowHeight={({ index }) => getRowHeight(index)}
+                        enableFixedColumnScroll={true}
+                        enableFixedRowScroll={true}
+                        hideTopRightGridScrollbar={true}
+                        hideBottomLeftGridScrollbar={true}
                     />
                 )}
             </AutoSizer>

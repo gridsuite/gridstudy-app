@@ -25,6 +25,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import LockIcon from '@mui/icons-material/Lock';
+import EditIcon from '@mui/icons-material/Edit';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ListItemText from '@mui/material/ListItemText';
 import {
@@ -44,11 +45,10 @@ import {
 } from '../../utils/messages';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 
-const ROW_HEIGHT = 50;
 const MIN_COLUMN_WIDTH = 160;
 const HEADER_CELL_WIDTH = 65;
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     searchSection: {
         paddingRight: '10px',
         alignItems: 'center',
@@ -71,6 +71,37 @@ const useStyles = makeStyles(() => ({
     selectColumns: {
         marginTop: '12px',
         marginLeft: '50px',
+    },
+    tableCell: {
+        //backgroundColor: 'black',
+        fontSize: 'small',
+        cursor: 'initial',
+        margin: '5px',
+        padding: '10px',
+        borderTop: '1px solid #515151',
+
+
+        // VOIR https://mui.com/material-ui/customization/default-theme/?expand-path=$.palette.primary
+
+        //backgroundColor: theme.palette.primary.main,
+        //color: theme.palette.primary.contrastText,
+    },
+    tableHeader: {
+        //backgroundColor: 'red',
+        fontSize: 'small',
+        cursor: 'initial',
+        textTransform: 'uppercase',
+        margin: '5px',
+        padding: '10px',
+        fontWeight: 'bold',
+        //overflowWrap: 'break-word',
+    },
+    editCell: {
+        //backgroundColor: 'pink',
+        fontSize: 'small',
+        cursor: 'initial',
+        margin: '5px',
+        padding: '10px',
     },
 }));
 
@@ -168,7 +199,6 @@ const NetworkTable = (props) => {
                 value = columnDefinition.cellDataGetter(cellData, props.network);
             }
             if (columnDefinition.normed) {
-                console.error("CHARLY fluxconvention "+fluxConvention); // TODO CHARLY ne fonctionne pas quand on change le param (maybe d'autres soucis)
                 value = columnDefinition.normed(fluxConvention, value);
             }
             return value &&
@@ -192,45 +222,95 @@ const NetworkTable = (props) => {
         return 0;
     }
 
+    const defaultCellRender = useCallback(
+        (cellData, columnDefinition, key, style) => {
+            const text = formatCell(cellData, columnDefinition);
+            return (
+                <div key={key}
+                     style={style}
+                     align={columnDefinition.numeric ? 'right' : 'left'}>
+                    <div
+                        className={classes.tableCell}>
+                        {text}
+                    </div>
+                </div>
+            );
+        },
+        [classes.tableCell, formatCell]
+    );
+
+    const lockIcon = () => {
+        return (<LockIcon style={{fontSize: 'medium', marginRight:'6px'}}/>);
+    }
+
+    const editIcon = () => {
+        return (<EditIcon />);
+    }
+
+    const headerCellRender = useCallback(
+        (columnDefinition, key, style) => {
+            return (
+                <div key={key}
+                     style={style}
+                     align={columnDefinition.numeric ? 'right' : 'left'}>
+                    <div className={classes.tableHeader}>
+                        {columnDefinition.locked && !columnDefinition.editColumn ? lockIcon() : ''}
+                        {columnDefinition.label}
+                    </div>
+                </div>
+            );
+        },
+        [classes.tableHeader]
+    );
+
+    const editCellRender = useCallback(
+        (cellData, columnDefinition, key, style) => {
+            return (
+                <div key={key}
+                     style={style}>
+                    <div className={classes.editCell}>
+                        {editIcon()}
+                    </div>
+                </div>
+            );
+        },
+        [classes.editCell]
+    );
+
     function generateTableColumns(tabIndex) {
         let generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex).columns.filter((c) => {
             return selectedColumnsNames.has(c.id);
         }).map((c) => {
             let column = {
                 ...c,
-                //label: intl.formatMessage({ id: c.id }),// TODO CHARLY remettre ça
-                label: c.id, // TODO CHARLY supprimer ça
+                label: intl.formatMessage({ id: c.id }),
                 locked: lockedColumnsNames.has(c.id),
-                style: {
-                    display: '',
-                    width: c.columnWidth ? c.columnWidth : MIN_COLUMN_WIDTH,
-                },
+                columnWidth: c.columnWidth ? c.columnWidth : MIN_COLUMN_WIDTH,
             };
             if (c.changeCmd !== undefined) {
                 console.error("ATTENTION code pas terminé ici");
-                column.cellRenderer = (cell, columnDefinition) =>
+                column.cellRenderer = (cell, columnDefinition, key, style) =>
                     //EditableCellRender(cell, columnDefinition);
-                    formatCell(cell, columnDefinition);
+                    defaultCellRender(cell, columnDefinition, key, style);
             } else {
-                column.cellRenderer = (cell, columnDefinition) =>
-                    //defaultCellRender(cell, columnDefinition);
-                    formatCell(cell, columnDefinition);
+                column.cellRenderer = (cell, columnDefinition, key, style) =>
+                    defaultCellRender(cell, columnDefinition, key, style);
             }
             delete column.changeCmd;
             return column;
         });
         if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
             generatedTableColumns.unshift({
-                style: {
-                    display: '',
-                    width: HEADER_CELL_WIDTH
-                },
                 locked: true,
+                editColumn: true,
+                columnWidth: HEADER_CELL_WIDTH,
                 label: 'Edit',
-                cellRenderer: (cell, columnDefinition) =>
-                    //defaultCellRender(cell, columnDefinition),
-                    formatCell(cell, columnDefinition),
+                cellRenderer: (cell, columnDefinition, key, style) =>
+                    editCellRender(cell, columnDefinition, key, style),
             });
+        }
+        generatedTableColumns.headerCellRender = (columnDefinition, key, style) => {
+            return headerCellRender(columnDefinition, key, style);
         }
         generatedTableColumns.sort(sortByLock);
         return generatedTableColumns;
@@ -294,7 +374,8 @@ const NetworkTable = (props) => {
             new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
         );
         setLockedColumnsNames(
-            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+            // TODO CHARLY faire en sorte qu'au chargement de l'appli, les locks sauvegardés soient appliqués
+            new Set()
         );
         setPopupSelectColumnNames(false);
     }, [tabIndex, allDisplayedColumnsNames]);
@@ -375,7 +456,7 @@ const NetworkTable = (props) => {
         setLockedColumnsNames(newLocked);
     };
 
-    const checkListColumnsNames = () => { // TODO CHARLY ici se construit la popup des colonnes
+    const checkListColumnsNames = () => {
         let isAllChecked =
             selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
@@ -490,15 +571,9 @@ const NetworkTable = (props) => {
                                 open={popupSelectColumnNames}
                                 onClose={handleCancelPopupSelectColumnNames}
                                 onClick={handleSaveSelectedColumnNames}
-                            //    title={intl.formatMessage({ // TODO CHARLY remettre ça
-                            //        id: 'ColumnsList',
-                            //    })}
-                                title={ // TODO CHARLY supprimer ça
-                                    [
-                                        intl.formatMessage({id: 'ColumnsList',}),
-                                        ' ',
-                                        intl.formatMessage({id: TABLES_DEFINITION_INDEXES.get(tabIndex).name}),
-                                    ]}
+                                title={intl.formatMessage({
+                                    id: 'ColumnsList',
+                                })}
                                 child={checkListColumnsNames()}
                             />
                         </Grid>
