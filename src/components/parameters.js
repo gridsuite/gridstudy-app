@@ -194,7 +194,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     });
                 });
         },
-        [studyUuid, lfProvider, enqueueSnackbar, intlRef]
+        [studyUuid, enqueueSnackbar, intlRef]
     );
 
     const setLoadFlowProviderToDefault = useCallback(() => {
