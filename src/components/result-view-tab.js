@@ -62,7 +62,7 @@ export const ResultViewTab = ({
     }
 
     return (
-        <div className={clsx('singlestretch-child', classes.table)}>
+        <Paper className={clsx('singlestretch-child', classes.table)}>
             <Tabs
                 value={tabIndex}
                 onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}
@@ -80,7 +80,7 @@ export const ResultViewTab = ({
             </Tabs>
             {tabIndex === 0 && renderLoadFlowResult()}
             {tabIndex === 1 && renderSecurityAnalysisResult()}
-        </div>
+        </Paper>
     );
 };
 

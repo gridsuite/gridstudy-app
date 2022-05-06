@@ -244,8 +244,6 @@ const ShuntCompensatorCreationDialog = ({
                     <Grid container spacing={2}>
                         {gridItem(maximumNumberOfSectionsField)}
                         {gridItem(currentNumberOfSectionsField)}
-                    </Grid>
-                    <Grid container spacing={2}>
                         {gridItem(identicalSectionsField)}
                         {gridItem(susceptancePerSectionField)}
                     </Grid>
