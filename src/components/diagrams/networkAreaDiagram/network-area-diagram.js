@@ -43,6 +43,8 @@ import { useSnackMessage } from '../../../utils/messages';
 
 import { useIntl } from 'react-intl';
 
+import { NetworkAreaDiagram as NAD } from 'hello-goodbye2';
+
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
 const maxHeightVoltageLevel = 700;
@@ -245,58 +247,59 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     useLayoutEffect(() => {
         if (svg.svg) {
             const divElt = svgRef.current;
-            divElt.innerHTML = svg.svg;
-            //need to add it there so the bbox has the right size
-            // calculate svg width and height from svg bounding box
-            const svgEl = divElt.getElementsByTagName('svg')[0];
-            const bbox = svgEl.getBBox();
-            const xOrigin = bbox.x - 20;
-            const yOrigin = bbox.y - 20;
-            const svgWidth = bbox.width + 40;
-            const svgHeight = bbox.height + 40;
-
-            const svgTmp = divElt.getElementsByTagName('svg')[0];
-            const width = svgTmp.getAttribute('width');
-            const height = svgTmp.getAttribute('height');
-
-            setSvgPreferredHeight(height);
-            setSvgPreferredWidth(width);
-
-            svgTmp.removeAttribute('width');
-            svgTmp.removeAttribute('height');
-
-            // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
-            divElt.innerHTML = ''; // clear the previous svg in div element before replacing
-            const draw = SVG()
-                .addTo(divElt)
-                .size(width, height)
-                .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
-                .panZoom({
-                    panning: true,
-                    zoomMin: 0.5,
-                    zoomMax: 200,
-                    zoomFactor: 0.3,
-                    margins: { top: 0, left: 0, right: 0, bottom: 0 },
-                });
-            draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
-
-            // PowSyBl NAD introduced server side calculated SVG viewbox
-            // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
-            draw.node.firstChild.removeAttribute('viewBox');
-
-            draw.on('panStart', function (evt) {
-                divElt.style.cursor = 'move';
-            });
-            draw.on('panEnd', function (evt) {
-                divElt.style.cursor = 'default';
-            });
-
-            if (svgDraw.current && svgUrlRef.current === svg.svgUrl) {
-                draw.viewbox(svgDraw.current.viewbox());
-            }
-            svgUrlRef.current = svg.svgUrl;
-
-            svgDraw.current = draw;
+            // divElt.innerHTML = svg.svg;
+            // // need to add it there so the bbox has the right size
+            // // calculate svg width and height from svg bounding box
+            // const svgEl = divElt.getElementsByTagName('svg')[0];
+            // const bbox = svgEl.getBBox();
+            // const xOrigin = bbox.x - 20;
+            // const yOrigin = bbox.y - 20;
+            // const svgWidth = bbox.width + 40;
+            // const svgHeight = bbox.height + 40;
+            //
+            // const svgTmp = divElt.getElementsByTagName('svg')[0];
+            // const width = svgTmp.getAttribute('width');
+            // const height = svgTmp.getAttribute('height');
+            //
+            // setSvgPreferredHeight(height);
+            // setSvgPreferredWidth(width);
+            //
+            // svgTmp.removeAttribute('width');
+            // svgTmp.removeAttribute('height');
+            //
+            // // using svgdotjs panzoom component to pan and zoom inside the svg, using svg width and height previously calculated for size and viewbox
+            // divElt.innerHTML = ''; // clear the previous svg in div element before replacing
+            // const draw = SVG()
+            //     .addTo(divElt)
+            //     .size(width, height)
+            //     .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
+            //     .panZoom({
+            //         panning: true,
+            //         zoomMin: 0.5,
+            //         zoomMax: 200,
+            //         zoomFactor: 0.3,
+            //         margins: { top: 0, left: 0, right: 0, bottom: 0 },
+            //     });
+            // draw.svg(svg.svg).node.firstElementChild.style.overflow = 'visible';
+            //
+            // // PowSyBl NAD introduced server side calculated SVG viewbox
+            // // waiting for deeper adaptation, remove it and still rely on client side computed viewbox
+            // draw.node.firstChild.removeAttribute('viewBox');
+            //
+            // draw.on('panStart', function (evt) {
+            //     divElt.style.cursor = 'move';
+            // });
+            // draw.on('panEnd', function (evt) {
+            //     divElt.style.cursor = 'default';
+            // });
+            //
+            // if (svgDraw.current && svgUrlRef.current === svg.svgUrl) {
+            //     draw.viewbox(svgDraw.current.viewbox());
+            // }
+            // svgUrlRef.current = svg.svgUrl;
+            //
+            // svgDraw.current = draw;
+            const networkAreaDiagram = new NAD(divElt, diagramTitle, svg.svg);
         }
     }, [network, svg, workingNode, theme, nadId, ref, svgUrl]);
 
@@ -406,44 +409,44 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 </Box>
                 {
                     <div
-                        id="sld-svg"
+                        id="nad-svg"
                         ref={svgRef}
                         className={classes.divNad}
-                        dangerouslySetInnerHTML={{ __html: svg.svg }}
+                        // dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 }
-                {!loadingState && (
-                    <>
-                        <Typography className={classes.depth}>
-                            {intl.formatMessage({
-                                id: 'depth',
-                            }) +
-                                ' : ' +
-                                depth}
-                        </Typography>
-                        <AddCircleIcon
-                            onClick={() => setDepth(depth + 1)}
-                            className={classes.plusIcon}
-                        />
-                        <RemoveCircleIcon
-                            onClick={() =>
-                                setDepth(depth === 0 ? 0 : depth - 1)
-                            }
-                            className={classes.lessIcon}
-                        />
-                        {fullScreen ? (
-                            <FullscreenExitIcon
-                                onClick={hideFullScreen}
-                                className={classes.fullScreenIcon}
-                            />
-                        ) : (
-                            <FullscreenIcon
-                                onClick={showFullScreen}
-                                className={classes.fullScreenIcon}
-                            />
-                        )}
-                    </>
-                )}
+                {/*{!loadingState && (*/}
+                {/*    <>*/}
+                {/*        <Typography className={classes.depth}>*/}
+                {/*            {intl.formatMessage({*/}
+                {/*                id: 'depth',*/}
+                {/*            }) +*/}
+                {/*                ' : ' +*/}
+                {/*                depth}*/}
+                {/*        </Typography>*/}
+                {/*        <AddCircleIcon*/}
+                {/*            onClick={() => setDepth(depth + 1)}*/}
+                {/*            className={classes.plusIcon}*/}
+                {/*        />*/}
+                {/*        <RemoveCircleIcon*/}
+                {/*            onClick={() =>*/}
+                {/*                setDepth(depth === 0 ? 0 : depth - 1)*/}
+                {/*            }*/}
+                {/*            className={classes.lessIcon}*/}
+                {/*        />*/}
+                {/*        {fullScreen ? (*/}
+                {/*            <FullscreenExitIcon*/}
+                {/*                onClick={hideFullScreen}*/}
+                {/*                className={classes.fullScreenIcon}*/}
+                {/*            />*/}
+                {/*        ) : (*/}
+                {/*            <FullscreenIcon*/}
+                {/*                onClick={showFullScreen}*/}
+                {/*                className={classes.fullScreenIcon}*/}
+                {/*            />*/}
+                {/*        )}*/}
+                {/*    </>*/}
+                {/*)}*/}
             </Box>
         </Paper>
     ) : (
