@@ -181,11 +181,9 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const updateLfProvider = useCallback(
         (newProvider) => {
-            const oldProvider = lfProvider;
-            setLfProvider(newProvider);
-            setLoadFlowProvider(studyUuid, newProvider).catch(
-                (errorMessage) => {
-                    setLfProvider(oldProvider); // restore old value
+            setLoadFlowProvider(studyUuid, newProvider)
+                .then(() => setLfProvider(newProvider))
+                .catch((errorMessage) => {
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,
                         enqueueSnackbar: enqueueSnackbar,
@@ -194,8 +192,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                             intlRef: intlRef,
                         },
                     });
-                }
-            );
+                });
         },
         [studyUuid, lfProvider, enqueueSnackbar, intlRef]
     );
