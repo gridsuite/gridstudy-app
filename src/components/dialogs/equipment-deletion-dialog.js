@@ -166,6 +166,7 @@ const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
                             <InputLabel
                                 id="equipment-type-label"
                                 margin={'dense'}
+                                variant={'filled'}
                             >
                                 {intl.formatMessage({ id: 'Type' })}
                             </InputLabel>

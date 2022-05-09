@@ -34,20 +34,18 @@ import {
     ActivePowerAdornment,
     filledTextField,
     gridItem,
+    MVAPowerAdornment,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { Box } from '@mui/system';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
         margin: 0,
         marginTop: 4,
-    },
-    h3: {
-        marginBottom: 0,
-        paddingBottom: 1,
     },
 }));
 
@@ -142,6 +140,7 @@ const GeneratorCreationDialog = ({
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,
@@ -190,7 +189,7 @@ const GeneratorCreationDialog = ({
             isValueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
-        adornment: ReactivePowerAdornment,
+        adornment: MVAPowerAdornment,
         inputForm: inputForm,
         defaultValue: formValues?.ratedNominalPower,
     });
@@ -344,8 +343,7 @@ const GeneratorCreationDialog = ({
                         <Grid container spacing={2}>
                             {gridItem(activePowerSetpointField, 4)}
                             {gridItem(reactivePowerSetpointField, 4)}
-                        </Grid>
-                        <Grid container spacing={2} alignItems="center">
+                            <Box sx={{ width: '100%' }} />
                             {gridItem(voltageRegulationField, 4)}
                             {gridItem(voltageSetpointField, 4)}
                         </Grid>

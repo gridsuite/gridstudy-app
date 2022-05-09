@@ -8,6 +8,7 @@
 import LoaderWithOverlay from './loader-with-overlay';
 import PageNotFound from '../page-not-found';
 import PropTypes from 'prop-types';
+import Paper from '@mui/material/Paper';
 
 const WaitingLoader = ({ loading, message, errMessage, children }) => {
     if (errMessage !== undefined) {
@@ -15,11 +16,13 @@ const WaitingLoader = ({ loading, message, errMessage, children }) => {
         return <PageNotFound message={errMessage} />;
     } else if (loading === true)
         return (
-            <LoaderWithOverlay
-                color="inherit"
-                loaderSize={70}
-                loadingMessageText={message}
-            />
+            <Paper className={'singlestretch-child'}>
+                <LoaderWithOverlay
+                    color="inherit"
+                    loaderSize={70}
+                    loadingMessageText={message}
+                />
+            </Paper>
         );
     return <>{children}</>;
 };

@@ -47,6 +47,7 @@
     "parameters": "Parameters",
     "paramsChangingError": "An error occured when changing the parameters",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
+    "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
 
     "close": "Close",
     "validate": "Validate",
@@ -248,6 +249,7 @@
     "FluxConvention.target": "Target",
 
     "Optional": " (optional)",
+    "loadingOptions": "Loading...",
     "createNetworkModificationNode": "Create a network modification node",
     "createModelNode": "Create a model node",
     "removeNode": "Remove node",

@@ -10,7 +10,6 @@ import React, { useRef, useState } from 'react';
 import { getNetworkAreaDiagramUrl } from '../../../utils/rest-api';
 import NetworkAreaDiagram from './network-area-diagram';
 import PropTypes from 'prop-types';
-// import { sayHello, BigDiv } from 'hello-goodbye2';
 
 export function NetworkAreaDiagramPane({
     studyUuid,
@@ -51,15 +50,6 @@ export function NetworkAreaDiagramPane({
         );
     }
 
-    // const bigDiv = new BigDiv();
-    // bigDiv.init();
-
-    // customElements.define('my-element', BigDiv, { extends: 'div' });
-    //
-    // const myElement = document.createElement('div', { is: 'my-element' });
-
-    // console.info('myElement', myElement)
-
     return (
         <>
             {displayedVoltageLevelId && (
@@ -72,7 +62,6 @@ export function NetworkAreaDiagramPane({
                         flexDirection: 'column',
                     }}
                 >
-                    <div is={"my-element"}></div>
                     <NetworkAreaDiagram
                         onClose={onClose}
                         diagramTitle={nadTitle}

@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '0.4em',
     },
     adornRightOther: {
-        marginBottom: '0.2em',
+        marginBottom: '0.3em',
     },
 }));
 
@@ -40,6 +40,15 @@ const TextFieldWithAdornment = (props) => {
         ...otherProps
     } = props;
     const [isFocused, setIsFocused] = useState(false);
+
+    const getAdornmentClassName = useCallback(
+        (variant) => {
+            if (variant === 'filled') return classes.adornRightFilled;
+            else if (variant === 'standard') return classes.adornRightOther;
+            else return null;
+        },
+        [classes.adornRightFilled, classes.adornRightOther]
+    );
 
     const getClearAdornment = useCallback(
         (position) => {
@@ -57,19 +66,23 @@ const TextFieldWithAdornment = (props) => {
     const getTextAdornment = useCallback(
         (position) => {
             return (
-                <InputAdornment position={position}>
+                <InputAdornment
+                    position={position}
+                    className={getAdornmentClassName(variant)}
+                >
                     {adornmentText}
                 </InputAdornment>
             );
         },
-        [adornmentText]
+        [adornmentText, variant, getAdornmentClassName]
     );
 
     const withEndAdornmentText = useCallback(() => {
-        return value
+        return value !== '' || isFocused
             ? {
-                  startAdornment: clearable && getClearAdornment('start'),
-                  endAdornment: isFocused && getTextAdornment('end'),
+                  startAdornment:
+                      value && clearable && getClearAdornment('start'),
+                  endAdornment: getTextAdornment('end'),
                   classes: { input: classes.inputRight },
               }
             : {};
@@ -79,14 +92,14 @@ const TextFieldWithAdornment = (props) => {
         getClearAdornment,
         isFocused,
         getTextAdornment,
-        classes,
+        classes.inputRight,
     ]);
 
     const withStartAdornmentText = useCallback(() => {
-        return value
+        return value !== '' || isFocused
             ? {
-                  startAdornment: isFocused && getTextAdornment('start'),
-                  endAdornment: clearable && getClearAdornment('end'),
+                  startAdornment: getTextAdornment('start'),
+                  endAdornment: value && clearable && getClearAdornment('end'),
                   classes: { input: classes.inputLeft },
               }
             : {};

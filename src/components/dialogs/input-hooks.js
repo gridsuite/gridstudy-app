@@ -156,7 +156,8 @@ export const useTextValue = ({
                 label={FieldLabel({
                     label,
                     optional:
-                        !validation.isFieldRequired && !formProps?.disabled,
+                        validation.isFieldRequired === false &&
+                        !formProps?.disabled,
                 })}
                 {...(adornment && {
                     adornmentPosition: adornment.position,
@@ -432,6 +433,7 @@ export const useAutocompleteField = ({
     selectedValue,
     defaultValue,
     previousValue,
+    loading = false,
 }) => {
     const [value, setValue] = useState(defaultValue);
     const [error, setError] = useState('');
@@ -476,6 +478,8 @@ export const useAutocompleteField = ({
                 defaultValue={value}
                 value={value}
                 previousValue={previousValue}
+                loading={loading}
+                loadingText={<FormattedMessage id="loadingOptions" />}
                 {...(allowNewValue && {
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
@@ -499,7 +503,7 @@ export const useAutocompleteField = ({
                         label={
                             <FieldLabel
                                 label={label}
-                                optional={!validation.isFieldRequired}
+                                optional={validation.isFieldRequired === false}
                             />
                         }
                         value={value}
@@ -521,6 +525,7 @@ export const useAutocompleteField = ({
         error,
         errorMsg,
         formProps,
+        loading,
     ]);
 
     return [value, field];
@@ -639,17 +644,17 @@ export const useEnumValue = ({
             <FormControl fullWidth size="small">
                 {/*This InputLabel is necessary in order to display
                             the label describing the content of the Select*/}
-                <InputLabel id="enum-type-label" variant={'filled'}>
+                <InputLabel id="enum-type-label" {...formProps}>
                     <FieldLabel
                         label={label}
-                        optional={!validation.isFieldRequired}
+                        optional={validation.isFieldRequired === false}
                     />
                 </InputLabel>
                 <Select
+                    label={label}
                     id={label}
                     value={value || ''}
                     onChange={handleChangeValue}
-                    variant="filled"
                     fullWidth
                     {...formProps}
                 >
@@ -745,7 +750,7 @@ export const useExpandableValues = ({
 
     const field = useMemo(() => {
         return (
-            <Grid item container>
+            <Grid item container spacing={2}>
                 {values.map((value, idx) => (
                     <Grid key={id + idx} container spacing={2} item>
                         <Field
@@ -772,7 +777,6 @@ export const useExpandableValues = ({
                         <Button
                             fullWidth
                             className={classes.button}
-                            variant="outlined"
                             startIcon={<AddIcon />}
                             onClick={handleAddValue}
                         >

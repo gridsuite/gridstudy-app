@@ -37,6 +37,22 @@ function backendFetch(url, init) {
     return fetch(url, initCopy);
 }
 
+export function fetchDefaultParametersValues() {
+    return fetchAppsAndUrls().then((res) => {
+        console.info(
+            'fecthing default parameters values from apps-metadata file'
+        );
+        const studyMetadata = res.find((metadata) => metadata.name === 'Study');
+        if (!studyMetadata) {
+            return Promise.reject(
+                'Study entry could not be found in metadatas'
+            );
+        }
+
+        return studyMetadata.defaultParametersValues;
+    });
+}
+
 export function fetchConfigParameters(appName) {
     console.info('Fetching UI configuration params for app : ' + appName);
     const fetchParams =
@@ -500,16 +516,25 @@ export function fetchAllEquipments(
     );
 }
 
-function fetchEquipments(
+export function fetchEquipments(
     studyUuid,
     selectedNodeUuid,
     substationsIds,
     equipmentType,
-    equipmentPath
+    equipmentPath,
+    inUpstreamBuiltParentNode
 ) {
     console.info(
         `Fetching equipments '${equipmentType}' of study '${studyUuid}' and node '${selectedNodeUuid}' with substations ids '${substationsIds}'...`
     );
+    let urlSearchParams = new URLSearchParams();
+    if (inUpstreamBuiltParentNode !== undefined) {
+        urlSearchParams.append(
+            'inUpstreamBuiltParentNode',
+            inUpstreamBuiltParentNode
+        );
+    }
+
     const fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +
@@ -1462,6 +1487,19 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
             ? response
             : response.text().then((text) => Promise.reject(text))
     );
+}
+
+export function getDefaultLoadFlowProvider() {
+    console.info('get default load flow provier');
+    const getDefaultLoadFlowProviderUrl =
+        PREFIX_STUDY_QUERIES + '/v1/loadflow-default-provider';
+    console.debug(getDefaultLoadFlowProviderUrl);
+    return backendFetch(getDefaultLoadFlowProviderUrl, {
+        method: 'GET',
+    }).then((response) => {
+        if (response.ok) return response.text();
+        throw new Error(response.status + ' ' + response.statusText);
+    });
 }
 
 export function getAvailableComponentLibraries() {

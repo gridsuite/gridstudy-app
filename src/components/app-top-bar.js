@@ -32,14 +32,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { stringify } from 'qs';
 import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 
 const useStyles = makeStyles(() => ({
     tabs: {
@@ -92,12 +91,16 @@ const CustomSuffixRenderer = ({ props, element }) => {
                 {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
                     <IconButton
                         onClick={(e) => openNetworkAreaDiagramCB(e, element)}
+                        size={'small'}
                     >
-                        <TimelineIcon />
+                        <TimelineIcon fontSize={'small'} />
                     </IconButton>
                 )}
-                <IconButton onClick={(e) => enterOnSubstationCB(e, element)}>
-                    <GpsFixedIcon />
+                <IconButton
+                    onClick={(e) => enterOnSubstationCB(e, element)}
+                    size={'small'}
+                >
+                    <GpsFixedIcon fontSize={'small'} />
                 </IconButton>
             </>
         );
@@ -115,8 +118,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const classes = useStyles();
 
     const equipmentClasses = useEquipmentStyles();
-
-    const history = useHistory();
 
     const dispatch = useDispatch();
 
@@ -147,7 +148,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const workingNode = useSelector((state) => state.workingTreeNode);
 
     const [showParameters, setShowParameters] = useState(false);
-
+    const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const searchMatchingEquipments = useCallback(
@@ -179,26 +180,14 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
         (optionInfos) => {
-            let substationOrVlId;
-            let requestParam;
-            if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
-                substationOrVlId = optionInfos.id;
-                requestParam = { substationId: substationOrVlId };
-            } else {
-                substationOrVlId = optionInfos.voltageLevelId;
-                requestParam = {
-                    voltageLevelId: substationOrVlId,
-                };
-            }
             onChangeTab(STUDY_VIEWS.indexOf(StudyView.MAP)); // switch to map view
-            history.replace(
-                // show voltage level
-                '/studies/' +
-                    encodeURIComponent(studyUuid) +
-                    stringify(requestParam, { addQueryPrefix: true })
-            );
+            if (optionInfos.type === EQUIPMENT_TYPE.SUBSTATION.name) {
+                showSubstation(optionInfos.id);
+            } else {
+                showVoltageLevel(optionInfos.voltageLevelId);
+            }
         },
-        [studyUuid, history, onChangeTab]
+        [onChangeTab, showSubstation, showVoltageLevel]
     );
 
     useEffect(() => {
