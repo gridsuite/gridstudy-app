@@ -145,8 +145,8 @@ export const useTextValue = ({
     );
 
     const handleClearValue = useCallback(() => {
-        setValue(defaultValue);
-    }, [defaultValue]);
+        setValue('');
+    }, []);
 
     const field = useMemo(() => {
         const Field = adornment ? TextFieldWithAdornment : TextField;
@@ -483,11 +483,12 @@ export const useAutocompleteField = ({
                 size={'small'}
                 options={values}
                 getOptionLabel={getLabel}
-                defaultValue={value}
+                defaultValue={defaultValue}
                 value={value}
                 previousValue={previousValue}
                 loading={loading}
                 loadingText={<FormattedMessage id="loadingOptions" />}
+                freeSolo={allowNewValue}
                 {...(allowNewValue && {
                     freeSolo: true,
                     isOptionEqualToValue: (option, input) =>
@@ -539,6 +540,7 @@ export const useAutocompleteField = ({
         handleChangeValue,
         validation.isFieldRequired,
         value,
+        defaultValue,
         previousValue,
         error,
         errorMsg,

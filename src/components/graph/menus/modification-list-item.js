@@ -30,6 +30,8 @@ const editableModificationTypes = new Set([
     'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
 ]);
 
+const equipmentModificationModificationsType = new Set(['LOAD_MODIFICATION']);
+
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
@@ -68,12 +70,14 @@ export const ModificationListItem = ({
     const classes = useStyles();
 
     const getComputedLabel = useCallback(() => {
-        if (useName && modification.equipmentName) {
+        if (modification.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
+            return modification.lineToSplitId;
+        } else if (equipmentModificationModificationsType.has(modification.type)) {
+            return modification.equipmentId
+        } else if (useName && modification.equipmentName) {
             return modification.equipmentName;
         } else if (modification.equipmentId) {
             return modification.equipmentId;
-        } else if (modification.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
-            return modification.lineToSplitId;
         }
         return '';
     }, [modification, useName]);
