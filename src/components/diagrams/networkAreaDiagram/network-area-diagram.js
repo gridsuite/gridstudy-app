@@ -41,7 +41,7 @@ import { useSnackMessage } from '../../../utils/messages';
 
 import { useIntl } from 'react-intl';
 
-import { NetworkAreaDiagram as NAD } from 'hello-goodbye2';
+import { NetworkAreaDiagram as NAD } from 'powsybl-diagram-viewer';
 
 const loadingWidth = 150;
 const maxWidthVoltageLevel = 800;
@@ -242,8 +242,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         if (svg.svg) {
-            const divElt = svgRef.current;
-            const nad = new NAD(divElt, svg.svg);
+            const nad = new NAD(svgRef.current, svg.svg);
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
         }
