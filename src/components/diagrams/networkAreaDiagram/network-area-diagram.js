@@ -299,7 +299,11 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             // svgUrlRef.current = svg.svgUrl;
             //
             // svgDraw.current = draw;
-            const networkAreaDiagram = new NAD(divElt, diagramTitle, svg.svg);
+            const nad = new NAD(divElt, diagramTitle, svg.svg);
+
+            setSvgPreferredHeight(nad.getHeight());
+            setSvgPreferredWidth(nad.getWidth());
+
         }
     }, [network, svg, workingNode, theme, nadId, ref, svgUrl]);
 
@@ -412,41 +416,40 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                         id="nad-svg"
                         ref={svgRef}
                         className={classes.divNad}
-                        // dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 }
-                {/*{!loadingState && (*/}
-                {/*    <>*/}
-                {/*        <Typography className={classes.depth}>*/}
-                {/*            {intl.formatMessage({*/}
-                {/*                id: 'depth',*/}
-                {/*            }) +*/}
-                {/*                ' : ' +*/}
-                {/*                depth}*/}
-                {/*        </Typography>*/}
-                {/*        <AddCircleIcon*/}
-                {/*            onClick={() => setDepth(depth + 1)}*/}
-                {/*            className={classes.plusIcon}*/}
-                {/*        />*/}
-                {/*        <RemoveCircleIcon*/}
-                {/*            onClick={() =>*/}
-                {/*                setDepth(depth === 0 ? 0 : depth - 1)*/}
-                {/*            }*/}
-                {/*            className={classes.lessIcon}*/}
-                {/*        />*/}
-                {/*        {fullScreen ? (*/}
-                {/*            <FullscreenExitIcon*/}
-                {/*                onClick={hideFullScreen}*/}
-                {/*                className={classes.fullScreenIcon}*/}
-                {/*            />*/}
-                {/*        ) : (*/}
-                {/*            <FullscreenIcon*/}
-                {/*                onClick={showFullScreen}*/}
-                {/*                className={classes.fullScreenIcon}*/}
-                {/*            />*/}
-                {/*        )}*/}
-                {/*    </>*/}
-                {/*)}*/}
+                {!loadingState && (
+                    <>
+                        <Typography className={classes.depth}>
+                            {intl.formatMessage({
+                                id: 'depth',
+                            }) +
+                                ' : ' +
+                                depth}
+                        </Typography>
+                        <AddCircleIcon
+                            onClick={() => setDepth(depth + 1)}
+                            className={classes.plusIcon}
+                        />
+                        <RemoveCircleIcon
+                            onClick={() =>
+                                setDepth(depth === 0 ? 0 : depth - 1)
+                            }
+                            className={classes.lessIcon}
+                        />
+                        {fullScreen ? (
+                            <FullscreenExitIcon
+                                onClick={hideFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ) : (
+                            <FullscreenIcon
+                                onClick={showFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        )}
+                    </>
+                )}
             </Box>
         </Paper>
     ) : (

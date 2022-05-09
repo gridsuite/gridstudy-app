@@ -961,7 +961,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                                 ? classes.divSld + ' ' + classes.divInvalid
                                 : classes.divSld
                         }
-                        dangerouslySetInnerHTML={{ __html: svg.svg }}
+                        // dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 }
                 {displayMenuLine()}
