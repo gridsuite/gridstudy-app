@@ -271,7 +271,6 @@ export function SingleLineDiagramPane({
         setViews((oldValue) =>
             mergeDisplayed(oldValue, newVoltageLevelIds, createView)
         );
-        // setMinimizedSLD( (oldValue) => );
 
         setUpdateSwitchMsg('');
     }, [createView, location.search]);
