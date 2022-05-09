@@ -162,10 +162,14 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             true
         );
 
-        return withVLs(Dialog, {
-            ...props,
-            fetchedEquipmentOptions: fetchedEquipmentOptions,
-        });
+        function withFetchedOptions(p) {
+            return {
+                ...p,
+                fetchedEquipmentOptions: fetchedEquipmentOptions,
+            };
+        }
+
+        return adapt(Dialog, withVLs, withFetchedOptions);
     }
 
     const dialogs = {

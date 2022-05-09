@@ -111,7 +111,6 @@ const useComplementaryPercentage = ({
             : '50';
     }
 
-    //const classes = useStyles();
     const [mostlyFloatStrValue, setMostlyFloatStrValue] = useState(
         initValue(defaultValue)
     );
@@ -180,9 +179,6 @@ const useComplementaryPercentage = ({
                         fullWidth
                         value={leftSideValue(mostlyFloatStrValue)}
                         onChange={handleChangeLeftValue}
-                        // FormHelperTextProps={{
-                        //     className: classes.helperText,
-                        // }}
                         {...genHelperError(error, errorMsg)}
                         {...formProps}
                     />
@@ -196,9 +192,6 @@ const useComplementaryPercentage = ({
                         fullWidth
                         value={rightSideValue(mostlyFloatStrValue)} // handle numerical mostlyFloatStrValue
                         onChange={handleChangeRightValue}
-                        // FormHelperTextProps={{
-                        //     className: classes.helperText,
-                        // }}
                         {...genHelperError(error, errorMsg)}
                         {...formProps}
                     />
@@ -214,7 +207,6 @@ function makeVoltageLevelCreationParams(vlId, bobbsId, vl) {
     return {
         ...(vl || {}),
         equipmentId: vlId,
-        //topologyKind: 'NODE_BEAKER',
         busbarSections: [{ id: bobbsId, horizPos: 1, vertPos: 1 }],
     };
 }
@@ -225,6 +217,8 @@ function makeVoltageLevelCreationParams(vlId, bobbsId, vl) {
  * @param {EventListener} onClose Event to close the dialog
  * @param lineOptions the available network lines
  * @param selectedNodeUuid the currently selected tree node
+ * @param substationOptions available substations
+ * @param editData the possible line split with voltage level creation record to edit
  */
 const LineSplitWithVoltageLevelDialog = ({
     open,
@@ -236,7 +230,6 @@ const LineSplitWithVoltageLevelDialog = ({
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
-    // const studyUuid = useSelector((state) => state.studyUuid);
 
     const bobbsCb = useMemo(
         () =>
@@ -473,8 +466,8 @@ const LineSplitWithVoltageLevelDialog = ({
                 newLine2Name || null
             )
                 .then(() => {
-                    // tant qu'on n'a pas implémenté, on ne ferme que par ... "fermer"
-                    handleCloseAndClear();
+                    // until whole treatment path is OK, we let close only on ... "Close"
+                    // handleCloseAndClear();
                 })
                 .catch((errorMessage) => {
                     displayErrorMessageWithSnackbar({
@@ -487,7 +480,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     });
                 });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
-            // handleCloseAndClear();
+            handleCloseAndClear();
         }
     };
 
@@ -520,7 +513,7 @@ const LineSplitWithVoltageLevelDialog = ({
             return new Promise(() => {
                 const preparedVoltageLevel = {
                     equipmentId: voltageLevelId,
-                    voltageLevelName: voltageLevelName,
+                    equipmentName: voltageLevelName,
                     nominalVoltage: nominalVoltage,
                     substationId: substationId,
                     busbarSections: busbarSections,
@@ -579,7 +572,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
-                    <GridSection title="LineToDivide" />
+                    <GridSection title="LineToSplit" />
                     <Grid container spacing={2} alignItems="center">
                         {gridItem(lineToDivideField, 5)}
                         {gridItem(
@@ -655,6 +648,8 @@ LineSplitWithVoltageLevelDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
     selectedNodeUuid: PropTypes.string,
+    substationOptions: PropTypes.arrayOf(PropTypes.object),
+    editData: PropTypes.object,
 };
 
 export default LineSplitWithVoltageLevelDialog;

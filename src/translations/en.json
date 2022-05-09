@@ -354,7 +354,7 @@
     "DisconnectorBetweenSameBusbar": "Forbidden to have a disconnector linking a bus bar section to itself",
 
     "LineSplitWithVoltageLevel" : "Create a voltage level on a line",
-    "LineToDivide" : "Existing line",
+    "LineToSplit" : "Existing line",
     "Percentage" : "% long",
     "OutOfBoundsPercentage" : "Percentage out of bounds",
     "BusbarOrNodeID" : "SJB or node ID",

@@ -1373,7 +1373,7 @@ export function createVoltageLevel({
     studyUuid,
     selectedNodeUuid,
     voltageLevelId,
-    name,
+    voltageLevelName,
     nominalVoltage,
     substationId,
     busbarSections,
@@ -1398,12 +1398,13 @@ export function createVoltageLevel({
 
     const body = JSON.stringify({
         equipmentId: voltageLevelId,
-        equipmentName: name,
+        equipmentName: voltageLevelName,
         nominalVoltage: nominalVoltage,
         substationId: substationId,
         busbarSections: busbarSections,
         busbarConnections: busbarConnections,
     });
+    console.log('createVoltageLevel body', body);
 
     return backendFetch(createVoltageLevelUrl, {
         method: isUpdate ? 'PUT' : 'POST',
@@ -1444,6 +1445,7 @@ export function divideLine(
         newLine2Id,
         newLine2Name,
     });
+    console.log('divideLine body', body);
     let lineSplitUrl;
     if (modificationUuid) {
         console.info('Line split with voltage level update', body);

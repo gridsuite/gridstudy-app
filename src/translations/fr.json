@@ -354,7 +354,7 @@
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
     "LineSplitWithVoltageLevel" : "Créer une coupure",
-    "LineToDivide" : "Liaison coupée",
+    "LineToSplit" : "Liaison coupée",
     "LengthPercentage" : "% long.",
     "OutOfBoundsPercentage" : "Pourcentage en dehors des limites",
     "BusbarOrNodeID" : "ID SJB ou noeud",
