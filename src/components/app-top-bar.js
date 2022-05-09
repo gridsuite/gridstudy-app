@@ -37,7 +37,7 @@ import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import { useSingleLineDiagram } from './singleLineDiagram/utils';
+import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import TimelineIcon from '@mui/icons-material/Timeline';
 
 const useStyles = makeStyles(() => ({
@@ -93,7 +93,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
                         onClick={(e) => openNetworkAreaDiagramCB(e, element)}
                         size={'small'}
                     >
-                        <TimelineIcon fontSize={'small'}/>
+                        <TimelineIcon fontSize={'small'} />
                     </IconButton>
                 )}
                 <IconButton

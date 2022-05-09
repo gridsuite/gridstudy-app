@@ -12,7 +12,7 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
-} from '../../utils/config-params';
+} from '../../../utils/config-params';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
