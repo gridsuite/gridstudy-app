@@ -132,9 +132,12 @@ export const ModificationListItem = ({
                             className={classes.label}
                             text={getLabel()}
                         />
-                        {equipmentCreationModificationsType.has(
+                        {(equipmentCreationModificationsType.has(
                             modification.type
-                        ) &&
+                        ) ||
+                            equipmentModificationModificationsType.has(
+                                modification.type
+                            )) &&
                             hover &&
                             !isDragging && (
                                 <IconButton
