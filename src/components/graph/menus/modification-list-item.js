@@ -57,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const ModificationListItem = ({
-    item: modification,
+    item: modif,
     onEdit,
     checked,
     index,
@@ -70,39 +70,39 @@ export const ModificationListItem = ({
     const classes = useStyles();
 
     const getComputedLabel = useCallback(() => {
-        if (modification.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
-            return modification.lineToSplitId;
-        } else if (equipmentModificationModificationsType.has(modification.type)) {
-            return modification.equipmentId
-        } else if (useName && modification.equipmentName) {
-            return modification.equipmentName;
-        } else if (modification.equipmentId) {
-            return modification.equipmentId;
+        if (modif.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
+            return modif.lineToSplitId;
+        } else if (equipmentModificationModificationsType.has(modif.type)) {
+            return modif.equipmentId;
+        } else if (useName && modif.equipmentName) {
+            return modif.equipmentName;
+        } else if (modif.equipmentId) {
+            return modif.equipmentId;
         }
         return '';
-    }, [modification, useName]);
+    }, [modif, useName]);
 
     const toggle = useCallback(
-        () => handleToggle(modification),
-        [modification, handleToggle]
+        () => handleToggle(modif),
+        [modif, handleToggle]
     );
 
     const getLabel = useCallback(
         () =>
             intl.formatMessage(
-                { id: 'network_modifications/' + modification.type },
+                { id: 'network_modifications/' + modif.type },
                 {
-                    ...modification,
+                    ...modif,
                     computedLabel: <strong>{getComputedLabel()}</strong>,
                 }
             ),
-        [modification, getComputedLabel, intl]
+        [modif, getComputedLabel, intl]
     );
 
     const [hover, setHover] = useState(false);
 
     return (
-        <Draggable draggableId={modification.uuid} index={index}>
+        <Draggable draggableId={modif.uuid} index={index}>
             {(provided) => (
                 <div
                     ref={provided.innerRef}
@@ -111,7 +111,7 @@ export const ModificationListItem = ({
                     onMouseLeave={() => setHover(false)}
                 >
                     <ListItem
-                        key={modification.uuid}
+                        key={modif.uuid}
                         {...props}
                         className={classes.listItem}
                     >
@@ -139,11 +139,11 @@ export const ModificationListItem = ({
                             className={classes.label}
                             text={getLabel()}
                         />
-                        {editableModificationTypes.has(modification.type) &&
+                        {editableModificationTypes.has(modif.type) &&
                             hover &&
                             !isDragging && (
                                 <IconButton
-                                    onClick={() => onEdit(modification.uuid)}
+                                    onClick={() => onEdit(modif.uuid)}
                                     size={'small'}
                                     className={classes.iconEdit}
                                 >
