@@ -54,6 +54,7 @@ import {
     connectNotificationsWsUpdateConfig,
     fetchConfigParameter,
     fetchConfigParameters,
+    fetchDefaultParametersValues,
 } from '../utils/rest-api';
 import {
     APP_NAME,
@@ -309,7 +310,39 @@ const App = () => {
                 );
 
             fetchConfigParameters(APP_NAME)
-                .then((params) => updateParams(params))
+                .then((params) => {
+                    fetchDefaultParametersValues()
+                        .then((defaultValues) => {
+                            // Browsing defaultParametersValues entries
+                            Object.entries(defaultValues).forEach(
+                                ([key, defaultValue]) => {
+                                    // Checking if keys defined in defaultParametersValues file are already defined in config server
+                                    // If they are not defined, values are taken from default values file
+                                    if (
+                                        !params.find(
+                                            (param) => param.name === key
+                                        )
+                                    ) {
+                                        params.push({
+                                            name: key,
+                                            value: defaultValue,
+                                        });
+                                    }
+                                }
+                            );
+                            updateParams(params);
+                        })
+                        .catch((errorMessage) => {
+                            displayErrorMessageWithSnackbar({
+                                errorMessage: errorMessage,
+                                enqueueSnackbar: enqueueSnackbar,
+                                headerMessage: {
+                                    headerMessageId: 'paramsRetrievingError',
+                                    intlRef: intlRef,
+                                },
+                            });
+                        });
+                })
                 .catch((errorMessage) =>
                     displayErrorMessageWithSnackbar({
                         errorMessage: errorMessage,

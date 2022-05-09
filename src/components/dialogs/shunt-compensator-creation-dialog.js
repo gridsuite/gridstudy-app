@@ -116,6 +116,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const [shuntCompensatorName, shuntCompensatorNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,
@@ -243,8 +244,6 @@ const ShuntCompensatorCreationDialog = ({
                     <Grid container spacing={2}>
                         {gridItem(maximumNumberOfSectionsField)}
                         {gridItem(currentNumberOfSectionsField)}
-                    </Grid>
-                    <Grid container spacing={2}>
                         {gridItem(identicalSectionsField)}
                         {gridItem(susceptancePerSectionField)}
                     </Grid>

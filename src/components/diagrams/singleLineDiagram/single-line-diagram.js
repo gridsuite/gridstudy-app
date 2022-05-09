@@ -102,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
             stroke: 'none',
             fill: theme.palette.text.primary,
         },
+        overflow: 'hidden',
     },
     divInvalid: {
         '& .sld-arrow-p, .sld-arrow-q': {
@@ -333,7 +334,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             numberToDisplay
         );
         if (typeof sizes != 'undefined') {
-            console.info(numberToDisplay, totalWidth, sizes);
             setSvgFinalWidth(sizes.svgWidth);
             setSvgFinalHeight(sizes.svgHeight);
             setFinalPaperWidth(sizes.paperWidth);
@@ -823,7 +823,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const onCloseHandler = () => {
         if (props.onClose !== null) {
             dispatch(fullScreenSingleLineDiagram(undefined));
-            console.info(props);
             props.onClose(sldId);
         }
     };
@@ -886,12 +885,12 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }
 
     const pinSld = useCallback(
-        () => toggleState(sldId, ViewState.PINNED),
-        [sldId, toggleState]
+        () => toggleState(sldId, svgType, ViewState.PINNED),
+        [sldId, svgType, toggleState]
     );
     const minimizeSld = useCallback(
-        () => toggleState(sldId, ViewState.MINIMIZED),
-        [toggleState, sldId]
+        () => toggleState(sldId, svgType, ViewState.MINIMIZED),
+        [toggleState, sldId, svgType]
     );
 
     return !svg.error ? (

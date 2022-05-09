@@ -12,6 +12,7 @@ import {
     deleteModifications,
     fetchNetworkModification,
     changeNetworkModificationOrder,
+    fetchEquipments,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
@@ -133,11 +134,24 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         });
     }
 
-    function withEquipmentModificationOptions(Dialog, resource, props) {
-        network.useEquipment(resource);
+    function withEquipmentModificationOptions(
+        Dialog,
+        resourceType,
+        resource,
+        props
+    ) {
+        const fetchedEquipmentOptions = fetchEquipments(
+            studyUuid,
+            selectedNode?.id,
+            [],
+            resourceType,
+            resource,
+            true
+        );
+
         return withVoltageLevel(Dialog, {
             ...props,
-            equipmentOptions: network[resource],
+            fetchedEquipmentOptions: fetchedEquipmentOptions,
         });
     }
 
@@ -152,6 +166,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             dialog: () =>
                 withEquipmentModificationOptions(
                     LoadModificationDialog,
+                    'Loads',
                     equipments.loads
                 ),
             icon: <AddIcon />,

@@ -53,9 +53,6 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: 0,
         paddingBottom: 1,
     },
-    h4: {
-        marginBottom: 0,
-    },
 }));
 
 /**
@@ -146,6 +143,7 @@ const LineCreationDialog = ({
 
     const [lineName, lineNameField] = useTextValue({
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.equipmentName,
@@ -329,7 +327,7 @@ const LineCreationDialog = ({
                     </Grid>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
-                            <h3 className={classes.h3}>
+                            <h3>
                                 <FormattedMessage id="Characteristics" />
                             </h3>
                         </Grid>
@@ -351,11 +349,11 @@ const LineCreationDialog = ({
                         </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <Grid item container xs={6}>
+                        <Grid item container xs={6} spacing={2}>
                             {gridItem(shuntConductance1Field, 12)}
                             {gridItem(shuntSusceptance1Field, 12)}
                         </Grid>
-                        <Grid item container xs={6}>
+                        <Grid item container xs={6} spacing={2}>
                             {gridItem(shuntConductance2Field, 12)}
                             {gridItem(shuntSusceptance2Field, 12)}
                         </Grid>

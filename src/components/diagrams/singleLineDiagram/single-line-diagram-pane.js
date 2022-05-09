@@ -12,8 +12,8 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
-} from '../../../utils/config-params';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+} from '../../utils/config-params';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getSubstationSingleLineDiagram,
@@ -117,7 +117,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
 
     return useCallback(
         (view) => {
-            function createSubstationSLD(substationId) {
+            function createSubstationSLD(substationId, lastOpen) {
                 const substation = network.getSubstation(substationId);
                 let name = useName ? substation.name : substationId;
                 const countryName = substation?.countryName;
@@ -129,13 +129,14 @@ const useDisplayView = (network, studyUuid, workingNode) => {
                 return {
                     id: substationId,
                     ref: React.createRef(),
+                    lastOpen,
                     name,
                     type: SvgType.SUBSTATION,
                     svgUrl,
                 };
             }
 
-            function createVoltageLevelSLD(vlId) {
+            function createVoltageLevelSLD(vlId, lastOpen) {
                 const vl = network.getVoltageLevel(vlId);
                 if (!vl) return;
                 let name = useName ? vl.name : vlId;
@@ -150,6 +151,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
                 return {
                     id: vlId,
                     ref: React.createRef(),
+                    lastOpen,
                     name,
                     svgUrl,
                     type: SvgType.VOLTAGE_LEVEL,
@@ -159,9 +161,9 @@ const useDisplayView = (network, studyUuid, workingNode) => {
 
             if (!network) return;
             if (view.type === SvgType.VOLTAGE_LEVEL)
-                return createVoltageLevelSLD(view.id);
+                return createVoltageLevelSLD(view.id, view.lastOpen);
             else if (view.type === SvgType.SUBSTATION)
-                return createSubstationSLD(view.id);
+                return createSubstationSLD(view.id, view.lastOpen);
         },
         [
             network,
@@ -202,15 +204,16 @@ export function SingleLineDiagramPane({
 
     const dispatch = useDispatch();
 
-    const [closeSingleLineDiagram, openVoltageLevel, openSubstation] =
+    const [closeViwe, openVoltageLevel, openSubstation] =
         useSingleLineDiagram();
 
     const location = useLocation();
 
     const updateSld = useCallback(
         (id) => {
-            if (id) views.find((sld) => sld.id === id)?.ref.current.reloadSvg();
-            else views.forEach((sld) => sld.ref.current.reloadSvg());
+            if (id)
+                views.find((sld) => sld.id === id)?.ref?.current?.reloadSvg();
+            else views.forEach((sld) => sld?.ref?.current?.reloadSvg());
         },
         [views]
     );
@@ -261,47 +264,52 @@ export function SingleLineDiagramPane({
         const queryParams = parse(location.search, {
             parseArrays: true,
             ignoreQueryPrefix: true,
+            arrayFormat: 'indices',
         });
         let newVoltageLevelIds = getArray(queryParams['views']);
 
         setViews((oldValue) =>
             mergeDisplayed(oldValue, newVoltageLevelIds, createView)
         );
-        // setMinimizedSLD( (oldValue) => );
 
         setUpdateSwitchMsg('');
     }, [createView, location.search]);
 
-    const toggleState = useCallback((id, state) => {
-        setViewState((oldValue) => {
-            const newVal = new Map(oldValue);
-            const oldState = oldValue.get(id);
-            if (oldState === state) newVal.delete(id);
-            else newVal.set(id, state);
-            return newVal;
-        });
-    }, []);
+    const toggleState = useCallback(
+        (id, type, state) => {
+            setViewState((oldValue) => {
+                const newVal = new Map(oldValue);
+                const oldState = oldValue.get(id);
+                if (oldState === state) newVal.delete(id);
+                else newVal.set(id, state);
+                if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
+                else if (type === SvgType.SUBSTATION) openSubstation(id);
+                return newVal;
+            });
+        },
+        [openSubstation, openVoltageLevel]
+    );
 
     const handleCloseSLD = useCallback(
         (id) => {
             setViewState((oldVal) => removeFromMap(oldVal, id));
-            closeSingleLineDiagram(id);
+            closeViwe(id);
         },
-        [closeSingleLineDiagram]
+        [closeViwe]
     );
 
     const handleOpenView = useCallback(
         (id, type = SvgType.VOLTAGE_LEVEL) => {
-            if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
-            else if (type === SvgType.SUBSTATION) openSubstation(id);
-            setViewState((oldState) => {
-                if (oldState.get(id) === ViewState.MINIMIZED) {
-                    const newMap = new Map(oldState);
+            setViewState((oldMap) => {
+                if (oldMap.has(id)) {
+                    const newMap = new Map(oldMap);
                     newMap.delete(id);
                     return newMap;
                 }
-                return oldState;
+                return oldMap;
             });
+            if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
+            else if (type === SvgType.SUBSTATION) openSubstation(id);
         },
         [openSubstation, openVoltageLevel]
     );
@@ -326,42 +334,30 @@ export function SingleLineDiagramPane({
                         (vl) =>
                             vl.substationId === deletedId || vl.id === deletedId
                     );
-                    closeSingleLineDiagram([...vlToClose, deletedId]);
+                    closeViwe([...vlToClose, deletedId]);
                 } else {
                     updateSld();
                 }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [
-        studyUpdatedForce,
-        dispatch,
-        studyUuid,
-        updateSld,
-        views,
-        closeSingleLineDiagram,
-    ]);
-
-    const viewStateRef = useRef();
-    viewStateRef.current = viewState;
+    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, views, closeViwe]);
 
     useEffect(() => {
         let toDisplay = views.filter(
             ({ id }) => viewState.get(id) === ViewState.PINNED
         );
-        const more = views.find(({ id }) => !viewState.get(id));
+        const more = views.find(
+            ({ id, lastOpen }) => lastOpen && viewState.get(id) === undefined
+        );
         if (more) {
             toDisplay.push(more);
         }
-        const displayedIds = new Set(toDisplay.map(({ id }) => id));
         setDisplayedSld(toDisplay);
-        const newViewState = new Map(viewState);
-        views.forEach(({ id }) => {
-            if (!displayedIds.has(id))
-                newViewState.set(id, ViewState.MINIMIZED);
-        });
-        if (newViewState.size !== viewState.size) setViewState(newViewState);
     }, [views, viewState]);
+
+    const displayedIds = new Set(displayedSLD.map(({ id }) => id));
+    const minimized = views.filter(({ id }) => !displayedIds.has(id));
 
     return (
         <>
@@ -369,10 +365,12 @@ export function SingleLineDiagramPane({
                 <div
                     style={{
                         flexGrow: 1,
+                        flexShrink: 1,
+                        width: 100 / displayedSLD + '%',
                         position: 'relative',
                         display:
                             !fullScreen || sld.id === fullScreen
-                                ? 'flex'
+                                ? 'inline-flex'
                                 : 'none',
                         pointerEvents: 'none',
                         flexDirection: 'column',
@@ -404,19 +402,15 @@ export function SingleLineDiagramPane({
                 spacing={1}
                 className={classes.minimizedSLD}
             >
-                {views
-                    .filter(
-                        ({ id }) => viewState.get(id) === ViewState.MINIMIZED
-                    )
-                    .map((view) => (
-                        <Chip
-                            key={view.id}
-                            icon={<ArrowUpwardIcon />}
-                            label={view.name}
-                            onClick={() => handleOpenView(view.id, view.type)}
-                            onDelete={() => handleCloseSLD(view.id)}
-                        />
-                    ))}
+                {minimized.map((view) => (
+                    <Chip
+                        key={view.id}
+                        icon={<ArrowUpwardIcon />}
+                        label={view.name}
+                        onClick={() => handleOpenView(view.id, view.type)}
+                        onDelete={() => handleCloseSLD(view.id)}
+                    />
+                ))}
             </Stack>
         </>
     );

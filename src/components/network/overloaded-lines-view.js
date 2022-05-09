@@ -127,6 +127,17 @@ const OverloadedLinesView = (props) => {
         );
     }
 
+    function MakeHead(label) {
+        return (
+            <TableCell
+                variant={'head'}
+                className={clsx(classes.tableCell, classes.flexContainer)}
+            >
+                {label}
+            </TableCell>
+        );
+    }
+
     function renderOverloadedLines() {
         return (
             <div className={classes.div}>
@@ -145,6 +156,7 @@ const OverloadedLinesView = (props) => {
                             label: intl.formatMessage({ id: 'Name' }),
                             dataKey: 'name',
                             numeric: false,
+                            headerRenderer: ({ label }) => MakeHead(label),
                             cellRenderer: (cellData) =>
                                 MakeCell(
                                     cellData.rowData.name,
@@ -157,12 +169,14 @@ const OverloadedLinesView = (props) => {
                             numeric: true,
                             width: 70,
                             fractionDigits: 1,
+                            headerRenderer: ({ label }) => MakeHead(label),
                         },
                         {
                             label: intl.formatMessage({ id: 'Intensity' }),
                             dataKey: 'intensity',
                             numeric: true,
                             width: 70,
+                            headerRenderer: ({ label }) => MakeHead(label),
                             fractionDigits: 1,
                         },
                         {
@@ -171,6 +185,7 @@ const OverloadedLinesView = (props) => {
                             numeric: true,
                             width: 70,
                             fractionDigits: 1,
+                            headerRenderer: ({ label }) => MakeHead(label),
                         },
                         {
                             label: intl.formatMessage({ id: 'Overload' }),
@@ -178,6 +193,7 @@ const OverloadedLinesView = (props) => {
                             numeric: true,
                             width: 90,
                             fractionDigits: 0,
+                            headerRenderer: ({ label }) => MakeHead(label),
                             unit: '%',
                         },
                     ]}
