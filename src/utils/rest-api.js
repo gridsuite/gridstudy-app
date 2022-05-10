@@ -233,13 +233,24 @@ export function getSubstationSingleLineDiagram(
     );
 }
 
-export function fetchReport(studyUuid, selectedNodeUuid) {
-    console.info('get report for node : ' + selectedNodeUuid + ' in study ' + studyUuid);
-    return backendFetch(getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) + '/report').then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
+export function fetchReport(studyUuid, selectedNodeUuid, nodeOnlyReport) {
+    console.info(
+        'get report for node : ' +
+            selectedNodeUuid +
+            ' with nodeOnlyReport = ' +
+            nodeOnlyReport +
+            ' in study ' +
+            studyUuid
     );
+    return backendFetch(
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/report?nodeOnlyReport=' +
+            (nodeOnlyReport === true ? 'true' : 'false')
+    ).then((response) => {
+        return response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function fetchSvg(svgUrl) {
