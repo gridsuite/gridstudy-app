@@ -432,6 +432,7 @@ const LineSplitWithVoltageLevelDialog = ({
     const [newLine1Name, newLine1NameField] = useTextValue({
         id: 'newLine1Name',
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.newLine1Name,
@@ -440,6 +441,7 @@ const LineSplitWithVoltageLevelDialog = ({
     const [newLine2Name, newLine2NameField] = useTextValue({
         id: 'newLine2Name',
         label: 'Name',
+        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
         defaultValue: formValues?.newLine2Name,
