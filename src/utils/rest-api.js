@@ -1062,12 +1062,25 @@ export function modifyLoad(
     activePower,
     reactivePower,
     voltageLevelId,
-    busOrBusbarSectionId
+    busOrBusbarSectionId,
+    isUpdate = false,
+    modificationUuid
 ) {
     console.info('Modifying load ');
-    let modifyLoadUrl =
-        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/loads';
+    let modifyLoadUrl;
+    if (isUpdate) {
+        console.info('Updating load creation');
+        modifyLoadUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/loads-modification';
+    } else {
+        console.info('Creating load ');
+        modifyLoadUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/loads';
+    }
 
     return backendFetch(modifyLoadUrl, {
         method: 'PUT',
