@@ -44,9 +44,9 @@ import { useIntl } from 'react-intl';
 import { NetworkAreaDiagram as NAD } from 'powsybl-diagram-viewer';
 
 const loadingWidth = 150;
-const maxWidthVoltageLevel = 800;
-const maxHeightVoltageLevel = 700;
-const errorWidth = maxWidthVoltageLevel;
+const maxWidth = 1200;
+const maxHeight = 1000;
+const errorWidth = maxWidth;
 
 const useStyles = makeStyles((theme) => ({
     divNad: {
@@ -56,6 +56,7 @@ const useStyles = makeStyles((theme) => ({
             // scrollbar appear in fullscreen mode)
             display: 'block',
         },
+        overflow: 'hidden',
     },
     close: {
         padding: 0,
@@ -121,12 +122,12 @@ const computePaperAndSvgSizesIfReady = (
             svgWidth = Math.min(
                 svgPreferredWidth,
                 totalWidth - mapRightOffset,
-                maxWidthVoltageLevel
+                maxWidth
             );
             svgHeight = Math.min(
                 svgPreferredHeight,
                 totalHeight - mapBottomOffset - headerPreferredHeight,
-                maxHeightVoltageLevel
+                maxHeight
             );
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
@@ -242,7 +243,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         if (svg.svg) {
-            const nad = new NAD(svgRef.current, svg.svg);
+            const nad = new NAD(svgRef.current, svg.svg, maxWidth, maxHeight);
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
         }
