@@ -32,6 +32,7 @@ const CreateNodeMenu = ({
     handleClose,
     handleNodeCreation,
     handleNodeRemoval,
+    handleNodeExport,
     activeNode,
 }) => {
     const classes = useStyles();
@@ -44,6 +45,11 @@ const CreateNodeMenu = ({
 
     function removeNode() {
         handleNodeRemoval(activeNode);
+        handleClose();
+    }
+
+    function exportNode() {
+        handleNodeExport(activeNode);
         handleClose();
     }
 
@@ -68,6 +74,11 @@ const CreateNodeMenu = ({
             action: () => removeNode(),
             id: 'removeNode',
         },
+        EXPORT_NODE: {
+            onRoot: false,
+            action: () => exportNode(),
+            id: 'exportNode',
+        },
     };
 
     return (
@@ -88,6 +99,7 @@ const CreateNodeMenu = ({
                         <MenuItem
                             className={classes.menuItem}
                             onClick={item.action}
+                            key={item.id}
                         >
                             <ListItemText
                                 key={item.id}

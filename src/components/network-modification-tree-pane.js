@@ -29,6 +29,7 @@ import { useSnackbar } from 'notistack';
 import { useStoreState } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
+import ExportDialog from './dialogs/export-dialog';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -73,6 +74,7 @@ export const NetworkModificationTreePane = ({
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
+    const DownloadIframe = 'downloadIframe';
 
     const selectedNode = useSelector((state) => state.selectedTreeNode);
 
@@ -169,6 +171,17 @@ export const NetworkModificationTreePane = ({
         [studyUuid, enqueueSnackbar, intlRef]
     );
 
+    const [openExportDialog, setOpenExportDialog] = useState(false);
+
+    const handleClickExportStudy = (url) => {
+        window.open(url, DownloadIframe);
+        setOpenExportDialog(false);
+    };
+
+    const handleNodeExport = (element) => {
+        setOpenExportDialog(true);
+    };
+
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: { x: -1, y: -1 },
         display: null,
@@ -226,9 +239,27 @@ export const NetworkModificationTreePane = ({
                     activeNode={createNodeMenu.selectedNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
+                    handleNodeExport={handleNodeExport}
                     handleClose={closeCreateNodeMenu}
                 />
             )}
+            {openExportDialog && (
+                <ExportDialog
+                    open={openExportDialog}
+                    onClose={() => setOpenExportDialog(false)}
+                    onClick={handleClickExportStudy}
+                    studyUuid={studyUuid}
+                    title={intlRef.current.formatMessage({
+                        id: 'exportNetwork',
+                    })}
+                />
+            )}
+            <iframe
+                id={DownloadIframe}
+                name={DownloadIframe}
+                title={DownloadIframe}
+                style={{ display: 'none' }}
+            />
         </>
     );
 };
