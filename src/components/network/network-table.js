@@ -17,7 +17,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import { IconButton, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { updateConfigParameter } from '../../utils/rest-api';
-//import { CharlyDebug } from '../util/charly';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { SelectOptionsDialog } from '../../utils/dialogs';
 import List from '@mui/material/List';
@@ -27,6 +26,8 @@ import Checkbox from '@mui/material/Checkbox';
 import LockIcon from '@mui/icons-material/Lock';
 import EditIcon from '@mui/icons-material/Edit';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ListItemText from '@mui/material/ListItemText';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -44,9 +45,11 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const MIN_COLUMN_WIDTH = 160;
 const HEADER_CELL_WIDTH = 65;
+const MAX_LOCKS_PER_TAB = 5;
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -73,47 +76,73 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: '50px',
     },
     tableCell: {
-        //backgroundColor: 'black',
         fontSize: 'small',
         cursor: 'initial',
         margin: '5px',
         padding: '10px',
         borderTop: '1px solid #515151',
-
-
-        // VOIR https://mui.com/material-ui/customization/default-theme/?expand-path=$.palette.primary
-
-        //backgroundColor: theme.palette.primary.main,
-        //color: theme.palette.primary.contrastText,
+        display: 'flex',
     },
     tableHeader: {
-        //backgroundColor: 'red',
         fontSize: 'small',
         cursor: 'initial',
         textTransform: 'uppercase',
         margin: '5px',
-        padding: '10px',
+        padding: '10px 24px 10px 10px',
         fontWeight: 'bold',
-        //overflowWrap: 'break-word',
     },
     editCell: {
-        //backgroundColor: 'pink',
         fontSize: 'small',
         cursor: 'initial',
         margin: '5px',
         padding: '10px',
     },
+    columnConfigClosedLock: {
+        fontSize: '1.2em',
+        color: theme.palette.action.active,
+    },
+    columnConfigOpenLock: {
+        fontSize: '1.2em',
+        color: theme.palette.action.disabled,
+    },
+    tableLock: {
+        fontSize: 'medium',
+        marginRight: '6px',
+        color: theme.palette.action.disabled,
+    },
+    activeSortArrow: {
+        '& .arrow': {
+            fontSize: '1.1em',
+            display: 'block',
+            position: 'absolute',
+            top: '14px',
+            right: '0',
+            color: theme.palette.action.active,
+        },
+    },
+    inactiveSortArrow: {
+        '& .arrow': {
+            fontSize: '1.1em',
+            display: 'block',
+            position: 'absolute',
+            top: '14px',
+            right: '0',
+            opacity: 0,
+        },
+        '&:hover .arrow': {
+            fontSize: '1.1em',
+            display: 'block',
+            position: 'absolute',
+            top: '14px',
+            right: '0',
+            color: theme.palette.action.disabled,
+            opacity: 1,
+        },
+    },
 }));
 
 const NetworkTable = (props) => {
-
-
-    /*const [charlyTime, setCharlyTime] = useState(
-        useEffect(() => {
-            setCharlyTime(Date.now());
-        }, [])
-    );*/
-
+// TODO CHARLY export CSV sur la même ligne que le filtre et les colonnes
     const classes = useStyles();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -121,10 +150,14 @@ const NetworkTable = (props) => {
     const allDisplayedColumnsNames = useSelector(
         (state) => state.allDisplayedColumnsNames
     );
+    const allLockedColumnsNames = useSelector(
+        (state) => state.allLockedColumnsNames
+    );
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
     const [rowFilter, setRowFilter] = useState(undefined);
+    const [columnSort, setColumnSort] = useState(undefined);
     const [tabIndex, setTabIndex] = useState(0);
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
@@ -136,12 +169,19 @@ const NetworkTable = (props) => {
 
     const intlRef = useIntlRef();
 
-    // TODO CHARLY il faut pouvoir garder dans les configs les locks sélectionnés
     useEffect(() => {
+        const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         setSelectedColumnsNames(
-            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+            new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
         );
     }, [tabIndex, allDisplayedColumnsNames]);
+
+    useEffect(() => {
+        const allLockedTemp = allLockedColumnsNames[tabIndex];
+        setLockedColumnsNames(
+            new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
+        );
+    }, [tabIndex, allLockedColumnsNames]);
 
     useEffect(() => {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
@@ -152,11 +192,36 @@ const NetworkTable = (props) => {
     const getRows = useCallback(
         (index) => {
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
-            return tableDefinition.getter
+            const datasourceRows = tableDefinition.getter
                 ? tableDefinition.getter(props.network)
                 : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
+
+            if (!datasourceRows) return [];
+
+            let result = [];
+
+            for (let i = 0; i < datasourceRows.length; i++) {
+                const row = datasourceRows[i];
+                if (!rowFilter || filter(row)) { // Data filtering here
+                    result.push(row);
+                }
+            }
+
+            function privateCompareValue(a, b, isNumeric, reverse) {
+                let mult = reverse ? 1 : -1;
+                if (a === undefined && b === undefined) return 0;else if (a === undefined) return mult;else if (b === undefined) return -mult;
+                return isNumeric ? (Number(a) < Number(b) ? 1 : -1) * mult : ('' + a).localeCompare(b) * mult;
+            }
+
+            if (columnSort) {
+                return result.sort((a,b) => {
+                    let isNumeric = false;
+                    return privateCompareValue(a[columnSort.key], b[columnSort.key], isNumeric, columnSort.reverse);
+                });
+            }
+            return result;
         },
-        [props.network]
+        [props.network, rowFilter, columnSort]
     );
 
     function getTabIndexFromEquipementType(equipmentType) {
@@ -231,7 +296,7 @@ const NetworkTable = (props) => {
                      align={columnDefinition.numeric ? 'right' : 'left'}>
                     <div
                         className={classes.tableCell}>
-                        {text}
+                        <OverflowableText text={text} />
                     </div>
                 </div>
             );
@@ -239,28 +304,56 @@ const NetworkTable = (props) => {
         [classes.tableCell, formatCell]
     );
 
-    const lockIcon = () => {
-        return (<LockIcon style={{fontSize: 'medium', marginRight:'6px'}}/>);
-    }
+    const renderTableLockIcon = () => {
+        return (<LockIcon className={classes.tableLock}/>);
+    };
+
+    const sortIconClassStyle = (columnSort, dataKey) => {
+        if(columnSort && columnSort.key === dataKey) {
+            return classes.activeSortArrow;
+        }
+        return classes.inactiveSortArrow;
+    };
+
+    const renderSortArrowIcon = (columnSort, dataKey) => {
+        if (columnSort && columnSort.key === dataKey && columnSort.reverse) {
+            return (<span><ArrowUpwardIcon className={'arrow'} /></span>);
+        }
+        return (<span><ArrowDownwardIcon className={'arrow'} /></span>);
+    };
 
     const editIcon = () => {
         return (<EditIcon />);
-    }
+    };
+
+    const renderColumnConfigLockIcon = (value) => {
+        if (lockedColumnsNames.has(value)) {
+            return <LockIcon className={classes.columnConfigClosedLock}/>;
+        } else {
+            if(lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
+                return <LockOpenIcon className={classes.columnConfigOpenLock}/>;
+            }
+        }
+    };
 
     const headerCellRender = useCallback(
         (columnDefinition, key, style) => {
             return (
                 <div key={key}
                      style={style}
-                     align={columnDefinition.numeric ? 'right' : 'left'}>
+                     align={columnDefinition.numeric ? 'right' : 'left'}
+                     onClick={() => setSort(columnDefinition.dataKey)}
+                     className={sortIconClassStyle(columnSort, columnDefinition.dataKey)}
+                >
                     <div className={classes.tableHeader}>
-                        {columnDefinition.locked && !columnDefinition.editColumn ? lockIcon() : ''}
+                        {columnDefinition.locked && !columnDefinition.editColumn ? renderTableLockIcon() : ''}
                         {columnDefinition.label}
                     </div>
+                    {renderSortArrowIcon(columnSort, columnDefinition.dataKey)}
                 </div>
             );
         },
-        [classes.tableHeader]
+        [classes.tableHeader, columnSort]
     );
 
     const editCellRender = useCallback(
@@ -288,7 +381,7 @@ const NetworkTable = (props) => {
                 columnWidth: c.columnWidth ? c.columnWidth : MIN_COLUMN_WIDTH,
             };
             if (c.changeCmd !== undefined) {
-                console.error("ATTENTION code pas terminé ici");
+                // TODO CHARLY attention code pas terminé ici
                 column.cellRenderer = (cell, columnDefinition, key, style) =>
                     //EditableCellRender(cell, columnDefinition);
                     defaultCellRender(cell, columnDefinition, key, style);
@@ -304,7 +397,6 @@ const NetworkTable = (props) => {
                 locked: true,
                 editColumn: true,
                 columnWidth: HEADER_CELL_WIDTH,
-                label: 'Edit',
                 cellRenderer: (cell, columnDefinition, key, style) =>
                     editCellRender(cell, columnDefinition, key, style),
             });
@@ -321,28 +413,42 @@ const NetworkTable = (props) => {
         const rows = getRows(tabIndex);
         const columns = generateTableColumns(tabIndex)
         return (
-            <EquipmentTable
+            <EquipmentTable // TODO CHARLY supprimer les props inutiles
                 tabIndex={tabIndex}
                 studyUuid={props.studyUuid}
                 workingNode={props.workingNode}
                 rows={rows}
                 columns={columns}
                 tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
-                filter={filter}
                 fetched={props.network.isResourceFetched(resource)}
                 scrollToIndex={scrollToIndex}
                 scrollToAlignment="start"
                 network={props.network}
-                selectedDataKey={Array.from(selectedDataKey)}
+                //selectedDataKey={Array.from(selectedDataKey)}
             />
         );
     }
 
     function setFilter(event) {
-        const value = event.target.value;
+        const value = event.target.value; // Value from the user's input
+        const sanitizedValue = value.trim().replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'); // No more Regexp sensible characters
+        const everyWord = sanitizedValue.split(' ').filter(n => n); // We split the user input by words
+        const regExp = '('+everyWord.join('|')+')'; // For each word, we do a "OR" research
         setRowFilter(
-            !value || value === '' ? undefined : new RegExp(value, 'i')
+            !value || value === '' ? undefined : new RegExp(regExp, 'i')
         );
+    }
+
+    function setSort(dataKey) {
+        let newReverse = false;
+        if(columnSort && columnSort.key === dataKey && !columnSort.reverse) {
+            newReverse = true;
+        }
+        let newSort = {
+            key: dataKey,
+            reverse: newReverse,
+        };
+        setColumnSort(newSort);
     }
 
     useEffect(() => {
@@ -370,23 +476,25 @@ const NetworkTable = (props) => {
     };
 
     const handleCancelPopupSelectColumnNames = useCallback(() => {
+        const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
         setSelectedColumnsNames(
-            new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+            new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
         );
+        const allLockedTemp = allLockedColumnsNames[tabIndex];
         setLockedColumnsNames(
-            // TODO CHARLY faire en sorte qu'au chargement de l'appli, les locks sauvegardés soient appliqués
-            new Set()
+            new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
         );
         setPopupSelectColumnNames(false);
-    }, [tabIndex, allDisplayedColumnsNames]);
+    }, [tabIndex, allDisplayedColumnsNames, allLockedColumnsNames]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
             DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
         ).catch((errorMessage) => {
+            const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
             setSelectedColumnsNames(
-                new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+                new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
             );
             displayErrorMessageWithSnackbar({
                 errorMessage: errorMessage,
@@ -401,8 +509,9 @@ const NetworkTable = (props) => {
             LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify([...lockedColumnsNames])
         ).catch((errorMessage) => {
+            const allLockedTemp = allLockedColumnsNames[tabIndex];
             setLockedColumnsNames(
-                new Set(JSON.parse(allDisplayedColumnsNames[tabIndex]))
+                new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
             );
             displayErrorMessageWithSnackbar({
                 errorMessage: errorMessage,
@@ -420,6 +529,7 @@ const NetworkTable = (props) => {
         selectedColumnsNames,
         lockedColumnsNames,
         allDisplayedColumnsNames,
+        allLockedColumnsNames,
         enqueueSnackbar,
         intlRef,
     ]);
@@ -446,12 +556,14 @@ const NetworkTable = (props) => {
         // If we need to check for double-click, we need to use :
         // const handleClickOnLock = (value) => (event) => {
         // and then :
-        // if(event.detail > 1) {/*DOUBLE CLICK*/}
+        // if(event.detail > 1) {/*DOUBLE CLICK HERE*/}
         const newLocked = new Set(lockedColumnsNames.values());
         if (lockedColumnsNames.has(value)) {
             newLocked.delete(value);
         } else {
-            newLocked.add(value);
+            if(lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
+                newLocked.add(value);
+            }
         }
         setLockedColumnsNames(newLocked);
     };
@@ -460,15 +572,6 @@ const NetworkTable = (props) => {
         let isAllChecked =
             selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
-
-        const renderLockIcon = (value) => {
-            if (lockedColumnsNames.has(value)) {
-                return <LockIcon style={{fontSize:'1.2em'}}/>;
-            } else {
-                return <LockOpenIcon style={{fontSize:'1.2em', opacity: 0.33 }} />; // TODO CHARLY en fonction du theme jour/nuit, en JOUR=50% et en NUIT=33%
-                // TODO CHARLY et aussi mettre le style dans du CSS plutôt qu'ici
-            }
-        };
 
         return (
             <List>
@@ -490,7 +593,7 @@ const NetworkTable = (props) => {
                         style={{ padding: '0 16px' }}
                     >
                         <ListItemIcon onClick={handleClickOnLock(value)} style={{minWidth:0, width:'20px'}}>
-                            {renderLockIcon(value)}
+                            {renderColumnConfigLockIcon(value)}
                         </ListItemIcon>
                         <ListItemIcon onClick={handleToggle(value)}>
                             <Checkbox
@@ -505,12 +608,7 @@ const NetworkTable = (props) => {
             </List>
         );
     };
-/*
-<CharlyDebug
-                charlyTime={charlyTime}
-                show={[selectedColumnsNames, '\n', lockedColumnsNames]}
-            />
- */
+
     return (
         props.network && (
             <>
@@ -522,6 +620,7 @@ const NetworkTable = (props) => {
                             onChange={(event, newValue) => {
                                 setTabIndex(newValue);
                                 setManualTabSwitch(true);
+                                setColumnSort(undefined);
                             }}
                             aria-label="tables"
                         >

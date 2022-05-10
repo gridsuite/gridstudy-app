@@ -188,21 +188,10 @@ export const EquipmentTable = (props) => {
         ]
     );*/
 
-
-    // https://bvaughn.github.io/react-virtualized/#/components/MultiGrid
-    // https://codesandbox.io/s/react-virtualized-multigrid-y9e08?from-embed=&file=/src/Gridtable.js:2358-2977
-    // https://github.com/bvaughn/react-virtualized/blob/master/source/MultiGrid/MultiGrid.example.js
-    // https://github.com/bvaughn/react-virtualized/blob/master/docs/MultiGrid.md
-
     function cellRenderer({ columnIndex, key, rowIndex, style }) {
         if(!props.columns || !props.columns[columnIndex])
         {
-            return (<div style={{
-                ...style,
-                backgroundColor: 'yellow',
-                color:'black',
-                zIndex: 99999,
-            }}>MISSING_DEF:{columnIndex}-{rowIndex}</div>);
+            return (<div style={{opacity: '0.5'}}>...loading</div>);
         }
         let columnDefinition = props.columns[columnIndex];
 
@@ -214,7 +203,7 @@ export const EquipmentTable = (props) => {
             {
                 return (columnDefinition.cellRenderer(cell, columnDefinition, key, style));
             } else {
-                return (<div>NO CELL RENDERER</div>);
+                return (<div style={{opacity: '0.5'}}>loading...</div>);
             }
         }
     }
