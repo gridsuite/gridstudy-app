@@ -249,6 +249,7 @@ export const NetworkModificationTreePane = ({
                     onClose={() => setOpenExportDialog(false)}
                     onClick={handleClickExportStudy}
                     studyUuid={studyUuid}
+                    nodeUuid={selectedNode.id}
                     title={intlRef.current.formatMessage({
                         id: 'exportNetwork',
                     })}

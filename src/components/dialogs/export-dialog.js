@@ -25,10 +25,18 @@ import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
  * @param {EventListener} onClose Event to close the dialog
  * @param {EventListener} onClick Event to submit the export
  * @param {String} studyUuid the uuid of the study to export
+ * @param {String} nodeUuid the uuid of the selected node
  * @param {String} title Title of the dialog
  */
 
-const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
+const ExportDialog = ({
+    open,
+    onClose,
+    onClick,
+    studyUuid,
+    nodeUuid,
+    title,
+}) => {
     const [availableFormats, setAvailableFormats] = React.useState('');
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
@@ -66,7 +74,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, title }) => {
     const handleChange = (event) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
-        setDownloadUrl(getExportUrl(studyUuid, selected));
+        setDownloadUrl(getExportUrl(studyUuid, nodeUuid, selected));
     };
 
     const intl = useIntl();
@@ -149,6 +157,7 @@ ExportDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
     studyUuid: PropTypes.string,
+    nodeUuid: PropTypes.string,
     title: PropTypes.string.isRequired,
 };
 
