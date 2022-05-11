@@ -25,6 +25,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import LockIcon from '@mui/icons-material/Lock';
 import EditIcon from '@mui/icons-material/Edit';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import CsvDownloader from 'react-csv-downloader';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
@@ -74,6 +76,15 @@ const useStyles = makeStyles((theme) => ({
     selectColumns: {
         marginTop: '12px',
         marginLeft: '50px',
+    },
+    exportCsv: {
+        marginTop: '12px',
+        marginLeft: '50px',
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'baseline',
+        position: 'absolute',
+        right: '0px',
     },
     tableCell: {
         fontSize: 'small',
@@ -139,10 +150,21 @@ const useStyles = makeStyles((theme) => ({
             opacity: 1,
         },
     },
+    blink: {
+        animation: '$blink 2s infinite',
+    },
+    '@keyframes blink': {
+        '0%': {
+            opacity: 1,
+        },
+        '50%': {
+            opacity: 0.1,
+        },
+    },
 }));
 
 const NetworkTable = (props) => {
-// TODO CHARLY export CSV sur la même ligne que le filtre et les colonnes
+
     const classes = useStyles();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -207,16 +229,20 @@ const NetworkTable = (props) => {
                 }
             }
 
-            function privateCompareValue(a, b, isNumeric, reverse) {
-                let mult = reverse ? 1 : -1;
-                if (a === undefined && b === undefined) return 0;else if (a === undefined) return mult;else if (b === undefined) return -mult;
-                return isNumeric ? (Number(a) < Number(b) ? 1 : -1) * mult : ('' + a).localeCompare(b) * mult;
+            function compareValue(a, b, isNumeric, reverse) {
+                const mult = reverse ? 1 : -1;
+                if (a === undefined && b === undefined) return 0;
+                else if (a === undefined) return mult;
+                else if (b === undefined) return -mult;
+
+                return isNumeric
+                    ? (Number(a) < Number(b) ? 1 : -1) * mult
+                    : ('' + a).localeCompare(b) * mult;
             }
 
             if (columnSort) {
                 return result.sort((a,b) => {
-                    let isNumeric = false;
-                    return privateCompareValue(a[columnSort.key], b[columnSort.key], isNumeric, columnSort.reverse);
+                    return compareValue(a[columnSort.key], b[columnSort.key], columnSort.numeric, columnSort.reverse);
                 });
             }
             return result;
@@ -275,18 +301,6 @@ const NetworkTable = (props) => {
         [fluxConvention, props.network]
     );
 
-    function isEditColumnVisible() {
-        return (
-            TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType && !props.workingNode?.readOnly
-        );
-    }
-
-    function sortByLock(a, b) {
-        if(a.locked && !b.locked) return -1;
-        if(!a.locked && b.locked) return 1;
-        return 0;
-    }
-
     const defaultCellRender = useCallback(
         (cellData, columnDefinition, key, style) => {
             const text = formatCell(cellData, columnDefinition);
@@ -342,7 +356,7 @@ const NetworkTable = (props) => {
                 <div key={key}
                      style={style}
                      align={columnDefinition.numeric ? 'right' : 'left'}
-                     onClick={() => setSort(columnDefinition.dataKey)}
+                     onClick={() => setSort(columnDefinition)}
                      className={sortIconClassStyle(columnSort, columnDefinition.dataKey)}
                 >
                     <div className={classes.tableHeader}>
@@ -392,6 +406,12 @@ const NetworkTable = (props) => {
             delete column.changeCmd;
             return column;
         });
+
+        function isEditColumnVisible() {
+            return (
+                TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType && !props.workingNode?.readOnly
+            );
+        }
         if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
             generatedTableColumns.unshift({
                 locked: true,
@@ -403,6 +423,12 @@ const NetworkTable = (props) => {
         }
         generatedTableColumns.headerCellRender = (columnDefinition, key, style) => {
             return headerCellRender(columnDefinition, key, style);
+        }
+
+        function sortByLock(a, b) {
+            if(a.locked && !b.locked) return -1;
+            if(!a.locked && b.locked) return 1;
+            return 0;
         }
         generatedTableColumns.sort(sortByLock);
         return generatedTableColumns;
@@ -432,21 +458,22 @@ const NetworkTable = (props) => {
     function setFilter(event) {
         const value = event.target.value; // Value from the user's input
         const sanitizedValue = value.trim().replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'); // No more Regexp sensible characters
-        const everyWord = sanitizedValue.split(' ').filter(n => n); // We split the user input by words
-        const regExp = '('+everyWord.join('|')+')'; // For each word, we do a "OR" research
+        const everyWords = sanitizedValue.split(' ').filter(n => n); // We split the user input by words
+        const regExp = '('+everyWords.join('|')+')'; // For each word, we do a "OR" research
         setRowFilter(
             !value || value === '' ? undefined : new RegExp(regExp, 'i')
         );
     }
 
-    function setSort(dataKey) {
+    function setSort(columnDefinition) {
         let newReverse = false;
-        if(columnSort && columnSort.key === dataKey && !columnSort.reverse) {
+        if(columnSort && columnSort.key === columnDefinition.dataKey && !columnSort.reverse) {
             newReverse = true;
         }
         let newSort = {
-            key: dataKey,
+            key: columnDefinition.dataKey,
             reverse: newReverse,
+            numeric: columnDefinition.numeric,
         };
         setColumnSort(newSort);
     }
@@ -609,6 +636,41 @@ const NetworkTable = (props) => {
         );
     };
 
+    const getCSVFilename = useCallback(() => {
+        const tabName = TABLES_DEFINITION_INDEXES.get(tabIndex).name;
+        const localisedTabName = intl.formatMessage({ id: tabName });
+        return localisedTabName
+            .trim()
+            .replace(/[\\/:"*?<>|\s]/g, '-') // Removes the filesystem sensible characters
+            .substring(0, 27); // Best practice : limits the filename size to 31 characters (27+'.csv')
+    }, [tabIndex]);
+
+    const getCSVColumnNames = () => {
+        let tempHeaders = [];
+        const columns = generateTableColumns(tabIndex);
+        columns.forEach((col) => {
+            tempHeaders.push({
+                displayName: col.label,
+                id: col.dataKey,
+            });
+        });
+        return tempHeaders;
+    };
+
+    const getCSVData = () => {
+        const rows = getRows(tabIndex);
+        const columns = generateTableColumns(tabIndex)
+        let csvData = [];
+        rows.forEach((row) => {
+            let rowData = {};
+            columns.forEach((col) => {
+                rowData[col.dataKey] = formatCell(row, col);
+            });
+            csvData.push(rowData);
+        });
+        return Promise.resolve(csvData);
+    };
+
     return (
         props.network && (
             <>
@@ -660,7 +722,7 @@ const NetworkTable = (props) => {
                             <span>
                                 <FormattedMessage id="LabelSelectList" />
                             </span>
-                            <IconButton
+                            <IconButton className={selectedColumnsNames.size===0?classes.blink:''}
                                 aria-label="dialog"
                                 onClick={handleOpenPopupSelectColumnNames}
                             >
@@ -675,6 +737,21 @@ const NetworkTable = (props) => {
                                 })}
                                 child={checkListColumnsNames()}
                             />
+                        </Grid>
+                        <Grid item className={classes.exportCsv}>
+                            <span>
+                                <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
+                            </span>
+                            <span>
+                                <CsvDownloader
+                                    datas={getCSVData}
+                                    columns={getCSVColumnNames()}
+                                    filename={getCSVFilename()}>
+                                    <IconButton aria-label="exportCSVButton">
+                                        <GetAppIcon />
+                                    </IconButton>
+                                </CsvDownloader>
+                            </span>
                         </Grid>
                     </Grid>
                 </Grid>

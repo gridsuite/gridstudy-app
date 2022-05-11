@@ -30,6 +30,7 @@
         "qs": "^6.9.1",
         "react": "^17.0.0",
         "react-beautiful-dnd": "^13.1.0",
+        "react-csv-downloader": "^2.7.1",
         "react-dom": "^17.0.0",
         "react-flow-renderer": "^9.6.7",
         "react-intl": "^5.0.0",
