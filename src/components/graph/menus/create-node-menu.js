@@ -75,7 +75,7 @@ const CreateNodeMenu = ({
             id: 'removeNode',
         },
         EXPORT_NODE: {
-            onRoot: false,
+            onRoot: true,
             action: () => exportNode(),
             id: 'exportNode',
         },
