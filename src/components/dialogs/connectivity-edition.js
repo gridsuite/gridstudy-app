@@ -146,8 +146,9 @@ const ConnectivityEdition = ({
 
     useEffect(() => {
         if (voltageLevelBusOrBBSCallback) {
-            voltageLevelBusOrBBSCallback(voltageLevel, (bobbss) =>
-                setBusOrBusbarSectionOptions(bobbss)
+            voltageLevelBusOrBBSCallback(
+                voltageLevel,
+                setBusOrBusbarSectionOptions
             );
         }
     }, [voltageLevel, voltageLevelBusOrBBSCallback]); //, studyUuid, workingNodeUuid]);
