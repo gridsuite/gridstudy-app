@@ -44,13 +44,34 @@ export const ReportViewerTab = ({ reportId, visible, workingNode }) => {
         setNodeOnlyReport(event.target.checked);
     }, []);
 
+    function condenseReport(report) {
+        let newReport = {
+            taskKey: report.taskKey,
+            defaultName: report.defaultName,
+            taskValues: report.taskValues,
+            reports: report.reports,
+            subReporters: [],
+        };
+        report.subReporters.forEach((subReport1) => {
+            if (subReport1.taskKey === 'NetworkModification') {
+                // we group all network modifications together
+                subReport1.subReporters.forEach((subReport2) =>
+                    newReport.subReporters.push(subReport2)
+                );
+            } else {
+                newReport.subReporters.push(subReport1);
+            }
+        });
+        return newReport;
+    }
+
     useEffect(() => {
         if (visible) {
             setWaitingLoadReport(true);
             fetchReport(reportId, workingNode?.id, nodeOnlyReport)
                 .then((fetchedReport) => {
                     if (fetchedReport.length === 1) {
-                        setReport(fetchedReport[0]);
+                        setReport(condenseReport(fetchedReport[0]));
                     } else {
                         let globalReport = {
                             taskKey: 'root',
@@ -60,7 +81,9 @@ export const ReportViewerTab = ({ reportId, visible, workingNode }) => {
                             subReporters: [],
                         };
                         fetchedReport.forEach((report) => {
-                            globalReport.subReporters.push(report);
+                            globalReport.subReporters.push(
+                                condenseReport(report)
+                            );
                         });
                         setReport(globalReport);
                     }
