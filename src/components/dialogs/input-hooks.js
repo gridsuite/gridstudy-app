@@ -184,7 +184,6 @@ export const useTextValue = ({
                     }
                 }
                 clearable={clearable}
-                handleClearValue={handleClearValue}
                 {...genHelperPreviousValue(previousValue, adornment)}
                 {...genHelperError(error, errorMsg)}
                 {...formProps}
@@ -485,7 +484,6 @@ export const useAutocompleteField = ({
                 getOptionLabel={getLabel}
                 defaultValue={defaultValue}
                 value={value}
-                previousValue={previousValue}
                 loading={loading}
                 loadingText={<FormattedMessage id="loadingOptions" />}
                 freeSolo={allowNewValue}

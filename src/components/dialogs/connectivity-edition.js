@@ -211,7 +211,6 @@ const ConnectivityEdition = ({
                             return filtered;
                         }}
                         value={voltageLevel}
-                        previousValue={voltageLevelPreviousValue}
                         onChange={handleChangeVoltageLevel}
                         renderInput={(params) => (
                             <TextField
@@ -285,7 +284,6 @@ const ConnectivityEdition = ({
                             return filtered;
                         }}
                         value={currentBBS}
-                        previousValue={busOrBusbarSectionPreviousValue}
                         onChange={handleChangeBus}
                         renderInput={(params) => (
                             <TextField
