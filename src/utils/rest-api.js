@@ -832,7 +832,11 @@ export function deleteModifications(studyUuid, node, modificationUuid) {
 }
 
 function getUrlWithToken(baseUrl) {
-    return baseUrl + '?access_token=' + getToken();
+    if (baseUrl.includes('?')) {
+        return baseUrl + '&access_token=' + getToken();
+    } else {
+        return baseUrl + '?access_token=' + getToken();
+    }
 }
 
 export function connectNotificationsWebsocket(studyUuid) {
@@ -1594,7 +1598,10 @@ export function changeNetworkModificationOrder(
     });
 }
 
-export function getExportUrl(studyUuid, exportFormat) {
-    const url = getStudyUrl(studyUuid) + '/export-network/' + exportFormat;
+export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/export-network/' +
+        exportFormat;
     return getUrlWithToken(url);
 }
