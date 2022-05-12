@@ -333,6 +333,9 @@ const StudyPane = ({
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
+                    loadFlowStatus={getLoadFlowRunningStatus(
+                        loadFlowInfos?.loadFlowStatus
+                    )}
                 />
             </Paper>
         );
