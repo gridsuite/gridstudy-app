@@ -76,6 +76,7 @@ export const NetworkModificationTreePane = ({
     const classes = useStyles();
     const DownloadIframe = 'downloadIframe';
 
+    const [activeNode, setActiveNode] = useState(null);
     const selectedNode = useSelector((state) => state.selectedTreeNode);
 
     const isModificationsDrawerOpen = useSelector(
@@ -185,21 +186,20 @@ export const NetworkModificationTreePane = ({
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: { x: -1, y: -1 },
         display: null,
-        selectedNode: null,
     });
 
     const onNodeContextMenu = useCallback((event, element) => {
+        setActiveNode(element);
         setCreateNodeMenu({
             position: { x: event.pageX, y: event.pageY },
             display: true,
-            selectedNode: element,
         });
     }, []);
 
     const closeCreateNodeMenu = useCallback(() => {
+        // setActiveNode(null);
         setCreateNodeMenu({
             display: false,
-            selectedNode: null,
         });
     }, []);
 
@@ -236,7 +236,7 @@ export const NetworkModificationTreePane = ({
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}
-                    activeNode={createNodeMenu.selectedNode}
+                    activeNode={activeNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
                     handleNodeExport={handleNodeExport}
@@ -249,7 +249,7 @@ export const NetworkModificationTreePane = ({
                     onClose={() => setOpenExportDialog(false)}
                     onClick={handleClickExportStudy}
                     studyUuid={studyUuid}
-                    nodeUuid={selectedNode.id}
+                    nodeUuid={activeNode.id}
                     title={intlRef.current.formatMessage({
                         id: 'exportNetwork',
                     })}

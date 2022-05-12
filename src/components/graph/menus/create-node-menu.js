@@ -78,6 +78,9 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => exportNode(),
             id: 'exportNode',
+            disabled:
+                activeNode?.type !== 'ROOT' &&
+                activeNode?.data?.buildStatus !== 'BUILT',
         },
     };
 
@@ -100,6 +103,7 @@ const CreateNodeMenu = ({
                             className={classes.menuItem}
                             onClick={item.action}
                             key={item.id}
+                            disabled={item.disabled}
                         >
                             <ListItemText
                                 key={item.id}
