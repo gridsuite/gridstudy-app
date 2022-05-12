@@ -953,7 +953,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 </Box>
                 {
                     <div
-                        id="sld-svg"
                         ref={svgRef}
                         className={
                             loadFlowStatus !== RunningStatus.SUCCEED
