@@ -1128,13 +1128,13 @@ export function modifyGenerator(
     const idUrl =
         modificationId === undefined
             ? ''
-            : '/modifications/' + encodeURIComponent(modificationId);
+            : '/' + encodeURIComponent(modificationId);
 
     const modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-modification' +
         idUrl +
-        '/generators-modification';
+        '/modifications/generators-modification';
 
     const generatorModification = {
         equipmentId: generatorId,
