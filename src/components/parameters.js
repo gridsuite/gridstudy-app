@@ -41,7 +41,7 @@ import {
     getDefaultLoadFlowProvider,
     fetchDefaultParametersValues,
 } from '../utils/rest-api';
-import { SubstationLayout } from './single-line-diagram';
+import { SubstationLayout } from './singleLineDiagram/single-line-diagram';
 import {
     PARAM_CENTER_LABEL,
     PARAM_DIAGONAL_LABEL,
