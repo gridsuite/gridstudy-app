@@ -1132,9 +1132,9 @@ export function modifyGenerator(
 
     const modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification' +
+        '/network-modification/modifications' +
         idUrl +
-        '/modifications/generators-modification';
+        '/generators-modification';
 
     const generatorModification = {
         equipmentId: generatorId,
