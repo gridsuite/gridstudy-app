@@ -20,7 +20,6 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import {
-    useBooleanValue,
     useButtonWithTooltip,
     useConnectivityValue,
     useDoubleValue,
@@ -38,6 +37,7 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { useBooleanValue } from './inputs/boolean';
 
 const disabledChecked = { disabled: true };
 

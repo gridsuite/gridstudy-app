@@ -16,6 +16,7 @@ import React, {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { validateField } from '../util/validation-functions';
 import {
+    Autocomplete,
     FormHelperText,
     InputLabel,
     MenuItem,
@@ -24,12 +25,9 @@ import {
     Tooltip,
 } from '@mui/material';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import ConnectivityEdition from './connectivity-edition';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
-import { Autocomplete } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -237,58 +235,6 @@ export const useDoubleValue = ({
         transformValue: transformValue,
         validation: { ...validation, isFieldNumeric: true },
     });
-};
-
-export const useBooleanValue = ({
-    label,
-    id,
-    defaultValue,
-    validation = {},
-    inputForm,
-    formProps,
-}) => {
-    const [value, setValue] = useState(defaultValue);
-    const intl = useIntl();
-
-    useEffect(() => {
-        function validate() {
-            return true;
-        }
-        inputForm.addValidation(id ? id : label, validate);
-    }, [label, validation, inputForm, value, id]);
-
-    const handleChangeValue = useCallback((event) => {
-        setValue(event.target.checked);
-    }, []);
-
-    const field = useMemo(() => {
-        return (
-            <FormControlLabel
-                id={id ? id : label}
-                control={
-                    <Switch
-                        checked={value}
-                        onChange={(e) => handleChangeValue(e)}
-                        value="checked"
-                        inputProps={{
-                            'aria-label': 'primary checkbox',
-                        }}
-                        {...formProps}
-                    />
-                }
-                label={intl.formatMessage({
-                    id: label,
-                })}
-            />
-        );
-    }, [intl, label, value, handleChangeValue, formProps, id]);
-
-    useEffect(
-        () => setValue(defaultValue),
-        [defaultValue, inputForm.toggleClear]
-    );
-
-    return [value, field];
 };
 
 export const useConnectivityValue = ({

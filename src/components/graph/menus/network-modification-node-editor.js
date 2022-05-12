@@ -17,6 +17,7 @@ import {
 import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
+import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { equipments } from '../../network/network-equipments';
@@ -174,6 +175,16 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         GENERATOR_CREATION: {
             label: 'CreateGenerator',
             dialog: () => withVoltageLevel(GeneratorCreationDialog),
+            icon: <AddIcon />,
+        },
+        GENERATOR_MODIFICATION: {
+            label: 'ModifyGenerator',
+            dialog: () =>
+                withEquipmentModificationOptions(
+                    GeneratorModificationDialog,
+                    'Generator',
+                    equipments.generators
+                ),
             icon: <AddIcon />,
         },
         SHUNT_COMPENSATOR_CREATION: {

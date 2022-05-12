@@ -7,6 +7,7 @@
     "network_modifications/LOAD_CREATION": "Création de la charge {computedLabel}",
     "network_modifications/LOAD_MODIFICATION": "Modification de la charge {computedLabel}",
     "network_modifications/GENERATOR_CREATION": "Création du générateur {computedLabel}",
+    "network_modifications/GENERATOR_MODIFICATION": "Modification du générateur {computedLabel}",
     "network_modifications/LINE_CREATION": "Création de la ligne {computedLabel}",
     "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Création du transformateur à 2 enroulements {computedLabel}",
     "network_modifications/BRANCH_STATUS": "Modification du statut de la ligne {computedLabel}",

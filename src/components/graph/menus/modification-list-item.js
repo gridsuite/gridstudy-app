@@ -28,7 +28,10 @@ const equipmentCreationModificationsType = new Set([
     'VOLTAGE_LEVEL_CREATION',
 ]);
 
-const equipmentModificationModificationsType = new Set(['LOAD_MODIFICATION']);
+const equipmentModificationModificationsType = new Set([
+    'LOAD_MODIFICATION',
+    'GENERATOR_MODIFICATION',
+]);
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
