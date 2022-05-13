@@ -13,23 +13,18 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import InputAdornment from '@mui/material/InputAdornment';
-import SearchIcon from '@mui/icons-material/Search';
 import { IconButton, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { updateConfigParameter } from '../../utils/rest-api';
-import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import {
+    requestNetworkChange,
+    updateConfigParameter,
+} from '../../utils/rest-api';
 import { SelectOptionsDialog } from '../../utils/dialogs';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
-import LockIcon from '@mui/icons-material/Lock';
-import EditIcon from '@mui/icons-material/Edit';
-import GetAppIcon from '@mui/icons-material/GetApp';
 import CsvDownloader from 'react-csv-downloader';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ListItemText from '@mui/material/ListItemText';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -48,6 +43,16 @@ import {
 } from '../../utils/messages';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import SearchIcon from '@mui/icons-material/Search';
+import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import LockIcon from '@mui/icons-material/Lock';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import GetAppIcon from '@mui/icons-material/GetApp';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 const MIN_COLUMN_WIDTH = 160;
 const HEADER_CELL_WIDTH = 65;
@@ -107,6 +112,24 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'initial',
         margin: '5px',
         padding: '10px',
+        '& button': {
+            margin: 0,
+            padding: 0,
+            position: 'absolute',
+            bottom: 0,
+        },
+        '& button:first-child': {
+            // Only applies to the first child
+            left: '10px',
+        },
+        '& button:nth-child(2)': {
+            // Only applies to the second child
+            right: '4px',
+        },
+        '& button:first-child:nth-last-child(1)': {
+            // If only ONE child, redefines its posiiton
+            left: '22px',
+        },
     },
     columnConfigClosedLock: {
         fontSize: '1.2em',
@@ -177,6 +200,7 @@ const NetworkTable = (props) => {
     );
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
 
+    const [lineEdit, setLineEdit] = useState(undefined);
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
     const [rowFilter, setRowFilter] = useState(undefined);
     const [columnSort, setColumnSort] = useState(undefined);
@@ -187,6 +211,13 @@ const NetworkTable = (props) => {
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
 
+    const isLineOnEditMode = useCallback(
+        (rowData) => {
+            return lineEdit && rowData.id === lineEdit.id;
+        },
+        [lineEdit]
+    );
+
     const intl = useIntl();
 
     const intlRef = useIntlRef();
@@ -196,6 +227,7 @@ const NetworkTable = (props) => {
         setSelectedColumnsNames(
             new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
         );
+        setLineEdit({});
     }, [tabIndex, allDisplayedColumnsNames]);
 
     useEffect(() => {
@@ -224,7 +256,7 @@ const NetworkTable = (props) => {
 
             for (let i = 0; i < datasourceRows.length; i++) {
                 const row = datasourceRows[i];
-                if (!rowFilter || filter(row)) { // Data filtering here
+                if (!rowFilter || filter(row)) {
                     result.push(row);
                 }
             }
@@ -241,8 +273,13 @@ const NetworkTable = (props) => {
             }
 
             if (columnSort) {
-                return result.sort((a,b) => {
-                    return compareValue(a[columnSort.key], b[columnSort.key], columnSort.numeric, columnSort.reverse);
+                return result.sort((a, b) => {
+                    return compareValue(
+                        formatCell(a, columnSort.colDef),
+                        formatCell(b, columnSort.colDef),
+                        columnSort.numeric,
+                        columnSort.reverse
+                    );
                 });
             }
             return result;
@@ -263,7 +300,7 @@ const NetworkTable = (props) => {
 
     useEffect(() => {
         if (
-            props.equipmentId !== null &&
+            props.equipmentId !== null && // TODO always equals to true. Maybe this function is broken ?
             props.equipmentType !== null &&
             !manualTabSwitch
         ) {
@@ -284,32 +321,185 @@ const NetworkTable = (props) => {
     ]);
 
     const formatCell = useCallback(
-        (cellData, columnDefinition) => {
-            let value = cellData[columnDefinition.dataKey];
+        (rowData, columnDefinition) => {
+            let value = rowData[columnDefinition.dataKey];
             if (columnDefinition.cellDataGetter) {
-                value = columnDefinition.cellDataGetter(cellData, props.network);
+                value = columnDefinition.cellDataGetter(
+                    rowData,
+                    props.network
+                );
             }
             if (columnDefinition.normed) {
                 value = columnDefinition.normed(fluxConvention, value);
             }
             return value &&
-            columnDefinition.numeric &&
-            columnDefinition.fractionDigits
+                columnDefinition.numeric &&
+                columnDefinition.fractionDigits
                 ? parseFloat(value).toFixed(columnDefinition.fractionDigits)
                 : value;
         },
         [fluxConvention, props.network]
     );
 
-    const defaultCellRender = useCallback(
-        (cellData, columnDefinition, key, style) => {
-            const text = formatCell(cellData, columnDefinition);
+    const renderTableLockIcon = () => {
+        return <LockIcon className={classes.tableLock} />;
+    };
+
+    const sortIconClassStyle = (columnSort, dataKey) => {
+        if (columnSort && columnSort.key === dataKey) {
+            return classes.activeSortArrow;
+        }
+        return classes.inactiveSortArrow;
+    };
+
+    const renderSortArrowIcon = (columnSort, dataKey) => {
+        if (columnSort && columnSort.key === dataKey && columnSort.reverse) {
+            return <ArrowUpwardIcon className={'arrow'} />;
+        }
+        return <ArrowDownwardIcon className={'arrow'} />;
+    };
+
+    const renderColumnConfigLockIcon = (value) => {
+        if (lockedColumnsNames.has(value)) {
+            return <LockIcon className={classes.columnConfigClosedLock} />;
+        } else {
+            if (lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
+                return <LockOpenIcon className={classes.columnConfigOpenLock} />;
+            }
+        }
+    };
+
+    const headerCellRender = useCallback(
+        (columnDefinition, key, style) => {
             return (
-                <div key={key}
-                     style={style}
-                     align={columnDefinition.numeric ? 'right' : 'left'}>
-                    <div
-                        className={classes.tableCell}>
+                <div
+                    key={key}
+                    style={style}
+                    align={columnDefinition.numeric ? 'right' : 'left'}
+                    onClick={() => setSort(columnDefinition)}
+                    className={sortIconClassStyle(
+                        columnSort,
+                        columnDefinition.dataKey
+                    )}
+                >
+                    <div className={classes.tableHeader}>
+                        {columnDefinition.locked && !columnDefinition.editColumn
+                            ? renderTableLockIcon()
+                            : ''}
+                        {columnDefinition.label}
+                    </div>
+                    <span>
+                        {renderSortArrowIcon(columnSort, columnDefinition.dataKey)}
+                    </span>
+                </div>
+            );
+        },
+        [classes.tableHeader, columnSort]
+    );
+
+    function commitChanges(rowData) {
+        console.error('COMMIT CHANGE => ', rowData);
+        /*function capitaliseFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        let groovyCr =
+            'equipment = network.get' +
+            capitaliseFirst(props.tableDefinition.modifiableEquipmentType) +
+            "('" +
+            lineEdit.id.replace(/'/g, "\\'") +
+            "')\n";
+        Object.values(lineEdit.newValues).forEach((cr) => {
+            groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
+        });
+        requestNetworkChange(props.studyUuid, props.workingNode?.id, groovyCr).then(
+            (response) => {
+                if (response.ok) {
+                    Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
+                        rowData[key] = cr.value;
+                    });
+                } else {
+                    Object.entries(lineEdit.oldValues).forEach(
+                        ([key, oldValue]) => {
+                            rowData[key] = oldValue;
+                        }
+                    );
+                }
+                setLineEdit({});
+            }
+        );*/
+        resetChanges(rowData); // TODO CHARLY temporaire pour tests
+    }
+
+    function resetChanges(rowData) {
+        // TODO CHARLY understand, then (maybe) fix this
+        console.error("Code non terminé");
+        Object.entries(lineEdit.oldValues).forEach(([key, oldValue]) => {
+            rowData[key] = oldValue;
+        });
+        setLineEdit({});
+    }
+
+    const editCellRender = useCallback(
+        (rowData, columnDefinition, key, style) => {
+            if (isLineOnEditMode(rowData)) {
+                return (
+                    <div key={key} style={style}>
+                        <div className={classes.editCell}>
+                            <IconButton
+                                size={'small'}
+                                onClick={() => commitChanges(rowData)}
+                            >
+                                <CheckIcon />
+                            </IconButton>
+                            <IconButton
+                                size={'small'}
+                                onClick={() => resetChanges(rowData)}
+                            >
+                                <ClearIcon />
+                            </IconButton>
+                        </div>
+                    </div>
+                );
+            } else {
+                return (
+                    <div key={key} style={style}>
+                        <div className={classes.editCell}>
+                            <IconButton
+                                size={'small'}
+                                disabled={lineEdit !== undefined && lineEdit.id !== undefined}
+                                onClick={() => {
+                                    setLineEdit({
+                                        oldValues: {},
+                                        newValues: {},
+                                        id: rowData.id,
+                                        equipmentType:
+                                        TABLES_DEFINITION_INDEXES.get(
+                                            tabIndex
+                                        ).modifiableEquipmentType,
+                                    })
+                                }
+                                }
+                            >
+                                <EditIcon />
+                            </IconButton>
+                        </div>
+                    </div>
+                );
+            }
+        },
+        [classes.editCell, lineEdit]
+    );
+
+    const defaultCellRender = useCallback(
+        (rowData, columnDefinition, key, style) => {
+            const text = formatCell(rowData, columnDefinition);
+            return (
+                <div
+                    key={key}
+                    style={style}
+                    align={columnDefinition.numeric ? 'right' : 'left'}
+                >
+                    <div className={classes.tableCell}>
                         <OverflowableText text={text} />
                     </div>
                 </div>
@@ -318,98 +508,115 @@ const NetworkTable = (props) => {
         [classes.tableCell, formatCell]
     );
 
-    const renderTableLockIcon = () => {
-        return (<LockIcon className={classes.tableLock}/>);
-    };
-
-    const sortIconClassStyle = (columnSort, dataKey) => {
-        if(columnSort && columnSort.key === dataKey) {
-            return classes.activeSortArrow;
-        }
-        return classes.inactiveSortArrow;
-    };
-
-    const renderSortArrowIcon = (columnSort, dataKey) => {
-        if (columnSort && columnSort.key === dataKey && columnSort.reverse) {
-            return (<span><ArrowUpwardIcon className={'arrow'} /></span>);
-        }
-        return (<span><ArrowDownwardIcon className={'arrow'} /></span>);
-    };
-
-    const editIcon = () => {
-        return (<EditIcon />);
-    };
-
-    const renderColumnConfigLockIcon = (value) => {
-        if (lockedColumnsNames.has(value)) {
-            return <LockIcon className={classes.columnConfigClosedLock}/>;
-        } else {
-            if(lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
-                return <LockOpenIcon className={classes.columnConfigOpenLock}/>;
-            }
-        }
-    };
-
-    const headerCellRender = useCallback(
-        (columnDefinition, key, style) => {
-            return (
-                <div key={key}
-                     style={style}
-                     align={columnDefinition.numeric ? 'right' : 'left'}
-                     onClick={() => setSort(columnDefinition)}
-                     className={sortIconClassStyle(columnSort, columnDefinition.dataKey)}
-                >
-                    <div className={classes.tableHeader}>
-                        {columnDefinition.locked && !columnDefinition.editColumn ? renderTableLockIcon() : ''}
-                        {columnDefinition.label}
-                    </div>
-                    {renderSortArrowIcon(columnSort, columnDefinition.dataKey)}
-                </div>
-            );
+    const registerChangeRequest = useCallback(
+        (data, changeCmd, value) => {
+            // save original value, dont erase if exists
+            if (!lineEdit.oldValues[data.dataKey])
+                lineEdit.oldValues[data.dataKey] = data.rowData[data.dataKey];
+            lineEdit.newValues[data.dataKey] = {
+                changeCmd: changeCmd,
+                value: value,
+            };
+            data.rowData[data.dataKey] = value;
         },
-        [classes.tableHeader, columnSort]
+        [lineEdit]
     );
 
-    const editCellRender = useCallback(
-        (cellData, columnDefinition, key, style) => {
-            return (
-                <div key={key}
-                     style={style}>
-                    <div className={classes.editCell}>
-                        {editIcon()}
-                    </div>
-                </div>
-            );
+    const editableCellRender = useCallback(
+        (rowData, columnDefinition, key, style) => {
+            if (isLineOnEditMode(rowData) && false)
+            {
+                const ref = React.createRef();
+                const text = formatCell(rowData, columnDefinition);
+                const changeRequest = (value) =>
+                    registerChangeRequest(
+                        rowData,
+                        columnDefinition.changeCmd,
+                        value
+                    );
+                const Editor = columnDefinition.editor;
+                return Editor ? (
+                    <Editor
+                        key={rowData.dataKey + rowData.rowData.id} // TODO CHARLY potentiellement à remplacer seulement par <OBSOLETE>, si ça plante.
+                        className={classes.tableCell}
+                        equipment={rowData.rowData} // TODO CHARLY potentiellement à remplacer seulement par <OBSOLETE>, si ça plante.
+                        defaultValue={formatCell(rowData, columnDefinition)}
+                        setter={(val) => changeRequest(val)}
+                    />
+                ) : (
+                    <OverflowableText text={text} childRef={ref}>
+                        <TextField
+                            id={rowData.dataKey}
+                            type="Number"
+                            className={classes.tableCell}
+                            size={'medium'}
+                            margin={'normal'}
+                            inputProps={{
+                                style: { textAlign: 'center' },
+                            }}
+                            onChange={(obj) => changeRequest(obj.target.value)}
+                            defaultValue={text}
+                            ref={ref}
+                        />
+                    </OverflowableText>
+                );
+            }
+            else
+            {
+                return defaultCellRender(
+                    rowData,
+                    columnDefinition,
+                    key,
+                    style
+                );
+            }
         },
-        [classes.editCell]
+        [
+            classes.tableCell,
+            defaultCellRender,
+            isLineOnEditMode,
+            registerChangeRequest,
+            formatCell,
+        ]
     );
 
     function generateTableColumns(tabIndex) {
-        let generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex).columns.filter((c) => {
-            return selectedColumnsNames.has(c.id);
-        }).map((c) => {
-            let column = {
-                ...c,
-                label: intl.formatMessage({ id: c.id }),
-                locked: lockedColumnsNames.has(c.id),
-                columnWidth: c.columnWidth ? c.columnWidth : MIN_COLUMN_WIDTH,
-            };
-            if (c.changeCmd !== undefined) {
-                // TODO CHARLY attention code pas terminé ici
-                column.cellRenderer = (cell, columnDefinition, key, style) =>
-                    //EditableCellRender(cell, columnDefinition);
-                    defaultCellRender(cell, columnDefinition, key, style);
-            } else {
-                column.cellRenderer = (cell, columnDefinition, key, style) =>
-                    defaultCellRender(cell, columnDefinition, key, style);
-            }
-            delete column.changeCmd;
-            return column;
-        });
+        let generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex)
+            .columns.filter((c) => {
+                return selectedColumnsNames.has(c.id);
+            })
+            .map((c) => {
+                let column = {
+                    ...c,
+                    label: intl.formatMessage({ id: c.id }),
+                    locked: lockedColumnsNames.has(c.id),
+                    columnWidth: c.columnWidth
+                        ? c.columnWidth
+                        : MIN_COLUMN_WIDTH,
+                };
+                if (c.changeCmd !== undefined) {
+                    column.cellRenderer = (
+                        rowData,
+                        columnDefinition,
+                        key,
+                        style
+                    ) => editableCellRender(rowData, columnDefinition, key, style);
+                } else {
+                    column.cellRenderer = (
+                        rowData,
+                        columnDefinition,
+                        key,
+                        style
+                    ) => defaultCellRender(rowData, columnDefinition, key, style);
+                }
+                delete column.changeCmd;
+                return column;
+            });
 
         function isEditColumnVisible() {
             return (
-                TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType && !props.workingNode?.readOnly
+                TABLES_DEFINITION_INDEXES.get(tabIndex)
+                    .modifiableEquipmentType && !props.workingNode?.readOnly
             );
         }
         if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
@@ -421,13 +628,17 @@ const NetworkTable = (props) => {
                     editCellRender(cell, columnDefinition, key, style),
             });
         }
-        generatedTableColumns.headerCellRender = (columnDefinition, key, style) => {
+        generatedTableColumns.headerCellRender = (
+            columnDefinition,
+            key,
+            style
+        ) => {
             return headerCellRender(columnDefinition, key, style);
-        }
+        };
 
         function sortByLock(a, b) {
-            if(a.locked && !b.locked) return -1;
-            if(!a.locked && b.locked) return 1;
+            if (a.locked && !b.locked) return -1;
+            if (!a.locked && b.locked) return 1;
             return 0;
         }
         generatedTableColumns.sort(sortByLock);
@@ -437,29 +648,25 @@ const NetworkTable = (props) => {
     function renderTable() {
         const resource = TABLES_DEFINITION_INDEXES.get(tabIndex).resource;
         const rows = getRows(tabIndex);
-        const columns = generateTableColumns(tabIndex)
+        const columns = generateTableColumns(tabIndex);
         return (
-            <EquipmentTable // TODO CHARLY supprimer les props inutiles
-                tabIndex={tabIndex}
-                studyUuid={props.studyUuid}
-                workingNode={props.workingNode}
+            <EquipmentTable
                 rows={rows}
                 columns={columns}
-                tableDefinition={TABLES_DEFINITION_INDEXES.get(tabIndex)}
                 fetched={props.network.isResourceFetched(resource)}
-                scrollToIndex={scrollToIndex}
-                scrollToAlignment="start"
-                network={props.network}
-                //selectedDataKey={Array.from(selectedDataKey)}
+                scrollToIndex={scrollToIndex} // TODO CHARLY reproduire comportement dans EquipmentTable
+                //scrollToAlignment="start"
             />
         );
     }
 
     function setFilter(event) {
         const value = event.target.value; // Value from the user's input
-        const sanitizedValue = value.trim().replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'); // No more Regexp sensible characters
-        const everyWords = sanitizedValue.split(' ').filter(n => n); // We split the user input by words
-        const regExp = '('+everyWords.join('|')+')'; // For each word, we do a "OR" research
+        const sanitizedValue = value
+            .trim()
+            .replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'); // No more Regexp sensible characters
+        const everyWords = sanitizedValue.split(' ').filter((n) => n); // We split the user input by words
+        const regExp = '(' + everyWords.join('|') + ')'; // For each word, we do a "OR" research
         setRowFilter(
             !value || value === '' ? undefined : new RegExp(regExp, 'i')
         );
@@ -467,13 +674,18 @@ const NetworkTable = (props) => {
 
     function setSort(columnDefinition) {
         let newReverse = false;
-        if(columnSort && columnSort.key === columnDefinition.dataKey && !columnSort.reverse) {
+        if (
+            columnSort &&
+            columnSort.key === columnDefinition.dataKey &&
+            !columnSort.reverse
+        ) {
             newReverse = true;
         }
         let newSort = {
             key: columnDefinition.dataKey,
             reverse: newReverse,
             numeric: columnDefinition.numeric,
+            colDef: columnDefinition,
         };
         setColumnSort(newSort);
     }
@@ -516,7 +728,8 @@ const NetworkTable = (props) => {
 
     const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
-            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
+                TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
         ).catch((errorMessage) => {
             const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
@@ -533,7 +746,8 @@ const NetworkTable = (props) => {
             });
         });
         updateConfigParameter(
-            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
+                TABLES_NAMES[tabIndex],
             JSON.stringify([...lockedColumnsNames])
         ).catch((errorMessage) => {
             const allLockedTemp = allLockedColumnsNames[tabIndex];
@@ -588,7 +802,7 @@ const NetworkTable = (props) => {
         if (lockedColumnsNames.has(value)) {
             newLocked.delete(value);
         } else {
-            if(lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
+            if (lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
                 newLocked.add(value);
             }
         }
@@ -619,7 +833,10 @@ const NetworkTable = (props) => {
                         className={classes.checkboxItem}
                         style={{ padding: '0 16px' }}
                     >
-                        <ListItemIcon onClick={handleClickOnLock(value)} style={{minWidth:0, width:'20px'}}>
+                        <ListItemIcon
+                            onClick={handleClickOnLock(value)}
+                            style={{ minWidth: 0, width: '20px' }}
+                        >
                             {renderColumnConfigLockIcon(value)}
                         </ListItemIcon>
                         <ListItemIcon onClick={handleToggle(value)}>
@@ -627,7 +844,8 @@ const NetworkTable = (props) => {
                                 checked={selectedColumnsNames.has(value)}
                             />
                         </ListItemIcon>
-                        <ListItemText onClick={handleToggle(value)}
+                        <ListItemText
+                            onClick={handleToggle(value)}
                             primary={intl.formatMessage({ id: `${value}` })}
                         />
                     </ListItem>
@@ -659,7 +877,7 @@ const NetworkTable = (props) => {
 
     const getCSVData = () => {
         const rows = getRows(tabIndex);
-        const columns = generateTableColumns(tabIndex)
+        const columns = generateTableColumns(tabIndex);
         let csvData = [];
         rows.forEach((row) => {
             let rowData = {};
@@ -722,7 +940,12 @@ const NetworkTable = (props) => {
                             <span>
                                 <FormattedMessage id="LabelSelectList" />
                             </span>
-                            <IconButton className={selectedColumnsNames.size===0?classes.blink:''}
+                            <IconButton
+                                className={
+                                    selectedColumnsNames.size === 0
+                                        ? classes.blink
+                                        : ''
+                                }
                                 aria-label="dialog"
                                 onClick={handleOpenPopupSelectColumnNames}
                             >
@@ -746,7 +969,8 @@ const NetworkTable = (props) => {
                                 <CsvDownloader
                                     datas={getCSVData}
                                     columns={getCSVColumnNames()}
-                                    filename={getCSVFilename()}>
+                                    filename={getCSVFilename()}
+                                >
                                     <IconButton aria-label="exportCSVButton">
                                         <GetAppIcon />
                                     </IconButton>

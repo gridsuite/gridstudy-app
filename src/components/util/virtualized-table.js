@@ -23,10 +23,6 @@ const styles = (theme) => ({
     },
     tableRow: {
         cursor: 'pointer',
-        // Used to remove the "transform" property that breaks fixed columns
-        '& + div': {
-            willChange: 'false !important',
-        },
     },
     tableRowHover: {
         '&:hover': {
@@ -44,7 +40,7 @@ const styles = (theme) => ({
         color: theme.link.color,
     },
     header: {
-        paddingLeft: cellPadding,
+        paddingLeft: 16 + cellPadding,
         height: '100%',
     },
 });
