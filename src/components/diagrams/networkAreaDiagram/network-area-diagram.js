@@ -46,6 +46,8 @@ import { NetworkAreaDiagramViewer } from 'powsybl-diagram-viewer';
 const loadingWidth = 150;
 const maxWidth = 1200;
 const maxHeight = 1000;
+const minWidth = 500;
+const minHeight = 400;
 const errorWidth = maxWidth;
 
 const useStyles = makeStyles((theme) => ({
@@ -55,6 +57,10 @@ const useStyles = makeStyles((theme) => ({
             // to our otherwise pixel accurate computations (this makes a
             // scrollbar appear in fullscreen mode)
             display: 'block',
+        },
+        '&  .nad-text-nodes': {
+            fill: theme.palette.text.primary,
+            'font-family': theme.typography.fontFamily,
         },
         overflow: 'hidden',
     },
@@ -246,6 +252,8 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             const nad = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 svg.svg,
+                minWidth,
+                minHeight,
                 maxWidth,
                 maxHeight
             );

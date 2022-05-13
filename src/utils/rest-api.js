@@ -244,7 +244,7 @@ export function getNetworkAreaDiagramUrl(
     );
     return (
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network/network-area-diagram?' +
+        '/network-area-diagram?' +
         new URLSearchParams({
             depth: depth,
         }) +
