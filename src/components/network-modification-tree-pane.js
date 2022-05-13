@@ -179,7 +179,7 @@ export const NetworkModificationTreePane = ({
         setOpenExportDialog(false);
     };
 
-    const handleNodeExport = (element) => {
+    const handleNetworkExportOnNode = (element) => {
         setOpenExportDialog(true);
     };
 
@@ -239,7 +239,7 @@ export const NetworkModificationTreePane = ({
                     activeNode={activeNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
-                    handleNodeExport={handleNodeExport}
+                    handleNetworkExportOnNode={handleNetworkExportOnNode}
                     handleClose={closeCreateNodeMenu}
                 />
             )}
