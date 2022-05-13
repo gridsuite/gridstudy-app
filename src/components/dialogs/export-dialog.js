@@ -4,13 +4,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Dialog, DialogTitle, Grid } from '@mui/material';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Dialog,
+    DialogTitle,
+    Grid,
+    Typography,
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -38,6 +47,7 @@ const ExportDialog = ({
     title,
 }) => {
     const [availableFormats, setAvailableFormats] = React.useState('');
+    const [formatsWithParameters, setFormatsWithParameters] = useState([]);
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [downloadUrl, setDownloadUrl] = React.useState('');
@@ -46,7 +56,13 @@ const ExportDialog = ({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                setAvailableFormats(formats);
+                console.log('available formats :', formats);
+                if (Array.isArray(formats)) {
+                    setAvailableFormats(formats);
+                } else if (typeof formats === 'object') {
+                    setAvailableFormats(Object.keys(formats));
+                    setFormatsWithParameters(formats);
+                }
             });
         }
     }, [open]);
@@ -123,6 +139,20 @@ const ExportDialog = ({
                                     })}
                             </Select>
                         </FormControl>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Accordion>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography>Parameters</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography>plop</Typography>
+                            </AccordionDetails>
+                        </Accordion>
                     </Grid>
                 </Grid>
                 {exportStudyErr !== '' && (
