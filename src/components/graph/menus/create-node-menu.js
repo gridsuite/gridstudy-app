@@ -32,7 +32,7 @@ const CreateNodeMenu = ({
     handleClose,
     handleNodeCreation,
     handleNodeRemoval,
-    handleNetworkExportOnNode,
+    handleExportCaseOnNode,
     activeNode,
 }) => {
     const classes = useStyles();
@@ -48,8 +48,8 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
-    function exportNetworkOnNode() {
-        handleNetworkExportOnNode(activeNode);
+    function exportCaseOnNode() {
+        handleExportCaseOnNode(activeNode);
         handleClose();
     }
 
@@ -76,8 +76,8 @@ const CreateNodeMenu = ({
         },
         EXPORT_NETWORK_ON_NODE: {
             onRoot: true,
-            action: () => exportNetworkOnNode(),
-            id: 'exportNetworkOnNode',
+            action: () => exportCaseOnNode(),
+            id: 'exportCaseOnNode',
             disabled:
                 activeNode?.type !== 'ROOT' &&
                 activeNode?.data?.buildStatus !== 'BUILT',

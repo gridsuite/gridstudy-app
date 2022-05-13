@@ -253,7 +253,7 @@
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
     "createModelNode": "Créer un nœud modèle",
     "removeNode": "Supprimer le nœud",
-    "exportNetworkOnNode": "Exporter le réseau associé",
+    "exportCaseOnNode": "Exporter la situation",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
