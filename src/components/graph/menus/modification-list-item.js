@@ -85,7 +85,7 @@ export const ModificationListItem = ({
         function getVoltageLevelLabel(vlID) {
             if (!vlID) return '';
             const vl = network.getVoltageLevel(vlID);
-            if (vl) return vl[useName ? 'name' : 'id'];
+            if (vl) return vl[useName ? 'name' : 'id'] || vlID;
             return vlID;
         }
         let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
