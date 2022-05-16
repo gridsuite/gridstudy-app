@@ -15,7 +15,7 @@ import {
     fetchEquipments,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
@@ -37,6 +37,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { currentNode } from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -106,6 +107,8 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
+
+    const dispatch = useDispatch();
 
     function withDefaultParams(Dialog, props) {
         return (
@@ -216,6 +219,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     useEffect(() => {
         if (selectedNode !== selectedNodeRef.current) {
             selectedNodeRef.current = selectedNode;
+            dispatch(currentNode(selectedNode));
             if (!selectedNode.networkModification) setModifications([]);
             else {
                 fetchNetworkModifications(selectedNode.networkModification)
@@ -226,7 +230,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     .catch((err) => snackError(err.message));
             }
         }
-    }, [selectedNode, setModifications, selectedNodeRef, snackError]);
+    }, [selectedNode, setModifications, selectedNodeRef, snackError, dispatch]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);

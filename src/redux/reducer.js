@@ -48,6 +48,7 @@ import {
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
+    CURRENT_NODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -116,6 +117,7 @@ const initialState = {
     isModificationsDrawerOpen: false,
     centerOnSubstation: null,
     ...paramsInitialState,
+    currentNode: null,
 };
 
 export const reducer = createReducer(initialState, {
@@ -314,5 +316,8 @@ export const reducer = createReducer(initialState, {
     },
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
+    },
+    [CURRENT_NODE]: (state, action) => {
+        state.currentNode = action.currentNode;
     },
 });

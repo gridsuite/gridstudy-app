@@ -12,6 +12,7 @@ import {
     fetchNetworkModificationTreeNode,
 } from '../utils/rest-api';
 import {
+    currentNode,
     networkModificationTreeNodeAdded,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
@@ -124,6 +125,8 @@ export const NetworkModificationTreePane = ({
                         studyUpdatedForce.eventData.headers['nodes']
                     )
                 );
+                //  set to null the current node global object
+                dispatch(currentNode({ id: null, name: 'Root' }));
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeUpdated'

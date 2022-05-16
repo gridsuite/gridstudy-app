@@ -352,3 +352,11 @@ export function centerOnSubstation(substationId) {
         centerOnSubstation: { to: substationId },
     };
 }
+
+export const CURRENT_NODE = 'CURRENT_NODE';
+export function currentNode(currentNode) {
+    return {
+        type: CURRENT_NODE,
+        currentNode: currentNode,
+    };
+}

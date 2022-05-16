@@ -19,7 +19,7 @@ import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_l
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import Tabs from '@mui/material/Tabs';
 import { StudyView } from './study-pane';
-import { Badge } from '@mui/material';
+import { Badge, Tooltip, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
 import Parameters, { useParameterState } from './parameters';
@@ -29,13 +29,21 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
+import {
+    fetchAppsAndUrls,
+    fetchEquipmentsInfos,
+    fetchNetworkModificationTree,
+} from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { stringify } from 'qs';
-import { centerOnSubstation, selectItemNetwork } from '../redux/actions';
+import {
+    centerOnSubstation,
+    currentNode,
+    selectItemNetwork,
+} from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
@@ -43,6 +51,12 @@ import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 const useStyles = makeStyles(() => ({
     tabs: {
         marginLeft: 18,
+    },
+    sub_title: {
+        marginLeft: 18,
+        alignSelf: 'center',
+        color: `${LIGHT_THEME}`,
+        fontWeight: 'bold',
     },
 }));
 
@@ -132,6 +146,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [showParameters, setShowParameters] = useState(false);
 
+    const selectedNode = useSelector((state) => state.currentNode);
+
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
     const searchMatchingEquipments = useCallback(
@@ -191,8 +207,20 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             fetchAppsAndUrls().then((res) => {
                 setAppsAndUrls(res);
             });
+            if (studyUuid !== null) {
+                fetchNetworkModificationTree(studyUuid)
+                    .then((res) => {
+                        dispatch(currentNode(res));
+                    })
+                    .catch((err) =>
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: err.message,
+                            enqueueSnackbar,
+                        })
+                    );
+            }
         }
-    }, [user]);
+    }, [dispatch, enqueueSnackbar, studyUuid, user]);
 
     function showParametersClicked() {
         setShowParameters(true);
@@ -202,10 +230,18 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         setShowParameters(false);
     }
 
+    function truncate(text, max_text_length = 10) {
+        return text !== null &&
+            max_text_length !== null &&
+            text.length > max_text_length
+            ? text.slice(0, max_text_length).concat('...')
+            : text;
+    }
+
     return (
         <>
             <TopBar
-                appName="Study"
+                appName={'Study'}
                 appColor="#0CA789"
                 appLogo={
                     theme === LIGHT_THEME ? (
@@ -241,6 +277,19 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             >
+                {/* Add current Node name between Logo and Tabs */}
+                {selectedNode && (
+                    <Tooltip title={selectedNode.name}>
+                        <Typography className={classes.sub_title}>
+                            {/* truncate string if length >= 20 char */}
+                            {selectedNode.name === 'Root'
+                                ? intl.formatMessage({
+                                      id: 'root',
+                                  })
+                                : truncate(selectedNode.name, 15)}
+                        </Typography>
+                    </Tooltip>
+                )}
                 {studyUuid && (
                     <Tabs
                         value={tabIndex}

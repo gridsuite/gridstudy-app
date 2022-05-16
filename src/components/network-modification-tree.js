@@ -14,6 +14,7 @@ import ReactFlow, {
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+    currentNode,
     selectTreeNode,
     setModificationsDrawerOpen,
     workingTreeNode,
@@ -85,6 +86,7 @@ const NetworkModificationTree = ({
                     element.data.buildStatus === 'BUILT')
             ) {
                 dispatch(workingTreeNode(element));
+                dispatch(currentNode({ id: null, name: 'Root' }));
             }
         },
         [dispatch]

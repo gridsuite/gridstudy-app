@@ -22,7 +22,10 @@ import { EditableTitle } from './editable-title';
 import { useSnackbar } from 'notistack';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { setModificationsDrawerOpen } from '../../../redux/actions';
+import {
+    currentNode,
+    setModificationsDrawerOpen,
+} from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -68,8 +71,11 @@ const NodeEditor = () => {
             selectedNodeUuidRef.current = selectedNodeUuid;
             fetchNetworkModificationTreeNode(studyUuid, selectedNodeUuid)
                 .then((res) => {
-                    if (selectedNodeUuid === selectedNodeUuidRef.current)
+                    if (selectedNodeUuid === selectedNodeUuidRef.current) {
                         setSelectedNode(res);
+                        //  update current node global object
+                        dispatch(currentNode(res));
+                    }
                 })
                 .catch((err) =>
                     displayErrorMessageWithSnackbar({
@@ -85,6 +91,7 @@ const NodeEditor = () => {
         selectedNodeUuidRef,
         studyUpdatedForce,
         studyUuid,
+        dispatch,
     ]);
 
     const changeNodeName = (newName) => {
