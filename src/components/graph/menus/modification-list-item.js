@@ -6,7 +6,7 @@
  */
 import { Checkbox, ListItem, ListItemIcon } from '@mui/material';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { OverflowableText } from '@gridsuite/commons-ui/';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../../utils/config-params';
@@ -63,6 +63,7 @@ export const ModificationListItem = ({
     index,
     handleToggle,
     isDragging,
+    network,
     ...props
 }) => {
     const intl = useIntl();
@@ -87,16 +88,38 @@ export const ModificationListItem = ({
         [modif, handleToggle]
     );
 
+    const computedValues = useMemo(() => {
+        function getVoltageLevelLabel(vlID) {
+            if (!vlID) return '';
+            const vl = network.getVoltageLevel(vlID);
+            if (vl) return vl[useName ? 'name' : 'id'] || vlID;
+            return vlID;
+        }
+        let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
+        if (modif.type === 'BRANCH_STATUS') {
+            if (modif.action === 'ENERGISE_END_ONE') {
+                res.energizedEnd = getVoltageLevelLabel(
+                    network.getLine(modif.equipmentId)?.voltageLevelId1
+                );
+            } else if (modif.action === 'ENERGISE_END_TWO') {
+                res.energizedEnd = getVoltageLevelLabel(
+                    network.getLine(modif.equipmentId)?.voltageLevelId2
+                );
+            }
+        }
+        return res;
+    }, [modif, network, getComputedLabel, useName]);
+
     const getLabel = useCallback(
         () =>
             intl.formatMessage(
                 { id: 'network_modifications/' + modif.type },
                 {
                     ...modif,
-                    computedLabel: <strong>{getComputedLabel()}</strong>,
+                    ...computedValues,
                 }
             ),
-        [modif, getComputedLabel, intl]
+        [modif, intl, computedValues]
     );
 
     const [hover, setHover] = useState(false);
