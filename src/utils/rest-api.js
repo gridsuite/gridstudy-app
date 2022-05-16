@@ -1382,18 +1382,18 @@ export function createSubstation(
     );
 }
 
-export function createVoltageLevel(
+export function createVoltageLevel({
     studyUuid,
     selectedNodeUuid,
     voltageLevelId,
-    name,
+    voltageLevelName,
     nominalVoltage,
     substationId,
-    busBarSections,
-    connections,
+    busbarSections,
+    busbarConnections,
     isUpdate,
-    modificationUuid
-) {
+    modificationUuid,
+}) {
     let createVoltageLevelUrl;
     if (isUpdate) {
         console.info('Updating voltage level creation');
@@ -1408,12 +1408,14 @@ export function createVoltageLevel(
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
             '/network-modification/voltage-levels';
     }
-    let busBarConnections = connections.map((c) => {
-        return {
-            fromBBS: c.fromBBS.id,
-            toBBS: c.toBBS.id,
-            switchKind: c.switchKind,
-        };
+
+    const body = JSON.stringify({
+        equipmentId: voltageLevelId,
+        equipmentName: voltageLevelName,
+        nominalVoltage: nominalVoltage,
+        substationId: substationId,
+        busbarSections: busbarSections,
+        busbarConnections: busbarConnections,
     });
 
     return backendFetch(createVoltageLevelUrl, {
@@ -1422,14 +1424,62 @@ export function createVoltageLevel(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            equipmentId: voltageLevelId,
-            equipmentName: name,
-            nominalVoltage: nominalVoltage,
-            substationId: substationId,
-            busbarSections: busBarSections,
-            busbarConnections: busBarConnections,
-        }),
+        body: body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function divideLine(
+    studyUuid,
+    selectedNodeUuid,
+    modificationUuid,
+    lineToSplitId,
+    percent,
+    mayNewVoltageLevelInfos,
+    existingVoltageLevelId,
+    bbsOrBusId,
+    newLine1Id,
+    newLine1Name,
+    newLine2Id,
+    newLine2Name
+) {
+    const body = JSON.stringify({
+        lineToSplitId,
+        percent,
+        mayNewVoltageLevelInfos,
+        existingVoltageLevelId,
+        bbsOrBusId,
+        newLine1Id,
+        newLine1Name,
+        newLine2Id,
+        newLine2Name,
+    });
+
+    let lineSplitUrl;
+    if (modificationUuid) {
+        console.info('Line split with voltage level update', body);
+        lineSplitUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/line-splits';
+    } else {
+        console.info('Line split with voltage level', body);
+        lineSplitUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/line-splits';
+    }
+
+    return backendFetch(lineSplitUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
     }).then((response) =>
         response.ok
             ? response.text()

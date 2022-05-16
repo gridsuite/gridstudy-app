@@ -353,6 +353,18 @@
     "DuplicateId": "Identifiant non unique",
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
+    "LineSplitWithVoltageLevel" : "Créer une coupure",
+    "LineToSplit" : "Liaison coupée",
+    "LengthPercentage" : "% long.",
+    "OutOfBoundsPercentage" : "Pourcentage en dehors des limites",
+    "BusbarOrNodeID" : "ID SJB ou noeud",
+    "Line1" : "Liaison origine",
+    "Line2" : "Liaison extrémité",
+    "VoltageLevel1" : "Poste origine",
+    "VoltageLevel2" : "Poste extrémité",
+    "NewVoltageLevel" : "Nouveau poste",
+    "LineDivisionError" : "Erreur lors de la création d'une coupure",
+
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
 

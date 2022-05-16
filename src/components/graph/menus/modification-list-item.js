@@ -18,14 +18,16 @@ import IconButton from '@mui/material/IconButton';
 import { Draggable } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 
-const equipmentCreationModificationsType = new Set([
+const editableModificationTypes = new Set([
     'GENERATOR_CREATION',
     'LINE_CREATION',
+    'LOAD_MODIFICATION',
     'LOAD_CREATION',
     'SHUNT_COMPENSATOR_CREATION',
     'SUBSTATION_CREATION',
     'TWO_WINDINGS_TRANSFORMER_CREATION',
     'VOLTAGE_LEVEL_CREATION',
+    'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
 ]);
 
 const equipmentModificationModificationsType = new Set(['LOAD_MODIFICATION']);
@@ -55,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const ModificationListItem = ({
-    item: modification,
+    item: modif,
     onEdit,
     checked,
     index,
@@ -69,16 +71,21 @@ export const ModificationListItem = ({
     const classes = useStyles();
 
     const getComputedLabel = useCallback(() => {
-        return equipmentModificationModificationsType.has(modification.type)
-            ? modification.equipmentId
-            : useName && modification.equipmentName
-            ? modification.equipmentName
-            : modification.equipmentId;
-    }, [modification, useName]);
+        if (modif.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
+            return modif.lineToSplitId;
+        } else if (equipmentModificationModificationsType.has(modif.type)) {
+            return modif.equipmentId;
+        } else if (useName && modif.equipmentName) {
+            return modif.equipmentName;
+        } else if (modif.equipmentId) {
+            return modif.equipmentId;
+        }
+        return '';
+    }, [modif, useName]);
 
     const toggle = useCallback(
-        () => handleToggle(modification),
-        [modification, handleToggle]
+        () => handleToggle(modif),
+        [modif, handleToggle]
     );
 
     const computedValues = useMemo(() => {
@@ -89,36 +96,36 @@ export const ModificationListItem = ({
             return vlID;
         }
         let res = { computedLabel: <strong>{getComputedLabel()}</strong> };
-        if (modification.type === 'BRANCH_STATUS') {
-            if (modification.action === 'ENERGISE_END_ONE') {
+        if (modif.type === 'BRANCH_STATUS') {
+            if (modif.action === 'ENERGISE_END_ONE') {
                 res.energizedEnd = getVoltageLevelLabel(
-                    network.getLine(modification.equipmentId)?.voltageLevelId1
+                    network.getLine(modif.equipmentId)?.voltageLevelId1
                 );
-            } else if (modification.action === 'ENERGISE_END_TWO') {
+            } else if (modif.action === 'ENERGISE_END_TWO') {
                 res.energizedEnd = getVoltageLevelLabel(
-                    network.getLine(modification.equipmentId)?.voltageLevelId2
+                    network.getLine(modif.equipmentId)?.voltageLevelId2
                 );
             }
         }
         return res;
-    }, [modification, network, getComputedLabel, useName]);
+    }, [modif, network, getComputedLabel, useName]);
 
     const getLabel = useCallback(
         () =>
             intl.formatMessage(
-                { id: 'network_modifications/' + modification.type },
+                { id: 'network_modifications/' + modif.type },
                 {
-                    ...modification,
+                    ...modif,
                     ...computedValues,
                 }
             ),
-        [modification, intl, computedValues]
+        [modif, intl, computedValues]
     );
 
     const [hover, setHover] = useState(false);
 
     return (
-        <Draggable draggableId={modification.uuid} index={index}>
+        <Draggable draggableId={modif.uuid} index={index}>
             {(provided) => (
                 <div
                     ref={provided.innerRef}
@@ -127,7 +134,7 @@ export const ModificationListItem = ({
                     onMouseLeave={() => setHover(false)}
                 >
                     <ListItem
-                        key={modification.uuid}
+                        key={modif.uuid}
                         {...props}
                         className={classes.listItem}
                     >
@@ -155,16 +162,11 @@ export const ModificationListItem = ({
                             className={classes.label}
                             text={getLabel()}
                         />
-                        {(equipmentCreationModificationsType.has(
-                            modification.type
-                        ) ||
-                            equipmentModificationModificationsType.has(
-                                modification.type
-                            )) &&
+                        {editableModificationTypes.has(modif.type) &&
                             hover &&
                             !isDragging && (
                                 <IconButton
-                                    onClick={() => onEdit(modification.uuid)}
+                                    onClick={() => onEdit(modif.uuid)}
                                     size={'small'}
                                     className={classes.iconEdit}
                                 >
