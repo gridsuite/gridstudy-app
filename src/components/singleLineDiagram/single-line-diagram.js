@@ -903,6 +903,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 minWidth: loadingWidth,
                 height: sizeHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
+                overflow: 'hidden',
             }}
         >
             <Box>
