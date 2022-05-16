@@ -348,6 +348,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                                         key={props.item.uuid}
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
+                                        network={network}
                                         {...props}
                                     />
                                 )}
