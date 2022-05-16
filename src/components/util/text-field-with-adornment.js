@@ -81,7 +81,9 @@ const TextFieldWithAdornment = (props) => {
         return value !== '' || isFocused
             ? {
                   startAdornment:
-                      value && clearable && getClearAdornment('start'),
+                      value && clearable
+                          ? getClearAdornment('start')
+                          : undefined,
                   endAdornment: getTextAdornment('end'),
                   classes: { input: classes.inputRight },
               }
