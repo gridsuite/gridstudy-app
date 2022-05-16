@@ -91,6 +91,7 @@ const StudyPane = ({
     studyUuid,
     network,
     workingNode,
+    selectedNode,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -278,6 +279,7 @@ const StudyPane = ({
                                     openVoltageLevel={openVoltageLevel}
                                     /* TODO verif tableEquipment*/
                                     workingNode={workingNode}
+                                    selectedNode={selectedNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -312,6 +314,7 @@ const StudyPane = ({
                                         loadFlowInfos?.loadFlowStatus
                                     )}
                                     workingNode={workingNode}
+                                    selectedNode={selectedNode}
                                 />
                             )}
                         </div>
@@ -328,6 +331,7 @@ const StudyPane = ({
                     network={network}
                     studyUuid={studyUuid}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}

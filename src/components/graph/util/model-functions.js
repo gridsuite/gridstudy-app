@@ -29,3 +29,13 @@ export function getFirstNodeOfType(elements, nodeType, buildStatus) {
         }
     }
 }
+
+export function allowModificationsOnNode(workingNode, selectedNode) {
+    return (
+        !workingNode?.readOnly &&
+        workingNode?.buildStatus === 'BUILT' &&
+        (selectedNode === null ||
+            selectedNode === undefined ||
+            workingNode?.id === selectedNode?.id)
+    );
+}

@@ -180,6 +180,12 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
+            action.networkModificationTreeNodes
+                .filter((node) => node.id === state.workingTreeNode?.id)
+                .forEach((node) => (state.workingTreeNode = node));
+            action.networkModificationTreeNodes
+                .filter((node) => node.id === state.selectedTreeNode?.id)
+                .forEach((node) => (state.selectedTreeNode = node));
         }
     },
 

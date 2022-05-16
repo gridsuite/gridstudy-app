@@ -60,6 +60,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
+import { nodeModificationAllowed } from '../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -681,7 +682,10 @@ const NetworkTable = (props) => {
             return (
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .modifiableEquipmentType &&
-                !props.workingNode?.readOnly &&
+                nodeModificationAllowed(
+                    props.workingNode,
+                    props.selectedNode
+                ) &&
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .columns.filter((c) => c.editor)
                     .filter((c) => selectedColumnsNames.has(c.id)).length > 0
@@ -713,6 +717,8 @@ const NetworkTable = (props) => {
         const columns = generateTableColumns(tabIndex);
         return (
             <EquipmentTable
+                workingNode={props.workingNode}
+                selectedNode={props.selectedNode}
                 rows={rows}
                 columns={columns}
                 fetched={props.network.isResourceFetched(resource)}
@@ -1033,6 +1039,7 @@ NetworkTable.defaultProps = {
     network: null,
     studyUuid: '',
     workingNode: null,
+    selectedNode: null,
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
@@ -1043,6 +1050,7 @@ NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
     workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,

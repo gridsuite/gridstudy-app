@@ -188,6 +188,7 @@ export function SingleLineDiagramPane({
     showInSpreadsheet,
     loadFlowStatus,
     workingNode,
+    selectedNode,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -406,6 +407,7 @@ export function SingleLineDiagramPane({
                         showInSpreadsheet={showInSpreadsheet}
                         loadFlowStatus={loadFlowStatus}
                         workingNode={workingNode}
+                        selectedNode={selectedNode}
                         numberToDisplay={displayedSLD.length}
                         toggleState={toggleState}
                         pinned={viewState.get(sld.id) === ViewState.PINNED}
@@ -434,6 +436,7 @@ export function SingleLineDiagramPane({
 SingleLineDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
     workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
     network: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,

@@ -147,6 +147,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const dispatch = useDispatch();
 
     const workingNode = useSelector((state) => state.workingTreeNode);
+    const selectedNode = useSelector((state) => state.selectedTreeNode);
 
     const workingNodeIdRef = useRef();
 
@@ -487,6 +488,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUuid={studyUuid}
                 network={network}
                 workingNode={workingNode}
+                selectedNode={selectedNode}
                 view={view}
                 onChangeTab={onChangeTab}
                 updatedLines={updatedLines}
