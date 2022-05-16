@@ -13,7 +13,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getSubstationSingleLineDiagram,
@@ -204,19 +204,20 @@ export function SingleLineDiagramPane({
 
     const dispatch = useDispatch();
 
-    const [closeViwe, openVoltageLevel, openSubstation] =
+    const [closeView, openVoltageLevel, openSubstation] =
         useSingleLineDiagram();
 
     const location = useLocation();
+    const viewsRef = useRef();
+    viewsRef.current = views;
 
-    const updateSld = useCallback(
-        (id) => {
-            if (id)
-                views.find((sld) => sld.id === id)?.ref?.current?.reloadSvg();
-            else views.forEach((sld) => sld?.ref?.current?.reloadSvg());
-        },
-        [views]
-    );
+    const updateSld = useCallback((id) => {
+        if (id)
+            viewsRef.current
+                .find((sld) => sld.id === id)
+                ?.ref?.current?.reloadSvg();
+        else viewsRef.current.forEach((sld) => sld?.ref?.current?.reloadSvg());
+    }, []);
 
     const classes = useStyles();
 
@@ -293,9 +294,9 @@ export function SingleLineDiagramPane({
     const handleCloseSLD = useCallback(
         (id) => {
             setViewState((oldVal) => removeFromMap(oldVal, id));
-            closeViwe(id);
+            closeView(id);
         },
-        [closeViwe]
+        [closeView]
     );
 
     const handleOpenView = useCallback(
@@ -315,7 +316,7 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers) {
+        if (studyUpdatedForce.eventData.headers && viewsRef.current) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
             ) {
@@ -330,30 +331,44 @@ export function SingleLineDiagramPane({
                         studyUpdatedForce.eventData.headers[
                             'deletedEquipmentId'
                         ];
-                    const vlToClose = views.filter(
+                    const vlToClose = viewsRef.current.filter(
                         (vl) =>
                             vl.substationId === deletedId || vl.id === deletedId
                     );
-                    closeViwe([...vlToClose, deletedId]);
+                    if (vlToClose.length > 0)
+                        closeView([...vlToClose, deletedId]);
                 } else {
                     updateSld();
                 }
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, views, closeViwe]);
+    }, [studyUpdatedForce, dispatch, studyUuid, updateSld, closeView]);
 
     useEffect(() => {
-        let toDisplay = views.filter(
-            ({ id }) => viewState.get(id) === ViewState.PINNED
-        );
-        const more = views.find(
-            ({ id, lastOpen }) => lastOpen && viewState.get(id) === undefined
-        );
-        if (more) {
-            toDisplay.push(more);
-        }
-        setDisplayedSld(toDisplay);
+        setDisplayedSld((oldSld) => {
+            const configuredViewsIds = new Set(views.map((view) => view.id));
+            // remove view no longer present, keep order
+            let newDisplayed = oldSld.filter(
+                (view) =>
+                    configuredViewsIds.has(view.id) &&
+                    viewState.get(view.id) === ViewState.PINNED
+            );
+            // there is place for one more
+            let more = views.find(
+                ({ id, lastOpen }) =>
+                    lastOpen && viewState.get(id) === undefined
+            );
+            if (!more)
+                more = views.find(
+                    ({ id, lastOpen }) =>
+                        viewState.get(id) === undefined && false
+                );
+            if (more) {
+                newDisplayed.push(more);
+            }
+            return newDisplayed;
+        });
     }, [views, viewState]);
 
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
