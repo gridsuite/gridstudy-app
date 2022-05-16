@@ -32,6 +32,7 @@ const CreateNodeMenu = ({
     handleClose,
     handleNodeCreation,
     handleNodeRemoval,
+    handleExportCaseOnNode,
     activeNode,
 }) => {
     const classes = useStyles();
@@ -44,6 +45,11 @@ const CreateNodeMenu = ({
 
     function removeNode() {
         handleNodeRemoval(activeNode);
+        handleClose();
+    }
+
+    function exportCaseOnNode() {
+        handleExportCaseOnNode(activeNode);
         handleClose();
     }
 
@@ -68,6 +74,14 @@ const CreateNodeMenu = ({
             action: () => removeNode(),
             id: 'removeNode',
         },
+        EXPORT_NETWORK_ON_NODE: {
+            onRoot: true,
+            action: () => exportCaseOnNode(),
+            id: 'exportCaseOnNode',
+            disabled:
+                activeNode?.type !== 'ROOT' &&
+                activeNode?.data?.buildStatus !== 'BUILT',
+        },
     };
 
     return (
@@ -88,6 +102,8 @@ const CreateNodeMenu = ({
                         <MenuItem
                             className={classes.menuItem}
                             onClick={item.action}
+                            key={item.id}
+                            disabled={item.disabled}
                         >
                             <ListItemText
                                 key={item.id}

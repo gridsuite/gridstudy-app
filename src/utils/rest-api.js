@@ -831,6 +831,14 @@ export function deleteModifications(studyUuid, node, modificationUuid) {
     );
 }
 
+function getUrlWithToken(baseUrl) {
+    if (baseUrl.includes('?')) {
+        return baseUrl + '&access_token=' + getToken();
+    } else {
+        return baseUrl + '?access_token=' + getToken();
+    }
+}
+
 export function connectNotificationsWebsocket(studyUuid) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
@@ -842,7 +850,7 @@ export function connectNotificationsWebsocket(studyUuid) {
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
     let wsaddressWithToken;
-    wsaddressWithToken = wsadress + '&access_token=' + getToken();
+    wsaddressWithToken = getUrlWithToken(wsadress);
 
     const rws = new ReconnectingWebSocket(wsaddressWithToken);
     // don't log the token, it's private
@@ -863,7 +871,7 @@ export function connectNotificationsWsUpdateConfig() {
         APP_NAME;
 
     let webSocketUrlWithToken;
-    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
+    webSocketUrlWithToken = getUrlWithToken(webSocketUrl);
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
         webSocketUrlWithToken
@@ -1638,4 +1646,12 @@ export function changeNetworkModificationOrder(
         if (!response.ok)
             throw new Error(response.status + ' ' + response.statusText);
     });
+}
+
+export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/export-network/' +
+        exportFormat;
+    return getUrlWithToken(url);
 }
