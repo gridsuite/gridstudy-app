@@ -33,6 +33,10 @@ import {
     TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
+    MIN_COLUMN_WIDTH,
+    MAX_LOCKS_PER_TAB,
+    HEADER_CELL_WIDTH,
+    ROW_HEIGHT,
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
@@ -53,10 +57,7 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-
-const MIN_COLUMN_WIDTH = 160;
-const HEADER_CELL_WIDTH = 65;
-const MAX_LOCKS_PER_TAB = 5;
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -98,6 +99,15 @@ const useStyles = makeStyles((theme) => ({
         padding: '10px',
         borderTop: '1px solid #515151',
         display: 'flex',
+    },
+    inlineEditionCell: {
+        backgroundColor: theme.palette.action.hover,
+        maxHeight: ROW_HEIGHT - 6 + 'px',
+        width: MIN_COLUMN_WIDTH - 10 + 'px !important',
+        '& input': {
+            padding: 0,
+            width: MIN_COLUMN_WIDTH + 'px !important',
+        },
     },
     tableHeader: {
         fontSize: 'small',
@@ -187,7 +197,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NetworkTable = (props) => {
-
     const classes = useStyles();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -253,7 +262,6 @@ const NetworkTable = (props) => {
             if (!datasourceRows) return [];
 
             let result = [];
-
             for (let i = 0; i < datasourceRows.length; i++) {
                 const row = datasourceRows[i];
                 if (!rowFilter || filter(row)) {
@@ -324,10 +332,7 @@ const NetworkTable = (props) => {
         (rowData, columnDefinition) => {
             let value = rowData[columnDefinition.dataKey];
             if (columnDefinition.cellDataGetter) {
-                value = columnDefinition.cellDataGetter(
-                    rowData,
-                    props.network
-                );
+                value = columnDefinition.cellDataGetter(rowData, props.network);
             }
             if (columnDefinition.normed) {
                 value = columnDefinition.normed(fluxConvention, value);
@@ -360,11 +365,17 @@ const NetworkTable = (props) => {
     };
 
     const renderColumnConfigLockIcon = (value) => {
-        if (lockedColumnsNames.has(value)) {
-            return <LockIcon className={classes.columnConfigClosedLock} />;
-        } else {
-            if (lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
-                return <LockOpenIcon className={classes.columnConfigOpenLock} />;
+        if (selectedColumnsNames.has(value)) {
+            if (lockedColumnsNames.has(value)) {
+                return <LockIcon className={classes.columnConfigClosedLock} />;
+            } else {
+                if (lockedColumnsNames.size < MAX_LOCKS_PER_TAB) {
+                    return (
+                        <LockOpenIcon
+                            className={classes.columnConfigOpenLock}
+                        />
+                    );
+                }
             }
         }
     };
@@ -389,7 +400,10 @@ const NetworkTable = (props) => {
                         {columnDefinition.label}
                     </div>
                     <span>
-                        {renderSortArrowIcon(columnSort, columnDefinition.dataKey)}
+                        {renderSortArrowIcon(
+                            columnSort,
+                            columnDefinition.dataKey
+                        )}
                     </span>
                 </div>
             );
@@ -398,41 +412,44 @@ const NetworkTable = (props) => {
     );
 
     function commitChanges(rowData) {
-        console.error('COMMIT CHANGE => ', rowData);
-        /*function capitaliseFirst(str) {
+        function capitaliseFirst(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
         let groovyCr =
             'equipment = network.get' +
-            capitaliseFirst(props.tableDefinition.modifiableEquipmentType) +
+            capitaliseFirst(
+                TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType
+            ) +
             "('" +
             lineEdit.id.replace(/'/g, "\\'") +
             "')\n";
         Object.values(lineEdit.newValues).forEach((cr) => {
             groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
         });
-        requestNetworkChange(props.studyUuid, props.workingNode?.id, groovyCr).then(
-            (response) => {
-                if (response.ok) {
-                    Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
-                        rowData[key] = cr.value;
-                    });
-                } else {
-                    Object.entries(lineEdit.oldValues).forEach(
-                        ([key, oldValue]) => {
-                            rowData[key] = oldValue;
-                        }
-                    );
-                }
-                setLineEdit({});
+        requestNetworkChange(
+            props.studyUuid,
+            props.workingNode?.id,
+            groovyCr
+        ).then((response) => {
+            if (response.ok) {
+                Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
+                    rowData[key] = cr.value;
+                });
+                // TODO When the data is saved, we should force an update of the table's data. As is, it takes too long to update.
+                // And maybe add a visual clue that the save was successful ?
+            } else {
+                Object.entries(lineEdit.oldValues).forEach(
+                    ([key, oldValue]) => {
+                        rowData[key] = oldValue;
+                    }
+                );
+                // TODO Same here, maybe a visual clue that something went wrong ?
             }
-        );*/
-        resetChanges(rowData); // TODO CHARLY temporaire pour tests
+            setLineEdit({});
+        });
     }
 
     function resetChanges(rowData) {
-        // TODO CHARLY understand, then (maybe) fix this
-        console.error("Code non terminé");
         Object.entries(lineEdit.oldValues).forEach(([key, oldValue]) => {
             rowData[key] = oldValue;
         });
@@ -466,19 +483,21 @@ const NetworkTable = (props) => {
                         <div className={classes.editCell}>
                             <IconButton
                                 size={'small'}
-                                disabled={lineEdit !== undefined && lineEdit.id !== undefined}
+                                disabled={
+                                    lineEdit !== undefined &&
+                                    lineEdit.id !== undefined
+                                }
                                 onClick={() => {
                                     setLineEdit({
                                         oldValues: {},
                                         newValues: {},
                                         id: rowData.id,
                                         equipmentType:
-                                        TABLES_DEFINITION_INDEXES.get(
-                                            tabIndex
-                                        ).modifiableEquipmentType,
-                                    })
-                                }
-                                }
+                                            TABLES_DEFINITION_INDEXES.get(
+                                                tabIndex
+                                            ).modifiableEquipmentType,
+                                    });
+                                }}
                             >
                                 <EditIcon />
                             </IconButton>
@@ -512,64 +531,43 @@ const NetworkTable = (props) => {
         (data, changeCmd, value) => {
             // save original value, dont erase if exists
             if (!lineEdit.oldValues[data.dataKey])
-                lineEdit.oldValues[data.dataKey] = data.rowData[data.dataKey];
+                lineEdit.oldValues[data.dataKey] = data[data.dataKey];
             lineEdit.newValues[data.dataKey] = {
                 changeCmd: changeCmd,
                 value: value,
             };
-            data.rowData[data.dataKey] = value;
+            data[data.dataKey] = value;
         },
         [lineEdit]
     );
 
     const editableCellRender = useCallback(
-        (rowData, columnDefinition, key, style) => {
-            if (isLineOnEditMode(rowData) && false)
-            {
-                const ref = React.createRef();
+        (rowData, columnDefinition, changeCmd, key, style) => {
+            if (
+                isLineOnEditMode(rowData) &&
+                rowData[columnDefinition.dataKey] !== undefined
+            ) {
                 const text = formatCell(rowData, columnDefinition);
                 const changeRequest = (value) =>
-                    registerChangeRequest(
-                        rowData,
-                        columnDefinition.changeCmd,
-                        value
-                    );
+                    registerChangeRequest(rowData, changeCmd, value);
                 const Editor = columnDefinition.editor;
-                return Editor ? (
-                    <Editor
-                        key={rowData.dataKey + rowData.rowData.id} // TODO CHARLY potentiellement à remplacer seulement par <OBSOLETE>, si ça plante.
-                        className={classes.tableCell}
-                        equipment={rowData.rowData} // TODO CHARLY potentiellement à remplacer seulement par <OBSOLETE>, si ça plante.
-                        defaultValue={formatCell(rowData, columnDefinition)}
-                        setter={(val) => changeRequest(val)}
-                    />
-                ) : (
-                    <OverflowableText text={text} childRef={ref}>
-                        <TextField
-                            id={rowData.dataKey}
-                            type="Number"
-                            className={classes.tableCell}
-                            size={'medium'}
-                            margin={'normal'}
-                            inputProps={{
-                                style: { textAlign: 'center' },
-                            }}
-                            onChange={(obj) => changeRequest(obj.target.value)}
+                if (Editor) {
+                    return (
+                        <Editor
+                            key={rowData.dataKey + rowData.id}
+                            className={clsx(
+                                classes.tableCell,
+                                classes.inlineEditionCell
+                            )}
+                            equipment={rowData}
                             defaultValue={text}
-                            ref={ref}
+                            setter={(val) => changeRequest(val)}
+                            style={style}
                         />
-                    </OverflowableText>
-                );
+                    );
+                }
             }
-            else
-            {
-                return defaultCellRender(
-                    rowData,
-                    columnDefinition,
-                    key,
-                    style
-                );
-            }
+            return defaultCellRender(rowData, columnDefinition, key, style);
         },
         [
             classes.tableCell,
@@ -600,14 +598,27 @@ const NetworkTable = (props) => {
                         columnDefinition,
                         key,
                         style
-                    ) => editableCellRender(rowData, columnDefinition, key, style);
+                    ) =>
+                        editableCellRender(
+                            rowData,
+                            columnDefinition,
+                            c.changeCmd,
+                            key,
+                            style
+                        );
                 } else {
                     column.cellRenderer = (
                         rowData,
                         columnDefinition,
                         key,
                         style
-                    ) => defaultCellRender(rowData, columnDefinition, key, style);
+                    ) =>
+                        defaultCellRender(
+                            rowData,
+                            columnDefinition,
+                            key,
+                            style
+                        );
                 }
                 delete column.changeCmd;
                 return column;
@@ -616,7 +627,11 @@ const NetworkTable = (props) => {
         function isEditColumnVisible() {
             return (
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
-                    .modifiableEquipmentType && !props.workingNode?.readOnly
+                    .modifiableEquipmentType &&
+                !props.workingNode?.readOnly &&
+                TABLES_DEFINITION_INDEXES.get(tabIndex)
+                    .columns.filter((c) => c.editor)
+                    .filter((c) => selectedColumnsNames.has(c.id)).length > 0
             );
         }
         if (generatedTableColumns.length > 0 && isEditColumnVisible()) {
@@ -624,8 +639,8 @@ const NetworkTable = (props) => {
                 locked: true,
                 editColumn: true,
                 columnWidth: HEADER_CELL_WIDTH,
-                cellRenderer: (cell, columnDefinition, key, style) =>
-                    editCellRender(cell, columnDefinition, key, style),
+                cellRenderer: (rowData, columnDefinition, key, style) =>
+                    editCellRender(rowData, columnDefinition, key, style),
             });
         }
         generatedTableColumns.headerCellRender = (
@@ -654,8 +669,7 @@ const NetworkTable = (props) => {
                 rows={rows}
                 columns={columns}
                 fetched={props.network.isResourceFetched(resource)}
-                scrollToIndex={scrollToIndex} // TODO CHARLY reproduire comportement dans EquipmentTable
-                //scrollToAlignment="start"
+                scrollToIndex={scrollToIndex} // TODO This is not implemented yet
             />
         );
     }
@@ -745,10 +759,13 @@ const NetworkTable = (props) => {
                 },
             });
         });
+        let lockedColumnsToSave = [...lockedColumnsNames].filter((name) =>
+            selectedColumnsNames.has(name)
+        );
         updateConfigParameter(
             LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
                 TABLES_NAMES[tabIndex],
-            JSON.stringify([...lockedColumnsNames])
+            JSON.stringify(lockedColumnsToSave)
         ).catch((errorMessage) => {
             const allLockedTemp = allLockedColumnsNames[tabIndex];
             setLockedColumnsNames(
@@ -777,27 +794,32 @@ const NetworkTable = (props) => {
 
     const handleToggle = (value) => () => {
         const newChecked = new Set(selectedColumnsNames.values());
+        const newLocked = new Set(lockedColumnsNames.values());
         if (selectedColumnsNames.has(value)) {
             newChecked.delete(value);
+            if (lockedColumnsNames.has(value)) {
+                newLocked.delete(value);
+            }
         } else {
             newChecked.add(value);
         }
         setSelectedColumnsNames(newChecked);
+        setLockedColumnsNames(newLocked);
     };
 
     const handleToggleAll = () => {
         let isAllChecked =
             selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        // If all columns are selected/checked, then we hide all of them.
         setSelectedColumnsNames(
             isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]
         );
+        if (isAllChecked) {
+            setLockedColumnsNames(new Set());
+        }
     };
 
     const handleClickOnLock = (value) => () => {
-        // If we need to check for double-click, we need to use :
-        // const handleClickOnLock = (value) => (event) => {
-        // and then :
-        // if(event.detail > 1) {/*DOUBLE CLICK HERE*/}
         const newLocked = new Set(lockedColumnsNames.values());
         if (lockedColumnsNames.has(value)) {
             newLocked.delete(value);
@@ -865,7 +887,9 @@ const NetworkTable = (props) => {
 
     const getCSVColumnNames = () => {
         let tempHeaders = [];
-        const columns = generateTableColumns(tabIndex);
+        const columns = generateTableColumns(tabIndex).filter(
+            (c) => !c.editColumn
+        );
         columns.forEach((col) => {
             tempHeaders.push({
                 displayName: col.label,
@@ -877,7 +901,9 @@ const NetworkTable = (props) => {
 
     const getCSVData = () => {
         const rows = getRows(tabIndex);
-        const columns = generateTableColumns(tabIndex);
+        const columns = generateTableColumns(tabIndex).filter(
+            (c) => !c.editColumn
+        );
         let csvData = [];
         rows.forEach((row) => {
             let rowData = {};

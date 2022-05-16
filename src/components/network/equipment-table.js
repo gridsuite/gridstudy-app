@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 import { MultiGrid, AutoSizer } from 'react-virtualized';
-
-const ROW_HEIGHT = 38;
-const HEADER_ROW_HEIGHT = 64;
-const MIN_COLUMN_WIDTH = 160;
+import {
+    MIN_COLUMN_WIDTH,
+    HEADER_ROW_HEIGHT,
+    ROW_HEIGHT,
+} from './config-tables';
 
 export const EquipmentTable = (props) => {
     const gridRef = useRef();
@@ -21,7 +22,11 @@ export const EquipmentTable = (props) => {
 
     function cellRenderer({ columnIndex, key, rowIndex, style }) {
         if (!props.columns || !props.columns[columnIndex]) {
-            return <div style={{ opacity: '0.5' }}>...loading</div>;
+            return (
+                <div key={key} style={{ opacity: '0.5' }}>
+                    ...loading
+                </div>
+            );
         }
         let columnDefinition = props.columns[columnIndex];
 
@@ -37,7 +42,11 @@ export const EquipmentTable = (props) => {
                     style
                 );
             } else {
-                return <div style={{ opacity: '0.5' }}>loading...</div>;
+                return (
+                    <div key={key} style={{ opacity: '0.5' }}>
+                        loading...
+                    </div>
+                );
             }
         }
     }
@@ -66,26 +75,33 @@ export const EquipmentTable = (props) => {
                     loadingMessageText={'LoadingRemoteData'}
                 />
             )}
-            <AutoSizer>
-                {({ width, height }) => (
-                    <MultiGrid
-                        ref={gridRef}
-                        cellRenderer={cellRenderer}
-                        fixedColumnCount={fixedColumnsCount}
-                        fixedRowCount={1}
-                        height={height}
-                        width={width}
-                        columnCount={props.columns.length}
-                        columnWidth={({ index }) => getColumnWidth(index)}
-                        rowCount={props.rows.length + 1}
-                        rowHeight={({ index }) => getRowHeight(index)}
-                        enableFixedColumnScroll={true}
-                        enableFixedRowScroll={true}
-                        hideTopRightGridScrollbar={true}
-                        hideBottomLeftGridScrollbar={true}
-                    />
+            {props.fetched &&
+                props.rows &&
+                props.columns &&
+                props.columns.length > 0 && (
+                    <AutoSizer>
+                        {({ width, height }) => (
+                            <MultiGrid
+                                ref={gridRef}
+                                cellRenderer={cellRenderer}
+                                fixedColumnCount={fixedColumnsCount}
+                                fixedRowCount={1}
+                                height={height}
+                                width={width}
+                                columnCount={props.columns.length}
+                                columnWidth={({ index }) =>
+                                    getColumnWidth(index)
+                                }
+                                rowCount={props.rows.length + 1}
+                                rowHeight={({ index }) => getRowHeight(index)}
+                                enableFixedColumnScroll={true}
+                                enableFixedRowScroll={true}
+                                hideTopRightGridScrollbar={true}
+                                hideBottomLeftGridScrollbar={true}
+                            />
+                        )}
+                    </AutoSizer>
                 )}
-            </AutoSizer>
         </>
     );
 };
