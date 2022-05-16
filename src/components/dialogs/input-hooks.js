@@ -25,7 +25,9 @@ import {
     Tooltip,
 } from '@mui/material';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
-import ConnectivityEdition from './connectivity-edition';
+import ConnectivityEdition, {
+    makeRefreshBusOrBusbarSectionsCallback,
+} from './connectivity-edition';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
@@ -44,6 +46,7 @@ import { getComputedLanguage } from '../../utils/language';
 import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
+import { useSelector } from 'react-redux';
 
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
@@ -179,7 +182,6 @@ export const useTextValue = ({
                     }
                 }
                 clearable={clearable}
-                handleClearValue={handleClearValue}
                 {...genHelperPreviousValue(previousValue, adornment)}
                 {...genHelperError(error, errorMsg)}
                 {...formProps}
@@ -260,6 +262,7 @@ export const useConnectivityValue = ({
     const [errorVoltageLevel, setErrorVoltageLevel] = useState();
     const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
+    const studyUuid = useSelector((state) => state.studyUuid);
 
     useEffect(() => {
         setConnectivity({
@@ -342,8 +345,11 @@ export const useConnectivityValue = ({
                         id: errorBusBarSection,
                     })
                 }
-                workingNodeUuid={workingNodeUuid}
                 direction={direction}
+                voltageLevelBusOrBBSCallback={makeRefreshBusOrBusbarSectionsCallback(
+                    studyUuid,
+                    workingNodeUuid
+                )}
             />
         );
     }, [
@@ -356,6 +362,7 @@ export const useConnectivityValue = ({
         setBusOrBusbarSection,
         setVoltageLevel,
         voltageLevelOptions,
+        studyUuid,
         workingNodeUuid,
         voltageLevelPreviousValue,
         busOrBusbarSectionPreviousValue,
@@ -423,11 +430,15 @@ export const useAutocompleteField = ({
                 getOptionLabel={getLabel}
                 defaultValue={defaultValue}
                 value={value}
-                previousValue={previousValue}
                 loading={loading}
                 loadingText={<FormattedMessage id="loadingOptions" />}
                 freeSolo={allowNewValue}
                 {...(allowNewValue && {
+                    freeSolo: true,
+                    isOptionEqualToValue: (option, input) =>
+                        option === input ||
+                        option.id === input ||
+                        option.id === input?.id,
                     filterOptions: (options, params) => {
                         const filtered = filter(options, params);
                         if (
@@ -441,6 +452,11 @@ export const useAutocompleteField = ({
                         }
                         return filtered;
                     },
+                    autoSelect: true,
+                    autoComplete: true,
+                    autoHighlight: true,
+                    blurOnSelect: true,
+                    clearOnBlur: true,
                 })}
                 renderInput={(props) => (
                     <TextField
@@ -476,7 +492,7 @@ export const useAutocompleteField = ({
         loading,
     ]);
 
-    return [value, field];
+    return [value, field, setValue];
 };
 
 const DELAY = 1000;
