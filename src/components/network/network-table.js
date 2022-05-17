@@ -35,7 +35,7 @@ import {
     TABLES_NAMES,
     MIN_COLUMN_WIDTH,
     MAX_LOCKS_PER_TAB,
-    HEADER_CELL_WIDTH,
+    EDIT_CELL_WIDTH,
     ROW_HEIGHT,
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
@@ -301,7 +301,7 @@ const NetworkTable = (props) => {
 
             function compareValue(a, b, isNumeric, reverse) {
                 const mult = reverse ? 1 : -1;
-                if (a === undefined && b === undefined) return 0;
+                if (a === b) return 0;
                 else if (a === undefined) return mult;
                 else if (b === undefined) return -mult;
 
@@ -397,21 +397,25 @@ const NetworkTable = (props) => {
 
     const setSort = useCallback(
         (columnDefinition) => {
-            let newReverse = false;
-            if (
-                columnSort &&
-                columnSort.key === columnDefinition.dataKey &&
-                !columnSort.reverse
-            ) {
-                newReverse = true;
+            // 1 clic : ASC, 2 clic : DESC, 3 clic : no sort
+            if(!columnSort || columnSort.key !== columnDefinition.dataKey)
+            {
+                setColumnSort({
+                    key: columnDefinition.dataKey,
+                    reverse: false,
+                    numeric: columnDefinition.numeric,
+                    colDef: columnDefinition,
+                });
+            } else if(!columnSort.reverse) {
+                setColumnSort({
+                    key: columnDefinition.dataKey,
+                    reverse: true,
+                    numeric: columnDefinition.numeric,
+                    colDef: columnDefinition,
+                });
+            } else {
+                setColumnSort(undefined);
             }
-            let newSort = {
-                key: columnDefinition.dataKey,
-                reverse: newReverse,
-                numeric: columnDefinition.numeric,
-                colDef: columnDefinition,
-            };
-            setColumnSort(newSort);
         },
         [columnSort]
     );
@@ -595,14 +599,14 @@ const NetworkTable = (props) => {
     );
 
     const editableCellRender = useCallback(
-        (rowData, columnDefinition, changeCmd, key, style) => {
+        (rowData, columnDefinition, key, style) => {
             if (
                 isLineOnEditMode(rowData) &&
                 rowData[columnDefinition.dataKey] !== undefined
             ) {
                 const text = formatCell(rowData, columnDefinition);
                 const changeRequest = (value) =>
-                    registerChangeRequest(rowData, changeCmd, value);
+                    registerChangeRequest(rowData, columnDefinition.changeCmd, value);
                 const Editor = columnDefinition.editor;
                 if (Editor) {
                     return (
@@ -647,34 +651,10 @@ const NetworkTable = (props) => {
                         : MIN_COLUMN_WIDTH,
                 };
                 if (c.changeCmd !== undefined) {
-                    column.cellRenderer = (
-                        rowData,
-                        columnDefinition,
-                        key,
-                        style
-                    ) =>
-                        editableCellRender(
-                            rowData,
-                            columnDefinition,
-                            c.changeCmd,
-                            key,
-                            style
-                        );
+                    column.cellRenderer = editableCellRender;
                 } else {
-                    column.cellRenderer = (
-                        rowData,
-                        columnDefinition,
-                        key,
-                        style
-                    ) =>
-                        defaultCellRender(
-                            rowData,
-                            columnDefinition,
-                            key,
-                            style
-                        );
+                    column.cellRenderer = defaultCellRender;
                 }
-                delete column.changeCmd;
                 return column;
             });
 
@@ -692,18 +672,12 @@ const NetworkTable = (props) => {
             generatedTableColumns.unshift({
                 locked: true,
                 editColumn: true,
-                columnWidth: HEADER_CELL_WIDTH,
+                columnWidth: EDIT_CELL_WIDTH,
                 cellRenderer: (rowData, columnDefinition, key, style) =>
                     editCellRender(rowData, columnDefinition, key, style),
             });
         }
-        generatedTableColumns.headerCellRender = (
-            columnDefinition,
-            key,
-            style
-        ) => {
-            return headerCellRender(columnDefinition, key, style);
-        };
+        generatedTableColumns.headerCellRender = headerCellRender;
 
         function sortByLock(a, b) {
             if (a.locked && !b.locked) return -1;
@@ -910,17 +884,15 @@ const NetworkTable = (props) => {
     }, [intl, tabIndex]);
 
     const getCSVColumnNames = () => {
-        let tempHeaders = [];
         const columns = generateTableColumns(tabIndex).filter(
             (c) => !c.editColumn
         );
-        columns.forEach((col) => {
-            tempHeaders.push({
+        return columns.map((col) => {
+            return ({
                 displayName: col.label,
                 id: col.dataKey,
             });
         });
-        return tempHeaders;
     };
 
     const getCSVData = () => {

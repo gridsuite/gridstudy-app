@@ -21,7 +21,9 @@ const applyFluxConvention = (convention, val) => {
 export const ROW_HEIGHT = 38;
 export const HEADER_ROW_HEIGHT = 64;
 export const MIN_COLUMN_WIDTH = 160;
-export const HEADER_CELL_WIDTH = 65;
+export const MEDIUM_COLUMN_WIDTH = 220;
+export const LARGE_COLUMN_WIDTH = 340;
+export const EDIT_CELL_WIDTH = 65;
 export const MAX_LOCKS_PER_TAB = 5;
 
 export const TABLES_DEFINITIONS = {
@@ -80,12 +82,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'Name',
                 dataKey: 'name',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'VoltageLevelIdSide1',
@@ -404,7 +406,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'Name',
@@ -460,12 +462,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'Name',
                 dataKey: 'name',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'LoadType',
@@ -519,12 +521,12 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'Name',
                 dataKey: 'name',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'VoltageLevelId',
@@ -675,27 +677,27 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'Name',
                 dataKey: 'name',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'ConvertersMode',
                 dataKey: 'convertersMode',
-                columnWidth: 340,
+                columnWidth: LARGE_COLUMN_WIDTH,
             },
             {
                 id: 'ConverterStationId1',
                 dataKey: 'converterStationId1',
-                columnWidth: 340,
+                columnWidth: LARGE_COLUMN_WIDTH,
             },
             {
                 id: 'ConverterStationId2',
                 dataKey: 'converterStationId2',
-                columnWidth: 340,
+                columnWidth: LARGE_COLUMN_WIDTH,
             },
             {
                 id: 'R',
@@ -783,7 +785,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ID',
                 dataKey: 'id',
-                columnWidth: 220,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
             },
             {
                 id: 'Name',
