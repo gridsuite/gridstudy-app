@@ -245,7 +245,7 @@ export function fetchReport(studyUuid, selectedNodeUuid, nodeOnlyReport) {
     return backendFetch(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
             '/report?nodeOnlyReport=' +
-            (nodeOnlyReport === true ? 'true' : 'false')
+            (nodeOnlyReport ? 'true' : 'false')
     ).then((response) => {
         return response.ok
             ? response.json()

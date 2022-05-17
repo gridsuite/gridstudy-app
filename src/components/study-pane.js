@@ -377,7 +377,7 @@ const StudyPane = ({
                 }}
             >
                 <ReportViewerTab
-                    reportId={studyUuid}
+                    studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
                     workingNode={workingNode}
                 />

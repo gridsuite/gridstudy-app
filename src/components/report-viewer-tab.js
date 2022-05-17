@@ -24,14 +24,17 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const NETWORK_MODIFICATION = 'NetworkModification';
+
 /**
  * control the ReportViewer (fetch and waiting)
- * @param reportId : string  uuid of report
+ * @param studyId : string study id
  * @param visible : boolean window visible
+ * @param workingNode : object visualized node
  * @returns {*} node
  * @constructor
  */
-export const ReportViewerTab = ({ reportId, visible, workingNode }) => {
+export const ReportViewerTab = ({ studyId, visible, workingNode }) => {
     const intl = useIntl();
     const classes = useStyles();
 
@@ -53,7 +56,7 @@ export const ReportViewerTab = ({ reportId, visible, workingNode }) => {
             subReporters: [],
         };
         report.subReporters.forEach((subReport1) => {
-            if (subReport1.taskKey === 'NetworkModification') {
+            if (subReport1.taskKey === NETWORK_MODIFICATION) {
                 // we group all network modifications together
                 subReport1.subReporters.forEach((subReport2) =>
                     newReport.subReporters.push(subReport2)
@@ -68,7 +71,7 @@ export const ReportViewerTab = ({ reportId, visible, workingNode }) => {
     useEffect(() => {
         if (visible) {
             setWaitingLoadReport(true);
-            fetchReport(reportId, workingNode?.id, nodeOnlyReport)
+            fetchReport(studyId, workingNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {
                     if (fetchedReport.length === 1) {
                         setReport(condenseReport(fetchedReport[0]));
@@ -98,7 +101,7 @@ export const ReportViewerTab = ({ reportId, visible, workingNode }) => {
                     setWaitingLoadReport(false);
                 });
         }
-    }, [visible, reportId, workingNode, nodeOnlyReport, enqueueSnackbar]);
+    }, [visible, studyId, workingNode, nodeOnlyReport, enqueueSnackbar]);
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
@@ -127,6 +130,7 @@ export const ReportViewerTab = ({ reportId, visible, workingNode }) => {
 };
 
 ReportViewerTab.propTypes = {
-    reportId: PropTypes.string,
+    studyId: PropTypes.string,
     visible: PropTypes.bool,
+    workingNode: PropTypes.object,
 };
