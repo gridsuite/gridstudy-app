@@ -12,6 +12,8 @@ import VirtualizedTable from '../util/virtualized-table';
 import makeStyles from '@mui/styles/makeStyles';
 import clsx from 'clsx';
 import { OverflowableText } from '@gridsuite/commons-ui';
+import { RunningStatus } from '../util/running-status';
+import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 
 const ROW_HEIGHT = 38;
 
@@ -26,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 0,
         height: ROW_HEIGHT + 'px',
         cursor: 'initial',
+    },
+    valueInvalid: {
+        opacity: INVALID_LOADFLOW_OPACITY,
     },
 }));
 
@@ -42,6 +47,7 @@ export const EquipmentTable = ({
     network,
     selectedDataKey,
     fluxConvention,
+    loadFlowStatus,
 }) => {
     const [lineEdit, setLineEdit] = useState(undefined);
     const classes = useStyles();
@@ -151,21 +157,31 @@ export const EquipmentTable = ({
     );
 
     const defaultCellRender = useCallback(
-        (cellData, numeric, fractionDigit, normed = undefined) => {
+        (
+            cellData,
+            numeric,
+            fractionDigit,
+            normed = undefined,
+            canBeInvalidated = undefined
+        ) => {
             const text = formatCell(cellData, numeric, fractionDigit, normed);
             return (
                 <TableCell
                     component="div"
                     variant="body"
                     style={{ width: cellData.width }}
-                    className={classes.tableCell}
+                    className={clsx(classes.tableCell, {
+                        [classes.valueInvalid]:
+                            canBeInvalidated &&
+                            loadFlowStatus !== RunningStatus.SUCCEED,
+                    })}
                     align={numeric ? 'right' : 'left'}
                 >
                     <OverflowableText text={text} />
                 </TableCell>
             );
         },
-        [classes.tableCell, formatCell]
+        [classes.tableCell, classes.valueInvalid, loadFlowStatus, formatCell]
     );
 
     const registerChangeRequest = useCallback(
@@ -262,7 +278,8 @@ export const EquipmentTable = ({
                         cell,
                         c.numeric,
                         c.fractionDigits,
-                        c.normed
+                        c.normed,
+                        c.canBeInvalidated
                     );
             }
             delete column.changeCmd;

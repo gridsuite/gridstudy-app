@@ -53,6 +53,7 @@ import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
+import clsx from 'clsx';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -955,11 +956,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 {
                     <div
                         ref={svgRef}
-                        className={
-                            loadFlowStatus !== RunningStatus.SUCCEED
-                                ? classes.divSld + ' ' + classes.divInvalid
-                                : classes.divSld
-                        }
+                        className={clsx(classes.divSld, {
+                            [classes.divInvalid]:
+                                loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
                         dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 }
