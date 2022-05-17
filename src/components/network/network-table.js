@@ -398,15 +398,14 @@ const NetworkTable = (props) => {
     const setSort = useCallback(
         (columnDefinition) => {
             // 1 clic : ASC, 2 clic : DESC, 3 clic : no sort
-            if(!columnSort || columnSort.key !== columnDefinition.dataKey)
-            {
+            if (!columnSort || columnSort.key !== columnDefinition.dataKey) {
                 setColumnSort({
                     key: columnDefinition.dataKey,
                     reverse: false,
                     numeric: columnDefinition.numeric,
                     colDef: columnDefinition,
                 });
-            } else if(!columnSort.reverse) {
+            } else if (!columnSort.reverse) {
                 setColumnSort({
                     key: columnDefinition.dataKey,
                     reverse: true,
@@ -606,7 +605,11 @@ const NetworkTable = (props) => {
             ) {
                 const text = formatCell(rowData, columnDefinition);
                 const changeRequest = (value) =>
-                    registerChangeRequest(rowData, columnDefinition.changeCmd, value);
+                    registerChangeRequest(
+                        rowData,
+                        columnDefinition.changeCmd,
+                        value
+                    );
                 const Editor = columnDefinition.editor;
                 if (Editor) {
                     return (
@@ -888,10 +891,10 @@ const NetworkTable = (props) => {
             (c) => !c.editColumn
         );
         return columns.map((col) => {
-            return ({
+            return {
                 displayName: col.label,
                 id: col.dataKey,
-            });
+            };
         });
     };
 
