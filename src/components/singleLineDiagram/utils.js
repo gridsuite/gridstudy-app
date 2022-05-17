@@ -30,6 +30,7 @@ export const useSingleLineDiagram = () => {
         (type, id) => {
             const queryParams = parse(location.search, {
                 ignoreQueryPrefix: true,
+                arrayFormat,
             });
             const current = getArray(queryParams['views'])
                 .filter((item) => item.id !== id)

@@ -38,24 +38,30 @@ function removeFromMap(oldMap, ids) {
 }
 
 const mergeDisplayed = (oldValue, sldToDisplay, createSLD) => {
-    const toAdd = new Set(sldToDisplay);
+    const toAdd = new Map(sldToDisplay.map((o) => [o.id, o]));
     const toRemove = new Set();
+    let changeLastOpen = false;
+    const lastOpen = sldToDisplay.find((view) => view.lastOpen)?.id;
     oldValue.forEach((sld) => {
         // delete already present element
+        if (!sld.lastOpen !== (sld.id === lastOpen)) {
+            changeLastOpen = true;
+        }
         if (!toAdd.delete(sld?.id)) {
             toRemove.add(sld); // if element is absent we (delete returned false we have to remove it
         }
     });
-    if (toAdd.size === 0 && toRemove.size === 0)
+    if (toAdd.size === 0 && toRemove.size === 0 && !changeLastOpen)
         // nothing to be done
         return oldValue;
     const newValue =
         toRemove.size === 0
             ? [...oldValue]
             : oldValue.filter((sld) => !toRemove.has(sld));
-    toAdd.forEach((id) => {
-        newValue.push(createSLD(id));
+    toAdd.forEach((value) => {
+        newValue.push(createSLD(value));
     });
+    newValue.forEach((view) => (view.lastOpen = view.id === lastOpen));
     return newValue.filter((n) => n);
 };
 
@@ -268,13 +274,12 @@ export function SingleLineDiagramPane({
             arrayFormat: 'indices',
         });
         let newVoltageLevelIds = getArray(queryParams['views']);
-
         setViews((oldValue) =>
             mergeDisplayed(oldValue, newVoltageLevelIds, createView)
         );
 
         setUpdateSwitchMsg('');
-    }, [createView, location.search]);
+    }, [createView, location]);
 
     const toggleState = useCallback(
         (id, type, state) => {
@@ -359,11 +364,6 @@ export function SingleLineDiagramPane({
                 ({ id, lastOpen }) =>
                     lastOpen && viewState.get(id) === undefined
             );
-            if (!more)
-                more = views.find(
-                    ({ id, lastOpen }) =>
-                        viewState.get(id) === undefined && false
-                );
             if (more) {
                 newDisplayed.push(more);
             }
@@ -373,7 +373,6 @@ export function SingleLineDiagramPane({
 
     const displayedIds = new Set(displayedSLD.map(({ id }) => id));
     const minimized = views.filter(({ id }) => !displayedIds.has(id));
-
     return (
         <>
             {displayedSLD.map((sld) => (
