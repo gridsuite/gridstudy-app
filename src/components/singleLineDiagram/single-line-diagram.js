@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2020, RTE (http://www.rte-france.com)
+/*
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -17,7 +17,6 @@ import React, {
 import PropTypes from 'prop-types';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { selectItemNetwork } from '../redux/actions';
 
 import Box from '@mui/material/Box';
 import CloseIcon from '@mui/icons-material/Close';
@@ -29,27 +28,31 @@ import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 
-import { fetchSvg } from '../utils/rest-api';
+import { fetchSvg } from '../../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
-import Arrow from '../images/arrow.svg';
-import ArrowHover from '../images/arrow_hover.svg';
-import { fullScreenSingleLineDiagram } from '../redux/actions';
+import Arrow from '../../images/arrow.svg';
+import ArrowHover from '../../images/arrow_hover.svg';
+import { fullScreenSingleLineDiagram } from '../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
-import BaseEquipmentMenu from './menus/base-equipment-menu';
-import withEquipmentMenu from './menus/equipment-menu';
-import withLineMenu from './menus/line-menu';
+import BaseEquipmentMenu from '../menus/base-equipment-menu';
+import withEquipmentMenu from '../menus/equipment-menu';
+import withLineMenu from '../menus/line-menu';
 
-import { equipments } from './network/network-equipments';
-import { RunningStatus } from './util/running-status';
-import { INVALID_LOADFLOW_OPACITY } from '../utils/colors';
+import { equipments } from '../network/network-equipments';
+import { RunningStatus } from '../util/running-status';
+import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useIntlRef, useSnackMessage } from '../../utils/messages';
+
+import PushPinIcon from '@mui/icons-material/PushPin';
+import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
+import MinimizeIcon from '@mui/icons-material/Minimize';
+import { ViewState } from './utils';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -99,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
             stroke: 'none',
             fill: theme.palette.text.primary,
         },
+        overflow: 'hidden',
     },
     divInvalid: {
         '& .sld-arrow-p, .sld-arrow-q': {
@@ -107,6 +111,15 @@ const useStyles = makeStyles((theme) => ({
     },
     close: {
         padding: 0,
+    },
+    actionIcon: {
+        padding: 0,
+        borderRight: theme.spacing(1),
+    },
+    pinRotate: {
+        padding: 0,
+        borderRight: theme.spacing(1),
+        transform: 'rotate(45deg)',
     },
     header: {
         padding: 5,
@@ -180,7 +193,8 @@ const computePaperAndSvgSizesIfReady = (
     totalHeight,
     svgPreferredWidth,
     svgPreferredHeight,
-    headerPreferredHeight
+    headerPreferredHeight,
+    numberToDisplay
 ) => {
     if (
         typeof svgPreferredWidth != 'undefined' &&
@@ -211,6 +225,9 @@ const computePaperAndSvgSizesIfReady = (
                 totalHeight - mapBottomOffset - headerPreferredHeight,
                 maxHeight
             );
+            if (numberToDisplay > 1) {
+                svgWidth = totalWidth - borders;
+            }
             paperWidth = svgWidth + borders;
             paperHeight = svgHeight + headerPreferredHeight + borders;
         }
@@ -223,11 +240,20 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const svgUrl = useRef('');
     const svgDraw = useRef();
     const dispatch = useDispatch();
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
-
-    const { totalWidth, totalHeight, svgType, loadFlowStatus, workingNode } =
-        props;
+    const svgRef = useRef();
+    const {
+        totalWidth,
+        totalHeight,
+        svgType,
+        loadFlowStatus,
+        workingNode,
+        numberToDisplay,
+        sldId,
+        pinned,
+        toggleState,
+    } = props;
 
     const network = useSelector((state) => state.network);
 
@@ -304,7 +330,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             totalHeight,
             svgPreferredWidth,
             svgPreferredHeight,
-            headerPreferredHeight
+            headerPreferredHeight,
+            numberToDisplay
         );
         if (typeof sizes != 'undefined') {
             setSvgFinalWidth(sizes.svgWidth);
@@ -320,6 +347,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         svgPreferredWidth,
         svgPreferredHeight,
         headerPreferredHeight,
+        numberToDisplay,
+        sldId,
     ]);
 
     useEffect(() => {
@@ -343,16 +372,13 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         error: errorMessage,
                         svgUrl: props.svgUrl,
                     });
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                    });
+                    snackError(errorMessage);
                     updateLoadingState(false);
                 });
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, enqueueSnackbar, intlRef]);
+    }, [props.svgUrl, forceState, snackError, intlRef]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -595,7 +621,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         }
 
         if (svg.svg) {
-            const divElt = document.getElementById('sld-svg');
+            const divElt = svgRef.current;
             divElt.innerHTML = svg.svg;
             //need to add it there so the bbox has the right size
             addNavigationArrow(svg);
@@ -759,6 +785,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         hideFeederSelection,
         svgType,
         theme,
+        sldId,
+        ref,
     ]);
 
     useLayoutEffect(() => {
@@ -766,7 +794,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             typeof svgFinalWidth != 'undefined' &&
             typeof svgFinalHeight != 'undefined'
         ) {
-            const divElt = document.getElementById('sld-svg');
+            const divElt = svgRef.current;
             if (divElt != null) {
                 const svgEl = divElt.getElementsByTagName('svg')[0];
                 if (svgEl != null) {
@@ -794,18 +822,17 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (props.onClose !== null) {
-            dispatch(selectItemNetwork(null));
-            dispatch(fullScreenSingleLineDiagram(false));
-            props.onClose();
+            dispatch(fullScreenSingleLineDiagram(undefined));
+            props.onClose(sldId);
         }
     };
 
     const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(true));
+        dispatch(fullScreenSingleLineDiagram(sldId));
     };
 
     const hideFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(false));
+        dispatch(fullScreenSingleLineDiagram(undefined));
     };
 
     function displayMenuLine() {
@@ -857,6 +884,15 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         sizeWidth = totalWidth; // happens during initalization
     }
 
+    const pinSld = useCallback(
+        () => toggleState(sldId, svgType, ViewState.PINNED),
+        [sldId, svgType, toggleState]
+    );
+    const minimizeSld = useCallback(
+        () => toggleState(sldId, svgType, ViewState.MINIMIZED),
+        [toggleState, sldId, svgType]
+    );
+
     return !svg.error ? (
         <Paper
             elevation={1}
@@ -867,6 +903,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 minWidth: loadingWidth,
                 height: sizeHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
+                overflow: 'hidden',
             }}
         >
             <Box>
@@ -882,6 +919,20 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     <Box flexGrow={1}>
                         <Typography>{props.diagramTitle}</Typography>
                     </Box>
+                    <IconButton
+                        className={classes.actionIcon}
+                        onClick={minimizeSld}
+                    >
+                        <MinimizeIcon />
+                    </IconButton>
+                    <IconButton
+                        className={
+                            pinned ? classes.actionIcon : classes.pinRotate
+                        }
+                        onClick={pinSld}
+                    >
+                        {pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
+                    </IconButton>
                     <IconButton
                         className={classes.close}
                         onClick={onCloseHandler}
@@ -903,7 +954,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 </Box>
                 {
                     <div
-                        id="sld-svg"
+                        ref={svgRef}
                         className={
                             loadFlowStatus !== RunningStatus.SUCCEED
                                 ? classes.divSld + ' ' + classes.divInvalid
@@ -980,6 +1031,8 @@ const SingleLineDiagram = forwardRef((props, ref) => {
 SingleLineDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
+    sldId: PropTypes.string,
+    numberToDisplay: PropTypes.number,
     onClose: PropTypes.func,
     updateSwitchMsg: PropTypes.string.isRequired,
     isComputationRunning: PropTypes.bool.isRequired,
@@ -987,6 +1040,9 @@ SingleLineDiagram.propTypes = {
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
     workingNode: PropTypes.object,
+    pinned: PropTypes.bool,
+    pin: PropTypes.func,
+    minimize: PropTypes.func,
 };
 
 export default SingleLineDiagram;
