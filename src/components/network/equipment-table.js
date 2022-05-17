@@ -170,14 +170,11 @@ export const EquipmentTable = ({
                     component="div"
                     variant="body"
                     style={{ width: cellData.width }}
-                    className={
-                        classes.tableCell +
-                        ' ' +
-                        (canBeInvalidated &&
-                        loadFlowStatus !== RunningStatus.SUCCEED
-                            ? classes.valueInvalid
-                            : '')
-                    }
+                    className={clsx(classes.tableCell, {
+                        [classes.valueInvalid]:
+                            canBeInvalidated &&
+                            loadFlowStatus !== RunningStatus.SUCCEED,
+                    })}
                     align={numeric ? 'right' : 'left'}
                 >
                     <OverflowableText text={text} />
