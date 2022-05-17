@@ -252,6 +252,36 @@ const NetworkTable = (props) => {
         props.network.useEquipment(resource);
     }, [props.network, tabIndex]);
 
+    const filter = useCallback(
+        (cell) => {
+            if (!rowFilter) return true;
+            return (
+                [...selectedDataKey].find((key) =>
+                    rowFilter.test(cell[key])
+                ) !== undefined
+            );
+        },
+        [rowFilter, selectedDataKey]
+    );
+
+    const formatCell = useCallback(
+        (rowData, columnDefinition) => {
+            let value = rowData[columnDefinition.dataKey];
+            if (columnDefinition.cellDataGetter) {
+                value = columnDefinition.cellDataGetter(rowData, props.network);
+            }
+            if (columnDefinition.normed) {
+                value = columnDefinition.normed(fluxConvention, value);
+            }
+            return value &&
+                columnDefinition.numeric &&
+                columnDefinition.fractionDigits
+                ? parseFloat(value).toFixed(columnDefinition.fractionDigits)
+                : value;
+        },
+        [fluxConvention, props.network]
+    );
+
     const getRows = useCallback(
         (index) => {
             const tableDefinition = TABLES_DEFINITION_INDEXES.get(index);
@@ -292,7 +322,7 @@ const NetworkTable = (props) => {
             }
             return result;
         },
-        [props.network, rowFilter, columnSort]
+        [props.network, rowFilter, columnSort, filter, formatCell]
     );
 
     function getTabIndexFromEquipementType(equipmentType) {
@@ -328,34 +358,19 @@ const NetworkTable = (props) => {
         manualTabSwitch,
     ]);
 
-    const formatCell = useCallback(
-        (rowData, columnDefinition) => {
-            let value = rowData[columnDefinition.dataKey];
-            if (columnDefinition.cellDataGetter) {
-                value = columnDefinition.cellDataGetter(rowData, props.network);
-            }
-            if (columnDefinition.normed) {
-                value = columnDefinition.normed(fluxConvention, value);
-            }
-            return value &&
-                columnDefinition.numeric &&
-                columnDefinition.fractionDigits
-                ? parseFloat(value).toFixed(columnDefinition.fractionDigits)
-                : value;
-        },
-        [fluxConvention, props.network]
-    );
-
-    const renderTableLockIcon = () => {
+    const renderTableLockIcon = useCallback(() => {
         return <LockIcon className={classes.tableLock} />;
-    };
+    }, [classes.tableLock]);
 
-    const sortIconClassStyle = (columnSort, dataKey) => {
-        if (columnSort && columnSort.key === dataKey) {
-            return classes.activeSortArrow;
-        }
-        return classes.inactiveSortArrow;
-    };
+    const sortIconClassStyle = useCallback(
+        (columnSort, dataKey) => {
+            if (columnSort && columnSort.key === dataKey) {
+                return classes.activeSortArrow;
+            }
+            return classes.inactiveSortArrow;
+        },
+        [classes.activeSortArrow, classes.inactiveSortArrow]
+    );
 
     const renderSortArrowIcon = (columnSort, dataKey) => {
         if (columnSort && columnSort.key === dataKey && columnSort.reverse) {
@@ -379,6 +394,27 @@ const NetworkTable = (props) => {
             }
         }
     };
+
+    const setSort = useCallback(
+        (columnDefinition) => {
+            let newReverse = false;
+            if (
+                columnSort &&
+                columnSort.key === columnDefinition.dataKey &&
+                !columnSort.reverse
+            ) {
+                newReverse = true;
+            }
+            let newSort = {
+                key: columnDefinition.dataKey,
+                reverse: newReverse,
+                numeric: columnDefinition.numeric,
+                colDef: columnDefinition,
+            };
+            setColumnSort(newSort);
+        },
+        [columnSort]
+    );
 
     const headerCellRender = useCallback(
         (columnDefinition, key, style) => {
@@ -408,56 +444,66 @@ const NetworkTable = (props) => {
                 </div>
             );
         },
-        [classes.tableHeader, columnSort]
+        [
+            classes.tableHeader,
+            columnSort,
+            renderTableLockIcon,
+            setSort,
+            sortIconClassStyle,
+        ]
     );
 
-    function commitChanges(rowData) {
-        function capitaliseFirst(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        }
-        let groovyCr =
-            'equipment = network.get' +
-            capitaliseFirst(
-                TABLES_DEFINITION_INDEXES.get(tabIndex).modifiableEquipmentType
-            ) +
-            "('" +
-            lineEdit.id.replace(/'/g, "\\'") +
-            "')\n";
-        Object.values(lineEdit.newValues).forEach((cr) => {
-            groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
-        });
-        requestNetworkChange(
-            props.studyUuid,
-            props.workingNode?.id,
-            groovyCr
-        ).then((response) => {
-            if (response.ok) {
-                Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
-                    rowData[key] = cr.value;
-                });
-                // TODO When the data is saved, we should force an update of the table's data. As is, it takes too long to update.
-                // And maybe add a visual clue that the save was successful ?
-            } else {
+    const editCellRender = useCallback(
+        (rowData, columnDefinition, key, style) => {
+            function resetChanges(rowData) {
                 Object.entries(lineEdit.oldValues).forEach(
                     ([key, oldValue]) => {
                         rowData[key] = oldValue;
                     }
                 );
-                // TODO Same here, maybe a visual clue that something went wrong ?
+                setLineEdit({});
             }
-            setLineEdit({});
-        });
-    }
+            function commitChanges(rowData) {
+                function capitaliseFirst(str) {
+                    return str.charAt(0).toUpperCase() + str.slice(1);
+                }
+                let groovyCr =
+                    'equipment = network.get' +
+                    capitaliseFirst(
+                        TABLES_DEFINITION_INDEXES.get(tabIndex)
+                            .modifiableEquipmentType
+                    ) +
+                    "('" +
+                    lineEdit.id.replace(/'/g, "\\'") +
+                    "')\n";
+                Object.values(lineEdit.newValues).forEach((cr) => {
+                    groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
+                });
+                requestNetworkChange(
+                    props.studyUuid,
+                    props.workingNode?.id,
+                    groovyCr
+                ).then((response) => {
+                    if (response.ok) {
+                        Object.entries(lineEdit.newValues).forEach(
+                            ([key, cr]) => {
+                                rowData[key] = cr.value;
+                            }
+                        );
+                        // TODO When the data is saved, we should force an update of the table's data. As is, it takes too long to update.
+                        // And maybe add a visual clue that the save was successful ?
+                    } else {
+                        Object.entries(lineEdit.oldValues).forEach(
+                            ([key, oldValue]) => {
+                                rowData[key] = oldValue;
+                            }
+                        );
+                        // TODO Same here, maybe a visual clue that something went wrong ?
+                    }
+                    setLineEdit({});
+                });
+            }
 
-    function resetChanges(rowData) {
-        Object.entries(lineEdit.oldValues).forEach(([key, oldValue]) => {
-            rowData[key] = oldValue;
-        });
-        setLineEdit({});
-    }
-
-    const editCellRender = useCallback(
-        (rowData, columnDefinition, key, style) => {
             if (isLineOnEditMode(rowData)) {
                 return (
                     <div key={key} style={style}>
@@ -506,7 +552,14 @@ const NetworkTable = (props) => {
                 );
             }
         },
-        [classes.editCell, lineEdit]
+        [
+            classes.editCell,
+            isLineOnEditMode,
+            lineEdit,
+            props.studyUuid,
+            props.workingNode?.id,
+            tabIndex,
+        ]
     );
 
     const defaultCellRender = useCallback(
@@ -570,11 +623,12 @@ const NetworkTable = (props) => {
             return defaultCellRender(rowData, columnDefinition, key, style);
         },
         [
-            classes.tableCell,
-            defaultCellRender,
             isLineOnEditMode,
-            registerChangeRequest,
+            defaultCellRender,
             formatCell,
+            registerChangeRequest,
+            classes.tableCell,
+            classes.inlineEditionCell,
         ]
     );
 
@@ -686,24 +740,6 @@ const NetworkTable = (props) => {
         );
     }
 
-    function setSort(columnDefinition) {
-        let newReverse = false;
-        if (
-            columnSort &&
-            columnSort.key === columnDefinition.dataKey &&
-            !columnSort.reverse
-        ) {
-            newReverse = true;
-        }
-        let newSort = {
-            key: columnDefinition.dataKey,
-            reverse: newReverse,
-            numeric: columnDefinition.numeric,
-            colDef: columnDefinition,
-        };
-        setColumnSort(newSort);
-    }
-
     useEffect(() => {
         let tmpDataKeySet = new Set();
         TABLES_DEFINITION_INDEXES.get(tabIndex)
@@ -711,18 +747,6 @@ const NetworkTable = (props) => {
             .forEach((col) => tmpDataKeySet.add(col.dataKey));
         setSelectedDataKey(tmpDataKeySet);
     }, [tabIndex, selectedColumnsNames]);
-
-    const filter = useCallback(
-        (cell) => {
-            if (!rowFilter) return true;
-            return (
-                [...selectedDataKey].find((key) =>
-                    rowFilter.test(cell[key])
-                ) !== undefined
-            );
-        },
-        [rowFilter, selectedDataKey]
-    );
 
     const handleOpenPopupSelectColumnNames = () => {
         setPopupSelectColumnNames(true);
@@ -883,7 +907,7 @@ const NetworkTable = (props) => {
             .trim()
             .replace(/[\\/:"*?<>|\s]/g, '-') // Removes the filesystem sensible characters
             .substring(0, 27); // Best practice : limits the filename size to 31 characters (27+'.csv')
-    }, [tabIndex]);
+    }, [intl, tabIndex]);
 
     const getCSVColumnNames = () => {
         let tempHeaders = [];
