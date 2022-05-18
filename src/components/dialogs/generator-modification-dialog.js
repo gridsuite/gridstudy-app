@@ -172,7 +172,6 @@ const GeneratorModificationDialog = ({
         clearable: true,
     });
 
-    // TODO Check previous value
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
         validation: {
@@ -195,7 +194,7 @@ const GeneratorModificationDialog = ({
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
         defaultValue: getValue(formValues?.activePowerSetpoint),
-        previousValue: generatorInfos?.p,
+        previousValue: generatorInfos?.targetP,
         clearable: true,
     });
 
@@ -226,7 +225,7 @@ const GeneratorModificationDialog = ({
         formProps: { disabled: voltageRegulation === false },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.voltageSetpoint),
-        previousValue: generatorInfos?.targetP,
+        previousValue: generatorInfos?.targetV,
         clearable: true,
     });
 
@@ -311,7 +310,6 @@ const GeneratorModificationDialog = ({
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
                         <Grid item xs={11}>
-                            {/* TODO message */}
                             <FormattedMessage id="ModifyGenerator" />
                         </Grid>
                     </Grid>
