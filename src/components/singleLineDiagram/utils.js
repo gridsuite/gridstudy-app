@@ -46,7 +46,7 @@ export const useSingleLineDiagram = () => {
                     )
             );
         },
-        [location, history]
+        [location.search, location.pathname, history]
     );
 
     const showVoltageLevelDiagram = useCallback(
