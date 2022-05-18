@@ -74,7 +74,7 @@ export const useNullableBooleanValue = ({
     inputForm,
     formProps,
 }) => {
-    const [value, setValue] = useState(defaultValue);
+    const [value, setValue] = useState(defaultValue || null);
     const intl = useIntl();
 
     useEffect(() => {
@@ -92,7 +92,6 @@ export const useNullableBooleanValue = ({
             return true;
         });
     }, []);
-
     const field = useMemo(() => {
         return (
             <FormControl fullWidth size="small">
@@ -100,7 +99,7 @@ export const useNullableBooleanValue = ({
                     id={id ? id : label}
                     control={
                         <Checkbox
-                            checked={value}
+                            checked={value === true}
                             indeterminate={value === null}
                             onChange={(e) => handleChangeValue(e)}
                             value="checked"
