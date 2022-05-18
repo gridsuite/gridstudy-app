@@ -1,333 +1,107 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useIntl } from 'react-intl';
-import { requestNetworkChange } from '../../utils/rest-api';
-import { IconButton, TextField } from '@mui/material';
-import CreateIcon from '@mui/icons-material/Create';
-import Grid from '@mui/material/Grid';
-import CheckIcon from '@mui/icons-material/Check';
-import ClearIcon from '@mui/icons-material/Clear';
-import TableCell from '@mui/material/TableCell';
+import React, { useEffect, useRef, useState } from 'react';
 import LoaderWithOverlay from '../util/loader-with-overlay';
-import VirtualizedTable from '../util/virtualized-table';
-import makeStyles from '@mui/styles/makeStyles';
-import clsx from 'clsx';
-import { OverflowableText } from '@gridsuite/commons-ui';
-import { RunningStatus } from '../util/running-status';
-import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
+import { MultiGrid, AutoSizer } from 'react-virtualized';
+import {
+    MIN_COLUMN_WIDTH,
+    HEADER_ROW_HEIGHT,
+    ROW_HEIGHT,
+} from './config-tables';
 
-const ROW_HEIGHT = 38;
+export const EquipmentTable = (props) => {
+    const gridRef = useRef();
 
-const useStyles = makeStyles((theme) => ({
-    tableCell: {
-        display: 'flex',
-        alignItems: 'right',
-        textAlign: 'right',
-        boxSizing: 'border-box',
-        padding: theme.spacing(1),
-        flex: 1,
-        minWidth: 0,
-        height: ROW_HEIGHT + 'px',
-        cursor: 'initial',
-    },
-    valueInvalid: {
-        opacity: INVALID_LOADFLOW_OPACITY,
-    },
-}));
+    const [fixedColumnsCount, setFixedColumnsCount] = useState(0);
 
-export const EquipmentTable = ({
-    fetched,
-    studyUuid,
-    workingNode,
-    rows,
-    selectedColumnsNames,
-    tableDefinition,
-    filter,
-    scrollToIndex,
-    scrollToAlignment,
-    network,
-    selectedDataKey,
-    fluxConvention,
-    loadFlowStatus,
-}) => {
-    const [lineEdit, setLineEdit] = useState(undefined);
-    const classes = useStyles();
-    const intl = useIntl();
-    const isLineOnEditMode = useCallback(
-        (cellData) => {
-            return lineEdit && cellData.rowData.id === lineEdit.id;
-        },
-        [lineEdit]
-    );
+    useEffect(() => {
+        const count = props.columns.filter((c) => c.locked).length;
+        setFixedColumnsCount(count);
+        if (gridRef && gridRef.current) {
+            gridRef.current.recomputeGridSize();
+        }
+    }, [props.columns]);
 
-    useEffect(() => setLineEdit({}), [tableDefinition]);
-
-    function startEdition(lineInfo) {
-        setLineEdit(lineInfo);
-    }
-
-    function capitaliseFirst(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    function commitChanges(rowData) {
-        let groovyCr =
-            'equipment = network.get' +
-            capitaliseFirst(tableDefinition.modifiableEquipmentType) +
-            "('" +
-            lineEdit.id.replace(/'/g, "\\'") +
-            "')\n";
-        Object.values(lineEdit.newValues).forEach((cr) => {
-            groovyCr += cr.changeCmd.replace(/\{\}/g, cr.value) + '\n';
-        });
-        requestNetworkChange(studyUuid, workingNode?.id, groovyCr).then(
-            (response) => {
-                if (response.ok) {
-                    Object.entries(lineEdit.newValues).forEach(([key, cr]) => {
-                        rowData[key] = cr.value;
-                    });
-                } else {
-                    Object.entries(lineEdit.oldValues).forEach(
-                        ([key, oldValue]) => {
-                            rowData[key] = oldValue;
-                        }
-                    );
-                }
-                setLineEdit({});
-            }
-        );
-    }
-
-    function resetChanges(rowData) {
-        Object.entries(lineEdit.oldValues).forEach(([key, oldValue]) => {
-            rowData[key] = oldValue;
-        });
-        setLineEdit({});
-    }
-
-    function createEditableRow(cellData) {
-        return (
-            (!isLineOnEditMode(cellData) && (
-                <IconButton
-                    size="small"
-                    disabled={lineEdit && lineEdit.id && true}
-                    onClick={() =>
-                        startEdition({
-                            line: cellData.rowIndex,
-                            oldValues: {},
-                            newValues: {},
-                            id: cellData.rowData['id'],
-                            equipmentType:
-                                tableDefinition.modifiableEquipmentType,
-                        })
-                    }
-                >
-                    <CreateIcon alignmentBaseline={'middle'} />
-                </IconButton>
-            )) || (
-                <Grid container>
-                    <Grid item>
-                        <IconButton
-                            size={'small'}
-                            onClick={() => commitChanges(cellData.rowData)}
-                        >
-                            <CheckIcon />
-                        </IconButton>
-                        <IconButton
-                            size={'small'}
-                            onClick={() => resetChanges(cellData.rowData)}
-                        >
-                            <ClearIcon />
-                        </IconButton>
-                    </Grid>
-                </Grid>
-            )
-        );
-    }
-
-    const formatCell = useCallback(
-        (cellData, isNumeric, fractionDigit, normed = undefined) => {
-            let value = cellData.cellData;
-            if (typeof value === 'function') value = cellData.cellData(network);
-            if (normed) value = normed(fluxConvention, value);
-            return value && isNumeric && fractionDigit
-                ? parseFloat(value).toFixed(fractionDigit)
-                : value;
-        },
-        [fluxConvention, network]
-    );
-
-    const defaultCellRender = useCallback(
-        (
-            cellData,
-            numeric,
-            fractionDigit,
-            normed = undefined,
-            canBeInvalidated = undefined
-        ) => {
-            const text = formatCell(cellData, numeric, fractionDigit, normed);
+    function cellRenderer({ columnIndex, key, rowIndex, style }) {
+        if (!props.columns || !props.columns[columnIndex]) {
             return (
-                <TableCell
-                    component="div"
-                    variant="body"
-                    style={{ width: cellData.width }}
-                    className={clsx(classes.tableCell, {
-                        [classes.valueInvalid]:
-                            canBeInvalidated &&
-                            loadFlowStatus !== RunningStatus.SUCCEED,
-                    })}
-                    align={numeric ? 'right' : 'left'}
-                >
-                    <OverflowableText text={text} />
-                </TableCell>
+                <div key={key} style={{ opacity: '0.5' }}>
+                    ...loading
+                </div>
             );
-        },
-        [classes.tableCell, classes.valueInvalid, loadFlowStatus, formatCell]
-    );
+        }
+        let columnDefinition = props.columns[columnIndex];
 
-    const registerChangeRequest = useCallback(
-        (data, changeCmd, value) => {
-            // save original value, dont erase if exists
-            if (!lineEdit.oldValues[data.dataKey])
-                lineEdit.oldValues[data.dataKey] = data.rowData[data.dataKey];
-            lineEdit.newValues[data.dataKey] = {
-                changeCmd: changeCmd,
-                value: value,
-            };
-            data.rowData[data.dataKey] = value;
-        },
-        [lineEdit]
-    );
-
-    const EditableCellRender = useCallback(
-        (cellData, numeric, changeCmd, fractionDigit, Editor) => {
-            if (
-                !isLineOnEditMode(cellData) ||
-                cellData.rowData[cellData.dataKey] === undefined
-            ) {
-                return defaultCellRender(cellData, numeric, fractionDigit);
+        if (rowIndex === 0) {
+            return props.columns.headerCellRender(columnDefinition, key, style);
+        } else {
+            let cell = props.rows[rowIndex - 1];
+            if (columnDefinition.cellRenderer) {
+                return columnDefinition.cellRenderer(
+                    cell,
+                    columnDefinition,
+                    key,
+                    style
+                );
             } else {
-                const ref = React.createRef();
-                const text = formatCell(cellData, numeric, fractionDigit);
-                const changeRequest = (value) =>
-                    registerChangeRequest(cellData, changeCmd, value);
-                return Editor ? (
-                    <Editor
-                        key={cellData.dataKey + cellData.rowData.id}
-                        className={classes.tableCell}
-                        equipment={cellData.rowData}
-                        defaultValue={formatCell(
-                            cellData,
-                            numeric,
-                            fractionDigit
-                        )}
-                        setter={(val) => changeRequest(val)}
-                    />
-                ) : (
-                    <OverflowableText text={text} childRef={ref}>
-                        <TextField
-                            id={cellData.dataKey}
-                            type="Number"
-                            className={clsx(classes.tableCell, classes.textDiv)}
-                            size={'medium'}
-                            margin={'normal'}
-                            inputProps={{
-                                style: { textAlign: 'center' },
-                            }}
-                            onChange={(obj) => changeRequest(obj.target.value)}
-                            defaultValue={text}
-                            ref={ref}
-                        />
-                    </OverflowableText>
+                return (
+                    <div key={key} style={{ opacity: '0.5' }}>
+                        loading...
+                    </div>
                 );
             }
-        },
-        [
-            classes.tableCell,
-            classes.textDiv,
-            defaultCellRender,
-            isLineOnEditMode,
-            registerChangeRequest,
-            formatCell,
-        ]
-    );
+        }
+    }
 
-    const columnDisplayStyle = (key) => {
-        return selectedColumnsNames.has(key) ? '' : 'none';
-    };
+    function getColumnWidth(index) {
+        const width = props.columns[index]?.columnWidth;
+        if (width) {
+            return width;
+        }
+        return MIN_COLUMN_WIDTH;
+    }
 
-    const generateTableColumns = (table) => {
-        return table.columns.map((c) => {
-            let column = {
-                label: intl.formatMessage({ id: c.id }),
-                headerStyle: { display: columnDisplayStyle(c.id) },
-                style: { display: columnDisplayStyle(c.id) },
-                ...c,
-            };
-            if (c.changeCmd !== undefined) {
-                column.cellRenderer = (cell) =>
-                    EditableCellRender(
-                        cell,
-                        c.numeric,
-                        c.changeCmd,
-                        c.fractionDigits,
-                        c.editor
-                    );
-            } else {
-                column.cellRenderer = (cell) =>
-                    defaultCellRender(
-                        cell,
-                        c.numeric,
-                        c.fractionDigits,
-                        c.normed,
-                        c.canBeInvalidated
-                    );
-            }
-            delete column.changeCmd;
-            return column;
-        });
-    };
-
-    function makeHeaderCell() {
-        return {
-            width: 65,
-            maxWidth: 65,
-            label: '',
-            dataKey: '',
-            style: {
-                display: selectedColumnsNames.size > 0 ? '' : 'none',
-            },
-            cellRenderer: createEditableRow,
-        };
+    function getRowHeight(index) {
+        if (index === 0) {
+            return HEADER_ROW_HEIGHT;
+        }
+        return ROW_HEIGHT;
     }
 
     return (
         <>
-            {!fetched && (
+            {!props.fetched && (
                 <LoaderWithOverlay
                     color="inherit"
                     loaderSize={70}
                     loadingMessageText={'LoadingRemoteData'}
                 />
             )}
-            <VirtualizedTable
-                rows={rows}
-                rowHeight={ROW_HEIGHT}
-                filter={filter}
-                columns={
-                    tableDefinition.modifiableEquipmentType &&
-                    !workingNode?.readOnly
-                        ? [
-                              makeHeaderCell(),
-                              ...generateTableColumns(tableDefinition),
-                          ]
-                        : generateTableColumns(tableDefinition)
-                }
-                scrollToIndex={scrollToIndex}
-                scrollToAlignment={scrollToAlignment}
-                enableExportCSV={true}
-                exportCSVDataKeys={selectedDataKey}
-                sortable={true}
-            />
+            {props.fetched &&
+                props.rows &&
+                props.columns &&
+                props.columns.length > 0 && (
+                    <AutoSizer>
+                        {({ width, height }) => (
+                            <MultiGrid
+                                ref={gridRef}
+                                cellRenderer={cellRenderer}
+                                fixedColumnCount={fixedColumnsCount}
+                                fixedRowCount={1}
+                                height={height}
+                                width={width}
+                                columnCount={props.columns.length}
+                                columnWidth={({ index }) =>
+                                    getColumnWidth(index)
+                                }
+                                rowCount={props.rows.length + 1}
+                                rowHeight={({ index }) => getRowHeight(index)}
+                                enableFixedColumnScroll={true}
+                                enableFixedRowScroll={true}
+                                hideTopRightGridScrollbar={true}
+                                hideBottomLeftGridScrollbar={true}
+                            />
+                        )}
+                    </AutoSizer>
+                )}
         </>
     );
 };
