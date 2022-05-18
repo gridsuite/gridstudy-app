@@ -58,6 +58,8 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import clsx from 'clsx';
+import { RunningStatus } from '../util/running-status';
+import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -111,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
     },
     tableHeader: {
         fontSize: 'small',
-        cursor: 'initial',
+        cursor: 'pointer',
         textTransform: 'uppercase',
         margin: '5px',
         padding: '10px 24px 10px 10px',
@@ -193,6 +195,9 @@ const useStyles = makeStyles((theme) => ({
         '50%': {
             opacity: 0.1,
         },
+    },
+    valueInvalid: {
+        opacity: INVALID_LOADFLOW_OPACITY,
     },
 }));
 
@@ -574,13 +579,24 @@ const NetworkTable = (props) => {
                     style={style}
                     align={columnDefinition.numeric ? 'right' : 'left'}
                 >
-                    <div className={classes.tableCell}>
+                    <div
+                        className={clsx(classes.tableCell, {
+                            [classes.valueInvalid]:
+                                columnDefinition.canBeInvalidated &&
+                                props.loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                    >
                         <OverflowableText text={text} />
                     </div>
                 </div>
             );
         },
-        [classes.tableCell, formatCell]
+        [
+            classes.tableCell,
+            classes.valueInvalid,
+            props.loadFlowStatus,
+            formatCell,
+        ]
     );
 
     const registerChangeRequest = useCallback(
@@ -1020,6 +1036,7 @@ NetworkTable.defaultProps = {
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
+    loadFlowStatus: RunningStatus.IDLE,
 };
 
 NetworkTable.propTypes = {
@@ -1029,6 +1046,7 @@ NetworkTable.propTypes = {
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
+    loadFlowStatus: PropTypes.any,
 };
 
 export default NetworkTable;
