@@ -113,11 +113,13 @@ const useStyles = makeStyles((theme) => ({
     },
     tableHeader: {
         fontSize: 'small',
-        cursor: 'pointer',
         textTransform: 'uppercase',
         margin: '5px',
         padding: '10px 24px 10px 10px',
         fontWeight: 'bold',
+    },
+    clickable: {
+        cursor: 'pointer',
     },
     editCell: {
         fontSize: 'small',
@@ -377,12 +379,26 @@ const NetworkTable = (props) => {
         [classes.activeSortArrow, classes.inactiveSortArrow]
     );
 
-    const renderSortArrowIcon = (columnSort, dataKey) => {
-        if (columnSort && columnSort.key === dataKey && columnSort.reverse) {
-            return <ArrowUpwardIcon className={'arrow'} />;
-        }
-        return <ArrowDownwardIcon className={'arrow'} />;
-    };
+    const isModifyingRow = useCallback(() => {
+        return lineEdit !== undefined && lineEdit.id !== undefined;
+    }, [lineEdit]);
+
+    const renderSortArrowIcon = useCallback(
+        (columnSort, dataKey) => {
+            if (isModifyingRow()) {
+                return null;
+            }
+            if (
+                columnSort &&
+                columnSort.key === dataKey &&
+                columnSort.reverse
+            ) {
+                return <ArrowUpwardIcon className={'arrow'} />;
+            }
+            return <ArrowDownwardIcon className={'arrow'} />;
+        },
+        [isModifyingRow]
+    );
 
     const renderColumnConfigLockIcon = (value) => {
         if (selectedColumnsNames.has(value)) {
@@ -403,6 +419,9 @@ const NetworkTable = (props) => {
     const setSort = useCallback(
         (columnDefinition) => {
             // 1 clic : ASC, 2 clic : DESC, 3 clic : no sort
+            if (isModifyingRow()) {
+                return;
+            }
             if (!columnSort || columnSort.key !== columnDefinition.dataKey) {
                 setColumnSort({
                     key: columnDefinition.dataKey,
@@ -421,7 +440,7 @@ const NetworkTable = (props) => {
                 setColumnSort(undefined);
             }
         },
-        [columnSort]
+        [columnSort, isModifyingRow]
     );
 
     const headerCellRender = useCallback(
@@ -437,7 +456,12 @@ const NetworkTable = (props) => {
                         columnDefinition.dataKey
                     )}
                 >
-                    <div className={classes.tableHeader}>
+                    <div
+                        className={clsx({
+                            [classes.tableHeader]: true,
+                            [classes.clickable]: !isModifyingRow(),
+                        })}
+                    >
                         {columnDefinition.locked && !columnDefinition.editColumn
                             ? renderTableLockIcon()
                             : ''}
@@ -458,6 +482,9 @@ const NetworkTable = (props) => {
             renderTableLockIcon,
             setSort,
             sortIconClassStyle,
+            renderSortArrowIcon,
+            classes.clickable,
+            isModifyingRow,
         ]
     );
 
@@ -537,10 +564,7 @@ const NetworkTable = (props) => {
                         <div className={classes.editCell}>
                             <IconButton
                                 size={'small'}
-                                disabled={
-                                    lineEdit !== undefined &&
-                                    lineEdit.id !== undefined
-                                }
+                                disabled={isModifyingRow()}
                                 onClick={() => {
                                     setLineEdit({
                                         oldValues: {},
@@ -567,6 +591,7 @@ const NetworkTable = (props) => {
             props.studyUuid,
             props.workingNode?.id,
             tabIndex,
+            isModifyingRow,
         ]
     );
 
@@ -958,6 +983,7 @@ const NetworkTable = (props) => {
                     <Grid container>
                         <Grid item className={classes.containerInputSearch}>
                             <TextField
+                                disabled={isModifyingRow()}
                                 className={classes.textField}
                                 size="small"
                                 placeholder={
@@ -971,7 +997,13 @@ const NetworkTable = (props) => {
                                     },
                                     startAdornment: (
                                         <InputAdornment position="start">
-                                            <SearchIcon />
+                                            <SearchIcon
+                                                color={
+                                                    isModifyingRow()
+                                                        ? 'disabled'
+                                                        : ''
+                                                }
+                                            />
                                         </InputAdornment>
                                     ),
                                 }}
@@ -982,6 +1014,7 @@ const NetworkTable = (props) => {
                                 <FormattedMessage id="LabelSelectList" />
                             </span>
                             <IconButton
+                                disabled={isModifyingRow()}
                                 className={
                                     selectedColumnsNames.size === 0
                                         ? classes.blink
