@@ -40,6 +40,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
+import { RunningStatus } from '../util/running-status';
 
 const useStyles = makeStyles(() => ({
     searchSection: {
@@ -161,6 +162,7 @@ const NetworkTable = (props) => {
                 network={props.network}
                 selectedDataKey={Array.from(selectedDataKey)}
                 fluxConvention={fluxConvention}
+                loadFlowStatus={props.loadFlowStatus}
             />
         );
     }
@@ -369,6 +371,7 @@ NetworkTable.defaultProps = {
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
+    loadFlowStatus: RunningStatus.IDLE,
 };
 
 NetworkTable.propTypes = {
@@ -378,6 +381,7 @@ NetworkTable.propTypes = {
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,
+    loadFlowStatus: PropTypes.any,
 };
 
 export default NetworkTable;
