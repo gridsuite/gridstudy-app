@@ -49,6 +49,11 @@ const useStyles = makeStyles((theme) => ({
 function getValue(val) {
     return val ? val.value : undefined;
 }
+
+function getValueOrNull(val) {
+    return val ? val.value : null;
+}
+
 /**
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
@@ -204,7 +209,7 @@ const GeneratorModificationDialog = ({
         {
             label: 'VoltageRegulationText',
             inputForm: inputForm,
-            defaultValue: getValue(formValues?.voltageRegulatorOn),
+            defaultValue: getValueOrNull(formValues?.voltageRegulatorOn),
             previousValue: previousRegulation,
             clearable: true,
         }
