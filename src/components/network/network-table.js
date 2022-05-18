@@ -60,7 +60,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
-import { nodeModificationAllowed } from '../graph/util/model-functions';
+import { allowModificationsOnNode } from '../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -682,7 +682,7 @@ const NetworkTable = (props) => {
             return (
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .modifiableEquipmentType &&
-                nodeModificationAllowed(
+                allowModificationsOnNode(
                     props.workingNode,
                     props.selectedNode
                 ) &&
