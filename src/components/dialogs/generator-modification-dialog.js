@@ -199,7 +199,7 @@ const GeneratorModificationDialog = ({
         previousRegulation = intl.formatMessage({ id: 'On' });
     else if (generatorInfos?.voltageRegulatorOn === false)
         previousRegulation = intl.formatMessage({ id: 'Off' });
-    // TODO
+
     const [voltageRegulation, voltageRegulationField] = useNullableBooleanValue(
         {
             label: 'VoltageRegulationText',
@@ -218,7 +218,7 @@ const GeneratorModificationDialog = ({
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
-        formProps: { disabled: voltageRegulation === true },
+        formProps: { disabled: voltageRegulation === false },
         inputForm: inputForm,
         defaultValue: getValue(formValues?.voltageSetpoint),
         previousValue: generatorInfos?.targetP,
@@ -232,7 +232,7 @@ const GeneratorModificationDialog = ({
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        formProps: { disabled: voltageRegulation === false },
+        formProps: { disabled: voltageRegulation === true },
         defaultValue: getValue(formValues?.reactivePowerSetpoint),
         previousValue: generatorInfos?.targetQ,
         clearable: true,
