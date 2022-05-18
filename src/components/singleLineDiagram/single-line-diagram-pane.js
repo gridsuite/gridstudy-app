@@ -288,8 +288,10 @@ export function SingleLineDiagramPane({
                 const oldState = oldValue.get(id);
                 if (oldState === state) newVal.delete(id);
                 else newVal.set(id, state);
-                if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
-                else if (type === SvgType.SUBSTATION) openSubstation(id);
+                if (state !== ViewState.MINIMIZED) {
+                    if (type === SvgType.VOLTAGE_LEVEL) openVoltageLevel(id);
+                    else if (type === SvgType.SUBSTATION) openSubstation(id);
+                }
                 return newVal;
             });
         },
