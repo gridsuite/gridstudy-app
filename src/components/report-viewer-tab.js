@@ -81,13 +81,10 @@ export const ReportViewerTab = ({ studyId, visible, workingNode }) => {
                             defaultName: 'Logs',
                             taskValues: {},
                             reports: [],
-                            subReporters: [],
+                            subReporters: fetchedReport.map((r) =>
+                                condenseReport(r)
+                            ),
                         };
-                        fetchedReport.forEach((report) => {
-                            globalReport.subReporters.push(
-                                condenseReport(report)
-                            );
-                        });
                         setReport(globalReport);
                     }
                 })
