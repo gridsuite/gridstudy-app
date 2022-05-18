@@ -389,5 +389,6 @@
     "Update": "Update",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
-    "InvalidNode": "Invalid node : no modification allowed !!"
+    "InvalidNode": "Invalid node : no modification allowed !!",
+    "LogOnlySingleNode": "Log single node"
 }
