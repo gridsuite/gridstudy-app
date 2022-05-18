@@ -20,6 +20,7 @@ import {
 import { StudyView } from './study-pane';
 import {
     changeDisplayedColumns,
+    changeLockedColumns,
     resetLoadflowNotif,
     resetSANotif,
     selectCenterLabelState,
@@ -76,7 +77,8 @@ import {
     PARAM_FLUX_CONVENTION,
 } from '../utils/config-params';
 import {
-    COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES_INDEXES,
 } from './network/config-tables';
 import { getComputedLanguage } from '../utils/language';
@@ -119,6 +121,7 @@ const App = () => {
         (params) => {
             console.debug('received UI parameters : ', params);
             let displayedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
+            let lockedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
@@ -190,12 +193,12 @@ const App = () => {
                     default:
                         if (
                             param.name.startsWith(
-                                COLUMNS_PARAMETER_PREFIX_IN_DATABASE
+                                DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
                             )
                         ) {
                             let index = TABLES_NAMES_INDEXES.get(
                                 param.name.slice(
-                                    COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
                                 )
                             );
                             displayedColumnsParams[index] = {
@@ -203,9 +206,25 @@ const App = () => {
                                 value: param.value,
                             };
                         }
+                        if (
+                            param.name.startsWith(
+                                LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
+                            )
+                        ) {
+                            let index = TABLES_NAMES_INDEXES.get(
+                                param.name.slice(
+                                    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
+                                )
+                            );
+                            lockedColumnsParams[index] = {
+                                index: index,
+                                value: param.value,
+                            };
+                        }
                 }
             });
             dispatch(changeDisplayedColumns(displayedColumnsParams));
+            dispatch(changeLockedColumns(lockedColumnsParams));
         },
         [dispatch]
     );
