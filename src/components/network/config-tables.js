@@ -689,6 +689,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'q',
                 numeric: true,
                 fractionDigits: 1,
+                normed: applyFluxConvention,
                 canBeInvalidated: true,
             },
             {
