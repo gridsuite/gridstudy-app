@@ -85,7 +85,6 @@ const NodeEditor = () => {
         selectedNodeUuidRef,
         studyUpdatedForce,
         studyUuid,
-        dispatch,
     ]);
 
     const changeNodeName = (newName) => {

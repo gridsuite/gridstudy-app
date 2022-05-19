@@ -216,7 +216,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     useEffect(() => {
         if (selectedNode !== selectedNodeRef.current) {
             selectedNodeRef.current = selectedNode;
-
             if (!selectedNode.networkModification) setModifications([]);
             else {
                 fetchNetworkModifications(selectedNode.networkModification)
