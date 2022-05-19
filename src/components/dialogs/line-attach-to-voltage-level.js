@@ -26,8 +26,8 @@ import {
     useInputForm,
     useTextValue,
 } from './input-hooks';
-import { gridItem, GridSection } from './dialogUtils';
-import { divideLine } from '../../utils/rest-api';
+import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
 import {
@@ -42,7 +42,7 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
 /**
- * Dialog to cut a line in two parts with in insertion of (possibly new) voltage level.
+ * Dialog to attach a line to a (possibly new) voltage level.
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param lineOptions the available network lines
@@ -50,7 +50,7 @@ const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
  * @param substationOptions available substations
  * @param editData the possible line split with voltage level creation record to edit
  */
-const LineSplitWithVoltageLevelDialog = ({
+const LineAttachToVoltageLevelDialog = ({
     open,
     onClose,
     lineOptions,
@@ -79,10 +79,10 @@ const LineSplitWithVoltageLevelDialog = ({
         setFormValues(null);
     };
 
-    const toFormValues = (lineSplit) => {
+    const toFormValues = (lineToAttachTo) => {
         return {
-            lineToSplitId: lineSplit.id + '(1)',
-            percentage: lineSplit.percentage,
+            lineToAttachToId: lineToAttachTo.id + '(1)',
+            percentage: lineToAttachTo.percentage,
         };
     };
 
@@ -114,7 +114,7 @@ const LineSplitWithVoltageLevelDialog = ({
             substationId: newVoltageLevel.substationId,
             busbarSections: newVoltageLevel.busbarSections,
         };
-        return [asVL, ...voltageLevelOptions.filter((vl) => vl.id !== asVL.id)];
+        return [asVL, ...voltageLevelOptions];
     }, [newVoltageLevel, voltageLevelOptions]);
 
     useEffect(() => {
@@ -134,17 +134,20 @@ const LineSplitWithVoltageLevelDialog = ({
     };
     const defaultVoltageLevelId = extractDefaultVoltageLevelId(formValues);
 
-    const [lineToDivide, lineToDivideField] = useAutocompleteField({
-        id: 'lineToDivide',
+    const [lineToAttachTo, lineToAttachToField] = useAutocompleteField({
+        id: 'lineToAttachTo',
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
+        formProps: filledTextField,
         values: lineOptions,
         allowNewValue: true,
         getLabel: getId,
-        defaultValue: formValues?.lineToSplitId || '',
+        defaultValue: formValues?.lineToAttachToId || '',
         selectedValue: formValues
-            ? lineOptions.find((value) => value.id === formValues.lineToSplitId)
+            ? lineOptions.find(
+                  (value) => value.id === formValues.lineToAttachToId
+              )
             : '',
     });
 
@@ -158,15 +161,17 @@ const LineSplitWithVoltageLevelDialog = ({
         upperLeftText: <FormattedMessage id="Line1"></FormattedMessage>,
         upperRightText: <FormattedMessage id="Line2"></FormattedMessage>,
         inputForm: inputForm,
+        formProps: filledTextField,
         defaultValue: formValues?.percent,
     });
 
     const [voltageLevelOrId, voltageLevelIdField, setVoltageLevelOrId] =
         useAutocompleteField({
             id: 'VoltageLevelId',
-            label: 'ID',
+            label: 'AttachedVoltageLevelId',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
+            formProps: filledTextField,
             values: allVoltageLevelOptions,
             allowNewValue: true,
             getLabel: getId,
@@ -187,13 +192,14 @@ const LineSplitWithVoltageLevelDialog = ({
             label: 'BusbarOrNodeID',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
+            formProps: filledTextField,
             values: busbarSectionOptions,
             allowNewValue: true,
             getLabel: getId,
-            defaultValue: formValues?.bbsOrBusId || '',
+            defaultValue: formValues?.bbsOrNodeId || '',
             selectedValue: formValues
                 ? busbarSectionOptions.find(
-                      (value) => value.id === formValues.bbsOrBusId
+                      (value) => value.id === formValues.bbsOrNodeId
                   )
                 : '',
         });
@@ -205,6 +211,7 @@ const LineSplitWithVoltageLevelDialog = ({
         } else {
             bobbsCb(voltageLevelOrId, (bobbss) => {
                 if (!bobbss?.length && voltageLevelOrId?.busbarSections) {
+                    bobbss.push(...voltageLevelOrId.busbarSections);
                     bobbss = [...bobbss, ...voltageLevelOrId.busbarSections];
                 }
                 if (bobbss?.length) {
@@ -236,11 +243,30 @@ const LineSplitWithVoltageLevelDialog = ({
         return newVoltageLevel;
     }, [voltageLevelOrId, bbsOrNodeId, newVoltageLevel, formValues]);
 
+    const [attachmentPointId, attachmentPointIdField] = useTextValue({
+        id: 'attachmentPointId',
+        label: 'AttachmentPointId',
+        validation: { isFieldRequired: true },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        defaultValue: formValues?.attachmentPointId,
+    });
+
+    const [attachmentPointName, attachmentPointNameField] = useTextValue({
+        id: 'attachmentPointName',
+        label: 'AttachmentPointName',
+        validation: { isFieldRequired: false },
+        inputForm: inputForm,
+        formProps: filledTextField,
+        defaultValue: formValues?.attachmentPointName,
+    });
+
     const [newLine1Id, newLine1IdField] = useTextValue({
         id: 'newLine1Id',
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
+        formProps: filledTextField,
         defaultValue: formValues?.newLine1Id,
     });
 
@@ -249,6 +275,7 @@ const LineSplitWithVoltageLevelDialog = ({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
+        formProps: filledTextField,
         defaultValue: formValues?.newLine2Id,
     });
 
@@ -257,6 +284,7 @@ const LineSplitWithVoltageLevelDialog = ({
         label: 'Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
+        formProps: filledTextField,
         defaultValue: formValues?.newLine1Name,
     });
 
@@ -265,19 +293,24 @@ const LineSplitWithVoltageLevelDialog = ({
         label: 'Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
+        formProps: filledTextField,
         defaultValue: formValues?.newLine2Name,
     });
 
     const [voltageLevelDialogOpen, setVoltageLevelDialogOpen] = useState(false);
 
+    const [lineDialogOpen, setLineDialogOpen] = useState(false);
+
     const handleSave = () => {
         if (inputForm.validate()) {
-            divideLine(
+            attachLine(
                 studyUuid,
                 selectedNodeUuid,
                 editData ? editData.uuid : undefined,
-                lineToDivide.id || lineToDivide,
+                lineToAttachTo.id || lineToAttachTo,
                 parseFloat(percentage),
+                attachmentPointId,
+                attachmentPointName,
                 newVoltageLevel,
                 newVoltageLevel
                     ? null
@@ -297,7 +330,7 @@ const LineSplitWithVoltageLevelDialog = ({
                         errorMessage: errorMessage,
                         enqueueSnackbar: enqueueSnackbar,
                         headerMessage: {
-                            headerMessageId: 'LineDivisionError',
+                            headerMessageId: 'LineAttachmentError',
                             intlRef: intlRef,
                         },
                     });
@@ -367,24 +400,17 @@ const LineSplitWithVoltageLevelDialog = ({
         setVoltageLevelDialogOpen(true);
     };
 
+    const openLineDialog = () => {
+        setLineDialogOpen(true);
+    };
+
     const lineSubstation = (isFirst) => {
-        if (!lineToDivide) return '';
-        let vlId = '';
-        if (typeof lineToDivide === 'object') {
-            vlId = isFirst
-                ? lineToDivide.voltageLevelId1
-                : lineToDivide.voltageLevelId2;
-        } else if (isFirst) {
-            const mayLine = lineOptions.find((l) => l?.id === newLine1Id);
-            vlId = mayLine?.voltageLevelId1;
-        } else {
-            const mayLine = lineOptions.find((l) => l?.id === newLine2Id);
-            vlId = mayLine?.voltageLevelId2;
-        }
-        if (vlId) {
-            const mayVl = allVoltageLevelOptions.find((vl) => vl.id === vlId);
-            if (mayVl) return mayVl.name;
-        }
+        if (!lineToAttachTo) return '';
+        const vlId = isFirst
+            ? lineToAttachTo.voltageLevelId1
+            : lineToAttachTo.voltageLevelId2;
+        const mayVl = allVoltageLevelOptions.filter((vl) => vl.id === vlId);
+        if (mayVl && mayVl.length) return mayVl[0].name;
         return '';
     };
 
@@ -394,21 +420,21 @@ const LineSplitWithVoltageLevelDialog = ({
                 fullWidth
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="dialog-create-voltage-level-amidst-a-line"
+                aria-labelledby="dialog-attach-voltage-level-to-a-line"
                 maxWidth={'md'}
             >
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
                         <Grid item xs={11}>
-                            <FormattedMessage id="LineSplitWithVoltageLevel" />
+                            <FormattedMessage id="LineAttachToVoltageLevel" />
                         </Grid>
                         <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
-                    <GridSection title="LineToSplit" />
+                    <GridSection title="LineToAttachTo" />
                     <Grid container spacing={2} alignItems="center">
-                        {gridItem(lineToDivideField, 5)}
+                        {gridItem(lineToAttachToField, 5)}
                         {gridItem(
                             <Typography>{lineSubstation(true)}</Typography>,
                             1
@@ -419,7 +445,12 @@ const LineSplitWithVoltageLevelDialog = ({
                             1
                         )}
                     </Grid>
-                    <GridSection title="VoltageLevelToSplitAt" />
+                    <GridSection title="AttachmentPoint" />
+                    <Grid container spacing={2}>
+                        {gridItem(attachmentPointIdField, 6)}
+                        {gridItem(attachmentPointNameField, 6)}
+                    </Grid>
+                    <GridSection title="VoltageLevel" />
                     <Grid container spacing={2}>
                         {gridItem(voltageLevelIdField, 5)}
                         {gridItem(
@@ -435,6 +466,21 @@ const LineSplitWithVoltageLevelDialog = ({
                             2
                         )}
                         {gridItem(bbsOrNodeIdField, 5)}
+                    </Grid>
+                    <GridSection title="AttachedLine" />
+                    <Grid container spacing={2}>
+                        {gridItem(
+                            <Button
+                                onClick={openLineDialog}
+                                startIcon={<AddIcon />}
+                                variant="outlined"
+                            >
+                                <Typography align="left">
+                                    <FormattedMessage id="AttachedLine" />
+                                </Typography>
+                            </Button>,
+                            6
+                        )}
                     </Grid>
                     <GridSection title="Line1" />
                     <Grid container spacing={2}>
@@ -465,6 +511,7 @@ const LineSplitWithVoltageLevelDialog = ({
                         editData={voltageLevelToEdit}
                     />
                 )}
+                {lineDialogOpen}
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
@@ -477,7 +524,7 @@ const LineSplitWithVoltageLevelDialog = ({
     );
 };
 
-LineSplitWithVoltageLevelDialog.propTypes = {
+LineAttachToVoltageLevelDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     lineOptions: PropTypes.arrayOf(PropTypes.object),
@@ -486,4 +533,4 @@ LineSplitWithVoltageLevelDialog.propTypes = {
     editData: PropTypes.object,
 };
 
-export default LineSplitWithVoltageLevelDialog;
+export default LineAttachToVoltageLevelDialog;
