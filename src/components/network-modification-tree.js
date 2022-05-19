@@ -98,23 +98,19 @@ const NetworkModificationTree = ({
                 node.data.buildStatus !== 'BUILT' &&
                 node.data.buildStatus !== 'BUILDING'
             ) {
-                buildNode(studyUuid, node.id)
-                    .then((data) => {
-                        dispatch(workingTreeNode(node));
-                    })
-                    .catch((errorMessage) => {
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: errorMessage,
-                            enqueueSnackbar: enqueueSnackbar,
-                            headerMessage: {
-                                headerMessageId: 'NodeBuildingError',
-                                intlRef: intlRef,
-                            },
-                        });
+                buildNode(studyUuid, node.id).catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NodeBuildingError',
+                            intlRef: intlRef,
+                        },
                     });
+                });
             }
         },
-        [studyUuid, enqueueSnackbar, intlRef, dispatch]
+        [studyUuid, enqueueSnackbar, intlRef]
     );
 
     const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
