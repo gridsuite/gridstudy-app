@@ -61,6 +61,7 @@ import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { allowModificationsOnNode } from '../graph/util/model-functions';
+import Alert from '@mui/material/Alert';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -84,6 +85,10 @@ const useStyles = makeStyles((theme) => ({
     },
     selectColumns: {
         marginTop: '12px',
+        marginLeft: '50px',
+    },
+    invalidNode: {
+        marginTop: '8px',
         marginLeft: '50px',
     },
     exportCsv: {
@@ -1008,6 +1013,18 @@ const NetworkTable = (props) => {
                                 child={checkListColumnsNames()}
                             />
                         </Grid>
+                        {!allowModificationsOnNode(
+                            props.workingNode,
+                            props.selectedNode
+                        ) &&
+                            props.selectedNode?.type !== 'ROOT' && (
+                                <Alert
+                                    className={classes.invalidNode}
+                                    severity="warning"
+                                >
+                                    {intl.formatMessage({ id: 'InvalidNode' })}
+                                </Alert>
+                            )}
                         <Grid item className={classes.exportCsv}>
                             <span>
                                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />

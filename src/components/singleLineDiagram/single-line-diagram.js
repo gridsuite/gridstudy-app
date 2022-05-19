@@ -961,11 +961,12 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
-                    {!allowModificationsOnNode(workingNode, selectedNode) && (
-                        <Alert severity="warning">
-                            {intl.formatMessage({ id: 'InvalidNode' })}
-                        </Alert>
-                    )}
+                    {!allowModificationsOnNode(workingNode, selectedNode) &&
+                        selectedNode?.type !== 'ROOT' && (
+                            <Alert severity="warning">
+                                {intl.formatMessage({ id: 'InvalidNode' })}
+                            </Alert>
+                        )}
                 </Box>
                 {
                     <div

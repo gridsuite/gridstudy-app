@@ -79,7 +79,14 @@ const NetworkModificationTree = ({
                 )
             );
             dispatch(selectTreeNode(element));
-            dispatch(workingTreeNode(element));
+            if (
+                element.type === 'ROOT' ||
+                (element.type === 'NETWORK_MODIFICATION' &&
+                    (element.data.buildStatus === 'BUILT' ||
+                        element.data.buildStatus === 'BUILT_INVALID'))
+            ) {
+                dispatch(workingTreeNode(element));
+            }
         },
         [dispatch]
     );
@@ -91,19 +98,23 @@ const NetworkModificationTree = ({
                 node.data.buildStatus !== 'BUILT' &&
                 node.data.buildStatus !== 'BUILDING'
             ) {
-                buildNode(studyUuid, node.id).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeBuildingError',
-                            intlRef: intlRef,
-                        },
+                buildNode(studyUuid, node.id)
+                    .then((data) => {
+                        dispatch(workingTreeNode(node));
+                    })
+                    .catch((errorMessage) => {
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'NodeBuildingError',
+                                intlRef: intlRef,
+                            },
+                        });
                     });
-                });
             }
         },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [studyUuid, enqueueSnackbar, intlRef, dispatch]
     );
 
     const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
