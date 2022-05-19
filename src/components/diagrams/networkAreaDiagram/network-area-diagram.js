@@ -45,7 +45,7 @@ import { NetworkAreaDiagramViewer } from 'powsybl-diagram-viewer';
 
 const loadingWidth = 150;
 const maxWidth = 1200;
-const maxHeight = 1000;
+const maxHeight = 750;
 const minWidth = 500;
 const minHeight = 400;
 const errorWidth = maxWidth;
