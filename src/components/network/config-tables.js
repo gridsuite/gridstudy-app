@@ -452,6 +452,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'q',
                 numeric: true,
                 fractionDigits: 1,
+                normed: applyFluxConvention,
                 canBeInvalidated: true,
             },
             {
@@ -463,6 +464,19 @@ export const TABLES_DEFINITIONS = {
                     NumericalField({
                         min: equipment.minP,
                         max: equipment.maxP,
+                        ...props,
+                    }),
+                fractionDigits: 1,
+            },
+            {
+                id: 'TargetQ',
+                dataKey: 'targetQ',
+                numeric: true,
+                changeCmd: 'equipment.setTargetQ({})',
+                editor: ({ equipment, ...props }) =>
+                    NumericalField({
+                        min: equipment.minQ,
+                        max: equipment.maxQ,
                         ...props,
                     }),
                 fractionDigits: 1,
