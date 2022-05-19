@@ -1140,9 +1140,8 @@ export function modifyGenerator(
 
     const modificationUrl =
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
-        '/network-modification/modifications' +
-        idUrl +
-        '/generators-modification';
+        '/network-modification/modifications/generators-modification' +
+        idUrl;
 
     const generatorModification = {
         equipmentId: generatorId,
