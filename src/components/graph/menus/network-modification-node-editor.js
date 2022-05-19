@@ -37,7 +37,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { currentNode } from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -219,7 +218,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     useEffect(() => {
         if (selectedNode !== selectedNodeRef.current) {
             selectedNodeRef.current = selectedNode;
-            dispatch(currentNode(selectedNode));
+
             if (!selectedNode.networkModification) setModifications([]);
             else {
                 fetchNetworkModifications(selectedNode.networkModification)

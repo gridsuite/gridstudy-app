@@ -14,12 +14,13 @@ import {
     EquipmentItem,
     TagRenderer,
     TopBar,
+    OverflowableText,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import Tabs from '@mui/material/Tabs';
 import { StudyView } from './study-pane';
-import { Badge, Tooltip, Typography } from '@mui/material';
+import { Badge, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
 import Parameters, { useParameterState } from './parameters';
@@ -29,33 +30,25 @@ import {
     PARAM_USE_NAME,
 } from '../utils/config-params';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchAppsAndUrls,
-    fetchEquipmentsInfos,
-    fetchNetworkModificationTree,
-} from '../utils/rest-api';
+import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { stringify } from 'qs';
-import {
-    centerOnSubstation,
-    currentNode,
-    selectItemNetwork,
-} from '../redux/actions';
+import { centerOnSubstation, selectItemNetwork } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     tabs: {
         marginLeft: 18,
+        flexGrow: 1,
     },
-    sub_title: {
-        marginLeft: 18,
-        alignSelf: 'center',
-        color: `${LIGHT_THEME}`,
+    label: {
+        color: theme.palette.primary.main,
+        margin: theme.spacing(1),
         fontWeight: 'bold',
     },
 }));
@@ -146,10 +139,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const [showParameters, setShowParameters] = useState(false);
 
-    const selectedNode = useSelector((state) => state.currentNode);
-
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
+
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
             fetchEquipmentsInfos(
@@ -207,20 +199,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
             fetchAppsAndUrls().then((res) => {
                 setAppsAndUrls(res);
             });
-            if (studyUuid !== null) {
-                fetchNetworkModificationTree(studyUuid)
-                    .then((res) => {
-                        dispatch(currentNode(res));
-                    })
-                    .catch((err) =>
-                        displayErrorMessageWithSnackbar({
-                            errorMessage: err.message,
-                            enqueueSnackbar,
-                        })
-                    );
-            }
         }
-    }, [dispatch, enqueueSnackbar, studyUuid, user]);
+    }, [user]);
 
     function showParametersClicked() {
         setShowParameters(true);
@@ -230,18 +210,10 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         setShowParameters(false);
     }
 
-    function truncate(text, max_text_length = 10) {
-        return text !== null &&
-            max_text_length !== null &&
-            text.length > max_text_length
-            ? text.slice(0, max_text_length).concat('...')
-            : text;
-    }
-
     return (
         <>
             <TopBar
-                appName={'Study'}
+                appName="Study"
                 appColor="#0CA789"
                 appLogo={
                     theme === LIGHT_THEME ? (
@@ -278,18 +250,21 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 language={languageLocal}
             >
                 {/* Add current Node name between Logo and Tabs */}
-                {selectedNode && (
-                    <Tooltip title={selectedNode.name}>
-                        <Typography className={classes.sub_title}>
-                            {/* truncate string if length >= 20 char */}
-                            {selectedNode.name === 'Root'
-                                ? intl.formatMessage({
-                                      id: 'root',
-                                  })
-                                : truncate(selectedNode.name, 15)}
-                        </Typography>
-                    </Tooltip>
-                )}
+                <Box width={'20%'} display="flex" alignItems="center">
+                    {workingNode && (
+                        <OverflowableText
+                            className={classes.label}
+                            text={
+                                workingNode.type === 'ROOT' ||
+                                workingNode.name === 'Root'
+                                    ? intl.formatMessage({
+                                          id: 'root',
+                                      })
+                                    : workingNode.name
+                            }
+                        />
+                    )}
+                </Box>
                 {studyUuid && (
                     <Tabs
                         value={tabIndex}

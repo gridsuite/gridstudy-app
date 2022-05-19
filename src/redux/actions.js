@@ -331,6 +331,7 @@ export function workingTreeNode(workingTreeNode) {
         workingTreeNode: {
             id: workingTreeNode?.id,
             readOnly: workingTreeNode?.data?.readOnly,
+            name: workingTreeNode?.data?.label,
         },
     };
 }
@@ -350,13 +351,5 @@ export function centerOnSubstation(substationId) {
     return {
         type: CENTER_ON_SUBSTATION,
         centerOnSubstation: { to: substationId },
-    };
-}
-
-export const CURRENT_NODE = 'CURRENT_NODE';
-export function currentNode(currentNode) {
-    return {
-        type: CURRENT_NODE,
-        currentNode: currentNode,
     };
 }
