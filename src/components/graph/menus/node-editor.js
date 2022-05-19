@@ -68,9 +68,8 @@ const NodeEditor = () => {
             selectedNodeUuidRef.current = selectedNodeUuid;
             fetchNetworkModificationTreeNode(studyUuid, selectedNodeUuid)
                 .then((res) => {
-                    if (selectedNodeUuid === selectedNodeUuidRef.current) {
+                    if (selectedNodeUuid === selectedNodeUuidRef.current)
                         setSelectedNode(res);
-                    }
                 })
                 .catch((err) =>
                     displayErrorMessageWithSnackbar({

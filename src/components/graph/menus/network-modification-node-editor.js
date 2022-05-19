@@ -15,7 +15,7 @@ import {
     fetchEquipments,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
@@ -106,8 +106,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
     };
-
-    const dispatch = useDispatch();
 
     function withDefaultParams(Dialog, props) {
         return (
@@ -229,7 +227,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     .catch((err) => snackError(err.message));
             }
         }
-    }, [selectedNode, setModifications, selectedNodeRef, snackError, dispatch]);
+    }, [selectedNode, setModifications, selectedNodeRef, snackError]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
