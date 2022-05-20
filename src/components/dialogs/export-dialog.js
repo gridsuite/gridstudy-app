@@ -10,7 +10,10 @@ import {
     AccordionSummary,
     Dialog,
     DialogTitle,
+    FormControlLabel,
     Grid,
+    Switch,
+    TextField,
     Typography,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -27,6 +30,74 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
+
+function longestCommonPrefix(strs) {
+    if (!strs?.length) return '';
+    let prefix = strs.reduce((acc, str) =>
+        str.length < acc.length ? str : acc
+    );
+
+    for (let str of strs) {
+        while (str.slice(0, prefix.length) !== prefix) {
+            prefix = prefix.slice(0, -1);
+        }
+    }
+    return prefix;
+}
+
+const MetaComp = ({ metasAsArray, onChange, inst }) => {
+    const longestPrefix = longestCommonPrefix(metasAsArray.map((m) => m.name));
+    const lastDotIndex = longestPrefix.lastIndexOf('.');
+    const prefix = longestPrefix.slice(0, lastDotIndex + 1);
+
+    function onBoolChange(paramName) {}
+
+    const comp = (
+        <>
+            {metasAsArray.map((meta, idx) => (
+                <Accordion key={meta.name}>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                    >
+                        {meta.type === 'BOOLEAN' ? (
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={
+                                            inst?.[meta.name] ??
+                                            meta.defaultValue
+                                        }
+                                        onChange={(e) =>
+                                            onBoolChange(meta.name)
+                                        }
+                                    />
+                                }
+                                label={meta.name.slice(prefix.length)}
+                            />
+                        ) : (
+                            <Typography>
+                                {meta.name.slice(prefix.length)}
+                            </Typography>
+                        )}
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        {meta.type !== 'BOOLEAN' && (
+                            <TextField
+                                defaultValue={
+                                    inst?.[meta.name] ?? meta.defaultValue
+                                }
+                            />
+                        )}
+                        <Typography>{meta.description}</Typography>
+                    </AccordionDetails>
+                </Accordion>
+            ))}
+        </>
+    );
+    return comp;
+};
 
 /**
  * Dialog to export the network case
@@ -87,7 +158,7 @@ const ExportDialog = ({
         onClose();
     };
 
-    const handleChange = (event) => {
+    const handleFormatSelectionChange = (event) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
         setDownloadUrl(getExportUrl(studyUuid, nodeUuid, selected));
@@ -95,10 +166,14 @@ const ExportDialog = ({
 
     const intl = useIntl();
 
+    const metasAsArray =
+        formatsWithParameters?.[selectedFormat]?.parameters || [];
+    const metaComp = <MetaComp metasAsArray={metasAsArray} />;
+
     return (
         <Dialog
             fullWidth
-            maxWidth="xs"
+            maxWidth="sm"
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-export"
@@ -120,7 +195,7 @@ const ExportDialog = ({
                                 label={<FormattedMessage id="exportFormat" />}
                                 variant="filled"
                                 id="controlled-select-format"
-                                onChange={handleChange}
+                                onChange={handleFormatSelectionChange}
                                 defaultValue=""
                                 inputProps={{
                                     id: 'select-format',
@@ -141,7 +216,7 @@ const ExportDialog = ({
                         </FormControl>
                     </Grid>
                     <Grid item xs={12}>
-                        <Accordion>
+                        <Accordion disabled={!selectedFormat}>
                             <AccordionSummary
                                 expandIcon={<ExpandMoreIcon />}
                                 aria-controls="panel1a-content"
@@ -149,9 +224,7 @@ const ExportDialog = ({
                             >
                                 <Typography>Parameters</Typography>
                             </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography>plop</Typography>
-                            </AccordionDetails>
+                            <AccordionDetails>{metaComp}</AccordionDetails>
                         </Accordion>
                     </Grid>
                 </Grid>
