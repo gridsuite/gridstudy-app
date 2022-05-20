@@ -574,7 +574,7 @@ const NetworkTable = (props) => {
                     style={style}
                     align={columnDefinition.numeric ? 'right' : 'left'}
                 >
-                    <div className={clsx(classes.tableCell)}>
+                    <div className={classes.tableCell}>
                         <OverflowableText
                             className={{
                                 [classes.valueInvalid]:

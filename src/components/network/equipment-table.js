@@ -34,12 +34,9 @@ export const EquipmentTable = (props) => {
 
     const lastLineCellRender = useCallback(
         (columnDefinition, key, style) => {
-            if (columnDefinition.editColumn) {
-                return <div key={key} style={style}></div>;
-            }
             return (
                 <div key={key} style={style}>
-                    <div className={classes.emptyLastLineCell}></div>
+                    {!columnDefinition.editColumn && <div className={classes.emptyLastLineCell}></div>}
                 </div>
             );
         },
