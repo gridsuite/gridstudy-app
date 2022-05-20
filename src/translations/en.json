@@ -200,6 +200,7 @@
     "ConvertersMode": "Converters mode",
     "R": "Resistance",
     "ActivePowerSetpoint": "Active power set point (MW)",
+    "MinP": "Min P (MW)",
     "MaxP": "Max P (MW)",
     "TargetV": "Target V (kV)",
     "TargetDeadband": "Target deadband",

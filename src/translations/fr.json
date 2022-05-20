@@ -200,6 +200,7 @@
     "ConvertersMode": "Mode du convertisseur",
     "R": "Résistance",
     "ActivePowerSetpoint": "Consigne p active (MW)",
+    "MinP": "P min (MW)",
     "MaxP": "P max (MW)",
     "TargetV": "Consigne tension (kV)",
     "TargetDeadband": "Consigne bande morte",

@@ -440,6 +440,22 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
+                id: 'Type',
+                dataKey: 'energySource',
+            },
+            {
+                id: 'MinP',
+                dataKey: 'minP',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'MaxP',
+                dataKey: 'maxP',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
                 id: 'ActivePower',
                 dataKey: 'p',
                 numeric: true,
@@ -479,6 +495,16 @@ export const TABLES_DEFINITIONS = {
                         max: equipment.maxQ,
                         ...props,
                     }),
+                fractionDigits: 1,
+            },
+            {
+                id: 'VoltageRegulatorOn',
+                dataKey: 'voltageRegulatorOn',
+            },
+            {
+                id: 'TargetV',
+                dataKey: 'targetV',
+                numeric: true,
                 fractionDigits: 1,
             },
         ],
