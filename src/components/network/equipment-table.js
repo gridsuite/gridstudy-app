@@ -36,7 +36,9 @@ export const EquipmentTable = (props) => {
         (columnDefinition, key, style) => {
             return (
                 <div key={key} style={style}>
-                    {!columnDefinition.editColumn && <div className={classes.emptyLastLineCell}></div>}
+                    {!columnDefinition.editColumn && (
+                        <div className={classes.emptyLastLineCell}></div>
+                    )}
                 </div>
             );
         },
