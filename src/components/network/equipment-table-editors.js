@@ -3,19 +3,31 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
+import { ROW_HEIGHT } from './config-tables';
 
 export const TapChangerSelector = ({
     tapChanger,
     setter,
     defaultValue,
+    style,
     ...props
 }) => {
+    const getStyle = () => {
+        if (style.width) {
+            let updatedStyle = { ...style };
+            updatedStyle.width = style.width - 10;
+            return updatedStyle;
+        }
+        return style;
+    };
+
     return (
         <Select
             defaultValue={defaultValue}
             onChange={(ev) => setter(ev.target.value)}
             size={'medium'}
             margin={'none'}
+            style={getStyle()}
             {...props}
         >
             {[...Array(tapChanger.highTap - tapChanger.lowTap + 1)].map(
@@ -37,6 +49,7 @@ export const NumericalField = ({
     min,
     max,
     setter,
+    style,
     ...props
 }) => {
     const [error, setError] = useState(false);
@@ -65,9 +78,16 @@ export const NumericalField = ({
                 error={error}
                 type="Number"
                 size={'small'}
-                margin={'normal'}
+                margin={'none'}
+                style={{ ...style, margin: '5px 0 0 0', padding: 0 }}
                 inputProps={{
-                    style: { textAlign: 'center', padding: '0px' },
+                    style: {
+                        textAlign: 'center',
+                        fontSize: 'small',
+                        height: ROW_HEIGHT - 1 + 'px',
+                        padding: 0,
+                        margin: 0,
+                    },
                     inputProps: { min: { min }, max: { max } },
                 }}
             />

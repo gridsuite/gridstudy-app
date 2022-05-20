@@ -36,7 +36,6 @@ import {
     MIN_COLUMN_WIDTH,
     MAX_LOCKS_PER_TAB,
     EDIT_CELL_WIDTH,
-    ROW_HEIGHT,
 } from './config-tables';
 import { EquipmentTable } from './equipment-table';
 import makeStyles from '@mui/styles/makeStyles';
@@ -104,16 +103,9 @@ const useStyles = makeStyles((theme) => ({
     },
     inlineEditionCell: {
         backgroundColor: theme.palette.action.hover,
-        maxHeight: ROW_HEIGHT - 6 + 'px',
-        width: MIN_COLUMN_WIDTH - 10 + 'px !important',
-        '& input': {
-            padding: 0,
-            width: MIN_COLUMN_WIDTH + 'px !important',
-        },
     },
     tableHeader: {
         fontSize: 'small',
-        cursor: 'pointer',
         textTransform: 'uppercase',
         margin: '5px',
         padding: '10px 24px 10px 10px',
@@ -157,6 +149,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.action.disabled,
     },
     activeSortArrow: {
+        cursor: 'pointer',
         '& .arrow': {
             fontSize: '1.1em',
             display: 'block',
@@ -167,6 +160,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     inactiveSortArrow: {
+        cursor: 'pointer',
         '& .arrow': {
             fontSize: '1.1em',
             display: 'block',
@@ -426,6 +420,9 @@ const NetworkTable = (props) => {
 
     const headerCellRender = useCallback(
         (columnDefinition, key, style) => {
+            if (columnDefinition.editColumn) {
+                return <div key={key} style={style}></div>;
+            }
             return (
                 <div
                     key={key}
@@ -438,9 +435,7 @@ const NetworkTable = (props) => {
                     )}
                 >
                     <div className={classes.tableHeader}>
-                        {columnDefinition.locked && !columnDefinition.editColumn
-                            ? renderTableLockIcon()
-                            : ''}
+                        {columnDefinition.locked ? renderTableLockIcon() : ''}
                         {columnDefinition.label}
                     </div>
                     <span>
@@ -579,14 +574,16 @@ const NetworkTable = (props) => {
                     style={style}
                     align={columnDefinition.numeric ? 'right' : 'left'}
                 >
-                    <div
-                        className={clsx(classes.tableCell, {
-                            [classes.valueInvalid]:
-                                columnDefinition.canBeInvalidated &&
-                                props.loadFlowStatus !== RunningStatus.SUCCEED,
-                        })}
-                    >
-                        <OverflowableText text={text} />
+                    <div className={clsx(classes.tableCell)}>
+                        <OverflowableText
+                            className={{
+                                [classes.valueInvalid]:
+                                    columnDefinition.canBeInvalidated &&
+                                    props.loadFlowStatus !==
+                                        RunningStatus.SUCCEED,
+                            }}
+                            text={text}
+                        />
                     </div>
                 </div>
             );

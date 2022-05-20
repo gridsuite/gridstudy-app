@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import LoaderWithOverlay from '../util/loader-with-overlay';
 import { MultiGrid, AutoSizer } from 'react-virtualized';
 import {
@@ -6,8 +6,20 @@ import {
     HEADER_ROW_HEIGHT,
     ROW_HEIGHT,
 } from './config-tables';
+import makeStyles from '@mui/styles/makeStyles';
+
+const useStyles = makeStyles(() => ({
+    emptyLastLineCell: {
+        margin: '5px',
+        padding: '10px',
+        borderTop: '1px solid #515151',
+        display: 'flex',
+    },
+}));
 
 export const EquipmentTable = (props) => {
+    const classes = useStyles();
+    const LAST_LINE_ROW_HEIGHT = 10;
     const gridRef = useRef();
 
     const [fixedColumnsCount, setFixedColumnsCount] = useState(0);
@@ -19,6 +31,20 @@ export const EquipmentTable = (props) => {
             gridRef.current.recomputeGridSize();
         }
     }, [props.columns]);
+
+    const lastLineCellRender = useCallback(
+        (columnDefinition, key, style) => {
+            if (columnDefinition.editColumn) {
+                return <div key={key} style={style}></div>;
+            }
+            return (
+                <div key={key} style={style}>
+                    <div className={classes.emptyLastLineCell}></div>
+                </div>
+            );
+        },
+        [classes.emptyLastLineCell]
+    );
 
     function cellRenderer({ columnIndex, key, rowIndex, style }) {
         if (!props.columns || !props.columns[columnIndex]) {
@@ -32,6 +58,8 @@ export const EquipmentTable = (props) => {
 
         if (rowIndex === 0) {
             return props.columns.headerCellRender(columnDefinition, key, style);
+        } else if (rowIndex === props.rows.length + 1) {
+            return lastLineCellRender(columnDefinition, key, style);
         } else {
             let cell = props.rows[rowIndex - 1];
             if (columnDefinition.cellRenderer) {
@@ -62,6 +90,8 @@ export const EquipmentTable = (props) => {
     function getRowHeight(index) {
         if (index === 0) {
             return HEADER_ROW_HEIGHT;
+        } else if (index === props.rows.length + 1) {
+            return LAST_LINE_ROW_HEIGHT;
         }
         return ROW_HEIGHT;
     }
@@ -92,7 +122,7 @@ export const EquipmentTable = (props) => {
                                 columnWidth={({ index }) =>
                                     getColumnWidth(index)
                                 }
-                                rowCount={props.rows.length + 1}
+                                rowCount={props.rows.length + 2} // +1 for the header, +1 for an empty last line used to fix display
                                 rowHeight={({ index }) => getRowHeight(index)}
                                 enableFixedColumnScroll={true}
                                 enableFixedRowScroll={true}
