@@ -252,7 +252,8 @@
     "loadingOptions": "Chargement...",
     "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
     "createModelNode": "Créer un nœud modèle",
-    "removeNode": "Supprimer nœud",
+    "removeNode": "Supprimer le nœud",
+    "exportCaseOnNode": "Exporter la situation",
     "NetworkModificationTreeLoadError": "Une erreur est survenue lors du chargement de l'arbre de modifications de réseau",
     "NodeCreateError": "Une erreur est survenue lors de la création du nœud",
     "NodeDeleteError": "Une erreur est survenue lors de la suppression du nœud",
@@ -353,6 +354,18 @@
     "DuplicateId": "Identifiant non unique",
     "DisconnectorBetweenSameBusbar": "Auto-connexion interdite d'un SJB via un sectionneur",
 
+    "LineSplitWithVoltageLevel" : "Créer une coupure",
+    "LineToSplit" : "Liaison coupée",
+    "LengthPercentage" : "% long.",
+    "OutOfBoundsPercentage" : "Pourcentage en dehors des limites",
+    "BusbarOrNodeID" : "ID SJB ou noeud",
+    "Line1" : "Liaison origine",
+    "Line2" : "Liaison extrémité",
+    "VoltageLevel1" : "Poste origine",
+    "VoltageLevel2" : "Poste extrémité",
+    "NewVoltageLevel" : "Nouveau poste",
+    "LineDivisionError" : "Erreur lors de la création d'une coupure",
+
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitGreaterThanZero": "La valeur IST doit être strictement positive",
 
@@ -377,5 +390,6 @@
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
 
-    "depth": "Profondeur"
+    "depth": "Profondeur",
+    "LogOnlySingleNode": "Log noeud seul"
 }

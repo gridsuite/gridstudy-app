@@ -349,6 +349,9 @@ const StudyPane = ({
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
+                    loadFlowStatus={getLoadFlowRunningStatus(
+                        loadFlowInfos?.loadFlowStatus
+                    )}
                 />
             </Paper>
         );
@@ -395,8 +398,9 @@ const StudyPane = ({
                 }}
             >
                 <ReportViewerTab
-                    reportId={studyUuid}
+                    studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
+                    workingNode={workingNode}
                 />
             </div>
         </>

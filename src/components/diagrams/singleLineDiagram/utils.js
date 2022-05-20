@@ -89,7 +89,7 @@ export const useSingleLineDiagram = () => {
                 );
             }
         },
-        [history, location]
+        [history, location.search, location.pathname]
     );
 
     return [closeDiagram, showVoltageLevelDiagram, showSubstationDiagram];

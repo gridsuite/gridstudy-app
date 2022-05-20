@@ -296,6 +296,15 @@ export function changeDisplayedColumns(displayedColumnsParams) {
     };
 }
 
+export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
+
+export function changeLockedColumns(lockedColumnsParams) {
+    return {
+        type: CHANGE_LOCKED_COLUMNS_NAMES,
+        lockedColumnsNamesParams: lockedColumnsParams,
+    };
+}
+
 export const FAVORITE_CONTINGENCY_LISTS = 'FAVORITE_CONTINGENCY_LISTS';
 
 export function selectFavoriteContingencyLists(favoriteContingencyLists) {

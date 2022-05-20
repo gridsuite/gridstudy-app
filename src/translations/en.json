@@ -253,6 +253,7 @@
     "createNetworkModificationNode": "Create a network modification node",
     "createModelNode": "Create a model node",
     "removeNode": "Remove node",
+    "exportCaseOnNode": "Export case",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
@@ -353,6 +354,18 @@
     "DuplicateId": "Duplicate id",
     "DisconnectorBetweenSameBusbar": "Forbidden to have a disconnector linking a bus bar section to itself",
 
+    "LineSplitWithVoltageLevel" : "Create a voltage level on a line",
+    "LineToSplit" : "Existing line",
+    "Percentage" : "% long",
+    "OutOfBoundsPercentage" : "Percentage out of bounds",
+    "BusbarOrNodeID" : "SJB or node ID",
+    "Line1" : "Line 1",
+    "Line2" : "Line 2",
+    "VoltageLevel1" : "Voltage level 1",
+    "VoltageLevel2" : "Voltage level 2",
+    "NewVoltageLevel" : "New voltage level",
+    "LineDivisionError" : "Error while puting a voltage level amidst a line",
+
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitGreaterThanZero": "The permanent current limit value must be strictly positive",
 
@@ -377,5 +390,6 @@
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
 
-    "depth": "Depth"
+    "depth": "Depth",
+    "LogOnlySingleNode": "Log single node"
 }

@@ -53,6 +53,7 @@ import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
+import clsx from 'clsx';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -903,6 +904,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 minWidth: loadingWidth,
                 height: sizeHeight,
                 position: 'relative', //workaround chrome78 bug https://codepen.io/jonenst/pen/VwKqvjv
+                overflow: 'hidden',
             }}
         >
             <Box>
@@ -954,12 +956,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 {
                     <div
                         ref={svgRef}
-                        className={
-                            loadFlowStatus !== RunningStatus.SUCCEED
-                                ? classes.divSld + ' ' + classes.divInvalid
-                                : classes.divSld
-                        }
-                        // dangerouslySetInnerHTML={{ __html: svg.svg }}
+                        className={clsx(classes.divSld, {
+                            [classes.divInvalid]:
+                                loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                        dangerouslySetInnerHTML={{ __html: svg.svg }}
                     />
                 }
                 {displayMenuLine()}

@@ -275,13 +275,24 @@ function getQueryParamsList(params, paramName) {
     return '';
 }
 
-export function fetchReport(studyUuid) {
-    console.info('get report for study : ' + studyUuid);
-    return backendFetch(getStudyUrl(studyUuid) + '/report').then((response) =>
-        response.ok
-            ? response.json()
-            : response.text().then((text) => Promise.reject(text))
+export function fetchReport(studyUuid, selectedNodeUuid, nodeOnlyReport) {
+    console.info(
+        'get report for node : ' +
+            selectedNodeUuid +
+            ' with nodeOnlyReport = ' +
+            nodeOnlyReport +
+            ' in study ' +
+            studyUuid
     );
+    return backendFetch(
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/report?nodeOnlyReport=' +
+            (nodeOnlyReport ? 'true' : 'false')
+    ).then((response) => {
+        return response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function fetchSvg(svgUrl) {
@@ -863,6 +874,14 @@ export function deleteModifications(studyUuid, node, modificationUuid) {
     );
 }
 
+function getUrlWithToken(baseUrl) {
+    if (baseUrl.includes('?')) {
+        return baseUrl + '&access_token=' + getToken();
+    } else {
+        return baseUrl + '?access_token=' + getToken();
+    }
+}
+
 export function connectNotificationsWebsocket(studyUuid) {
     // The websocket API doesn't allow relative urls
     const wsbase = document.baseURI
@@ -874,7 +893,7 @@ export function connectNotificationsWebsocket(studyUuid) {
         '/notify?studyUuid=' +
         encodeURIComponent(studyUuid);
     let wsaddressWithToken;
-    wsaddressWithToken = wsadress + '&access_token=' + getToken();
+    wsaddressWithToken = getUrlWithToken(wsadress);
 
     const rws = new ReconnectingWebSocket(wsaddressWithToken);
     // don't log the token, it's private
@@ -895,7 +914,7 @@ export function connectNotificationsWsUpdateConfig() {
         APP_NAME;
 
     let webSocketUrlWithToken;
-    webSocketUrlWithToken = webSocketUrl + '&access_token=' + getToken();
+    webSocketUrlWithToken = getUrlWithToken(webSocketUrl);
 
     const reconnectingWebSocket = new ReconnectingWebSocket(
         webSocketUrlWithToken
@@ -1414,18 +1433,18 @@ export function createSubstation(
     );
 }
 
-export function createVoltageLevel(
+export function createVoltageLevel({
     studyUuid,
     selectedNodeUuid,
     voltageLevelId,
-    name,
+    voltageLevelName,
     nominalVoltage,
     substationId,
-    busBarSections,
-    connections,
+    busbarSections,
+    busbarConnections,
     isUpdate,
-    modificationUuid
-) {
+    modificationUuid,
+}) {
     let createVoltageLevelUrl;
     if (isUpdate) {
         console.info('Updating voltage level creation');
@@ -1440,12 +1459,14 @@ export function createVoltageLevel(
             getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
             '/network-modification/voltage-levels';
     }
-    let busBarConnections = connections.map((c) => {
-        return {
-            fromBBS: c.fromBBS.id,
-            toBBS: c.toBBS.id,
-            switchKind: c.switchKind,
-        };
+
+    const body = JSON.stringify({
+        equipmentId: voltageLevelId,
+        equipmentName: voltageLevelName,
+        nominalVoltage: nominalVoltage,
+        substationId: substationId,
+        busbarSections: busbarSections,
+        busbarConnections: busbarConnections,
     });
 
     return backendFetch(createVoltageLevelUrl, {
@@ -1454,14 +1475,62 @@ export function createVoltageLevel(
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            equipmentId: voltageLevelId,
-            equipmentName: name,
-            nominalVoltage: nominalVoltage,
-            substationId: substationId,
-            busbarSections: busBarSections,
-            busbarConnections: busBarConnections,
-        }),
+        body: body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function divideLine(
+    studyUuid,
+    selectedNodeUuid,
+    modificationUuid,
+    lineToSplitId,
+    percent,
+    mayNewVoltageLevelInfos,
+    existingVoltageLevelId,
+    bbsOrBusId,
+    newLine1Id,
+    newLine1Name,
+    newLine2Id,
+    newLine2Name
+) {
+    const body = JSON.stringify({
+        lineToSplitId,
+        percent,
+        mayNewVoltageLevelInfos,
+        existingVoltageLevelId,
+        bbsOrBusId,
+        newLine1Id,
+        newLine1Name,
+        newLine2Id,
+        newLine2Name,
+    });
+
+    let lineSplitUrl;
+    if (modificationUuid) {
+        console.info('Line split with voltage level update', body);
+        lineSplitUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/line-splits';
+    } else {
+        console.info('Line split with voltage level', body);
+        lineSplitUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/line-splits';
+    }
+
+    return backendFetch(lineSplitUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
     }).then((response) =>
         response.ok
             ? response.text()
@@ -1620,4 +1689,12 @@ export function changeNetworkModificationOrder(
         if (!response.ok)
             throw new Error(response.status + ' ' + response.statusText);
     });
+}
+
+export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
+    const url =
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/export-network/' +
+        exportFormat;
+    return getUrlWithToken(url);
 }
