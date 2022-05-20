@@ -30,6 +30,7 @@ import { filledTextField, gridItem, GridSection } from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
+import LineCreationDialog from './line-creation-dialog';
 import {
     makeVoltageLevelCreationParams,
     useComplementaryPercentage,
@@ -103,6 +104,8 @@ const LineAttachToVoltageLevelDialog = ({
     });
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
+
+    const [attachmentLine, setAttachmentLine] = useState(null);
 
     const allVoltageLevelOptions = useMemo(() => {
         if (!newVoltageLevel)
@@ -316,6 +319,7 @@ const LineAttachToVoltageLevelDialog = ({
                     ? null
                     : voltageLevelOrId?.id || voltageLevelOrId,
                 bbsOrNodeId?.id || bbsOrNodeId,
+                attachmentLine,
                 newLine1Id,
                 newLine1Name || null,
                 newLine2Id,
@@ -398,6 +402,54 @@ const LineAttachToVoltageLevelDialog = ({
 
     const openVoltageLevelDialog = () => {
         setVoltageLevelDialogOpen(true);
+    };
+
+    const onLineDo = useCallback(
+        (
+            studyUuid,
+            selectedNodeUuid,
+            lineId,
+            lineName,
+            seriesResistance,
+            seriesReactance,
+            shuntConductance1,
+            shuntSusceptance1,
+            shuntConductance2,
+            shuntSusceptance2,
+            connectivity1VlId,
+            connectivity1BobbsId,
+            connectivity2VlId,
+            connectivity2BobbsId,
+            permanentCurrentLimit1,
+            permanentCurrentLimit2,
+            isUpdate,
+            modificationUuid
+        ) => {
+            return new Promise(() => {
+                const preparedLine = {
+                    equipmentId: lineId,
+                    equipmentName: lineName,
+                    seriesResistance: seriesResistance,
+                    seriesReactance: seriesReactance,
+                    shuntConductance1: shuntConductance1,
+                    shuntSusceptance1: shuntSusceptance1,
+                    shuntConductance2: shuntConductance2,
+                    shuntSusceptance2: shuntSusceptance2,
+                    currentLimits1: {
+                        permanentLimit: permanentCurrentLimit1,
+                    },
+                    currentLimits2: {
+                        permanentLimit: permanentCurrentLimit2,
+                    },
+                };
+                setAttachmentLine(preparedLine);
+            });
+        },
+        []
+    );
+
+    const onLineDialogClose = () => {
+        setLineDialogOpen(false);
     };
 
     const openLineDialog = () => {
@@ -511,7 +563,16 @@ const LineAttachToVoltageLevelDialog = ({
                         editData={voltageLevelToEdit}
                     />
                 )}
-                {lineDialogOpen}
+                {lineDialogOpen && (
+                    <LineCreationDialog
+                        open={true}
+                        onClose={onLineDialogClose}
+                        selectedNodeUuid={selectedNodeUuid}
+                        substationOptions={substationOptions}
+                        displayConnectivity={false}
+                        onCreateLine={onLineDo}
+                    />
+                )}
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
