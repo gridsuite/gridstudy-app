@@ -472,7 +472,6 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetQ',
                 dataKey: 'targetQ',
                 numeric: true,
-                changeCmd: 'equipment.setTargetQ({})',
                 fractionDigits: 1,
             },
         ],
