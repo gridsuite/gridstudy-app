@@ -62,18 +62,18 @@ import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
-        paddingRight: '10px',
+        paddingRight: theme.spacing(1),
         alignItems: 'center',
     },
     table: {
         marginTop: '20px',
     },
     containerInputSearch: {
-        marginTop: '15px',
-        marginLeft: '10px',
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(1),
     },
     checkboxSelectAll: {
-        padding: '0 32px 15px 15px',
+        padding: theme.spacing(0, 3, 2, 2),
         fontWeight: 'bold',
         cursor: 'pointer',
     },
@@ -81,23 +81,23 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
     },
     selectColumns: {
-        marginTop: '12px',
-        marginLeft: '50px',
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(6),
     },
     exportCsv: {
-        marginTop: '12px',
-        marginLeft: '50px',
+        marginTop: theme.spacing(2),
+        marginLeft: theme.spacing(6),
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'baseline',
         position: 'absolute',
-        right: '0px',
+        right: theme.spacing(0),
     },
     tableCell: {
         fontSize: 'small',
         cursor: 'initial',
-        margin: '5px',
-        padding: '10px',
+        margin: theme.spacing(0.5),
+        padding: theme.spacing(1.25),
         borderTop: '1px solid #515151',
         display: 'flex',
     },
@@ -107,15 +107,15 @@ const useStyles = makeStyles((theme) => ({
     tableHeader: {
         fontSize: 'small',
         textTransform: 'uppercase',
-        margin: '5px',
-        padding: '10px 24px 10px 10px',
+        margin: theme.spacing(0.5),
+        padding: theme.spacing(1.25, 3, 1.25, 1.25),
         fontWeight: 'bold',
     },
     editCell: {
         fontSize: 'small',
         cursor: 'initial',
-        margin: '5px',
-        padding: '10px',
+        margin: theme.spacing(0.5),
+        padding: theme.spacing(1.25),
         '& button': {
             margin: 0,
             padding: 0,
@@ -124,15 +124,15 @@ const useStyles = makeStyles((theme) => ({
         },
         '& button:first-child': {
             // Only applies to the first child
-            left: '10px',
+            left: theme.spacing(1.25),
         },
         '& button:nth-child(2)': {
             // Only applies to the second child
-            right: '4px',
+            right: theme.spacing(0.5),
         },
         '& button:first-child:nth-last-child(1)': {
             // If only ONE child, redefines its posiiton
-            left: '22px',
+            left: theme.spacing(3),
         },
     },
     columnConfigClosedLock: {
@@ -145,7 +145,7 @@ const useStyles = makeStyles((theme) => ({
     },
     tableLock: {
         fontSize: 'medium',
-        marginRight: '6px',
+        marginRight: theme.spacing(0.75),
         color: theme.palette.action.disabled,
     },
     activeSortArrow: {
@@ -154,8 +154,8 @@ const useStyles = makeStyles((theme) => ({
             fontSize: '1.1em',
             display: 'block',
             position: 'absolute',
-            top: '14px',
-            right: '0',
+            top: theme.spacing(2),
+            right: theme.spacing(0),
             color: theme.palette.action.active,
         },
     },
@@ -165,16 +165,16 @@ const useStyles = makeStyles((theme) => ({
             fontSize: '1.1em',
             display: 'block',
             position: 'absolute',
-            top: '14px',
-            right: '0',
+            top: theme.spacing(2),
+            right: theme.spacing(0),
             opacity: 0,
         },
         '&:hover .arrow': {
             fontSize: '1.1em',
             display: 'block',
             position: 'absolute',
-            top: '14px',
-            right: '0',
+            top: theme.spacing(2),
+            right: theme.spacing(0),
             color: theme.palette.action.disabled,
             opacity: 1,
         },

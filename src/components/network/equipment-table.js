@@ -8,10 +8,10 @@ import {
 } from './config-tables';
 import makeStyles from '@mui/styles/makeStyles';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     emptyLastLineCell: {
-        margin: '5px',
-        padding: '10px',
+        margin: theme.spacing(0.5),
+        padding: theme.spacing(1.25),
         borderTop: '1px solid #515151',
         display: 'flex',
     },

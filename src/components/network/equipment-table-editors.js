@@ -12,10 +12,11 @@ export const TapChangerSelector = ({
     style,
     ...props
 }) => {
-    const getStyle = () => {
+    // This element does not display correctly in the table, we have to fix its values here
+    const getCorrectedStyle = () => {
         if (style.width) {
             let updatedStyle = { ...style };
-            updatedStyle.width = style.width - 10;
+            updatedStyle.width = style.width - 8;
             return updatedStyle;
         }
         return style;
@@ -27,7 +28,7 @@ export const TapChangerSelector = ({
             onChange={(ev) => setter(ev.target.value)}
             size={'medium'}
             margin={'none'}
-            style={getStyle()}
+            style={getCorrectedStyle()}
             {...props}
         >
             {[...Array(tapChanger.highTap - tapChanger.lowTap + 1)].map(
@@ -69,6 +70,17 @@ export const NumericalField = ({
         [setError, min, max, setter, defaultValue]
     );
 
+    // This element does not display correctly in the table, we have to fix its values here
+    const getCorrectedStyle = () => {
+        let updatedStyle = { ...style };
+        updatedStyle.margin = '4px 4px 0 4px';
+        updatedStyle.padding = 0;
+        if (style.width) {
+            updatedStyle.width = style.width - 8;
+        }
+        return updatedStyle;
+    };
+
     return (
         <Tooltip title={intl.formatMessage({ id: 'MinMax' }, { min, max })}>
             <TextField
@@ -79,8 +91,9 @@ export const NumericalField = ({
                 type="Number"
                 size={'small'}
                 margin={'none'}
-                style={{ ...style, margin: '5px 0 0 0', padding: 0 }}
+                style={getCorrectedStyle()}
                 inputProps={{
+                    // This element does not display correctly in the table, we have to fix its values here
                     style: {
                         textAlign: 'center',
                         fontSize: 'small',
