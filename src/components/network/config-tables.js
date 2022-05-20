@@ -473,12 +473,6 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'targetQ',
                 numeric: true,
                 changeCmd: 'equipment.setTargetQ({})',
-                editor: ({ equipment, ...props }) =>
-                    NumericalField({
-                        min: equipment.minQ,
-                        max: equipment.maxQ,
-                        ...props,
-                    }),
                 fractionDigits: 1,
             },
         ],
