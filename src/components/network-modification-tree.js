@@ -73,6 +73,11 @@ const NetworkModificationTree = ({
 
     const onElementClick = useCallback(
         (event, element) => {
+            dispatch(
+                setModificationsDrawerOpen(
+                    element.type === 'NETWORK_MODIFICATION'
+                )
+            );
             dispatch(selectTreeNode(element));
             if (
                 element.type === 'ROOT' ||
@@ -81,11 +86,6 @@ const NetworkModificationTree = ({
             ) {
                 dispatch(workingTreeNode(element));
             }
-            dispatch(
-                setModificationsDrawerOpen(
-                    element.type === 'NETWORK_MODIFICATION'
-                )
-            );
         },
         [dispatch]
     );

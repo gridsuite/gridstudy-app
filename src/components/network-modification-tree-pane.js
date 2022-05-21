@@ -9,7 +9,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     createTreeNode,
     deleteTreeNode,
-    fetchNetworkModificationTree,
     fetchNetworkModificationTreeNode,
 } from '../utils/rest-api';
 import {
@@ -32,8 +31,6 @@ import { useSnackbar } from 'notistack';
 import { useStoreState } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
-import { getFirstNodeOfType } from './graph/util/model-functions';
-import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -92,39 +89,12 @@ export const NetworkModificationTreePane = ({
     //we use this useRef to avoid to trigger on this depedencie workingTreeNode. avoid infinite loop
     const workingNodeRef = useRef();
     workingNodeRef.current = workingNode;
-
-    // change working node to ROOT node after deleting the current working node
-    const updateWorkingNodeToRootAfterDeleting = useCallback(() => {
-        const networkModificationTree = fetchNetworkModificationTree(studyUuid);
-
-        networkModificationTree
-            .then((tree) => {
-                const networkModificationTreeModel =
-                    new NetworkModificationTreeModel();
-                networkModificationTreeModel.setTreeElements(tree);
-                networkModificationTreeModel.updateLayout();
-                const rootNode = getFirstNodeOfType(tree, 'ROOT');
-                dispatch(
-                    workingTreeNode({
-                        id: rootNode.id,
-                        data: {
-                            readOnly: rootNode.data.readOnly,
-                            label: rootNode.data.label,
-                        },
-                    })
-                );
-            })
-            .catch((errorMessage) =>
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NetworkModificationTreeLoadError',
-                        intlRef: intlRef,
-                    },
-                })
-            );
-    }, [dispatch, enqueueSnackbar, intlRef, studyUuid]);
+    const treeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
+    //we use this useRef to avoid to trigger on this depedencie networkModificationTreeModel. avoid infinite loop
+    const treeModelRef = useRef();
+    treeModelRef.current = treeModel;
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -135,17 +105,16 @@ export const NetworkModificationTreePane = ({
             ).then((values) => {
                 dispatch(networkModificationTreeNodesUpdated(values));
                 // if working node is present in updated values then we save the new values
-                if (values.find(({ id }) => id === workingNodeRef.current.id)) {
-                    const res = values.find(({ id }) => {
-                        return id === workingNodeRef.current.id;
-                    });
+                const res = values.find(({ id }) => {
+                    return id === workingNodeRef.current.id;
+                });
+                if (res)
                     dispatch(
                         workingTreeNode({
                             id: res.id,
                             data: { readOnly: res.readOnly, label: res.name },
                         })
                     );
-                }
             });
         },
         [studyUuid, dispatch]
@@ -173,16 +142,34 @@ export const NetworkModificationTreePane = ({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeDeleted'
             ) {
-                dispatch(selectTreeNode(null));
-
-                // handle the case of deleting the working node
+                // handle the case of deleting the selected node
+                // we check if the selected node if exist in the list
                 if (
-                    studyUpdatedForce.eventData.headers['nodes'][0] ===
-                    workingNodeRef.current.id
+                    studyUpdatedForce.eventData.headers['nodes'].filter(
+                        (entry) => entry === selectedNode?.id
+                    )?.length > 0
+                )
+                    dispatch(selectTreeNode(null));
+                // handle the case of deleting the working node (we have one deleted node as return)
+                // this handle also the case when we get list of deleted node => we check if the working node if exist in the list
+                if (
+                    studyUpdatedForce.eventData.headers['nodes'].filter(
+                        (entry) => entry === workingNodeRef.current.id
+                    )?.length > 0
                 ) {
-                    updateWorkingNodeToRootAfterDeleting();
+                    const rootNode = treeModelRef.current?.treeElements.find(
+                        (entry) => entry?.type === 'ROOT'
+                    );
+                    dispatch(
+                        workingTreeNode({
+                            id: rootNode.id,
+                            data: {
+                                readOnly: rootNode.data.readOnly,
+                                label: rootNode.data.label,
+                            },
+                        })
+                    );
                 }
-
                 dispatch(
                     networkModificationTreeNodesRemoved(
                         studyUpdatedForce.eventData.headers['nodes']
@@ -197,10 +184,10 @@ export const NetworkModificationTreePane = ({
         }
     }, [
         dispatch,
+        selectedNode,
         studyUpdatedForce.eventData.headers,
         studyUuid,
         updateNodes,
-        updateWorkingNodeToRootAfterDeleting,
     ]);
 
     const handleCreateNode = useCallback(
