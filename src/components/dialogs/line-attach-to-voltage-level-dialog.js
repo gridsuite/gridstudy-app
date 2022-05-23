@@ -25,7 +25,12 @@ import {
     useInputForm,
     useTextValue,
 } from './input-hooks';
-import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import {
+    filledTextField,
+    gridItem,
+    GridSection,
+    removeNullDataValues,
+} from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
@@ -98,6 +103,7 @@ const LineAttachToVoltageLevelDialog = ({
         if (editData) {
             setFormValues(editData);
             setNewVoltageLevel(editData.mayNewVoltageLevelInfos);
+            setAttachmentLine(editData.attachmentLine);
         }
     }, [editData]);
 
@@ -219,6 +225,17 @@ const LineAttachToVoltageLevelDialog = ({
 
         return newVoltageLevel;
     }, [voltageLevelOrId, bbsOrNodeId, newVoltageLevel, formValues]);
+
+    const lineToEdit = useMemo(() => {
+        let lineData;
+        if (!attachmentLine && formValues?.attachmentLine) {
+            lineData = formValues.attachmentLine;
+        } else {
+            lineData = attachmentLine;
+        }
+        lineData && removeNullDataValues(lineData);
+        return lineData;
+    }, [attachmentLine, formValues]);
 
     const [attachmentPointId, attachmentPointIdField] = useTextValue({
         id: 'attachmentPointId',
@@ -544,6 +561,7 @@ const LineAttachToVoltageLevelDialog = ({
                         substationOptions={substationOptions}
                         displayConnectivity={false}
                         onCreateLine={onLineDo}
+                        editData={lineToEdit}
                     />
                 )}
             </Dialog>
