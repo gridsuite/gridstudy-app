@@ -138,7 +138,6 @@ const ExportDialog = ({
     const [formatsWithParameters, setFormatsWithParameters] = useState([]);
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
-    const [downloadUrl, setDownloadUrl] = React.useState('');
     const [exportStudyErr, setExportStudyErr] = React.useState('');
 
     useEffect(() => {
@@ -160,8 +159,22 @@ const ExportDialog = ({
 
     const handleClick = () => {
         if (selectedFormat) {
+            const downloadUrl = getExportUrl(
+                studyUuid,
+                nodeUuid,
+                selectedFormat
+            );
+            let suffix;
+            if (Object.keys(currentParameters).length > 0) {
+                const urlSearchParams = new URLSearchParams();
+                const jsoned = JSON.stringify(currentParameters);
+                urlSearchParams.append('formatParameters', jsoned);
+                // we have already as parameters, the tokens, so use '&' in stead of '?'
+                suffix = '&' + urlSearchParams.toString();
+            }
+
             setLoading(true);
-            onClick(downloadUrl, currentParameters);
+            onClick(downloadUrl + (suffix ? suffix : ''));
         } else {
             setExportStudyErr(
                 intl.formatMessage({ id: 'exportStudyErrorMsg' })
@@ -173,14 +186,12 @@ const ExportDialog = ({
         setExportStudyErr('');
         setSelectedFormat('');
         setLoading(false);
-        setDownloadUrl('');
         onClose();
     };
 
     const handleFormatSelectionChange = (event) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
-        setDownloadUrl(getExportUrl(studyUuid, nodeUuid, selected));
     };
 
     const intl = useIntl();
