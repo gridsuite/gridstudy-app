@@ -299,6 +299,9 @@
     "ShuntCompensatorCreationError": "Error while creating shunt compensator",
 
     "CreateGenerator": "Create generator",
+    "ModifyGenerator": "Modify generator",
+    "On": "On",
+    "Off": "Off",
     "GeneratorCreationError": "Error while creating generator",
     "EnergySourceText": "Energy source",
     "Hydro": "Hydro",
@@ -316,6 +319,7 @@
     "MinActivePowerLessThanMaxActivePower": "Minimum active power value must be less or equal than maximum active power value",
     "RatedNominalPowerGreaterThanZero": "The rated nominal power value must be strictly positive",
     "VoltageGreaterThanZero": "The voltage value must be strictly positive",
+    "GeneratorModificationError" : "Error while modifying generator",
 
     "CreateLine": "Create line",
     "Characteristics": "Characteristics",

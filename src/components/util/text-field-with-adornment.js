@@ -35,7 +35,6 @@ const TextFieldWithAdornment = (props) => {
         adornmentText,
         value,
         variant,
-        clearable,
         handleClearValue,
         ...otherProps
     } = props;
@@ -81,7 +80,7 @@ const TextFieldWithAdornment = (props) => {
         return value !== '' || isFocused
             ? {
                   startAdornment:
-                      value && clearable
+                      value && handleClearValue
                           ? getClearAdornment('start')
                           : undefined,
                   endAdornment: getTextAdornment('end'),
@@ -90,7 +89,7 @@ const TextFieldWithAdornment = (props) => {
             : {};
     }, [
         value,
-        clearable,
+        handleClearValue,
         getClearAdornment,
         isFocused,
         getTextAdornment,
@@ -101,13 +100,14 @@ const TextFieldWithAdornment = (props) => {
         return value !== '' || isFocused
             ? {
                   startAdornment: getTextAdornment('start'),
-                  endAdornment: value && clearable && getClearAdornment('end'),
+                  endAdornment:
+                      value && handleClearValue && getClearAdornment('end'),
                   classes: { input: classes.inputLeft },
               }
             : {};
     }, [
         value,
-        clearable,
+        handleClearValue,
         getClearAdornment,
         isFocused,
         getTextAdornment,
