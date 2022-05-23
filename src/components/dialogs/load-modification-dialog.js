@@ -31,15 +31,14 @@ import {
 } from './input-hooks';
 import {
     ActivePowerAdornment,
+    compareById,
     filledTextField,
+    getId,
     gridItem,
     GridSection,
     ReactivePowerAdornment,
 } from './dialogUtils';
 
-const getId = (e) => e?.id;
-
-const compareById = (a, b) => a?.id?.localeCompare(b?.id);
 /**
  * Dialog to modify a load in the network
  * @param {Boolean} open Is the dialog open ?
