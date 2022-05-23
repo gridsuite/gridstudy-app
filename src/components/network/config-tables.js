@@ -538,6 +538,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'q',
                 numeric: true,
                 fractionDigits: 1,
+                normed: applyFluxConvention,
                 canBeInvalidated: true,
             },
             {
@@ -551,6 +552,12 @@ export const TABLES_DEFINITIONS = {
                         max: equipment.maxP,
                         ...props,
                     }),
+                fractionDigits: 1,
+            },
+            {
+                id: 'TargetQ',
+                dataKey: 'targetQ',
+                numeric: true,
                 fractionDigits: 1,
             },
         ],
@@ -761,6 +768,7 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'q',
                 numeric: true,
                 fractionDigits: 1,
+                normed: applyFluxConvention,
                 canBeInvalidated: true,
             },
             {
