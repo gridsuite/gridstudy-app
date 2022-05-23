@@ -30,9 +30,9 @@ import {
     DISPLAY_OVERLOAD_TABLE,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
-    SELECTED_ITEM_NETWORK,
     FULLSCREEN_SINGLE_LINE_DIAGRAM,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
+    CHANGE_LOCKED_COLUMNS_NAMES,
     ADD_LOADFLOW_NOTIF,
     RESET_LOADFLOW_NOTIF,
     ADD_SA_NOTIF,
@@ -109,9 +109,9 @@ const initialState = {
     loadflowNotif: false,
     saNotif: false,
     filteredNominalVoltages: null,
-    selectItemNetwork: null,
     fullScreen: false,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
+    allLockedColumnsNames: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     centerOnSubstation: null,
@@ -282,10 +282,6 @@ export const reducer = createReducer(initialState, {
         state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     },
 
-    [SELECTED_ITEM_NETWORK]: (state, action) => {
-        state.selectItemNetwork = action.selectItemNetwork;
-    },
-
     [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
         state.fullScreen = action.fullScreen;
     },
@@ -298,6 +294,15 @@ export const reducer = createReducer(initialState, {
             }
         });
         state.allDisplayedColumnsNames = newDisplayedColumnsNames;
+    },
+    [CHANGE_LOCKED_COLUMNS_NAMES]: (state, action) => {
+        let newLockedColumnsNames = [...state.allLockedColumnsNames];
+        action.lockedColumnsNamesParams.forEach((param) => {
+            if (param) {
+                newLockedColumnsNames[param.index] = param.value;
+            }
+        });
+        state.allLockedColumnsNames = newLockedColumnsNames;
     },
     [FAVORITE_CONTINGENCY_LISTS]: (state, action) => {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =

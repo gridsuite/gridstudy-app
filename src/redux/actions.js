@@ -281,15 +281,6 @@ export function selectComponentLibrary(componentLibrary) {
     };
 }
 
-export const SELECTED_ITEM_NETWORK = 'SELECTED_ITEM_NETWORK';
-
-export function selectItemNetwork(selectItemNetwork) {
-    return {
-        type: SELECTED_ITEM_NETWORK,
-        selectItemNetwork: selectItemNetwork,
-    };
-}
-
 export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
 
 export function fullScreenSingleLineDiagram(fullScreen) {
@@ -302,6 +293,15 @@ export function changeDisplayedColumns(displayedColumnsParams) {
     return {
         type: CHANGE_DISPLAYED_COLUMNS_NAMES,
         displayedColumnsNamesParams: displayedColumnsParams,
+    };
+}
+
+export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
+
+export function changeLockedColumns(lockedColumnsParams) {
+    return {
+        type: CHANGE_LOCKED_COLUMNS_NAMES,
+        lockedColumnsNamesParams: lockedColumnsParams,
     };
 }
 

@@ -30,13 +30,11 @@ import NetworkMapTab from './network-map-tab';
 import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
-import {
-    SingleLineDiagramPane,
-    useSingleLineDiagram,
-} from './single-line-diagram-pane';
+import { SingleLineDiagramPane } from './singleLineDiagram/single-line-diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
+import { useSingleLineDiagram } from './singleLineDiagram/utils';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -306,7 +304,7 @@ const StudyPane = ({
                                 <SingleLineDiagramPane
                                     studyUuid={studyUuid}
                                     network={network}
-                                    onClose={() => closeVoltageLevelDiagram()}
+                                    onClose={closeVoltageLevelDiagram}
                                     openVoltageLevel={openVoltageLevel}
                                     isComputationRunning={isComputationRunning}
                                     showInSpreadsheet={showInSpreadsheet}
@@ -333,6 +331,9 @@ const StudyPane = ({
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
+                    loadFlowStatus={getLoadFlowRunningStatus(
+                        loadFlowInfos?.loadFlowStatus
+                    )}
                 />
             </Paper>
         );
@@ -379,8 +380,9 @@ const StudyPane = ({
                 }}
             >
                 <ReportViewerTab
-                    reportId={studyUuid}
+                    studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
+                    workingNode={workingNode}
                 />
             </div>
         </>

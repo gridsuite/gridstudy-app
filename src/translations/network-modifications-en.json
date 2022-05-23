@@ -2,14 +2,15 @@
     "network_modification/modificationsCount": "{count, plural, =0 {no modification} =1 {{count} modification} other {{count} modifications}}",
     "network_modifications/EQUIPMENT_DELETION": "Deletion of {computedLabel}",
     "network_modifications/SUBSTATION_CREATION": "Creating substation {computedLabel}",
-    "network_modifications/EQUIPMENT_ATTRIBUTE_MODIFICATION": "Equipment modification {computedLabel}",
     "network_modifications/VOLTAGE_LEVEL_CREATION": "Creating voltage level {computedLabel}",
+    "network_modifications/LINE_SPLIT_WITH_VOLTAGE_LEVEL": "Splitting a line {computedLabel}",
     "network_modifications/LOAD_CREATION": "Creating load {computedLabel}",
     "network_modifications/LOAD_MODIFICATION": "Modifying load {computedLabel}",
     "network_modifications/GENERATOR_CREATION": "Creating generator {computedLabel}",
     "network_modifications/LINE_CREATION": "Creating line {computedLabel}",
     "network_modifications/TWO_WINDINGS_TRANSFORMER_CREATION": "Creating 2 windings transformer {computedLabel}",
-    "network_modifications/BRANCH_STATUS": "Modification status line {computedLabel}",
+    "network_modifications/BRANCH_STATUS": "{action, select, TRIP {Trip line {computedLabel}} LOCKOUT {Lock out line {computedLabel}} ENERGISE_END_ONE {Energise {computedLabel} on {energizedEnd}} ENERGISE_END_TWO {Energise {computedLabel} on {energizedEnd}} SWITCH_ON {Switch on {computedLabel}} other {Modification line status {computedLabel}}}",
     "network_modifications/SHUNT_COMPENSATOR_CREATION": "Creating shunt compensator {computedLabel}",
-    "network_modifications/GROOVY_SCRIPT": "Modification by script"
+    "network_modifications/GROOVY_SCRIPT": "Modification by script",
+    "network_modifications/EQUIPMENT_ATTRIBUTE_MODIFICATION": "{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Open {computedLabel}} other {Close {computedLabel}}}} other {Equipment modification {computedLabel}}}"
 }

@@ -14,11 +14,11 @@ export const TapChangerSelector = ({
         <Select
             defaultValue={defaultValue}
             onChange={(ev) => setter(ev.target.value)}
-            size={'large'}
+            size={'medium'}
             margin={'none'}
             {...props}
         >
-            {[...Array(tapChanger.highTap - tapChanger.lowTap)].map(
+            {[...Array(tapChanger.highTap - tapChanger.lowTap + 1)].map(
                 (step, index) => (
                     <MenuItem
                         key={'tapChanger' + index}
@@ -64,10 +64,10 @@ export const NumericalField = ({
                 {...props}
                 error={error}
                 type="Number"
-                size={'medium'}
+                size={'small'}
                 margin={'normal'}
                 inputProps={{
-                    style: { textAlign: 'center' },
+                    style: { textAlign: 'center', padding: '0px' },
                     inputProps: { min: { min }, max: { max } },
                 }}
             />

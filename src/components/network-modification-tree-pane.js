@@ -31,6 +31,7 @@ import { useSnackbar } from 'notistack';
 import { useStoreState } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
+import ExportDialog from './dialogs/export-dialog';
 
 const useStyles = makeStyles((theme) => ({
     nodeEditor: {
@@ -75,7 +76,9 @@ export const NetworkModificationTreePane = ({
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
+    const DownloadIframe = 'downloadIframe';
 
+    const [activeNode, setActiveNode] = useState(null);
     const selectedNode = useSelector((state) => state.selectedTreeNode);
 
     const isModificationsDrawerOpen = useSelector(
@@ -226,24 +229,34 @@ export const NetworkModificationTreePane = ({
         [studyUuid, enqueueSnackbar, intlRef]
     );
 
+    const [openExportDialog, setOpenExportDialog] = useState(false);
+
+    const handleClickExportStudy = (url) => {
+        window.open(url, DownloadIframe);
+        setOpenExportDialog(false);
+    };
+
+    const handleExportCaseOnNode = (element) => {
+        setOpenExportDialog(true);
+    };
+
     const [createNodeMenu, setCreateNodeMenu] = useState({
         position: { x: -1, y: -1 },
         display: null,
-        selectedNode: null,
     });
 
     const onNodeContextMenu = useCallback((event, element) => {
+        setActiveNode(element);
         setCreateNodeMenu({
             position: { x: event.pageX, y: event.pageY },
             display: true,
-            selectedNode: element,
         });
     }, []);
 
     const closeCreateNodeMenu = useCallback(() => {
+        // setActiveNode(null);
         setCreateNodeMenu({
             display: false,
-            selectedNode: null,
         });
     }, []);
 
@@ -280,12 +293,31 @@ export const NetworkModificationTreePane = ({
             {createNodeMenu.display && (
                 <CreateNodeMenu
                     position={createNodeMenu.position}
-                    activeNode={createNodeMenu.selectedNode}
+                    activeNode={activeNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
+                    handleExportCaseOnNode={handleExportCaseOnNode}
                     handleClose={closeCreateNodeMenu}
                 />
             )}
+            {openExportDialog && (
+                <ExportDialog
+                    open={openExportDialog}
+                    onClose={() => setOpenExportDialog(false)}
+                    onClick={handleClickExportStudy}
+                    studyUuid={studyUuid}
+                    nodeUuid={activeNode.id}
+                    title={intlRef.current.formatMessage({
+                        id: 'exportNetwork',
+                    })}
+                />
+            )}
+            <iframe
+                id={DownloadIframe}
+                name={DownloadIframe}
+                title={DownloadIframe}
+                style={{ display: 'none' }}
+            />
         </>
     );
 };
