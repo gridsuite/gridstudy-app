@@ -300,6 +300,9 @@
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 
     "CreateGenerator": "Créer un groupe",
+    "ModifyGenerator": "modifier un groupe",
+    "On": "On",
+    "Off": "Off",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
     "EnergySourceText": "Source d'énergie",
     "Hydro": "Hydraulique",
@@ -317,6 +320,7 @@
     "MinActivePowerLessThanMaxActivePower": "La valeur de la puissance active min doit être inférieure ou égale à la valeur de la puissance active max",
     "RatedNominalPowerGreaterThanZero": "La valeur de la puissance nominale doit être strictement positive",
     "VoltageGreaterThanZero": "La valeur de la tension doit être strictement positive",
+    "GeneratorModificationError" : "Erreur lors de la modification d'un générateur ",
 
     "CreateLine": "Créer une ligne",
     "Characteristics": "Caractéristiques",

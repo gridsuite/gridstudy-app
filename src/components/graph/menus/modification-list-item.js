@@ -28,9 +28,13 @@ const editableModificationTypes = new Set([
     'TWO_WINDINGS_TRANSFORMER_CREATION',
     'VOLTAGE_LEVEL_CREATION',
     'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
+    'GENERATOR_MODIFICATION',
 ]);
 
-const equipmentModificationModificationsType = new Set(['LOAD_MODIFICATION']);
+const equipmentModificationModificationsType = new Set([
+    'LOAD_MODIFICATION',
+    'GENERATOR_MODIFICATION',
+]);
 
 const useStyles = makeStyles((theme) => ({
     listItem: {
