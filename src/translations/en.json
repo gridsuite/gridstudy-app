@@ -389,5 +389,12 @@
     "Update": "Update",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
-    "LogOnlySingleNode": "Log single node"
+    "LogOnlySingleNode": "Log single node",
+
+    "RegulationMode" : "PHASE REGULATION MODE",
+    "RegulatingPhase" : "PHASE REGULATING",
+    "RegulationValue" : "CURRENT (A) OR FLOW SET POINT (MW)",
+    "LoadTapChangingCapabilities" : "RATIO ON-LOAD",
+    "RegulatingRatio" : "RATIO REGULATING",
+    "TargetVPoint" : "VOLTAGE SET POINT (KV)"
 }

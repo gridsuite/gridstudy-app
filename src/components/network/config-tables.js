@@ -215,6 +215,22 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
+                id: 'LoadTapChangingCapabilities',
+                dataKey: 'loadTapChangingCapabilities',
+                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+            },
+            {
+                id: 'RegulatingRatio',
+                dataKey: 'regulating',
+                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+            },
+            {
+                id: 'TargetVPoint',
+                dataKey: 'targetV',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
                 id: 'RatioTap',
                 dataKey: 'ratioTapChangerPosition',
                 numeric: true,
@@ -227,6 +243,16 @@ export const TABLES_DEFINITIONS = {
                     }),
             },
             {
+                id: 'RegulationMode',
+                dataKey: 'regulationMode',
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+            },
+            {
+                id: 'RegulatingPhase',
+                dataKey: 'regulating',
+                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+            },
+            {
                 id: 'PhaseTap',
                 dataKey: 'phaseTapChangerPosition',
                 numeric: true,
@@ -237,6 +263,13 @@ export const TABLES_DEFINITIONS = {
                         tapChanger: equipment.phaseTapChanger,
                         ...props,
                     }),
+            },
+            {
+                id: 'RegulationValue',
+                dataKey: 'regulationValue',
+                numeric: true,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                fractionDigits: 1,
             },
         ],
     },

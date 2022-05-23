@@ -110,8 +110,8 @@
     "ReactivePowerSide2": "q2 (MVar)",
     "ReactivePowerSide3": "q3 (MVar)",
     "TargetP": "P consigne (MW)",
-    "RatioTap": "Plot régleur",
-    "PhaseTap": "Plot déphaseur",
+    "RatioTap": "Prise régleur",
+    "PhaseTap": "Prise déphaseur",
     "RatioTap1": "Plot régleur 1",
     "PhaseTap1": "Plot déphaseur 1",
     "RatioTap2": "Plot régleur 2",
@@ -389,5 +389,12 @@
     "Update": "Mettre à jour",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
-    "LogOnlySingleNode": "Log noeud seul"
+    "LogOnlySingleNode": "Log noeud seul",
+
+    "RegulationMode" : "MODE DE RÉGLAGE DEPHASEUR",
+    "RegulatingPhase" : "DEPHASEUR EN RÉGLAGE",
+    "RegulationValue" : "CONSIGNE DU COURANT (A) OU DE TRANSIT (MW)",
+    "LoadTapChangingCapabilities" : "RÉGLEUR EN CHARGE",
+    "RegulatingRatio" : "RÉGLEUR  EN RÉGLAGE",
+    "TargetVPoint" : "CONSIGNE TENSION (KV)"
 }
