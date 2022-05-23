@@ -16,7 +16,7 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level';
+import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
