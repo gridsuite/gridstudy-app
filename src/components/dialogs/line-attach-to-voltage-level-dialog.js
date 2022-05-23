@@ -22,7 +22,6 @@ import {
 import { useSnackbar } from 'notistack';
 import {
     useAutocompleteField,
-    useButtonWithTooltip,
     useInputForm,
     useTextValue,
 } from './input-hooks';
@@ -37,8 +36,6 @@ import {
 } from './line-split-or-attach-utils';
 import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
-import EquipmentSearchDialog from './equipment-search-dialog';
-import { useFormSearchCopy } from './form-search-copy-hook';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -79,29 +76,6 @@ const LineAttachToVoltageLevelDialog = ({
     const clearValues = () => {
         setFormValues(null);
     };
-
-    const toFormValues = (lineToAttachTo) => {
-        return {
-            lineToAttachToId: lineToAttachTo.id + '(1)',
-            percentage: lineToAttachTo.percentage,
-        };
-    };
-
-    const equipmentPath = 'line-split';
-
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        selectedNodeUuid,
-        equipmentPath,
-        toFormValues,
-        setFormValues,
-        clearValues,
-    });
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
-    });
 
     const [newVoltageLevel, setNewVoltageLevel] = useState(null);
 
@@ -477,10 +451,9 @@ const LineAttachToVoltageLevelDialog = ({
             >
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
-                        <Grid item xs={11}>
+                        <Grid item xs={12}>
                             <FormattedMessage id="LineAttachToVoltageLevel" />
                         </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
@@ -573,13 +546,6 @@ const LineAttachToVoltageLevelDialog = ({
                         onCreateLine={onLineDo}
                     />
                 )}
-                <EquipmentSearchDialog
-                    open={searchCopy.isDialogSearchOpen}
-                    onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={'VOLTAGE_LEVEL'}
-                    onSelectionChange={searchCopy.handleSelectionChange}
-                    selectedNodeUuid={selectedNodeUuid}
-                />
             </Dialog>
         </>
     );
