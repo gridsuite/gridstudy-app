@@ -22,7 +22,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -45,12 +45,28 @@ function longestCommonPrefix(strs) {
     return prefix;
 }
 
-const MetaComp = ({ metasAsArray, onChange, inst }) => {
+const useMeta = (metasAsArray) => {
     const longestPrefix = longestCommonPrefix(metasAsArray.map((m) => m.name));
     const lastDotIndex = longestPrefix.lastIndexOf('.');
     const prefix = longestPrefix.slice(0, lastDotIndex + 1);
 
-    function onBoolChange(paramName) {}
+    const defaultInst = useMemo(() => {
+        return Object.fromEntries(
+            metasAsArray.map((m) => {
+                if (m.type === 'BOOLEAN') return [m.name, m.defaultValue];
+                return [m.name, m.defaultValue ?? null];
+            })
+        );
+    }, [metasAsArray]);
+    const [inst, setInst] = useState(defaultInst);
+
+    const onBoolChange = (event, paramName) => {
+        setInst((prevInst) => {
+            const nextInst = { ...inst };
+            nextInst[paramName] = event.target.checked;
+            return nextInst;
+        });
+    };
 
     const comp = (
         <>
@@ -70,7 +86,7 @@ const MetaComp = ({ metasAsArray, onChange, inst }) => {
                                             meta.defaultValue
                                         }
                                         onChange={(e) =>
-                                            onBoolChange(meta.name)
+                                            onBoolChange(e, meta.name)
                                         }
                                     />
                                 }
@@ -96,7 +112,8 @@ const MetaComp = ({ metasAsArray, onChange, inst }) => {
             ))}
         </>
     );
-    return comp;
+
+    return [inst, comp];
 };
 
 /**
@@ -127,7 +144,6 @@ const ExportDialog = ({
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                console.log('available formats :', formats);
                 if (Array.isArray(formats)) {
                     setAvailableFormats(formats);
                 } else if (typeof formats === 'object') {
@@ -138,11 +154,14 @@ const ExportDialog = ({
         }
     }, [open]);
 
+    const formatWithParameter = formatsWithParameters?.[selectedFormat];
+    const metasAsArray = formatWithParameter?.parameters || [];
+    const [currentParameters, paramsComponent] = useMeta(metasAsArray);
+
     const handleClick = () => {
-        console.debug('Request for exporting in format: ' + selectedFormat);
         if (selectedFormat) {
             setLoading(true);
-            onClick(downloadUrl);
+            onClick(downloadUrl, currentParameters);
         } else {
             setExportStudyErr(
                 intl.formatMessage({ id: 'exportStudyErrorMsg' })
@@ -165,10 +184,6 @@ const ExportDialog = ({
     };
 
     const intl = useIntl();
-
-    const metasAsArray =
-        formatsWithParameters?.[selectedFormat]?.parameters || [];
-    const metaComp = <MetaComp metasAsArray={metasAsArray} />;
 
     return (
         <Dialog
@@ -224,7 +239,9 @@ const ExportDialog = ({
                             >
                                 <Typography>Parameters</Typography>
                             </AccordionSummary>
-                            <AccordionDetails>{metaComp}</AccordionDetails>
+                            <AccordionDetails>
+                                {paramsComponent}
+                            </AccordionDetails>
                         </Accordion>
                     </Grid>
                 </Grid>

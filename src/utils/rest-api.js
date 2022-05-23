@@ -905,6 +905,18 @@ export function getAvailableExportFormats() {
     }).then((response) => response.json());
 }
 
+export function fetchExport(url, params) {
+    console.info('export');
+    return backendFetch(url, {
+        method: 'post',
+        body: JSON.stringify(params),
+    }).then((response) => {
+        let ret = response.blob();
+        console.debug('got blob', ret);
+        return ret;
+    });
+}
+
 export function fetchAppsAndUrls() {
     console.info(`Fetching apps and urls...`);
     return fetch('env.json')

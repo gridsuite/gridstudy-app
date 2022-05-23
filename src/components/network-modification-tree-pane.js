@@ -9,6 +9,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     createTreeNode,
     deleteTreeNode,
+    fetchExport,
     fetchNetworkModificationTreeNode,
 } from '../utils/rest-api';
 import {
@@ -174,8 +175,35 @@ export const NetworkModificationTreePane = ({
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
-    const handleClickExportStudy = (url) => {
-        window.open(url, DownloadIframe);
+    const handleClickExportStudy = (url, params) => {
+        console.log('handleClickExportStudy');
+        fetchExport(url, params)
+            .then((blob) => {
+                try {
+                    //downloading the file depends on the browser
+                    //IE handles it differently than chrome/webkit
+                    if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                        window.navigator.msSaveOrOpenBlob(
+                            blob,
+                            'dumb_name_for_now'
+                        );
+                    } else {
+                        var objectUrl = URL.createObjectURL(blob);
+                        console.log('pre window open');
+                        window.open(objectUrl);
+                        console.log('post window open');
+                    }
+                } catch (exc) {
+                    console.log(
+                        'Save Blob method failed with the following exception.'
+                    );
+                    console.log(exc);
+                }
+            })
+            .catch((aie) => {
+                console.error('ouille', aie);
+            });
+        //window.open(url, DownloadIframe);
         setOpenExportDialog(false);
     };
 
