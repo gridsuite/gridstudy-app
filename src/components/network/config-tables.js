@@ -221,7 +221,12 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingRatio',
-                dataKey: 'regulating',
+                dataKey: 'regulatingRatio',
+                cellDataGetter: (cellData) => {
+                    return cellData.ratioTapChangerPosition
+                        ? cellData.regulating
+                        : undefined;
+                },
                 boolean: true, // new param to indicate that this cell data is boolean(true/false)
             },
             {
@@ -249,7 +254,12 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingPhase',
-                dataKey: 'regulating',
+                dataKey: 'regulatingPhase',
+                cellDataGetter: (cellData) => {
+                    return cellData.phaseTapChangerPosition
+                        ? cellData.regulating
+                        : undefined;
+                },
                 boolean: true, // new param to indicate that this cell data is boolean(true/false)
             },
             {
@@ -376,7 +386,12 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingRatio',
-                dataKey: 'regulating',
+                dataKey: 'regulatingRatio',
+                cellDataGetter: (cellData) => {
+                    return cellData.ratioTapChangerPosition
+                        ? cellData.regulating
+                        : undefined;
+                },
                 boolean: true, // new param to indicate that this cell data is boolean(true/false)
             },
             {
@@ -428,7 +443,12 @@ export const TABLES_DEFINITIONS = {
             },
             {
                 id: 'RegulatingPhase',
-                dataKey: 'regulating',
+                dataKey: 'regulatingPhase',
+                cellDataGetter: (cellData) => {
+                    return cellData.phaseTapChangerPosition
+                        ? cellData.regulating
+                        : undefined;
+                },
                 boolean: true, // new param to indicate that this cell data is boolean(true/false)
             },
             {
