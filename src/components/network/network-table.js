@@ -599,6 +599,47 @@ const NetworkTable = (props) => {
         ]
     );
 
+    /**
+     * Used for boolean cell data value to render a checkbox
+     * @param {any} rowData data of row
+     * @param {any} columnDefinition definition of column
+     * @param {any} key key of element
+     * @param {any} style style for table cell element
+     * @returns {JSX.Element} Component template
+     */
+    const booleanCellRender = useCallback(
+        (rowData, columnDefinition, key, style) => {
+            // get value of cell in this case is true or false or null
+            const isChecked = formatCell(rowData, columnDefinition);
+            return (
+                <div key={key} style={style}>
+                    <div
+                        className={clsx(classes.tableCell, {
+                            [classes.valueInvalid]:
+                                columnDefinition.canBeInvalidated &&
+                                props.loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                    >
+                        {isChecked !== undefined && (
+                            <Checkbox
+                                style={{ margin: '-10%' }}
+                                checked={isChecked}
+                                //onClick={handleCheckboxClick} #TODO handle change event later
+                                //onChange={handleCheckboxChange} #TODO handle change event later
+                            />
+                        )}
+                    </div>
+                </div>
+            );
+        },
+        [
+            formatCell,
+            classes.tableCell,
+            classes.valueInvalid,
+            props.loadFlowStatus,
+        ]
+    );
+
     const registerChangeRequest = useCallback(
         (data, changeCmd, value) => {
             // save original value, dont erase if exists
@@ -671,6 +712,9 @@ const NetworkTable = (props) => {
                 };
                 if (c.changeCmd !== undefined) {
                     column.cellRenderer = editableCellRender;
+                } else if (column.boolean) {
+                    // check if param boolean is true then render a boolean cell(checkbox)
+                    column.cellRenderer = booleanCellRender;
                 } else {
                     column.cellRenderer = defaultCellRender;
                 }

@@ -472,6 +472,11 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
+                id: 'ActivePowerControl',
+                dataKey: 'activePowerControlOn',
+                boolean: true,
+            },
+            {
                 id: 'TargetP',
                 dataKey: 'targetP',
                 numeric: true,
@@ -500,12 +505,17 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'VoltageRegulatorOn',
                 dataKey: 'voltageRegulatorOn',
+                boolean: true,
             },
             {
                 id: 'TargetV',
                 dataKey: 'targetV',
                 numeric: true,
                 fractionDigits: 1,
+            },
+            {
+                id: 'RegulatingTerminal',
+                dataKey: 'regulatingTerminal',
             },
         ],
     },
