@@ -444,18 +444,6 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'energySource',
             },
             {
-                id: 'MinP',
-                dataKey: 'minP',
-                numeric: true,
-                fractionDigits: 1,
-            },
-            {
-                id: 'MaxP',
-                dataKey: 'maxP',
-                numeric: true,
-                fractionDigits: 1,
-            },
-            {
                 id: 'ActivePower',
                 dataKey: 'p',
                 numeric: true,
@@ -475,6 +463,18 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerControl',
                 dataKey: 'activePowerControlOn',
                 boolean: true,
+            },
+            {
+                id: 'MinP',
+                dataKey: 'minP',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'MaxP',
+                dataKey: 'maxP',
+                numeric: true,
+                fractionDigits: 1,
             },
             {
                 id: 'TargetP',
