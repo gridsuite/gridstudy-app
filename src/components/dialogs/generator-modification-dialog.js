@@ -208,7 +208,7 @@ const GeneratorModificationDialog = ({
         {
             label: 'VoltageRegulationText',
             inputForm: inputForm,
-            defaultValue: getValueOrNull(formValues?.voltageRegulatorOn),
+            defaultValue: getValueOrNull(formValues?.voltageRegulationOn),
             previousValue: previousRegulation,
             clearable: true,
         }
