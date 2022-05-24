@@ -114,7 +114,6 @@ const GeneratorModificationDialog = ({
             : { id: '' };
     }, [formValues]);
 
-    console.info(equipmentOptions);
     const [generatorInfos, generatorIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
