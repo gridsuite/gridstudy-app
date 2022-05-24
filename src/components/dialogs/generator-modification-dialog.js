@@ -30,12 +30,13 @@ import {
     filledTextField,
     getId,
     gridItem,
+    gridItemWithTooltip,
     MVAPowerAdornment,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';
 import { Box } from '@mui/system';
-import { ENERGY_SOURCES } from '../network/constants';
+import { ENERGY_SOURCES, getEnergySourceLabel } from '../network/constants';
 import { useNullableBooleanValue } from './inputs/boolean';
 import { modifyGenerator } from '../../utils/rest-api';
 
@@ -136,13 +137,22 @@ const GeneratorModificationDialog = ({
         clearable: true,
     });
 
+    const energySourceLabelId = getEnergySourceLabel(
+        generatorInfos?.energySource
+    );
+    const previousEnergySourceLabel = energySourceLabelId
+        ? intl.formatMessage({
+              id: energySourceLabelId,
+          })
+        : undefined;
+
     const [energySource, energySourceField] = useEnumValue({
         label: 'EnergySourceText',
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: ENERGY_SOURCES,
         defaultValue: getValue(formValues?.energySource),
-        previousValue: generatorInfos?.energySource,
+        previousValue: previousEnergySourceLabel,
         clearable: true,
     });
 
@@ -344,7 +354,15 @@ const GeneratorModificationDialog = ({
                             {gridItem(activePowerSetpointField, 4)}
                             {gridItem(reactivePowerSetpointField, 4)}
                             <Box sx={{ width: '100%' }} />
-                            {gridItem(voltageRegulationField, 4)}
+                            {gridItemWithTooltip(
+                                voltageRegulationField,
+                                voltageRegulation !== null ? (
+                                    ''
+                                ) : (
+                                    <FormattedMessage id={'NoModification'} />
+                                ),
+                                4
+                            )}
                             {gridItem(voltageSetpointField, 4)}
                         </Grid>
                         {/* Connectivity part */}

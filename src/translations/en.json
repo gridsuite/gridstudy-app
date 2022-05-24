@@ -303,6 +303,7 @@
     "ModifyGenerator": "Modify generator",
     "On": "On",
     "Off": "Off",
+    "NoModification": "No modification",
     "GeneratorCreationError": "Error while creating generator",
     "EnergySourceText": "Energy source",
     "Hydro": "Hydro",
