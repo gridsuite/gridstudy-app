@@ -9,6 +9,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import React from 'react';
+import { Tooltip } from '@mui/material';
 
 export const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -107,5 +108,14 @@ export const gridItem = (field, size = 6) => {
         </Grid>
     );
 };
+
+export const gridItemWithTooltip = (field, tooltip = '', size = 6) => {
+    return (
+        <Grid item xs={size} align={'start'}>
+            <Tooltip title={tooltip}>{field}</Tooltip>
+        </Grid>
+    );
+};
+
 export const getId = (e) => e?.id;
 export const compareById = (a, b) => a?.id?.localeCompare(b?.id);
