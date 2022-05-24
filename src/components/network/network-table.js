@@ -590,12 +590,12 @@ const NetworkTable = (props) => {
                 >
                     <div className={classes.tableCell}>
                         <OverflowableText
-                            className={{
+                            className={clsx({
                                 [classes.valueInvalid]:
                                     columnDefinition.canBeInvalidated &&
                                     props.loadFlowStatus !==
                                         RunningStatus.SUCCEED,
-                            }}
+                            })}
                             text={text}
                         />
                     </div>
