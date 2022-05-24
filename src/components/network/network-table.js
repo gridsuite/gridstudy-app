@@ -622,8 +622,9 @@ const NetworkTable = (props) => {
                     >
                         {isChecked !== undefined && (
                             <Checkbox
-                                style={{ margin: '-10%' }}
+                                style={{ margin: '-10%', cursor: 'initial' }}
                                 checked={isChecked}
+                                disableRipple={true} //to change by using dynamic value when handling events
                                 //onClick={handleCheckboxClick} #TODO handle change event later
                                 //onChange={handleCheckboxChange} #TODO handle change event later
                             />
