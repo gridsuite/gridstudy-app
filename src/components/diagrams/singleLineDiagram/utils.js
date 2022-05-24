@@ -85,7 +85,7 @@ export const useSingleLineDiagram = () => {
                                 addQueryPrefix: true,
                                 arrayFormat,
                             }
-                        ).toString()
+                        )
                 );
             }
         },

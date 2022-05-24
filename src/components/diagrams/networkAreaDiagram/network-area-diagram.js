@@ -9,7 +9,6 @@ import React, {
     forwardRef,
     useCallback,
     useEffect,
-    useImperativeHandle,
     useLayoutEffect,
     useRef,
     useState,
@@ -168,20 +167,13 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 
     const [forceState, updateState] = useState(false);
 
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+
     const [loadingState, updateLoadingState] = useState(false);
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);
     }, []);
-
-    useImperativeHandle(
-        ref,
-        () => ({
-            reloadSvg: forceUpdate,
-        }),
-        // Note: forceUpdate doesn't change
-        [forceUpdate]
-    );
 
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
@@ -246,6 +238,25 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             setSvg(noSvg);
         }
     }, [svgUrl, forceState, snackError]);
+
+    const updateNad = useCallback(() => {
+        if (svgRef.current) {
+            forceUpdate();
+        }
+    }, [forceUpdate]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers && svgRef.current) {
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'loadflow' ||
+                studyUpdatedForce.eventData.headers['updateType'] === 'study'
+            ) {
+                updateNad();
+            }
+        }
+        // Note: studyUuid, and loadNetwork don't change
+    }, [studyUpdatedForce, props.studyUuid, updateNad]);
 
     useLayoutEffect(() => {
         if (svg.svg) {

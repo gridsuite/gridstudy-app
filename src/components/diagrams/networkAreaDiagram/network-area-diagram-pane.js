@@ -71,6 +71,7 @@ export function NetworkAreaDiagramPane({
                         workingNode={workingNode}
                         depth={depth}
                         setDepth={setDepth}
+                        studyUuid={studyUuid}
                     />
                 </div>
             )}
