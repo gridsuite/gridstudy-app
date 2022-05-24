@@ -401,6 +401,6 @@
     "RegulatingPhase" : "DEPHASEUR EN RÉGLAGE",
     "RegulationValue" : "CONSIGNE DU COURANT (A) OU DE TRANSIT (MW)",
     "LoadTapChangingCapabilities" : "RÉGLEUR EN CHARGE",
-    "RegulatingRatio" : "RÉGLEUR  EN RÉGLAGE",
+    "RegulatingRatio" : "RÉGLEUR EN RÉGLAGE",
     "TargetVPoint" : "CONSIGNE TENSION (KV)"
 }

@@ -217,7 +217,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'LoadTapChangingCapabilities',
                 dataKey: 'loadTapChangingCapabilities',
-                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+                boolean: true,
             },
             {
                 id: 'RegulatingRatio',
@@ -227,7 +227,7 @@ export const TABLES_DEFINITIONS = {
                         ? cellData.regulating
                         : undefined;
                 },
-                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+                boolean: true,
             },
             {
                 id: 'TargetVPoint',
@@ -260,7 +260,7 @@ export const TABLES_DEFINITIONS = {
                         ? cellData.regulating
                         : undefined;
                 },
-                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+                boolean: true,
             },
             {
                 id: 'PhaseTap',
@@ -382,7 +382,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'LoadTapChangingCapabilities',
                 dataKey: 'loadTapChangingCapabilities',
-                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+                boolean: true,
             },
             {
                 id: 'RegulatingRatio',
@@ -392,7 +392,7 @@ export const TABLES_DEFINITIONS = {
                         ? cellData.regulating
                         : undefined;
                 },
-                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+                boolean: true,
             },
             {
                 id: 'TargetVPoint',
@@ -449,7 +449,7 @@ export const TABLES_DEFINITIONS = {
                         ? cellData.regulating
                         : undefined;
                 },
-                boolean: true, // new param to indicate that this cell data is boolean(true/false)
+                boolean: true,
             },
             {
                 id: 'PhaseTap1',

@@ -609,7 +609,6 @@ const NetworkTable = (props) => {
      */
     const booleanCellRender = useCallback(
         (rowData, columnDefinition, key, style) => {
-            // get value of cell in this case is true or false or null
             const isChecked = formatCell(rowData, columnDefinition);
             return (
                 <div key={key} style={style}>
@@ -624,9 +623,8 @@ const NetworkTable = (props) => {
                             <Checkbox
                                 style={{ margin: '-10%', cursor: 'initial' }}
                                 checked={isChecked}
-                                disableRipple={true} //to change by using dynamic value when handling events
-                                //onClick={handleCheckboxClick} #TODO handle change event later
-                                //onChange={handleCheckboxChange} #TODO handle change event later
+                                // #TODO to change by using dynamic value when handling events (Ripple: its an annimation effect when hover/click on checkbox)
+                                disableRipple={true}
                             />
                         )}
                     </div>
@@ -714,7 +712,6 @@ const NetworkTable = (props) => {
                 if (c.changeCmd !== undefined) {
                     column.cellRenderer = editableCellRender;
                 } else if (column.boolean) {
-                    // check if param boolean is true then render a boolean cell(checkbox)
                     column.cellRenderer = booleanCellRender;
                 } else {
                     column.cellRenderer = defaultCellRender;
