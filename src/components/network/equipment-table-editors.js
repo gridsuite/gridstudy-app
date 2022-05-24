@@ -37,6 +37,7 @@ export const NumericalField = ({
     min,
     max,
     setter,
+    style,
     ...props
 }) => {
     const [error, setError] = useState(false);
@@ -65,9 +66,14 @@ export const NumericalField = ({
                 error={error}
                 type="Number"
                 size={'small'}
-                margin={'normal'}
+                margin={'none'}
+                style={{ ...style, padding: 0 }}
                 inputProps={{
-                    style: { textAlign: 'center', padding: '0px' },
+                    style: {
+                        textAlign: 'center',
+                        fontSize: 'small',
+                        flexGrow: 1,
+                    },
                     inputProps: { min: { min }, max: { max } },
                 }}
             />
