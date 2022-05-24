@@ -74,7 +74,9 @@ export const useNullableBooleanValue = ({
     inputForm,
     formProps,
 }) => {
-    const [value, setValue] = useState(defaultValue || null);
+    const [value, setValue] = useState(
+        defaultValue === undefined ? null : defaultValue
+    );
     const intl = useIntl();
 
     useEffect(() => {
