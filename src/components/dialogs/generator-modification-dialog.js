@@ -119,7 +119,7 @@ const GeneratorModificationDialog = ({
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        values: equipmentOptions ? equipmentOptions?.sort(compareById) : [],
+        values: equipmentOptions?.sort(compareById),
         allowNewValue: true,
         getLabel: getId,
         defaultValue:
