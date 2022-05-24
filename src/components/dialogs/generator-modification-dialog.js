@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -14,15 +14,10 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { createGenerator } from '../../utils/rest-api';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import makeStyles from '@mui/styles/makeStyles';
 import {
-    useButtonWithTooltip,
+    useAutocompleteField,
     useConnectivityValue,
     useDoubleValue,
     useEnumValue,
@@ -31,17 +26,18 @@ import {
 } from './input-hooks';
 import {
     ActivePowerAdornment,
+    compareById,
     filledTextField,
+    getId,
     gridItem,
     MVAPowerAdornment,
     ReactivePowerAdornment,
     VoltageAdornment,
 } from './dialogUtils';
-import EquipmentSearchDialog from './equipment-search-dialog';
-import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
 import { ENERGY_SOURCES } from '../network/constants';
-import { useBooleanValue } from './inputs/boolean';
+import { useNullableBooleanValue } from './inputs/boolean';
+import { modifyGenerator } from '../../utils/rest-api';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -50,6 +46,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function getValue(val) {
+    return val ? val.value : undefined;
+}
+
+function getValueOrNull(val) {
+    return val ? val.value : null;
+}
+
 /**
  * Dialog to create a generator in the network
  * @param {Boolean} open Is the dialog open ?
@@ -57,63 +61,45 @@ const useStyles = makeStyles((theme) => ({
  * @param voltageLevelOptions : the network voltageLevels available
  * @param selectedNodeUuid : the currently selected tree node
  * @param workingNodeUuid : the node we are currently working on
+ * @param fetchedEquipmentOptions the data generator option
  * @param editData the data to edit
  */
-const GeneratorCreationDialog = ({
+const GeneratorModificationDialog = ({
+    editData,
     open,
     onClose,
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
-    editData,
+    fetchedEquipmentOptions,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
-    const classes = useStyles();
-    const intlRef = useIntlRef();
+    const intl = useIntl();
 
-    const { enqueueSnackbar } = useSnackbar();
+    const classes = useStyles();
+
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
-    const [formValues, setFormValues] = useState(undefined);
+    const [formValues, setFormValues] = useState({});
 
-    const toFormValues = (generator) => {
-        return {
-            equipmentId: generator.id + '(1)',
-            equipmentName: generator.name,
-            energySource: generator.energySource,
-            maxActivePower: generator.maxP,
-            minActivePower: generator.minP,
-            ratedNominalPower: generator.ratedS,
-            activePowerSetpoint: generator.targetP,
-            voltageRegulatorOn: generator.voltageRegulatorOn,
-            voltageSetpoint: generator.targetV,
-            reactivePowerSetpoint: generator.targetQ,
-            voltageLevelId: generator.voltageLevelId,
-            busOrBusbarSectionId: null,
-        };
-    };
+    const [equipmentOptions, setEquipmentOptions] = useState([]);
 
-    const equipmentPath = 'generators';
+    const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
+        useState(true);
 
     const clearValues = () => {
         setFormValues(null);
     };
 
-    const searchCopy = useFormSearchCopy({
-        studyUuid,
-        selectedNodeUuid,
-        equipmentPath,
-        toFormValues,
-        setFormValues,
-        clearValues,
-    });
-
-    const copyEquipmentButton = useButtonWithTooltip({
-        label: 'CopyFromExisting',
-        handleClick: searchCopy.handleOpenSearchDialog,
-    });
+    useEffect(() => {
+        fetchedEquipmentOptions.then((values) => {
+            setEquipmentOptions(values);
+            setLoadingEquipmentOptions(false);
+        });
+    }, [fetchedEquipmentOptions]);
 
     useEffect(() => {
         if (editData) {
@@ -121,20 +107,33 @@ const GeneratorCreationDialog = ({
         }
     }, [editData]);
 
-    const [generatorId, generatorIdField] = useTextValue({
+    const formValueEquipmentId = useMemo(() => {
+        return formValues?.equipmentId
+            ? { id: formValues?.equipmentId }
+            : { id: '' };
+    }, [formValues]);
+
+    const [generatorInfos, generatorIdField] = useAutocompleteField({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentId,
+        values: equipmentOptions?.sort(compareById),
+        allowNewValue: true,
+        getLabel: getId,
+        defaultValue:
+            equipmentOptions?.find((e) => e.id === formValueEquipmentId?.id) ||
+            formValueEquipmentId,
+        loading: loadingEquipmentOptions,
     });
 
     const [generatorName, generatorNameField] = useTextValue({
         label: 'Name',
-        validation: { isFieldRequired: false },
         inputForm: inputForm,
         formProps: filledTextField,
-        defaultValue: formValues?.equipmentName,
+        defaultValue: getValue(formValues?.equipmentName) || undefined,
+        previousValue: generatorInfos?.name,
+        clearable: true,
     });
 
     const [energySource, energySourceField] = useEnumValue({
@@ -142,137 +141,148 @@ const GeneratorCreationDialog = ({
         inputForm: inputForm,
         formProps: filledTextField,
         enumValues: ENERGY_SOURCES,
-        validation: {
-            isFieldRequired: false,
-        },
-        defaultValue: formValues?.energySource,
+        defaultValue: getValue(formValues?.energySource),
+        previousValue: generatorInfos?.energySource,
+        clearable: true,
     });
 
     const [maximumActivePower, maximumActivePowerField] = useDoubleValue({
         label: 'MaximumActivePowerText',
         validation: {
-            isFieldRequired: true,
             isFieldNumeric: true,
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.maxActivePower,
+        defaultValue: getValue(formValues?.maxActivePower),
+        previousValue: generatorInfos?.maxP,
+        clearable: true,
     });
 
     const [minimumActivePower, minimumActivePowerField] = useDoubleValue({
         label: 'MinimumActivePowerText',
         validation: {
-            isFieldRequired: true,
             isFieldNumeric: true,
             isValueLessOrEqualTo: maximumActivePower,
             errorMsgId: 'MinActivePowerLessThanMaxActivePower',
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.minActivePower,
+        defaultValue: getValue(formValues?.minActivePower),
+        previousValue: generatorInfos?.minP,
+        clearable: true,
     });
 
     const [ratedNominalPower, ratedNominalPowerField] = useDoubleValue({
         label: 'RatedNominalPowerText',
         validation: {
-            isFieldRequired: false,
             isFieldNumeric: true,
             isValueGreaterThan: '0',
             errorMsgId: 'RatedNominalPowerGreaterThanZero',
         },
         adornment: MVAPowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.ratedNominalPower,
+        defaultValue: getValue(formValues?.ratedNominalPower),
+        previousValue: generatorInfos?.ratedS,
+        clearable: true,
     });
 
     const [activePowerSetpoint, activePowerSetpointField] = useDoubleValue({
         label: 'ActivePowerText',
         validation: {
-            isFieldRequired: true,
             isFieldNumeric: true,
         },
         adornment: ActivePowerAdornment,
         inputForm: inputForm,
-        defaultValue: formValues?.activePowerSetpoint,
+        defaultValue: getValue(formValues?.activePowerSetpoint),
+        previousValue: generatorInfos?.targetP,
+        clearable: true,
     });
 
-    const [voltageRegulation, voltageRegulationField] = useBooleanValue({
-        label: 'VoltageRegulationText',
-        validation: { isFieldRequired: true },
-        inputForm: inputForm,
-        defaultValue: formValues?.voltageRegulatorOn || false,
-    });
+    let previousRegulation = '';
+    if (generatorInfos?.voltageRegulatorOn)
+        previousRegulation = intl.formatMessage({ id: 'On' });
+    else if (generatorInfos?.voltageRegulatorOn === false)
+        previousRegulation = intl.formatMessage({ id: 'Off' });
+
+    const [voltageRegulation, voltageRegulationField] = useNullableBooleanValue(
+        {
+            label: 'VoltageRegulationText',
+            inputForm: inputForm,
+            defaultValue: getValueOrNull(formValues?.voltageRegulationOn),
+            previousValue: previousRegulation,
+            clearable: true,
+        }
+    );
 
     const [voltageSetpoint, voltageSetpointField] = useDoubleValue({
         label: 'VoltageText',
         validation: {
-            isFieldRequired: voltageRegulation,
             isFieldNumeric: true,
             isValueGreaterThan: '0',
             errorMsgId: 'VoltageGreaterThanZero',
         },
         adornment: VoltageAdornment,
-        formProps: { disabled: !voltageRegulation },
+        formProps: { disabled: voltageRegulation === false },
         inputForm: inputForm,
-        defaultValue: formValues?.voltageSetpoint,
+        defaultValue: getValue(formValues?.voltageSetpoint),
+        previousValue: generatorInfos?.targetV,
+        clearable: true,
     });
 
     const [reactivePowerSetpoint, reactivePowerSetpointField] = useDoubleValue({
         label: 'ReactivePowerText',
         validation: {
-            isFieldRequired: !voltageRegulation,
             isFieldNumeric: true,
         },
         adornment: ReactivePowerAdornment,
         inputForm: inputForm,
-        formProps: { disabled: voltageRegulation },
-        defaultValue: formValues?.reactivePowerSetpoint,
+        formProps: { disabled: voltageRegulation === true },
+        defaultValue: getValue(formValues?.reactivePowerSetpoint),
+        previousValue: generatorInfos?.targetQ,
+        clearable: true,
     });
 
     const [connectivity, connectivityField] = useConnectivityValue({
         label: 'Connectivity',
+        validation: {
+            isFieldRequired: false,
+        },
+        disabled: true,
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
-        voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
+        voltageLevelIdDefaultValue:
+            getValue(formValues?.voltageLevelId) || null,
+        voltageLevelPreviousValue: generatorInfos?.voltageLevelId,
         busOrBusbarSectionIdDefaultValue:
-            formValues?.busOrBusbarSectionId || null,
+            getValue(formValues?.busOrBusbarSectionId) || null,
     });
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            createGenerator(
+            modifyGenerator(
                 studyUuid,
                 selectedNodeUuid,
-                generatorId,
-                generatorName ? generatorName : null,
-                !energySource ? 'OTHER' : energySource,
+                generatorInfos?.id,
+                generatorName,
+                energySource,
                 minimumActivePower,
                 maximumActivePower,
-                ratedNominalPower ? ratedNominalPower : null,
+                ratedNominalPower,
                 activePowerSetpoint,
-                reactivePowerSetpoint ? reactivePowerSetpoint : null,
+                reactivePowerSetpoint,
                 voltageRegulation,
-                voltageSetpoint ? voltageSetpoint : null,
-                connectivity.voltageLevel.id,
-                connectivity.busOrBusbarSection.id,
-                editData ? true : false,
-                editData ? editData.uuid : undefined
+                voltageSetpoint,
+                connectivity?.voltageLevel?.id,
+                connectivity?.busOrBusbarSection?.id,
+                editData?.uuid
             ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'GeneratorCreationError',
-                        intlRef: intlRef,
-                    },
-                });
+                snackError(errorMessage, 'GeneratorModificationError');
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
     };
-
     const handleClose = useCallback(
         (event, reason) => {
             if (reason !== 'backdropClick') {
@@ -300,9 +310,8 @@ const GeneratorCreationDialog = ({
                 <DialogTitle>
                     <Grid container justifyContent={'space-between'}>
                         <Grid item xs={11}>
-                            <FormattedMessage id="CreateGenerator" />
+                            <FormattedMessage id="ModifyGenerator" />
                         </Grid>
-                        <Grid item> {copyEquipmentButton} </Grid>
                     </Grid>
                 </DialogTitle>
                 <DialogContent>
@@ -360,18 +369,11 @@ const GeneratorCreationDialog = ({
                     </Button>
                 </DialogActions>
             </Dialog>
-            <EquipmentSearchDialog
-                open={searchCopy.isDialogSearchOpen}
-                onClose={searchCopy.handleCloseSearchDialog}
-                equipmentType={'GENERATOR'}
-                onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
-            />
         </>
     );
 };
 
-GeneratorCreationDialog.propTypes = {
+GeneratorModificationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -380,4 +382,4 @@ GeneratorCreationDialog.propTypes = {
     workingNodeUuid: PropTypes.string,
 };
 
-export default GeneratorCreationDialog;
+export default GeneratorModificationDialog;
