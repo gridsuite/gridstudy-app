@@ -1122,6 +1122,68 @@ export function modifyLoad(
     });
 }
 
+function toModificationOperation(value) {
+    return value === 0 || value === false || value
+        ? { value: value, op: 'SET' }
+        : null;
+}
+
+export function modifyGenerator(
+    studyUuid,
+    selectedNodeUuid,
+    generatorId,
+    name,
+    energySource,
+    minimumActivePower,
+    maximumActivePower,
+    ratedNominalPower,
+    activePowerSetpoint,
+    reactivePowerSetpoint,
+    voltageRegulation,
+    voltageSetpoint,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    modificationId
+) {
+    console.info('Modifying load ');
+    const idUrl =
+        modificationId === undefined
+            ? ''
+            : '/' + encodeURIComponent(modificationId);
+
+    const modificationUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-modification/modifications/generators-modification' +
+        idUrl;
+
+    const generatorModification = {
+        equipmentId: generatorId,
+        equipmentName: toModificationOperation(name),
+        energySource: toModificationOperation(energySource),
+        minActivePower: toModificationOperation(minimumActivePower),
+        maxActivePower: toModificationOperation(maximumActivePower),
+        ratedNominalPower: toModificationOperation(ratedNominalPower),
+        activePowerSetpoint: toModificationOperation(activePowerSetpoint),
+        reactivePowerSetpoint: toModificationOperation(reactivePowerSetpoint),
+        voltageRegulationOn: toModificationOperation(voltageRegulation),
+        voltageSetpoint: toModificationOperation(voltageSetpoint),
+        voltageLevelId: toModificationOperation(voltageLevelId),
+        busOrBusbarSectionId: toModificationOperation(busOrBusbarSectionId),
+    };
+    return backendFetch(modificationUrl, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(generatorModification),
+    }).then((response) => {
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text));
+    });
+}
+
 export function createGenerator(
     studyUuid,
     selectedNodeUuid,

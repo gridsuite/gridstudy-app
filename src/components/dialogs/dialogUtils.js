@@ -107,3 +107,5 @@ export const gridItem = (field, size = 6) => {
         </Grid>
     );
 };
+export const getId = (e) => e?.id;
+export const compareById = (a, b) => a?.id?.localeCompare(b?.id);
