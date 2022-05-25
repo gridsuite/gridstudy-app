@@ -82,6 +82,7 @@ const LineAttachToVoltageLevelDialog = ({
     const [attachmentLine, setAttachmentLine] = useState(null);
 
     const allVoltageLevelOptions = useMemo(() => {
+        console.log('NNO useMemo');
         if (!newVoltageLevel)
             if (voltageLevelOptions?.length) return voltageLevelOptions;
             else return [];
@@ -91,7 +92,7 @@ const LineAttachToVoltageLevelDialog = ({
             substationId: newVoltageLevel.substationId,
             busbarSections: newVoltageLevel.busbarSections,
         };
-        return [asVL, ...voltageLevelOptions];
+        return [asVL, ...voltageLevelOptions.filter((vl) => vl.id !== asVL.id)];
     }, [newVoltageLevel, voltageLevelOptions]);
 
     useEffect(() => {
@@ -170,10 +171,10 @@ const LineAttachToVoltageLevelDialog = ({
             values: busbarSectionOptions,
             allowNewValue: true,
             getLabel: getId,
-            defaultValue: formValues?.bbsOrNodeId || '',
+            defaultValue: formValues?.bbsOrBusId || '',
             selectedValue: formValues
                 ? busbarSectionOptions.find(
-                      (value) => value.id === formValues.bbsOrNodeId
+                      (value) => value.id === formValues.bbsOrBusId
                   )
                 : '',
         });
@@ -185,7 +186,6 @@ const LineAttachToVoltageLevelDialog = ({
         } else {
             bobbsCb(voltageLevelOrId, (bobbss) => {
                 if (!bobbss?.length && voltageLevelOrId?.busbarSections) {
-                    bobbss.push(...voltageLevelOrId.busbarSections);
                     bobbss = [...bobbss, ...voltageLevelOrId.busbarSections];
                 }
                 if (bobbss?.length) {
