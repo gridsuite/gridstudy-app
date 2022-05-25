@@ -64,12 +64,15 @@ const NetworkModificationTree = ({
     const classes = useStyles();
 
     const selectedNode = useSelector((state) => state.selectedTreeNode);
-
+    const selectedNodeRef = useRef();
+    selectedNodeRef.current = selectedNode;
+    const [isMoving, setIsMoving] = useState(false);
+    const workingNode = useSelector((state) => state.workingTreeNode);
+    const workingNodeRef = useRef();
+    workingNodeRef.current = workingNode;
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
-
-    const [isMoving, setIsMoving] = useState(false);
 
     const onElementClick = useCallback(
         (event, element) => {
@@ -143,6 +146,34 @@ const NetworkModificationTree = ({
         transform,
         prevTreeDisplay,
     };
+
+    useEffect(() => {
+        const node = treeModel?.treeElements.find(
+            (entry) => entry?.id === workingNodeRef.current?.id
+        );
+
+        if (node) {
+            dispatch(workingTreeNode(node));
+        } else {
+            // handle the case of deleting the working node
+
+            const rootNode = treeModel?.treeElements.find(
+                (entry) => entry?.type === 'ROOT'
+            );
+            if (rootNode) {
+                if (workingNodeRef.current === selectedNodeRef.current)
+                    dispatch(selectTreeNode(rootNode));
+                dispatch(workingTreeNode(rootNode));
+            }
+        }
+    }, [dispatch, treeModel, workingNodeRef]);
+
+    useEffect(() => {
+        const node = treeModel?.treeElements.find(
+            (entry) => entry?.id === selectedNodeRef.current?.id
+        );
+        node ? dispatch(selectTreeNode(node)) : dispatch(selectTreeNode(null));
+    }, [dispatch, treeModel, selectedNodeRef]);
 
     useEffect(() => {
         const nodeEditorShift = isModificationsDrawerOpen

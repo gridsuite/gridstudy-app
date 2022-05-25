@@ -15,8 +15,6 @@ import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
-    selectTreeNode,
-    workingTreeNode,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -88,16 +86,6 @@ export const NetworkModificationTreePane = ({
 
     const width = useStoreState((state) => state.width);
     const prevTreeDisplay = usePreviousTreeDisplay(studyMapTreeDisplay, width);
-    const workingNode = useSelector((state) => state.workingTreeNode);
-    //we use this useRef to avoid to trigger on this depedencie workingTreeNode. avoid infinite loop
-    const workingNodeRef = useRef();
-    workingNodeRef.current = workingNode;
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
-    //we use this useRef to avoid to trigger on this depedencie networkModificationTreeModel. avoid infinite loop
-    const treeModelRef = useRef();
-    treeModelRef.current = treeModel;
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
@@ -107,17 +95,6 @@ export const NetworkModificationTreePane = ({
                 )
             ).then((values) => {
                 dispatch(networkModificationTreeNodesUpdated(values));
-                // if working node is present in updated values then we save the new values
-                const res = values.find(({ id }) => {
-                    return id === workingNodeRef.current.id;
-                });
-                if (res)
-                    dispatch(
-                        workingTreeNode({
-                            id: res.id,
-                            data: { readOnly: res.readOnly, label: res.name },
-                        })
-                    );
             });
         },
         [studyUuid, dispatch]
@@ -145,34 +122,6 @@ export const NetworkModificationTreePane = ({
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'nodeDeleted'
             ) {
-                // handle the case of deleting the selected node
-                // we check if the selected node if exist in the list
-                if (
-                    studyUpdatedForce.eventData.headers['nodes'].filter(
-                        (entry) => entry === selectedNode?.id
-                    )?.length > 0
-                )
-                    dispatch(selectTreeNode(null));
-                // handle the case of deleting the working node (we have one deleted node as return)
-                // this handle also the case when we get list of deleted node => we check if the working node if exist in the list
-                if (
-                    studyUpdatedForce.eventData.headers['nodes'].filter(
-                        (entry) => entry === workingNodeRef.current.id
-                    )?.length > 0
-                ) {
-                    const rootNode = treeModelRef.current?.treeElements.find(
-                        (entry) => entry?.type === 'ROOT'
-                    );
-                    dispatch(
-                        workingTreeNode({
-                            id: rootNode.id,
-                            data: {
-                                readOnly: rootNode.data.readOnly,
-                                label: rootNode.data.label,
-                            },
-                        })
-                    );
-                }
                 dispatch(
                     networkModificationTreeNodesRemoved(
                         studyUpdatedForce.eventData.headers['nodes']
@@ -185,13 +134,7 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
             }
         }
-    }, [
-        dispatch,
-        selectedNode,
-        studyUpdatedForce.eventData.headers,
-        studyUuid,
-        updateNodes,
-    ]);
+    }, [dispatch, studyUpdatedForce.eventData.headers, studyUuid, updateNodes]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
