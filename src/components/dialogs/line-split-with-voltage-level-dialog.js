@@ -187,6 +187,7 @@ const useComplementaryPercentage = ({
                 <Grid item xs={3} align={'end'}>
                     <TextFieldWithAdornment
                         size="small"
+                        variant="standard"
                         adornmentText="%"
                         adornmentPosition="end"
                         fullWidth
