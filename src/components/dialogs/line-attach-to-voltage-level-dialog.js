@@ -82,7 +82,6 @@ const LineAttachToVoltageLevelDialog = ({
     const [attachmentLine, setAttachmentLine] = useState(null);
 
     const allVoltageLevelOptions = useMemo(() => {
-        console.log('NNO useMemo');
         if (!newVoltageLevel)
             if (voltageLevelOptions?.length) return voltageLevelOptions;
             else return [];
@@ -115,7 +114,7 @@ const LineAttachToVoltageLevelDialog = ({
 
     const [lineToAttachTo, lineToAttachToField] = useAutocompleteField({
         id: 'lineToAttachTo',
-        label: 'ID',
+        label: 'LineToAttachTo',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         values: lineOptions,
@@ -165,7 +164,7 @@ const LineAttachToVoltageLevelDialog = ({
     const [bbsOrNodeId, bbsOrNodeIdField, setBbsOrNodeId] =
         useAutocompleteField({
             id: 'BusbarOrNodeID',
-            label: 'BusbarOrNodeID',
+            label: 'BusBarBus',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
             values: busbarSectionOptions,
@@ -246,7 +245,7 @@ const LineAttachToVoltageLevelDialog = ({
 
     const [newLine1Id, newLine1IdField] = useTextValue({
         id: 'newLine1Id',
-        label: 'ID',
+        label: 'Line1ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         defaultValue: formValues?.newLine1Id,
@@ -254,7 +253,7 @@ const LineAttachToVoltageLevelDialog = ({
 
     const [newLine2Id, newLine2IdField] = useTextValue({
         id: 'newLine2Id',
-        label: 'ID',
+        label: 'Line2ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
         defaultValue: formValues?.newLine2Id,
@@ -262,7 +261,7 @@ const LineAttachToVoltageLevelDialog = ({
 
     const [newLine1Name, newLine1NameField] = useTextValue({
         id: 'newLine1Name',
-        label: 'Name',
+        label: 'Line1Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.newLine1Name,
@@ -270,7 +269,7 @@ const LineAttachToVoltageLevelDialog = ({
 
     const [newLine2Name, newLine2NameField] = useTextValue({
         id: 'newLine2Name',
-        label: 'Name',
+        label: 'Line2Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
         defaultValue: formValues?.newLine2Name,
