@@ -433,11 +433,22 @@ const LineAttachToVoltageLevelDialog = ({
 
     const lineSubstation = (isFirst) => {
         if (!lineToAttachTo) return '';
-        const vlId = isFirst
-            ? lineToAttachTo.voltageLevelId1
-            : lineToAttachTo.voltageLevelId2;
-        const mayVl = allVoltageLevelOptions.filter((vl) => vl.id === vlId);
-        if (mayVl && mayVl.length) return mayVl[0].name;
+        let vlId = '';
+        if (typeof lineToAttachTo === 'object') {
+            vlId = isFirst
+                ? lineToAttachTo.voltageLevelId1
+                : lineToAttachTo.voltageLevelId2;
+        } else if (isFirst) {
+            const mayLine = lineOptions.find((l) => l?.id === newLine1Id);
+            vlId = mayLine?.voltageLevelId1;
+        } else {
+            const mayLine = lineOptions.find((l) => l?.id === newLine2Id);
+            vlId = mayLine?.voltageLevelId2;
+        }
+        if (vlId) {
+            const mayVl = allVoltageLevelOptions.find((vl) => vl.id === vlId);
+            if (mayVl) return mayVl.name;
+        }
         return '';
     };
 
