@@ -25,12 +25,7 @@ import {
     useInputForm,
     useTextValue,
 } from './input-hooks';
-import {
-    filledTextField,
-    gridItem,
-    GridSection,
-    removeNullDataValues,
-} from './dialogUtils';
+import { gridItem, GridSection, removeNullDataValues } from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
@@ -122,7 +117,6 @@ const LineAttachToVoltageLevelDialog = ({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        formProps: filledTextField,
         values: lineOptions,
         allowNewValue: true,
         getLabel: getId,
@@ -144,7 +138,6 @@ const LineAttachToVoltageLevelDialog = ({
         upperLeftText: <FormattedMessage id="Line1"></FormattedMessage>,
         upperRightText: <FormattedMessage id="Line2"></FormattedMessage>,
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.percent,
     });
 
@@ -154,7 +147,6 @@ const LineAttachToVoltageLevelDialog = ({
             label: 'AttachedVoltageLevelId',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            formProps: filledTextField,
             values: allVoltageLevelOptions,
             allowNewValue: true,
             getLabel: getId,
@@ -175,7 +167,6 @@ const LineAttachToVoltageLevelDialog = ({
             label: 'BusbarOrNodeID',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            formProps: filledTextField,
             values: busbarSectionOptions,
             allowNewValue: true,
             getLabel: getId,
@@ -242,7 +233,6 @@ const LineAttachToVoltageLevelDialog = ({
         label: 'AttachmentPointId',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.attachmentPointId,
     });
 
@@ -251,7 +241,6 @@ const LineAttachToVoltageLevelDialog = ({
         label: 'AttachmentPointName',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.attachmentPointName,
     });
 
@@ -260,7 +249,6 @@ const LineAttachToVoltageLevelDialog = ({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.newLine1Id,
     });
 
@@ -269,7 +257,6 @@ const LineAttachToVoltageLevelDialog = ({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.newLine2Id,
     });
 
@@ -278,7 +265,6 @@ const LineAttachToVoltageLevelDialog = ({
         label: 'Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.newLine1Name,
     });
 
@@ -287,7 +273,6 @@ const LineAttachToVoltageLevelDialog = ({
         label: 'Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.newLine2Name,
     });
 
