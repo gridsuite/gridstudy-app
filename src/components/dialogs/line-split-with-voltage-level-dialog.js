@@ -284,7 +284,7 @@ const LineSplitWithVoltageLevelDialog = ({
             substationId: newVoltageLevel.substationId,
             busbarSections: newVoltageLevel.busbarSections,
         };
-        return [asVL, ...voltageLevelOptions];
+        return [asVL, ...voltageLevelOptions.filter((vl) => vl.id !== asVL.id)];
     }, [newVoltageLevel, voltageLevelOptions]);
 
     useEffect(() => {
