@@ -29,6 +29,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
+import { getFirstNodeOfType, getRootNode } from './graph/util/model-functions';
+import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 
 const nodeTypes = {
     ROOT: RootNode,
@@ -151,20 +153,13 @@ const NetworkModificationTree = ({
         const node = treeModel?.treeElements.find(
             (entry) => entry?.id === workingNodeRef.current?.id
         );
-
         if (node) {
+            //still need to dispatch to manage update of node property like name...
             dispatch(workingTreeNode(node));
         } else {
-            // handle the case of deleting the working node
-
-            const rootNode = treeModel?.treeElements.find(
-                (entry) => entry?.type === 'ROOT'
-            );
-            if (rootNode) {
-                if (workingNodeRef.current === selectedNodeRef.current)
-                    dispatch(selectTreeNode(rootNode));
-                dispatch(workingTreeNode(rootNode));
-            }
+            // handle the case of workingNode not in the TreeModel anymore.
+            let rootNode = getRootNode(...treeModel.treeElements);
+            dispatch(workingTreeNode(rootNode ? rootNode : null));
         }
     }, [dispatch, treeModel, workingNodeRef]);
 
@@ -172,7 +167,7 @@ const NetworkModificationTree = ({
         const node = treeModel?.treeElements.find(
             (entry) => entry?.id === selectedNodeRef.current?.id
         );
-        node ? dispatch(selectTreeNode(node)) : dispatch(selectTreeNode(null));
+        if (node === undefined) dispatch(selectTreeNode(null));
     }, [dispatch, treeModel, selectedNodeRef]);
 
     useEffect(() => {

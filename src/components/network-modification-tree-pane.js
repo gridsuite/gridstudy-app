@@ -134,7 +134,7 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
             }
         }
-    }, [dispatch, studyUpdatedForce.eventData.headers, studyUuid, updateNodes]);
+    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
