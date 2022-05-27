@@ -368,6 +368,7 @@
     "BusbarOrNodeID" : "ID SJB ou noeud",
     "Line1" : "Liaison origine",
     "Line2" : "Liaison extrémité",
+    "VoltageLevelToSplitAt" : "Poste en coupure",
     "VoltageLevel1" : "Poste origine",
     "VoltageLevel2" : "Poste extrémité",
     "NewVoltageLevel" : "Nouveau poste",
