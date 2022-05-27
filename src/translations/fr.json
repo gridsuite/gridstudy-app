@@ -397,10 +397,29 @@
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "LogOnlySingleNode": "Log noeud seul",
 
-    "RegulationMode" : "MODE DE RÉGLAGE DEPHASEUR",
+    "RegulatingMode" : "MODE DE RÉGLAGE DEPHASEUR",
     "RegulatingPhase" : "DEPHASEUR EN RÉGLAGE",
-    "RegulationValue" : "CONSIGNE DU COURANT (A) OU DE TRANSIT (MW)",
+    "RegulatingValue" : "CONSIGNE DU COURANT (A) OU DE TRANSIT (MW)",
     "LoadTapChangingCapabilities" : "RÉGLEUR EN CHARGE",
     "RegulatingRatio" : "RÉGLEUR EN RÉGLAGE",
-    "TargetVPoint" : "CONSIGNE TENSION (KV)"
+    "TargetVPoint" : "CONSIGNE TENSION (KV)",
+
+    "RegulatingMode1" : "MODE DE RÉGLAGE DEPHASEUR 1",
+    "RegulatingPhase1" : "DEPHASEUR EN RÉGLAGE 1",
+    "RegulatingValue1" : "CONSIGNE DU COURANT (A) OU DE TRANSIT (MW) 1",
+    "LoadTapChanging1Capabilities" : "RÉGLEUR EN CHARGE 1",
+    "RegulatingRatio1" : "RÉGLEUR EN RÉGLAGE 1",
+    "TargetVPoint1" : "CONSIGNE TENSION (KV) 1",
+    "RegulatingMode2" : "MODE DE RÉGLAGE DEPHASEUR 2",
+    "RegulatingPhase2" : "DEPHASEUR EN RÉGLAGE 2",
+    "RegulatingValue2" : "CONSIGNE DU COURANT (A) OU DE TRANSIT (MW) 2",
+    "LoadTapChanging2Capabilities" : "RÉGLEUR EN CHARGE 2",
+    "RegulatingRatio2" : "RÉGLEUR EN RÉGLAGE 2",
+    "TargetVPoint2" : "CONSIGNE TENSION (KV) 2",
+    "RegulatingMode3" : "MODE DE RÉGLAGE DEPHASEUR 3",
+    "RegulatingPhase3" : "DEPHASEUR EN RÉGLAGE 3",
+    "RegulatingValue3" : "CONSIGNE DU COURANT (A) OU DE TRANSIT (MW) 3",
+    "LoadTapChanging3Capabilities" : "RÉGLEUR EN CHARGE 3",
+    "RegulatingRatio3" : "RÉGLEUR EN RÉGLAGE 3",
+    "TargetVPoint3" : "CONSIGNE TENSION (KV) 3"
 }
