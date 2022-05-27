@@ -29,8 +29,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
-import { getFirstNodeOfType, getRootNode } from './graph/util/model-functions';
-import NetworkModificationTreeModel from './graph/network-modification-tree-model';
+import { getRootNode } from './graph/util/model-functions';
 
 const nodeTypes = {
     ROOT: RootNode,
