@@ -1123,7 +1123,9 @@ export function modifyLoad(
 }
 
 function toModificationOperation(value) {
-    return value === 0 || value ? { value: value, op: 'SET' } : null;
+    return value === 0 || value === false || value
+        ? { value: value, op: 'SET' }
+        : null;
 }
 
 export function modifyGenerator(

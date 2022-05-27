@@ -301,9 +301,10 @@
     "ShuntCompensatorCreationError": "Erreur lors de la création d'un moyen de compensation",
 
     "CreateGenerator": "Créer un groupe",
-    "ModifyGenerator": "modifier un groupe",
-    "On": "On",
-    "Off": "Off",
+    "ModifyGenerator": "Modifier un groupe",
+    "On": "Activé",
+    "Off": "Désactivé",
+    "NoModification": "Pas de modification",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
     "EnergySourceText": "Source d'énergie",
     "Hydro": "Hydraulique",
