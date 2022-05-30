@@ -427,6 +427,7 @@ export const useAutocompleteField = ({
                     handleChangeValue(newValue);
                 }}
                 size={'small'}
+                forcePopupIcon
                 options={values}
                 getOptionLabel={getLabel}
                 defaultValue={defaultValue}

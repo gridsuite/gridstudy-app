@@ -92,7 +92,7 @@ export const EquipmentTable = (props) => {
                                 columnWidth={({ index }) =>
                                     getColumnWidth(index)
                                 }
-                                rowCount={props.rows.length + 1}
+                                rowCount={props.rows.length + 1} // +1 for the header
                                 rowHeight={({ index }) => getRowHeight(index)}
                                 enableFixedColumnScroll={true}
                                 enableFixedRowScroll={true}

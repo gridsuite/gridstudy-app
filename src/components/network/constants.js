@@ -25,3 +25,7 @@ export const ENERGY_SOURCES = [
     { id: 'SOLAR', label: 'Solar' },
     { id: 'OTHER', label: 'Other' },
 ];
+
+export function getEnergySourceLabel(energySourceId) {
+    return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
+}
