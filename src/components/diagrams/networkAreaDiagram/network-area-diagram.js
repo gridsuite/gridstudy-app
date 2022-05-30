@@ -28,7 +28,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchNADSvg } from '../../../utils/rest-api';
 
-import { fullScreenSingleLineDiagram } from '../../../redux/actions';
+import { fullScreenNetworkAreaDiagram } from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -44,7 +44,7 @@ import { NetworkAreaDiagramViewer } from 'powsybl-diagram-viewer';
 
 const loadingWidth = 150;
 const maxWidth = 1200;
-const maxHeight = 750;
+const maxHeight = 650;
 const minWidth = 500;
 const minHeight = 400;
 const errorWidth = maxWidth;
@@ -163,7 +163,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 
     const network = useSelector((state) => state.network);
 
-    const fullScreen = useSelector((state) => state.fullScreen);
+    const fullScreen = useSelector((state) => state.fullScreenNad);
 
     const [forceState, updateState] = useState(false);
 
@@ -213,6 +213,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     useEffect(() => {
         if (svgUrl) {
             updateLoadingState(true);
+            setSvg(noSvg);
             fetchNADSvg(svgUrl)
                 .then((svg) => {
                     setSvg({
@@ -307,18 +308,18 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
 
     const onCloseHandler = () => {
         if (onClose !== null) {
-            dispatch(fullScreenSingleLineDiagram(undefined));
+            dispatch(fullScreenNetworkAreaDiagram(undefined));
             onClose(nadId);
             setDepth(0);
         }
     };
 
     const showFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(nadId));
+        dispatch(fullScreenNetworkAreaDiagram(nadId));
     };
 
     const hideFullScreen = () => {
-        dispatch(fullScreenSingleLineDiagram(undefined));
+        dispatch(fullScreenNetworkAreaDiagram(undefined));
     };
 
     let sizeWidth, sizeHeight;

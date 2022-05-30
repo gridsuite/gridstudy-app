@@ -287,6 +287,16 @@ export function fullScreenSingleLineDiagram(fullScreen) {
     return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
 }
 
+export const FULLSCREEN_NETWORK_AREA_DIAGRAM =
+    'FULLSCREEN_NETWORK_AREA_DIAGRAM';
+
+export function fullScreenNetworkAreaDiagram(fullScreenNad) {
+    return {
+        type: FULLSCREEN_NETWORK_AREA_DIAGRAM,
+        fullScreenNad: fullScreenNad,
+    };
+}
+
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 
 export function changeDisplayedColumns(displayedColumnsParams) {

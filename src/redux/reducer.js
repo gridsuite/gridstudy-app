@@ -49,6 +49,7 @@ import {
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
     OPEN_NETWORK_AREA_DIAGRAM,
+    FULLSCREEN_NETWORK_AREA_DIAGRAM,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -285,6 +286,10 @@ export const reducer = createReducer(initialState, {
 
     [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
         state.fullScreen = action.fullScreen;
+    },
+
+    [FULLSCREEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
+        state.fullScreenNad = action.fullScreenNad;
     },
 
     [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {

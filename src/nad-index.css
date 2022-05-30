@@ -20,7 +20,15 @@
     fill: black;
     letter-spacing: 0
 }
-.nad-edge-infos text {font: 0.2px "Verdana"; dominant-baseline:middle; stroke: #FFFFFFAA; stroke-width: 0.1; stroke-linejoin:round; paint-order: stroke}
+.nad-edge-infos text {
+    font: 0.2px "Verdana";
+    dominant-baseline:middle;
+    stroke: #FFFFFFAA;
+    stroke-width: 0.1;
+    stroke-linejoin:round;
+    paint-order: stroke;
+    letter-spacing: 0
+}
 .nad-edge-infos .nad-state-in text {fill: #b71c1c}
 .nad-edge-infos .nad-state-out text {fill: #2e7d32}
 .nad-disconnected {--nad-vl-color: #808080}
