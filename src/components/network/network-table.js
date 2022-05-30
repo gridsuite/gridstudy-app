@@ -655,6 +655,7 @@ const NetworkTable = (props) => {
             classes.tableCell,
             classes.valueInvalid,
             props.loadFlowStatus,
+            theme,
         ]
     );
 
