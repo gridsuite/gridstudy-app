@@ -246,7 +246,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
     }, [forceUpdate]);
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers && svgRef.current) {
+        if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                     'loadflow' ||
@@ -256,7 +256,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             }
         }
         // Note: studyUuid, and loadNetwork don't change
-    }, [studyUpdatedForce, props.studyUuid, updateNad]);
+    }, [studyUpdatedForce, updateNad]);
 
     useLayoutEffect(() => {
         if (svg.svg) {
