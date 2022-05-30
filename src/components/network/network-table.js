@@ -44,8 +44,8 @@ import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
 } from '../../utils/messages';
-import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
-import { OverflowableText } from '@gridsuite/commons-ui';
+import { PARAM_FLUX_CONVENTION, PARAM_THEME } from '../../utils/config-params';
+import { LIGHT_THEME, OverflowableText } from '@gridsuite/commons-ui';
 import SearchIcon from '@mui/icons-material/Search';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import LockIcon from '@mui/icons-material/Lock';
@@ -243,6 +243,7 @@ const NetworkTable = (props) => {
     const intl = useIntl();
 
     const intlRef = useIntlRef();
+    const theme = useSelector((state) => state[PARAM_THEME]);
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
@@ -632,7 +633,14 @@ const NetworkTable = (props) => {
                     >
                         {isChecked !== undefined && (
                             <Checkbox
-                                style={{ margin: '-10%', cursor: 'initial' }}
+                                style={{
+                                    margin: '-10%',
+                                    cursor: 'initial',
+                                    color:
+                                        theme === LIGHT_THEME
+                                            ? 'black'
+                                            : 'white',
+                                }}
                                 checked={isChecked}
                                 // #TODO to change by using dynamic value when handling events (Ripple: its an annimation effect when hover/click on checkbox)
                                 disableRipple={true}
