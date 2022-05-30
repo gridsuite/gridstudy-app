@@ -1003,6 +1003,23 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 fractionDigits: 1,
             },
+            {
+                id: 'VoltageRegulatorOn',
+                dataKey: 'voltageRegulatorOn',
+                boolean: true,
+            },
+            {
+                id: 'VoltageSetpointKV',
+                dataKey: 'voltageSetpoint',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'ReactivePowerSetpointMVAR',
+                dataKey: 'reactivePowerSetpoint',
+                numeric: true,
+                fractionDigits: 1,
+            },
         ],
     },
 
