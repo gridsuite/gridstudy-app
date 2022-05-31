@@ -41,5 +41,7 @@ export function getRootNode(elements) {
                 buildStatus: elements.data.buildStatus,
                 readOnly: elements.data.readOnly,
             },
+            targetPosition: elements?.targetPosition,
+            position: elements?.position,
         };
 }

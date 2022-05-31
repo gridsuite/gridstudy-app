@@ -29,7 +29,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
-import { getRootNode } from './graph/util/model-functions';
 
 const nodeTypes = {
     ROOT: RootNode,
@@ -65,7 +64,6 @@ const NetworkModificationTree = ({
     const classes = useStyles();
     const selectedNode = useSelector((state) => state.selectedTreeNode);
     const [isMoving, setIsMoving] = useState(false);
-    const workingNode = useSelector((state) => state.workingTreeNode);
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
@@ -142,27 +140,6 @@ const NetworkModificationTree = ({
         transform,
         prevTreeDisplay,
     };
-
-    useEffect(() => {
-        const node = treeModel?.treeElements.find(
-            (entry) => entry?.id === workingNode?.id
-        );
-        if (node) {
-            //still need to dispatch to manage update of node property like name...
-            dispatch(workingTreeNode(node));
-        } else {
-            // handle the case of workingNode not in the TreeModel anymore.
-            let rootNode = getRootNode(...treeModel.treeElements);
-            dispatch(workingTreeNode(rootNode ? rootNode : null));
-        }
-    }, [dispatch, treeModel, workingNode.id]);
-
-    useEffect(() => {
-        const node = treeModel?.treeElements.find(
-            (entry) => entry?.id === selectedNode?.id
-        );
-        if (node === undefined) dispatch(selectTreeNode(null));
-    }, [dispatch, treeModel, selectedNode]);
 
     useEffect(() => {
         const nodeEditorShift = isModificationsDrawerOpen
