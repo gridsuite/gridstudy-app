@@ -207,6 +207,10 @@ const useStyles = makeStyles((theme) => ({
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
     },
+    checkbox: {
+        margin: '-10%',
+        cursor: 'initial',
+    },
 }));
 
 const NetworkTable = (props) => {
@@ -632,7 +636,8 @@ const NetworkTable = (props) => {
                     >
                         {isChecked !== undefined && (
                             <Checkbox
-                                style={{ margin: '-10%', cursor: 'initial' }}
+                                color="default"
+                                className={classes.checkbox}
                                 checked={isChecked}
                                 // #TODO to change by using dynamic value when handling events (Ripple: its an annimation effect when hover/click on checkbox)
                                 disableRipple={true}
@@ -646,6 +651,7 @@ const NetworkTable = (props) => {
             formatCell,
             classes.tableCell,
             classes.valueInvalid,
+            classes.checkbox,
             props.loadFlowStatus,
         ]
     );
