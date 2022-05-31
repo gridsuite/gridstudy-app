@@ -336,7 +336,6 @@ function synchWorkingNodeAndSelectedNode(state) {
         );
         state.workingTreeNode = rootNode ? rootNode : null;
     } else {
-        //still need to dispatch to manage update of node property like name...
         state.workingTreeNode = {
             type: workingNode?.type,
             id: workingNode?.id,

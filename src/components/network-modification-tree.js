@@ -62,11 +62,14 @@ const NetworkModificationTree = ({
     const intlRef = useIntlRef();
     const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
+
     const selectedNode = useSelector((state) => state.selectedTreeNode);
-    const [isMoving, setIsMoving] = useState(false);
+
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
+
+    const [isMoving, setIsMoving] = useState(false);
 
     const onElementClick = useCallback(
         (event, element) => {
