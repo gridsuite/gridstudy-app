@@ -252,7 +252,7 @@
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
-    "createNetworkModificationNode": "Créer un nœud de modifications de réseau",
+    "createNetworkModificationNode": "Créer un nœud dans une nouvelle branche",
     "createModelNode": "Créer un nœud modèle",
     "removeNode": "Supprimer le nœud",
     "exportCaseOnNode": "Exporter la situation",
@@ -389,9 +389,9 @@
     "EquipmentCopyFailed404": "Erreur lors de la copie de l'ouvrage : l'ouvrage n'a pas été trouvé",
     "EquipmentCopyFailed": "Erreur lors de la copie de l'ouvrage",
 
-    "insertNetworkModificationNodeBefore": "Insérer un nœud de modifications de réseau au dessus",
+    "insertNetworkModificationNodeBefore": "Insérer un nœud au dessus dans la branche courante",
     "insertModelNodeBefore": "Insérer un nœud modèle au dessus",
-    "insertNetworkModificationNodeAfter": "Insérer un nœud de modifications de réseau en dessous",
+    "insertNetworkModificationNodeAfter": "Insérer un nœud en dessous dans la branche courante",
     "insertModelNodeAfter": "Insérer un nœud modèle en dessous",
 
     "Update": "Mettre à jour",
