@@ -16,8 +16,9 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { IconButton, TextField } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
+    fetchNetworkModificationTree,
     requestNetworkChange,
-    updateConfigParameter,
+    updateConfigParameter
 } from '../../utils/rest-api';
 import { SelectOptionsDialog } from '../../utils/dialogs';
 import List from '@mui/material/List';
@@ -59,6 +60,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
+import NetworkModificationTreeModel from '../graph/network-modification-tree-model';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -541,32 +543,43 @@ const NetworkTable = (props) => {
                     </div>
                 );
             } else {
-                return (
-                    <div key={key} style={style}>
-                        <div className={classes.editCell}>
-                            <IconButton
-                                size={'small'}
-                                disabled={
-                                    lineEdit !== undefined &&
-                                    lineEdit.id !== undefined
-                                }
-                                onClick={() => {
-                                    setLineEdit({
-                                        oldValues: {},
-                                        newValues: {},
-                                        id: rowData.id,
-                                        equipmentType:
-                                            TABLES_DEFINITION_INDEXES.get(
-                                                tabIndex
-                                            ).modifiableEquipmentType,
-                                    });
-                                }}
-                            >
-                                <EditIcon />
-                            </IconButton>
-                        </div>
-                    </div>
-                );
+                console.info('props.studyUuid', props.studyUuid)
+                const networkModificationTree = fetchNetworkModificationTree(props.studyUuid);
+
+                networkModificationTree
+                    .then((tree) => {
+                        const networkModificationTreeModel =
+                            new NetworkModificationTreeModel();
+                        networkModificationTreeModel.setTreeElements(tree);
+
+                        return (
+                            <div key={key} style={style}>
+                                <div className={classes.editCell}>
+                                    <IconButton
+                                        size={'small'}
+                                        disabled={
+                                            lineEdit !== undefined &&
+                                            lineEdit.id !== undefined
+                                        }
+                                        onClick={() => {
+                                            setLineEdit({
+                                                oldValues: {},
+                                                newValues: {},
+                                                id: rowData.id,
+                                                equipmentType:
+                                                TABLES_DEFINITION_INDEXES.get(
+                                                    tabIndex
+                                                ).modifiableEquipmentType,
+                                            });
+                                        }}
+                                    >
+                                        {(!networkModificationTreeModel.isOneNodeBuilding() &&
+                                            <EditIcon />)}
+                                    </IconButton>
+                                </div>
+                            </div>
+                        );
+                    })
             }
         },
         [
