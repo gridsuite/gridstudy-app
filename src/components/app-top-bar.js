@@ -234,7 +234,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 language={languageLocal}
             >
                 {/* Add current Node name between Logo and Tabs */}
-                <Box width={'20%'} display="flex" alignItems="center">
+                <Box width="20%" display="flex" alignItems="center">
                     {workingNode && (
                         <OverflowableText
                             className={classes.label}
