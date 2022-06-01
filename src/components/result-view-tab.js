@@ -110,7 +110,7 @@ ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object,
     network: PropTypes.object.isRequired,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
-    workingNode: PropTypes.object.isRequired,
-    selectedNode: PropTypes.object.isRequired,
+    workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
 };

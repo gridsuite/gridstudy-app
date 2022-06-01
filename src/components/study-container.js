@@ -204,7 +204,12 @@ export function StudyContainer({ view, onChangeTab }) {
         (isUpdate) => {
             console.info(`Loading network of study '${studyUuid}'...`);
 
-            if (!workingNode || !studyUuid) return;
+            if (
+                !workingNode ||
+                !studyUuid ||
+                workingNode.buildStatus === 'BUILDING'
+            )
+                return;
 
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
