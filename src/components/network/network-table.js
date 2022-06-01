@@ -212,6 +212,9 @@ const useStyles = makeStyles((theme) => ({
         margin: '-10%',
         cursor: 'initial',
     },
+    disabledLabel: {
+        opacity: 0.4,
+    },
 }));
 
 const NetworkTable = (props) => {
@@ -471,8 +474,7 @@ const NetworkTable = (props) => {
                     )}
                 >
                     <div
-                        className={clsx({
-                            [classes.tableHeader]: true,
+                        className={clsx(classes.tableHeader, {
                             [classes.clickable]: !isModifyingRow(),
                         })}
                     >
@@ -1068,7 +1070,11 @@ const NetworkTable = (props) => {
                             />
                         </Grid>
                         <Grid item className={classes.selectColumns}>
-                            <span>
+                            <span
+                                className={clsx({
+                                    [classes.disabledLabel]: isModifyingRow(),
+                                })}
+                            >
                                 <FormattedMessage id="LabelSelectList" />
                             </span>
                             <IconButton
@@ -1094,7 +1100,11 @@ const NetworkTable = (props) => {
                             />
                         </Grid>
                         <Grid item className={classes.exportCsv}>
-                            <span>
+                            <span
+                                className={clsx({
+                                    [classes.disabledLabel]: isModifyingRow(),
+                                })}
+                            >
                                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
                             </span>
                             <span>
@@ -1102,8 +1112,12 @@ const NetworkTable = (props) => {
                                     datas={getCSVData}
                                     columns={getCSVColumnNames()}
                                     filename={getCSVFilename()}
+                                    disabled={isModifyingRow()}
                                 >
-                                    <IconButton aria-label="exportCSVButton">
+                                    <IconButton
+                                        disabled={isModifyingRow()}
+                                        aria-label="exportCSVButton"
+                                    >
                                         <GetAppIcon />
                                     </IconButton>
                                 </CsvDownloader>
