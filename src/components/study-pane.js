@@ -372,6 +372,7 @@ const StudyPane = ({
                 <ResultViewTab
                     studyUuid={studyUuid}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
@@ -387,6 +388,7 @@ const StudyPane = ({
                     studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                 />
             </div>
         </>

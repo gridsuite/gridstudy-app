@@ -180,12 +180,37 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
-            action.networkModificationTreeNodes
-                .filter((node) => node.id === state.workingTreeNode?.id)
-                .forEach((node) => (state.workingTreeNode = node));
-            action.networkModificationTreeNodes
-                .filter((node) => node.id === state.selectedTreeNode?.id)
-                .forEach((node) => (state.selectedTreeNode = node));
+
+            const foundWorkingTreeNode =
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.workingTreeNode?.id
+                );
+            if (foundWorkingTreeNode !== undefined) {
+                let newWorkingTreeNode = { id: foundWorkingTreeNode.id };
+                if (foundWorkingTreeNode?.readOnly !== undefined) {
+                    newWorkingTreeNode.readOnly =
+                        foundWorkingTreeNode?.readOnly;
+                } else {
+                    newWorkingTreeNode.readOnly =
+                        state.workingTreeNode.readOnly;
+                }
+                if (foundWorkingTreeNode?.buildStatus !== undefined) {
+                    newWorkingTreeNode.buildStatus =
+                        foundWorkingTreeNode?.buildStatus;
+                } else {
+                    newWorkingTreeNode.buildStatus =
+                        state.workingTreeNode.buildStatus;
+                }
+                state.workingTreeNode = newWorkingTreeNode;
+            }
+
+            const foundSelectedTreeNode =
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.selectedTreeNode?.id
+                );
+            if (foundSelectedTreeNode !== undefined) {
+                state.selectedTreeNode = foundSelectedTreeNode;
+            }
         }
     },
 
