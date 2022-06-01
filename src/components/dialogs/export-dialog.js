@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
     Collapse,
     Dialog,
     DialogTitle,
-    FormControlLabel,
+    List,
+    ListItem,
+    ListItemText,
     Switch,
     TextField,
+    Tooltip,
     Typography,
 } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -71,48 +71,30 @@ const useMeta = (metasAsArray) => {
     };
 
     const comp = (
-        <>
+        <List>
             {metasAsArray.map((meta, idx) => (
-                <Accordion key={meta.name}>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                    >
+                <Tooltip title={meta.description} enterDelay={1200}>
+                    <ListItem key={meta.name}>
+                        <ListItemText
+                            primary={meta.name.slice(prefix.length)}
+                        />
                         {meta.type === 'BOOLEAN' ? (
-                            <FormControlLabel
-                                control={
-                                    <Switch
-                                        checked={
-                                            inst?.[meta.name] ??
-                                            meta.defaultValue
-                                        }
-                                        onChange={(e) =>
-                                            onBoolChange(e, meta.name)
-                                        }
-                                    />
-                                }
-                                label={meta.name.slice(prefix.length)}
+                            <Switch
+                                checked={inst?.[meta.name] ?? meta.defaultValue}
+                                onChange={(e) => onBoolChange(e, meta.name)}
                             />
                         ) : (
-                            <Typography>
-                                {meta.name.slice(prefix.length)}
-                            </Typography>
-                        )}
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        {meta.type !== 'BOOLEAN' && (
                             <TextField
                                 defaultValue={
                                     inst?.[meta.name] ?? meta.defaultValue
                                 }
+                                variant={'standard'}
                             />
                         )}
-                        <Typography>{meta.description}</Typography>
-                    </AccordionDetails>
-                </Accordion>
+                    </ListItem>
+                </Tooltip>
             ))}
-        </>
+        </List>
     );
 
     return [inst, comp];
