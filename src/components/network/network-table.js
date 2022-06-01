@@ -208,6 +208,10 @@ const useStyles = makeStyles((theme) => ({
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
     },
+    checkbox: {
+        margin: '-10%',
+        cursor: 'initial',
+    },
 }));
 
 const NetworkTable = (props) => {
@@ -634,6 +638,48 @@ const NetworkTable = (props) => {
         ]
     );
 
+    /**
+     * Used for boolean cell data value to render a checkbox
+     * @param {any} rowData data of row
+     * @param {any} columnDefinition definition of column
+     * @param {any} key key of element
+     * @param {any} style style for table cell element
+     * @returns {JSX.Element} Component template
+     */
+    const booleanCellRender = useCallback(
+        (rowData, columnDefinition, key, style) => {
+            const isChecked = formatCell(rowData, columnDefinition);
+            return (
+                <div key={key} style={style}>
+                    <div
+                        className={clsx(classes.tableCell, {
+                            [classes.valueInvalid]:
+                                columnDefinition.canBeInvalidated &&
+                                props.loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                    >
+                        {isChecked !== undefined && (
+                            <Checkbox
+                                color="default"
+                                className={classes.checkbox}
+                                checked={isChecked}
+                                // #TODO to change by using dynamic value when handling events (Ripple: its an annimation effect when hover/click on checkbox)
+                                disableRipple={true}
+                            />
+                        )}
+                    </div>
+                </div>
+            );
+        },
+        [
+            formatCell,
+            classes.tableCell,
+            classes.valueInvalid,
+            classes.checkbox,
+            props.loadFlowStatus,
+        ]
+    );
+
     const registerChangeRequest = useCallback(
         (data, changeCmd, value) => {
             // save original value, dont erase if exists
@@ -706,6 +752,8 @@ const NetworkTable = (props) => {
                 };
                 if (c.changeCmd !== undefined) {
                     column.cellRenderer = editableCellRender;
+                } else if (column.boolean) {
+                    column.cellRenderer = booleanCellRender;
                 } else {
                     column.cellRenderer = defaultCellRender;
                 }
