@@ -187,13 +187,12 @@ export const reducer = createReducer(initialState, {
                     (node) => node.id === state.workingTreeNode?.id
                 );
             if (foundWorkingTreeNode !== undefined) {
-                let newWorkingTreeNode = {
-                    id: state.workingTreeNode.id,
+                state.workingTreeNode = {
+                    id: foundWorkingTreeNode.id,
                     readOnly: foundWorkingTreeNode.readOnly,
                     buildStatus: foundWorkingTreeNode.buildStatus,
                     name: foundWorkingTreeNode.name,
                 };
-                state.workingTreeNode = newWorkingTreeNode;
             }
 
             const foundSelectedTreeNode =
