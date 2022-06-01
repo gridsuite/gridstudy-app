@@ -74,7 +74,8 @@ export const NumericalField = ({
                         fontSize: 'small',
                         flexGrow: 1,
                     },
-                    inputProps: { min: { min }, max: { max } },
+                    min: { min },
+                    max: { max },
                 }}
             />
         </Tooltip>
