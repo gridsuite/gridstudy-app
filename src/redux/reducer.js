@@ -182,7 +182,37 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
-            synchWorkingNodeAndSelectedNode(state);
+            const foundWorkingTreeNode =
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.workingTreeNode?.id
+                );
+            if (foundWorkingTreeNode !== undefined) {
+                let newWorkingTreeNode = {
+                    id: state.workingTreeNode.id,
+                    readOnly: state.workingTreeNode.readOnly,
+                    buildStatus: state.workingTreeNode.buildStatus,
+                    name: state.workingTreeNode.name,
+                };
+                if (foundWorkingTreeNode?.readOnly !== undefined) {
+                    newWorkingTreeNode.readOnly = foundWorkingTreeNode.readOnly;
+                }
+                if (foundWorkingTreeNode?.buildStatus !== undefined) {
+                    newWorkingTreeNode.buildStatus =
+                        foundWorkingTreeNode.buildStatus;
+                }
+                if (foundWorkingTreeNode?.name !== undefined) {
+                    newWorkingTreeNode.name = foundWorkingTreeNode.name;
+                }
+                state.workingTreeNode = newWorkingTreeNode;
+            }
+
+            const foundSelectedTreeNode =
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.selectedTreeNode?.id
+                );
+            if (foundSelectedTreeNode !== undefined) {
+                state.selectedTreeNode = foundSelectedTreeNode;
+            }
         }
     },
 
@@ -343,7 +373,7 @@ function synchWorkingNodeAndSelectedNode(state) {
             name: workingNode?.data?.label,
             targetPosition: workingNode?.targetPosition,
             position: workingNode?.position,
-            buildStatus: workingNode?.buildStatus
+            buildStatus: workingNode?.buildStatus,
         };
     }
     const selectedNode = state.networkModificationTreeModel?.treeElements.find(
