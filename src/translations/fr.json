@@ -429,7 +429,6 @@
     "LoadTapChanging3Capabilities" : "Régleur en charge 3",
     "RegulatingRatio3" : "Régleur en réglage 3",
     "TargetVPoint3" : "Consigne tension (KV) 3",
-    "VoltageRegulatorOn" : "RÉGLAGE DE TENSION",
-    "VoltageSetpointKV" : " Consigne Tension (KV)",
-    "ReactivePowerSetpointMVAR" : "Consigne De Reactif (MVAR)"
+    "VoltageSetpointKV" : "Consigne tension (KV)",
+    "ReactivePowerSetpointMVAR" : "Consigne de reactif (MVAR)"
 }
