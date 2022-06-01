@@ -8,14 +8,15 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
+    Collapse,
     Dialog,
     DialogTitle,
     FormControlLabel,
-    Grid,
     Switch,
     TextField,
     Typography,
 } from '@mui/material';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
@@ -30,6 +31,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
+import IconButton from '@mui/material/IconButton';
 
 function longestCommonPrefix(strs) {
     if (!strs?.length) return '';
@@ -140,6 +142,11 @@ const ExportDialog = ({
     const [loading, setLoading] = React.useState(false);
     const [exportStudyErr, setExportStudyErr] = React.useState('');
 
+    const [checked, setChecked] = React.useState(false);
+
+    const handleChange = () => {
+        setChecked((prev) => !prev);
+    };
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
@@ -157,7 +164,7 @@ const ExportDialog = ({
     const metasAsArray = formatWithParameter?.parameters || [];
     const [currentParameters, paramsComponent] = useMeta(metasAsArray);
 
-    const handleClick = () => {
+    const handleExportClick = () => {
         if (selectedFormat) {
             const downloadUrl = getExportUrl(
                 studyUuid,
@@ -204,58 +211,49 @@ const ExportDialog = ({
             onClose={handleClose}
             aria-labelledby="dialog-title-export"
         >
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle>
+                {title}
+                <FormControl fullWidth size="small">
+                    <InputLabel
+                        id="select-format-label"
+                        margin={'dense'}
+                        variant={'filled'}
+                    >
+                        <FormattedMessage id="exportFormat" />
+                    </InputLabel>
+                    <Select
+                        labelId="select-format-label"
+                        label={<FormattedMessage id="exportFormat" />}
+                        variant="filled"
+                        id="controlled-select-format"
+                        onChange={handleFormatSelectionChange}
+                        defaultValue=""
+                        inputProps={{
+                            id: 'select-format',
+                        }}
+                    >
+                        {availableFormats !== '' &&
+                            availableFormats.map(function (element) {
+                                return (
+                                    <MenuItem key={element} value={element}>
+                                        {element}
+                                    </MenuItem>
+                                );
+                            })}
+                    </Select>
+                    <IconButton
+                        onClick={handleChange}
+                        disabled={!selectedFormat}
+                    >
+                        <Typography style={{ fontWeight: 'bold' }}>
+                            Parameters
+                        </Typography>
+                        {checked ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </IconButton>
+                </FormControl>
+            </DialogTitle>
             <DialogContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={10} align="start">
-                        <FormControl fullWidth size="small">
-                            <InputLabel
-                                id="select-format-label"
-                                margin={'dense'}
-                                variant={'filled'}
-                            >
-                                <FormattedMessage id="exportFormat" />
-                            </InputLabel>
-                            <Select
-                                labelId="select-format-label"
-                                label={<FormattedMessage id="exportFormat" />}
-                                variant="filled"
-                                id="controlled-select-format"
-                                onChange={handleFormatSelectionChange}
-                                defaultValue=""
-                                inputProps={{
-                                    id: 'select-format',
-                                }}
-                            >
-                                {availableFormats !== '' &&
-                                    availableFormats.map(function (element) {
-                                        return (
-                                            <MenuItem
-                                                key={element}
-                                                value={element}
-                                            >
-                                                {element}
-                                            </MenuItem>
-                                        );
-                                    })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Accordion disabled={!selectedFormat}>
-                            <AccordionSummary
-                                expandIcon={<ExpandMoreIcon />}
-                                aria-controls="panel1a-content"
-                                id="panel1a-header"
-                            >
-                                <Typography>Parameters</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                {paramsComponent}
-                            </AccordionDetails>
-                        </Accordion>
-                    </Grid>
-                </Grid>
+                <Collapse in={checked}>{paramsComponent}</Collapse>
                 {exportStudyErr !== '' && (
                     <Alert severity="error">{exportStudyErr}</Alert>
                 )}
@@ -275,7 +273,11 @@ const ExportDialog = ({
                 <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick} variant="outlined">
+                <Button
+                    onClick={handleExportClick}
+                    variant="outlined"
+                    disabled={!selectedFormat}
+                >
                     <FormattedMessage id="export" />
                 </Button>
             </DialogActions>
