@@ -582,6 +582,10 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 0,
             },
             {
+                id: 'Type',
+                dataKey: 'energySource',
+            },
+            {
                 id: 'ActivePower',
                 dataKey: 'p',
                 numeric: true,
@@ -596,6 +600,23 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
+            },
+            {
+                id: 'ActivePowerControl',
+                dataKey: 'activePowerControlOn',
+                boolean: true,
+            },
+            {
+                id: 'MinP',
+                dataKey: 'minP',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'MaxP',
+                dataKey: 'maxP',
+                numeric: true,
+                fractionDigits: 1,
             },
             {
                 id: 'TargetP',
@@ -615,6 +636,21 @@ export const TABLES_DEFINITIONS = {
                 dataKey: 'targetQ',
                 numeric: true,
                 fractionDigits: 1,
+            },
+            {
+                id: 'VoltageRegulatorOn',
+                dataKey: 'voltageRegulatorOn',
+                boolean: true,
+            },
+            {
+                id: 'TargetV',
+                dataKey: 'targetV',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'RegulatingTerminal',
+                dataKey: 'regulatingTerminal',
             },
         ],
     },
