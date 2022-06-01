@@ -207,6 +207,10 @@ const useStyles = makeStyles((theme) => ({
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
     },
+    checkbox: {
+        margin: '-10%',
+        cursor: 'initial',
+    },
 }));
 
 const NetworkTable = (props) => {
@@ -620,7 +624,6 @@ const NetworkTable = (props) => {
      */
     const booleanCellRender = useCallback(
         (rowData, columnDefinition, key, style) => {
-            // get value of cell in this case is true or false or null
             const isChecked = formatCell(rowData, columnDefinition);
             return (
                 <div key={key} style={style}>
@@ -633,10 +636,11 @@ const NetworkTable = (props) => {
                     >
                         {isChecked !== undefined && (
                             <Checkbox
-                                style={{ margin: '-10%' }}
+                                color="default"
+                                className={classes.checkbox}
                                 checked={isChecked}
-                                //onClick={handleCheckboxClick} #TODO handle change event later
-                                //onChange={handleCheckboxChange} #TODO handle change event later
+                                // #TODO to change by using dynamic value when handling events (Ripple: its an annimation effect when hover/click on checkbox)
+                                disableRipple={true}
                             />
                         )}
                     </div>
@@ -647,6 +651,7 @@ const NetworkTable = (props) => {
             formatCell,
             classes.tableCell,
             classes.valueInvalid,
+            classes.checkbox,
             props.loadFlowStatus,
         ]
     );
@@ -724,7 +729,6 @@ const NetworkTable = (props) => {
                 if (c.changeCmd !== undefined) {
                     column.cellRenderer = editableCellRender;
                 } else if (column.boolean) {
-                    // check if param boolean is true then render a boolean cell(checkbox)
                     column.cellRenderer = booleanCellRender;
                 } else {
                     column.cellRenderer = defaultCellRender;

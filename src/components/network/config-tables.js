@@ -215,6 +215,27 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
+                id: 'LoadTapChangingCapabilities',
+                dataKey: 'loadTapChangingCapabilities',
+                boolean: true,
+            },
+            {
+                id: 'RegulatingRatio',
+                dataKey: 'regulatingRatio',
+                cellDataGetter: (cellData) => {
+                    return cellData.ratioTapChangerPosition
+                        ? cellData.regulating
+                        : undefined;
+                },
+                boolean: true,
+            },
+            {
+                id: 'TargetVPoint',
+                dataKey: 'targetV',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
                 id: 'RatioTap',
                 dataKey: 'ratioTapChangerPosition',
                 numeric: true,
@@ -227,6 +248,21 @@ export const TABLES_DEFINITIONS = {
                     }),
             },
             {
+                id: 'RegulatingMode',
+                dataKey: 'regulatingMode',
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+            },
+            {
+                id: 'RegulatingPhase',
+                dataKey: 'regulatingPhase',
+                cellDataGetter: (cellData) => {
+                    return cellData.phaseTapChangerPosition
+                        ? cellData.regulating
+                        : undefined;
+                },
+                boolean: true,
+            },
+            {
                 id: 'PhaseTap',
                 dataKey: 'phaseTapChangerPosition',
                 numeric: true,
@@ -237,6 +273,13 @@ export const TABLES_DEFINITIONS = {
                         tapChanger: equipment.phaseTapChanger,
                         ...props,
                     }),
+            },
+            {
+                id: 'RegulatingValue',
+                dataKey: 'regulatingValue',
+                numeric: true,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                fractionDigits: 1,
             },
         ],
     },
@@ -337,6 +380,22 @@ export const TABLES_DEFINITIONS = {
                 canBeInvalidated: true,
             },
             {
+                id: 'LoadTapChanging1Capabilities',
+                dataKey: 'loadTapChanging1Capabilities',
+                boolean: true,
+            },
+            {
+                id: 'RegulatingRatio1',
+                dataKey: 'regulatingRatio1',
+                boolean: true,
+            },
+            {
+                id: 'TargetVPoint1',
+                dataKey: 'targetV1',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
                 id: 'RatioTap1',
                 dataKey: 'ratioTapChanger1Position',
                 numeric: true,
@@ -347,6 +406,22 @@ export const TABLES_DEFINITIONS = {
                         tapChanger: equipment.ratioTapChanger1,
                         ...props,
                     }),
+            },
+            {
+                id: 'LoadTapChanging2Capabilities',
+                dataKey: 'loadTapChanging2Capabilities',
+                boolean: true,
+            },
+            {
+                id: 'RegulatingRatio2',
+                dataKey: 'regulatingRatio2',
+                boolean: true,
+            },
+            {
+                id: 'TargetVPoint2',
+                dataKey: 'targetV2',
+                numeric: true,
+                fractionDigits: 1,
             },
             {
                 id: 'RatioTap2',
@@ -361,6 +436,22 @@ export const TABLES_DEFINITIONS = {
                     }),
             },
             {
+                id: 'LoadTapChanging3Capabilities',
+                dataKey: 'loadTapChanging3Capabilities',
+                boolean: true,
+            },
+            {
+                id: 'RegulatingRatio3',
+                dataKey: 'regulatingRatio3',
+                boolean: true,
+            },
+            {
+                id: 'TargetVPoint3',
+                dataKey: 'targetV3',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
                 id: 'RatioTap3',
                 dataKey: 'ratioTapChanger3Position',
                 numeric: true,
@@ -371,6 +462,16 @@ export const TABLES_DEFINITIONS = {
                         tapChanger: equipment.ratioTapChanger3,
                         ...props,
                     }),
+            },
+            {
+                id: 'RegulatingMode1',
+                dataKey: 'regulatingMode1',
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+            },
+            {
+                id: 'RegulatingPhase1',
+                dataKey: 'regulatingPhase1',
+                boolean: true,
             },
             {
                 id: 'PhaseTap1',
@@ -385,6 +486,23 @@ export const TABLES_DEFINITIONS = {
                     }),
             },
             {
+                id: 'RegulatingValue1',
+                dataKey: 'regulatingValue1',
+                numeric: true,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                fractionDigits: 1,
+            },
+            {
+                id: 'RegulatingMode2',
+                dataKey: 'regulatingMode2',
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+            },
+            {
+                id: 'RegulatingPhase2',
+                dataKey: 'regulatingPhase2',
+                boolean: true,
+            },
+            {
                 id: 'PhaseTap2',
                 dataKey: 'phaseTapChanger2Position',
                 numeric: true,
@@ -397,6 +515,23 @@ export const TABLES_DEFINITIONS = {
                     }),
             },
             {
+                id: 'RegulatingValue2',
+                dataKey: 'regulatingValue2',
+                numeric: true,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                fractionDigits: 1,
+            },
+            {
+                id: 'RegulatingMode3',
+                dataKey: 'regulatingMode3',
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+            },
+            {
+                id: 'RegulatingPhase3',
+                dataKey: 'regulatingPhase3',
+                boolean: true,
+            },
+            {
                 id: 'PhaseTap3',
                 dataKey: 'phaseTapChanger3Position',
                 numeric: true,
@@ -407,6 +542,13 @@ export const TABLES_DEFINITIONS = {
                         tapChanger: equipment.phaseTapChanger3,
                         ...props,
                     }),
+            },
+            {
+                id: 'RegulatingValue3',
+                dataKey: 'regulatingValue3',
+                numeric: true,
+                columnWidth: MEDIUM_COLUMN_WIDTH,
+                fractionDigits: 1,
             },
         ],
     },
