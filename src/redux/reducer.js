@@ -381,5 +381,4 @@ function synchWorkingNodeAndSelectedNode(state) {
     );
     // handle the case of selectedNode not in the TreeModel anymore.
     if (selectedNode === undefined) state.selectedTreeNode = null;
-    else state.selectedTreeNode = selectedNode;
 }
