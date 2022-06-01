@@ -223,7 +223,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingRatio',
                 dataKey: 'regulatingRatio',
                 cellDataGetter: (cellData) => {
-                    return cellData.ratioTapChangerPosition
+                    return cellData.ratioTapChanger
                         ? cellData.regulating
                         : undefined;
                 },
@@ -256,7 +256,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingPhase',
                 dataKey: 'regulatingPhase',
                 cellDataGetter: (cellData) => {
-                    return cellData.phaseTapChangerPosition
+                    return cellData.phaseTapChanger
                         ? cellData.regulating
                         : undefined;
                 },
