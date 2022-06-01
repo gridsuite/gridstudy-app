@@ -15,3 +15,17 @@ export const LOAD_TYPES = [
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
 ];
+
+export const ENERGY_SOURCES = [
+    { id: '', label: 'None' },
+    { id: 'HYDRO', label: 'Hydro' },
+    { id: 'NUCLEAR', label: 'Nuclear' },
+    { id: 'WIND', label: 'Wind' },
+    { id: 'THERMAL', label: 'Thermal' },
+    { id: 'SOLAR', label: 'Solar' },
+    { id: 'OTHER', label: 'Other' },
+];
+
+export function getEnergySourceLabel(energySourceId) {
+    return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
+}

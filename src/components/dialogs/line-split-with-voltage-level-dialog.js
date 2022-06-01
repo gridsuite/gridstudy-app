@@ -32,7 +32,7 @@ import {
     useInputForm,
     useTextValue,
 } from './input-hooks';
-import { filledTextField, gridItem, GridSection } from './dialogUtils';
+import { gridItem, GridSection } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
@@ -187,6 +187,7 @@ const useComplementaryPercentage = ({
                 <Grid item xs={3} align={'end'}>
                     <TextFieldWithAdornment
                         size="small"
+                        variant="standard"
                         adornmentText="%"
                         adornmentPosition="end"
                         fullWidth
@@ -284,7 +285,7 @@ const LineSplitWithVoltageLevelDialog = ({
             substationId: newVoltageLevel.substationId,
             busbarSections: newVoltageLevel.busbarSections,
         };
-        return [asVL, ...voltageLevelOptions];
+        return [asVL, ...voltageLevelOptions.filter((vl) => vl.id !== asVL.id)];
     }, [newVoltageLevel, voltageLevelOptions]);
 
     useEffect(() => {
@@ -309,7 +310,6 @@ const LineSplitWithVoltageLevelDialog = ({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        formProps: filledTextField,
         values: lineOptions,
         allowNewValue: true,
         getLabel: getId,
@@ -329,7 +329,6 @@ const LineSplitWithVoltageLevelDialog = ({
         upperLeftText: <FormattedMessage id="Line1"></FormattedMessage>,
         upperRightText: <FormattedMessage id="Line2"></FormattedMessage>,
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.percent,
     });
 
@@ -339,7 +338,6 @@ const LineSplitWithVoltageLevelDialog = ({
             label: 'ID',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            formProps: filledTextField,
             values: allVoltageLevelOptions,
             allowNewValue: true,
             getLabel: getId,
@@ -360,14 +358,13 @@ const LineSplitWithVoltageLevelDialog = ({
             label: 'BusbarOrNodeID',
             validation: { isFieldRequired: true },
             inputForm: inputForm,
-            formProps: filledTextField,
             values: busbarSectionOptions,
             allowNewValue: true,
             getLabel: getId,
-            defaultValue: formValues?.bbsOrNodeId || '',
+            defaultValue: formValues?.bbsOrBusId || '',
             selectedValue: formValues
                 ? busbarSectionOptions.find(
-                      (value) => value.id === formValues.bbsOrNodeId
+                      (value) => value.id === formValues.bbsOrBusId
                   )
                 : '',
         });
@@ -379,7 +376,6 @@ const LineSplitWithVoltageLevelDialog = ({
         } else {
             bobbsCb(voltageLevelOrId, (bobbss) => {
                 if (!bobbss?.length && voltageLevelOrId?.busbarSections) {
-                    bobbss.push(...voltageLevelOrId.busbarSections);
                     bobbss = [...bobbss, ...voltageLevelOrId.busbarSections];
                 }
                 if (bobbss?.length) {
@@ -416,7 +412,6 @@ const LineSplitWithVoltageLevelDialog = ({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.newLine1Id,
     });
 
@@ -425,7 +420,6 @@ const LineSplitWithVoltageLevelDialog = ({
         label: 'ID',
         validation: { isFieldRequired: true },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.newLine2Id,
     });
 
@@ -434,7 +428,6 @@ const LineSplitWithVoltageLevelDialog = ({
         label: 'Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.newLine1Name,
     });
 
@@ -443,7 +436,6 @@ const LineSplitWithVoltageLevelDialog = ({
         label: 'Name',
         validation: { isFieldRequired: false },
         inputForm: inputForm,
-        formProps: filledTextField,
         defaultValue: formValues?.newLine2Name,
     });
 
@@ -548,11 +540,22 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const lineSubstation = (isFirst) => {
         if (!lineToDivide) return '';
-        const vlId = isFirst
-            ? lineToDivide.voltageLevelId1
-            : lineToDivide.voltageLevelId2;
-        const mayVl = allVoltageLevelOptions.filter((vl) => vl.id === vlId);
-        if (mayVl && mayVl.length) return mayVl[0].name;
+        let vlId = '';
+        if (typeof lineToDivide === 'object') {
+            vlId = isFirst
+                ? lineToDivide.voltageLevelId1
+                : lineToDivide.voltageLevelId2;
+        } else if (isFirst) {
+            const mayLine = lineOptions.find((l) => l?.id === newLine1Id);
+            vlId = mayLine?.voltageLevelId1;
+        } else {
+            const mayLine = lineOptions.find((l) => l?.id === newLine2Id);
+            vlId = mayLine?.voltageLevelId2;
+        }
+        if (vlId) {
+            const mayVl = allVoltageLevelOptions.find((vl) => vl.id === vlId);
+            if (mayVl) return mayVl.name;
+        }
         return '';
     };
 
@@ -587,7 +590,7 @@ const LineSplitWithVoltageLevelDialog = ({
                             1
                         )}
                     </Grid>
-                    <GridSection title="VoltageLevel" />
+                    <GridSection title="VoltageLevelToSplitAt" />
                     <Grid container spacing={2}>
                         {gridItem(voltageLevelIdField, 5)}
                         {gridItem(

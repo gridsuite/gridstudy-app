@@ -32,10 +32,26 @@ export function getFirstNodeOfType(elements, nodeType, buildStatus) {
 
 export function allowModificationsOnNode(workingNode, selectedNode) {
     return (
-        !workingNode?.readOnly &&
-        workingNode?.buildStatus === 'BUILT' &&
-        (selectedNode === null ||
-            selectedNode === undefined ||
-            workingNode?.id === selectedNode?.id)
+      !workingNode?.readOnly &&
+      workingNode?.buildStatus === 'BUILT' &&
+      (selectedNode === null ||
+        selectedNode === undefined ||
+        workingNode?.id === selectedNode?.id)
     );
+}
+
+export function getRootNode(elements) {
+    if (elements.type === 'ROOT')
+        return {
+            id: elements.id,
+            type: elements.type,
+            data: {
+                label: elements.data.label,
+                description: elements.data.description,
+                buildStatus: elements.data.buildStatus,
+                readOnly: elements.data.readOnly,
+            },
+            targetPosition: elements?.targetPosition,
+            position: elements?.position,
+        };
 }

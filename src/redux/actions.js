@@ -332,6 +332,7 @@ export function workingTreeNode(workingTreeNode) {
             id: workingTreeNode?.id,
             readOnly: workingTreeNode?.data?.readOnly,
             buildStatus: workingTreeNode?.data?.buildStatus,
+            name: workingTreeNode?.data?.label,
         },
     };
 }
