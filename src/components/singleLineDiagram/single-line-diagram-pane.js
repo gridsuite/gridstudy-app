@@ -348,6 +348,11 @@ export function SingleLineDiagramPane({
                 } else {
                     updateSld();
                 }
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'buildCompleted'
+            ) {
+                updateSld();
             }
         }
         // Note: studyUuid, and loadNetwork don't change
