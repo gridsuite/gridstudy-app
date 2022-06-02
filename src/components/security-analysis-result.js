@@ -31,8 +31,7 @@ const useStyles = makeStyles((theme) => ({
     },
     nmkResultSelect: {
         position: 'absolute',
-        top: 10,
-        right: 10,
+        right: theme.spacing(2),
     },
 }));
 
