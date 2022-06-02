@@ -48,6 +48,8 @@ import {
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
+    MODIFICATION_CREATION_IN_PROGRESS,
+    MODIFICATION_CREATION_FINISHED,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -115,6 +117,7 @@ const initialState = {
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     centerOnSubstation: null,
+    modificationCreationInProgress: false,
     ...paramsInitialState,
 };
 
@@ -319,5 +322,13 @@ export const reducer = createReducer(initialState, {
     },
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
+    },
+
+    [MODIFICATION_CREATION_IN_PROGRESS]: (state) => {
+        state.modificationCreationInProgress = true;
+    },
+
+    [MODIFICATION_CREATION_FINISHED]: (state) => {
+        state.modificationCreationInProgress = false;
     },
 });

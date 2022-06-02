@@ -15,14 +15,20 @@ import {
     fetchEquipments,
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
 import makeStyles from '@mui/styles/makeStyles';
 import { equipments } from '../../network/network-equipments';
 import { ModificationListItem } from './modification-list-item';
-import { Checkbox, Fab, Toolbar, Typography } from '@mui/material';
+import {
+    Checkbox,
+    CircularProgress,
+    Fab,
+    Toolbar,
+    Typography,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
@@ -39,6 +45,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { modificationCreationFinished } from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -77,6 +84,10 @@ const useStyles = makeStyles((theme) => ({
     dividerTool: {
         background: theme.palette.primary.main,
     },
+    circularRoot: {
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(1),
+    },
 }));
 
 function isChecked(s1) {
@@ -91,6 +102,9 @@ function isPartial(s1, s2) {
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
     const workingNode = useSelector((state) => state.workingTreeNode);
+    const modificationCreationInProgress = useSelector(
+        (state) => state.modificationCreationInProgress
+    );
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
@@ -103,6 +117,8 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
+
+    const dispatch = useDispatch();
 
     const closeDialog = () => {
         setEditDialogOpen(undefined);
@@ -258,13 +274,14 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             else {
                 fetchNetworkModifications(selectedNode.networkModification)
                     .then((res) => {
+                        dispatch(modificationCreationFinished());
                         if (selectedNodeRef.current === selectedNode)
                             setModifications(res.status ? [] : res);
                     })
                     .catch((err) => snackError(err.message));
             }
         }
-    }, [selectedNode, setModifications, selectedNodeRef, snackError]);
+    }, [selectedNode, setModifications, selectedNodeRef, snackError, dispatch]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -393,6 +410,19 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                                 toggleSelectAll={toggleSelectAll}
                             />
                             {provided.placeholder}
+                            {modificationCreationInProgress === true && (
+                                <div>
+                                    <CircularProgress
+                                        size={18}
+                                        className={classes.circularRoot}
+                                    />
+                                    <FormattedMessage
+                                        id={
+                                            'network_modifications/creatingModification'
+                                        }
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
                 </Droppable>

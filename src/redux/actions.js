@@ -352,3 +352,20 @@ export function centerOnSubstation(substationId) {
         centerOnSubstation: { to: substationId },
     };
 }
+
+export const MODIFICATION_CREATION_IN_PROGRESS =
+    'MODIFICATION_CREATION_IN_PROGRESS';
+
+export function modificationCreationInProgress() {
+    return {
+        type: MODIFICATION_CREATION_IN_PROGRESS,
+    };
+}
+
+export const MODIFICATION_CREATION_FINISHED = 'MODIFICATION_CREATION_FINISHED';
+
+export function modificationCreationFinished() {
+    return {
+        type: MODIFICATION_CREATION_FINISHED,
+    };
+}
