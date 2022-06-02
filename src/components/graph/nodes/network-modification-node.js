@@ -9,11 +9,11 @@ import Button from '@mui/material/Button';
 import { Handle } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
-import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import BuildIcon from '@mui/icons-material/Build';
 import LockIcon from '@mui/icons-material/Lock';
+import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
     networkModificationSelected: {
@@ -39,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     },
     buildStatusInvalid: {
         color: 'indianred',
+    },
+    margin: {
+        marginLeft: '10px',
     },
 }));
 
@@ -71,30 +74,27 @@ const NetworkModificationNode = (props) => {
                 disableElevation
             >
                 {props.data.label}
-                <IconButton
-                    className={
-                        props.selected
-                            ? classes.networkModificationSelected
-                            : classes.networkModification
-                    }
-                >
-                    {props.data.buildStatus === 'BUILDING' ? (
-                        <CircularProgress size={24} color="secondary" />
-                    ) : props.id === workingNode?.id ? (
-                        <VisibilityIcon />
-                    ) : (
-                        props.data.buildStatus !== 'NOT_BUILT' && (
-                            <BuildIcon
-                                className={
-                                    props.data.buildStatus === 'BUILT'
-                                        ? classes.buildStatusOk
-                                        : classes.buildStatusInvalid
-                                }
-                            />
-                        )
-                    )}
-                </IconButton>
-                {props.data.readOnly && <LockIcon />}
+                {props.data.buildStatus === 'BUILDING' ? (
+                    <CircularProgress
+                        size={24}
+                        color="secondary"
+                        className={classes.margin}
+                    />
+                ) : props.id === workingNode?.id ? (
+                    <VisibilityIcon className={classes.margin} />
+                ) : (
+                    props.data.buildStatus !== 'NOT_BUILT' && (
+                        <BuildIcon
+                            className={clsx(
+                                props.data.buildStatus === 'BUILT'
+                                    ? classes.buildStatusOk
+                                    : classes.buildStatusInvalid,
+                                classes.margin
+                            )}
+                        />
+                    )
+                )}
+                {props.data.readOnly && <LockIcon className={classes.margin} />}
             </Button>
         </>
     );
