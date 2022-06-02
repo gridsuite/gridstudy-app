@@ -172,8 +172,11 @@ export const NetworkMapTab = ({
     useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
 
-        const substationPositions = fetchSubstationPositions(studyUuid);
-        const linePositions = fetchLinePositions(studyUuid);
+        const substationPositions = fetchSubstationPositions(
+            studyUuid,
+            workingNode?.id
+        );
+        const linePositions = fetchLinePositions(studyUuid, workingNode?.id);
         setWaitingLoadGeoData(true);
 
         Promise.all([substationPositions, linePositions])
@@ -197,6 +200,7 @@ export const NetworkMapTab = ({
         // Note: studyUuid and dispatch don't change
     }, [
         studyUuid,
+        workingNode,
         setWaitingLoadGeoData,
         setErrorMessage,
         setGeoData,
