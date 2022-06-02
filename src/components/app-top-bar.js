@@ -42,12 +42,11 @@ import { useSingleLineDiagram } from './singleLineDiagram/utils';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
-        marginLeft: 18,
         flexGrow: 1,
     },
     label: {
         color: theme.palette.primary.main,
-        margin: theme.spacing(1),
+        margin: theme.spacing(1.5),
         fontWeight: 'bold',
     },
 }));
@@ -234,7 +233,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 language={languageLocal}
             >
                 {/* Add current Node name between Logo and Tabs */}
-                <Box width="20%" display="flex" alignItems="center">
+                <Box width="15%" display="flex" justifyContent="center">
                     {workingNode && (
                         <OverflowableText
                             className={classes.label}
