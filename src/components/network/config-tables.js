@@ -926,6 +926,37 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 fractionDigits: 1,
             },
+            {
+                id: 'OprFromCS1toCS2',
+                dataKey: 'oprFromCS1toCS2',
+                numeric: true,
+                fractionDigits: 1,
+                columnWidth: LARGE_COLUMN_WIDTH,
+            },
+            {
+                id: 'OprFromCS2toCS1',
+                dataKey: 'oprFromCS2toCS1',
+                numeric: true,
+                fractionDigits: 1,
+                columnWidth: LARGE_COLUMN_WIDTH,
+            },
+            {
+                id: 'K',
+                dataKey: 'k',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'AcEmulation',
+                dataKey: 'isEnabled',
+                boolean: true,
+            },
+            {
+                id: 'P0',
+                dataKey: 'p0',
+                numeric: true,
+                fractionDigits: 1,
+            },
         ],
     },
 
