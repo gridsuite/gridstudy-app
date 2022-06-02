@@ -4,6 +4,10 @@ import MenuItem from '@mui/material/MenuItem';
 import { TextField, Tooltip } from '@mui/material';
 import { useIntl } from 'react-intl';
 
+const ITEM_HEIGHT = 36;
+const ITEMS_NUMBER = 5;
+const ITEMS_PADDING = 8;
+
 export const TapChangerSelector = ({
     tapChanger,
     setter,
@@ -16,6 +20,13 @@ export const TapChangerSelector = ({
             onChange={(ev) => setter(ev.target.value)}
             size={'medium'}
             margin={'none'}
+            MenuProps={{
+                PaperProps: {
+                    sx: {
+                        maxHeight: ITEM_HEIGHT * ITEMS_NUMBER + ITEMS_PADDING,
+                    },
+                },
+            }}
             {...props}
         >
             {[...Array(tapChanger.highTap - tapChanger.lowTap + 1)].map(
