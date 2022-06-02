@@ -401,6 +401,7 @@
     "Update": "Mettre à jour",
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
+    "root" : "Racine",
     "LogOnlySingleNode": "Log noeud seul",
 
     "RegulatingMode" : "Mode de réglage déphaseur",
