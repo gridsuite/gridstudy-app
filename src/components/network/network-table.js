@@ -213,7 +213,7 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'initial',
     },
     disabledLabel: {
-        opacity: 0.4,
+        color: theme.palette.text.disabled,
     },
 }));
 
@@ -383,23 +383,34 @@ const NetworkTable = (props) => {
         return <LockIcon className={classes.tableLock} />;
     }, [classes.tableLock]);
 
+    const isModifyingRow = useCallback(() => {
+        return lineEdit?.id !== undefined;
+    }, [lineEdit]);
+
+    const isActiveSortArrow = (columnSort, dataKey) => {
+        return columnSort && columnSort.key === dataKey;
+    };
+
     const sortIconClassStyle = useCallback(
         (columnSort, dataKey) => {
-            if (columnSort && columnSort.key === dataKey) {
-                return classes.activeSortArrow;
-            }
-            return classes.inactiveSortArrow;
+            let isSortArrowActive = isActiveSortArrow(columnSort, dataKey);
+            return clsx({
+                [classes.activeSortArrow]: isSortArrowActive,
+                [classes.inactiveSortArrow]: !isSortArrowActive,
+                [classes.clickable]: !isModifyingRow(),
+            });
         },
-        [classes.activeSortArrow, classes.inactiveSortArrow]
+        [
+            classes.activeSortArrow,
+            classes.inactiveSortArrow,
+            classes.clickable,
+            isModifyingRow,
+        ]
     );
-
-    const isModifyingRow = useCallback(() => {
-        return lineEdit !== undefined && lineEdit.id !== undefined;
-    }, [lineEdit]);
 
     const renderSortArrowIcon = useCallback(
         (columnSort, dataKey) => {
-            if (isModifyingRow()) {
+            if (!isActiveSortArrow(columnSort, dataKey) && isModifyingRow()) {
                 return null;
             }
             if (
@@ -473,11 +484,7 @@ const NetworkTable = (props) => {
                         columnDefinition.dataKey
                     )}
                 >
-                    <div
-                        className={clsx(classes.tableHeader, {
-                            [classes.clickable]: !isModifyingRow(),
-                        })}
-                    >
+                    <div className={clsx(classes.tableHeader, {})}>
                         {columnDefinition.locked ? renderTableLockIcon() : ''}
                         {columnDefinition.label}
                     </div>
@@ -497,8 +504,6 @@ const NetworkTable = (props) => {
             setSort,
             sortIconClassStyle,
             renderSortArrowIcon,
-            classes.clickable,
-            isModifyingRow,
         ]
     );
 
@@ -1061,7 +1066,7 @@ const NetworkTable = (props) => {
                                                 color={
                                                     isModifyingRow()
                                                         ? 'disabled'
-                                                        : ''
+                                                        : 'inherit'
                                                 }
                                             />
                                         </InputAdornment>
