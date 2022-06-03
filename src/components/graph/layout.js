@@ -32,17 +32,10 @@ export function getLayoutedElements(elements) {
             el.targetPosition = 'top';
             el.sourcePosition = 'bottom';
 
-            if (el.type === 'ROOT') {
-                el.position = {
-                    x: nodeWithPosition.x - nodeWidth / 2,
-                    y: nodeWithPosition.y - nodeHeight / 2,
-                };
-            } else {
-                el.position = {
-                    x: nodeWithPosition.x - nodeWidth / 2,
-                    y: nodeWithPosition.y - nodeHeight / 2,
-                };
-            }
+            el.position = {
+                x: nodeWithPosition.x - nodeWidth / 2,
+                y: nodeWithPosition.y - nodeHeight / 2,
+            };
         }
 
         return el;

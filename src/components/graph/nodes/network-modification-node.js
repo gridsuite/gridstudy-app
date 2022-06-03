@@ -29,17 +29,6 @@ const useStyles = makeStyles((theme) => ({
         },
         overflow: 'hidden',
     },
-    networkModificationSelected: {
-        position: 'relative',
-        variant: 'contained',
-        background: '#fff',
-        textTransform: 'none',
-        color: theme.palette.primary.contrastText,
-        '&:hover': {
-            background: theme.palette.primary.main,
-        },
-        overflow: 'hidden',
-    },
     networkModification: {
         background: '#c5c8d1',
         textTransform: 'none',
