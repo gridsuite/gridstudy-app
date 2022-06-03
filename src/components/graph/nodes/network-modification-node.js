@@ -11,6 +11,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import clsx from 'clsx';
 import Tooltip from '@mui/material/Tooltip';
@@ -51,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
     outOfBoundIcons: {
         display: 'flex',
         flexDirection: 'column',
-        color: '#fff',
         position: 'absolute',
         right: '-30px',
         top: '18px',
@@ -131,7 +131,10 @@ const NetworkModificationNode = (props) => {
                                 color="primary"
                                 style={{ margin: 'auto' }}
                             />
-                        )}
+                        ) ||
+                            (props.data.buildStatus === 'NOT_BUILT' && (
+                                <VisibilityOffIcon style={{ margin: 'auto' }} />
+                            ))}
                     </div>
 
                     <div className={classes.labelWrapper}>
