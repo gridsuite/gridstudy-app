@@ -37,6 +37,8 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { modificationCreationInProgress } from '../../redux/actions';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -67,6 +69,8 @@ const TwoWindingsTransformerCreationDialog = ({
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const intlRef = useIntlRef();
+
+    const dispatch = useDispatch();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -230,16 +234,19 @@ const TwoWindingsTransformerCreationDialog = ({
                 connectivity2.busOrBusbarSection.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'TwoWindingsTransformerCreationError',
-                        intlRef: intlRef,
-                    },
+            )
+                .then(() => dispatch(modificationCreationInProgress()))
+                .catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId:
+                                'TwoWindingsTransformerCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

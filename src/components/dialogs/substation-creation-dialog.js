@@ -29,6 +29,8 @@ import {
 import { filledTextField, gridItem } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { modificationCreationInProgress } from '../../redux/actions';
+import { useDispatch } from 'react-redux';
 
 /**
  * Dialog to create a substation in the network
@@ -50,6 +52,8 @@ const SubstationCreationDialog = ({
     const { enqueueSnackbar } = useSnackbar();
 
     const inputForm = useInputForm();
+
+    const dispatch = useDispatch();
 
     const [formValues, setFormValues] = useState(undefined);
 
@@ -125,16 +129,18 @@ const SubstationCreationDialog = ({
                 substationCountry,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
-            ).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'SubstationCreationError',
-                        intlRef: intlRef,
-                    },
+            )
+                .then(() => dispatch(modificationCreationInProgress()))
+                .catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'SubstationCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

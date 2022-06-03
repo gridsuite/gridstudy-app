@@ -38,6 +38,8 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
+import { modificationCreationInProgress } from '../../redux/actions';
+import { useDispatch } from 'react-redux';
 
 const numericalWithButton = {
     type: 'number',
@@ -266,6 +268,8 @@ const VoltageLevelCreationDialog = ({
 
     const equipmentPath = 'voltage-levels';
 
+    const dispatch = useDispatch();
+
     const clearValues = () => {
         setFormValues(null);
     };
@@ -383,17 +387,19 @@ const VoltageLevelCreationDialog = ({
                 busbarConnections: busbarConnections,
                 isUpdate: editData ? true : false,
                 modificationUuid: editData ? editData.uuid : undefined,
-            }).catch((errorMessage) => {
-                console.error('while edit/create VL', errorMessage);
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'VoltageLevelCreationError',
-                        intlRef: intlRef,
-                    },
+            })
+                .then(() => dispatch(modificationCreationInProgress()))
+                .catch((errorMessage) => {
+                    console.error('while edit/create VL', errorMessage);
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'VoltageLevelCreationError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
