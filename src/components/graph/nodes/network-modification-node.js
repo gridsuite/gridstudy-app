@@ -12,11 +12,9 @@ import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import LockIcon from '@mui/icons-material/Lock';
-<<<<<<< Updated upstream
 import clsx from 'clsx';
-=======
 import Tooltip from '@mui/material/Tooltip';
->>>>>>> Stashed changes
+
 
 const useStyles = makeStyles((theme) => ({
     networkModificationVisualized: {
@@ -62,10 +60,6 @@ const useStyles = makeStyles((theme) => ({
     buildStatusInvalid: {
         color: 'indianred',
     },
-<<<<<<< Updated upstream
-    margin: {
-        marginLeft: '10px',
-=======
     buildBannerOK: {
         display: 'flex',
         height: '100%',
@@ -92,7 +86,6 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         lineHeight: 'normal',
         marginLeft: 'auto',
->>>>>>> Stashed changes
     },
 }));
 
@@ -115,40 +108,6 @@ const NetworkModificationNode = (props) => {
                 style={{ background: '#555' }}
                 isConnectable={false}
             />
-<<<<<<< Updated upstream
-            <Button
-                variant="outlined"
-                className={
-                    props.selected
-                        ? classes.networkModificationSelected
-                        : classes.networkModification
-                }
-                disableElevation
-            >
-                {props.data.label}
-                {props.data.buildStatus === 'BUILDING' ? (
-                    <CircularProgress
-                        size={24}
-                        color="secondary"
-                        className={classes.margin}
-                    />
-                ) : props.id === workingNode?.id ? (
-                    <VisibilityIcon className={classes.margin} />
-                ) : (
-                    props.data.buildStatus !== 'NOT_BUILT' && (
-                        <BuildIcon
-                            className={clsx(
-                                props.data.buildStatus === 'BUILT'
-                                    ? classes.buildStatusOk
-                                    : classes.buildStatusInvalid,
-                                classes.margin
-                            )}
-                        />
-                    )
-                )}
-                {props.data.readOnly && <LockIcon className={classes.margin} />}
-            </Button>
-=======
             <Tooltip title={props.data.label} placement="top">
                 <Button
                     className={
@@ -195,7 +154,6 @@ const NetworkModificationNode = (props) => {
                 {(props.data.readOnly && <LockIcon />) ||
                     (props.id === workingNode?.id && <VisibilityIcon />)}
             </div>
->>>>>>> Stashed changes
         </>
     );
 };
