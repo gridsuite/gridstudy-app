@@ -35,7 +35,7 @@ import {
 import { gridItem, GridSection } from './dialogUtils';
 import { divideLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from '@mui/icons-material/ControlPoint';
 import TextFieldWithAdornment from '../util/text-field-with-adornment';
 import VoltageLevelCreationDialog from './voltage-level-creation-dialog';
 import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
@@ -591,21 +591,20 @@ const LineSplitWithVoltageLevelDialog = ({
                         )}
                     </Grid>
                     <GridSection title="VoltageLevelToSplitAt" />
-                    <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField, 5)}
+                    <Grid container columnSpacing={2}>
+                        {gridItem(voltageLevelIdField, 6)}
+                        {gridItem(bbsOrNodeIdField, 6)}
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
                                 startIcon={<AddIcon />}
-                                variant="outlined"
                             >
                                 <Typography align="left">
                                     <FormattedMessage id="NewVoltageLevel" />
                                 </Typography>
                             </Button>,
-                            2
+                            6
                         )}
-                        {gridItem(bbsOrNodeIdField, 5)}
                     </Grid>
                     <GridSection title="Line1" />
                     <Grid container spacing={2}>
