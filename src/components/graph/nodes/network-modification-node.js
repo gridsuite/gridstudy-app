@@ -11,12 +11,16 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import BuildIcon from '@mui/icons-material/Build';
 import LockIcon from '@mui/icons-material/Lock';
+<<<<<<< Updated upstream
 import clsx from 'clsx';
+=======
+import Tooltip from '@mui/material/Tooltip';
+>>>>>>> Stashed changes
 
 const useStyles = makeStyles((theme) => ({
-    networkModificationSelected: {
+    networkModificationVisualized: {
+        position: 'relative',
         variant: 'contained',
         background: theme.palette.primary.main,
         textTransform: 'none',
@@ -24,15 +28,33 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             background: theme.palette.primary.main,
         },
+        overflow: 'hidden',
     },
-    networkModification: {
-        variant: 'outlined',
-        background: theme.palette.primary.light,
+    networkModificationSelected: {
+        position: 'relative',
+        variant: 'contained',
+        background: '#fff',
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
             background: theme.palette.primary.main,
         },
+        overflow: 'hidden',
+    },
+    networkModification: {
+        background: '#c5c8d1',
+        textTransform: 'none',
+        color: theme.palette.primary.contrastText,
+        '&:hover': {
+            background: theme.palette.primary.main,
+        },
+        overflow: 'hidden',
+    },
+    outOfBoundIcons: {
+        color: '#fff',
+        position: 'absolute',
+        right: '-30px',
+        top: '18px',
     },
     buildStatusOk: {
         color: 'green',
@@ -40,8 +62,37 @@ const useStyles = makeStyles((theme) => ({
     buildStatusInvalid: {
         color: 'indianred',
     },
+<<<<<<< Updated upstream
     margin: {
         marginLeft: '10px',
+=======
+    buildBannerOK: {
+        display: 'flex',
+        height: '100%',
+        width: '15%',
+        position: 'absolute',
+        top: '0px',
+        left: '0px',
+        background: '#74a358',
+    },
+    buildBannerInvalid: {
+        display: 'flex',
+        height: '100%',
+        width: '15%',
+        position: 'absolute',
+        top: '0px',
+        left: '0px',
+        background: '#9196a1',
+    },
+    labelWrapper: {
+        display: 'flex',
+        width: '85%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        lineHeight: 'normal',
+        marginLeft: 'auto',
+>>>>>>> Stashed changes
     },
 }));
 
@@ -64,6 +115,7 @@ const NetworkModificationNode = (props) => {
                 style={{ background: '#555' }}
                 isConnectable={false}
             />
+<<<<<<< Updated upstream
             <Button
                 variant="outlined"
                 className={
@@ -96,6 +148,54 @@ const NetworkModificationNode = (props) => {
                 )}
                 {props.data.readOnly && <LockIcon className={classes.margin} />}
             </Button>
+=======
+            <Tooltip title={props.data.label} placement="top">
+                <Button
+                    className={
+                        props.id === workingNode?.id
+                            ? classes.networkModificationVisualized
+                            : props.selected
+                                ? classes.networkModificationSelected
+                                : classes.networkModification
+                    }
+                >
+                    <div
+                        className={
+                            props.data.buildStatus === 'BUILT'
+                                ? classes.buildBannerOK
+                                : classes.buildBannerInvalid
+                        }
+                    >
+                        {props.data.buildStatus === 'BUILDING' && (
+                            <CircularProgress
+                                size={20}
+                                color="primary"
+                                style={{ margin: 'auto' }}
+                            />
+                        )}
+                    </div>
+
+                    <div className={classes.labelWrapper}>
+                        <span
+                            style={{
+                                overflow: 'hidden',
+                                display: '-webkit-box',
+                                WebkitLineClamp: '3',
+                                //Usage of a deprecated property because there's no satisfying alternative yet : replace with line-clamp in the future 
+                                WebkitBoxOrient: 'vertical',
+                            }}
+                        >
+                            {props.data.label}
+                        </span>
+                    </div>
+                </Button>
+            </Tooltip>
+
+            <div className={classes.outOfBoundIcons}>
+                {(props.data.readOnly && <LockIcon />) ||
+                    (props.id === workingNode?.id && <VisibilityIcon />)}
+            </div>
+>>>>>>> Stashed changes
         </>
     );
 };

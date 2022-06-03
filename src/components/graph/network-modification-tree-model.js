@@ -148,4 +148,14 @@ export default class NetworkModificationTreeModel {
         );
         return newTreeModel;
     }
+
+    setCaseName(newCaseName) {
+        if (
+            this.treeElements.length > 0 &&
+            this.treeElements[0].data &&
+            newCaseName
+        ) {
+            this.treeElements[0].data.caseName = newCaseName;
+        }
+    }
 }

@@ -7,18 +7,21 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import LockIcon from '@mui/icons-material/Lock';
+import PhotoIcon from '@mui/icons-material/Photo';
 import React from 'react';
 import { Handle } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
+import Tooltip from '@mui/material/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
     rootSelected: {
         background: 'lightseagreen',
+        borderRadius: '30%',
     },
     root: {
         background: 'darkseagreen',
+        borderRadius: '30%',
     },
 }));
 
@@ -32,27 +35,32 @@ const RootNode = (props) => {
             <Handle
                 type="source"
                 position="bottom"
-                style={{ background: '#555' }}
+                style={{
+                    background: '#555',
+                    zIndex: '1',
+                }}
                 isConnectable={false}
             />
-            <Handle
-                type="target"
-                position="top"
-                style={{ background: '#555' }}
-                isConnectable={false}
-            />
-            <IconButton
-                variant="outlined"
-                className={props.selected ? classes.rootSelected : classes.root}
+            <Tooltip
+                title={props.data.caseName}
+                placement="top"
+                disableHoverListener={!props.data.caseName}
             >
-                {props.data.buildStatus === 'BUILDING' ? (
-                    <CircularProgress size={24} />
-                ) : props.id === workingNode?.id ? (
-                    <VisibilityIcon />
-                ) : (
-                    props.data.readOnly && <LockIcon />
-                )}
-            </IconButton>
+                <IconButton
+                    variant="outlined"
+                    className={
+                        props.selected ? classes.rootSelected : classes.root
+                    }
+                >
+                    {props.data.buildStatus === 'BUILDING' ? (
+                        <CircularProgress size={24} />
+                    ) : props.id === workingNode?.id ? (
+                        <VisibilityIcon />
+                    ) : (
+                        props.data.readOnly && <PhotoIcon />
+                    )}
+                </IconButton>
+            </Tooltip>
         </>
     );
 };

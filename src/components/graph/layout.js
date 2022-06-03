@@ -8,7 +8,7 @@
 import dagre from 'dagre';
 import { isNode } from 'react-flow-renderer';
 
-const nodeWidth = 150;
+const nodeWidth = 200;
 const nodeHeight = 50;
 
 export function getLayoutedElements(elements) {
@@ -32,10 +32,17 @@ export function getLayoutedElements(elements) {
             el.targetPosition = 'top';
             el.sourcePosition = 'bottom';
 
-            el.position = {
-                x: nodeWithPosition.x - nodeWidth / 2,
-                y: nodeWithPosition.y - nodeHeight / 2,
-            };
+            if (el.type === 'ROOT') {
+                el.position = {
+                    x: nodeWithPosition.x - nodeWidth / 2,
+                    y: nodeWithPosition.y - nodeHeight / 2,
+                };
+            } else {
+                el.position = {
+                    x: nodeWithPosition.x - nodeWidth / 2,
+                    y: nodeWithPosition.y - nodeHeight / 2,
+                };
+            }
         }
 
         return el;

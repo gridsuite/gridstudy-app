@@ -24,6 +24,7 @@ import {
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
+    fetchCaseInfos,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -276,6 +277,14 @@ export function StudyContainer({ view, onChangeTab }) {
                     new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
+
+                fetchCaseInfos(studyUuid)
+                    .then((res) => {
+                        if (res) {
+                            networkModificationTreeModel.setCaseName(res);
+                        }
+                    })
+                    .catch((err) => console.log(err.message));
 
                 let firstBuiltNode = getFirstNodeOfType(
                     tree,
