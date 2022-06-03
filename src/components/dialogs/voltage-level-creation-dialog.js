@@ -111,7 +111,7 @@ const SWITCH_TYPE = [
     { id: 'DISCONNECTOR', label: 'Disconnector' },
 ];
 
-const getId = (e) => e?.id || e;
+const getId = (e) => e?.id || '';
 
 const getBusbarSectionById = (busbars, id) => {
     if (id) {
@@ -139,7 +139,7 @@ const BusBarConnexion = ({
             defaultValue && defaultValue.fromBBS
                 ? getBusbarSectionById(fieldProps, defaultValue?.fromBBS)
                 : '',
-        values: fieldProps,
+        values: fieldProps.filter((val) => val?.id !== ''),
         getLabel: getId,
         errorMsg: errors?.sjbFrom,
         allowNewValue: true,
@@ -155,7 +155,7 @@ const BusBarConnexion = ({
             defaultValue && defaultValue.toBBS
                 ? getBusbarSectionById(fieldProps, defaultValue?.toBBS)
                 : '',
-        values: fieldProps,
+        values: fieldProps.filter((val) => val?.id !== ''),
         getLabel: getId,
         errorMsg: errors?.sjbTo,
         allowNewValue: true,
