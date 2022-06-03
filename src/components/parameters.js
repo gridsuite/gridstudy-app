@@ -11,22 +11,29 @@ import { FormattedMessage } from 'react-intl';
 
 import { useSelector } from 'react-redux';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Switch from '@mui/material/Switch';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Typography from '@mui/material/Typography';
-import Slider from '@mui/material/Slider';
+import {
+    Chip,
+    Grid,
+    MenuItem,
+    Autocomplete,
+    Box,
+    Button,
+    Container,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    TextField,
+    Select,
+    Switch,
+    Tab,
+    Tabs,
+    Typography,
+    Slider,
+} from '@mui/material';
+import SettingsIcon from '@mui/icons-material/Settings';
+import CheckIcon from '@mui/icons-material/Check';
 import { useSnackbar } from 'notistack';
 
 import { LineFlowMode } from './network/line-layer';
@@ -64,11 +71,18 @@ const useStyles = makeStyles((theme) => ({
     grid: {
         padding: theme.spacing(2),
     },
+    minWidthMedium: {
+        minWidth: theme.spacing(16),
+    },
     controlItem: {
         justifyContent: 'flex-end',
     },
     button: {
         marginBottom: '30px',
+    },
+    advancedParameterButton: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(1),
     },
 }));
 
@@ -125,6 +139,19 @@ const LF_PROVIDER_VALUES = {
 const Parameters = ({ showParameters, hideParameters, user }) => {
     const classes = useStyles();
 
+    let countriesList;
+    try {
+        countriesList = require('localized-countries')(
+            require('localized-countries/data/' +
+                navigator.language.substr(0, 2))
+        );
+    } catch (error) {
+        // fallback to english if no localised list found
+        countriesList = require('localized-countries')(
+            require('localized-countries/data/en')
+        );
+    }
+
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
@@ -168,6 +195,8 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
     const [lfProvider, setLfProvider] = useState(null);
 
     const [lfParams, setLfParams] = useState(null);
+
+    const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
     const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] =
         useState(
@@ -319,6 +348,27 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         );
     }
 
+    function MakeAdvancedParameterButton(prop, label, callback) {
+        return (
+            <>
+                <Grid item xs={12} className={classes.advancedParameterButton}>
+                    <Button
+                        variant="outlined"
+                        startIcon={<SettingsIcon />}
+                        endIcon={
+                            prop ? (
+                                <CheckIcon style={{ color: 'green' }} />
+                            ) : undefined
+                        }
+                        onClick={callback}
+                    >
+                        <FormattedMessage id={label} />
+                    </Button>
+                </Grid>
+            </>
+        );
+    }
+
     function MakeDropDown(prop, label, values, callback) {
         return (
             <>
@@ -337,6 +387,48 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                             </MenuItem>
                         ))}
                     </Select>
+                </Grid>
+            </>
+        );
+    }
+
+    function MakeCountrySelector(value, label, callback) {
+        return (
+            <>
+                <Grid item xs={6}>
+                    <Typography component="span" variant="body1">
+                        <Box fontWeight="fontWeightBold" m={1}>
+                            <FormattedMessage id={label} />
+                        </Box>
+                    </Typography>
+                </Grid>
+                <Grid item container xs={6} className={classes.controlItem}>
+                    <Autocomplete
+                        value={value}
+                        multiple="true"
+                        onChange={(event, newValues) => callback(newValues)}
+                        options={Object.keys(countriesList.object())}
+                        getOptionLabel={(code) => countriesList.get(code)}
+                        renderInput={(props) => (
+                            <TextField
+                                label={
+                                    <FormattedMessage id="descLfCountries" />
+                                }
+                                className={classes.minWidthMedium}
+                                {...props}
+                            />
+                        )}
+                        renderTags={(val, getTagsProps) =>
+                            val.map((code, index) => (
+                                <Chip
+                                    id={'chip_' + code}
+                                    size={'small'}
+                                    label={countriesList.get(code)}
+                                    {...getTagsProps({ index })}
+                                />
+                            ))
+                        }
+                    />
                 </Grid>
             </>
         );
@@ -611,6 +703,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
     const TYPES = {
         enum: 'Enum',
         bool: 'Bool',
+        countries: 'Countries',
     };
 
     function makeComponentFor(defParam, key, lfParams, setter) {
@@ -624,6 +717,14 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 defParam.description,
                 defParam.values,
                 (ev) => setter({ ...lfParams, [key]: ev.target.value })
+            );
+        } else if (defParam.type === TYPES.countries) {
+            return MakeCountrySelector(
+                lfParams[key],
+                defParam.description,
+                (newValues) => {
+                    setter({ ...lfParams, [key]: [...newValues] });
+                }
             );
         }
     }
@@ -718,12 +819,65 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     )}
                 </Grid>
                 <MakeLineSeparator />
-                <LoadFlowParameters />
+                <BasicLoadFlowParameters />
+                <AdvancedLoadFlowParameters />
+                {MakeButton(resetLfParameters, 'resetToDefault')}
             </Grid>
         );
     };
 
-    const LoadFlowParameters = () => {
+    const BasicLoadFlowParameters = () => {
+        const defParams = {
+            transformerVoltageControlOn: {
+                type: TYPES.bool,
+                description: 'descLfTransformerVoltageControlOn',
+            },
+            phaseShifterRegulationOn: {
+                type: TYPES.bool,
+                description: 'descLfPhaseShifterRegulationOn',
+            },
+            dc: {
+                type: TYPES.bool,
+                description: 'descLfDC',
+            },
+            balanceType: {
+                type: TYPES.enum,
+                description: 'descLfBalanceType',
+                values: {
+                    PROPORTIONAL_TO_GENERATION_P: 'descLfBalanceTypeGenP',
+                    PROPORTIONAL_TO_GENERATION_P_MAX:
+                        'descLfBalanceTypeGenPMax',
+                    PROPORTIONAL_TO_LOAD: 'descLfBalanceTypeLoad',
+                    PROPORTIONAL_TO_CONFORM_LOAD:
+                        'descLfBalanceTypeConformLoad',
+                },
+            },
+            countriesToBalance: {
+                type: TYPES.countries,
+                description: 'descLfCountriesToBalance',
+            },
+            connectedComponentMode: {
+                type: TYPES.enum,
+                description: 'descLfConnectedComponentMode',
+                values: {
+                    MAIN: 'descLfConnectedComponentModeMain',
+                    ALL: 'descLfConnectedComponentModeAll',
+                },
+            },
+            hvdcAcEmulation: {
+                type: TYPES.bool,
+                description: 'descLfHvdcAcEmulation',
+            },
+        };
+
+        return (
+            lfParams && (
+                <>{makeComponentsFor(defParams, lfParams, commitLFParameter)}</>
+            )
+        );
+    };
+
+    const AdvancedLoadFlowParameters = () => {
         const defParams = {
             voltageInitMode: {
                 type: TYPES.enum,
@@ -734,25 +888,13 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     DC_VALUES: 'descLfDcValues',
                 },
             },
-            transformerVoltageControlOn: {
-                type: TYPES.bool,
-                description: 'descLfTransformerVoltageControlOn',
-            },
             noGeneratorReactiveLimits: {
                 type: TYPES.bool,
                 description: 'descLfNoGeneratorReactiveLimits',
             },
-            phaseShifterRegulationOn: {
-                type: TYPES.bool,
-                description: 'descLfPhaseShifterRegulationOn',
-            },
             twtSplitShuntAdmittance: {
                 type: TYPES.bool,
                 description: 'descLfTwtSplitShuntAdmittance',
-            },
-            simulShunt: {
-                type: TYPES.bool,
-                description: 'descLfSimulShunt',
             },
             readSlackBus: {
                 type: TYPES.bool,
@@ -762,13 +904,34 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                 type: TYPES.bool,
                 description: 'descLfWriteSlackBus',
             },
+            distributedSlack: {
+                type: TYPES.bool,
+                description: 'descLfDistributedSlack',
+            },
+            shuntCompensatorVoltageControlOn: {
+                type: TYPES.bool,
+                description: 'descLfShuntCompensatorVoltageControlOn',
+            },
+            dcUseTransformerRatio: {
+                type: TYPES.bool,
+                description: 'descLfDcUseTransformerRatio',
+            },
         };
 
         return (
             lfParams && (
                 <>
-                    {makeComponentsFor(defParams, lfParams, commitLFParameter)}
-                    {MakeButton(resetLfParameters, 'resetToDefault')}
+                    {MakeAdvancedParameterButton(
+                        showAdvancedLfParams,
+                        'showAdvancedParameters',
+                        () => setShowAdvancedLfParams(!showAdvancedLfParams)
+                    )}
+                    {showAdvancedLfParams &&
+                        makeComponentsFor(
+                            defParams,
+                            lfParams,
+                            commitLFParameter
+                        )}
                 </>
             )
         );
