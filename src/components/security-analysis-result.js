@@ -31,8 +31,8 @@ const useStyles = makeStyles((theme) => ({
     },
     nmkResultSelect: {
         position: 'absolute',
-        top: 10,
-        right: 10,
+        right: theme.spacing(2),
+        top: theme.spacing(1),
     },
 }));
 
@@ -462,6 +462,8 @@ const SecurityAnalysisResult = ({ onClickNmKConstraint, result }) => {
                                 labelId="nmk-type-result-label"
                                 value={nmkTypeResult}
                                 onChange={switchNmkTypeResult}
+                                autoWidth={true}
+                                size="small"
                             >
                                 <MenuItem
                                     value={
