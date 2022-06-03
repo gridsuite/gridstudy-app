@@ -80,9 +80,9 @@ const NetworkModificationTree = ({
         if (node.type === 'ROOT') {
             return 'rgba(0, 0, 0, 0.0)';
         } else {
-            if(node.id === workingNode?.id) {
+            if (node.id === workingNode?.id) {
                 return '#4287f5';
-            } 
+            }
             switch (node.data.buildStatus) {
                 case 'BUILT':
                     return '#70d136';

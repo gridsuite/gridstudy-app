@@ -13,9 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
-import clsx from 'clsx';
 import Tooltip from '@mui/material/Tooltip';
-
 
 const useStyles = makeStyles((theme) => ({
     networkModificationVisualized: {
@@ -114,13 +112,13 @@ const NetworkModificationNode = (props) => {
                                 : classes.buildBannerInvalid
                         }
                     >
-                        {props.data.buildStatus === 'BUILDING' && (
+                        {(props.data.buildStatus === 'BUILDING' && (
                             <CircularProgress
                                 size={20}
                                 color="primary"
                                 style={{ margin: 'auto' }}
                             />
-                        ) ||
+                        )) ||
                             (props.data.buildStatus === 'NOT_BUILT' && (
                                 <VisibilityOffIcon style={{ margin: 'auto' }} />
                             ))}
@@ -132,7 +130,7 @@ const NetworkModificationNode = (props) => {
                                 overflow: 'hidden',
                                 display: '-webkit-box',
                                 WebkitLineClamp: '3',
-                                //Usage of a deprecated property because there's no satisfying alternative yet : replace with line-clamp in the future 
+                                //Usage of a deprecated property because there's no satisfying alternative yet : replace with line-clamp in the future
                                 WebkitBoxOrient: 'vertical',
                             }}
                         >
