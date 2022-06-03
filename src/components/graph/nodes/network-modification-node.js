@@ -49,6 +49,8 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     outOfBoundIcons: {
+        display: 'flex',
+        flexDirection: 'column',
         color: '#fff',
         position: 'absolute',
         right: '-30px',
@@ -149,8 +151,8 @@ const NetworkModificationNode = (props) => {
             </Tooltip>
 
             <div className={classes.outOfBoundIcons}>
-                {(props.data.readOnly && <LockIcon />) ||
-                    (props.id === workingNode?.id && <VisibilityIcon />)}
+                {props.data.readOnly && <LockIcon />}
+                {props.id === workingNode?.id && <VisibilityIcon />}
             </div>
         </>
     );
