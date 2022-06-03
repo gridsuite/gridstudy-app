@@ -433,5 +433,7 @@
     "RegulatingValue3" : "Current (A) or flow set point (MW) 3",
     "LoadTapChanging3Capabilities" : "Ratio on-load 3",
     "RegulatingRatio3" : "Ratio regulating 3",
-    "TargetVPoint3" : "Voltage set point (KV) 3"
+    "TargetVPoint3" : "Voltage set point (KV) 3",
+    "VoltageSetpointKV" : "Voltage set point (KV)",
+    "ReactivePowerSetpointMVAR" : "Reactive power set point (MVAR)"
 }
