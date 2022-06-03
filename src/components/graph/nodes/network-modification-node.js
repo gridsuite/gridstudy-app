@@ -111,11 +111,9 @@ const NetworkModificationNode = (props) => {
             <Tooltip title={props.data.label} placement="top">
                 <Button
                     className={
-                        props.id === workingNode?.id
+                        props.selected
                             ? classes.networkModificationVisualized
-                            : props.selected
-                                ? classes.networkModificationSelected
-                                : classes.networkModification
+                            : classes.networkModification
                     }
                 >
                     <div
