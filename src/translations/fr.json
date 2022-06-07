@@ -406,6 +406,7 @@
     "AttachmentPointId" : "ID point de piquage",
     "AttachmentPointName" : "Nom point de piquage",
     "AttachedLine" : "Liaison de piquage",
+    "AttachedLineId" : "ID liaison de piquage",
     "LineDivisionError": "Erreur lors de la création d'une coupure",
     "LineAttachmentError" : "Erreur lors de la création d'un piquage",
 

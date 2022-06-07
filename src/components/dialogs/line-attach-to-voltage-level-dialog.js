@@ -227,6 +227,15 @@ const LineAttachToVoltageLevelDialog = ({
         return lineData;
     }, [attachmentLine, formValues]);
 
+    const [, lineToIdField] = useTextValue({
+        id: 'attachedLineId',
+        label: 'AttachedLineId',
+        inputForm: inputForm,
+        validation: { isFieldRequired: true },
+        defaultValue: lineToEdit?.equipmentId,
+        formProps: { disabled: true },
+    });
+
     const [attachmentPointId, attachmentPointIdField] = useTextValue({
         id: 'attachmentPointId',
         label: 'AttachmentPointId',
@@ -506,6 +515,7 @@ const LineAttachToVoltageLevelDialog = ({
                     </Grid>
                     <GridSection title="AttachedLine" />
                     <Grid container spacing={2}>
+                        {gridItem(lineToIdField, 4)}
                         {gridItem(
                             <Button
                                 onClick={openLineDialog}
@@ -516,7 +526,7 @@ const LineAttachToVoltageLevelDialog = ({
                                     <FormattedMessage id="AttachedLine" />
                                 </Typography>
                             </Button>,
-                            6
+                            4
                         )}
                     </Grid>
                     <GridSection title="Line1" />

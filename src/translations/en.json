@@ -405,6 +405,7 @@
     "AttachmentPointId" : "Attachment point ID",
     "AttachmentPointName" : "Attachment point name",
     "AttachedLine" : "Attached line",
+    "AttachedLineId" : "Attached line ID",
     "LineDivisionError": "Error while puting a voltage level amidst a line",
     "LineAttachmentError" : "Error while attaching a voltage level to a line",
 
