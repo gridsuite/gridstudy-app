@@ -149,19 +149,12 @@ export default class NetworkModificationTreeModel {
         return newTreeModel;
     }
 
-
     isOneNodeBuilding() {
-        console.info('isOneNodeBuilding')
-        console.info('this.treeElements', this.treeElements)
-        this.treeElements.forEach(element => {
-            console.info('element?.data?.buildStatus', element?.data?.buildStatus)
-            console.info('DADADA')
-            if (element?.data?.buildStatus === 'BUILDING') {
-                console.info('true')
+        for (let i = 0; i < this.treeElements.length; i++) {
+            if (this.treeElements[i]?.data?.buildStatus === 'BUILDING') {
                 return true;
             }
-            console.info('false')
-            return false;
-        })
+        }
+        return false;
     }
 }
