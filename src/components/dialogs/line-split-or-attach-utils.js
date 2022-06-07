@@ -1,4 +1,11 @@
-// functiuons for useComplementaryPercentage
+/**
+ * Copyright (c) 2022, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+// functions for useComplementaryPercentage
 
 import { Slider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -68,7 +75,7 @@ export const useComplementaryPercentage = ({
     function initValue(defaultValue) {
         return typeof defaultValue === 'number'
             ? defaultValue.toFixed(maxDecimals)
-            : '50';
+            : Number(50).toFixed(maxDecimals);
     }
 
     const [mostlyFloatStrValue, setMostlyFloatStrValue] = useState(
@@ -147,6 +154,7 @@ export const useComplementaryPercentage = ({
                 <Grid item xs={3} align={'end'}>
                     <TextFieldWithAdornment
                         size="small"
+                        variant="standard"
                         adornmentText="%"
                         adornmentPosition="end"
                         fullWidth
