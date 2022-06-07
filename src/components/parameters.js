@@ -348,7 +348,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
         );
     }
 
-    function MakeAdvancedParameterButton(prop, label, callback) {
+    function MakeAdvancedParameterButton(showOpenIcon, label, callback) {
         return (
             <>
                 <Grid item xs={12} className={classes.advancedParameterButton}>
@@ -356,7 +356,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         variant="outlined"
                         startIcon={<SettingsIcon />}
                         endIcon={
-                            prop ? (
+                            showOpenIcon ? (
                                 <CheckIcon style={{ color: 'green' }} />
                             ) : undefined
                         }
