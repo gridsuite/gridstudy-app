@@ -61,6 +61,11 @@ const useStyles = makeStyles((theme) => ({
             fill: theme.palette.text.primary,
             'font-family': theme.typography.fontFamily,
         },
+
+        '&  .nad-branch-edges circle': {
+            fill: theme.palette.background.default,
+        },
+
         overflow: 'hidden',
     },
     close: {
