@@ -11,7 +11,10 @@ export function validateField(value, toValidate) {
     }
 
     if (toValidate.isFieldRequired) {
-        if (!value) {
+        if (
+            (!toValidate.isFieldNumeric && !value) ||
+            (toValidate.isFieldNumeric && value === '')
+        ) {
             return makeErrorRecord('FieldIsRequired');
         }
     }
