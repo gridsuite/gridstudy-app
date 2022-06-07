@@ -40,7 +40,7 @@ import { useSnackMessage } from '../../../utils/messages';
 
 import { useIntl } from 'react-intl';
 
-import { NetworkAreaDiagramViewer } from 'powsybl-diagram-viewer';
+import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
 
 const loadingWidth = 150;
 const maxWidth = 1200;
