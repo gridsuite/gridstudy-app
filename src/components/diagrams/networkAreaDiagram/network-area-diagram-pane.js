@@ -15,6 +15,7 @@ export function NetworkAreaDiagramPane({
     studyUuid,
     network,
     workingNode,
+    loadFlowStatus,
     onClose,
 }) {
     const [depth, setDepth] = useState(0);
@@ -72,6 +73,7 @@ export function NetworkAreaDiagramPane({
                         depth={depth}
                         setDepth={setDepth}
                         studyUuid={studyUuid}
+                        loadFlowStatus={loadFlowStatus}
                     />
                 </div>
             )}
@@ -81,6 +83,7 @@ export function NetworkAreaDiagramPane({
 
 NetworkAreaDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
+    loadFlowStatus: PropTypes.any,
     network: PropTypes.object,
     workingNode: PropTypes.object,
     onClose: PropTypes.func,

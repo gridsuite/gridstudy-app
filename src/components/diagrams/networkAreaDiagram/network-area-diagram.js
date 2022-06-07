@@ -41,6 +41,9 @@ import { useSnackMessage } from '../../../utils/messages';
 import { useIntl } from 'react-intl';
 
 import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
+import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
+import clsx from 'clsx';
+import { RunningStatus } from '../../util/running-status';
 
 const loadingWidth = 150;
 const maxWidth = 1200;
@@ -67,6 +70,11 @@ const useStyles = makeStyles((theme) => ({
         },
 
         overflow: 'hidden',
+    },
+    divInvalid: {
+        '& .nad-edge-infos': {
+            opacity: INVALID_LOADFLOW_OPACITY,
+        },
     },
     close: {
         padding: 0,
@@ -164,6 +172,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         onClose,
         depth,
         setDepth,
+        loadFlowStatus,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -379,7 +388,16 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                         </Box>
                     )}
                 </Box>
-                {<div id="nad-svg" ref={svgRef} className={classes.divNad} />}
+                {
+                    <div
+                        id="nad-svg"
+                        ref={svgRef}
+                        className={clsx(classes.divNad, {
+                            [classes.divInvalid]:
+                                loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                    />
+                }
                 {!loadingState && (
                     <>
                         <Typography className={classes.depth}>
@@ -442,6 +460,7 @@ NetworkAreaDiagram.propTypes = {
     workingNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
+    loadFlowStatus: PropTypes.any,
 };
 
 export default NetworkAreaDiagram;
