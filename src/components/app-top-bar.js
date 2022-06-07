@@ -14,12 +14,13 @@ import {
     EquipmentItem,
     TagRenderer,
     TopBar,
+    OverflowableText,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import Tabs from '@mui/material/Tabs';
 import { StudyView } from './study-pane';
-import { Badge } from '@mui/material';
+import { Badge, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
 import Parameters, { useParameterState } from './parameters';
@@ -40,9 +41,14 @@ import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     tabs: {
-        marginLeft: 18,
+        flexGrow: 1,
+    },
+    label: {
+        color: theme.palette.primary.main,
+        margin: theme.spacing(1.5),
+        fontWeight: 'bold',
     },
 }));
 
@@ -151,6 +157,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
+
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
             fetchEquipmentsInfos(
@@ -245,6 +252,27 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             >
+                {/* Add current Node name between Logo and Tabs */}
+                <Box
+                    width="15%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                >
+                    {workingNode && (
+                        <OverflowableText
+                            className={classes.label}
+                            text={
+                                workingNode.type === 'ROOT' ||
+                                workingNode.name === 'Root'
+                                    ? intl.formatMessage({
+                                          id: 'root',
+                                      })
+                                    : workingNode.name
+                            }
+                        />
+                    )}
+                </Box>
                 {studyUuid && (
                     <Tabs
                         value={tabIndex}

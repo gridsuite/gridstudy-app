@@ -162,8 +162,10 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(0.75),
         color: theme.palette.action.disabled,
     },
-    activeSortArrow: {
+    clickable: {
         cursor: 'pointer',
+    },
+    activeSortArrow: {
         '& .arrow': {
             fontSize: '1.1em',
             display: 'block',
@@ -174,7 +176,6 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     inactiveSortArrow: {
-        cursor: 'pointer',
         '& .arrow': {
             fontSize: '1.1em',
             display: 'block',
@@ -206,6 +207,13 @@ const useStyles = makeStyles((theme) => ({
     },
     valueInvalid: {
         opacity: INVALID_LOADFLOW_OPACITY,
+    },
+    checkbox: {
+        margin: '-10%',
+        cursor: 'initial',
+    },
+    disabledLabel: {
+        color: theme.palette.text.disabled,
     },
 }));
 
@@ -375,22 +383,47 @@ const NetworkTable = (props) => {
         return <LockIcon className={classes.tableLock} />;
     }, [classes.tableLock]);
 
+    const isModifyingRow = useCallback(() => {
+        return lineEdit?.id !== undefined;
+    }, [lineEdit]);
+
+    const isActiveSortArrow = (columnSort, dataKey) => {
+        return columnSort && columnSort.key === dataKey;
+    };
+
     const sortIconClassStyle = useCallback(
         (columnSort, dataKey) => {
-            if (columnSort && columnSort.key === dataKey) {
-                return classes.activeSortArrow;
-            }
-            return classes.inactiveSortArrow;
+            let isSortArrowActive = isActiveSortArrow(columnSort, dataKey);
+            return clsx({
+                [classes.activeSortArrow]: isSortArrowActive,
+                [classes.inactiveSortArrow]: !isSortArrowActive,
+                [classes.clickable]: !isModifyingRow(),
+            });
         },
-        [classes.activeSortArrow, classes.inactiveSortArrow]
+        [
+            classes.activeSortArrow,
+            classes.inactiveSortArrow,
+            classes.clickable,
+            isModifyingRow,
+        ]
     );
 
-    const renderSortArrowIcon = (columnSort, dataKey) => {
-        if (columnSort && columnSort.key === dataKey && columnSort.reverse) {
-            return <ArrowUpwardIcon className={'arrow'} />;
-        }
-        return <ArrowDownwardIcon className={'arrow'} />;
-    };
+    const renderSortArrowIcon = useCallback(
+        (columnSort, dataKey) => {
+            if (!isActiveSortArrow(columnSort, dataKey) && isModifyingRow()) {
+                return null;
+            }
+            if (
+                columnSort &&
+                columnSort.key === dataKey &&
+                columnSort.reverse
+            ) {
+                return <ArrowUpwardIcon className={'arrow'} />;
+            }
+            return <ArrowDownwardIcon className={'arrow'} />;
+        },
+        [isModifyingRow]
+    );
 
     const renderColumnConfigLockIcon = (value) => {
         if (selectedColumnsNames.has(value)) {
@@ -410,6 +443,9 @@ const NetworkTable = (props) => {
 
     const setSort = useCallback(
         (columnDefinition) => {
+            if (isModifyingRow()) {
+                return;
+            }
             // 1 clic : ASC, 2 clic : DESC, 3 clic : no sort
             if (!columnSort || columnSort.key !== columnDefinition.dataKey) {
                 setColumnSort({
@@ -429,7 +465,7 @@ const NetworkTable = (props) => {
                 setColumnSort(undefined);
             }
         },
-        [columnSort]
+        [columnSort, isModifyingRow]
     );
 
     const headerCellRender = useCallback(
@@ -448,7 +484,7 @@ const NetworkTable = (props) => {
                         columnDefinition.dataKey
                     )}
                 >
-                    <div className={classes.tableHeader}>
+                    <div className={clsx(classes.tableHeader, {})}>
                         {columnDefinition.locked ? renderTableLockIcon() : ''}
                         {columnDefinition.label}
                     </div>
@@ -467,6 +503,7 @@ const NetworkTable = (props) => {
             renderTableLockIcon,
             setSort,
             sortIconClassStyle,
+            renderSortArrowIcon,
         ]
     );
 
@@ -546,10 +583,7 @@ const NetworkTable = (props) => {
                         <div className={classes.editCell}>
                             <IconButton
                                 size={'small'}
-                                disabled={
-                                    lineEdit !== undefined &&
-                                    lineEdit.id !== undefined
-                                }
+                                disabled={isModifyingRow()}
                                 onClick={() => {
                                     setLineEdit({
                                         oldValues: {},
@@ -576,6 +610,7 @@ const NetworkTable = (props) => {
             props.studyUuid,
             props.workingNode?.id,
             tabIndex,
+            isModifyingRow,
         ]
     );
 
@@ -607,6 +642,48 @@ const NetworkTable = (props) => {
             classes.valueInvalid,
             props.loadFlowStatus,
             formatCell,
+        ]
+    );
+
+    /**
+     * Used for boolean cell data value to render a checkbox
+     * @param {any} rowData data of row
+     * @param {any} columnDefinition definition of column
+     * @param {any} key key of element
+     * @param {any} style style for table cell element
+     * @returns {JSX.Element} Component template
+     */
+    const booleanCellRender = useCallback(
+        (rowData, columnDefinition, key, style) => {
+            const isChecked = formatCell(rowData, columnDefinition);
+            return (
+                <div key={key} style={style}>
+                    <div
+                        className={clsx(classes.tableCell, {
+                            [classes.valueInvalid]:
+                                columnDefinition.canBeInvalidated &&
+                                props.loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                    >
+                        {isChecked !== undefined && (
+                            <Checkbox
+                                color="default"
+                                className={classes.checkbox}
+                                checked={isChecked}
+                                // #TODO to change by using dynamic value when handling events (Ripple: its an annimation effect when hover/click on checkbox)
+                                disableRipple={true}
+                            />
+                        )}
+                    </div>
+                </div>
+            );
+        },
+        [
+            formatCell,
+            classes.tableCell,
+            classes.valueInvalid,
+            classes.checkbox,
+            props.loadFlowStatus,
         ]
     );
 
@@ -682,6 +759,8 @@ const NetworkTable = (props) => {
                 };
                 if (c.changeCmd !== undefined) {
                     column.cellRenderer = editableCellRender;
+                } else if (column.boolean) {
+                    column.cellRenderer = booleanCellRender;
                 } else {
                     column.cellRenderer = defaultCellRender;
                 }
@@ -969,6 +1048,7 @@ const NetworkTable = (props) => {
                     <Grid container>
                         <Grid item className={classes.containerInputSearch}>
                             <TextField
+                                disabled={isModifyingRow()}
                                 className={classes.textField}
                                 size="small"
                                 placeholder={
@@ -982,17 +1062,28 @@ const NetworkTable = (props) => {
                                     },
                                     startAdornment: (
                                         <InputAdornment position="start">
-                                            <SearchIcon />
+                                            <SearchIcon
+                                                color={
+                                                    isModifyingRow()
+                                                        ? 'disabled'
+                                                        : 'inherit'
+                                                }
+                                            />
                                         </InputAdornment>
                                     ),
                                 }}
                             />
                         </Grid>
                         <Grid item className={classes.selectColumns}>
-                            <span>
+                            <span
+                                className={clsx({
+                                    [classes.disabledLabel]: isModifyingRow(),
+                                })}
+                            >
                                 <FormattedMessage id="LabelSelectList" />
                             </span>
                             <IconButton
+                                disabled={isModifyingRow()}
                                 className={
                                     selectedColumnsNames.size === 0
                                         ? classes.blink
@@ -1014,7 +1105,11 @@ const NetworkTable = (props) => {
                             />
                         </Grid>
                         <Grid item className={classes.exportCsv}>
-                            <span>
+                            <span
+                                className={clsx({
+                                    [classes.disabledLabel]: isModifyingRow(),
+                                })}
+                            >
                                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
                             </span>
                             <span>
@@ -1022,8 +1117,12 @@ const NetworkTable = (props) => {
                                     datas={getCSVData}
                                     columns={getCSVColumnNames()}
                                     filename={getCSVFilename()}
+                                    disabled={isModifyingRow()}
                                 >
-                                    <IconButton aria-label="exportCSVButton">
+                                    <IconButton
+                                        disabled={isModifyingRow()}
+                                        aria-label="exportCSVButton"
+                                    >
                                         <GetAppIcon />
                                     </IconButton>
                                 </CsvDownloader>
