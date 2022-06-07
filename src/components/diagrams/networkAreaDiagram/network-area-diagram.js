@@ -347,7 +347,9 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
         sizeHeight = finalPaperHeight;
     }
 
-    return !svg.error ? (
+    return svg.error ? (
+        <></>
+    ) : (
         <Paper
             elevation={1}
             square={true}
@@ -432,8 +434,6 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
                 )}
             </Box>
         </Paper>
-    ) : (
-        <></>
     );
 });
 
