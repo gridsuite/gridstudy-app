@@ -1,12 +1,13 @@
 {
     "name": "gridstudy-app",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "homepage": ".",
     "private": true,
     "dependencies": {
         "@emotion/react": "^11.8.2",
         "@emotion/styled": "^11.8.1",
         "@gridsuite/commons-ui": "0.20.5",
+        "@powsybl/diagram-viewer": "0.1.1",
         "@mui/icons-material": "^5.5.1",
         "@mui/lab": "^5.0.0-alpha.75",
         "@mui/material": "^5.5.3",
@@ -20,7 +21,6 @@
         "dagre": "^0.8.5",
         "deck.gl": "^8.0.0",
         "geolib": "^3.2.1",
-        "powsybl-diagram-viewer": "file:../powsybl-diagram-viewer",
         "localized-countries": "^2.0.0",
         "lucene-escape-query": "^1.0.1",
         "mui-nested-menu": "^2.0.0",
