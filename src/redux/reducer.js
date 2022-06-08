@@ -48,6 +48,8 @@ import {
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
+    OPEN_NETWORK_AREA_DIAGRAM,
+    FULLSCREEN_NETWORK_AREA_DIAGRAM,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -289,6 +291,10 @@ export const reducer = createReducer(initialState, {
         state.fullScreen = action.fullScreen;
     },
 
+    [FULLSCREEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
+        state.fullScreenNad = action.fullScreenNad;
+    },
+
     [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {
         let newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
         action.displayedColumnsNamesParams.forEach((param) => {
@@ -322,6 +328,9 @@ export const reducer = createReducer(initialState, {
     },
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
+    },
+    [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
+        state.openNetworkAreaDiagram = action.openNetworkAreaDiagram;
     },
 });
 
