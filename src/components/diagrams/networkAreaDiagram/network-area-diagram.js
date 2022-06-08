@@ -65,6 +65,10 @@ const useStyles = makeStyles((theme) => ({
             'font-family': theme.typography.fontFamily,
         },
 
+        '&  .nad-edge-infos text': {
+            stroke: theme.palette.background.default,
+        },
+
         '&  .nad-branch-edges circle': {
             fill: theme.palette.background.default,
         },
