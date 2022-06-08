@@ -8,8 +8,8 @@ import { useIntl } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
-import Alert from '@mui/material/Alert';
 import { allowModificationsOnNode } from './graph/util/model-functions';
+import AlertInvalidNode from './util/alert-invalid-node';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -19,10 +19,6 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-    },
-    invalidNode: {
-        marginTop: '4px',
-        marginLeft: '50px',
     },
 }));
 
@@ -91,14 +87,7 @@ export const ResultViewTab = ({
                     />
                 </Tabs>
                 {!allowModificationsOnNode(workingNode, selectedNode) &&
-                    selectedNode?.type !== 'ROOT' && (
-                        <Alert
-                            className={classes.invalidNode}
-                            severity="warning"
-                        >
-                            {intl.formatMessage({ id: 'InvalidNode' })}
-                        </Alert>
-                    )}
+                    selectedNode?.type !== 'ROOT' && <AlertInvalidNode />}
             </div>
             {tabIndex === 0 && renderLoadFlowResult()}
             {tabIndex === 1 && renderSecurityAnalysisResult()}

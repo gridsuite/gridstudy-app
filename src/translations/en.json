@@ -261,7 +261,6 @@
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
     "createNetworkModificationNode": "Create a node in a new branch",
-    "createModelNode": "Create a model node",
     "removeNode": "Remove node",
     "exportCaseOnNode": "Export case",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
@@ -397,10 +396,8 @@
     "EquipmentCopyFailed404": "Equipment copy failed: the equipment was not found",
     "EquipmentCopyFailed": "Equipment copy failed",
 
-    "insertNetworkModificationNodeBefore": "Insert a node before in the current branch",
-    "insertModelNodeBefore": "Insert a model node before",
-    "insertNetworkModificationNodeAfter": "Insert a node after in the current branch",
-    "insertModelNodeAfter": "Insert a model node after",
+    "insertNetworkModificationNodeAbove": "Insert a node above in the current branch",
+    "insertNetworkModificationNodeBelow": "Insert a node below in the current branch",
 
     "Update": "Update",
 
