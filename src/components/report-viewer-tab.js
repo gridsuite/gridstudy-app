@@ -13,11 +13,11 @@ import { ReportViewer } from '@gridsuite/commons-ui';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import WaitingLoader from './util/waiting-loader';
+import AlertInvalidNode from './util/alert-invalid-node';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
-import Alert from '@mui/material/Alert';
 import { allowModificationsOnNode } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
@@ -26,10 +26,6 @@ const useStyles = makeStyles((theme) => ({
     },
     reportOnlyNode: {
         margin: 5,
-    },
-    invalidNode: {
-        marginTop: '4px',
-        marginLeft: '50px',
     },
 }));
 
@@ -137,12 +133,7 @@ export const ReportViewerTab = ({
                         />
                         {!allowModificationsOnNode(workingNode, selectedNode) &&
                             selectedNode?.type !== 'ROOT' && (
-                                <Alert
-                                    className={classes.invalidNode}
-                                    severity="warning"
-                                >
-                                    {intl.formatMessage({ id: 'InvalidNode' })}
-                                </Alert>
+                                <AlertInvalidNode />
                             )}
                     </div>
                     <ReportViewer jsonReport={report} />

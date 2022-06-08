@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'indianred',
     },
     margin: {
-        marginLeft: '10px',
+        marginLeft: theme.spacing(1.25),
     },
 }));
 

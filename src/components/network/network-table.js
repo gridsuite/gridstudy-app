@@ -60,7 +60,7 @@ import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { allowModificationsOnNode } from '../graph/util/model-functions';
-import Alert from '@mui/material/Alert';
+import AlertInvalidNode from '../util/alert-invalid-node';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -86,10 +86,6 @@ const useStyles = makeStyles((theme) => ({
     selectColumns: {
         marginTop: theme.spacing(2),
         marginLeft: theme.spacing(6),
-    },
-    invalidNode: {
-        marginTop: '8px',
-        marginLeft: '50px',
     },
     exportCsv: {
         marginTop: theme.spacing(2),
@@ -1120,12 +1116,7 @@ const NetworkTable = (props) => {
                             props.selectedNode
                         ) &&
                             props.selectedNode?.type !== 'ROOT' && (
-                                <Alert
-                                    className={classes.invalidNode}
-                                    severity="warning"
-                                >
-                                    {intl.formatMessage({ id: 'InvalidNode' })}
-                                </Alert>
+                                <AlertInvalidNode />
                             )}
                         <Grid item className={classes.exportCsv}>
                             <span
