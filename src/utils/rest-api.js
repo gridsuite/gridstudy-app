@@ -7,6 +7,7 @@
 import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { APP_NAME, getAppName } from './config-params';
+import { node } from 'prop-types';
 
 const PREFIX_STUDY_QUERIES = process.env.REACT_APP_API_GATEWAY + '/study';
 const PREFIX_NOTIFICATION_WS =
@@ -1732,6 +1733,22 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
 export function fetchCaseInfos(studyUuid) {
     console.info('Fetching case infos');
     const url = getStudyUrl(studyUuid) + '/case/name';
+    console.debug(url);
+
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        return response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text));
+    });
+}
+
+export function fetchNearestBuiltParentNode(studyUuid, nodeUuid) {
+    console.info('Fetching nearest parent node which is built');
+    const url =
+        getStudyUrl(studyUuid) +
+        '/tree/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/nearest-built-parent';
     console.debug(url);
 
     return backendFetch(url, { method: 'get' }).then((response) => {

@@ -21,7 +21,7 @@ import {
     setModificationsDrawerOpen,
     workingTreeNode,
 } from '../redux/actions';
-import { buildNode } from '../utils/rest-api';
+import { buildNode, fetchNearestBuiltParentNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -108,6 +108,16 @@ const NetworkModificationTree = ({
             if (element.data.buildStatus === 'NOT_BUILT') {
                 //fetch nearest built node
                 //assign working node to nearest built node
+                fetchNearestBuiltParentNode(studyUuid, element.id)
+                    .then((res) => {
+                        console.log(res);
+                        if (res) {
+                            dispatch(workingTreeNode(res));
+                        }
+                    })
+                    .catch((err) => console.log(err.message));
+
+                console.log('HMMMMMMMMMMMMMMMMMMMMMMMMM');
             } else if (
                 element.type === 'ROOT' ||
                 (element.type === 'NETWORK_MODIFICATION' &&
@@ -117,7 +127,7 @@ const NetworkModificationTree = ({
                 dispatch(workingTreeNode(element));
             }
         },
-        [dispatch]
+        [dispatch, studyUuid]
     );
 
     const onNodeDoubleClick = useCallback(
