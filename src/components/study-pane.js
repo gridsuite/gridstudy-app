@@ -144,7 +144,7 @@ const StudyPane = ({
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
 
-    const openedNad = useSelector((state) => state.openNetworkAreaDiagram);
+    const voltageLevelsIds = useSelector((state) => state.voltageLevelsIds);
 
     useEffect(() => {
         if (
@@ -320,7 +320,7 @@ const StudyPane = ({
                                     workingNode={workingNode}
                                 />
                             )}
-                            {props.view === StudyView.MAP && openedNad && (
+                            {props.view === StudyView.MAP && voltageLevelsIds?.length && (
                                 <NetworkAreaDiagramPane
                                     studyUuid={studyUuid}
                                     network={network}
@@ -330,7 +330,7 @@ const StudyPane = ({
                                     )}
                                     onClose={() =>
                                         dispatch(
-                                            openNetworkAreaDiagram(undefined)
+                                            openNetworkAreaDiagram([])
                                         )
                                     }
                                 />

@@ -20,40 +20,38 @@ export function NetworkAreaDiagramPane({
 }) {
     const [depth, setDepth] = useState(0);
 
-    const openNetworkAreaDiagram = useSelector(
-        (state) => state.openNetworkAreaDiagram
+    const voltageLevelsIds = useSelector(
+        (state) => state.voltageLevelsIds
     );
 
-    const displayedVoltageLevelId = openNetworkAreaDiagram?.voltageLevelId;
-
     const displayedVoltageLevelIdRef = useRef();
-    displayedVoltageLevelIdRef.current = displayedVoltageLevelId;
+    displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
 
-    let displayedVoltageLevel;
+    let displayedVoltageLevels = [];
     if (network) {
-        if (displayedVoltageLevelId) {
-            displayedVoltageLevel = network.getVoltageLevel(
-                displayedVoltageLevelId
-            );
+        if (voltageLevelsIds) {
+            voltageLevelsIds.forEach(id => displayedVoltageLevels.push(network.getVoltageLevel(
+                id
+            )))
         }
     }
 
     let nadTitle = '';
     let svgUrl = '';
-    if (displayedVoltageLevel) {
-        nadTitle = displayedVoltageLevel.name;
+    if (displayedVoltageLevels) {
+        displayedVoltageLevels.forEach(vl =>  nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + vl.name);
 
         svgUrl = getNetworkAreaDiagramUrl(
             studyUuid,
             workingNode?.id,
-            [displayedVoltageLevelId],
+            voltageLevelsIds,
             depth
         );
     }
 
     return (
         <>
-            {displayedVoltageLevelId && (
+            {voltageLevelsIds && voltageLevelsIds !== [] && (
                 <div
                     style={{
                         flexGrow: 1,
@@ -67,7 +65,7 @@ export function NetworkAreaDiagramPane({
                         onClose={onClose}
                         diagramTitle={nadTitle}
                         svgUrl={svgUrl}
-                        nadId={displayedVoltageLevel?.id}
+                        nadId={voltageLevelsIds[0]}
                         workingNode={workingNode}
                         depth={depth}
                         setDepth={setDepth}

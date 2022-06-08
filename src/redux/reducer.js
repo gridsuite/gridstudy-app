@@ -117,6 +117,7 @@ const initialState = {
     allLockedColumnsNames: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    voltageLevelsIds: [],
     centerOnSubstation: null,
     ...paramsInitialState,
 };
@@ -330,7 +331,7 @@ export const reducer = createReducer(initialState, {
         state.centerOnSubstation = action.centerOnSubstation;
     },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
-        state.openNetworkAreaDiagram = action.openNetworkAreaDiagram;
+        state.voltageLevelsIds = action.voltageLevelsIds;
     },
 });
 

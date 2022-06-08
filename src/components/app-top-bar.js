@@ -66,6 +66,8 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const equipmentClasses = useEquipmentStyles();
     const network = useSelector((state) => state.network);
 
+    const voltageLevelsIds = useSelector((state) => state.voltageLevelsIds);
+
     const enterOnSubstationCB = useCallback(
         (e, element) => {
             const substationId =
@@ -81,7 +83,7 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const openNetworkAreaDiagramCB = useCallback(
         (e, element) => {
-            dispatch(openNetworkAreaDiagram(element.id));
+            dispatch(openNetworkAreaDiagram(voltageLevelsIds.concat([element.id])));
             props.onClose && props.onClose();
             e.stopPropagation();
         },
