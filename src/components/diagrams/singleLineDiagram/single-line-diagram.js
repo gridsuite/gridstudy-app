@@ -54,8 +54,8 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
 import clsx from 'clsx';
-import { isNodeValid } from '../graph/util/model-functions';
-import AlertInvalidNode from '../util/alert-invalid-node';
+import { isNodeValid } from '../../graph/util/model-functions';
+import AlertInvalidNode from '../../util/alert-invalid-node';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
