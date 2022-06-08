@@ -6,7 +6,6 @@
  */
 
 import React, {
-    forwardRef,
     useCallback,
     useEffect,
     useLayoutEffect,
@@ -41,7 +40,7 @@ import { useSnackMessage } from '../../../utils/messages';
 import { useIntl } from 'react-intl';
 
 import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
-import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
+import { NAD_INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
 
@@ -77,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     },
     divInvalid: {
         '& .nad-edge-infos': {
-            opacity: INVALID_LOADFLOW_OPACITY,
+            opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
     },
     close: {
@@ -158,7 +157,7 @@ const computePaperAndSvgSizesIfReady = (
     }
 };
 
-const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
+const SizedNetworkAreaDiagram = (props) => {
     const [svg, setSvg] = useState(noSvg);
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
@@ -290,7 +289,7 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
         }
-    }, [network, svg, workingNode, theme, nadId, ref, svgUrl]);
+    }, [network, svg, workingNode, theme, nadId, svgUrl]);
 
     useLayoutEffect(() => {
         if (
@@ -439,14 +438,13 @@ const SizedNetworkAreaDiagram = forwardRef((props, ref) => {
             </Box>
         </Paper>
     );
-});
+};
 
-const NetworkAreaDiagram = forwardRef((props, ref) => {
+const NetworkAreaDiagram = (props) => {
     return (
         <AutoSizer>
             {({ width, height }) => (
                 <SizedNetworkAreaDiagram
-                    ref={ref}
                     totalWidth={width}
                     totalHeight={height}
                     {...props}
@@ -454,7 +452,7 @@ const NetworkAreaDiagram = forwardRef((props, ref) => {
             )}
         </AutoSizer>
     );
-});
+};
 
 NetworkAreaDiagram.propTypes = {
     onClose: PropTypes.func,
@@ -465,6 +463,7 @@ NetworkAreaDiagram.propTypes = {
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,
+    studyUuid: PropTypes.string.isRequired,
 };
 
 export default NetworkAreaDiagram;

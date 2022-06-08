@@ -68,7 +68,6 @@ export function NetworkAreaDiagramPane({
                         diagramTitle={nadTitle}
                         svgUrl={svgUrl}
                         nadId={displayedVoltageLevel?.id}
-                        ref={displayedVoltageLevelIdRef}
                         workingNode={workingNode}
                         depth={depth}
                         setDepth={setDepth}
