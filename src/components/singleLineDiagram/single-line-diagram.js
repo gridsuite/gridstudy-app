@@ -48,7 +48,6 @@ import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 
 import { useIntlRef, useSnackMessage } from '../../utils/messages';
-import { useIntl } from 'react-intl';
 
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
@@ -56,6 +55,7 @@ import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
 import clsx from 'clsx';
 import { allowModificationsOnNode } from '../graph/util/model-functions';
+import AlertInvalidNode from '../util/alert-invalid-node';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -245,7 +245,6 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
-    const intl = useIntl();
     const svgRef = useRef();
     const {
         totalWidth,
@@ -964,9 +963,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     )}
                     {!allowModificationsOnNode(workingNode, selectedNode) &&
                         selectedNode?.type !== 'ROOT' && (
-                            <Alert severity="warning">
-                                {intl.formatMessage({ id: 'InvalidNode' })}
-                            </Alert>
+                            <AlertInvalidNode noMargin={true} />
                         )}
                 </Box>
                 {
