@@ -12,14 +12,14 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
-} from '../../utils/config-params';
+} from '../../../utils/config-params';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     getSubstationSingleLineDiagram,
     getVoltageLevelSingleLineDiagram,
     updateSwitchState,
-} from '../../utils/rest-api';
+} from '../../../utils/rest-api';
 import SingleLineDiagram, { SvgType } from './single-line-diagram';
 import PropTypes from 'prop-types';
 import { parse } from 'qs';

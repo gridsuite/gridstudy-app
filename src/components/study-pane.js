@@ -11,7 +11,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import { filteredNominalVoltagesUpdated } from '../redux/actions';
+import {
+    filteredNominalVoltagesUpdated,
+    openNetworkAreaDiagram,
+} from '../redux/actions';
 import { equipments } from './network/network-equipments';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
@@ -30,11 +33,12 @@ import NetworkMapTab from './network-map-tab';
 import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
-import { SingleLineDiagramPane } from './singleLineDiagram/single-line-diagram-pane';
+import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useSingleLineDiagram } from './singleLineDiagram/utils';
+import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
+import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -139,6 +143,8 @@ const StudyPane = ({
 
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
+
+    const openedNad = useSelector((state) => state.openNetworkAreaDiagram);
 
     useEffect(() => {
         if (
@@ -312,6 +318,21 @@ const StudyPane = ({
                                         loadFlowInfos?.loadFlowStatus
                                     )}
                                     workingNode={workingNode}
+                                />
+                            )}
+                            {props.view === StudyView.MAP && openedNad && (
+                                <NetworkAreaDiagramPane
+                                    studyUuid={studyUuid}
+                                    network={network}
+                                    workingNode={workingNode}
+                                    loadFlowStatus={getLoadFlowRunningStatus(
+                                        loadFlowInfos?.loadFlowStatus
+                                    )}
+                                    onClose={() =>
+                                        dispatch(
+                                            openNetworkAreaDiagram(undefined)
+                                        )
+                                    }
                                 />
                             )}
                         </div>

@@ -402,6 +402,9 @@
     "Update": "Update",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
+
+    "depth": "Depth",
+
     "root" : "Root",
     "LogOnlySingleNode": "Log single node",
 
