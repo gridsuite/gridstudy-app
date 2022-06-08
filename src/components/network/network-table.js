@@ -690,15 +690,16 @@ const NetworkTable = (props) => {
     );
 
     const registerChangeRequest = useCallback(
-        (data, changeCmd, value) => {
+        (data, dataKey, changeCmd, value) => {
             // save original value, dont erase if exists
-            if (!lineEdit.oldValues[data.dataKey])
-                lineEdit.oldValues[data.dataKey] = data[data.dataKey];
-            lineEdit.newValues[data.dataKey] = {
+            if (!lineEdit.oldValues[dataKey]) {
+                lineEdit.oldValues[dataKey] = data[dataKey];
+            }
+            lineEdit.newValues[dataKey] = {
                 changeCmd: changeCmd,
                 value: value,
             };
-            data[data.dataKey] = value;
+            data[dataKey] = value;
         },
         [lineEdit]
     );
@@ -713,6 +714,7 @@ const NetworkTable = (props) => {
                 const changeRequest = (value) =>
                     registerChangeRequest(
                         rowData,
+                        columnDefinition.dataKey,
                         columnDefinition.changeCmd,
                         value
                     );
@@ -1045,6 +1047,7 @@ const NetworkTable = (props) => {
                                     label={intl.formatMessage({
                                         id: table.name,
                                     })}
+                                    disabled={isModifyingRow()}
                                 />
                             ))}
                         </Tabs>
