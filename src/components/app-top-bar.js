@@ -83,11 +83,13 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const openNetworkAreaDiagramCB = useCallback(
         (e, element) => {
-            dispatch(openNetworkAreaDiagram(voltageLevelsIds.concat([element.id])));
+            dispatch(
+                openNetworkAreaDiagram(voltageLevelsIds.concat([element.id]))
+            );
             props.onClose && props.onClose();
             e.stopPropagation();
         },
-        [dispatch, props]
+        [dispatch, props, voltageLevelsIds]
     );
 
     if (

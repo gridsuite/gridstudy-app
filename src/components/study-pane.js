@@ -320,21 +320,20 @@ const StudyPane = ({
                                     workingNode={workingNode}
                                 />
                             )}
-                            {props.view === StudyView.MAP && voltageLevelsIds?.length && (
-                                <NetworkAreaDiagramPane
-                                    studyUuid={studyUuid}
-                                    network={network}
-                                    workingNode={workingNode}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
-                                    onClose={() =>
-                                        dispatch(
-                                            openNetworkAreaDiagram([])
-                                        )
-                                    }
-                                />
-                            )}
+                            {props.view === StudyView.MAP &&
+                                voltageLevelsIds?.length && (
+                                    <NetworkAreaDiagramPane
+                                        studyUuid={studyUuid}
+                                        network={network}
+                                        workingNode={workingNode}
+                                        loadFlowStatus={getLoadFlowRunningStatus(
+                                            loadFlowInfos?.loadFlowStatus
+                                        )}
+                                        onClose={() =>
+                                            dispatch(openNetworkAreaDiagram([]))
+                                        }
+                                    />
+                                )}
                         </div>
                     </div>
                 </div>

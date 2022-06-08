@@ -20,9 +20,7 @@ export function NetworkAreaDiagramPane({
 }) {
     const [depth, setDepth] = useState(0);
 
-    const voltageLevelsIds = useSelector(
-        (state) => state.voltageLevelsIds
-    );
+    const voltageLevelsIds = useSelector((state) => state.voltageLevelsIds);
 
     const displayedVoltageLevelIdRef = useRef();
     displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
@@ -30,16 +28,19 @@ export function NetworkAreaDiagramPane({
     let displayedVoltageLevels = [];
     if (network) {
         if (voltageLevelsIds) {
-            voltageLevelsIds.forEach(id => displayedVoltageLevels.push(network.getVoltageLevel(
-                id
-            )))
+            voltageLevelsIds.forEach((id) =>
+                displayedVoltageLevels.push(network.getVoltageLevel(id))
+            );
         }
     }
 
     let nadTitle = '';
     let svgUrl = '';
     if (displayedVoltageLevels) {
-        displayedVoltageLevels.forEach(vl =>  nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + vl.name);
+        displayedVoltageLevels.forEach(
+            (vl) =>
+                (nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + vl.name)
+        );
 
         svgUrl = getNetworkAreaDiagramUrl(
             studyUuid,
