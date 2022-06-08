@@ -404,6 +404,9 @@
 
     "LoadStudyAndParentsInfoError": "Erreur lors de la récupération du nom et chemin de l'étude en cours",
     "InvalidNode": "Noeud invalide !!",
+
+    "depth": "Profondeur",
+
     "root" : "Racine",
     "LogOnlySingleNode": "Log noeud seul",
 
