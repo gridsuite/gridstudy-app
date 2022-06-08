@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -61,6 +61,16 @@ const withLineMenu =
         const { enqueueSnackbar } = useSnackbar();
         const [displayUseName] = useParameterState(PARAM_USE_NAME);
         const network = useSelector((state) => state.network);
+
+        const [oneNodeBuilding, setOneNodeBuilding] = useState(false);
+
+        const treeModel = useSelector(
+            (state) => state.networkModificationTreeModel
+        );
+
+        useEffect(() => {
+            setOneNodeBuilding(treeModel.isOneNodeBuilding());
+        }, [treeModel]);
 
         const line = network.getLine(id);
 
@@ -176,7 +186,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
                     selected={line.branchStatus === 'PLANNED_OUTAGE'}
-                    disabled={workingNode?.readOnly}
+                    disabled={workingNode?.readOnly || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -196,7 +206,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     selected={line.branchStatus === 'FORCED_OUTAGE'}
-                    disabled={workingNode?.readOnly}
+                    disabled={workingNode?.readOnly || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -218,7 +228,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && !line.terminal2Connected
                     }
-                    disabled={workingNode?.readOnly}
+                    disabled={workingNode?.readOnly || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -247,7 +257,7 @@ const withLineMenu =
                     selected={
                         line.terminal2Connected && !line.terminal1Connected
                     }
-                    disabled={workingNode?.readOnly}
+                    disabled={workingNode?.readOnly || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -276,7 +286,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && line.terminal2Connected
                     }
-                    disabled={workingNode?.readOnly}
+                    disabled={workingNode?.readOnly || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <PlayIcon />

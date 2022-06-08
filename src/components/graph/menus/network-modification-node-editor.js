@@ -269,6 +269,16 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
 
+    const [oneNodeBuilding, setOneNodeBuilding] = useState(false);
+
+    const treeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
+
+    useEffect(() => {
+        setOneNodeBuilding(treeModel.isOneNodeBuilding());
+    }, [treeModel]);
+
     const classes = useStyles();
 
     const openNetworkModificationConfiguration = () => {
@@ -356,7 +366,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     onClick={doDeleteModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={!(selectedItems?.size > 0)}
+                    disabled={!(selectedItems?.size > 0) || oneNodeBuilding}
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -402,6 +412,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 className={classes.addButton}
                 color="primary"
                 onClick={openNetworkModificationConfiguration}
+                disabled={oneNodeBuilding}
             >
                 <AddIcon />
             </Fab>
