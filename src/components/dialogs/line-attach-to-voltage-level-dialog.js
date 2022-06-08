@@ -29,6 +29,7 @@ import { gridItem, GridSection, removeNullDataValues } from './dialogUtils';
 import { attachLine } from '../../utils/rest-api';
 import PropTypes from 'prop-types';
 import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
 import LineCreationDialog from './line-creation-dialog';
 import {
     makeVoltageLevelCreationParams,
@@ -502,7 +503,9 @@ const LineAttachToVoltageLevelDialog = ({
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
-                                startIcon={<AddIcon />}
+                                startIcon={
+                                    newVoltageLevel ? <EditIcon /> : <AddIcon />
+                                }
                                 variant="outlined"
                             >
                                 <Typography align="left">
@@ -519,7 +522,9 @@ const LineAttachToVoltageLevelDialog = ({
                         {gridItem(
                             <Button
                                 onClick={openLineDialog}
-                                startIcon={<AddIcon />}
+                                startIcon={
+                                    attachmentLine ? <EditIcon /> : <AddIcon />
+                                }
                                 variant="outlined"
                             >
                                 <Typography align="left">
