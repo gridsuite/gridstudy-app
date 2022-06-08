@@ -59,7 +59,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
-import { allowModificationsOnNode } from '../graph/util/model-functions';
+import { isNodeValid } from '../graph/util/model-functions';
 import AlertInvalidNode from '../util/alert-invalid-node';
 
 const useStyles = makeStyles((theme) => ({
@@ -773,10 +773,7 @@ const NetworkTable = (props) => {
             return (
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .modifiableEquipmentType &&
-                allowModificationsOnNode(
-                    props.workingNode,
-                    props.selectedNode
-                ) &&
+                isNodeValid(props.workingNode, props.selectedNode) &&
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .columns.filter((c) => c.editor)
                     .filter((c) => selectedColumnsNames.has(c.id)).length > 0
@@ -1111,10 +1108,7 @@ const NetworkTable = (props) => {
                                 child={checkListColumnsNames()}
                             />
                         </Grid>
-                        {!allowModificationsOnNode(
-                            props.workingNode,
-                            props.selectedNode
-                        ) &&
+                        {!isNodeValid(props.workingNode, props.selectedNode) &&
                             props.selectedNode?.type !== 'ROOT' && (
                                 <AlertInvalidNode />
                             )}

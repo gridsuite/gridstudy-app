@@ -16,7 +16,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { addLoadflowNotif, addSANotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { allowModificationsOnNode } from './graph/util/model-functions';
+import { isNodeValid } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -146,7 +146,7 @@ export function RunButtonContainer({
                 getText={getRunningText}
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
-                disabled={!allowModificationsOnNode(workingNode, selectedNode)}
+                disabled={!isNodeValid(workingNode, selectedNode)}
             />
             <ContingencyListSelector
                 open={showContingencyListSelector}
