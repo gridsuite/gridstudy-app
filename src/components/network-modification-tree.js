@@ -104,7 +104,11 @@ const NetworkModificationTree = ({
                 )
             );
             dispatch(selectTreeNode(element));
-            if (
+
+            if (element.data.buildStatus === 'NOT_BUILT') {
+                //fetch nearest built node
+                //assign working node to nearest built node
+            } else if (
                 element.type === 'ROOT' ||
                 (element.type === 'NETWORK_MODIFICATION' &&
                     (element.data.buildStatus === 'BUILT' ||
