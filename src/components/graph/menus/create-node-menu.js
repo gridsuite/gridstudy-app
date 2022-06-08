@@ -62,12 +62,12 @@ const CreateNodeMenu = ({
         INSERT_MODIFICATION_NODE_BEFORE: {
             onRoot: false,
             action: () => createNetworkModificationNode('BEFORE'),
-            id: 'insertNetworkModificationNodeBefore',
+            id: 'insertNetworkModificationNodeAbove',
         },
         INSERT_MODIFICATION_NODE_AFTER: {
             onRoot: true,
             action: () => createNetworkModificationNode('AFTER'),
-            id: 'insertNetworkModificationNodeAfter',
+            id: 'insertNetworkModificationNodeBelow',
         },
         REMOVE_NODE: {
             onRoot: false,
