@@ -284,7 +284,18 @@ export function StudyContainer({ view, onChangeTab }) {
                             networkModificationTreeModel.setCaseName(res);
                         }
                     })
-                    .catch((err) => console.log(err.message));
+                    .catch((err) => {
+                        console.error(err.message);
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: err.message,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId:
+                                    'NetworkModificationTreeLoadError',
+                                intlRef: intlRef,
+                            },
+                        });
+                    });
 
                 let firstBuiltNode = getFirstNodeOfType(
                     tree,

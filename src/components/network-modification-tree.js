@@ -138,6 +138,10 @@ const NetworkModificationTree = ({
         [studyUuid, enqueueSnackbar, intlRef]
     );
 
+    const toggleMinimap = useCallback(() => {
+        setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
+    }, []);
+
     const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
         onElementClick,
         onNodeDoubleClick
@@ -249,11 +253,7 @@ const NetworkModificationTree = ({
                     showInteractive={false}
                 >
                     <CenterGraphButton selectedNode={selectedNode} />
-                    <ControlButton
-                        onClick={() =>
-                            setIsMinimapOpen(isMinimapOpen ? false : true)
-                        }
-                    >
+                    <ControlButton onClick={() => toggleMinimap()}>
                         <MapIcon />
                     </ControlButton>
                 </Controls>

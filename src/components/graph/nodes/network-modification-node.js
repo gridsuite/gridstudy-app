@@ -15,6 +15,9 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
 
+const VALID_NODE_BANNER_COLOR = '#74a358';
+const INVALID_NODE_BANNER_COLOR = '#9196a1';
+
 const useStyles = makeStyles((theme) => ({
     networkModificationVisualized: {
         position: 'relative',
@@ -28,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     networkModification: {
-        background: '#c5c8d1',
+        background: theme.palette.text.secondary,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
@@ -43,30 +46,6 @@ const useStyles = makeStyles((theme) => ({
         right: '-30px',
         top: '18px',
     },
-    buildStatusOk: {
-        color: 'green',
-    },
-    buildStatusInvalid: {
-        color: 'indianred',
-    },
-    buildBannerOK: {
-        display: 'flex',
-        height: '100%',
-        width: '15%',
-        position: 'absolute',
-        top: '0px',
-        left: '0px',
-        background: '#74a358',
-    },
-    buildBannerInvalid: {
-        display: 'flex',
-        height: '100%',
-        width: '15%',
-        position: 'absolute',
-        top: '0px',
-        left: '0px',
-        background: '#9196a1',
-    },
     labelWrapper: {
         display: 'flex',
         width: '85%',
@@ -75,6 +54,24 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         lineHeight: 'normal',
         marginLeft: 'auto',
+    },
+    buildBannerOK: {
+        display: 'flex',
+        height: '100%',
+        width: '15%',
+        position: 'absolute',
+        top: '0px',
+        left: '0px',
+        background: VALID_NODE_BANNER_COLOR,
+    },
+    buildBannerInvalid: {
+        display: 'flex',
+        height: '100%',
+        width: '15%',
+        position: 'absolute',
+        top: '0px',
+        left: '0px',
+        background: INVALID_NODE_BANNER_COLOR,
     },
 }));
 
