@@ -11,6 +11,7 @@ import {
     List,
     ListItem,
     ListItemText,
+    Stack,
     Switch,
     TextField,
     Tooltip,
@@ -73,7 +74,11 @@ const useMeta = (metasAsArray) => {
     const comp = (
         <List>
             {metasAsArray.map((meta, idx) => (
-                <Tooltip title={meta.description} enterDelay={1200}>
+                <Tooltip
+                    title={meta.description}
+                    enterDelay={1200}
+                    key={meta.name}
+                >
                     <ListItem key={meta.name}>
                         <ListItemText
                             primary={meta.name.slice(prefix.length)}
@@ -118,29 +123,24 @@ const ExportDialog = ({
     nodeUuid,
     title,
 }) => {
-    const [availableFormats, setAvailableFormats] = React.useState('');
     const [formatsWithParameters, setFormatsWithParameters] = useState([]);
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [exportStudyErr, setExportStudyErr] = React.useState('');
 
-    const [checked, setChecked] = React.useState(false);
+    const [unfolded, setUnfolded] = React.useState(false);
 
-    const handleChange = () => {
-        setChecked((prev) => !prev);
-    };
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                if (Array.isArray(formats)) {
-                    setAvailableFormats(formats);
-                } else if (typeof formats === 'object') {
-                    setAvailableFormats(Object.keys(formats));
-                    setFormatsWithParameters(formats);
-                }
+                setFormatsWithParameters(formats);
             });
         }
     }, [open]);
+
+    const handleFoldChange = () => {
+        setUnfolded((prev) => !prev);
+    };
 
     const formatWithParameter = formatsWithParameters?.[selectedFormat];
     const metasAsArray = formatWithParameter?.parameters || [];
@@ -195,6 +195,7 @@ const ExportDialog = ({
         >
             <DialogTitle>
                 {title}
+                <div style={{ marginTop: '0.8em' }} />
                 <FormControl fullWidth size="small">
                     <InputLabel
                         id="select-format-label"
@@ -214,28 +215,40 @@ const ExportDialog = ({
                             id: 'select-format',
                         }}
                     >
-                        {availableFormats !== '' &&
-                            availableFormats.map(function (element) {
-                                return (
-                                    <MenuItem key={element} value={element}>
-                                        {element}
-                                    </MenuItem>
-                                );
-                            })}
+                        {Object.keys(formatsWithParameters).map(function (key) {
+                            return (
+                                <MenuItem key={key} value={key}>
+                                    {key}
+                                </MenuItem>
+                            );
+                        })}
                     </Select>
-                    <IconButton
-                        onClick={handleChange}
-                        disabled={!selectedFormat}
+                    <Stack
+                        marginTop="0.7em"
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
                     >
-                        <Typography style={{ fontWeight: 'bold' }}>
+                        <Typography
+                            component="span"
+                            color={
+                                selectedFormat ? 'text.main' : 'text.disabled'
+                            }
+                            style={{ fontWeight: 'bold' }}
+                        >
                             Parameters
                         </Typography>
-                        {checked ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                    </IconButton>
+                        <IconButton
+                            onClick={handleFoldChange}
+                            disabled={!selectedFormat}
+                        >
+                            {unfolded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
+                    </Stack>
                 </FormControl>
             </DialogTitle>
             <DialogContent>
-                <Collapse in={checked}>{paramsComponent}</Collapse>
+                <Collapse in={unfolded}>{paramsComponent}</Collapse>
                 {exportStudyErr !== '' && (
                     <Alert severity="error">{exportStudyErr}</Alert>
                 )}
