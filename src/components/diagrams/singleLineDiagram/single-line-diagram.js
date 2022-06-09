@@ -54,6 +54,8 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
 import clsx from 'clsx';
+import { isNodeValid } from '../../graph/util/model-functions';
+import AlertInvalidNode from '../../util/alert-invalid-node';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -250,6 +252,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         svgType,
         loadFlowStatus,
         workingNode,
+        selectedNode,
         numberToDisplay,
         sldId,
         pinned,
@@ -740,7 +743,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
 
             // handling the click on a switch
-            if (!isComputationRunning && !workingNode?.readOnly) {
+            if (
+                !isComputationRunning &&
+                isNodeValid(workingNode, selectedNode)
+            ) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
                 );
@@ -777,6 +783,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         network,
         svg,
         workingNode,
+        selectedNode,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -846,6 +853,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                 />
             )
         );
@@ -953,6 +961,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
+                    {!isNodeValid(workingNode, selectedNode) &&
+                        selectedNode?.type !== 'ROOT' && (
+                            <AlertInvalidNode noMargin={true} />
+                        )}
                 </Box>
                 {
                     <div
@@ -1041,6 +1053,7 @@ SingleLineDiagram.propTypes = {
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
     workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
     pinned: PropTypes.bool,
     pin: PropTypes.func,
     minimize: PropTypes.func,
