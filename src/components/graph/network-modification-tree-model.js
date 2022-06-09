@@ -153,13 +153,9 @@ export default class NetworkModificationTreeModel {
     }
 
     setBuildingStatus() {
-        for (let i = 0; i < this.treeElements.length; i++) {
-            if (this.treeElements[i]?.data?.buildStatus === 'BUILDING') {
-                this.isOneNodeBuilding = true;
-                return;
-            }
-        }
-        this.isOneNodeBuilding = false;
-        return false;
+        this.isOneNodeBuilding =
+            this.treeElements.find(
+                (node) => node?.data?.buildStatus === 'BUILDING'
+            ) !== undefined;
     }
 }
