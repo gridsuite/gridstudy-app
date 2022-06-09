@@ -140,6 +140,7 @@ export default class NetworkModificationTreeModel {
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);
         });
+        this.setBuildingStatus();
     }
 
     newSharedForUpdate() {
