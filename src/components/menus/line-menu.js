@@ -194,7 +194,10 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
                     selected={line.branchStatus === 'PLANNED_OUTAGE'}
-                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
+                    disabled={
+                        !isNodeValid(workingNode, selectedNode) ||
+                        oneNodeBuilding
+                    }
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -214,7 +217,10 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     selected={line.branchStatus === 'FORCED_OUTAGE'}
-                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
+                    disabled={
+                        !isNodeValid(workingNode, selectedNode) ||
+                        oneNodeBuilding
+                    }
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -236,7 +242,10 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && !line.terminal2Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
+                    disabled={
+                        !isNodeValid(workingNode, selectedNode) ||
+                        oneNodeBuilding
+                    }
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -265,7 +274,10 @@ const withLineMenu =
                     selected={
                         line.terminal2Connected && !line.terminal1Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
+                    disabled={
+                        !isNodeValid(workingNode, selectedNode) ||
+                        oneNodeBuilding
+                    }
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -294,7 +306,10 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && line.terminal2Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
+                    disabled={
+                        !isNodeValid(workingNode, selectedNode) ||
+                        oneNodeBuilding
+                    }
                 >
                     <ListItemIcon>
                         <PlayIcon />
