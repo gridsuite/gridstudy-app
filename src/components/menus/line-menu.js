@@ -36,11 +36,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { equipments } from '../network/network-equipments';
-<<<<<<< HEAD
-import { allowModificationsOnNode } from '../graph/util/model-functions';
-=======
 import { isNodeValid } from '../graph/util/model-functions';
->>>>>>> origin/main
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -188,13 +184,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
                     selected={line.branchStatus === 'PLANNED_OUTAGE'}
-<<<<<<< HEAD
-                    disabled={
-                        !allowModificationsOnNode(workingNode, selectedNode)
-                    }
-=======
                     disabled={!isNodeValid(workingNode, selectedNode)}
->>>>>>> origin/main
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -214,13 +204,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     selected={line.branchStatus === 'FORCED_OUTAGE'}
-<<<<<<< HEAD
-                    disabled={
-                        !allowModificationsOnNode(workingNode, selectedNode)
-                    }
-=======
                     disabled={!isNodeValid(workingNode, selectedNode)}
->>>>>>> origin/main
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -242,13 +226,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && !line.terminal2Connected
                     }
-<<<<<<< HEAD
-                    disabled={
-                        !allowModificationsOnNode(workingNode, selectedNode)
-                    }
-=======
                     disabled={!isNodeValid(workingNode, selectedNode)}
->>>>>>> origin/main
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -277,13 +255,7 @@ const withLineMenu =
                     selected={
                         line.terminal2Connected && !line.terminal1Connected
                     }
-<<<<<<< HEAD
-                    disabled={
-                        !allowModificationsOnNode(workingNode, selectedNode)
-                    }
-=======
                     disabled={!isNodeValid(workingNode, selectedNode)}
->>>>>>> origin/main
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -312,13 +284,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && line.terminal2Connected
                     }
-<<<<<<< HEAD
-                    disabled={
-                        !allowModificationsOnNode(workingNode, selectedNode)
-                    }
-=======
                     disabled={!isNodeValid(workingNode, selectedNode)}
->>>>>>> origin/main
                 >
                     <ListItemIcon>
                         <PlayIcon />
