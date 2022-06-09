@@ -417,6 +417,7 @@
     "Update": "Update",
 
     "LoadStudyAndParentsInfoError": "An error occured while loading current study's name and path",
+    "InvalidNode": "Invalid node !!",
 
     "depth": "Depth",
 
