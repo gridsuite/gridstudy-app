@@ -30,6 +30,17 @@ export function getFirstNodeOfType(elements, nodeType, buildStatus) {
     }
 }
 
+export function isNodeValid(workingNode, selectedNode) {
+    const readOnlyNode = workingNode?.readOnly;
+    const builtWorkingNode = workingNode?.buildStatus === 'BUILT';
+    const workingNodeIsSelectedNode =
+        selectedNode === null ||
+        selectedNode === undefined ||
+        workingNode?.id === selectedNode?.id;
+
+    return !readOnlyNode && builtWorkingNode && workingNodeIsSelectedNode;
+}
+
 export function getRootNode(elements) {
     if (elements.type === 'ROOT')
         return {

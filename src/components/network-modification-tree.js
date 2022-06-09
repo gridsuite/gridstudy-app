@@ -82,7 +82,8 @@ const NetworkModificationTree = ({
             if (
                 element.type === 'ROOT' ||
                 (element.type === 'NETWORK_MODIFICATION' &&
-                    element.data.buildStatus === 'BUILT')
+                    (element.data.buildStatus === 'BUILT' ||
+                        element.data.buildStatus === 'BUILT_INVALID'))
             ) {
                 dispatch(workingTreeNode(element));
             }

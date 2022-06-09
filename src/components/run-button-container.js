@@ -16,6 +16,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import { addLoadflowNotif, addSANotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
+import { isNodeValid } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -26,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 export function RunButtonContainer({
     studyUuid,
     workingNode,
+    selectedNode,
     loadFlowStatus,
     securityAnalysisStatus,
     setIsComputationRunning,
@@ -144,7 +146,7 @@ export function RunButtonContainer({
                 getText={getRunningText}
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
-                disabled={workingNode?.readOnly}
+                disabled={!isNodeValid(workingNode, selectedNode)}
             />
             <ContingencyListSelector
                 open={showContingencyListSelector}
@@ -163,6 +165,7 @@ RunButtonContainer.propTypes = {
         text: PropTypes.string,
     }),
     workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
     status: PropTypes.func,
     onStartClick: PropTypes.func,
     text: PropTypes.func,
