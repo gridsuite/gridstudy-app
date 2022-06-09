@@ -233,6 +233,48 @@ export function getSubstationSingleLineDiagram(
     );
 }
 
+export function getNetworkAreaDiagramUrl(
+    studyUuid,
+    selectedNodeUuid,
+    voltageLevelsIds,
+    depth
+) {
+    console.info(
+        `Getting url of network area diagram of study '${studyUuid}' and node '${selectedNodeUuid}'...`
+    );
+    return (
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-area-diagram?' +
+        new URLSearchParams({
+            depth: depth,
+        }) +
+        '&' +
+        getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()
+    );
+}
+
+export function fetchNADSvg(svgUrl) {
+    console.debug(svgUrl);
+    return backendFetch(svgUrl).then((response) => {
+        return response.ok
+            ? response.text()
+            : response.text().then((text) => {
+                  return Promise.reject(
+                      text ? text.message : response.statusText
+                  );
+              });
+    });
+}
+
+function getQueryParamsList(params, paramName) {
+    if (params !== undefined && params.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        params.forEach((id) => urlSearchParams.append(paramName, id));
+        return urlSearchParams.toString();
+    }
+    return '';
+}
+
 export function fetchReport(studyUuid, selectedNodeUuid, nodeOnlyReport) {
     console.info(
         'get report for node : ' +
@@ -264,17 +306,6 @@ export function fetchSvg(svgUrl) {
                   );
               })
     );
-}
-
-function getSubstationsIdsListsQueryParams(substationsIds) {
-    if (substationsIds !== undefined && substationsIds.length > 0) {
-        const urlSearchParams = new URLSearchParams();
-        substationsIds.forEach((substationId) =>
-            urlSearchParams.append('substationId', substationId)
-        );
-        return '?' + urlSearchParams.toString();
-    }
-    return '';
 }
 
 export function fetchSubstations(studyUuid, selectedNodeUuid, substationsIds) {
@@ -519,7 +550,8 @@ export function fetchEquipments(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +
         equipmentPath +
-        getSubstationsIdsListsQueryParams(substationsIds);
+        '?' +
+        getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }

@@ -95,15 +95,21 @@ const ContingencyListSelector = (props) => {
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
+        var discardResult = false;
         if (props.selectedNodeUuid !== null) {
             fetchContingencyCount(
                 studyUuid,
                 props.selectedNodeUuid,
                 checkedContingencyListUuids
             ).then((contingencyCount) => {
-                setSimulatedContingencyCount(contingencyCount);
+                if (!discardResult) {
+                    setSimulatedContingencyCount(contingencyCount);
+                }
             });
         }
+        return () => {
+            discardResult = true;
+        };
     }, [studyUuid, props.selectedNodeUuid, checkedContingencyListUuids]);
 
     useEffect(() => {

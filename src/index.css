@@ -1,3 +1,5 @@
+@import 'nad-index.css';
+
 /* a css rule for position: relative coming before singlestretch-* rules
  * to be ignored if singlestretch is implemented with position: absolute */
 .relative {

@@ -73,6 +73,9 @@ const useStyles = makeStyles((theme) => ({
         left: '0px',
         background: INVALID_NODE_BANNER_COLOR,
     },
+    margin: {
+        marginLeft: theme.spacing(1.25),
+    },
 }));
 
 const NetworkModificationNode = (props) => {

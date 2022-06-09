@@ -8,7 +8,7 @@ import { useIntl } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
-import { allowModificationsOnNode } from './graph/util/model-functions';
+import { isNodeValid } from './graph/util/model-functions';
 import AlertInvalidNode from './util/alert-invalid-node';
 
 const useStyles = makeStyles((theme) => ({
@@ -86,7 +86,7 @@ export const ResultViewTab = ({
                         })}
                     />
                 </Tabs>
-                {!allowModificationsOnNode(workingNode, selectedNode) &&
+                {!isNodeValid(workingNode, selectedNode) &&
                     selectedNode?.type !== 'ROOT' && <AlertInvalidNode />}
             </div>
             {tabIndex === 0 && renderLoadFlowResult()}

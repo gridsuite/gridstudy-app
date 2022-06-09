@@ -18,7 +18,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
-import { allowModificationsOnNode } from './graph/util/model-functions';
+import { isNodeValid } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -131,7 +131,7 @@ export const ReportViewerTab = ({
                                 id: 'LogOnlySingleNode',
                             })}
                         />
-                        {!allowModificationsOnNode(workingNode, selectedNode) &&
+                        {!isNodeValid(workingNode, selectedNode) &&
                             selectedNode?.type !== 'ROOT' && (
                                 <AlertInvalidNode />
                             )}
