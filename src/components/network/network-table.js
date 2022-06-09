@@ -259,7 +259,7 @@ const NetworkTable = (props) => {
     const intlRef = useIntlRef();
 
     useEffect(() => {
-        setOneNodeBuilding(treeModel.isOneNodeBuilding());
+        setOneNodeBuilding(treeModel.isOneNodeBuilding);
     }, [treeModel]);
 
     useEffect(() => {

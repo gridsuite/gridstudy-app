@@ -69,7 +69,7 @@ const withLineMenu =
         );
 
         useEffect(() => {
-            setOneNodeBuilding(treeModel.isOneNodeBuilding());
+            setOneNodeBuilding(treeModel.isOneNodeBuilding);
         }, [treeModel]);
 
         const line = network.getLine(id);

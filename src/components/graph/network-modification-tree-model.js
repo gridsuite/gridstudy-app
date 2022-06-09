@@ -9,6 +9,8 @@ import { getLayoutedElements } from './layout';
 export default class NetworkModificationTreeModel {
     treeElements = [];
 
+    isOneNodeBuilding = false;
+
     updateLayout() {
         this.treeElements = getLayoutedElements(this.treeElements);
     }
@@ -149,12 +151,14 @@ export default class NetworkModificationTreeModel {
         return newTreeModel;
     }
 
-    isOneNodeBuilding() {
+    setBuildingStatus() {
         for (let i = 0; i < this.treeElements.length; i++) {
             if (this.treeElements[i]?.data?.buildStatus === 'BUILDING') {
-                return true;
+                this.isOneNodeBuilding = true;
+                return;
             }
         }
+        this.isOneNodeBuilding = false;
         return false;
     }
 }

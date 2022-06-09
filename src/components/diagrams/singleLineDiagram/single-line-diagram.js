@@ -275,7 +275,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const theme = useTheme();
 
     useEffect(() => {
-        setOneNodeBuilding(treeModel.isOneNodeBuilding());
+        setOneNodeBuilding(treeModel.isOneNodeBuilding);
     }, [treeModel]);
 
     const forceUpdate = useCallback(() => {

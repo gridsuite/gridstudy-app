@@ -46,7 +46,7 @@ const CreateNodeMenu = ({
     );
 
     useEffect(() => {
-        setOneNodeBuilding(treeModel.isOneNodeBuilding());
+        setOneNodeBuilding(treeModel.isOneNodeBuilding);
     }, [treeModel]);
 
     function createNetworkModificationNode(insertMode) {

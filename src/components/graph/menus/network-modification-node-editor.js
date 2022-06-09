@@ -276,7 +276,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     );
 
     useEffect(() => {
-        setOneNodeBuilding(treeModel.isOneNodeBuilding());
+        setOneNodeBuilding(treeModel.isOneNodeBuilding);
     }, [treeModel]);
 
     const classes = useStyles();
