@@ -4,13 +4,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Dialog, DialogTitle, Grid } from '@mui/material';
+import {
+    Collapse,
+    Dialog,
+    DialogTitle,
+    List,
+    ListItem,
+    ListItemText,
+    Stack,
+    Switch,
+    TextField,
+    Tooltip,
+    Typography,
+} from '@mui/material';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -18,6 +32,78 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import { getAvailableExportFormats, getExportUrl } from '../../utils/rest-api';
+import IconButton from '@mui/material/IconButton';
+
+function longestCommonPrefix(strs) {
+    if (!strs?.length) return '';
+    let prefix = strs.reduce((acc, str) =>
+        str.length < acc.length ? str : acc
+    );
+
+    for (let str of strs) {
+        while (str.slice(0, prefix.length) !== prefix) {
+            prefix = prefix.slice(0, -1);
+        }
+    }
+    return prefix;
+}
+
+const useMeta = (metasAsArray) => {
+    const longestPrefix = longestCommonPrefix(metasAsArray.map((m) => m.name));
+    const lastDotIndex = longestPrefix.lastIndexOf('.');
+    const prefix = longestPrefix.slice(0, lastDotIndex + 1);
+
+    const defaultInst = useMemo(() => {
+        return Object.fromEntries(
+            metasAsArray.map((m) => {
+                if (m.type === 'BOOLEAN') return [m.name, m.defaultValue];
+                return [m.name, m.defaultValue ?? null];
+            })
+        );
+    }, [metasAsArray]);
+    const [inst, setInst] = useState(defaultInst);
+
+    const onBoolChange = (event, paramName) => {
+        setInst((prevInst) => {
+            const nextInst = { ...inst };
+            nextInst[paramName] = event.target.checked;
+            return nextInst;
+        });
+    };
+
+    const comp = (
+        <List>
+            {metasAsArray.map((meta, idx) => (
+                <Tooltip
+                    title={meta.description}
+                    enterDelay={1200}
+                    key={meta.name}
+                >
+                    <ListItem key={meta.name}>
+                        <ListItemText
+                            primary={meta.name.slice(prefix.length)}
+                        />
+                        {meta.type === 'BOOLEAN' ? (
+                            <Switch
+                                checked={inst?.[meta.name] ?? meta.defaultValue}
+                                onChange={(e) => onBoolChange(e, meta.name)}
+                            />
+                        ) : (
+                            <TextField
+                                defaultValue={
+                                    inst?.[meta.name] ?? meta.defaultValue
+                                }
+                                variant={'standard'}
+                            />
+                        )}
+                    </ListItem>
+                </Tooltip>
+            ))}
+        </List>
+    );
+
+    return [inst, comp];
+};
 
 /**
  * Dialog to export the network case
@@ -37,25 +123,47 @@ const ExportDialog = ({
     nodeUuid,
     title,
 }) => {
-    const [availableFormats, setAvailableFormats] = React.useState('');
+    const [formatsWithParameters, setFormatsWithParameters] = useState([]);
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
-    const [downloadUrl, setDownloadUrl] = React.useState('');
     const [exportStudyErr, setExportStudyErr] = React.useState('');
+
+    const [unfolded, setUnfolded] = React.useState(false);
 
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                setAvailableFormats(formats);
+                setFormatsWithParameters(formats);
             });
         }
     }, [open]);
 
-    const handleClick = () => {
-        console.debug('Request for exporting in format: ' + selectedFormat);
+    const handleFoldChange = () => {
+        setUnfolded((prev) => !prev);
+    };
+
+    const formatWithParameter = formatsWithParameters?.[selectedFormat];
+    const metasAsArray = formatWithParameter?.parameters || [];
+    const [currentParameters, paramsComponent] = useMeta(metasAsArray);
+
+    const handleExportClick = () => {
         if (selectedFormat) {
+            const downloadUrl = getExportUrl(
+                studyUuid,
+                nodeUuid,
+                selectedFormat
+            );
+            let suffix;
+            if (Object.keys(currentParameters).length > 0) {
+                const urlSearchParams = new URLSearchParams();
+                const jsoned = JSON.stringify(currentParameters);
+                urlSearchParams.append('formatParameters', jsoned);
+                // we have already as parameters, the tokens, so use '&' in stead of '?'
+                suffix = '&' + urlSearchParams.toString();
+            }
+
             setLoading(true);
-            onClick(downloadUrl);
+            onClick(downloadUrl + (suffix ? suffix : ''));
         } else {
             setExportStudyErr(
                 intl.formatMessage({ id: 'exportStudyErrorMsg' })
@@ -67,14 +175,12 @@ const ExportDialog = ({
         setExportStudyErr('');
         setSelectedFormat('');
         setLoading(false);
-        setDownloadUrl('');
         onClose();
     };
 
-    const handleChange = (event) => {
+    const handleFormatSelectionChange = (event) => {
         let selected = event.target.value;
         setSelectedFormat(selected);
-        setDownloadUrl(getExportUrl(studyUuid, nodeUuid, selected));
     };
 
     const intl = useIntl();
@@ -82,49 +188,67 @@ const ExportDialog = ({
     return (
         <Dialog
             fullWidth
-            maxWidth="xs"
+            maxWidth="sm"
             open={open}
             onClose={handleClose}
             aria-labelledby="dialog-title-export"
         >
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle>
+                {title}
+                <div style={{ marginTop: '0.8em' }} />
+                <FormControl fullWidth size="small">
+                    <InputLabel
+                        id="select-format-label"
+                        margin={'dense'}
+                        variant={'filled'}
+                    >
+                        <FormattedMessage id="exportFormat" />
+                    </InputLabel>
+                    <Select
+                        labelId="select-format-label"
+                        label={<FormattedMessage id="exportFormat" />}
+                        variant="filled"
+                        id="controlled-select-format"
+                        onChange={handleFormatSelectionChange}
+                        defaultValue=""
+                        inputProps={{
+                            id: 'select-format',
+                        }}
+                    >
+                        {Object.keys(formatsWithParameters).map(function (key) {
+                            return (
+                                <MenuItem key={key} value={key}>
+                                    {key}
+                                </MenuItem>
+                            );
+                        })}
+                    </Select>
+                    <Stack
+                        marginTop="0.7em"
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                    >
+                        <Typography
+                            component="span"
+                            color={
+                                selectedFormat ? 'text.main' : 'text.disabled'
+                            }
+                            style={{ fontWeight: 'bold' }}
+                        >
+                            Parameters
+                        </Typography>
+                        <IconButton
+                            onClick={handleFoldChange}
+                            disabled={!selectedFormat}
+                        >
+                            {unfolded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                        </IconButton>
+                    </Stack>
+                </FormControl>
+            </DialogTitle>
             <DialogContent>
-                <Grid container spacing={2}>
-                    <Grid item xs={10} align="start">
-                        <FormControl fullWidth size="small">
-                            <InputLabel
-                                id="select-format-label"
-                                margin={'dense'}
-                                variant={'filled'}
-                            >
-                                <FormattedMessage id="exportFormat" />
-                            </InputLabel>
-                            <Select
-                                labelId="select-format-label"
-                                label={<FormattedMessage id="exportFormat" />}
-                                variant="filled"
-                                id="controlled-select-format"
-                                onChange={handleChange}
-                                defaultValue=""
-                                inputProps={{
-                                    id: 'select-format',
-                                }}
-                            >
-                                {availableFormats !== '' &&
-                                    availableFormats.map(function (element) {
-                                        return (
-                                            <MenuItem
-                                                key={element}
-                                                value={element}
-                                            >
-                                                {element}
-                                            </MenuItem>
-                                        );
-                                    })}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                </Grid>
+                <Collapse in={unfolded}>{paramsComponent}</Collapse>
                 {exportStudyErr !== '' && (
                     <Alert severity="error">{exportStudyErr}</Alert>
                 )}
@@ -144,7 +268,11 @@ const ExportDialog = ({
                 <Button onClick={handleClose}>
                     <FormattedMessage id="cancel" />
                 </Button>
-                <Button onClick={handleClick} variant="outlined">
+                <Button
+                    onClick={handleExportClick}
+                    variant="outlined"
+                    disabled={!selectedFormat}
+                >
                     <FormattedMessage id="export" />
                 </Button>
             </DialogActions>

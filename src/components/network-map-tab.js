@@ -54,6 +54,7 @@ export const NetworkMapTab = ({
     studyUuid,
     network,
     workingNode,
+    selectedNode,
     /* results*/
     securityAnalysisStatus,
     runnable,
@@ -217,6 +218,7 @@ export const NetworkMapTab = ({
                 {equipmentMenu.equipmentType === equipments.lines &&
                     withEquipment(MenuLine, {
                         workingNode: workingNode,
+                        selectedNode: selectedNode,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
@@ -322,6 +324,7 @@ export const NetworkMapTab = ({
                 <RunButtonContainer
                     studyUuid={studyUuid}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}

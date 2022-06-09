@@ -36,6 +36,7 @@ import {
     useIntlRef,
 } from '../../utils/messages';
 import { equipments } from '../network/network-equipments';
+import { isNodeValid } from '../graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -51,7 +52,14 @@ const useStyles = makeStyles((theme) => ({
 
 const withLineMenu =
     (BaseMenu) =>
-    ({ id, position, handleClose, handleViewInSpreadsheet, workingNode }) => {
+    ({
+        id,
+        position,
+        handleClose,
+        handleViewInSpreadsheet,
+        workingNode,
+        selectedNode,
+    }) => {
         const classes = useStyles();
         const intl = useIntl();
         const intlRef = useIntlRef();
@@ -186,7 +194,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
                     selected={line.branchStatus === 'PLANNED_OUTAGE'}
-                    disabled={workingNode?.readOnly || oneNodeBuilding}
+                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -206,7 +214,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     selected={line.branchStatus === 'FORCED_OUTAGE'}
-                    disabled={workingNode?.readOnly || oneNodeBuilding}
+                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -228,7 +236,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && !line.terminal2Connected
                     }
-                    disabled={workingNode?.readOnly || oneNodeBuilding}
+                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -257,7 +265,7 @@ const withLineMenu =
                     selected={
                         line.terminal2Connected && !line.terminal1Connected
                     }
-                    disabled={workingNode?.readOnly || oneNodeBuilding}
+                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -286,7 +294,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && line.terminal2Connected
                     }
-                    disabled={workingNode?.readOnly || oneNodeBuilding}
+                    disabled={!isNodeValid(workingNode, selectedNode) || oneNodeBuilding}
                 >
                     <ListItemIcon>
                         <PlayIcon />
@@ -311,6 +319,7 @@ withLineMenu.propTypes = {
     handleClose: PropTypes.func.isRequired,
     handleViewInSpreadsheet: PropTypes.func.isRequired,
     workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
 };
 
 export default withLineMenu;
