@@ -24,6 +24,7 @@ import {
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
+    fetchCaseInfos,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -276,6 +277,25 @@ export function StudyContainer({ view, onChangeTab }) {
                     new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
+
+                fetchCaseInfos(studyUuid)
+                    .then((res) => {
+                        if (res) {
+                            networkModificationTreeModel.setCaseName(res);
+                        }
+                    })
+                    .catch((err) => {
+                        console.error(err.message);
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: err.message,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId:
+                                    'NetworkModificationTreeLoadError',
+                                intlRef: intlRef,
+                            },
+                        });
+                    });
 
                 let firstBuiltNode = getFirstNodeOfType(
                     tree,

@@ -11,12 +11,16 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import BuildIcon from '@mui/icons-material/Build';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
-import clsx from 'clsx';
+import Tooltip from '@mui/material/Tooltip';
+
+const VALID_NODE_BANNER_COLOR = '#74a358';
+const INVALID_NODE_BANNER_COLOR = '#9196a1';
 
 const useStyles = makeStyles((theme) => ({
-    networkModificationSelected: {
+    networkModificationVisualized: {
+        position: 'relative',
         variant: 'contained',
         background: theme.palette.primary.main,
         textTransform: 'none',
@@ -24,21 +28,50 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             background: theme.palette.primary.main,
         },
+        overflow: 'hidden',
     },
     networkModification: {
-        variant: 'outlined',
-        background: theme.palette.primary.light,
+        background: theme.palette.text.secondary,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
             background: theme.palette.primary.main,
         },
+        overflow: 'hidden',
     },
-    buildStatusOk: {
-        color: 'green',
+    outOfBoundIcons: {
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'absolute',
+        right: '-30px',
+        top: '18px',
     },
-    buildStatusInvalid: {
-        color: 'indianred',
+    labelWrapper: {
+        display: 'flex',
+        width: '85%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        lineHeight: 'normal',
+        marginLeft: 'auto',
+    },
+    buildBannerOK: {
+        display: 'flex',
+        height: '100%',
+        width: '15%',
+        position: 'absolute',
+        top: '0px',
+        left: '0px',
+        background: VALID_NODE_BANNER_COLOR,
+    },
+    buildBannerInvalid: {
+        display: 'flex',
+        height: '100%',
+        width: '15%',
+        position: 'absolute',
+        top: '0px',
+        left: '0px',
+        background: INVALID_NODE_BANNER_COLOR,
     },
     margin: {
         marginLeft: theme.spacing(1.25),
@@ -64,38 +97,53 @@ const NetworkModificationNode = (props) => {
                 style={{ background: '#555' }}
                 isConnectable={false}
             />
-            <Button
-                variant="outlined"
-                className={
-                    props.selected
-                        ? classes.networkModificationSelected
-                        : classes.networkModification
-                }
-                disableElevation
-            >
-                {props.data.label}
-                {props.data.buildStatus === 'BUILDING' ? (
-                    <CircularProgress
-                        size={24}
-                        color="secondary"
-                        className={classes.margin}
-                    />
-                ) : props.id === workingNode?.id ? (
-                    <VisibilityIcon className={classes.margin} />
-                ) : (
-                    props.data.buildStatus !== 'NOT_BUILT' && (
-                        <BuildIcon
-                            className={clsx(
-                                props.data.buildStatus === 'BUILT'
-                                    ? classes.buildStatusOk
-                                    : classes.buildStatusInvalid,
-                                classes.margin
-                            )}
-                        />
-                    )
-                )}
-                {props.data.readOnly && <LockIcon className={classes.margin} />}
-            </Button>
+            <Tooltip title={props.data.label} placement="top">
+                <Button
+                    className={
+                        props.selected
+                            ? classes.networkModificationVisualized
+                            : classes.networkModification
+                    }
+                >
+                    <div
+                        className={
+                            props.data.buildStatus === 'BUILT'
+                                ? classes.buildBannerOK
+                                : classes.buildBannerInvalid
+                        }
+                    >
+                        {(props.data.buildStatus === 'BUILDING' && (
+                            <CircularProgress
+                                size={20}
+                                color="primary"
+                                style={{ margin: 'auto' }}
+                            />
+                        )) ||
+                            (props.data.buildStatus === 'NOT_BUILT' && (
+                                <VisibilityOffIcon style={{ margin: 'auto' }} />
+                            ))}
+                    </div>
+
+                    <div className={classes.labelWrapper}>
+                        <span
+                            style={{
+                                overflow: 'hidden',
+                                display: '-webkit-box',
+                                WebkitLineClamp: '3',
+                                //Usage of a deprecated property because there's no satisfying alternative yet : replace with line-clamp in the future
+                                WebkitBoxOrient: 'vertical',
+                            }}
+                        >
+                            {props.data.label}
+                        </span>
+                    </div>
+                </Button>
+            </Tooltip>
+
+            <div className={classes.outOfBoundIcons}>
+                {props.data.readOnly && <LockIcon />}
+                {props.id === workingNode?.id && <VisibilityIcon />}
+            </div>
         </>
     );
 };
