@@ -297,15 +297,11 @@ export function fetchReport(studyUuid, selectedNodeUuid, nodeOnlyReport) {
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetch(svgUrl).then((response) =>
-        response.ok
+    return backendFetch(svgUrl).then((response) => {
+        return response.ok
             ? response.json()
-            : response.json().then((json) => {
-                  return Promise.reject(
-                      json ? json.message : response.statusText
-                  );
-              })
-    );
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function fetchSubstations(studyUuid, selectedNodeUuid, substationsIds) {
