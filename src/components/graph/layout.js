@@ -8,7 +8,7 @@
 import dagre from 'dagre';
 import { isNode } from 'react-flow-renderer';
 
-const nodeWidth = 150;
+const nodeWidth = 200;
 const nodeHeight = 50;
 
 export function getLayoutedElements(elements) {

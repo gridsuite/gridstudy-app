@@ -95,6 +95,7 @@ const StudyPane = ({
     studyUuid,
     network,
     workingNode,
+    selectedNode,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -284,6 +285,7 @@ const StudyPane = ({
                                     openVoltageLevel={openVoltageLevel}
                                     /* TODO verif tableEquipment*/
                                     workingNode={workingNode}
+                                    selectedNode={selectedNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -318,6 +320,7 @@ const StudyPane = ({
                                         loadFlowInfos?.loadFlowStatus
                                     )}
                                     workingNode={workingNode}
+                                    selectedNode={selectedNode}
                                 />
                             )}
                             {props.view === StudyView.MAP &&
@@ -348,6 +351,7 @@ const StudyPane = ({
                     network={network}
                     studyUuid={studyUuid}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
@@ -388,6 +392,7 @@ const StudyPane = ({
                 <ResultViewTab
                     studyUuid={studyUuid}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
@@ -403,6 +408,7 @@ const StudyPane = ({
                     studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                 />
             </div>
         </>

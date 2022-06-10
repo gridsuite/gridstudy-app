@@ -185,7 +185,26 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
-            synchWorkingNodeAndSelectedNode(state);
+            const foundWorkingTreeNode =
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.workingTreeNode?.id
+                );
+            if (foundWorkingTreeNode !== undefined) {
+                state.workingTreeNode = {
+                    id: foundWorkingTreeNode.id,
+                    readOnly: foundWorkingTreeNode.readOnly,
+                    buildStatus: foundWorkingTreeNode.buildStatus,
+                    name: foundWorkingTreeNode.name,
+                };
+            }
+
+            const foundSelectedTreeNode =
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.selectedTreeNode?.id
+                );
+            if (foundSelectedTreeNode !== undefined) {
+                state.selectedTreeNode = foundSelectedTreeNode;
+            }
         }
     },
 
@@ -353,6 +372,7 @@ function synchWorkingNodeAndSelectedNode(state) {
             name: workingNode?.data?.label,
             targetPosition: workingNode?.targetPosition,
             position: workingNode?.position,
+            buildStatus: workingNode?.buildStatus,
         };
     }
     const selectedNode = state.networkModificationTreeModel?.treeElements.find(
