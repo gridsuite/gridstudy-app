@@ -43,6 +43,8 @@ import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
 import { NAD_INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
+import { isNodeValid } from '../../graph/util/model-functions';
+import AlertInvalidNode from '../../util/alert-invalid-node';
 
 const loadingWidth = 150;
 const maxWidth = 1200;
@@ -169,6 +171,7 @@ const SizedNetworkAreaDiagram = (props) => {
         totalWidth,
         totalHeight,
         workingNode,
+        selectedNode,
         nadId,
         diagramTitle,
         svgUrl,
@@ -269,6 +272,11 @@ const SizedNetworkAreaDiagram = (props) => {
                 studyUpdatedForce.eventData.headers['updateType'] ===
                     'loadflow' ||
                 studyUpdatedForce.eventData.headers['updateType'] === 'study'
+            ) {
+                updateNad();
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'buildCompleted'
             ) {
                 updateNad();
             }
@@ -392,6 +400,10 @@ const SizedNetworkAreaDiagram = (props) => {
                             <LinearProgress />
                         </Box>
                     )}
+                    {!isNodeValid(workingNode, selectedNode) &&
+                        selectedNode?.type !== 'ROOT' && (
+                            <AlertInvalidNode noMargin={true} />
+                        )}
                 </Box>
                 {
                     <div
@@ -460,6 +472,7 @@ NetworkAreaDiagram.propTypes = {
     svgUrl: PropTypes.string.isRequired,
     nadId: PropTypes.string,
     workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,
