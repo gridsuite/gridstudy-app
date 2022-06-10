@@ -271,12 +271,9 @@ const SizedNetworkAreaDiagram = (props) => {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                     'loadflow' ||
-                studyUpdatedForce.eventData.headers['updateType'] === 'study'
-            ) {
-                updateNad();
-            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] === 'study' ||
                 studyUpdatedForce.eventData.headers['updateType'] ===
-                'buildCompleted'
+                    'buildCompleted'
             ) {
                 updateNad();
             }
