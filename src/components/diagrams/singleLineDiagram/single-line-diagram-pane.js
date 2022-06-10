@@ -43,12 +43,14 @@ const mergeDisplayed = (oldValue, sldToDisplay, createSLD) => {
     let changeLastOpen = false;
     const lastOpen = sldToDisplay.find((view) => view.lastOpen)?.id;
     oldValue.forEach((sld) => {
-        // delete already present element
-        if (!sld.lastOpen !== (sld.id === lastOpen)) {
-            changeLastOpen = true;
-        }
-        if (!toAdd.delete(sld?.id)) {
-            toRemove.add(sld); // if element is absent we (delete returned false we have to remove it
+        if (sld !== undefined) {
+            // delete already present element
+            if (!sld.lastOpen !== (sld.id === lastOpen)) {
+                changeLastOpen = true;
+            }
+            if (!toAdd.delete(sld?.id)) {
+                toRemove.add(sld); // if element is absent we (delete returned false we have to remove it
+            }
         }
     });
     if (toAdd.size === 0 && toRemove.size === 0 && !changeLastOpen)
@@ -61,7 +63,11 @@ const mergeDisplayed = (oldValue, sldToDisplay, createSLD) => {
     toAdd.forEach((value) => {
         newValue.push(createSLD(value));
     });
-    newValue.forEach((view) => (view.lastOpen = view.id === lastOpen));
+    newValue.forEach((view) => {
+        if (view !== undefined) {
+            view.lastOpen = view.id === lastOpen;
+        }
+    });
     return newValue.filter((n) => n);
 };
 

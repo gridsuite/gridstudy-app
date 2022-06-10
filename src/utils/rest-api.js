@@ -297,15 +297,11 @@ export function fetchReport(studyUuid, selectedNodeUuid, nodeOnlyReport) {
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetch(svgUrl).then((response) =>
-        response.ok
+    return backendFetch(svgUrl).then((response) => {
+        return response.ok
             ? response.json()
-            : response.json().then((json) => {
-                  return Promise.reject(
-                      json ? json.message : response.statusText
-                  );
-              })
-    );
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function fetchSubstations(studyUuid, selectedNodeUuid, substationsIds) {
@@ -1759,4 +1755,16 @@ export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
         '/export-network/' +
         exportFormat;
     return getUrlWithToken(url);
+}
+
+export function fetchCaseInfos(studyUuid) {
+    console.info('Fetching case infos');
+    const url = getStudyUrl(studyUuid) + '/case/name';
+    console.debug(url);
+
+    return backendFetch(url, { method: 'get' }).then((response) => {
+        return response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
