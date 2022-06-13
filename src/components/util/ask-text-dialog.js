@@ -4,17 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+
 import { useIntl } from 'react-intl';
 import {
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
-    TextField,
 } from '@mui/material';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
+import { useValidNodeName } from '../dialogs/input-hooks';
+import { useSelector } from 'react-redux';
+import Alert from '@mui/material/Alert';
 
 /**
  * Display a modal window asking for a single string
@@ -27,19 +30,25 @@ import PropTypes from 'prop-types';
  * @constructor
  */
 export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
-    const [currentValue, setCurrentValue] = useState(value);
     const intl = useIntl();
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const [triggerReset, setTriggerReset] = React.useState(false);
 
-    const handleChange = (e) => {
-        setCurrentValue(e.target.value || '');
-    };
-
-    useEffect(() => {
-        if (show) setCurrentValue(value);
-    }, [value, show]);
+    const [nameError, nameField, isNameOK, currentValue] = useValidNodeName({
+        studyUuid,
+        defaultValue: value,
+        triggerReset,
+    });
 
     const handleValidate = (e) => {
         onValidate(currentValue || '');
+        onClose();
+    };
+
+    useEffect(() => setTriggerReset(false), [show]);
+
+    const handleClose = (e) => {
+        setTriggerReset(nameField.props.value !== value);
         onClose();
     };
 
@@ -47,13 +56,20 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
         <Dialog open={show} onClose={onClose}>
             <DialogTitle id={'modal-title'}>{title}</DialogTitle>
             <DialogContent>
-                <TextField value={currentValue} onChange={handleChange} />
+                {nameField}
+                {!isNameOK && nameError !== undefined && (
+                    <Alert severity="error">{nameError}</Alert>
+                )}
             </DialogContent>
             <DialogActions>
-                <Button variant={'outlined'} onClick={handleValidate}>
+                <Button
+                    variant={'outlined'}
+                    onClick={handleValidate}
+                    disabled={!isNameOK}
+                >
                     {intl.formatMessage({ id: 'validate' })}
                 </Button>
-                <Button onClick={onClose}>
+                <Button onClick={handleClose}>
                     {intl.formatMessage({ id: 'cancel' })}
                 </Button>
             </DialogActions>

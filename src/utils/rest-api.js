@@ -1829,3 +1829,26 @@ export function fetchCaseInfos(studyUuid) {
             : response.text().then((text) => Promise.reject(text));
     });
 }
+
+export function isNodeExists(studyUuid, nodeName) {
+    const existsNodeUrl =
+        getStudyUrl(studyUuid) +
+        '/nodes?' +
+        new URLSearchParams({
+            nodeName: nodeName,
+        });
+    console.debug(existsNodeUrl);
+    return backendFetch(existsNodeUrl, { method: 'head' });
+}
+
+export function getUniqueNodeName(studyUuid) {
+    const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/nodes/nextUniqueName';
+    console.debug(uniqueNodeNameUrl);
+    return backendFetch(uniqueNodeNameUrl, {
+        method: 'get',
+    }).then((response) => {
+        return response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text));
+    });
+}

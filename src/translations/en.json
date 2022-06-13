@@ -279,6 +279,7 @@
     "createNetworkModificationNode": "Create a node in a new branch",
     "removeNode": "Remove node",
     "exportCaseOnNode": "Export case",
+    "nodeNameAlreadyUsed": "This name is already used",
     "NetworkModificationTreeLoadError": "An error occured while loading network modification tree",
     "NodeCreateError": "An error occured while creating node",
     "NodeDeleteError": "An error occured while deleting node",
