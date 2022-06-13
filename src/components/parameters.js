@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
     },
     minWidthMedium: {
-        minWidth: theme.spacing(16),
+        minWidth: theme.spacing(20),
     },
     controlItem: {
         justifyContent: 'flex-end',
@@ -412,7 +412,13 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                         renderInput={(props) => (
                             <TextField
                                 label={
-                                    <FormattedMessage id="descLfCountries" />
+                                    <FormattedMessage
+                                        id={
+                                            value?.length === 0
+                                                ? 'descLfAllCountries'
+                                                : 'descLfCountries'
+                                        }
+                                    />
                                 }
                                 className={classes.minWidthMedium}
                                 {...props}

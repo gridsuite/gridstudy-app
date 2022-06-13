@@ -153,7 +153,7 @@
     "descLfNoGeneratorReactiveLimits": "Prise en compte des limites de réactif des groupes : ",
     "descLfPhaseShifterRegulationOn": "Activer les régulations des transformateurs déphaseurs : ",
     "descLfTwtSplitShuntAdmittance": "Répartir la susceptance des transformateurs à deux enroulements entre primaire et secondaire : ",
-    "descLfShuntCompensatorVoltageControlOn": "Simulation des moyens de compensation : ",
+    "descLfShuntCompensatorVoltageControlOn": "Activer la régulation de tension des bancs de compensation : ",
     "descLfUniformValues": "Uniforme",
     "descLfPreviousValues": "Précédentes",
     "descLfDcValues": "DC",
@@ -175,6 +175,7 @@
     "descLfBalanceTypeLoad": "consommation",
     "descLfBalanceTypeConformLoad": "part variable de la consommation",
     "descLfCountries": "Pays",
+    "descLfAllCountries": "Tous les pays",
     "descLfCountriesToBalance": "Pays participant à la compensation : ",
 
     "securityAnalysisResults": "Résultats de l'analyse de sécurité",
