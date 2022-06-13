@@ -13,12 +13,17 @@ import { ReportViewer } from '@gridsuite/commons-ui';
 import { useSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import WaitingLoader from './util/waiting-loader';
+import AlertInvalidNode from './util/alert-invalid-node';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
+import { isNodeValid } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
+    div: {
+        display: 'flex',
+    },
     reportOnlyNode: {
         margin: 5,
     },
@@ -31,10 +36,16 @@ const NETWORK_MODIFICATION = 'NetworkModification';
  * @param studyId : string study id
  * @param visible : boolean window visible
  * @param workingNode : object visualized node
+ * @param selectedNode : object selected node
  * @returns {*} node
  * @constructor
  */
-export const ReportViewerTab = ({ studyId, visible, workingNode }) => {
+export const ReportViewerTab = ({
+    studyId,
+    visible,
+    workingNode,
+    selectedNode,
+}) => {
     const intl = useIntl();
     const classes = useStyles();
 
@@ -104,21 +115,27 @@ export const ReportViewerTab = ({ studyId, visible, workingNode }) => {
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
             {report && (
                 <Paper className={clsx('singlestretch-child')}>
-                    <FormControlLabel
-                        className={classes.reportOnlyNode}
-                        control={
-                            <Switch
-                                checked={nodeOnlyReport}
-                                inputProps={{
-                                    'aria-label': 'primary checkbox',
-                                }}
-                                onChange={(e) => handleChangeValue(e)}
-                            />
-                        }
-                        label={intl.formatMessage({
-                            id: 'LogOnlySingleNode',
-                        })}
-                    />
+                    <div className={classes.div}>
+                        <FormControlLabel
+                            className={classes.reportOnlyNode}
+                            control={
+                                <Switch
+                                    checked={nodeOnlyReport}
+                                    inputProps={{
+                                        'aria-label': 'primary checkbox',
+                                    }}
+                                    onChange={(e) => handleChangeValue(e)}
+                                />
+                            }
+                            label={intl.formatMessage({
+                                id: 'LogOnlySingleNode',
+                            })}
+                        />
+                        {!isNodeValid(workingNode, selectedNode) &&
+                            selectedNode?.type !== 'ROOT' && (
+                                <AlertInvalidNode />
+                            )}
+                    </div>
                     <ReportViewer jsonReport={report} />
                 </Paper>
             )}
@@ -130,4 +147,5 @@ ReportViewerTab.propTypes = {
     studyId: PropTypes.string,
     visible: PropTypes.bool,
     workingNode: PropTypes.object,
+    selectedNodeNode: PropTypes.object,
 };

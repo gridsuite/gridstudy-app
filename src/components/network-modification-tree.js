@@ -10,7 +10,10 @@ import ReactFlow, {
     Controls,
     useStoreState,
     useZoomPanHelper,
+    ControlButton,
+    MiniMap,
 } from 'react-flow-renderer';
+import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -64,12 +67,34 @@ const NetworkModificationTree = ({
     const classes = useStyles();
 
     const selectedNode = useSelector((state) => state.selectedTreeNode);
+    const workingNode = useSelector((state) => state.workingTreeNode);
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
 
     const [isMoving, setIsMoving] = useState(false);
+    const [isMinimapOpen, setIsMinimapOpen] = useState(false);
+
+    const nodeColor = (node) => {
+        if (node.type === 'ROOT') {
+            return 'rgba(0, 0, 0, 0.0)';
+        } else {
+            if (node.id === workingNode?.id) {
+                return '#4287f5';
+            }
+            switch (node.data.buildStatus) {
+                case 'BUILT':
+                    return '#70d136';
+                case 'BUILT_INVALID':
+                    return '#9196a1';
+                case 'NOT_BUILT':
+                    return '#9196a1';
+                default:
+                    return '#9196a1';
+            }
+        }
+    };
 
     const onElementClick = useCallback(
         (event, element) => {
@@ -82,7 +107,8 @@ const NetworkModificationTree = ({
             if (
                 element.type === 'ROOT' ||
                 (element.type === 'NETWORK_MODIFICATION' &&
-                    element.data.buildStatus === 'BUILT')
+                    (element.data.buildStatus === 'BUILT' ||
+                        element.data.buildStatus === 'BUILT_INVALID'))
             ) {
                 dispatch(workingTreeNode(element));
             }
@@ -111,6 +137,10 @@ const NetworkModificationTree = ({
         },
         [studyUuid, enqueueSnackbar, intlRef]
     );
+
+    const toggleMinimap = useCallback(() => {
+        setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
+    }, []);
 
     const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
         onElementClick,
@@ -196,7 +226,9 @@ const NetworkModificationTree = ({
     return (
         <Box flexGrow={1}>
             <ReactFlow
-                style={{ cursor: isMoving ? 'grabbing' : 'grab' }}
+                style={{
+                    cursor: isMoving ? 'grabbing' : 'grab',
+                }}
                 elements={treeModel ? treeModel.treeElements : []}
                 onNodeContextMenu={onNodeContextMenu}
                 onElementClick={nodeSingleOrDoubleClick}
@@ -207,7 +239,7 @@ const NetworkModificationTree = ({
                 elementsSelectable
                 selectNodesOnDrag={false}
                 nodeTypes={nodeTypes}
-                connectionLineType="smoothstep"
+                connectionLineType="default"
                 nodesDraggable={false}
                 nodesConnectable={false}
                 snapToGrid={false}
@@ -221,7 +253,14 @@ const NetworkModificationTree = ({
                     showInteractive={false}
                 >
                     <CenterGraphButton selectedNode={selectedNode} />
+                    <ControlButton onClick={() => toggleMinimap()}>
+                        <MapIcon />
+                    </ControlButton>
                 </Controls>
+
+                {isMinimapOpen && (
+                    <MiniMap nodeColor={nodeColor} nodeStrokeWidth={0} />
+                )}
             </ReactFlow>
         </Box>
     );

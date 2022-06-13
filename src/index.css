@@ -1,3 +1,5 @@
+@import 'nad-index.css';
+
 /* a css rule for position: relative coming before singlestretch-* rules
  * to be ignored if singlestretch is implemented with position: absolute */
 .relative {
@@ -466,4 +468,26 @@ code {
 }
 .sld-vl0to30 {
     --sld-vl-color: #abae28;
+}
+
+/* Network modification tree */
+
+.react-flow__node-ROOT {
+    width: 180px;
+    height: auto;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.react-flow__node-NETWORK_MODIFICATION {
+    width: 180px;
+    height: 60px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.react-flow__node > .MuiButton-root {
+    width: 100%;
 }

@@ -16,6 +16,7 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
+import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
@@ -255,6 +256,17 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             dialog: () =>
                 adapt(
                     LineSplitWithVoltageLevelDialog,
+                    withVLs,
+                    withLines,
+                    withSubstations
+                ),
+            icon: <AddIcon />,
+        },
+        LINE_ATTACH_TO_VOLTAGE_LEVEL: {
+            label: 'LineAttachToVoltageLevel',
+            dialog: () =>
+                adapt(
+                    LineAttachToVoltageLevelDialog,
                     withVLs,
                     withLines,
                     withSubstations

@@ -71,6 +71,8 @@ const LineCreationDialog = ({
     voltageLevelOptions,
     selectedNodeUuid,
     workingNodeUuid,
+    onCreateLine = createLine,
+    displayConnectivity = true,
 }) => {
     const classes = useStyles();
 
@@ -204,6 +206,7 @@ const LineCreationDialog = ({
     const [connectivity1, connectivity1Field] = useConnectivityValue({
         label: 'Connectivity',
         id: 'Connectivity1',
+        validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
@@ -216,6 +219,7 @@ const LineCreationDialog = ({
     const [connectivity2, connectivity2Field] = useConnectivityValue({
         label: 'Connectivity',
         id: 'Connectivity2',
+        validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
         workingNodeUuid: workingNodeUuid,
@@ -255,7 +259,7 @@ const LineCreationDialog = ({
 
     const handleSave = () => {
         if (inputForm.validate()) {
-            createLine(
+            onCreateLine(
                 studyUuid,
                 selectedNodeUuid,
                 lineId,
@@ -266,10 +270,10 @@ const LineCreationDialog = ({
                 shuntSusceptance1,
                 shuntConductance2,
                 shuntSusceptance2,
-                connectivity1.voltageLevel.id,
-                connectivity1.busOrBusbarSection.id,
-                connectivity2.voltageLevel.id,
-                connectivity2.busOrBusbarSection.id,
+                connectivity1?.voltageLevel?.id,
+                connectivity1?.busOrBusbarSection?.id,
+                connectivity2?.voltageLevel?.id,
+                connectivity2?.busOrBusbarSection?.id,
                 permanentCurrentLimit1,
                 permanentCurrentLimit2,
                 editData ? true : false,
@@ -385,38 +389,50 @@ const LineCreationDialog = ({
                             {gridItem(permanentCurrentLimit2Field, 12)}
                         </Grid>
                     </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <h3 className={classes.h3}>
-                                <FormattedMessage id="Connectivity" />
-                            </h3>
-                        </Grid>
-                    </Grid>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <h4 className={classes.h4}>
-                                <FormattedMessage id="Side1" />
-                            </h4>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <h4 className={classes.h4}>
-                                <FormattedMessage id="Side2" />
-                            </h4>
-                        </Grid>
-                    </Grid>
+                    {displayConnectivity && (
+                        <>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                    <h3 className={classes.h3}>
+                                        <FormattedMessage id="Connectivity" />
+                                    </h3>
+                                </Grid>
+                            </Grid>
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <h4 className={classes.h4}>
+                                        <FormattedMessage id="Side1" />
+                                    </h4>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <h4 className={classes.h4}>
+                                        <FormattedMessage id="Side2" />
+                                    </h4>
+                                </Grid>
+                            </Grid>
 
-                    <Grid container spacing={2}>
-                        <Grid item container xs={6} direction="column">
-                            <Grid container direction="column" spacing={2}>
-                                {gridItem(connectivity1Field, 12)}
+                            <Grid container spacing={2}>
+                                <Grid item container xs={6} direction="column">
+                                    <Grid
+                                        container
+                                        direction="column"
+                                        spacing={2}
+                                    >
+                                        {gridItem(connectivity1Field, 12)}
+                                    </Grid>
+                                </Grid>
+                                <Grid item container direction="column" xs={6}>
+                                    <Grid
+                                        container
+                                        direction="column"
+                                        spacing={2}
+                                    >
+                                        {gridItem(connectivity2Field, 12)}
+                                    </Grid>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid item container direction="column" xs={6}>
-                            <Grid container direction="column" spacing={2}>
-                                {gridItem(connectivity2Field, 12)}
-                            </Grid>
-                        </Grid>
-                    </Grid>
+                        </>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseAndClear}>

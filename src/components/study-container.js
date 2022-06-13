@@ -24,6 +24,7 @@ import {
     fetchSecurityAnalysisStatus,
     fetchStudyExists,
     fetchPath,
+    fetchCaseInfos,
 } from '../utils/rest-api';
 import {
     closeStudy,
@@ -147,6 +148,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const dispatch = useDispatch();
 
     const workingNode = useSelector((state) => state.workingTreeNode);
+    const selectedNode = useSelector((state) => state.selectedTreeNode);
 
     const workingNodeIdRef = useRef();
 
@@ -203,7 +205,12 @@ export function StudyContainer({ view, onChangeTab }) {
         (isUpdate) => {
             console.info(`Loading network of study '${studyUuid}'...`);
 
-            if (!workingNode || !studyUuid) return;
+            if (
+                !workingNode ||
+                !studyUuid ||
+                workingNode.buildStatus === 'BUILDING'
+            )
+                return;
 
             if (isUpdate) {
                 // After a load flow, network has to be recreated.
@@ -270,6 +277,25 @@ export function StudyContainer({ view, onChangeTab }) {
                     new NetworkModificationTreeModel();
                 networkModificationTreeModel.setTreeElements(tree);
                 networkModificationTreeModel.updateLayout();
+
+                fetchCaseInfos(studyUuid)
+                    .then((res) => {
+                        if (res) {
+                            networkModificationTreeModel.setCaseName(res);
+                        }
+                    })
+                    .catch((err) => {
+                        console.error(err.message);
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: err.message,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId:
+                                    'NetworkModificationTreeLoadError',
+                                intlRef: intlRef,
+                            },
+                        });
+                    });
 
                 let firstBuiltNode = getFirstNodeOfType(
                     tree,
@@ -487,6 +513,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUuid={studyUuid}
                 network={network}
                 workingNode={workingNode}
+                selectedNode={selectedNode}
                 view={view}
                 onChangeTab={onChangeTab}
                 updatedLines={updatedLines}

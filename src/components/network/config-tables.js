@@ -941,15 +941,15 @@ export const TABLES_DEFINITIONS = {
                 columnWidth: LARGE_COLUMN_WIDTH,
             },
             {
+                id: 'AcEmulation',
+                dataKey: 'isEnabled',
+                boolean: true,
+            },
+            {
                 id: 'K',
                 dataKey: 'k',
                 numeric: true,
                 fractionDigits: 1,
-            },
-            {
-                id: 'AcEmulation',
-                dataKey: 'isEnabled',
-                boolean: true,
             },
             {
                 id: 'P0',
@@ -1067,6 +1067,23 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'LossFactor',
                 dataKey: 'lossFactor',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'VoltageRegulatorOn',
+                dataKey: 'voltageRegulatorOn',
+                boolean: true,
+            },
+            {
+                id: 'VoltageSetpointKV',
+                dataKey: 'voltageSetpoint',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'ReactivePowerSetpointMVAR',
+                dataKey: 'reactivePowerSetpoint',
                 numeric: true,
                 fractionDigits: 1,
             },

@@ -34,11 +34,12 @@ import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { centerOnSubstation } from '../redux/actions';
+import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import { useSingleLineDiagram } from './singleLineDiagram/utils';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -78,17 +79,36 @@ const CustomSuffixRenderer = ({ props, element }) => {
         [dispatch, props, network]
     );
 
+    const openNetworkAreaDiagramCB = useCallback(
+        (e, element) => {
+            dispatch(openNetworkAreaDiagram(element.id));
+            props.onClose && props.onClose();
+            e.stopPropagation();
+        },
+        [dispatch, props]
+    );
+
     if (
         element.type === EQUIPMENT_TYPE.SUBSTATION.name ||
         element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
     )
         return (
-            <IconButton
-                onClick={(e) => enterOnSubstationCB(e, element)}
-                size={'small'}
-            >
-                <GpsFixedIcon fontSize={'small'} />
-            </IconButton>
+            <>
+                {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
+                    <IconButton
+                        onClick={(e) => openNetworkAreaDiagramCB(e, element)}
+                        size={'small'}
+                    >
+                        <TimelineIcon fontSize={'small'} />
+                    </IconButton>
+                )}
+                <IconButton
+                    onClick={(e) => enterOnSubstationCB(e, element)}
+                    size={'small'}
+                >
+                    <GpsFixedIcon fontSize={'small'} />
+                </IconButton>
+            </>
         );
 
     return (
