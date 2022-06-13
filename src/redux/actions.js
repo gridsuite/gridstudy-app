@@ -356,15 +356,6 @@ export function centerOnSubstation(substationId) {
     };
 }
 
-export const SET_MODIFICATION_NOTIFICATION = 'SET_MODIFICATION_NOTIFICATION';
-
-export function setModificationNotification(modificationNotification) {
-    return {
-        type: SET_MODIFICATION_NOTIFICATION,
-        notificat: modificationNotification,
-    };
-}
-
 export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 
 export function addNotification(notification) {
