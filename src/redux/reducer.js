@@ -48,8 +48,9 @@ import {
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
-    MODIFICATION_CREATION_IN_PROGRESS,
-    MODIFICATION_CREATION_FINISHED,
+    ADD_NOTIFICATION,
+    REMOVE_NOTIFICATION,
+    REMOVE_NOTIFICATION_BY_NODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -118,7 +119,7 @@ const initialState = {
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     centerOnSubstation: null,
-    modificationCreationInProgress: false,
+    notificationList: [],
     ...paramsInitialState,
 };
 
@@ -326,18 +327,31 @@ export const reducer = createReducer(initialState, {
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
     },
-
-    [MODIFICATION_CREATION_IN_PROGRESS]: (state) => {
-        state.modificationCreationInProgress = true;
+    [ADD_NOTIFICATION]: (state, action) => {
+        state.notificationList = [
+            ...state.notificationList,
+            action.notification,
+        ];
     },
-
-    [MODIFICATION_CREATION_FINISHED]: (state) => {
-        state.modificationCreationInProgress = false;
+    [REMOVE_NOTIFICATION]: (state, action) => {
+        state.notificationList = [
+            ...state.notificationList.filter(
+                (n) =>
+                    n.notificationUuid !== action.notification.notificationUuid
+            ),
+        ];
+    },
+    [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
+        state.notificationList = [
+            ...state.notificationList.filter(
+                (n) => n.nodeUuid !== action.notification.nodeUuid
+            ),
+        ];
     },
 });
 
 function synchWorkingNodeAndSelectedNode(state) {
-    const workingNode = state.networkModificationTreeModel?.treeElements.find(
+    let workingNode = state.networkModificationTreeModel?.treeElements.find(
         (entry) => entry?.id === state.workingTreeNode?.id
     );
     if (workingNode === undefined) {
@@ -356,7 +370,7 @@ function synchWorkingNodeAndSelectedNode(state) {
             position: workingNode?.position,
         };
     }
-    const selectedNode = state.networkModificationTreeModel?.treeElements.find(
+    let selectedNode = state.networkModificationTreeModel?.treeElements.find(
         (entry) => entry?.id === state.selectedTreeNode?.id
     );
     // handle the case of selectedNode not in the TreeModel anymore.

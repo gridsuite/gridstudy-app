@@ -58,6 +58,10 @@ const useStyles = makeStyles((theme) => ({
         border: theme.spacing(1),
         zIndex: 90,
     },
+    circularRoot: {
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(1),
+    },
 }));
 
 export const ModificationListItem = ({
@@ -73,7 +77,6 @@ export const ModificationListItem = ({
     const intl = useIntl();
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
-
     const getComputedLabel = useCallback(() => {
         if (modif.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
             return modif.lineToSplitId;

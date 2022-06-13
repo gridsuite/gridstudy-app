@@ -14,5 +14,9 @@
     "network_modifications/SHUNT_COMPENSATOR_CREATION": "Creating shunt compensator {computedLabel}",
     "network_modifications/GROOVY_SCRIPT": "Modification by script",
     "network_modifications/EQUIPMENT_ATTRIBUTE_MODIFICATION": "{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Open {computedLabel}} other {Close {computedLabel}}}} other {Equipment modification {computedLabel}}}",
-    "network_modifications/creatingModification": "Creating modification ..."
+    "network_modifications/creatingModification": "Creating Hypothesis ...",
+    "network_modifications/deletingModification": "Deleting Hypothesis ...",
+    "network_modifications/updatingModification": "Updating Hypothesis ...",
+    "network_modifications/modificationFinished": "Hypothesis updated",
+    "network_modifications/modificationError": "Error updating hypothesis"
 }

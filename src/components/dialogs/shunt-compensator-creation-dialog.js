@@ -38,8 +38,6 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useBooleanValue } from './inputs/boolean';
-import { modificationCreationInProgress } from '../../redux/actions';
-import { useDispatch } from 'react-redux';
 
 const disabledChecked = { disabled: true };
 
@@ -65,8 +63,6 @@ const ShuntCompensatorCreationDialog = ({
     const intlRef = useIntlRef();
 
     const { enqueueSnackbar } = useSnackbar();
-
-    const dispatch = useDispatch();
 
     const inputForm = useInputForm();
 
@@ -193,18 +189,16 @@ const ShuntCompensatorCreationDialog = ({
                 connectivity,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
-            )
-                .then(() => dispatch(modificationCreationInProgress()))
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'ShuntCompensatorCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'ShuntCompensatorCreationError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

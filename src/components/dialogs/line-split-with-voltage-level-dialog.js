@@ -42,8 +42,6 @@ import { makeRefreshBusOrBusbarSectionsCallback } from './connectivity-edition';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { validateField } from '../util/validation-functions';
-import { modificationCreationInProgress } from '../../redux/actions';
-import { useDispatch } from 'react-redux';
 
 const getId = (e) => e?.id || (typeof e === 'string' ? e : '');
 
@@ -241,8 +239,6 @@ const LineSplitWithVoltageLevelDialog = ({
     );
 
     const intlRef = useIntlRef();
-
-    const dispatch = useDispatch();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -462,22 +458,16 @@ const LineSplitWithVoltageLevelDialog = ({
                 newLine1Name || null,
                 newLine2Id,
                 newLine2Name || null
-            )
-                .then(() => {
-                    dispatch(modificationCreationInProgress());
-                    // until whole treatment path is OK, we let close only on ... "Close"
-                    // handleCloseAndClear();
-                })
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LineDivisionError',
-                            intlRef: intlRef,
-                        },
-                    });
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LineDivisionError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

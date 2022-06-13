@@ -14,5 +14,9 @@
     "network_modifications/SHUNT_COMPENSATOR_CREATION": "Création d'un moyen de compensation {computedLabel}",
     "network_modifications/GROOVY_SCRIPT": "Modification par script",
     "network_modifications/EQUIPMENT_ATTRIBUTE_MODIFICATION": "{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Ouverture de {computedLabel}} other {Fermeture de {computedLabel}}}} other {Modification de l'equipement {computedLabel}}}",
-    "network_modifications/creatingModification": "Creation de la modification ..."
+    "network_modifications/creatingModification": "Création de l'hypothése en cours ...",
+    "network_modifications/deletingModification": "supression de l'hypothése en cours ...",
+    "network_modifications/updatingModification": "Mise à jour de l'hypothése en cours ...",
+    "network_modifications/modificationFinished": "Mise à jour de l'hypothése terminé",
+    "network_modifications/modificationError": "Mise à jour de l'hypothése en erreur"
 }

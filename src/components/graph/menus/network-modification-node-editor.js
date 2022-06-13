@@ -45,7 +45,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { modificationCreationFinished } from '../../../redux/actions';
+import { addNotification, removeNotification } from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -85,8 +85,14 @@ const useStyles = makeStyles((theme) => ({
         background: theme.palette.primary.main,
     },
     circularRoot: {
-        marginLeft: theme.spacing(3),
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(2),
+    },
+    notification: {
+        flex: 1,
+        alignContent: 'center',
+        justifyContent: 'center',
+        marginTop: theme.spacing(4),
+        textAlign: 'center',
     },
 }));
 
@@ -102,9 +108,7 @@ function isPartial(s1, s2) {
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
     const workingNode = useSelector((state) => state.workingTreeNode);
-    const modificationCreationInProgress = useSelector(
-        (state) => state.modificationCreationInProgress
-    );
+    const notificationList = useSelector((state) => state.notificationList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
@@ -117,8 +121,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const [editDialogOpen, setEditDialogOpen] = useState(undefined);
     const [editData, setEditData] = useState(undefined);
-
     const dispatch = useDispatch();
+    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const [messageId, setMessageId] = useState('');
 
     const closeDialog = () => {
         setEditDialogOpen(undefined);
@@ -274,14 +279,72 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             else {
                 fetchNetworkModifications(selectedNode.networkModification)
                     .then((res) => {
-                        dispatch(modificationCreationFinished());
                         if (selectedNodeRef.current === selectedNode)
                             setModifications(res.status ? [] : res);
                     })
                     .catch((err) => snackError(err.message));
             }
         }
-    }, [selectedNode, setModifications, selectedNodeRef, snackError, dispatch]);
+    }, [selectedNode, setModifications, selectedNodeRef, snackError]);
+
+    const fillNotification = useCallback(
+        (study, messageId, type) => {
+            const notification = {
+                studyUuid: study.eventData.headers['studyUuid'],
+                nodeUuid: study.eventData.headers['parentNode'],
+                notificationUuid: study.eventData.payload,
+            };
+            setMessageId(messageId);
+            if (type === 'add') dispatch(addNotification(notification));
+            if (type === 'remove') dispatch(removeNotification(notification));
+        },
+        [dispatch]
+    );
+
+    const manageNotification = useCallback(
+        (study) => {
+            let messageId = '';
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'creatingInProgress'
+            ) {
+                messageId = 'network_modifications/creatingModification';
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'updatingInProgress'
+            ) {
+                messageId = 'network_modifications/updatingModification';
+            } else if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'deletingInProgress'
+            ) {
+                messageId = 'network_modifications/deletingModification';
+            }
+            fillNotification(studyUpdatedForce, messageId, 'add');
+        },
+        [fillNotification, studyUpdatedForce]
+    );
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (
+                selectedNodeRef.current.id !==
+                studyUpdatedForce.eventData.headers['parentNode']
+            )
+                return;
+
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'creatingInProgress' ||
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'updatingInProgress' ||
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'deletingInProgress'
+            ) {
+                manageNotification(studyUpdatedForce);
+            }
+        }
+    }, [dispatch, manageNotification, studyUpdatedForce]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -353,6 +416,16 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         [modifications, studyUuid, selectedNode.id, snackError]
     );
 
+    const isLoading = () => {
+        if (notificationList.length === 0) return false;
+
+        let res = notificationList.filter(
+            (notification) => notification.nodeUuid === selectedNode.id
+        );
+        if (res.length > 0) return true;
+        return false;
+    };
+
     return (
         <>
             <Toolbar className={classes.toolbar}>
@@ -386,7 +459,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             </Typography>
             <DragDropContext
                 onDragEnd={commit}
-                onDragStart={() => setIsDragging(true)}
+                onDragStart={() => setIsDragging(isLoading())}
             >
                 <Droppable droppableId="network-modification-list">
                     {(provided) => (
@@ -395,34 +468,31 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            <CheckboxList
-                                onChecked={setSelectedItems}
-                                values={modifications}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        network={network}
-                                        {...props}
-                                    />
-                                )}
-                                toggleSelectAll={toggleSelectAll}
-                            />
-                            {provided.placeholder}
-                            {modificationCreationInProgress === true && (
-                                <div>
+                            {isLoading() ? (
+                                <div className={classes.notification}>
                                     <CircularProgress
                                         size={18}
                                         className={classes.circularRoot}
                                     />
-                                    <FormattedMessage
-                                        id={
-                                            'network_modifications/creatingModification'
-                                        }
-                                    />
+                                    <FormattedMessage id={messageId} />
                                 </div>
+                            ) : (
+                                <CheckboxList
+                                    onChecked={setSelectedItems}
+                                    values={modifications}
+                                    itemRenderer={(props) => (
+                                        <ModificationListItem
+                                            key={props.item.uuid}
+                                            onEdit={doEditModification}
+                                            isDragging={isDragging}
+                                            network={network}
+                                            {...props}
+                                        />
+                                    )}
+                                    toggleSelectAll={toggleSelectAll}
+                                />
                             )}
+                            {provided.placeholder}
                         </div>
                     )}
                 </Droppable>

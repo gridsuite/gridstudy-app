@@ -15,6 +15,7 @@ import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
+    removeNotificationByNode,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -132,9 +133,21 @@ export const NetworkModificationTreePane = ({
                 'nodeUpdated'
             ) {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
+                if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (n) => n === selectedNode.id
+                    )
+                ) {
+                    const notification = {
+                        studyUuid:
+                            studyUpdatedForce.eventData.headers['studyUuid'],
+                        nodeUuid: selectedNode.id,
+                    };
+                    dispatch(removeNotificationByNode(notification));
+                }
             }
         }
-    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
+    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, selectedNode?.id]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {

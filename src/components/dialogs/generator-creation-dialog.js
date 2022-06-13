@@ -42,8 +42,6 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
 import { ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
-import { modificationCreationInProgress } from '../../redux/actions';
-import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -73,8 +71,6 @@ const GeneratorCreationDialog = ({
 
     const classes = useStyles();
     const intlRef = useIntlRef();
-
-    const dispatch = useDispatch();
 
     const { enqueueSnackbar } = useSnackbar();
 
@@ -262,18 +258,16 @@ const GeneratorCreationDialog = ({
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
-            )
-                .then(() => dispatch(modificationCreationInProgress()))
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'GeneratorCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'GeneratorCreationError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

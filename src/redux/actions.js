@@ -332,6 +332,8 @@ export function workingTreeNode(workingTreeNode) {
             id: workingTreeNode?.id,
             readOnly: workingTreeNode?.data?.readOnly,
             name: workingTreeNode?.data?.label,
+            targetPosition: workingTreeNode?.targetPosition,
+            position: workingTreeNode?.position,
         },
     };
 }
@@ -354,19 +356,38 @@ export function centerOnSubstation(substationId) {
     };
 }
 
-export const MODIFICATION_CREATION_IN_PROGRESS =
-    'MODIFICATION_CREATION_IN_PROGRESS';
+export const SET_MODIFICATION_NOTIFICATION = 'SET_MODIFICATION_NOTIFICATION';
 
-export function modificationCreationInProgress() {
+export function setModificationNotification(modificationNotification) {
     return {
-        type: MODIFICATION_CREATION_IN_PROGRESS,
+        type: SET_MODIFICATION_NOTIFICATION,
+        notificat: modificationNotification,
     };
 }
 
-export const MODIFICATION_CREATION_FINISHED = 'MODIFICATION_CREATION_FINISHED';
+export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 
-export function modificationCreationFinished() {
+export function addNotification(notification) {
     return {
-        type: MODIFICATION_CREATION_FINISHED,
+        type: ADD_NOTIFICATION,
+        notification: notification,
+    };
+}
+
+export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
+
+export function removeNotification(notification) {
+    return {
+        type: REMOVE_NOTIFICATION,
+        notification: notification,
+    };
+}
+
+export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
+
+export function removeNotificationByNode(notification) {
+    return {
+        type: REMOVE_NOTIFICATION_BY_NODE,
+        notification: notification,
     };
 }

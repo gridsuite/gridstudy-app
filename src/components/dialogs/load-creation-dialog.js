@@ -39,8 +39,6 @@ import {
 import { createLoad } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
-import { useDispatch } from 'react-redux';
-import { modificationCreationInProgress } from '../../redux/actions';
 
 /**
  * Dialog to create a load in the network
@@ -70,8 +68,6 @@ const LoadCreationDialog = ({
     const [formValues, setFormValues] = useState(undefined);
 
     const equipmentPath = 'loads';
-
-    const dispatch = useDispatch();
 
     const clearValues = () => {
         setFormValues(null);
@@ -180,18 +176,16 @@ const LoadCreationDialog = ({
                 connectivity.busOrBusbarSection.id,
                 editData ? true : false,
                 editData ? editData.uuid : undefined
-            )
-                .then(() => dispatch(modificationCreationInProgress()))
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LoadCreationError',
-                            intlRef: intlRef,
-                        },
-                    });
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LoadCreationError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
