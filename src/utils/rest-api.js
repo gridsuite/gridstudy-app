@@ -234,6 +234,48 @@ export function getSubstationSingleLineDiagram(
     );
 }
 
+export function getNetworkAreaDiagramUrl(
+    studyUuid,
+    selectedNodeUuid,
+    voltageLevelsIds,
+    depth
+) {
+    console.info(
+        `Getting url of network area diagram of study '${studyUuid}' and node '${selectedNodeUuid}'...`
+    );
+    return (
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/network-area-diagram?' +
+        new URLSearchParams({
+            depth: depth,
+        }) +
+        '&' +
+        getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()
+    );
+}
+
+export function fetchNADSvg(svgUrl) {
+    console.debug(svgUrl);
+    return backendFetch(svgUrl).then((response) => {
+        return response.ok
+            ? response.text()
+            : response.text().then((text) => {
+                  return Promise.reject(
+                      text ? text.message : response.statusText
+                  );
+              });
+    });
+}
+
+function getQueryParamsList(params, paramName) {
+    if (params !== undefined && params.length > 0) {
+        const urlSearchParams = new URLSearchParams();
+        params.forEach((id) => urlSearchParams.append(paramName, id));
+        return urlSearchParams.toString();
+    }
+    return '';
+}
+
 export function fetchReport(studyUuid, selectedNodeUuid, nodeOnlyReport) {
     console.info(
         'get report for node : ' +
@@ -256,26 +298,11 @@ export function fetchReport(studyUuid, selectedNodeUuid, nodeOnlyReport) {
 
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
-    return backendFetch(svgUrl).then((response) =>
-        response.ok
+    return backendFetch(svgUrl).then((response) => {
+        return response.ok
             ? response.json()
-            : response.json().then((json) => {
-                  return Promise.reject(
-                      json ? json.message : response.statusText
-                  );
-              })
-    );
-}
-
-function getSubstationsIdsListsQueryParams(substationsIds) {
-    if (substationsIds !== undefined && substationsIds.length > 0) {
-        const urlSearchParams = new URLSearchParams();
-        substationsIds.forEach((substationId) =>
-            urlSearchParams.append('substationId', substationId)
-        );
-        return '?' + urlSearchParams.toString();
-    }
-    return '';
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function fetchSubstations(studyUuid, selectedNodeUuid, substationsIds) {
@@ -520,7 +547,8 @@ export function fetchEquipments(
         getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
         '/network-map/' +
         equipmentPath +
-        getSubstationsIdsListsQueryParams(substationsIds);
+        '?' +
+        getQueryParamsList(substationsIds, 'substationId');
     console.debug(fetchEquipmentsUrl);
     return backendFetch(fetchEquipmentsUrl).then((response) => response.json());
 }
@@ -1556,6 +1584,67 @@ export function divideLine(
     }
 
     return backendFetch(lineSplitUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
+export function attachLine(
+    studyUuid,
+    selectedNodeUuid,
+    modificationUuid,
+    lineToAttachToId,
+    percent,
+    attachmentPointId,
+    attachmentPointName,
+    mayNewVoltageLevelInfos,
+    existingVoltageLevelId,
+    bbsOrBusId,
+    attachmentLine,
+    newLine1Id,
+    newLine1Name,
+    newLine2Id,
+    newLine2Name
+) {
+    const body = JSON.stringify({
+        lineToAttachToId,
+        percent,
+        attachmentPointId,
+        attachmentPointName,
+        mayNewVoltageLevelInfos,
+        existingVoltageLevelId,
+        bbsOrBusId,
+        attachmentLine,
+        newLine1Id,
+        newLine1Name,
+        newLine2Id,
+        newLine2Name,
+    });
+
+    let lineAttachUrl;
+    if (modificationUuid) {
+        console.info('Line attach to voltage level update', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/line-attach';
+    } else {
+        console.info('Line attach to voltage level', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/line-attach';
+    }
+
+    return backendFetch(lineAttachUrl, {
         method: modificationUuid ? 'PUT' : 'POST',
         headers: {
             Accept: 'application/json',

@@ -28,34 +28,34 @@ import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 
-import { fetchSvg } from '../../utils/rest-api';
+import { fetchSvg } from '../../../utils/rest-api';
 
 import { SVG } from '@svgdotjs/svg.js';
 import '@svgdotjs/svg.panzoom.js';
-import Arrow from '../../images/arrow.svg';
-import ArrowHover from '../../images/arrow_hover.svg';
-import { fullScreenSingleLineDiagram } from '../../redux/actions';
+import Arrow from '../../../images/arrow.svg';
+import ArrowHover from '../../../images/arrow_hover.svg';
+import { fullScreenSingleLineDiagram } from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 
 import { AutoSizer } from 'react-virtualized';
-import BaseEquipmentMenu from '../menus/base-equipment-menu';
-import withEquipmentMenu from '../menus/equipment-menu';
-import withLineMenu from '../menus/line-menu';
+import BaseEquipmentMenu from '../../menus/base-equipment-menu';
+import withEquipmentMenu from '../../menus/equipment-menu';
+import withLineMenu from '../../menus/line-menu';
 
-import { equipments } from '../network/network-equipments';
-import { RunningStatus } from '../util/running-status';
-import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
+import { equipments } from '../../network/network-equipments';
+import { RunningStatus } from '../../util/running-status';
+import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 
-import { useIntlRef, useSnackMessage } from '../../utils/messages';
+import { useIntlRef, useSnackMessage } from '../../../utils/messages';
 
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
 import clsx from 'clsx';
-import { allowModificationsOnNode } from '../graph/util/model-functions';
-import AlertInvalidNode from '../util/alert-invalid-node';
+import { isNodeValid } from '../../graph/util/model-functions';
+import AlertInvalidNode from '../../util/alert-invalid-node';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -745,7 +745,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the click on a switch
             if (
                 !isComputationRunning &&
-                allowModificationsOnNode(workingNode, selectedNode)
+                isNodeValid(workingNode, selectedNode)
             ) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
@@ -961,7 +961,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
-                    {!allowModificationsOnNode(workingNode, selectedNode) &&
+                    {!isNodeValid(workingNode, selectedNode) &&
                         selectedNode?.type !== 'ROOT' && (
                             <AlertInvalidNode noMargin={true} />
                         )}
