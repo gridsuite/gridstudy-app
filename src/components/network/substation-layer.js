@@ -177,6 +177,7 @@ class SubstationLayer extends CompositeLayer {
                 visible: this.props.labelsVisible,
                 updateTriggers: {
                     getText: this.props.useName,
+                    getPosition: this.props.useName,
                 },
             })
         );

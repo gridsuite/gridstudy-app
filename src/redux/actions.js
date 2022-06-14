@@ -287,6 +287,16 @@ export function fullScreenSingleLineDiagram(fullScreen) {
     return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
 }
 
+export const FULLSCREEN_NETWORK_AREA_DIAGRAM =
+    'FULLSCREEN_NETWORK_AREA_DIAGRAM';
+
+export function fullScreenNetworkAreaDiagram(fullScreenNad) {
+    return {
+        type: FULLSCREEN_NETWORK_AREA_DIAGRAM,
+        fullScreenNad: fullScreenNad,
+    };
+}
+
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 
 export function changeDisplayedColumns(displayedColumnsParams) {
@@ -331,6 +341,8 @@ export function workingTreeNode(workingTreeNode) {
         workingTreeNode: {
             id: workingTreeNode?.id,
             readOnly: workingTreeNode?.data?.readOnly,
+            buildStatus: workingTreeNode?.data?.buildStatus,
+            name: workingTreeNode?.data?.label,
         },
     };
 }
@@ -350,5 +362,14 @@ export function centerOnSubstation(substationId) {
     return {
         type: CENTER_ON_SUBSTATION,
         centerOnSubstation: { to: substationId },
+    };
+}
+
+export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM';
+
+export function openNetworkAreaDiagram(voltageLevelId) {
+    return {
+        type: OPEN_NETWORK_AREA_DIAGRAM,
+        openNetworkAreaDiagram: { voltageLevelId: voltageLevelId },
     };
 }

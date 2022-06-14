@@ -223,7 +223,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingRatio',
                 dataKey: 'regulatingRatio',
                 cellDataGetter: (cellData) => {
-                    return cellData.ratioTapChangerPosition
+                    return cellData.ratioTapChanger
                         ? cellData.regulating
                         : undefined;
                 },
@@ -256,7 +256,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingPhase',
                 dataKey: 'regulatingPhase',
                 cellDataGetter: (cellData) => {
-                    return cellData.phaseTapChangerPosition
+                    return cellData.phaseTapChanger
                         ? cellData.regulating
                         : undefined;
                 },
@@ -926,6 +926,37 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 fractionDigits: 1,
             },
+            {
+                id: 'OprFromCS1toCS2',
+                dataKey: 'oprFromCS1toCS2',
+                numeric: true,
+                fractionDigits: 1,
+                columnWidth: LARGE_COLUMN_WIDTH,
+            },
+            {
+                id: 'OprFromCS2toCS1',
+                dataKey: 'oprFromCS2toCS1',
+                numeric: true,
+                fractionDigits: 1,
+                columnWidth: LARGE_COLUMN_WIDTH,
+            },
+            {
+                id: 'AcEmulation',
+                dataKey: 'isEnabled',
+                boolean: true,
+            },
+            {
+                id: 'K',
+                dataKey: 'k',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'P0',
+                dataKey: 'p0',
+                numeric: true,
+                fractionDigits: 1,
+            },
         ],
     },
 
@@ -1036,6 +1067,23 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'LossFactor',
                 dataKey: 'lossFactor',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'VoltageRegulatorOn',
+                dataKey: 'voltageRegulatorOn',
+                boolean: true,
+            },
+            {
+                id: 'VoltageSetpointKV',
+                dataKey: 'voltageSetpoint',
+                numeric: true,
+                fractionDigits: 1,
+            },
+            {
+                id: 'ReactivePowerSetpointMVAR',
+                dataKey: 'reactivePowerSetpoint',
                 numeric: true,
                 fractionDigits: 1,
             },

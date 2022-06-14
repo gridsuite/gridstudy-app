@@ -11,7 +11,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
-import { filteredNominalVoltagesUpdated } from '../redux/actions';
+import {
+    filteredNominalVoltagesUpdated,
+    openNetworkAreaDiagram,
+} from '../redux/actions';
 import { equipments } from './network/network-equipments';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
@@ -30,11 +33,12 @@ import NetworkMapTab from './network-map-tab';
 import { MapLateralDrawers } from './map-lateral-drawers';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
-import { SingleLineDiagramPane } from './singleLineDiagram/single-line-diagram-pane';
+import { SingleLineDiagramPane } from './diagrams/singleLineDiagram/single-line-diagram-pane';
 import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
-import { useSingleLineDiagram } from './singleLineDiagram/utils';
+import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
+import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -91,6 +95,7 @@ const StudyPane = ({
     studyUuid,
     network,
     workingNode,
+    selectedNode,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -139,6 +144,8 @@ const StudyPane = ({
 
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
+
+    const openedNad = useSelector((state) => state.openNetworkAreaDiagram);
 
     useEffect(() => {
         if (
@@ -278,6 +285,7 @@ const StudyPane = ({
                                     openVoltageLevel={openVoltageLevel}
                                     /* TODO verif tableEquipment*/
                                     workingNode={workingNode}
+                                    selectedNode={selectedNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -312,6 +320,23 @@ const StudyPane = ({
                                         loadFlowInfos?.loadFlowStatus
                                     )}
                                     workingNode={workingNode}
+                                    selectedNode={selectedNode}
+                                />
+                            )}
+                            {props.view === StudyView.MAP && openedNad && (
+                                <NetworkAreaDiagramPane
+                                    studyUuid={studyUuid}
+                                    network={network}
+                                    workingNode={workingNode}
+                                    selectedNode={selectedNode}
+                                    loadFlowStatus={getLoadFlowRunningStatus(
+                                        loadFlowInfos?.loadFlowStatus
+                                    )}
+                                    onClose={() =>
+                                        dispatch(
+                                            openNetworkAreaDiagram(undefined)
+                                        )
+                                    }
                                 />
                             )}
                         </div>
@@ -328,6 +353,7 @@ const StudyPane = ({
                     network={network}
                     studyUuid={studyUuid}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
@@ -368,6 +394,7 @@ const StudyPane = ({
                 <ResultViewTab
                     studyUuid={studyUuid}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
@@ -383,6 +410,7 @@ const StudyPane = ({
                     studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
                     workingNode={workingNode}
+                    selectedNode={selectedNode}
                 />
             </div>
         </>

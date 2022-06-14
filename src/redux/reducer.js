@@ -48,6 +48,8 @@ import {
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
+    OPEN_NETWORK_AREA_DIAGRAM,
+    FULLSCREEN_NETWORK_AREA_DIAGRAM,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -76,6 +78,7 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/parameters';
+import { getRootNode } from '../components/graph/util/model-functions';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -171,6 +174,7 @@ export const reducer = createReducer(initialState, {
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
+            synchWorkingNodeAndSelectedNode(state);
         }
     },
 
@@ -180,6 +184,26 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
+            const foundWorkingTreeNode =
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.workingTreeNode?.id
+                );
+            if (foundWorkingTreeNode !== undefined) {
+                state.workingTreeNode = {
+                    id: foundWorkingTreeNode.id,
+                    readOnly: foundWorkingTreeNode.readOnly,
+                    buildStatus: foundWorkingTreeNode.buildStatus,
+                    name: foundWorkingTreeNode.name,
+                };
+            }
+
+            const foundSelectedTreeNode =
+                action.networkModificationTreeNodes.find(
+                    (node) => node.id === state.selectedTreeNode?.id
+                );
+            if (foundSelectedTreeNode !== undefined) {
+                state.selectedTreeNode = foundSelectedTreeNode;
+            }
         }
     },
 
@@ -286,6 +310,10 @@ export const reducer = createReducer(initialState, {
         state.fullScreen = action.fullScreen;
     },
 
+    [FULLSCREEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
+        state.fullScreenNad = action.fullScreenNad;
+    },
+
     [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {
         let newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
         action.displayedColumnsNamesParams.forEach((param) => {
@@ -320,4 +348,35 @@ export const reducer = createReducer(initialState, {
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
     },
+    [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
+        state.openNetworkAreaDiagram = action.openNetworkAreaDiagram;
+    },
 });
+
+function synchWorkingNodeAndSelectedNode(state) {
+    const workingNode = state.networkModificationTreeModel?.treeElements.find(
+        (entry) => entry?.id === state.workingTreeNode?.id
+    );
+    if (workingNode === undefined) {
+        // handle the case of workingNode not in the TreeModel anymore.
+        let rootNode = getRootNode(
+            ...state.networkModificationTreeModel.treeElements
+        );
+        state.workingTreeNode = rootNode ? rootNode : null;
+    } else {
+        state.workingTreeNode = {
+            type: workingNode?.type,
+            id: workingNode?.id,
+            readOnly: workingNode?.data?.readOnly,
+            name: workingNode?.data?.label,
+            targetPosition: workingNode?.targetPosition,
+            position: workingNode?.position,
+            buildStatus: workingNode?.buildStatus,
+        };
+    }
+    const selectedNode = state.networkModificationTreeModel?.treeElements.find(
+        (entry) => entry?.id === state.selectedTreeNode?.id
+    );
+    // handle the case of selectedNode not in the TreeModel anymore.
+    if (selectedNode === undefined) state.selectedTreeNode = null;
+}

@@ -14,12 +14,13 @@ import {
     EquipmentItem,
     TagRenderer,
     TopBar,
+    OverflowableText,
 } from '@gridsuite/commons-ui';
 import { ReactComponent as GridStudyLogoLight } from '../images/GridStudy_logo_light.svg';
 import { ReactComponent as GridStudyLogoDark } from '../images/GridStudy_logo_dark.svg';
 import Tabs from '@mui/material/Tabs';
 import { StudyView } from './study-pane';
-import { Badge } from '@mui/material';
+import { Badge, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
 import Parameters, { useParameterState } from './parameters';
@@ -33,15 +34,21 @@ import { fetchAppsAndUrls, fetchEquipmentsInfos } from '../utils/rest-api';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { centerOnSubstation } from '../redux/actions';
+import { centerOnSubstation, openNetworkAreaDiagram } from '../redux/actions';
 import { useSnackbar } from 'notistack';
 import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import { useSingleLineDiagram } from './singleLineDiagram/utils';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
     tabs: {
-        marginLeft: 18,
+        flexGrow: 1,
+    },
+    label: {
+        color: theme.palette.primary.main,
+        margin: theme.spacing(1.5),
+        fontWeight: 'bold',
     },
 }));
 
@@ -72,17 +79,36 @@ const CustomSuffixRenderer = ({ props, element }) => {
         [dispatch, props, network]
     );
 
+    const openNetworkAreaDiagramCB = useCallback(
+        (e, element) => {
+            dispatch(openNetworkAreaDiagram(element.id));
+            props.onClose && props.onClose();
+            e.stopPropagation();
+        },
+        [dispatch, props]
+    );
+
     if (
         element.type === EQUIPMENT_TYPE.SUBSTATION.name ||
         element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name
     )
         return (
-            <IconButton
-                onClick={(e) => enterOnSubstationCB(e, element)}
-                size={'small'}
-            >
-                <GpsFixedIcon fontSize={'small'} />
-            </IconButton>
+            <>
+                {element.type === EQUIPMENT_TYPE.VOLTAGE_LEVEL.name && (
+                    <IconButton
+                        onClick={(e) => openNetworkAreaDiagramCB(e, element)}
+                        size={'small'}
+                    >
+                        <TimelineIcon fontSize={'small'} />
+                    </IconButton>
+                )}
+                <IconButton
+                    onClick={(e) => enterOnSubstationCB(e, element)}
+                    size={'small'}
+                >
+                    <GpsFixedIcon fontSize={'small'} />
+                </IconButton>
+            </>
         );
 
     return (
@@ -131,6 +157,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
     // Equipments search bar
     const [equipmentsFound, setEquipmentsFound] = useState([]);
+
     const searchMatchingEquipments = useCallback(
         (searchTerm) => {
             fetchEquipmentsInfos(
@@ -225,6 +252,27 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onLanguageClick={handleChangeLanguage}
                 language={languageLocal}
             >
+                {/* Add current Node name between Logo and Tabs */}
+                <Box
+                    width="15%"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                >
+                    {workingNode && (
+                        <OverflowableText
+                            className={classes.label}
+                            text={
+                                workingNode.type === 'ROOT' ||
+                                workingNode.name === 'Root'
+                                    ? intl.formatMessage({
+                                          id: 'root',
+                                      })
+                                    : workingNode.name
+                            }
+                        />
+                    )}
+                </Box>
                 {studyUuid && (
                     <Tabs
                         value={tabIndex}
