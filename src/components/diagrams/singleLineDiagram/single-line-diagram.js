@@ -137,9 +137,9 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
     },
     paperBorders: {
-        borderLeft: '1px solid '+theme.palette.action.disabled,
-        borderBottom: '1px solid '+theme.palette.action.disabledBackground,
-        borderRight: '1px solid '+theme.palette.action.hover,
+        borderLeft: '1px solid ' + theme.palette.action.disabled,
+        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+        borderRight: '1px solid ' + theme.palette.action.hover,
     },
 }));
 
