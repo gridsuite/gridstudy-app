@@ -46,10 +46,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import {
-    addNotification,
-    removeNotificationByNode,
-} from '../../../redux/actions';
+import { addNotification } from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     list: {

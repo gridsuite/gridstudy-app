@@ -1318,7 +1318,7 @@ export function createShuntCompensator(
     }).then((response) => {
         return response.ok
             ? response.text()
-            : response.text().then((text) => Promise.reject(text))
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
@@ -1385,7 +1385,7 @@ export function createLine(
     }).then((response) => {
         return response.ok
             ? response.text()
-            : response.text().then((text) => Promise.reject(text))
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
@@ -1444,7 +1444,7 @@ export function createTwoWindingsTransformer(
     }).then((response) => {
         return response.ok
             ? response.text()
-            : response.text().then((text) => Promise.reject(text))
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
@@ -1487,7 +1487,7 @@ export function createSubstation(
     }).then((response) => {
         return response.ok
             ? response.text()
-            : response.text().then((text) => Promise.reject(text))
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
