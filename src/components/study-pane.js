@@ -79,6 +79,11 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
+    flexResizer: {
+        flex: '0 0 4px',
+        background: theme.palette.text.secondary,
+        cursor: 'ew-resize',
+    },
 }));
 
 export const StudyView = {
@@ -202,6 +207,61 @@ const StudyPane = ({
         props.onChangeTab(1); // switch to spreadsheet view
     }
 
+    // Prototype / WIP :
+    // Resizer adapted from http://jsfiddle.net/6j10L3x2
+    function manageResize(md, sizeProp, posProp) {
+        let r = md.target;
+
+        let prev = r.previousElementSibling;
+        let next = r.nextElementSibling;
+        if (!prev || !next) {
+            return;
+        }
+
+        md.preventDefault();
+
+        let prevSize = prev[sizeProp];
+        let nextSize = next[sizeProp];
+        let sumSize = prevSize + nextSize;
+        let prevGrow = Number(prev.style.flexGrow);
+        let nextGrow = Number(next.style.flexGrow);
+        let sumGrow = prevGrow + nextGrow;
+        let lastPos = md[posProp];
+
+        function onMouseMove(mm) {
+            let pos = mm[posProp];
+            let d = pos - lastPos;
+            prevSize += d;
+            nextSize -= d;
+            if (prevSize < 0) {
+                nextSize += prevSize;
+                pos -= prevSize;
+                prevSize = 0;
+            }
+            if (nextSize < 0) {
+                prevSize += nextSize;
+                pos += nextSize;
+                nextSize = 0;
+            }
+
+            let prevGrowNew = sumGrow * (prevSize / sumSize);
+            let nextGrowNew = sumGrow * (nextSize / sumSize);
+
+            prev.style.flexGrow = prevGrowNew;
+            next.style.flexGrow = nextGrowNew;
+
+            lastPos = pos;
+        }
+
+        function onMouseUp() {
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+    }
+
     function renderMapView() {
         return (
             <ReactFlowProvider>
@@ -231,6 +291,10 @@ const StudyPane = ({
                     >
                         <div
                             style={{
+                                flex:
+                                    studyDisplayMode === StudyDisplayMode.HYBRID
+                                        ? '1'
+                                        : null,
                                 display:
                                     studyDisplayMode === STUDY_DISPLAY_MODE.MAP
                                         ? 'none'
@@ -247,12 +311,24 @@ const StudyPane = ({
                                 studyMapTreeDisplay={studyDisplayMode}
                             />
                         </div>
+                        {studyDisplayMode === StudyDisplayMode.HYBRID && (
+                            <div
+                                onMouseDown={(event) =>
+                                    manageResize(event, 'scrollWidth', 'pageX')
+                                }
+                                className={classes.flexResizer}
+                            ></div>
+                        )}
                         <div
                             className={clsx(
                                 'relative singlestretch-child',
                                 classes.map
                             )}
                             style={{
+                                flex:
+                                    studyDisplayMode === StudyDisplayMode.HYBRID
+                                        ? '1'
+                                        : null,
                                 display:
                                     studyDisplayMode === STUDY_DISPLAY_MODE.TREE
                                         ? 'none'
