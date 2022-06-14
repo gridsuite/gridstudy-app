@@ -28,7 +28,6 @@ const editableModificationTypes = new Set([
     'TWO_WINDINGS_TRANSFORMER_CREATION',
     'VOLTAGE_LEVEL_CREATION',
     'LINE_SPLIT_WITH_VOLTAGE_LEVEL',
-    'LINE_ATTACH_TO_VOLTAGE_LEVEL',
     'GENERATOR_MODIFICATION',
 ]);
 
@@ -74,12 +73,9 @@ export const ModificationListItem = ({
     const intl = useIntl();
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const classes = useStyles();
-
     const getComputedLabel = useCallback(() => {
         if (modif.type === 'LINE_SPLIT_WITH_VOLTAGE_LEVEL') {
             return modif.lineToSplitId;
-        } else if (modif.type === 'LINE_ATTACH_TO_VOLTAGE_LEVEL') {
-            return modif.lineToAttachToId;
         } else if (equipmentModificationModificationsType.has(modif.type)) {
             return modif.equipmentId;
         } else if (useName && modif.equipmentName) {

@@ -376,15 +376,6 @@ export function addNotification(notification) {
     };
 }
 
-export const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
-
-export function removeNotification(notification) {
-    return {
-        type: REMOVE_NOTIFICATION,
-        notification: notification,
-    };
-}
-
 export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
 
 export function removeNotificationByNode(notification) {

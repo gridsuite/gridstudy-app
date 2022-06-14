@@ -49,7 +49,6 @@ import {
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
     ADD_NOTIFICATION,
-    REMOVE_NOTIFICATION,
     REMOVE_NOTIFICATION_BY_NODE,
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM,
@@ -358,18 +357,10 @@ export const reducer = createReducer(initialState, {
             action.notification,
         ];
     },
-    [REMOVE_NOTIFICATION]: (state, action) => {
-        state.notificationList = [
-            ...state.notificationList.filter(
-                (n) =>
-                    n.notificationUuid !== action.notification.notificationUuid
-            ),
-        ];
-    },
     [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
         state.notificationList = [
             ...state.notificationList.filter(
-                (n) => n.nodeUuid !== action.notification.nodeUuid
+                (n) => n?.nodeUuid !== action.notification.nodeUuid
             ),
         ];
     },

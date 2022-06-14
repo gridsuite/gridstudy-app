@@ -38,6 +38,8 @@ import {
     GridSection,
     ReactivePowerAdornment,
 } from './dialogUtils';
+import { useDispatch } from 'react-redux';
+import { removeNotificationByNode } from '../../redux/actions';
 
 /**
  * Dialog to modify a load in the network
@@ -72,6 +74,8 @@ const LoadModificationDialog = ({
 
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
+
+    const dispatch = useDispatch();
 
     const clearValues = () => {
         setFormValues(null);
@@ -188,6 +192,10 @@ const LoadModificationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
+                const notification = {
+                    nodeUuid: selectedNodeUuid,
+                };
+                dispatch(removeNotificationByNode(notification));
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,
@@ -196,7 +204,7 @@ const LoadModificationDialog = ({
                         intlRef: intlRef,
                     },
                 });
-            });
+            })
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

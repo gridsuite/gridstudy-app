@@ -38,6 +38,8 @@ import {
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
 import { useBooleanValue } from './inputs/boolean';
+import { useDispatch } from 'react-redux';
+import { removeNotificationByNode } from '../../redux/actions';
 
 const disabledChecked = { disabled: true };
 
@@ -69,6 +71,8 @@ const ShuntCompensatorCreationDialog = ({
     const [formValues, setFormValues] = useState(undefined);
 
     const equipmentPath = 'shunt-compensators';
+
+    const dispatch = useDispatch();
 
     const clearValues = () => {
         setFormValues(null);
@@ -190,6 +194,10 @@ const ShuntCompensatorCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
+                const notification = {
+                    nodeUuid: selectedNodeUuid,
+                };
+                dispatch(removeNotificationByNode(notification));
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,

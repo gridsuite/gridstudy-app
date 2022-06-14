@@ -19,5 +19,5 @@
     "network_modifications/deletingModification": "supression de l'hypothése en cours ...",
     "network_modifications/updatingModification": "Mise à jour de l'hypothése en cours ...",
     "network_modifications/modificationFinished": "Mise à jour de l'hypothése terminé",
-    "network_modifications/modificationError": "Mise à jour de l'hypothése en erreur"
+    "network_modifications/modifications": "Mise à jour de la liste des hypothèses en cours ..."
 }

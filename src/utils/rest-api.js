@@ -1082,11 +1082,11 @@ export function createLoad(
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
         }),
-    }).then((response) =>
-        response.ok
+    }).then((response) => {
+        return response.ok
             ? response.text()
-            : response.text().then((text) => Promise.reject(text))
-    );
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function modifyLoad(
@@ -1144,7 +1144,7 @@ export function modifyLoad(
                 : null,
         }),
     }).then((response) => {
-        response.ok
+        return response.ok
             ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
@@ -1206,7 +1206,7 @@ export function modifyGenerator(
         },
         body: JSON.stringify(generatorModification),
     }).then((response) => {
-        response.ok
+        return response.ok
             ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
@@ -1264,11 +1264,11 @@ export function createGenerator(
             voltageLevelId: voltageLevelId,
             busOrBusbarSectionId: busOrBusbarSectionId,
         }),
-    }).then((response) =>
-        response.ok
+    }).then((response) => {
+        return response.ok
             ? response.text()
-            : response.text().then((text) => Promise.reject(text))
-    );
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function createShuntCompensator(
@@ -1315,11 +1315,11 @@ export function createShuntCompensator(
             voltageLevelId: connectivity.voltageLevel.id,
             busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
         }),
-    }).then((response) =>
-        response.ok
+    }).then((response) => {
+        return response.ok
             ? response.text()
             : response.text().then((text) => Promise.reject(text))
-    );
+    });
 }
 
 export function createLine(
@@ -1382,11 +1382,11 @@ export function createLine(
                 permanentLimit: permanentCurrentLimit2,
             },
         }),
-    }).then((response) =>
-        response.ok
+    }).then((response) => {
+        return response.ok
             ? response.text()
             : response.text().then((text) => Promise.reject(text))
-    );
+    });
 }
 
 export function createTwoWindingsTransformer(
@@ -1441,11 +1441,11 @@ export function createTwoWindingsTransformer(
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
         }),
-    }).then((response) =>
-        response.ok
+    }).then((response) => {
+        return response.ok
             ? response.text()
             : response.text().then((text) => Promise.reject(text))
-    );
+    });
 }
 
 export function createSubstation(
@@ -1484,11 +1484,11 @@ export function createSubstation(
             substationCountry:
                 substationCountry === '' ? null : substationCountry,
         }),
-    }).then((response) =>
-        response.ok
+    }).then((response) => {
+        return response.ok
             ? response.text()
             : response.text().then((text) => Promise.reject(text))
-    );
+    });
 }
 
 export function createVoltageLevel({
@@ -1534,11 +1534,11 @@ export function createVoltageLevel({
             'Content-Type': 'application/json',
         },
         body: body,
-    }).then((response) =>
-        response.ok
+    }).then((response) => {
+        return response.ok
             ? response.text()
-            : response.text().then((text) => Promise.reject(text))
-    );
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function divideLine(

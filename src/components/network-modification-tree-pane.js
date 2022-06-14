@@ -135,7 +135,7 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (n) => n === selectedNode.id
+                        (n) => n === selectedNode?.id
                     )
                 ) {
                     const notification = {

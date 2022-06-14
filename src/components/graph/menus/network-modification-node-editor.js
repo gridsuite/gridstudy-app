@@ -16,7 +16,6 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
@@ -27,6 +26,7 @@ import {
     Checkbox,
     CircularProgress,
     Fab,
+    LinearProgress,
     Toolbar,
     Typography,
 } from '@mui/material';
@@ -46,7 +46,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { addNotification, removeNotification } from '../../../redux/actions';
+import {
+    addNotification,
+    removeNotificationByNode,
+} from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -85,8 +88,15 @@ const useStyles = makeStyles((theme) => ({
     dividerTool: {
         background: theme.palette.primary.main,
     },
-    circularRoot: {
+    circularProgress: {
         marginRight: theme.spacing(2),
+    },
+    linearProgress: {
+        marginTop: theme.spacing(2),
+        marginRight: theme.spacing(2),
+    },
+    formattedMessageProgress: {
+        marginTop: theme.spacing(2),
     },
     notification: {
         flex: 1,
@@ -94,6 +104,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'center',
         marginTop: theme.spacing(4),
         textAlign: 'center',
+        color: theme.palette.primary.main,
     },
 }));
 
@@ -110,6 +121,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
     const workingNode = useSelector((state) => state.workingTreeNode);
     const notificationList = useSelector((state) => state.notificationList);
+    const errorList = useSelector((state) => state.errorList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
@@ -125,7 +137,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
-
+    const [launchLoader, setLaunchLoader] = useState(false);
     const closeDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
@@ -262,17 +274,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 ),
             icon: <AddIcon />,
         },
-        LINE_ATTACH_TO_VOLTAGE_LEVEL: {
-            label: 'LineAttachToVoltageLevel',
-            dialog: () =>
-                adapt(
-                    LineAttachToVoltageLevelDialog,
-                    withVLs,
-                    withLines,
-                    withSubstations
-                ),
-            icon: <AddIcon />,
-        },
         deleteEquipment: {
             label: 'DeleteEquipment',
             dialog: () => withDefaultParams(EquipmentDeletionDialog),
@@ -286,29 +287,41 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     useEffect(() => {
         if (selectedNode !== selectedNodeRef.current) {
+            setLaunchLoader(true);
             selectedNodeRef.current = selectedNode;
-            if (!selectedNode.networkModification) setModifications([]);
-            else {
+            if (!selectedNode.networkModification) {
+                setModifications([]);
+                setLaunchLoader(false);
+            } else {
                 fetchNetworkModifications(selectedNode.networkModification)
                     .then((res) => {
                         if (selectedNodeRef.current === selectedNode)
                             setModifications(res.status ? [] : res);
                     })
-                    .catch((err) => snackError(err.message));
+                    .catch((err) => snackError(err.message))
+                    .finally(() => {
+                        setLaunchLoader(false);
+                    });
             }
         }
-    }, [selectedNode, setModifications, selectedNodeRef, snackError]);
+    }, [
+        selectedNode,
+        setModifications,
+        selectedNodeRef,
+        snackError,
+        dispatch,
+        errorList,
+        notificationList,
+    ]);
 
     const fillNotification = useCallback(
-        (study, messageId, type) => {
+        (study, messageId) => {
             const notification = {
                 studyUuid: study.eventData.headers['studyUuid'],
                 nodeUuid: study.eventData.headers['parentNode'],
-                notificationUuid: study.eventData.payload,
             };
             setMessageId(messageId);
-            if (type === 'add') dispatch(addNotification(notification));
-            if (type === 'remove') dispatch(removeNotification(notification));
+            dispatch(addNotification(notification));
         },
         [dispatch]
     );
@@ -332,12 +345,17 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             ) {
                 messageId = 'network_modifications/deletingModification';
             }
-            fillNotification(studyUpdatedForce, messageId, 'add');
+            fillNotification(studyUpdatedForce, messageId);
         },
         [fillNotification, studyUpdatedForce]
     );
 
     useEffect(() => {
+        const updateType = [
+            'creatingInProgress',
+            'updatingInProgress',
+            'deletingInProgress',
+        ];
         if (studyUpdatedForce.eventData.headers) {
             if (
                 selectedNodeRef.current.id !==
@@ -346,12 +364,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 return;
 
             if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'creatingInProgress' ||
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'updatingInProgress' ||
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'deletingInProgress'
+                updateType.includes(
+                    studyUpdatedForce.eventData.headers['updateType']
+                )
             ) {
                 manageNotification(studyUpdatedForce);
             }
@@ -432,7 +447,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         if (notificationList.length === 0) return false;
 
         let res = notificationList.filter(
-            (notification) => notification.nodeUuid === selectedNode.id
+            (notification) => notification?.nodeUuid === selectedNode?.id
         );
         if (res.length > 0) return true;
         return false;
@@ -466,12 +481,14 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             <Typography className={classes.modificationCount}>
                 <FormattedMessage
                     id={'network_modification/modificationsCount'}
-                    values={{ count: modifications?.length }}
+                    values={{
+                        count: modifications ? modifications?.length : '',
+                    }}
                 />
             </Typography>
             <DragDropContext
                 onDragEnd={commit}
-                onDragStart={() => setIsDragging(isLoading())}
+                onDragStart={() => setIsDragging(true)}
             >
                 <Droppable droppableId="network-modification-list">
                     {(provided) => (
@@ -484,7 +501,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                                 <div className={classes.notification}>
                                     <CircularProgress
                                         size={18}
-                                        className={classes.circularRoot}
+                                        className={classes.circularProgress}
                                     />
                                     <FormattedMessage id={messageId} />
                                 </div>
@@ -505,6 +522,18 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                                 />
                             )}
                             {provided.placeholder}
+                            {launchLoader && (
+                                <div className={classes.notification}>
+                                    <LinearProgress
+                                        className={classes.linearProgress}
+                                    />
+                                    <FormattedMessage
+                                        id={
+                                            'network_modifications/modifications'
+                                        }
+                                    />
+                                </div>
+                            )}
                         </div>
                     )}
                 </Droppable>
