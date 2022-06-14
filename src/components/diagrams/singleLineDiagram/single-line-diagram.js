@@ -653,7 +653,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .size(svgWidth, svgHeight)
+                .size(
+                    svgFinalWidth !== undefined ? svgFinalWidth : svgWidth,
+                    svgFinalHeight !== undefined ? svgFinalHeight : svgHeight
+                )
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
@@ -795,6 +798,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         theme,
         sldId,
         ref,
+        svgFinalHeight,
+        svgFinalWidth,
     ]);
 
     useLayoutEffect(() => {
