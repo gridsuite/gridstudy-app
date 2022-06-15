@@ -71,6 +71,14 @@ const useMeta = (metasAsArray) => {
         });
     };
 
+    const onFieldChange = (event, paramName) => {
+        setInst((prevInst) => {
+            const nextInst = { ...inst };
+            nextInst[paramName] = event.target.value;
+            return nextInst;
+        });
+    };
+
     const comp = (
         <List>
             {metasAsArray.map((meta, idx) => (
@@ -93,6 +101,7 @@ const useMeta = (metasAsArray) => {
                                 defaultValue={
                                     inst?.[meta.name] ?? meta.defaultValue
                                 }
+                                onChange={(e) => onFieldChange(e, meta.name)}
                                 variant={'standard'}
                             />
                         )}
