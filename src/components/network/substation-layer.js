@@ -181,8 +181,14 @@ class SubstationLayer extends CompositeLayer {
                 getPixelOffset: [20 / 1.5, 0],
                 visible: this.props.labelsVisible,
                 updateTriggers: {
-                    getText: [this.props.useName, this.props.geoData.substationPositionsById],
-                    getPosition: [this.props.useName, this.props.geoData.substationPositionsById],
+                    getText: [
+                        this.props.useName,
+                        this.props.geoData.substationPositionsById,
+                    ],
+                    getPosition: [
+                        this.props.useName,
+                        this.props.geoData.substationPositionsById,
+                    ],
                 },
             })
         );
