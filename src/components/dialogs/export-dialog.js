@@ -65,7 +65,7 @@ const useMeta = (metasAsArray) => {
 
     const onBoolChange = (event, paramName) => {
         setInst((prevInst) => {
-            const nextInst = { ...inst };
+            const nextInst = { ...prevInst };
             nextInst[paramName] = event.target.checked;
             return nextInst;
         });
@@ -73,7 +73,7 @@ const useMeta = (metasAsArray) => {
 
     const onFieldChange = (event, paramName) => {
         setInst((prevInst) => {
-            const nextInst = { ...inst };
+            const nextInst = { ...prevInst };
             nextInst[paramName] = event.target.value;
             return nextInst;
         });
