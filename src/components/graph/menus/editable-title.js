@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { IconButton, Typography } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AskTextDialog from '../../util/ask-text-dialog';
@@ -14,6 +14,7 @@ import { lighten, darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     header: {
@@ -27,6 +28,17 @@ const useStyles = makeStyles((theme) => ({
                 ? darken(theme.palette.background.paper, 0.1)
                 : lighten(theme.palette.background.paper, 0.2)
         ),
+    },
+    box: {
+        width: '80%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: theme.spacing(0.5),
+    },
+    text: {
+        fontWeight: 'bold',
+        fontSize: '110%',
     },
 }));
 
@@ -44,9 +56,9 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
             >
                 <EditIcon />
             </IconButton>
-            <Typography variant={'h5'} style={{ flexGrow: '1' }}>
-                {name}
-            </Typography>
+            <Box className={classes.box}>
+                <OverflowableText text={name} className={classes.text} />
+            </Box>
             <IconButton size={'small'} onClick={onClose}>
                 <CloseIcon />
             </IconButton>
