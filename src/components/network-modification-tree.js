@@ -147,12 +147,9 @@ const NetworkModificationTree = ({
         onNodeDoubleClick
     );
 
-    const onPaneClick = useCallback(
-        (event) => {
-            dispatch(setModificationsDrawerOpen(false));
-        },
-        [dispatch]
-    );
+    const onPaneClick = useCallback(() => {
+        dispatch(selectTreeNode(null));
+    }, [dispatch]);
 
     const onMove = useCallback((flowTransform) => {
         setIsMoving(true);
