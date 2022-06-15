@@ -1838,7 +1838,11 @@ export function isNodeExists(studyUuid, nodeName) {
             nodeName: nodeName,
         });
     console.debug(existsNodeUrl);
-    return backendFetch(existsNodeUrl, { method: 'head' });
+    return backendFetch(existsNodeUrl, { method: 'head' }).then((response) => {
+        return response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text));
+    });
 }
 
 export function getUniqueNodeName(studyUuid) {
