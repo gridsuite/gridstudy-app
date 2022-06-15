@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { Box, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AskTextDialog from '../../util/ask-text-dialog';
@@ -28,17 +28,12 @@ const useStyles = makeStyles((theme) => ({
                 ? darken(theme.palette.background.paper, 0.1)
                 : lighten(theme.palette.background.paper, 0.2)
         ),
-    },
-    box: {
-        width: '80%',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        margin: theme.spacing(0.5),
     },
-    text: {
+    nodeNameTitle: {
+        flexGrow: 1,
         fontWeight: 'bold',
-        fontSize: '110%',
     },
 }));
 
@@ -48,7 +43,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
     const intl = useIntl();
 
     return (
-        <div style={{ display: 'flex' }} className={classes.header}>
+        <div className={classes.header}>
             <IconButton
                 size={'small'}
                 onClick={() => setOpenEditTitle(true)}
@@ -56,9 +51,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
             >
                 <EditIcon />
             </IconButton>
-            <Box className={classes.box}>
-                <OverflowableText text={name} className={classes.text} />
-            </Box>
+            <OverflowableText text={name} className={classes.nodeNameTitle} />
             <IconButton size={'small'} onClick={onClose}>
                 <CloseIcon />
             </IconButton>
