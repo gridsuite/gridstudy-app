@@ -8,12 +8,13 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import { Handle } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
+import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
-import { useSelector } from 'react-redux';
+
 
 const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
