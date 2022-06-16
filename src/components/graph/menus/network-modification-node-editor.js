@@ -281,7 +281,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
 
-    const [oneNodeBuilding, setOneNodeBuilding] = useState(false);
+    const [isOneNodeBuilding, setOneNodeBuilding] = useState(false);
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
@@ -378,7 +378,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     onClick={doDeleteModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={!(selectedItems?.size > 0) || oneNodeBuilding}
+                    disabled={!(selectedItems?.size > 0) || isOneNodeBuilding}
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -393,7 +393,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 onDragEnd={commit}
                 onDragStart={() => setIsDragging(true)}
             >
-                <Droppable droppableId="network-modification-list">
+                <Droppable
+                    droppableId="network-modification-list"
+                    isDropDisabled={isOneNodeBuilding}
+                >
                     {(provided) => (
                         <div
                             className={classes.list}
@@ -409,6 +412,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
                                         network={network}
+                                        isOneNodeBuilding={isOneNodeBuilding}
                                         {...props}
                                     />
                                 )}
@@ -424,7 +428,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 className={classes.addButton}
                 color="primary"
                 onClick={openNetworkModificationConfiguration}
-                disabled={oneNodeBuilding}
+                disabled={isOneNodeBuilding}
             >
                 <AddIcon />
             </Fab>
