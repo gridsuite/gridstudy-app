@@ -158,4 +158,14 @@ export default class NetworkModificationTreeModel {
                 (node) => node?.data?.buildStatus === 'BUILDING'
             ) !== undefined;
     }
+
+    setCaseName(newCaseName) {
+        if (
+            this.treeElements.length > 0 &&
+            this.treeElements[0].data &&
+            newCaseName
+        ) {
+            this.treeElements[0].data.caseName = newCaseName;
+        }
+    }
 }

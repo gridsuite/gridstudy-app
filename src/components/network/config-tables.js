@@ -941,15 +941,15 @@ export const TABLES_DEFINITIONS = {
                 columnWidth: LARGE_COLUMN_WIDTH,
             },
             {
+                id: 'AcEmulation',
+                dataKey: 'isEnabled',
+                boolean: true,
+            },
+            {
                 id: 'K',
                 dataKey: 'k',
                 numeric: true,
                 fractionDigits: 1,
-            },
-            {
-                id: 'AcEmulation',
-                dataKey: 'isEnabled',
-                boolean: true,
             },
             {
                 id: 'P0',

@@ -40,20 +40,27 @@ function removeFromMap(oldMap, ids) {
 const mergeDisplayed = (oldValue, sldToDisplay, createSLD) => {
     const toAdd = new Map(sldToDisplay.map((o) => [o.id, o]));
     const toRemove = new Set();
-    let changeLastOpen = false;
     const lastOpen = sldToDisplay.find((view) => view.lastOpen)?.id;
     oldValue.forEach((sld) => {
-        // delete already present element
-        if (!sld.lastOpen !== (sld.id === lastOpen)) {
-            changeLastOpen = true;
-        }
-        if (!toAdd.delete(sld?.id)) {
-            toRemove.add(sld); // if element is absent we (delete returned false we have to remove it
+        if (sld !== undefined) {
+            // delete already present element
+            if (!toAdd.delete(sld?.id)) {
+                toRemove.add(sld); // if element is absent, then we have to remove it from the map
+            }
         }
     });
-    if (toAdd.size === 0 && toRemove.size === 0 && !changeLastOpen)
-        // nothing to be done
-        return oldValue;
+
+    // Is there something to add or remove ?
+    if (toAdd.size === 0 && toRemove.size === 0) {
+        // Did the lastOpen SLD changed ?
+        const oldLastOpen = oldValue.find((view) => view.lastOpen)?.id;
+        const newLastOpen = sldToDisplay.find((view) => view.lastOpen)?.id;
+        if (oldLastOpen === newLastOpen) {
+            // Nothing needs to be done.
+            return oldValue;
+        }
+    }
+
     const newValue =
         toRemove.size === 0
             ? [...oldValue]
@@ -61,7 +68,11 @@ const mergeDisplayed = (oldValue, sldToDisplay, createSLD) => {
     toAdd.forEach((value) => {
         newValue.push(createSLD(value));
     });
-    newValue.forEach((view) => (view.lastOpen = view.id === lastOpen));
+    newValue.forEach((view) => {
+        if (view !== undefined) {
+            view.lastOpen = view.id === lastOpen;
+        }
+    });
     return newValue.filter((n) => n);
 };
 
@@ -310,7 +321,7 @@ export function SingleLineDiagramPane({
     const handleOpenView = useCallback(
         (id, type = SvgType.VOLTAGE_LEVEL) => {
             setViewState((oldMap) => {
-                if (oldMap.has(id)) {
+                if (oldMap.has(id) && oldMap.get(id) !== ViewState.PINNED) {
                     const newMap = new Map(oldMap);
                     newMap.delete(id);
                     return newMap;
