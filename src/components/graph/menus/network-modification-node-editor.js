@@ -46,7 +46,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { addNotification } from '../../../redux/actions';
+import {
+    addNotification,
+    removeNotificationByNode,
+} from '../../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -284,6 +287,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     useEffect(() => {
         if (selectedNode !== selectedNodeRef.current) {
+            // loader when opening a modification panel (current user only)
             setLaunchLoader(true);
             selectedNodeRef.current = selectedNode;
             if (!selectedNode.networkModification) {
@@ -312,10 +316,12 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const fillNotification = useCallback(
         (study, messageId) => {
+            // (work for all users)
             const notification = {
                 studyUuid: study.eventData.headers['studyUuid'],
                 nodeUuid: study.eventData.headers['parentNode'],
             };
+            // specific message id for each action type
             setMessageId(messageId);
             dispatch(addNotification(notification));
         },
@@ -363,8 +369,19 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             ) {
                 manageNotification(studyUpdatedForce);
             }
+            // notify  finished action (success or error => we remove the loader)
+            // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
+            if (
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                'UPDATE_FINISHED'
+            ) {
+                const notification = {
+                    nodeUuid: studyUpdatedForce.eventData.headers['parentNode'],
+                };
+                dispatch(removeNotificationByNode(notification));
+            }
         }
-    }, [manageNotification, studyUpdatedForce]);
+    }, [dispatch, manageNotification, studyUpdatedForce]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);

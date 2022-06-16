@@ -309,21 +309,16 @@ const LineAttachToVoltageLevelDialog = ({
                 newLine1Name || null,
                 newLine2Id,
                 newLine2Name || null
-            )
-                .then(() => {
-                    // until whole treatment path is OK, we let close only on ... "Close"
-                    // handleCloseAndClear();
-                })
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LineAttachmentError',
-                            intlRef: intlRef,
-                        },
-                    });
+            ).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'LineAttachmentError',
+                        intlRef: intlRef,
+                    },
                 });
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }

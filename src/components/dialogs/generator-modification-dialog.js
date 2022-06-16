@@ -39,8 +39,6 @@ import { Box } from '@mui/system';
 import { ENERGY_SOURCES, getEnergySourceLabel } from '../network/constants';
 import { useNullableBooleanValue } from './inputs/boolean';
 import { modifyGenerator } from '../../utils/rest-api';
-import { removeNotificationByNode } from '../../redux/actions';
-import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -93,7 +91,6 @@ const GeneratorModificationDialog = ({
     const [loadingEquipmentOptions, setLoadingEquipmentOptions] =
         useState(true);
 
-    const dispatch = useDispatch();
     const clearValues = () => {
         setFormValues(null);
     };
@@ -290,10 +287,6 @@ const GeneratorModificationDialog = ({
                 connectivity?.busOrBusbarSection?.id,
                 editData?.uuid
             ).catch((errorMessage) => {
-                const notification = {
-                    nodeUuid: selectedNodeUuid,
-                };
-                dispatch(removeNotificationByNode(notification));
                 snackError(errorMessage, 'GeneratorModificationError');
             });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.

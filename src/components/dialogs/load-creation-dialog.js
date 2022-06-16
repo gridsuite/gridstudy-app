@@ -39,8 +39,6 @@ import {
 import { createLoad } from '../../utils/rest-api';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
-import { removeNotificationByNode } from '../../redux/actions';
-import { useDispatch } from 'react-redux';
 
 /**
  * Dialog to create a load in the network
@@ -70,8 +68,6 @@ const LoadCreationDialog = ({
     const [formValues, setFormValues] = useState(undefined);
 
     const equipmentPath = 'loads';
-
-    const dispatch = useDispatch();
 
     const clearValues = () => {
         setFormValues(null);
@@ -181,10 +177,6 @@ const LoadCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
-                const notification = {
-                    nodeUuid: selectedNodeUuid,
-                };
-                dispatch(removeNotificationByNode(notification));
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,

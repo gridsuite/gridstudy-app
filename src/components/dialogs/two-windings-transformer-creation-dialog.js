@@ -37,8 +37,6 @@ import {
 } from './dialogUtils';
 import EquipmentSearchDialog from './equipment-search-dialog';
 import { useFormSearchCopy } from './form-search-copy-hook';
-import { removeNotificationByNode } from '../../redux/actions';
-import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
     h3: {
@@ -77,8 +75,6 @@ const TwoWindingsTransformerCreationDialog = ({
     const [formValues, setFormValues] = useState(undefined);
 
     const equipmentPath = '2-windings-transformers';
-
-    const dispatch = useDispatch();
 
     const clearValues = () => {
         setFormValues(null);
@@ -235,10 +231,6 @@ const TwoWindingsTransformerCreationDialog = ({
                 editData ? true : false,
                 editData ? editData.uuid : undefined
             ).catch((errorMessage) => {
-                const notification = {
-                    nodeUuid: selectedNodeUuid,
-                };
-                dispatch(removeNotificationByNode(notification));
                 displayErrorMessageWithSnackbar({
                     errorMessage: errorMessage,
                     enqueueSnackbar: enqueueSnackbar,
