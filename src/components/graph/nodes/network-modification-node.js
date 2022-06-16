@@ -8,10 +8,7 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import { Handle } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
-import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -78,8 +75,6 @@ const useStyles = makeStyles((theme) => ({
 const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
-    const workingNode = useSelector((state) => state.workingTreeNode);
-
     return (
         <>
             <Handle
@@ -136,7 +131,7 @@ const NetworkModificationNode = (props) => {
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-            </div>
+y            </div>
         </>
     );
 };
