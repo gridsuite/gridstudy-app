@@ -188,6 +188,7 @@ fetch(ArrowHover)
         arrowHoverSvg = data;
     });
 
+let initialWidth, initialHeight;
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
 const mapRightOffset = 120;
@@ -888,19 +889,27 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         );
     }
 
-    let sizeWidth, sizeHeight;
+    let sizeWidth,
+        sizeHeight = initialHeight;
     if (svg.error) {
-        sizeWidth = errorWidth; // height is not set so height is auto;
+        sizeWidth = errorWidth;
     } else if (
         typeof finalPaperWidth != 'undefined' &&
         typeof finalPaperHeight != 'undefined'
     ) {
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
-    } else if (loadingState) {
-        sizeWidth = loadingWidth; // height is not set so height is auto; used for the first load
+    } else if (initialWidth !== undefined || loadingState) {
+        sizeWidth = initialWidth;
     } else {
-        sizeWidth = totalWidth; // happens during initalization
+        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+    }
+
+    if (sizeWidth !== undefined) {
+        initialWidth = sizeWidth; // setting initial width for the next SLD.
+    }
+    if (sizeHeight !== undefined) {
+        initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
     const pinSld = useCallback(
@@ -962,13 +971,13 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     </IconButton>
                 </Box>
             </Box>
-            {loadingState && (
-                <Box height={2}>
-                    <LinearProgress />
-                </Box>
-            )}
             <Box position="relative">
                 <Box position="absolute" left={0} right={0} top={0}>
+                    {loadingState && (
+                        <Box height={2}>
+                            <LinearProgress />
+                        </Box>
+                    )}
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
