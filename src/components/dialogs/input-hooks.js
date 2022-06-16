@@ -796,6 +796,7 @@ export const useSimpleTextValue = ({
                 {...(adornment && { InputProps: adornment })}
                 error={error !== undefined}
                 autoFocus={true}
+                fullWidth={true}
             />
         );
     }, [value, handleChangeValue, adornment, error]);

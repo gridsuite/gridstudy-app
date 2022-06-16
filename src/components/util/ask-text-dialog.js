@@ -53,7 +53,7 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
     };
 
     return (
-        <Dialog open={show} onClose={onClose}>
+        <Dialog open={show} onClose={onClose} maxWidth={'xs'} fullWidth={true}>
             <DialogTitle id={'modal-title'}>{title}</DialogTitle>
             <DialogContent>
                 {nameField}
@@ -62,15 +62,15 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
                 )}
             </DialogContent>
             <DialogActions>
+                <Button onClick={handleClose}>
+                    {intl.formatMessage({ id: 'cancel' })}
+                </Button>
                 <Button
                     variant={'outlined'}
                     onClick={handleValidate}
                     disabled={!isNameOK}
                 >
                     {intl.formatMessage({ id: 'validate' })}
-                </Button>
-                <Button onClick={handleClose}>
-                    {intl.formatMessage({ id: 'cancel' })}
                 </Button>
             </DialogActions>
         </Dialog>
