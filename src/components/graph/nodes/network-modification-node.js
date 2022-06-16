@@ -131,7 +131,7 @@ const NetworkModificationNode = (props) => {
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-y            </div>
+            </div>
         </>
     );
 };
