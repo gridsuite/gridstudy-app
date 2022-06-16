@@ -308,7 +308,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         snackError,
         dispatch,
         errorList,
-        notificationList,
     ]);
 
     const fillNotification = useCallback(
@@ -327,24 +326,21 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         (study) => {
             let messageId = '';
             if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'creatingInProgress'
+                study.eventData.headers['updateType'] === 'creatingInProgress'
             ) {
                 messageId = 'network_modifications/creatingModification';
             } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'updatingInProgress'
+                study.eventData.headers['updateType'] === 'updatingInProgress'
             ) {
                 messageId = 'network_modifications/updatingModification';
             } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'deletingInProgress'
+                study.eventData.headers['updateType'] === 'deletingInProgress'
             ) {
                 messageId = 'network_modifications/deletingModification';
             }
-            fillNotification(studyUpdatedForce, messageId);
+            fillNotification(study, messageId);
         },
-        [fillNotification, studyUpdatedForce]
+        [fillNotification]
     );
 
     useEffect(() => {
@@ -368,7 +364,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 manageNotification(studyUpdatedForce);
             }
         }
-    }, [dispatch, manageNotification, studyUpdatedForce]);
+    }, [manageNotification, studyUpdatedForce]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
