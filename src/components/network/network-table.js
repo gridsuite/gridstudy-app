@@ -595,7 +595,7 @@ const NetworkTable = (props) => {
                         <div className={classes.editCell}>
                             <IconButton
                                 size={'small'}
-                                disabled={isModifyingRow()}
+                                disabled={isModifyingRow() && !oneNodeBuilding}
                                 onClick={() => {
                                     setLineEdit({
                                         oldValues: {},
