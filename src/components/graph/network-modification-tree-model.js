@@ -158,4 +158,56 @@ export default class NetworkModificationTreeModel {
             this.treeElements[0].data.caseName = newCaseName;
         }
     }
+
+    getParentEdge(node) {
+        let parentEdge = this.treeElements.filter((element) => {
+            return element.target === node.id;
+        });
+        return parentEdge.length > 0 ? parentEdge[0] : undefined;
+    }
+
+    getParentNode(node) {
+        let parentEdge = this.getParentEdge(node);
+        let selectedNodeParent;
+        if (parentEdge) {
+            selectedNodeParent = this.treeElements.filter((element) => {
+                return element.id === parentEdge.source;
+            });
+        }
+        return selectedNodeParent.length > 0
+            ? selectedNodeParent[0]
+            : undefined;
+    }
+
+    getNearestBuiltParent(node) {
+        if (node) {
+            for (let element of this.treeElements) {
+                if (element.id === node.id) {
+                    let isParentFound = false;
+                    let currentNode = element;
+                    let nodeParent;
+
+                    while (!isParentFound) {
+                        nodeParent = this.getParentNode(currentNode);
+                        if (nodeParent) {
+                            if (
+                                nodeParent.data.buildStatus === 'BUILT' ||
+                                nodeParent.data.buildStatus ===
+                                    'BUILT_INVALID' ||
+                                nodeParent.type === 'ROOT'
+                            ) {
+                                isParentFound = nodeParent;
+                            } else {
+                                currentNode = nodeParent;
+                            }
+                        } else {
+                            nodeParent = undefined;
+                            break;
+                        }
+                    }
+                    return nodeParent;
+                }
+            }
+        }
+    }
 }

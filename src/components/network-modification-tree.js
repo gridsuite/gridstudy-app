@@ -21,7 +21,7 @@ import {
     setModificationsDrawerOpen,
     workingTreeNode,
 } from '../redux/actions';
-import { buildNode, fetchNearestBuiltParentNode } from '../utils/rest-api';
+import { buildNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -106,18 +106,25 @@ const NetworkModificationTree = ({
             dispatch(selectTreeNode(element));
 
             if (element.data.buildStatus === 'NOT_BUILT') {
-                //fetch nearest built node
-                //assign working node to nearest built node
-                fetchNearestBuiltParentNode(studyUuid, element.id)
-                    .then((res) => {
-                        console.log(res);
-                        if (res) {
-                            dispatch(workingTreeNode(res));
-                        }
-                    })
-                    .catch((err) => console.log(err.message));
+                let nearestBuiltParent =
+                    treeModel.getNearestBuiltParent(element);
 
-                console.log('HMMMMMMMMMMMMMMMMMMMMMMMMM');
+                if (nearestBuiltParent) {
+                    dispatch(workingTreeNode(nearestBuiltParent));
+                } else {
+                    const errorMessage = intlRef.current.formatMessage({
+                        id: 'NodeParentRetrievalError',
+                    });
+
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NetworkModificationTreeLoadError',
+                            intlRef: intlRef,
+                        },
+                    });
+                }
             } else if (
                 element.type === 'ROOT' ||
                 (element.type === 'NETWORK_MODIFICATION' &&
@@ -127,7 +134,7 @@ const NetworkModificationTree = ({
                 dispatch(workingTreeNode(element));
             }
         },
-        [dispatch, studyUuid]
+        [dispatch, enqueueSnackbar, intlRef, treeModel]
     );
 
     const onNodeDoubleClick = useCallback(

@@ -285,6 +285,7 @@
     "NodeUpdateError": "An error occured while updating node",
     "NodeBuildingError": "An error occured while building node",
     "NetworkModifications": "Network modifications",
+    "NodeParentRetrievalError": "Closest visualizable node retrieval failed",
     "CreateLoad": "Create load",
     "ModifyLoad": "Modify load",
     "NameOptional": "Name (optional)",

@@ -109,16 +109,13 @@ const NetworkModificationNode = (props) => {
                                 : classes.buildBannerInvalid
                         }
                     >
-                        {(props.data.buildStatus === 'BUILDING' && (
+                        {props.data.buildStatus === 'BUILDING' && (
                             <CircularProgress
                                 size={20}
                                 color="primary"
                                 style={{ margin: 'auto' }}
                             />
-                        )) ||
-                            (props.data.buildStatus === 'NOT_BUILT' && (
-                                <VisibilityOffIcon style={{ margin: 'auto' }} />
-                            ))}
+                        )}
                     </div>
 
                     <div className={classes.labelWrapper}>
@@ -139,7 +136,6 @@ const NetworkModificationNode = (props) => {
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-                {props.id === workingNode?.id && <VisibilityIcon />}
             </div>
         </>
     );
