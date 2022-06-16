@@ -56,6 +56,7 @@ import { ViewState } from './utils';
 import clsx from 'clsx';
 import { isNodeValid } from '../../graph/util/model-functions';
 import AlertInvalidNode from '../../util/alert-invalid-node';
+import { useOneNodeBuilding } from '../../util/is-one-node-building-hook';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -267,19 +268,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
-    const [oneNodeBuilding, setOneNodeBuilding] = useState(false);
-
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
+    const oneNodeBuilding = useOneNodeBuilding();
 
     const MenuLine = withLineMenu(BaseEquipmentMenu);
 
     const theme = useTheme();
-
-    useEffect(() => {
-        setOneNodeBuilding(treeModel.isOneNodeBuilding);
-    }, [treeModel]);
 
     const forceUpdate = useCallback(() => {
         updateState((s) => !s);

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -14,7 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useOneNodeBuilding } from '../../util/is-one-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -39,15 +39,7 @@ const CreateNodeMenu = ({
     const classes = useStyles();
     const intl = useIntl();
 
-    const [oneNodeBuilding, setOneNodeBuilding] = useState(false);
-
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
-
-    useEffect(() => {
-        setOneNodeBuilding(treeModel.isOneNodeBuilding);
-    }, [treeModel]);
+    const oneNodeBuilding = useOneNodeBuilding();
 
     function createNetworkModificationNode(insertMode) {
         handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);

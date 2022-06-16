@@ -61,6 +61,7 @@ import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { isNodeValid } from '../graph/util/model-functions';
 import AlertInvalidNode from '../util/alert-invalid-node';
+import { useOneNodeBuilding } from '../util/is-one-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -243,11 +244,7 @@ const NetworkTable = (props) => {
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
 
-    const [oneNodeBuilding, setOneNodeBuilding] = useState(false);
-
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
+    const oneNodeBuilding = useOneNodeBuilding();
 
     const isLineOnEditMode = useCallback(
         (rowData) => {
@@ -259,10 +256,6 @@ const NetworkTable = (props) => {
     const intl = useIntl();
 
     const intlRef = useIntlRef();
-
-    useEffect(() => {
-        setOneNodeBuilding(treeModel.isOneNodeBuilding);
-    }, [treeModel]);
 
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];

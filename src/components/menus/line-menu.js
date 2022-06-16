@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -37,6 +37,7 @@ import {
 } from '../../utils/messages';
 import { equipments } from '../network/network-equipments';
 import { isNodeValid } from '../graph/util/model-functions';
+import { useOneNodeBuilding } from '../util/is-one-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -70,15 +71,7 @@ const withLineMenu =
         const [displayUseName] = useParameterState(PARAM_USE_NAME);
         const network = useSelector((state) => state.network);
 
-        const [oneNodeBuilding, setOneNodeBuilding] = useState(false);
-
-        const treeModel = useSelector(
-            (state) => state.networkModificationTreeModel
-        );
-
-        useEffect(() => {
-            setOneNodeBuilding(treeModel.isOneNodeBuilding);
-        }, [treeModel]);
+        const oneNodeBuilding = useOneNodeBuilding();
 
         const line = network.getLine(id);
 
