@@ -343,8 +343,8 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 selectedNode.id,
                 item.uuid,
                 before
-            ).catch((e) => {
-                snackError(e.message, 'errReorderModificationMsg');
+            ).catch((errorMessage) => {
+                snackError(errorMessage, 'errReorderModificationMsg');
                 setModifications(modifications); // rollback
             });
         },
