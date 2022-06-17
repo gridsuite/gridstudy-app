@@ -42,8 +42,6 @@ import { useFormSearchCopy } from './form-search-copy-hook';
 import { Box } from '@mui/system';
 import { ENERGY_SOURCES } from '../network/constants';
 import { useBooleanValue } from './inputs/boolean';
-import { useDispatch } from 'react-redux';
-import { removeNotificationByNode } from '../../redux/actions';
 
 const useStyles = makeStyles((theme) => ({
     helperText: {
@@ -79,8 +77,6 @@ const GeneratorCreationDialog = ({
     const inputForm = useInputForm();
 
     const [formValues, setFormValues] = useState(undefined);
-
-    const dispatch = useDispatch();
 
     const toFormValues = (generator) => {
         return {
