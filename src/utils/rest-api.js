@@ -258,11 +258,7 @@ export function fetchNADSvg(svgUrl) {
     return backendFetch(svgUrl).then((response) => {
         return response.ok
             ? response.text()
-            : response.text().then((text) => {
-                  return Promise.reject(
-                      text ? text.message : response.statusText
-                  );
-              });
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
