@@ -170,7 +170,7 @@ export default class NetworkModificationTreeModel {
     }
 
     getParentNode(node) {
-        let parentEdge = this.getParentEdge(undefined);
+        let parentEdge = this.getParentEdge(node);
         let selectedNodeParent = [];
         if (parentEdge) {
             selectedNodeParent = this.treeElements.filter((element) => {
