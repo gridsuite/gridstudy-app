@@ -130,7 +130,7 @@ const ConnectivityEdition = ({
         (event, value, reason) => {
             if (reason === 'selectOption') {
                 onChangeVoltageLevel(value);
-                onChangeBusOrBusbarSection('');
+                onChangeBusOrBusbarSection(null);
             } else if (reason === 'clear') {
                 onChangeVoltageLevel(null);
                 onChangeBusOrBusbarSection(null);
