@@ -15,8 +15,10 @@ export function NetworkAreaDiagramPane({
     studyUuid,
     network,
     workingNode,
+    selectedNode,
     loadFlowStatus,
     onClose,
+    align,
 }) {
     const [depth, setDepth] = useState(0);
 
@@ -60,6 +62,7 @@ export function NetworkAreaDiagramPane({
                         display: 'flex',
                         pointerEvents: 'none',
                         flexDirection: 'column',
+                        direction: align === 'right' ? 'rtl' : undefined,
                     }}
                 >
                     <NetworkAreaDiagram
@@ -68,6 +71,7 @@ export function NetworkAreaDiagramPane({
                         svgUrl={svgUrl}
                         nadId={voltageLevelsIds[0]}
                         workingNode={workingNode}
+                        selectedNode={selectedNode}
                         depth={depth}
                         setDepth={setDepth}
                         studyUuid={studyUuid}
@@ -84,5 +88,7 @@ NetworkAreaDiagramPane.propTypes = {
     loadFlowStatus: PropTypes.any,
     network: PropTypes.object,
     workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
     onClose: PropTypes.func,
+    align: PropTypes.string,
 };

@@ -329,12 +329,14 @@ const StudyPane = ({
                                         studyUuid={studyUuid}
                                         network={network}
                                         workingNode={workingNode}
+                                        selectedNode={selectedNode}
                                         loadFlowStatus={getLoadFlowRunningStatus(
                                             loadFlowInfos?.loadFlowStatus
                                         )}
                                         onClose={() =>
                                             dispatch(openNetworkAreaDiagram([]))
                                         }
+                                        align="right"
                                     />
                                 )}
                         </div>

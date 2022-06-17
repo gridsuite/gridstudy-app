@@ -258,11 +258,7 @@ export function fetchNADSvg(svgUrl) {
     return backendFetch(svgUrl).then((response) => {
         return response.ok
             ? response.text()
-            : response.text().then((text) => {
-                  return Promise.reject(
-                      text ? text.message : response.statusText
-                  );
-              });
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
@@ -1596,6 +1592,67 @@ export function divideLine(
     );
 }
 
+export function attachLine(
+    studyUuid,
+    selectedNodeUuid,
+    modificationUuid,
+    lineToAttachToId,
+    percent,
+    attachmentPointId,
+    attachmentPointName,
+    mayNewVoltageLevelInfos,
+    existingVoltageLevelId,
+    bbsOrBusId,
+    attachmentLine,
+    newLine1Id,
+    newLine1Name,
+    newLine2Id,
+    newLine2Name
+) {
+    const body = JSON.stringify({
+        lineToAttachToId,
+        percent,
+        attachmentPointId,
+        attachmentPointName,
+        mayNewVoltageLevelInfos,
+        existingVoltageLevelId,
+        bbsOrBusId,
+        attachmentLine,
+        newLine1Id,
+        newLine1Name,
+        newLine2Id,
+        newLine2Name,
+    });
+
+    let lineAttachUrl;
+    if (modificationUuid) {
+        console.info('Line attach to voltage level update', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/modifications/' +
+            encodeURIComponent(modificationUuid) +
+            '/line-attach';
+    } else {
+        console.info('Line attach to voltage level', body);
+        lineAttachUrl =
+            getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+            '/network-modification/line-attach';
+    }
+
+    return backendFetch(lineAttachUrl, {
+        method: modificationUuid ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body,
+    }).then((response) =>
+        response.ok
+            ? response.text()
+            : response.text().then((text) => Promise.reject(text))
+    );
+}
+
 export function getLoadFlowProvider(studyUuid) {
     console.info('get load flow provider');
     const getLoadFlowProviderUrl =
@@ -1765,6 +1822,33 @@ export function fetchCaseInfos(studyUuid) {
     return backendFetch(url, { method: 'get' }).then((response) => {
         return response.ok
             ? response.json()
+            : response.text().then((text) => Promise.reject(text));
+    });
+}
+
+export function isNodeExists(studyUuid, nodeName) {
+    const existsNodeUrl =
+        getStudyUrl(studyUuid) +
+        '/nodes?' +
+        new URLSearchParams({
+            nodeName: nodeName,
+        });
+    console.debug(existsNodeUrl);
+    return backendFetch(existsNodeUrl, { method: 'head' }).then((response) => {
+        return response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text));
+    });
+}
+
+export function getUniqueNodeName(studyUuid) {
+    const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/nodes/nextUniqueName';
+    console.debug(uniqueNodeNameUrl);
+    return backendFetch(uniqueNodeNameUrl, {
+        method: 'get',
+    }).then((response) => {
+        return response.ok
+            ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
 }

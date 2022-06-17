@@ -88,6 +88,14 @@ export const toFloatValue = (val) => {
     return parseFloat(tmp) || 0;
 };
 
+export const removeNullDataValues = (data) => {
+    Object.keys(data).forEach((key) => {
+        if (data[key] === null) {
+            delete data[key];
+        }
+    });
+};
+
 export const GridSection = ({ title, size = 12 }) => {
     const classes = useStyles();
     return (

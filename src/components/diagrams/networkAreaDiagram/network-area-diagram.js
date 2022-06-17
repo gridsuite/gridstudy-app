@@ -43,6 +43,8 @@ import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
 import { NAD_INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
+import { isNodeValid } from '../../graph/util/model-functions';
+import AlertInvalidNode from '../../util/alert-invalid-node';
 
 const loadingWidth = 150;
 const maxWidth = 1200;
@@ -111,6 +113,11 @@ const useStyles = makeStyles((theme) => ({
         left: 5,
         position: 'absolute',
     },
+    paperBorders: {
+        borderLeft: '1px solid ' + theme.palette.action.disabled,
+        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+        borderRight: '1px solid ' + theme.palette.action.hover,
+    },
 }));
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
@@ -169,6 +176,7 @@ const SizedNetworkAreaDiagram = (props) => {
         totalWidth,
         totalHeight,
         workingNode,
+        selectedNode,
         nadId,
         diagramTitle,
         svgUrl,
@@ -268,7 +276,9 @@ const SizedNetworkAreaDiagram = (props) => {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] ===
                     'loadflow' ||
-                studyUpdatedForce.eventData.headers['updateType'] === 'study'
+                studyUpdatedForce.eventData.headers['updateType'] === 'study' ||
+                studyUpdatedForce.eventData.headers['updateType'] ===
+                    'buildCompleted'
             ) {
                 updateNad();
             }
@@ -302,7 +312,7 @@ const SizedNetworkAreaDiagram = (props) => {
                 if (svgEl != null) {
                     svgEl.setAttribute(
                         'width',
-                        fullScreen ? totalWidth - 40 : svgPreferredWidth
+                        fullScreen ? totalWidth : svgPreferredWidth
                     );
                     svgEl.setAttribute(
                         'height',
@@ -354,14 +364,16 @@ const SizedNetworkAreaDiagram = (props) => {
         <></>
     ) : (
         <Paper
-            elevation={1}
+            elevation={4}
             square={true}
+            className={classes.paperBorders}
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,
                 minWidth: loadingWidth,
                 height: sizeHeight,
                 position: 'relative',
+                direction: 'ltr',
             }}
         >
             <Box>
@@ -392,6 +404,10 @@ const SizedNetworkAreaDiagram = (props) => {
                             <LinearProgress />
                         </Box>
                     )}
+                    {!isNodeValid(workingNode, selectedNode) &&
+                        selectedNode?.type !== 'ROOT' && (
+                            <AlertInvalidNode noMargin={true} />
+                        )}
                 </Box>
                 {
                     <div
@@ -460,6 +476,7 @@ NetworkAreaDiagram.propTypes = {
     svgUrl: PropTypes.string.isRequired,
     nadId: PropTypes.string,
     workingNode: PropTypes.object,
+    selectedNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,

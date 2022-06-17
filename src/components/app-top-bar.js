@@ -157,6 +157,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const workingNode = useSelector((state) => state.workingTreeNode);
 
+    const selectedTreeNode = useSelector((state) => state.selectedTreeNode);
+
     const [showParameters, setShowParameters] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
     // Equipments search bar
@@ -263,16 +265,15 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     alignItems="center"
                     justifyContent="center"
                 >
-                    {workingNode && (
+                    {selectedTreeNode && (
                         <OverflowableText
                             className={classes.label}
                             text={
-                                workingNode.type === 'ROOT' ||
-                                workingNode.name === 'Root'
+                                selectedTreeNode?.data?.label === 'Root'
                                     ? intl.formatMessage({
                                           id: 'root',
                                       })
-                                    : workingNode.name
+                                    : selectedTreeNode?.data?.label
                             }
                         />
                     )}
