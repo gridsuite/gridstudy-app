@@ -264,6 +264,10 @@
     "NetworkModificationTree": "Arbre de modification de réseau",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+    "CenterSelectedNode": "Centrer sur le noeud sélectionné",
+    "DisplayMinimap": "Afficher la mini-carte",
+    "HideMinimap": "Masquer la mini-carte",
+    "DisplayTHeWholeTree": "Visualiser l'arbre en entier",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",

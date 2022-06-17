@@ -253,7 +253,7 @@
     "UnableToSwitchOnLine": "Unable to switch on the line",
 
     "Provider": "Provider: ",
-    "Default": "Default",
+    "Default": "Default",       
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
     "setLoadFlowProviderError": "An error occured when updating the load flow provider",
@@ -263,6 +263,10 @@
     "NetworkModificationTree": "Network modification tree",
     "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+    "CenterSelectedNode": "Center on selected node",
+    "DisplayMinimap": "Display minimap",
+    "HideMinimap": "Hide minimap",
+    "DisplayTHeWholeTree": "Display the whole tree",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",

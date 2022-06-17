@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -5,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import ReactFlow, {
     Controls,
     useStoreState,
@@ -32,6 +33,8 @@ import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
+import { useIntl } from 'react-intl';
+import FitScreenOutlinedIcon from '@mui/icons-material/FitScreenOutlined';
 
 const nodeTypes = {
     ROOT: RootNode,
@@ -162,6 +165,7 @@ const NetworkModificationTree = ({
     const [x, y, zoom] = useStoreState((state) => state.transform);
 
     const { transform } = useZoomPanHelper();
+    const reactFlowInstance = useZoomPanHelper();
 
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
@@ -173,6 +177,8 @@ const NetworkModificationTree = ({
         transform,
         prevTreeDisplay,
     };
+
+    const intl = useIntl();
 
     useEffect(() => {
         const nodeEditorShift = isModificationsDrawerOpen
@@ -251,10 +257,33 @@ const NetworkModificationTree = ({
                     className={classes.controls}
                     showZoom={false}
                     showInteractive={false}
+                    showFitView={false}
                 >
+                    <ControlButton
+                        onClick={() => {
+                            reactFlowInstance.fitView();
+                        }}
+                    >
+                        <Tooltip
+                        placement="left" 
+                        title={intl.formatMessage({ id: 'DisplayTHeWholeTree' })}>
+                            <FitScreenOutlinedIcon />
+                        </Tooltip>
+                    </ControlButton>
                     <CenterGraphButton selectedNode={selectedNode} />
                     <ControlButton onClick={() => toggleMinimap()}>
-                        <MapIcon />
+                        <Tooltip
+                            placement="left"
+                            title={
+                                isMinimapOpen
+                                    ? intl.formatMessage({ id: 'HideMinimap' })
+                                    : intl.formatMessage({
+                                          id: 'DisplayMinimap',
+                                      })
+                            }
+                        >
+                            <MapIcon />
+                        </Tooltip>
                     </ControlButton>
                 </Controls>
 
