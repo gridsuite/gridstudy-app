@@ -160,15 +160,18 @@ export default class NetworkModificationTreeModel {
     }
 
     getParentEdge(node) {
-        let parentEdge = this.treeElements.filter((element) => {
-            return element.target === node.id;
-        });
+        let parentEdge = [];
+        if (node) {
+            parentEdge = this.treeElements.filter((element) => {
+                return element.target === node.id;
+            });
+        }
         return parentEdge.length > 0 ? parentEdge[0] : undefined;
     }
 
     getParentNode(node) {
-        let parentEdge = this.getParentEdge(node);
-        let selectedNodeParent;
+        let parentEdge = this.getParentEdge(undefined);
+        let selectedNodeParent = [];
         if (parentEdge) {
             selectedNodeParent = this.treeElements.filter((element) => {
                 return element.id === parentEdge.source;
