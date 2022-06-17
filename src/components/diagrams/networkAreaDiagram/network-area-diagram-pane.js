@@ -18,6 +18,7 @@ export function NetworkAreaDiagramPane({
     selectedNode,
     loadFlowStatus,
     onClose,
+    align,
 }) {
     const [depth, setDepth] = useState(0);
 
@@ -62,6 +63,7 @@ export function NetworkAreaDiagramPane({
                         display: 'flex',
                         pointerEvents: 'none',
                         flexDirection: 'column',
+                        direction: align === 'right' ? 'rtl' : undefined,
                     }}
                 >
                     <NetworkAreaDiagram
@@ -89,4 +91,5 @@ NetworkAreaDiagramPane.propTypes = {
     workingNode: PropTypes.object,
     selectedNode: PropTypes.object,
     onClose: PropTypes.func,
+    align: PropTypes.string,
 };
