@@ -420,7 +420,7 @@ const LineSplitWithVoltageLevelDialog = ({
                         )}
                     </Grid>
                     <GridSection title="VoltageLevelToSplitAt" />
-                    <Grid container columnSpacing={2}>
+                    <Grid container spacing={2}>
                         {gridItem(voltageLevelIdField, 6)}
                         {gridItem(bbsOrNodeIdField, 6)}
                         {gridItem(
