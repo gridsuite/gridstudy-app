@@ -196,7 +196,7 @@ export default class NetworkModificationTreeModel {
                                     'BUILT_INVALID' ||
                                 nodeParent.type === 'ROOT'
                             ) {
-                                isParentFound = nodeParent;
+                                isParentFound = true;
                             } else {
                                 currentNode = nodeParent;
                             }
