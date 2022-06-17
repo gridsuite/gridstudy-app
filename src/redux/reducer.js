@@ -184,26 +184,7 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
-            const foundWorkingTreeNode =
-                action.networkModificationTreeNodes.find(
-                    (node) => node.id === state.workingTreeNode?.id
-                );
-            if (foundWorkingTreeNode !== undefined) {
-                state.workingTreeNode = {
-                    id: foundWorkingTreeNode.id,
-                    readOnly: foundWorkingTreeNode.readOnly,
-                    buildStatus: foundWorkingTreeNode.buildStatus,
-                    name: foundWorkingTreeNode.name,
-                };
-            }
-
-            const foundSelectedTreeNode =
-                action.networkModificationTreeNodes.find(
-                    (node) => node.id === state.selectedTreeNode?.id
-                );
-            if (foundSelectedTreeNode !== undefined) {
-                state.selectedTreeNode = foundSelectedTreeNode;
-            }
+            synchWorkingNodeAndSelectedNode(state);
         }
     },
 
@@ -357,6 +338,10 @@ function synchWorkingNodeAndSelectedNode(state) {
     const workingNode = state.networkModificationTreeModel?.treeElements.find(
         (entry) => entry?.id === state.workingTreeNode?.id
     );
+    const selectedNode = state.networkModificationTreeModel?.treeElements.find(
+        (entry) => entry?.id === state.selectedTreeNode?.id
+    );
+
     if (workingNode === undefined) {
         // handle the case of workingNode not in the TreeModel anymore.
         let rootNode = getRootNode(
@@ -374,9 +359,9 @@ function synchWorkingNodeAndSelectedNode(state) {
             buildStatus: workingNode?.buildStatus,
         };
     }
-    const selectedNode = state.networkModificationTreeModel?.treeElements.find(
-        (entry) => entry?.id === state.selectedTreeNode?.id
-    );
     // handle the case of selectedNode not in the TreeModel anymore.
     if (selectedNode === undefined) state.selectedTreeNode = null;
+    else {
+        state.selectedTreeNode = { ...selectedNode };
+    }
 }

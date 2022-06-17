@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { IconButton, Typography } from '@mui/material';
+import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AskTextDialog from '../../util/ask-text-dialog';
@@ -14,6 +14,7 @@ import { lighten, darken } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import { useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
+import { OverflowableText } from '@gridsuite/commons-ui';
 
 const useStyles = makeStyles((theme) => ({
     header: {
@@ -27,6 +28,12 @@ const useStyles = makeStyles((theme) => ({
                 ? darken(theme.palette.background.paper, 0.1)
                 : lighten(theme.palette.background.paper, 0.2)
         ),
+        display: 'flex',
+        alignItems: 'center',
+    },
+    nodeNameTitle: {
+        flexGrow: 1,
+        fontWeight: 'bold',
     },
 }));
 
@@ -36,7 +43,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
     const intl = useIntl();
 
     return (
-        <div style={{ display: 'flex' }} className={classes.header}>
+        <div className={classes.header}>
             <IconButton
                 size={'small'}
                 onClick={() => setOpenEditTitle(true)}
@@ -44,9 +51,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
             >
                 <EditIcon />
             </IconButton>
-            <Typography variant={'h5'} style={{ flexGrow: '1' }}>
-                {name}
-            </Typography>
+            <OverflowableText text={name} className={classes.nodeNameTitle} />
             <IconButton size={'small'} onClick={onClose}>
                 <CloseIcon />
             </IconButton>
