@@ -658,7 +658,10 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             divElt.innerHTML = ''; // clear the previous svg in div element before replacing
             const draw = SVG()
                 .addTo(divElt)
-                .size(svgWidth, svgHeight)
+                .size(
+                    svgFinalWidth !== undefined ? svgFinalWidth : svgWidth,
+                    svgFinalHeight !== undefined ? svgFinalHeight : svgHeight
+                )
                 .viewbox(xOrigin, yOrigin, svgWidth, svgHeight)
                 .panZoom({
                     panning: true,
@@ -800,6 +803,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         theme,
         sldId,
         ref,
+        svgFinalHeight,
+        svgFinalWidth,
     ]);
 
     useLayoutEffect(() => {
@@ -957,13 +962,13 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     </IconButton>
                 </Box>
             </Box>
+            {loadingState && (
+                <Box height={2}>
+                    <LinearProgress />
+                </Box>
+            )}
             <Box position="relative">
                 <Box position="absolute" left={0} right={0} top={0}>
-                    {loadingState && (
-                        <Box height={2}>
-                            <LinearProgress />
-                        </Box>
-                    )}
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
