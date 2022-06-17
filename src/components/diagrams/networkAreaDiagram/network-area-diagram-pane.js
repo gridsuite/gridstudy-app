@@ -22,7 +22,9 @@ export function NetworkAreaDiagramPane({
 }) {
     const [depth, setDepth] = useState(0);
 
-    const voltageLevelsIds = useSelector((state) => state.voltageLevelsIds);
+    const voltageLevelsIds = useSelector(
+        (state) => state.voltageLevelsIdsForNad
+    );
 
     const displayedVoltageLevelIdRef = useRef();
     displayedVoltageLevelIdRef.current = voltageLevelsIds[0];

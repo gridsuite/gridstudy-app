@@ -370,6 +370,6 @@ export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM';
 export function openNetworkAreaDiagram(voltageLevelsIds) {
     return {
         type: OPEN_NETWORK_AREA_DIAGRAM,
-        voltageLevelsIds: voltageLevelsIds,
+        voltageLevelsIdsForNad: voltageLevelsIds,
     };
 }
