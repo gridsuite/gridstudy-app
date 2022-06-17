@@ -136,6 +136,11 @@ const useStyles = makeStyles((theme) => ({
         position: 'absolute',
         cursor: 'pointer',
     },
+    paperBorders: {
+        borderLeft: '1px solid ' + theme.palette.action.disabled,
+        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+        borderRight: '1px solid ' + theme.palette.action.hover,
+    },
 }));
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
@@ -910,8 +915,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     return !svg.error ? (
         <Paper
             ref={ref}
-            elevation={1}
+            elevation={4}
             square={true}
+            className={classes.paperBorders}
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,

@@ -10,6 +10,7 @@ import {
     createTreeNode,
     deleteTreeNode,
     fetchNetworkModificationTreeNode,
+    getUniqueNodeName,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -151,20 +152,33 @@ export const NetworkModificationTreePane = ({
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {
-            createTreeNode(studyUuid, element.id, insertMode, {
-                name: 'New node',
-                type: type,
-                buildStatus: 'NOT_BUILT',
-            }).catch((errorMessage) => {
-                displayErrorMessageWithSnackbar({
-                    errorMessage: errorMessage,
-                    enqueueSnackbar: enqueueSnackbar,
-                    headerMessage: {
-                        headerMessageId: 'NodeCreateError',
-                        intlRef: intlRef,
-                    },
+            getUniqueNodeName(studyUuid)
+                .then((response) =>
+                    createTreeNode(studyUuid, element.id, insertMode, {
+                        name: response,
+                        type: type,
+                        buildStatus: 'NOT_BUILT',
+                    }).catch((errorMessage) => {
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: errorMessage,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'NodeCreateError',
+                                intlRef: intlRef,
+                            },
+                        });
+                    })
+                )
+                .catch((errorMessage) => {
+                    displayErrorMessageWithSnackbar({
+                        errorMessage: errorMessage,
+                        enqueueSnackbar: enqueueSnackbar,
+                        headerMessage: {
+                            headerMessageId: 'NodeCreateError',
+                            intlRef: intlRef,
+                        },
+                    });
                 });
-            });
         },
         [studyUuid, enqueueSnackbar, intlRef]
     );
