@@ -16,6 +16,7 @@ import {
 } from '../../../utils/rest-api';
 import { useSnackMessage } from '../../../utils/messages';
 import { useDispatch, useSelector } from 'react-redux';
+import LineAttachToVoltageLevelDialog from '../../dialogs/line-attach-to-voltage-level-dialog';
 import LoadModificationDialog from '../../dialogs/load-modification-dialog';
 import GeneratorModificationDialog from '../../dialogs/generator-modification-dialog';
 import NetworkModificationDialog from '../../dialogs/network-modifications-dialog';
@@ -90,10 +91,12 @@ const useStyles = makeStyles((theme) => ({
     },
     circularProgress: {
         marginRight: theme.spacing(2),
+        color: theme.palette.primary.main,
     },
     linearProgress: {
         marginTop: theme.spacing(2),
         marginRight: theme.spacing(2),
+        color: theme.palette.primary.main,
     },
     formattedMessageProgress: {
         marginTop: theme.spacing(2),
@@ -121,7 +124,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
     const workingNode = useSelector((state) => state.workingTreeNode);
     const notificationList = useSelector((state) => state.notificationList);
-    const errorList = useSelector((state) => state.errorList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
@@ -274,6 +276,17 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 ),
             icon: <AddIcon />,
         },
+        LINE_ATTACH_TO_VOLTAGE_LEVEL: {
+            label: 'LineAttachToVoltageLevel',
+            dialog: () =>
+                adapt(
+                    LineAttachToVoltageLevelDialog,
+                    withVLs,
+                    withLines,
+                    withSubstations
+                ),
+            icon: <AddIcon />,
+        },
         deleteEquipment: {
             label: 'DeleteEquipment',
             dialog: () => withDefaultParams(EquipmentDeletionDialog),
@@ -305,25 +318,14 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     });
             }
         }
-    }, [
-        selectedNode,
-        setModifications,
-        selectedNodeRef,
-        snackError,
-        dispatch,
-        errorList,
-    ]);
+    }, [selectedNode, setModifications, snackError, dispatch]);
 
     const fillNotification = useCallback(
         (study, messageId) => {
             // (work for all users)
-            const notification = {
-                studyUuid: study.eventData.headers['studyUuid'],
-                nodeUuid: study.eventData.headers['parentNode'],
-            };
             // specific message id for each action type
             setMessageId(messageId);
-            dispatch(addNotification(notification));
+            dispatch(addNotification(study.eventData.headers['parentNode']));
         },
         [dispatch]
     );
@@ -375,10 +377,11 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 studyUpdatedForce.eventData.headers['updateType'] ===
                 'UPDATE_FINISHED'
             ) {
-                const notification = {
-                    nodeUuid: studyUpdatedForce.eventData.headers['parentNode'],
-                };
-                dispatch(removeNotificationByNode(notification));
+                dispatch(
+                    removeNotificationByNode(
+                        studyUpdatedForce.eventData.headers['parentNode']
+                    )
+                );
             }
         }
     }, [dispatch, manageNotification, studyUpdatedForce]);
@@ -457,7 +460,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         if (notificationList.length === 0) return false;
 
         let res = notificationList.filter(
-            (notification) => notification?.nodeUuid === selectedNode?.id
+            (notification) => notification === selectedNode?.id
         );
         if (res.length > 0) return true;
         return false;
@@ -500,36 +503,39 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 onDragEnd={commit}
                 onDragStart={() => setIsDragging(true)}
             >
-                <Droppable droppableId="network-modification-list">
+                <Droppable
+                    droppableId="network-modification-list"
+                    isDropDisabled={isLoading()}
+                >
                     {(provided) => (
                         <div
                             className={classes.list}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            {isLoading() ? (
+                            <CheckboxList
+                                onChecked={setSelectedItems}
+                                values={modifications}
+                                itemRenderer={(props) => (
+                                    <ModificationListItem
+                                        key={props.item.uuid}
+                                        onEdit={doEditModification}
+                                        isDragging={isDragging}
+                                        network={network}
+                                        {...props}
+                                        disabled={isLoading()}
+                                    />
+                                )}
+                                toggleSelectAll={toggleSelectAll}
+                            />
+
+                            {isLoading() && (
                                 <div className={classes.notification}>
                                     <CircularProgress
-                                        size={18}
                                         className={classes.circularProgress}
                                     />
                                     <FormattedMessage id={messageId} />
                                 </div>
-                            ) : (
-                                <CheckboxList
-                                    onChecked={setSelectedItems}
-                                    values={modifications}
-                                    itemRenderer={(props) => (
-                                        <ModificationListItem
-                                            key={props.item.uuid}
-                                            onEdit={doEditModification}
-                                            isDragging={isDragging}
-                                            network={network}
-                                            {...props}
-                                        />
-                                    )}
-                                    toggleSelectAll={toggleSelectAll}
-                                />
                             )}
                             {provided.placeholder}
                             {launchLoader && (

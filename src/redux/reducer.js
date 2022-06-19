@@ -340,9 +340,7 @@ export const reducer = createReducer(initialState, {
     },
     [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
         state.notificationList = [
-            ...state.notificationList.filter(
-                (n) => n?.nodeUuid !== action.notification.nodeUuid
-            ),
+            ...state.notificationList.filter((n) => n !== action.notification),
         ];
     },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
@@ -351,7 +349,7 @@ export const reducer = createReducer(initialState, {
 });
 
 function synchWorkingNodeAndSelectedNode(state) {
-    let workingNode = state.networkModificationTreeModel?.treeElements.find(
+    const workingNode = state.networkModificationTreeModel?.treeElements.find(
         (entry) => entry?.id === state.workingTreeNode?.id
     );
     const selectedNode = state.networkModificationTreeModel?.treeElements.find(

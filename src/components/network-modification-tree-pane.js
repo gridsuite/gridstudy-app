@@ -80,7 +80,8 @@ export const NetworkModificationTreePane = ({
 
     const [activeNode, setActiveNode] = useState(null);
     const selectedNode = useSelector((state) => state.selectedTreeNode);
-
+    const selectedNodeRef = useRef();
+    selectedNodeRef.current = selectedNode;
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
@@ -136,19 +137,16 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (n) => n === selectedNode?.id
+                        (n) => n === selectedNodeRef.current.id
                     )
                 ) {
-                    const notification = {
-                        studyUuid:
-                            studyUpdatedForce.eventData.headers['studyUuid'],
-                        nodeUuid: selectedNode.id,
-                    };
-                    dispatch(removeNotificationByNode(notification));
+                    dispatch(
+                        removeNotificationByNode(selectedNodeRef.current.id)
+                    );
                 }
             }
         }
-    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch, selectedNode?.id]);
+    }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
 
     const handleCreateNode = useCallback(
         (element, type, insertMode) => {

@@ -343,8 +343,6 @@ export function workingTreeNode(workingTreeNode) {
             readOnly: workingTreeNode?.data?.readOnly,
             buildStatus: workingTreeNode?.data?.buildStatus,
             name: workingTreeNode?.data?.label,
-            targetPosition: workingTreeNode?.targetPosition,
-            position: workingTreeNode?.position,
         },
     };
 }

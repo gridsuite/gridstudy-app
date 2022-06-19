@@ -72,6 +72,7 @@ const NetworkModificationTree = ({
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
+
     const [isMoving, setIsMoving] = useState(false);
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
 
