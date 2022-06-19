@@ -371,6 +371,7 @@ const VoltageLevelCreationDialog = ({
                     switchKind: c.switchKind,
                 };
             });
+
             onCreateVoltageLevel({
                 studyUuid,
                 selectedNodeUuid,
