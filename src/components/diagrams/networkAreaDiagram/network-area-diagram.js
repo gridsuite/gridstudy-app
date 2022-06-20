@@ -113,6 +113,11 @@ const useStyles = makeStyles((theme) => ({
         left: 5,
         position: 'absolute',
     },
+    paperBorders: {
+        borderLeft: '1px solid ' + theme.palette.action.disabled,
+        borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
+        borderRight: '1px solid ' + theme.palette.action.hover,
+    },
 }));
 
 const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
@@ -307,7 +312,7 @@ const SizedNetworkAreaDiagram = (props) => {
                 if (svgEl != null) {
                     svgEl.setAttribute(
                         'width',
-                        fullScreen ? totalWidth - 40 : svgPreferredWidth
+                        fullScreen ? totalWidth : svgPreferredWidth
                     );
                     svgEl.setAttribute(
                         'height',
@@ -359,14 +364,16 @@ const SizedNetworkAreaDiagram = (props) => {
         <></>
     ) : (
         <Paper
-            elevation={1}
+            elevation={4}
             square={true}
+            className={classes.paperBorders}
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,
                 minWidth: loadingWidth,
                 height: sizeHeight,
                 position: 'relative',
+                direction: 'ltr',
             }}
         >
             <Box>

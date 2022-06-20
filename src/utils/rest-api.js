@@ -258,11 +258,7 @@ export function fetchNADSvg(svgUrl) {
     return backendFetch(svgUrl).then((response) => {
         return response.ok
             ? response.text()
-            : response.text().then((text) => {
-                  return Promise.reject(
-                      text ? text.message : response.statusText
-                  );
-              });
+            : response.text().then((text) => Promise.reject(text));
     });
 }
 
@@ -1826,6 +1822,33 @@ export function fetchCaseInfos(studyUuid) {
     return backendFetch(url, { method: 'get' }).then((response) => {
         return response.ok
             ? response.json()
+            : response.text().then((text) => Promise.reject(text));
+    });
+}
+
+export function isNodeExists(studyUuid, nodeName) {
+    const existsNodeUrl =
+        getStudyUrl(studyUuid) +
+        '/nodes?' +
+        new URLSearchParams({
+            nodeName: nodeName,
+        });
+    console.debug(existsNodeUrl);
+    return backendFetch(existsNodeUrl, { method: 'head' }).then((response) => {
+        return response.ok
+            ? response
+            : response.text().then((text) => Promise.reject(text));
+    });
+}
+
+export function getUniqueNodeName(studyUuid) {
+    const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/nodes/nextUniqueName';
+    console.debug(uniqueNodeNameUrl);
+    return backendFetch(uniqueNodeNameUrl, {
+        method: 'get',
+    }).then((response) => {
+        return response.ok
+            ? response.text()
             : response.text().then((text) => Promise.reject(text));
     });
 }
