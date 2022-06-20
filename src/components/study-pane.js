@@ -337,6 +337,7 @@ const StudyPane = ({
                                             openNetworkAreaDiagram(undefined)
                                         )
                                     }
+                                    align="right"
                                 />
                             )}
                         </div>
