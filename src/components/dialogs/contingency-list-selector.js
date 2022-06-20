@@ -199,13 +199,13 @@ const ContingencyListSelector = (props) => {
     const renderButtons = () => {
         return (
             <Grid container spacing={1} item justifyContent={'center'}>
+                {makeButton(handleClose, 'close', false)}
                 {makeButton(handleAddFavorite, 'AddContingencyList', false)}
                 {makeButton(
                     () => removeFromFavorite(checkedContingencyListUuids),
                     'DeleteContingencyList',
                     checkedContingencyListUuids.length === 0
                 )}
-                {makeButton(handleClose, 'cancel', false)}
                 {makeButton(
                     handleStart,
                     'Execute',
