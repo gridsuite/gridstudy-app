@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /**
  * Copyright (c) 2022, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -167,6 +166,10 @@ const NetworkModificationTree = ({
     const { transform } = useZoomPanHelper();
     const reactFlowInstance = useZoomPanHelper();
 
+    const onLoad = useCallback((reactFlowInstance) => {
+        reactFlowInstance.fitView();
+    }, []);
+
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
     const focusParams = useRef();
@@ -225,10 +228,6 @@ const NetworkModificationTree = ({
         }
     }, [isModificationsDrawerOpen]);
 
-    const onLoad = useCallback((reactFlowInstance) => {
-        reactFlowInstance.fitView();
-    }, []);
-
     return (
         <Box flexGrow={1}>
             <ReactFlow
@@ -265,8 +264,11 @@ const NetworkModificationTree = ({
                         }}
                     >
                         <Tooltip
-                        placement="left" 
-                        title={intl.formatMessage({ id: 'DisplayTHeWholeTree' })}>
+                            placement="left"
+                            title={intl.formatMessage({
+                                id: 'DisplayTHeWholeTree',
+                            })}
+                        >
                             <FitScreenOutlinedIcon />
                         </Tooltip>
                     </ControlButton>

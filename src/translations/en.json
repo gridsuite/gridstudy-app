@@ -253,7 +253,7 @@
     "UnableToSwitchOnLine": "Unable to switch on the line",
 
     "Provider": "Provider: ",
-    "Default": "Default",       
+    "Default": "Default",
     "OpenLoadFlow": "Open Load Flow",
     "Hades2": "Hades 2",
     "setLoadFlowProviderError": "An error occured when updating the load flow provider",
