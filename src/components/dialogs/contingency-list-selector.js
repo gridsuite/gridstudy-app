@@ -205,6 +205,7 @@ const ContingencyListSelector = (props) => {
                     'DeleteContingencyList',
                     checkedContingencyListUuids.length === 0
                 )}
+                {makeButton(handleClose, 'cancel', false)}
                 {makeButton(
                     handleStart,
                     'Execute',
