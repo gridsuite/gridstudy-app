@@ -150,7 +150,7 @@ export const ModificationListItem = ({
                             className={classes.dragIcon}
                             size={'small'}
                             style={{
-                                opacity: hover && !isDragging ? '2' : '5',
+                                opacity: hover && !isDragging ? '1' : '0',
                             }}
                         >
                             <DragIndicatorIcon edge="start" spacing={0} />
