@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import PropTypes from 'prop-types';
 import {
     fetchNetworkModifications,
@@ -123,7 +129,7 @@ function isPartial(s1, s2) {
 const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const network = useSelector((state) => state.network);
     const workingNode = useSelector((state) => state.workingTreeNode);
-    const notificationList = useSelector((state) => state.notificationList);
+    const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
@@ -140,6 +146,13 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
+    const updateType = useMemo(() => {
+        return [
+            'creatingInProgress',
+            'updatingInProgress',
+            'deletingInProgress',
+        ];
+    }, []);
     const closeDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
@@ -299,6 +312,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     }, [editData]);
 
     useEffect(() => {
+        var discardResult = false;
         if (selectedNode !== selectedNodeRef.current) {
             // loader when opening a modification panel (current user only)
             setLaunchLoader(true);
@@ -309,7 +323,10 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             } else {
                 fetchNetworkModifications(selectedNode.networkModification)
                     .then((res) => {
-                        if (selectedNodeRef.current === selectedNode)
+                        if (
+                            selectedNodeRef.current === selectedNode &&
+                            !discardResult
+                        )
                             setModifications(res.status ? [] : res);
                     })
                     .catch((err) => snackError(err.message))
@@ -318,6 +335,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     });
             }
         }
+        return () => {
+            discardResult = true;
+        };
     }, [selectedNode, setModifications, snackError, dispatch]);
 
     const fillNotification = useCallback(
@@ -352,11 +372,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     );
 
     useEffect(() => {
-        const updateType = [
-            'creatingInProgress',
-            'updatingInProgress',
-            'deletingInProgress',
-        ];
         if (studyUpdatedForce.eventData.headers) {
             if (
                 selectedNodeRef.current.id !==
@@ -384,7 +399,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 );
             }
         }
-    }, [dispatch, manageNotification, studyUpdatedForce]);
+    }, [dispatch, manageNotification, studyUpdatedForce, updateType]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -457,9 +472,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     );
 
     const isLoading = () => {
-        if (notificationList.length === 0) return false;
+        if (notificationIdList.length === 0) return false;
 
-        let res = notificationList.filter(
+        let res = notificationIdList.filter(
             (notification) => notification === selectedNode?.id
         );
         if (res.length > 0) return true;

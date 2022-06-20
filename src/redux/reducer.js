@@ -120,7 +120,7 @@ const initialState = {
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     centerOnSubstation: null,
-    notificationList: [],
+    notificationIdList: [],
     ...paramsInitialState,
 };
 
@@ -333,14 +333,16 @@ export const reducer = createReducer(initialState, {
         state.centerOnSubstation = action.centerOnSubstation;
     },
     [ADD_NOTIFICATION]: (state, action) => {
-        state.notificationList = [
-            ...state.notificationList,
-            action.notification,
+        state.notificationIdList = [
+            ...state.notificationIdList,
+            action.notificationId,
         ];
     },
     [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
-        state.notificationList = [
-            ...state.notificationList.filter((n) => n !== action.notification),
+        state.notificationIdList = [
+            ...state.notificationIdList.filter(
+                (nodeId) => nodeId !== action.notificationId
+            ),
         ];
     },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
