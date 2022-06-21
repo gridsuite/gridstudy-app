@@ -362,7 +362,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                selectedNodeRef.current.id !==
+                selectedNodeRef.current?.id !==
                 studyUpdatedForce.eventData.headers['parentNode']
             )
                 return;

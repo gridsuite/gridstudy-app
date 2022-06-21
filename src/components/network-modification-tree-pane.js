@@ -137,11 +137,11 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) => nodeId === selectedNodeRef.current.id
+                        (nodeId) => nodeId === selectedNodeRef.current?.id
                     )
                 ) {
                     dispatch(
-                        removeNotificationByNode(selectedNodeRef.current.id)
+                        removeNotificationByNode(selectedNodeRef.current?.id)
                     );
                 }
             }
