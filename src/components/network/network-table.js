@@ -554,7 +554,18 @@ const NetworkTable = (props) => {
                                 rowData[key] = oldValue;
                             }
                         );
-                        // TODO Same here, maybe a visual clue that something went wrong ?
+
+                        let message = intl.formatMessage({
+                            id: 'paramsChangingDenied',
+                        });
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: message,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'paramsChangingError',
+                                intlRef: intlRef,
+                            },
+                        });
                     }
                     setLineEdit({});
                 });
