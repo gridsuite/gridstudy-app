@@ -26,6 +26,12 @@ export const ENERGY_SOURCES = [
     { id: 'OTHER', label: 'Other' },
 ];
 
+export const UPDATE_TYPE = [
+    'creatingInProgress',
+    'updatingInProgress',
+    'deletingInProgress',
+];
+
 export function getEnergySourceLabel(energySourceId) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
