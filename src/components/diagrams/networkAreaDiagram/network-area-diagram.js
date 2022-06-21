@@ -251,12 +251,6 @@ const SizedNetworkAreaDiagram = (props) => {
                 })
                 .catch((errorMessage) => {
                     console.error(errorMessage);
-                    setSvg({
-                        svg: null,
-                        metadata: null,
-                        error: errorMessage,
-                        svgUrl: svgUrl,
-                    });
                     snackError(errorMessage);
                     updateLoadingState(false);
                 });
