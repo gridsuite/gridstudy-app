@@ -651,6 +651,12 @@ class LineLayer extends CompositeLayer {
     renderLayers() {
         const layers = [];
 
+        const linePathUpdateTriggers = [
+            this.props.lineFullPath,
+            this.props.geoData.linePositionsById,
+            this.props.network.lines,
+        ];
+
         // lines : create one layer per nominal voltage, starting from higher to lower nominal voltage
         this.state.compositeData.forEach((compositeData) => {
             const nominalVoltageColor = this.props.getNominalVoltageColor(
@@ -698,16 +704,10 @@ class LineLayer extends CompositeLayer {
                         compositeData.nominalVoltage
                     ),
                     updateTriggers: {
-                        getPath: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
+                        getPath: linePathUpdateTriggers,
                         getExtraAttributes: [
                             this.props.lineParallelPath,
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
+                            linePathUpdateTriggers,
                         ],
                         getColor: [
                             this.props.disconnectedLineColor,
@@ -780,17 +780,9 @@ class LineLayer extends CompositeLayer {
                             ? INVALID_LOADFLOW_OPACITY
                             : 1,
                     updateTriggers: {
-                        getLinePositions: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
+                        getLinePositions: linePathUpdateTriggers,
                         getLineParallelIndex: [this.props.lineParallelPath],
-                        getLineAngles: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
+                        getLineAngles: linePathUpdateTriggers,
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -835,31 +827,11 @@ class LineLayer extends CompositeLayer {
                         compositeData.nominalVoltage
                     ),
                     updateTriggers: {
-                        getLineParallelIndex: [
-                            this.props.lineParallelPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
-                        getSourcePosition: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
-                        getTargetPosition: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
-                        getLineAngle: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
-                        getProximityFactor: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
+                        getLineParallelIndex: linePathUpdateTriggers,
+                        getSourcePosition: linePathUpdateTriggers,
+                        getTargetPosition: linePathUpdateTriggers,
+                        getLineAngle: linePathUpdateTriggers,
+                        getProximityFactor: linePathUpdateTriggers,
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -904,26 +876,10 @@ class LineLayer extends CompositeLayer {
                     ),
                     updateTriggers: {
                         getLineParallelIndex: [this.props.lineParallelPath],
-                        getSourcePosition: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
-                        getTargetPosition: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
-                        getLineAngle: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
-                        getProximityFactor: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
+                        getSourcePosition: linePathUpdateTriggers,
+                        getTargetPosition: linePathUpdateTriggers,
+                        getLineAngle: linePathUpdateTriggers,
+                        getProximityFactor: linePathUpdateTriggers,
                         getColor: [
                             this.props.disconnectedLineColor,
                             this.props.lineFlowColorMode,
@@ -962,16 +918,10 @@ class LineLayer extends CompositeLayer {
                             : 1,
                     updateTriggers: {
                         getPosition: [
-                            this.props.lineFullPath,
                             this.props.lineParallelPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
+                            linePathUpdateTriggers,
                         ],
-                        getPixelOffset: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
+                        getPixelOffset: linePathUpdateTriggers,
                         opacity: [this.props.loadFlowStatus],
                     },
                 })
@@ -994,16 +944,10 @@ class LineLayer extends CompositeLayer {
                         ) && this.props.labelsVisible,
                     updateTriggers: {
                         getPosition: [
-                            this.props.lineFullPath,
                             this.props.lineParallelPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
+                            linePathUpdateTriggers,
                         ],
-                        getPixelOffset: [
-                            this.props.lineFullPath,
-                            this.props.geoData.linePositionsById,
-                            this.props.network.lines,
-                        ],
+                        getPixelOffset: linePathUpdateTriggers,
                         getIcon: [this.state.linesStatus],
                         getColor: [this.props.labelColor],
                     },
