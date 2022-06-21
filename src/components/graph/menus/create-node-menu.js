@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
 const CreateNodeMenu = ({
     position,
     handleClose,
+    handleBuildNode,
     handleNodeCreation,
     handleNodeRemoval,
     handleExportCaseOnNode,
@@ -37,6 +38,11 @@ const CreateNodeMenu = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
+
+    function buildNode() {
+        handleBuildNode(activeNode);
+        handleClose();
+    }
 
     function createNetworkModificationNode(insertMode) {
         handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);
@@ -54,6 +60,12 @@ const CreateNodeMenu = ({
     }
 
     const NODE_MENU_ITEMS = {
+        BUILD_NODE: {
+            onRoot: false,
+            action: () => buildNode(),
+            id: 'buildNode',
+            disabled: activeNode?.data?.buildStatus === 'BUILT',
+        },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,
             action: () => createNetworkModificationNode('CHILD'),

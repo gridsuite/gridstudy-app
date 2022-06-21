@@ -116,36 +116,9 @@ const NetworkModificationTree = ({
         [dispatch]
     );
 
-    const onNodeDoubleClick = useCallback(
-        (event, node) => {
-            if (
-                node.type === 'NETWORK_MODIFICATION' &&
-                node.data.buildStatus !== 'BUILT' &&
-                node.data.buildStatus !== 'BUILDING'
-            ) {
-                buildNode(studyUuid, node.id).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeBuildingError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
-        },
-        [studyUuid, enqueueSnackbar, intlRef]
-    );
-
     const toggleMinimap = useCallback(() => {
         setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
     }, []);
-
-    const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
-        onElementClick,
-        onNodeDoubleClick
-    );
 
     const onPaneClick = useCallback(() => {
         dispatch(selectTreeNode(null));
@@ -231,7 +204,7 @@ const NetworkModificationTree = ({
                 }}
                 elements={treeModel ? treeModel.treeElements : []}
                 onNodeContextMenu={onNodeContextMenu}
-                onElementClick={nodeSingleOrDoubleClick}
+                onElementClick={onElementClick}
                 onPaneClick={onPaneClick}
                 onMove={onMove}
                 onLoad={onLoad}

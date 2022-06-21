@@ -276,6 +276,7 @@
 
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
+    "buildNode": "Build node",
     "createNetworkModificationNode": "Create a node in a new branch",
     "removeNode": "Remove node",
     "exportCaseOnNode": "Export case",
