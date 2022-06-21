@@ -40,7 +40,6 @@ const equipmentModificationModificationsType = new Set([
 const useStyles = makeStyles((theme) => ({
     listItem: {
         padding: theme.spacing(0),
-        paddingRight: theme.spacing(1),
     },
     label: {
         flexGrow: '1',
@@ -49,14 +48,13 @@ const useStyles = makeStyles((theme) => ({
         minWidth: 0,
     },
     iconEdit: {
-        padding: theme.spacing(0),
+        marginRight: theme.spacing(1),
     },
-    checkbox: {
-        padding: theme.spacing(1),
-    },
+    checkbox: {},
     dragIcon: {
         padding: theme.spacing(0),
         border: theme.spacing(1),
+        borderRadius: theme.spacing(0),
         zIndex: 90,
     },
 }));

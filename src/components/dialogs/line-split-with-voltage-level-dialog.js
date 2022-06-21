@@ -15,11 +15,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import { Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import {
-    displayErrorMessageWithSnackbar,
-    useIntlRef,
-} from '../../utils/messages';
-import { useSnackbar } from 'notistack';
+import { useSnackMessage } from '../../utils/messages';
 import {
     useAutocompleteField,
     useButtonWithTooltip,
@@ -67,9 +63,7 @@ const LineSplitWithVoltageLevelDialog = ({
         [studyUuid, selectedNodeUuid]
     );
 
-    const intlRef = useIntlRef();
-
-    const { enqueueSnackbar } = useSnackbar();
+    const { snackError } = useSnackMessage();
 
     const inputForm = useInputForm();
 
@@ -287,21 +281,9 @@ const LineSplitWithVoltageLevelDialog = ({
                 newLine1Name || null,
                 newLine2Id,
                 newLine2Name || null
-            )
-                .then(() => {
-                    // until whole treatment path is OK, we let close only on ... "Close"
-                    // handleCloseAndClear();
-                })
-                .catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'LineDivisionError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
+            ).catch((errorMessage) => {
+                snackError(errorMessage, 'LineDivisionError');
+            });
             // do not wait fetch response and close dialog, errors will be shown in snackbar.
             handleCloseAndClear();
         }
