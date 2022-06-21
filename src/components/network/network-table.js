@@ -618,9 +618,7 @@ const NetworkTable = (props) => {
         },
         [
             isLineOnEditMode,
-            lineEdit.oldValues,
-            lineEdit.id,
-            lineEdit.newValues,
+            lineEdit,
             tabIndex,
             props.studyUuid,
             props.workingNode?.id,
