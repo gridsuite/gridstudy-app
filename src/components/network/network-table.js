@@ -617,12 +617,17 @@ const NetworkTable = (props) => {
             }
         },
         [
-            classes.editCell,
             isLineOnEditMode,
-            lineEdit,
+            lineEdit.oldValues,
+            lineEdit.id,
+            lineEdit.newValues,
+            tabIndex,
             props.studyUuid,
             props.workingNode?.id,
-            tabIndex,
+            intl,
+            enqueueSnackbar,
+            intlRef,
+            classes.editCell,
             isModifyingRow,
         ]
     );
