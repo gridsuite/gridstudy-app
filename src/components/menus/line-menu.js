@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -37,6 +37,7 @@ import {
 } from '../../utils/messages';
 import { equipments } from '../network/network-equipments';
 import { isNodeValid } from '../graph/util/model-functions';
+import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
     menuItem: {
@@ -70,7 +71,18 @@ const withLineMenu =
         const [displayUseName] = useParameterState(PARAM_USE_NAME);
         const network = useSelector((state) => state.network);
 
+        const isAnyNodeBuilding = useIsAnyNodeBuilding();
+
         const line = network.getLine(id);
+
+        const isNodeEditable = useMemo(
+            function () {
+                return (
+                    !isNodeValid(workingNode, selectedNode) || isAnyNodeBuilding
+                );
+            },
+            [workingNode, selectedNode, isAnyNodeBuilding]
+        );
 
         const getLineDescriptor = useCallback(
             (voltageLevelId) => {
@@ -184,7 +196,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleLockout()}
                     selected={line.branchStatus === 'PLANNED_OUTAGE'}
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <LockOutlinedIcon />
@@ -204,7 +216,7 @@ const withLineMenu =
                     className={classes.menuItem}
                     onClick={() => handleTrip()}
                     selected={line.branchStatus === 'FORCED_OUTAGE'}
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -226,7 +238,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && !line.terminal2Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <EnergiseOneSideIcon />
@@ -255,7 +267,7 @@ const withLineMenu =
                     selected={
                         line.terminal2Connected && !line.terminal1Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <EnergiseOtherSideIcon />
@@ -284,7 +296,7 @@ const withLineMenu =
                     selected={
                         line.terminal1Connected && line.terminal2Connected
                     }
-                    disabled={!isNodeValid(workingNode, selectedNode)}
+                    disabled={isNodeEditable}
                 >
                     <ListItemIcon>
                         <PlayIcon />

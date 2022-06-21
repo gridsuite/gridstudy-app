@@ -9,6 +9,8 @@ import { getLayoutedElements } from './layout';
 export default class NetworkModificationTreeModel {
     treeElements = [];
 
+    isAnyNodeBuilding = false;
+
     updateLayout() {
         this.treeElements = getLayoutedElements(this.treeElements);
     }
@@ -138,6 +140,7 @@ export default class NetworkModificationTreeModel {
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);
         });
+        this.setBuildingStatus();
     }
 
     newSharedForUpdate() {
@@ -147,6 +150,13 @@ export default class NetworkModificationTreeModel {
             this
         );
         return newTreeModel;
+    }
+
+    setBuildingStatus() {
+        this.isAnyNodeBuilding =
+            this.treeElements.find(
+                (node) => node?.data?.buildStatus === 'BUILDING'
+            ) !== undefined;
     }
 
     setCaseName(newCaseName) {

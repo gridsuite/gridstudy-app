@@ -155,6 +155,7 @@ export const reducer = createReducer(initialState, {
     [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
         state.networkModificationTreeModel =
             action.networkModificationTreeModel;
+        state.networkModificationTreeModel.setBuildingStatus();
     },
 
     [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
@@ -188,6 +189,7 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
+            state.networkModificationTreeModel.setBuildingStatus();
             synchWorkingNodeAndSelectedNode(state);
         }
     },
