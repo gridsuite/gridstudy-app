@@ -33,7 +33,7 @@ import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import FitScreenOutlinedIcon from '@mui/icons-material/FitScreenOutlined';
+import CropFreeIcon from '@mui/icons-material/CropFree';
 
 const nodeTypes = {
     ROOT: RootNode,
@@ -269,7 +269,7 @@ const NetworkModificationTree = ({
                                 id: 'DisplayTHeWholeTree',
                             })}
                         >
-                            <FitScreenOutlinedIcon />
+                            <CropFreeIcon />
                         </Tooltip>
                     </ControlButton>
                     <CenterGraphButton selectedNode={selectedNode} />
