@@ -365,6 +365,24 @@ export function centerOnSubstation(substationId) {
     };
 }
 
+export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
+
+export function addNotification(notificationId) {
+    return {
+        type: ADD_NOTIFICATION,
+        notificationId: notificationId,
+    };
+}
+
+export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
+
+export function removeNotificationByNode(notificationId) {
+    return {
+        type: REMOVE_NOTIFICATION_BY_NODE,
+        notificationId: notificationId,
+    };
+}
+
 export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM';
 
 export function openNetworkAreaDiagram(voltageLevelsIds) {
