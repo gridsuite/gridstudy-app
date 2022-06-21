@@ -163,8 +163,7 @@ const NetworkModificationTree = ({
 
     const [x, y, zoom] = useStoreState((state) => state.transform);
 
-    const { transform } = useZoomPanHelper();
-    const reactFlowInstance = useZoomPanHelper();
+    const { transform, fitView } = useZoomPanHelper();
 
     const onLoad = useCallback((reactFlowInstance) => {
         reactFlowInstance.fitView();
@@ -258,11 +257,7 @@ const NetworkModificationTree = ({
                     showInteractive={false}
                     showFitView={false}
                 >
-                    <ControlButton
-                        onClick={() => {
-                            reactFlowInstance.fitView();
-                        }}
-                    >
+                    <ControlButton onClick={fitView}>
                         <Tooltip
                             placement="left"
                             title={intl.formatMessage({
