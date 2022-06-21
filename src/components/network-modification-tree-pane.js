@@ -16,6 +16,7 @@ import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
+    removeNotificationByNode,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -79,7 +80,8 @@ export const NetworkModificationTreePane = ({
 
     const [activeNode, setActiveNode] = useState(null);
     const selectedNode = useSelector((state) => state.selectedTreeNode);
-
+    const selectedNodeRef = useRef();
+    selectedNodeRef.current = selectedNode;
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
@@ -133,6 +135,15 @@ export const NetworkModificationTreePane = ({
                 'nodeUpdated'
             ) {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
+                if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) => nodeId === selectedNodeRef.current.id
+                    )
+                ) {
+                    dispatch(
+                        removeNotificationByNode(selectedNodeRef.current.id)
+                    );
+                }
             }
         }
     }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
