@@ -57,6 +57,7 @@ import {
     addNotification,
     removeNotificationByNode,
 } from '../../../redux/actions';
+import { UPDATE_TYPE } from '../../network/constants';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -146,13 +147,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
-    const updateType = useMemo(() => {
-        return [
-            'creatingInProgress',
-            'updatingInProgress',
-            'deletingInProgress',
-        ];
-    }, []);
     const closeDialog = () => {
         setEditDialogOpen(undefined);
         setEditData(undefined);
@@ -380,7 +374,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 return;
 
             if (
-                updateType.includes(
+                UPDATE_TYPE.includes(
                     studyUpdatedForce.eventData.headers['updateType']
                 )
             ) {
@@ -399,7 +393,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 );
             }
         }
-    }, [dispatch, manageNotification, studyUpdatedForce, updateType]);
+    }, [dispatch, manageNotification, studyUpdatedForce]);
 
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
@@ -474,11 +468,11 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const isLoading = () => {
         if (notificationIdList.length === 0) return false;
 
-        let res = notificationIdList.filter(
-            (notification) => notification === selectedNode?.id
+        return (
+            notificationIdList.filter(
+                (notification) => notification === selectedNode?.id
+            ).length > 0
         );
-        if (res.length > 0) return true;
-        return false;
     };
 
     return (
