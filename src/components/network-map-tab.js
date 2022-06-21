@@ -11,7 +11,6 @@ import withLineMenu from './menus/line-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
-import LoaderWithOverlay from './util/loader-with-overlay';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import makeStyles from '@mui/styles/makeStyles';
 import OverloadedLinesView from './network/overloaded-lines-view';
@@ -176,7 +175,9 @@ export const NetworkMapTab = ({
             studyUuid,
             workingNode?.id
         );
-        const linePositions = fetchLinePositions(studyUuid, workingNode?.id);
+        const linePositions = lineFullPath
+            ? fetchLinePositions(studyUuid, workingNode?.id)
+            : [];
         setWaitingLoadGeoData(true);
 
         Promise.all([substationPositions, linePositions])
@@ -201,6 +202,7 @@ export const NetworkMapTab = ({
     }, [
         studyUuid,
         workingNode,
+        lineFullPath,
         setWaitingLoadGeoData,
         setErrorMessage,
         setGeoData,
@@ -243,15 +245,6 @@ export const NetworkMapTab = ({
         );
     }
 
-    const renderOverlay = () => (
-        <LoaderWithOverlay
-            color="inherit"
-            loaderSize={70}
-            isFixed={true}
-            loadingMessageText={'loadingGeoData'}
-        />
-    );
-
     const linesNearOverload = useCallback(() => {
         if (network) {
             return network.lines.some((l) => {
@@ -272,6 +265,7 @@ export const NetworkMapTab = ({
             lines={network ? network.lines : []}
             updatedLines={updatedLines}
             geoData={geoData}
+            waitingLoadGeoData={waitingLoadGeoData}
             useName={useName}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
@@ -309,7 +303,6 @@ export const NetworkMapTab = ({
 
     return (
         <>
-            {waitingLoadGeoData && renderOverlay()}
             {renderMap()}
             {renderEquipmentMenu()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
