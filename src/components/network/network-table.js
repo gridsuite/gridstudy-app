@@ -61,6 +61,7 @@ import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { isNodeValid } from '../graph/util/model-functions';
 import AlertInvalidNode from '../util/alert-invalid-node';
+import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
     searchSection: {
@@ -242,6 +243,8 @@ const NetworkTable = (props) => {
     const [scrollToIndex, setScrollToIndex] = useState(-1);
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
+
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const isLineOnEditMode = useCallback(
         (rowData) => {
@@ -585,7 +588,9 @@ const NetworkTable = (props) => {
                         <div className={classes.editCell}>
                             <IconButton
                                 size={'small'}
-                                disabled={isModifyingRow()}
+                                disabled={
+                                    isModifyingRow() && !isAnyNodeBuilding
+                                }
                                 onClick={() => {
                                     setLineEdit({
                                         oldValues: {},
@@ -598,7 +603,7 @@ const NetworkTable = (props) => {
                                     });
                                 }}
                             >
-                                <EditIcon />
+                                {!isAnyNodeBuilding && <EditIcon />}
                             </IconButton>
                         </div>
                     </div>
@@ -612,6 +617,7 @@ const NetworkTable = (props) => {
             props.studyUuid,
             props.workingNode?.id,
             tabIndex,
+            isAnyNodeBuilding,
             isModifyingRow,
         ]
     );

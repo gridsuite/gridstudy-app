@@ -1801,8 +1801,9 @@ export function changeNetworkModificationOrder(
         new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
     console.debug(url);
     return backendFetch(url, { method: 'put' }).then((response) => {
-        if (!response.ok)
-            throw new Error(response.status + ' ' + response.statusText);
+        if (!response.ok) {
+            return response.text().then((text) => Promise.reject(text));
+        }
     });
 }
 
