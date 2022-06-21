@@ -367,9 +367,9 @@ export function centerOnSubstation(substationId) {
 
 export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM';
 
-export function openNetworkAreaDiagram(voltageLevelId) {
+export function openNetworkAreaDiagram(voltageLevelsIds) {
     return {
         type: OPEN_NETWORK_AREA_DIAGRAM,
-        openNetworkAreaDiagram: { voltageLevelId: voltageLevelId },
+        voltageLevelsIdsForNad: voltageLevelsIds,
     };
 }

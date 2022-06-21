@@ -43,7 +43,7 @@ import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
 const useStyles = makeStyles((theme) => ({
     list: {
-        paddingTop: 0,
+        paddingTop: theme.spacing(0),
         overflowY: 'auto',
     },
     addButton: {
@@ -53,14 +53,13 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(3),
     },
     modificationCount: {
-        margin: 0,
+        margin: theme.spacing(0),
         padding: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
     },
     toolbar: {
         padding: theme.spacing(0),
-        paddingLeft: theme.spacing(1),
         border: theme.spacing(1),
         minHeight: 0,
         margin: 0,
@@ -68,9 +67,10 @@ const useStyles = makeStyles((theme) => ({
     },
 
     toolbarIcon: {
-        padding: theme.spacing(1),
-        paddingLeft: theme.spacing(3),
-        minWidth: 0,
+        marginRight: theme.spacing(1),
+    },
+    toolbarCheckbox: {
+        marginLeft: theme.spacing(1.5),
     },
     filler: {
         flexGrow: 1,
@@ -352,7 +352,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         <>
             <Toolbar className={classes.toolbar}>
                 <Checkbox
-                    className={classes.toolbarIcon}
+                    className={classes.toolbarCheckbox}
                     color={'primary'}
                     edge="start"
                     checked={isChecked(selectedItems.size)}
@@ -391,6 +391,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                             {...provided.droppableProps}
                         >
                             <CheckboxList
+                                className={classes.list}
                                 onChecked={setSelectedItems}
                                 values={modifications}
                                 itemRenderer={(props) => (
