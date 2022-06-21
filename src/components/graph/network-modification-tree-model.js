@@ -9,7 +9,7 @@ import { getLayoutedElements } from './layout';
 export default class NetworkModificationTreeModel {
     treeElements = [];
 
-    isOneNodeBuilding = false;
+    isAnyNodeBuilding = false;
 
     updateLayout() {
         this.treeElements = getLayoutedElements(this.treeElements);
@@ -153,7 +153,7 @@ export default class NetworkModificationTreeModel {
     }
 
     setBuildingStatus() {
-        this.isOneNodeBuilding =
+        this.isAnyNodeBuilding =
             this.treeElements.find(
                 (node) => node?.data?.buildStatus === 'BUILDING'
             ) !== undefined;

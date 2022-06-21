@@ -8,16 +8,16 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
-export const useOneNodeBuilding = () => {
-    const [oneNodeBuilding, setOneNodeBuilding] = useState(false);
+export const useIsAnyNodeBuilding = () => {
+    const [iAnyNodeBuild, setAnyNodeBuilding] = useState(false);
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
     );
 
     useEffect(() => {
-        setOneNodeBuilding(treeModel.isOneNodeBuilding);
+        setAnyNodeBuilding(treeModel.isAnyNodeBuilding);
     }, [treeModel]);
 
-    return oneNodeBuilding;
+    return iAnyNodeBuild;
 };

@@ -56,7 +56,7 @@ import { ViewState } from './utils';
 import clsx from 'clsx';
 import { isNodeValid } from '../../graph/util/model-functions';
 import AlertInvalidNode from '../../util/alert-invalid-node';
-import { useOneNodeBuilding } from '../../util/is-one-node-building-hook';
+import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -273,7 +273,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const [loadingState, updateLoadingState] = useState(false);
 
-    const oneNodeBuilding = useOneNodeBuilding();
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const MenuLine = withLineMenu(BaseEquipmentMenu);
 
@@ -710,7 +710,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             addNavigationArrow(svg);
 
             // handling the right click on a feeder (menus)
-            if (!isComputationRunning && !oneNodeBuilding) {
+            if (!isComputationRunning && !isAnyNodeBuilding) {
                 const feeders = svg.metadata.nodes.filter((element) => {
                     return (
                         element.vid !== '' &&
@@ -757,7 +757,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             if (
                 !isComputationRunning &&
                 isNodeValid(workingNode, selectedNode) &&
-                !oneNodeBuilding
+                !isAnyNodeBuilding
             ) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
@@ -799,7 +799,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
-        oneNodeBuilding,
+        isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
         showFeederSelection,

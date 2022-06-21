@@ -40,7 +40,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckboxList from '../../util/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import { useOneNodeBuilding } from '../../util/is-one-node-building-hook';
+import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 
 const useStyles = makeStyles((theme) => ({
     list: {
@@ -282,7 +282,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const [openNetworkModificationsDialog, setOpenNetworkModificationsDialog] =
         useState(false);
 
-    const oneNodeBuilding = useOneNodeBuilding();
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const classes = useStyles();
 
@@ -371,7 +371,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     onClick={doDeleteModification}
                     size={'small'}
                     className={classes.toolbarIcon}
-                    disabled={!(selectedItems?.size > 0) || oneNodeBuilding}
+                    disabled={!(selectedItems?.size > 0) || isAnyNodeBuilding}
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -388,7 +388,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             >
                 <Droppable
                     droppableId="network-modification-list"
-                    isDropDisabled={oneNodeBuilding}
+                    isDropDisabled={isAnyNodeBuilding}
                 >
                     {(provided) => (
                         <div
@@ -405,7 +405,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
                                         network={network}
-                                        isOneNodeBuilding={oneNodeBuilding}
+                                        isOneNodeBuilding={isAnyNodeBuilding}
                                         {...props}
                                     />
                                 )}
@@ -421,7 +421,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 className={classes.addButton}
                 color="primary"
                 onClick={openNetworkModificationConfiguration}
-                disabled={oneNodeBuilding}
+                disabled={isAnyNodeBuilding}
             >
                 <AddIcon />
             </Fab>
