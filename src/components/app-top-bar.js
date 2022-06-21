@@ -269,7 +269,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                     ? intl.formatMessage({
                                           id: 'root',
                                       })
-                                    : selectedTreeNode?.data?.label
+                                    : formatTreeNodeLabel(selectedTreeNode)
                             }
                         />
                     )}
@@ -323,3 +323,8 @@ AppTopBar.propTypes = {
 };
 
 export default AppTopBar;
+function formatTreeNodeLabel(selectedTreeNode) {
+    return selectedTreeNode?.data?.label.length > 20
+        ? selectedTreeNode?.data?.label.substring(0, 20).concat('...')
+        : selectedTreeNode?.data?.label;
+}
