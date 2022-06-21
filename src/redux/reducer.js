@@ -48,6 +48,8 @@ import {
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
+    ADD_NOTIFICATION,
+    REMOVE_NOTIFICATION_BY_NODE,
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM,
 } from './actions';
@@ -119,6 +121,7 @@ const initialState = {
     isModificationsDrawerOpen: false,
     voltageLevelsIdsForNad: [],
     centerOnSubstation: null,
+    notificationIdList: [],
     ...paramsInitialState,
 };
 
@@ -329,6 +332,19 @@ export const reducer = createReducer(initialState, {
     },
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
+    },
+    [ADD_NOTIFICATION]: (state, action) => {
+        state.notificationIdList = [
+            ...state.notificationIdList,
+            action.notificationId,
+        ];
+    },
+    [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
+        state.notificationIdList = [
+            ...state.notificationIdList.filter(
+                (nodeId) => nodeId !== action.notificationId
+            ),
+        ];
     },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
         state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
