@@ -214,6 +214,11 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     function hideParameters() {
         setShowParameters(false);
     }
+    function formatTreeNodeLabel(selectedTreeNode) {
+        return selectedTreeNode?.data?.label.length > 20
+            ? selectedTreeNode?.data?.label.substring(0, 20).concat('...')
+            : selectedTreeNode?.data?.label;
+    }
 
     return (
         <>
@@ -323,8 +328,3 @@ AppTopBar.propTypes = {
 };
 
 export default AppTopBar;
-function formatTreeNodeLabel(selectedTreeNode) {
-    return selectedTreeNode?.data?.label.length > 20
-        ? selectedTreeNode?.data?.label.substring(0, 20).concat('...')
-        : selectedTreeNode?.data?.label;
-}
