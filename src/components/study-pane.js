@@ -145,7 +145,9 @@ const StudyPane = ({
     const [closeVoltageLevelDiagram, showVoltageLevelDiagram] =
         useSingleLineDiagram(studyUuid);
 
-    const openedNad = useSelector((state) => state.openNetworkAreaDiagram);
+    const voltageLevelsIdsForNad = useSelector(
+        (state) => state.voltageLevelsIdsForNad
+    );
 
     useEffect(() => {
         if (
@@ -323,23 +325,22 @@ const StudyPane = ({
                                     selectedNode={selectedNode}
                                 />
                             )}
-                            {props.view === StudyView.MAP && openedNad && (
-                                <NetworkAreaDiagramPane
-                                    studyUuid={studyUuid}
-                                    network={network}
-                                    workingNode={workingNode}
-                                    selectedNode={selectedNode}
-                                    loadFlowStatus={getLoadFlowRunningStatus(
-                                        loadFlowInfos?.loadFlowStatus
-                                    )}
-                                    onClose={() =>
-                                        dispatch(
-                                            openNetworkAreaDiagram(undefined)
-                                        )
-                                    }
-                                    align="right"
-                                />
-                            )}
+                            {props.view === StudyView.MAP &&
+                                voltageLevelsIdsForNad?.length && (
+                                    <NetworkAreaDiagramPane
+                                        studyUuid={studyUuid}
+                                        network={network}
+                                        workingNode={workingNode}
+                                        selectedNode={selectedNode}
+                                        loadFlowStatus={getLoadFlowRunningStatus(
+                                            loadFlowInfos?.loadFlowStatus
+                                        )}
+                                        onClose={() =>
+                                            dispatch(openNetworkAreaDiagram([]))
+                                        }
+                                        align="right"
+                                    />
+                                )}
                         </div>
                     </div>
                 </div>
