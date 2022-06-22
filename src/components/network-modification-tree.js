@@ -21,13 +21,9 @@ import {
     setModificationsDrawerOpen,
     workingTreeNode,
 } from '../redux/actions';
-import { buildNode } from '../utils/rest-api';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
-import { useSnackbar } from 'notistack';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
@@ -62,8 +58,6 @@ const NetworkModificationTree = ({
     isModificationsDrawerOpen,
 }) => {
     const dispatch = useDispatch();
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
 
     const selectedNode = useSelector((state) => state.selectedTreeNode);
