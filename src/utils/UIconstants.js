@@ -5,4 +5,4 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const DELAY = 1000;
+export const TOOLTIP_DELAY = 1000;

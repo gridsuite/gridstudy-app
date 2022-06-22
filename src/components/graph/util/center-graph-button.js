@@ -13,7 +13,7 @@ import {
     useZoomPanHelper,
 } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
-import { DELAY } from '../../../utils/UIconstants';
+import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 
 const CenterGraphButton = ({ selectedNode }) => {
     const { setCenter } = useZoomPanHelper();
@@ -35,8 +35,8 @@ const CenterGraphButton = ({ selectedNode }) => {
             placement="left"
             title={intl.formatMessage({ id: 'CenterSelectedNode' })}
             arrow
-            enterDelay={DELAY}
-            enterNextDelay={DELAY}
+            enterDelay={TOOLTIP_DELAY}
+            enterNextDelay={TOOLTIP_DELAY}
         >
             <span>
                 <ControlButton

@@ -267,7 +267,7 @@
     "CenterSelectedNode": "Center on selected node",
     "DisplayMinimap": "Display minimap",
     "HideMinimap": "Hide minimap",
-    "DisplayTHeWholeTree": "Display the whole tree",
+    "DisplayTheWholeTree": "Display the whole tree",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",

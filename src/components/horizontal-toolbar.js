@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './study-pane';
 import Divider from '@mui/material/Divider';
 import { setModificationsDrawerOpen } from '../redux/actions';
-import { DELAY } from '../utils/UIconstants';
+import { TOOLTIP_DELAY } from '../utils/UIconstants';
 const useStyles = makeStyles((theme) => ({
     selected: {
         color: theme.palette.action.active,
@@ -74,8 +74,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 title={intl.formatMessage({ id: 'NetworkModifications' })}
                 placement="right"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '20px',

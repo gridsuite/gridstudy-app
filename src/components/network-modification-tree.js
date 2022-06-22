@@ -34,7 +34,7 @@ import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-import { DELAY } from '../utils/UIconstants';
+import { TOOLTIP_DELAY } from '../utils/UIconstants';
 const nodeTypes = {
     ROOT: RootNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
@@ -261,11 +261,11 @@ const NetworkModificationTree = ({
                     <Tooltip
                         placement="left"
                         title={intl.formatMessage({
-                            id: 'DisplayTHeWholeTree',
+                            id: 'DisplayTheWholeTree',
                         })}
                         arrow
-                        enterDelay={DELAY}
-                        enterNextDelay={DELAY}
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
                     >
                         <span>
                             <ControlButton onClick={fitView}>

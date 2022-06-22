@@ -55,7 +55,7 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
-import { DELAY } from '../../utils/UIconstants';
+import { TOOLTIP_DELAY } from '../../utils/UIconstants';
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
@@ -515,8 +515,8 @@ export const useButtonWithTooltip = ({ handleClick, label }) => {
                 title={<FormattedMessage id={label} />}
                 placement="top"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
             >
                 <IconButton style={{ padding: '2px' }} onClick={handleClick}>
