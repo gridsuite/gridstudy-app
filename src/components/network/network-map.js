@@ -18,6 +18,7 @@ import DeckGL from '@deck.gl/react';
 
 import { useTheme } from '@mui/styles';
 import { decomposeColor } from '@mui/material/styles';
+import LoaderWithOverlay from '../util/loader-with-overlay';
 
 import Network from './network';
 import GeoData from './geo-data';
@@ -353,33 +354,45 @@ const NetworkMap = (props) => {
         bearing: 0,
     };
 
+    const renderOverlay = () => (
+        <LoaderWithOverlay
+            color="inherit"
+            loaderSize={70}
+            isFixed={false}
+            loadingMessageText={'loadingGeoData'}
+        />
+    );
+
     return (
-        <DeckGL
-            onViewStateChange={onViewStateChange}
-            ref={(ref) => {
-                // save a reference to the Deck instance to be able to center in onAfterRender
-                setDeck(ref && ref.deck);
-            }}
-            onClick={(info, event) => {
-                onClickHandler(info, event, props.network);
-            }}
-            onAfterRender={onAfterRender}
-            layers={layers}
-            initialViewState={initialViewState}
-            controller={{ doubleClickZoom: false }}
-            ContextProvider={MapContext.Provider}
-            getCursor={cursorHandler}
-            pickingRadius={5}
-        >
-            <StaticMap
-                mapStyle={theme.mapboxStyle}
-                preventStyleDiffing={true}
-                mapboxApiAccessToken={MAPBOX_TOKEN}
+        <>
+            {props.waitingLoadGeoData && renderOverlay()}
+            <DeckGL
+                onViewStateChange={onViewStateChange}
+                ref={(ref) => {
+                    // save a reference to the Deck instance to be able to center in onAfterRender
+                    setDeck(ref && ref.deck);
+                }}
+                onClick={(info, event) => {
+                    onClickHandler(info, event, props.network);
+                }}
+                onAfterRender={onAfterRender}
+                layers={layers}
+                initialViewState={initialViewState}
+                controller={{ doubleClickZoom: false }}
+                ContextProvider={MapContext.Provider}
+                getCursor={cursorHandler}
+                pickingRadius={5}
             >
-                {renderTooltip()}
-            </StaticMap>
-            <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
-        </DeckGL>
+                <StaticMap
+                    mapStyle={theme.mapboxStyle}
+                    preventStyleDiffing={true}
+                    mapboxApiAccessToken={MAPBOX_TOKEN}
+                >
+                    {renderTooltip()}
+                </StaticMap>
+                <NavigationControl style={{ right: 10, top: 10, zIndex: 1 }} />
+            </DeckGL>
+        </>
     );
 };
 
