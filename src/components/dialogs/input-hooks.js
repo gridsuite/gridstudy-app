@@ -178,16 +178,17 @@ export const useTextValue = ({
                     className: classes.helperText,
                 }}
                 InputProps={
-                    clearable &&
-                    value && {
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton onClick={handleClearValue}>
-                                    <ClearIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }
+                    clearable && value
+                        ? {
+                              endAdornment: (
+                                  <InputAdornment position="end">
+                                      <IconButton onClick={handleClearValue}>
+                                          <ClearIcon />
+                                      </IconButton>
+                                  </InputAdornment>
+                              ),
+                          }
+                        : {}
                 }
                 {...(clearable &&
                     adornment && { handleClearValue: handleClearValue })}

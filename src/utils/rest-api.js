@@ -310,10 +310,13 @@ export function fetchSubstations(studyUuid, selectedNodeUuid, substationsIds) {
     );
 }
 
-export function fetchSubstationPositions(studyUuid) {
-    console.info(`Fetching substation positions of study '${studyUuid}'...`);
+export function fetchSubstationPositions(studyUuid, selectedNodeUuid) {
+    console.info(
+        `Fetching substation positions of study '${studyUuid}' and node '${selectedNodeUuid}'...`
+    );
     const fetchSubstationPositionsUrl =
-        getStudyUrl(studyUuid) + '/geo-data/substations';
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/geo-data/substations';
     console.debug(fetchSubstationPositionsUrl);
     return backendFetch(fetchSubstationPositionsUrl).then((response) =>
         response.json()
@@ -615,9 +618,13 @@ export function fetchBusbarSectionsForVoltageLevel(
     );
 }
 
-export function fetchLinePositions(studyUuid) {
-    console.info(`Fetching line positions of study '${studyUuid}'...`);
-    const fetchLinePositionsUrl = getStudyUrl(studyUuid) + '/geo-data/lines';
+export function fetchLinePositions(studyUuid, selectedNodeUuid) {
+    console.info(
+        `Fetching line positions of study '${studyUuid}' and node '${selectedNodeUuid}'...`
+    );
+    const fetchLinePositionsUrl =
+        getStudyUrlWithNodeUuid(studyUuid, selectedNodeUuid) +
+        '/geo-data/lines';
     console.debug(fetchLinePositionsUrl);
     return backendFetch(fetchLinePositionsUrl).then((response) =>
         response.json()
@@ -1801,8 +1808,9 @@ export function changeNetworkModificationOrder(
         new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
     console.debug(url);
     return backendFetch(url, { method: 'put' }).then((response) => {
-        if (!response.ok)
-            throw new Error(response.status + ' ' + response.statusText);
+        if (!response.ok) {
+            return response.text().then((text) => Promise.reject(text));
+        }
     });
 }
 

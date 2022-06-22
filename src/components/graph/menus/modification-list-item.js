@@ -66,6 +66,7 @@ export const ModificationListItem = ({
     index,
     handleToggle,
     isDragging,
+    isOneNodeBuilding,
     network,
     ...props
 }) => {
@@ -130,7 +131,11 @@ export const ModificationListItem = ({
     const [hover, setHover] = useState(false);
 
     return (
-        <Draggable draggableId={modif.uuid} index={index}>
+        <Draggable
+            draggableId={modif.uuid}
+            index={index}
+            isDragDisabled={isOneNodeBuilding}
+        >
             {(provided) => (
                 <div
                     ref={provided.innerRef}
@@ -148,7 +153,10 @@ export const ModificationListItem = ({
                             className={classes.dragIcon}
                             size={'small'}
                             style={{
-                                opacity: hover && !isDragging ? '1' : '0',
+                                opacity:
+                                    hover && !isDragging && !isOneNodeBuilding
+                                        ? '1'
+                                        : '0',
                             }}
                         >
                             <DragIndicatorIcon edge="start" spacing={0} />
@@ -168,6 +176,7 @@ export const ModificationListItem = ({
                             text={getLabel()}
                         />
                         {editableModificationTypes.has(modif.type) &&
+                            !isOneNodeBuilding &&
                             hover &&
                             !isDragging && (
                                 <IconButton
@@ -192,4 +201,5 @@ ModificationListItem.propTypes = {
     handleToggle: PropTypes.func,
     onEdit: PropTypes.func,
     isDragging: PropTypes.bool,
+    isOneNodeBuilding: PropTypes.bool,
 };

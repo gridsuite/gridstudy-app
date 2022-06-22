@@ -56,6 +56,7 @@ import { ViewState } from './utils';
 import clsx from 'clsx';
 import { isNodeValid } from '../../graph/util/model-functions';
 import AlertInvalidNode from '../../util/alert-invalid-node';
+import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -188,6 +189,7 @@ fetch(ArrowHover)
         arrowHoverSvg = data;
     });
 
+let initialWidth, initialHeight;
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
 const mapRightOffset = 120;
@@ -271,6 +273,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     const [forceState, updateState] = useState(false);
 
     const [loadingState, updateLoadingState] = useState(false);
+
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const MenuLine = withLineMenu(BaseEquipmentMenu);
 
@@ -707,7 +711,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             addNavigationArrow(svg);
 
             // handling the right click on a feeder (menus)
-            if (!isComputationRunning) {
+            if (!isComputationRunning && !isAnyNodeBuilding) {
                 const feeders = svg.metadata.nodes.filter((element) => {
                     return (
                         element.vid !== '' &&
@@ -753,7 +757,8 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the click on a switch
             if (
                 !isComputationRunning &&
-                isNodeValid(workingNode, selectedNode)
+                isNodeValid(workingNode, selectedNode) &&
+                !isAnyNodeBuilding
             ) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
@@ -795,6 +800,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
+        isAnyNodeBuilding,
         equipmentMenu,
         showEquipmentMenu,
         showFeederSelection,
@@ -888,19 +894,27 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         );
     }
 
-    let sizeWidth, sizeHeight;
+    let sizeWidth,
+        sizeHeight = initialHeight;
     if (svg.error) {
-        sizeWidth = errorWidth; // height is not set so height is auto;
+        sizeWidth = errorWidth;
     } else if (
         typeof finalPaperWidth != 'undefined' &&
         typeof finalPaperHeight != 'undefined'
     ) {
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
-    } else if (loadingState) {
-        sizeWidth = loadingWidth; // height is not set so height is auto; used for the first load
+    } else if (initialWidth !== undefined || loadingState) {
+        sizeWidth = initialWidth;
     } else {
-        sizeWidth = totalWidth; // happens during initalization
+        sizeWidth = totalWidth; // happens during initialization if initial width value is undefined
+    }
+
+    if (sizeWidth !== undefined) {
+        initialWidth = sizeWidth; // setting initial width for the next SLD.
+    }
+    if (sizeHeight !== undefined) {
+        initialHeight = sizeHeight; // setting initial height for the next SLD.
     }
 
     const pinSld = useCallback(
