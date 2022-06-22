@@ -30,7 +30,7 @@ import {
     DISPLAY_OVERLOAD_TABLE,
     FILTERED_NOMINAL_VOLTAGES_UPDATED,
     SUBSTATION_LAYOUT,
-    FULLSCREEN_SINGLE_LINE_DIAGRAM,
+    FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
     CHANGE_DISPLAYED_COLUMNS_NAMES,
     CHANGE_LOCKED_COLUMNS_NAMES,
     ADD_LOADFLOW_NOTIF,
@@ -114,7 +114,7 @@ const initialState = {
     loadflowNotif: false,
     saNotif: false,
     filteredNominalVoltages: null,
-    fullScreenSld: false,
+    fullScreenSldId: null,
     fullScreenNad: false,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
@@ -294,8 +294,8 @@ export const reducer = createReducer(initialState, {
         state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
     },
 
-    [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
-        state.fullScreenSld = action.fullScreenSld;
+    [FULLSCREEN_SINGLE_LINE_DIAGRAM_ID]: (state, action) => {
+        state.fullScreenSldId = action.fullScreenSldId;
     },
 
     [FULLSCREEN_NETWORK_AREA_DIAGRAM]: (state, action) => {

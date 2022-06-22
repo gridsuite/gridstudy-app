@@ -281,12 +281,13 @@ export function selectComponentLibrary(componentLibrary) {
     };
 }
 
-export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
+export const FULLSCREEN_SINGLE_LINE_DIAGRAM_ID =
+    'FULLSCREEN_SINGLE_LINE_DIAGRAM_ID';
 
-export function fullScreenSingleLineDiagram(fullScreenSld) {
+export function fullScreenSingleLineDiagramId(fullScreenSldId) {
     return {
-        type: FULLSCREEN_SINGLE_LINE_DIAGRAM,
-        fullScreenSld: fullScreenSld,
+        type: FULLSCREEN_SINGLE_LINE_DIAGRAM_ID,
+        fullScreenSldId: fullScreenSldId,
     };
 }
 
