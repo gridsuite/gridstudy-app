@@ -86,8 +86,6 @@ const NetworkModificationTree = ({
             switch (node.data.buildStatus) {
                 case 'BUILT':
                     return '#70d136';
-                case 'BUILT_INVALID':
-                    return '#9196a1';
                 case 'NOT_BUILT':
                     return '#9196a1';
                 default:
@@ -107,8 +105,7 @@ const NetworkModificationTree = ({
             if (
                 element.type === 'ROOT' ||
                 (element.type === 'NETWORK_MODIFICATION' &&
-                    (element.data.buildStatus === 'BUILT' ||
-                        element.data.buildStatus === 'BUILT_INVALID'))
+                    element.data.buildStatus === 'BUILT')
             ) {
                 dispatch(workingTreeNode(element));
             }
