@@ -155,6 +155,7 @@ export const reducer = createReducer(initialState, {
     [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
         state.networkModificationTreeModel =
             action.networkModificationTreeModel;
+        state.networkModificationTreeModel.setBuildingStatus();
     },
 
     [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
@@ -188,6 +189,7 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
+            state.networkModificationTreeModel.setBuildingStatus();
             synchWorkingNodeAndSelectedNode(state);
         }
     },
@@ -371,9 +373,9 @@ function synchWorkingNodeAndSelectedNode(state) {
             id: workingNode?.id,
             readOnly: workingNode?.data?.readOnly,
             name: workingNode?.data?.label,
+            buildStatus: workingNode?.data?.buildStatus,
             targetPosition: workingNode?.targetPosition,
             position: workingNode?.position,
-            buildStatus: workingNode?.buildStatus,
         };
     }
     // handle the case of selectedNode not in the TreeModel anymore.
