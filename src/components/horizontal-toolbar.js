@@ -131,8 +131,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 title={intl.formatMessage({ id: 'HybridDisplay' })}
                 placement="right"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '8px',
@@ -156,8 +156,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 title={intl.formatMessage({ id: 'Map' })}
                 placement="right"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '8px',
