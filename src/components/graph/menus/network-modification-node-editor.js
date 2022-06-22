@@ -63,7 +63,6 @@ const useStyles = makeStyles((theme) => ({
     },
     list: {
         paddingTop: theme.spacing(0),
-        // backgroundColor: 'red',
         flexGrow: 1,
     },
     addButton: {
@@ -341,7 +340,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
-            console.debug('SBO notif: ', messageId);
             dispatch(addNotification(study.eventData.headers['parentNode']));
         },
         [dispatch]
