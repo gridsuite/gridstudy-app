@@ -392,7 +392,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef]);
+    }, [props.svgUrl, forceState, snackError, intlRef, disabled]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -813,6 +813,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         ref,
         svgFinalHeight,
         svgFinalWidth,
+        disabled,
     ]);
 
     useLayoutEffect(() => {
@@ -983,7 +984,11 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     <LinearProgress />
                 </Box>
             )}
-            {!disabled && (
+            {disabled ? (
+                <Box position="relative" left={0} right={0} top={0}>
+                    <AlertInvalidNode noMargin={true} />
+                </Box>
+            ) : (
                 <Box position="relative">
                     {
                         <div

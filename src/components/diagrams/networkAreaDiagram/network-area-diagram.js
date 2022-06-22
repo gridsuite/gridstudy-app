@@ -184,6 +184,7 @@ const SizedNetworkAreaDiagram = (props) => {
         depth,
         setDepth,
         loadFlowStatus,
+        disabled,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -235,8 +236,9 @@ const SizedNetworkAreaDiagram = (props) => {
         nadId,
     ]);
 
+    console.info('JBO', disabled);
     useEffect(() => {
-        if (svgUrl) {
+        if (!disabled && svgUrl) {
             updateLoadingState(true);
             setSvg(noSvg);
             fetchNADSvg(svgUrl)
@@ -257,7 +259,7 @@ const SizedNetworkAreaDiagram = (props) => {
         } else {
             setSvg(noSvg);
         }
-    }, [svgUrl, forceState, snackError]);
+    }, [svgUrl, forceState, snackError, disabled]);
 
     const updateNad = useCallback(() => {
         if (svgRef.current) {
@@ -398,13 +400,14 @@ const SizedNetworkAreaDiagram = (props) => {
                 </Box>
             )}
             <Box position="relative">
-                <Box position="absolute" left={0} right={0} top={0}>
-                    {!isNodeValid(workingNode, selectedNode) &&
-                        selectedNode?.type !== 'ROOT' && (
-                            <AlertInvalidNode noMargin={true} />
-                        )}
-                </Box>
-                {
+                {disabled ? (
+                    <Box position="relative" left={0} right={0} top={0}>
+                        {!isNodeValid(workingNode, selectedNode) &&
+                            selectedNode?.type !== 'ROOT' && (
+                                <AlertInvalidNode noMargin={true} />
+                            )}
+                    </Box>
+                ) : (
                     <div
                         id="nad-svg"
                         ref={svgRef}
@@ -413,9 +416,9 @@ const SizedNetworkAreaDiagram = (props) => {
                                 loadFlowStatus !== RunningStatus.SUCCEED,
                         })}
                     />
-                }
+                )}
                 {!loadingState && (
-                    <>
+                    <div style={{ display: 'flex' }}>
                         <Typography className={classes.depth}>
                             {intl.formatMessage({
                                 id: 'depth',
@@ -444,7 +447,7 @@ const SizedNetworkAreaDiagram = (props) => {
                                 className={classes.fullScreenIcon}
                             />
                         )}
-                    </>
+                    </div>
                 )}
             </Box>
         </Paper>
