@@ -55,7 +55,7 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
-
+import { DELAY } from '../../utils/UIconstants';
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
@@ -505,8 +505,6 @@ export const useAutocompleteField = ({
 
     return [value, field, setValue];
 };
-
-const DELAY = 1000;
 
 export const useButtonWithTooltip = ({ handleClick, label }) => {
     const classes = useStyles();

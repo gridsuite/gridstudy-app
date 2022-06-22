@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './study-pane';
 import Divider from '@mui/material/Divider';
 import { setModificationsDrawerOpen } from '../redux/actions';
-
+import { DELAY } from '../utils/UIconstants';
 const useStyles = makeStyles((theme) => ({
     selected: {
         color: theme.palette.action.active,
@@ -33,8 +33,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
     },
 }));
-
-const DELAY = 1000;
 
 export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
     const classes = useStyles();

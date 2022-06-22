@@ -34,7 +34,7 @@ import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
-
+import { DELAY } from '../utils/UIconstants';
 const nodeTypes = {
     ROOT: RootNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
@@ -257,31 +257,41 @@ const NetworkModificationTree = ({
                     showInteractive={false}
                     showFitView={false}
                 >
-                    <ControlButton onClick={fitView}>
-                        <Tooltip
-                            placement="left"
-                            title={intl.formatMessage({
-                                id: 'DisplayTHeWholeTree',
-                            })}
-                        >
-                            <CropFreeIcon />
-                        </Tooltip>
-                    </ControlButton>
+                    <Tooltip
+                        placement="left"
+                        title={intl.formatMessage({
+                            id: 'DisplayTHeWholeTree',
+                        })}
+                        arrow
+                        enterDelay={DELAY}
+                        enterNextDelay={DELAY}
+                    >
+                        <span>
+                            <ControlButton onClick={fitView}>
+                                <CropFreeIcon />
+                            </ControlButton>
+                        </span>
+                    </Tooltip>
                     <CenterGraphButton selectedNode={selectedNode} />
-                    <ControlButton onClick={() => toggleMinimap()}>
-                        <Tooltip
-                            placement="left"
-                            title={
-                                isMinimapOpen
-                                    ? intl.formatMessage({ id: 'HideMinimap' })
-                                    : intl.formatMessage({
-                                          id: 'DisplayMinimap',
-                                      })
-                            }
-                        >
-                            <MapIcon />
-                        </Tooltip>
-                    </ControlButton>
+                    <Tooltip
+                        placement="left"
+                        title={
+                            isMinimapOpen
+                                ? intl.formatMessage({ id: 'HideMinimap' })
+                                : intl.formatMessage({
+                                      id: 'DisplayMinimap',
+                                  })
+                        }
+                        arrow
+                        enterDelay={DELAY}
+                        enterNextDelay={DELAY}
+                    >
+                        <span>
+                            <ControlButton onClick={() => toggleMinimap()}>
+                                <MapIcon />
+                            </ControlButton>
+                        </span>
+                    </Tooltip>
                 </Controls>
 
                 {isMinimapOpen && (

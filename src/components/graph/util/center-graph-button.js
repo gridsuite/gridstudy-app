@@ -13,6 +13,7 @@ import {
     useZoomPanHelper,
 } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
+import { DELAY } from '../../../utils/UIconstants';
 
 const CenterGraphButton = ({ selectedNode }) => {
     const { setCenter } = useZoomPanHelper();
@@ -30,18 +31,23 @@ const CenterGraphButton = ({ selectedNode }) => {
     }, [setCenter, selectedNode, zoom]);
 
     return (
-        <ControlButton
-            onClick={() => {
-                focusNode();
-            }}
+        <Tooltip
+            placement="left"
+            title={intl.formatMessage({ id: 'CenterSelectedNode' })}
+            arrow
+            enterDelay={DELAY}
+            enterNextDelay={DELAY}
         >
-            <Tooltip
-                placement="left"
-                title={intl.formatMessage({ id: 'CenterSelectedNode' })}
-            >
-                <CenterFocusIcon />
-            </Tooltip>
-        </ControlButton>
+            <span>
+                <ControlButton
+                    onClick={() => {
+                        focusNode();
+                    }}
+                >
+                    <CenterFocusIcon />
+                </ControlButton>
+            </span>
+        </Tooltip>
     );
 };
 
