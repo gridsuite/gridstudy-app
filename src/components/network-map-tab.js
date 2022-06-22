@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
+import { isNodeDisabled } from './graph/util/model-functions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -79,7 +80,7 @@ export const NetworkMapTab = ({
     const displayOverloadTable = useSelector(
         (state) => state[PARAM_DISPLAY_OVERLOAD_TABLE]
     );
-
+    const nodeDisabled = isNodeDisabled(workingNode);
     const [geoData, setGeoData] = useState();
 
     const [equipmentMenu, setEquipmentMenu] = useState({
@@ -170,7 +171,7 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
-
+        if (nodeDisabled) return;
         const substationPositions = fetchSubstationPositions(
             studyUuid,
             workingNode?.id
@@ -200,6 +201,7 @@ export const NetworkMapTab = ({
             });
         // Note: studyUuid and dispatch don't change
     }, [
+        nodeDisabled,
         studyUuid,
         workingNode,
         lineFullPath,
@@ -290,6 +292,7 @@ export const NetworkMapTab = ({
                 showEquipmentMenu(equipment, x, y, equipments.substations)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
+            disabled={nodeDisabled}
         />
     );
 

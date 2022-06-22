@@ -39,6 +39,7 @@ import NetworkModificationTreePane from './network-modification-tree-pane';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
 import { NetworkAreaDiagramPane } from './diagrams/networkAreaDiagram/network-area-diagram-pane';
+import { isNodeDisabled } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     map: {
@@ -362,6 +363,7 @@ const StudyPane = ({
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
+                    disabled={isNodeDisabled(workingNode)}
                 />
             </Paper>
         );

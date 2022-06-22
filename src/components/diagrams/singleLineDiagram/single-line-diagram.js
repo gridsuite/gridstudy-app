@@ -264,6 +264,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         sldId,
         pinned,
         toggleState,
+        disabled,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -365,7 +366,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     ]);
 
     useEffect(() => {
-        if (props.svgUrl) {
+        if (props.svgUrl && !disabled) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -477,6 +478,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, []);
 
     useLayoutEffect(() => {
+        if (disabled) return;
         function createSvgArrow(element, position, x, highestY, lowestY) {
             let svgInsert = document.getElementById(element.id).parentElement;
             let group = document.createElementNS(SVG_NS, 'g');
@@ -981,70 +983,66 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     <LinearProgress />
                 </Box>
             )}
-            <Box position="relative">
-                <Box position="absolute" left={0} right={0} top={0}>
-                    {props.updateSwitchMsg && (
-                        <Alert severity="error">{props.updateSwitchMsg}</Alert>
+            {!disabled && (
+                <Box position="relative">
+                    {
+                        <div
+                            ref={svgRef}
+                            className={clsx(classes.divSld, {
+                                [classes.divInvalid]:
+                                    loadFlowStatus !== RunningStatus.SUCCEED,
+                            })}
+                            dangerouslySetInnerHTML={{ __html: svg.svg }}
+                        />
+                    }
+                    {displayMenuLine()}
+                    {displayMenu(equipments.loads, 'load-menus')}
+                    {displayMenu(equipments.batteries, 'battery-menus')}
+                    {displayMenu(
+                        equipments.danglingLines,
+                        'dangling-line-menus'
                     )}
-                    {!isNodeValid(workingNode, selectedNode) &&
-                        selectedNode?.type !== 'ROOT' && (
-                            <AlertInvalidNode noMargin={true} />
-                        )}
-                </Box>
-                {
-                    <div
-                        ref={svgRef}
-                        className={clsx(classes.divSld, {
-                            [classes.divInvalid]:
-                                loadFlowStatus !== RunningStatus.SUCCEED,
-                        })}
-                        dangerouslySetInnerHTML={{ __html: svg.svg }}
-                    />
-                }
-                {displayMenuLine()}
-                {displayMenu(equipments.loads, 'load-menus')}
-                {displayMenu(equipments.batteries, 'battery-menus')}
-                {displayMenu(equipments.danglingLines, 'dangling-line-menus')}
-                {displayMenu(equipments.generators, 'generator-menus')}
-                {displayMenu(
-                    equipments.staticVarCompensators,
-                    'static-var-compensator-menus'
-                )}
-                {displayMenu(
-                    equipments.shuntCompensators,
-                    'shunt-compensator-menus'
-                )}
-                {displayMenu(
-                    equipments.twoWindingsTransformers,
-                    'two-windings-transformer-menus'
-                )}
-                {displayMenu(
-                    equipments.threeWindingsTransformers,
-                    'three-windings-transformer-menus'
-                )}
-                {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
-                {displayMenu(
-                    equipments.lccConverterStations,
-                    'lcc-converter-station-menus'
-                )}
-                {displayMenu(
-                    equipments.vscConverterStations,
-                    'vsc-converter-station-menus'
-                )}
+                    {displayMenu(equipments.generators, 'generator-menus')}
+                    {displayMenu(
+                        equipments.staticVarCompensators,
+                        'static-var-compensator-menus'
+                    )}
+                    {displayMenu(
+                        equipments.shuntCompensators,
+                        'shunt-compensator-menus'
+                    )}
+                    {displayMenu(
+                        equipments.twoWindingsTransformers,
+                        'two-windings-transformer-menus'
+                    )}
+                    {displayMenu(
+                        equipments.threeWindingsTransformers,
+                        'three-windings-transformer-menus'
+                    )}
+                    {displayMenu(equipments.hvdcLines, 'hvdc-line-menus')}
+                    {displayMenu(
+                        equipments.lccConverterStations,
+                        'lcc-converter-station-menus'
+                    )}
+                    {displayMenu(
+                        equipments.vscConverterStations,
+                        'vsc-converter-station-menus'
+                    )}
 
-                {!loadingState &&
-                    (fullScreen ? (
-                        <FullscreenExitIcon
-                            onClick={hideFullScreen}
-                            className={classes.fullScreenIcon}
-                        />
-                    ) : (
-                        <FullscreenIcon
-                            onClick={showFullScreen}
-                            className={classes.fullScreenIcon}
-                        />
-                    ))}
-            </Box>
+                    {!loadingState &&
+                        (fullScreen ? (
+                            <FullscreenExitIcon
+                                onClick={hideFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ) : (
+                            <FullscreenIcon
+                                onClick={showFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ))}
+                </Box>
+            )}
         </Paper>
     ) : (
         <></>

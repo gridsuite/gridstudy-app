@@ -286,7 +286,8 @@ const NetworkMap = (props) => {
     if (
         props.network !== null &&
         props.geoData !== null &&
-        props.filteredNominalVoltages !== null
+        props.filteredNominalVoltages !== null &&
+        !props.disabled
     ) {
         layers.push(
             new SubstationLayer({
