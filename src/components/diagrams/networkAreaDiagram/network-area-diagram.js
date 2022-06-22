@@ -392,13 +392,13 @@ const SizedNetworkAreaDiagram = (props) => {
                     </IconButton>
                 </Box>
             </Box>
+            {loadingState && (
+                <Box height={2}>
+                    <LinearProgress />
+                </Box>
+            )}
             <Box position="relative">
                 <Box position="absolute" left={0} right={0} top={0}>
-                    {loadingState && (
-                        <Box height={2}>
-                            <LinearProgress />
-                        </Box>
-                    )}
                     {!isNodeValid(workingNode, selectedNode) &&
                         selectedNode?.type !== 'ROOT' && (
                             <AlertInvalidNode noMargin={true} />
