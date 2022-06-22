@@ -39,12 +39,12 @@ const CreateNodeMenu = ({
 }) => {
     const classes = useStyles();
     const intl = useIntl();
+    const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     function buildNode() {
         handleBuildNode(activeNode);
         handleClose();
     }
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     function createNetworkModificationNode(insertMode) {
         handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);
