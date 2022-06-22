@@ -48,6 +48,8 @@ import {
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
+    ADD_NOTIFICATION,
+    REMOVE_NOTIFICATION_BY_NODE,
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM,
 } from './actions';
@@ -117,7 +119,9 @@ const initialState = {
     allLockedColumnsNames: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    voltageLevelsIdsForNad: [],
     centerOnSubstation: null,
+    notificationIdList: [],
     ...paramsInitialState,
 };
 
@@ -151,6 +155,7 @@ export const reducer = createReducer(initialState, {
     [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
         state.networkModificationTreeModel =
             action.networkModificationTreeModel;
+        state.networkModificationTreeModel.setBuildingStatus();
     },
 
     [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
@@ -184,6 +189,7 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
+            state.networkModificationTreeModel.setBuildingStatus();
             synchWorkingNodeAndSelectedNode(state);
         }
     },
@@ -329,8 +335,21 @@ export const reducer = createReducer(initialState, {
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
     },
+    [ADD_NOTIFICATION]: (state, action) => {
+        state.notificationIdList = [
+            ...state.notificationIdList,
+            action.notificationId,
+        ];
+    },
+    [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
+        state.notificationIdList = [
+            ...state.notificationIdList.filter(
+                (nodeId) => nodeId !== action.notificationId
+            ),
+        ];
+    },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
-        state.openNetworkAreaDiagram = action.openNetworkAreaDiagram;
+        state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
     },
 });
 
@@ -354,9 +373,9 @@ function synchWorkingNodeAndSelectedNode(state) {
             id: workingNode?.id,
             readOnly: workingNode?.data?.readOnly,
             name: workingNode?.data?.label,
+            buildStatus: workingNode?.data?.buildStatus,
             targetPosition: workingNode?.targetPosition,
             position: workingNode?.position,
-            buildStatus: workingNode?.buildStatus,
         };
     }
     // handle the case of selectedNode not in the TreeModel anymore.

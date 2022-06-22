@@ -251,12 +251,6 @@ const SizedNetworkAreaDiagram = (props) => {
                 })
                 .catch((errorMessage) => {
                     console.error(errorMessage);
-                    setSvg({
-                        svg: null,
-                        metadata: null,
-                        error: errorMessage,
-                        svgUrl: svgUrl,
-                    });
                     snackError(errorMessage);
                     updateLoadingState(false);
                 });
@@ -312,11 +306,11 @@ const SizedNetworkAreaDiagram = (props) => {
                 if (svgEl != null) {
                     svgEl.setAttribute(
                         'width',
-                        fullScreen ? totalWidth : svgPreferredWidth
+                        fullScreen ? totalWidth : svgFinalWidth
                     );
                     svgEl.setAttribute(
                         'height',
-                        fullScreen ? totalHeight - 40 : svgPreferredHeight
+                        fullScreen ? totalHeight - 40 : svgFinalHeight
                     );
                 }
             }
@@ -374,6 +368,7 @@ const SizedNetworkAreaDiagram = (props) => {
                 height: sizeHeight,
                 position: 'relative',
                 direction: 'ltr',
+                overflow: 'hidden',
             }}
         >
             <Box>
