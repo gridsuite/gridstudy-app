@@ -373,9 +373,9 @@ function synchWorkingNodeAndSelectedNode(state) {
             id: workingNode?.id,
             readOnly: workingNode?.data?.readOnly,
             name: workingNode?.data?.label,
+            buildStatus: workingNode?.data?.buildStatus,
             targetPosition: workingNode?.targetPosition,
             position: workingNode?.position,
-            buildStatus: workingNode?.buildStatus,
         };
     }
     // handle the case of selectedNode not in the TreeModel anymore.
