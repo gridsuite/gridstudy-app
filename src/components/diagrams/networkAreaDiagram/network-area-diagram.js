@@ -236,7 +236,6 @@ const SizedNetworkAreaDiagram = (props) => {
         nadId,
     ]);
 
-    console.info('JBO', disabled);
     useEffect(() => {
         if (!disabled && svgUrl) {
             updateLoadingState(true);
