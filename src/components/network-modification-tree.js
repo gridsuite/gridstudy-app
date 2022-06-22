@@ -103,14 +103,15 @@ const NetworkModificationTree = ({
             );
             dispatch(selectTreeNode(element));
             if (
-                element.type === 'ROOT' ||
-                (element.type === 'NETWORK_MODIFICATION' &&
-                    element.data.buildStatus === 'BUILT')
+                (element.type === 'ROOT' ||
+                    (element.type === 'NETWORK_MODIFICATION' &&
+                        element.data.buildStatus === 'BUILT')) &&
+                element.id !== workingNode?.id
             ) {
                 dispatch(workingTreeNode(element));
             }
         },
-        [dispatch]
+        [dispatch, workingNode]
     );
 
     const onNodeDoubleClick = useCallback(
