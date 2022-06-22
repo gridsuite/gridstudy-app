@@ -106,8 +106,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 title={intl.formatMessage({ id: 'NetworkModificationTree' })}
                 placement="right"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginLeft: '20px',
