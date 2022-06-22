@@ -46,6 +46,7 @@
 
     "parameters": "Parameters",
     "paramsChangingError": "An error occured when changing the parameters",
+    "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
 
