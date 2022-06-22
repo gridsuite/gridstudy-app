@@ -1749,10 +1749,12 @@ export function fetchNetworkModifications(groupUuid) {
         PREFIX_NETWORK_MODIFICATION_QUERIES +
         '/v1/groups/' +
         encodeURIComponent(groupUuid) +
-        '/modifications';
+        '/modifications?errorOnGroupNotFound=false';
     console.debug(url);
     return backendFetch(url, { method: 'get' }).then((response) =>
-        response.json()
+        response.ok
+            ? response.json()
+            : response.text().then((text) => Promise.reject(text))
     );
 }
 
