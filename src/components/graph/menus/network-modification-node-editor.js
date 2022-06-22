@@ -55,9 +55,16 @@ import {
 import { UPDATE_TYPE } from '../../network/constants';
 
 const useStyles = makeStyles((theme) => ({
+    listContainer: {
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+    },
     list: {
         paddingTop: theme.spacing(0),
-        overflowY: 'auto',
+        // backgroundColor: 'red',
+        flexGrow: 1,
     },
     addButton: {
         position: 'absolute',
@@ -334,6 +341,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
+            console.debug('SBO notif: ', messageId);
             dispatch(addNotification(study.eventData.headers['parentNode']));
         },
         [dispatch]
@@ -362,6 +370,11 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.debug(
+                'SBO studyUpdatedForce: ',
+                studyUpdatedForce.eventData.headers
+            );
+
             if (
                 selectedNodeRef.current?.id !==
                 studyUpdatedForce.eventData.headers['parentNode']
@@ -472,6 +485,75 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         );
     };
 
+    const renderNetworkModificationsListLoading = () => {
+        return (
+            <div className={classes.notification}>
+                <CircularProgress className={classes.circularProgress} />
+                <FormattedMessage id={messageId} />
+            </div>
+        );
+    };
+
+    const renderNetworkModificationsListUpdating = () => {
+        return (
+            <div className={classes.notification}>
+                <LinearProgress className={classes.linearProgress} />
+                <FormattedMessage id={'network_modifications/modifications'} />
+            </div>
+        );
+    };
+
+    const renderNetworkModificationsList = () => {
+        return (
+            <DragDropContext
+                onDragEnd={commit}
+                onDragStart={() => setIsDragging(true)}
+            >
+                <Droppable
+                    droppableId="network-modification-list"
+                    isDropDisabled={isLoading() || isAnyNodeBuilding}
+                >
+                    {(provided) => (
+                        <div
+                            className={classes.listContainer}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                        >
+                            <CheckboxList
+                                className={classes.list}
+                                onChecked={setSelectedItems}
+                                values={modifications}
+                                itemRenderer={(props) => (
+                                    <ModificationListItem
+                                        key={props.item.uuid}
+                                        onEdit={doEditModification}
+                                        isDragging={isDragging}
+                                        network={network}
+                                        isOneNodeBuilding={isAnyNodeBuilding}
+                                        {...props}
+                                        disabled={isLoading()}
+                                    />
+                                )}
+                                toggleSelectAll={toggleSelectAll}
+                            />
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
+        );
+    };
+
+    const renderPaneContent = () => {
+        if (isLoading()) {
+            return renderNetworkModificationsListLoading();
+        } else if (launchLoader) {
+            return renderNetworkModificationsListUpdating();
+        } else {
+            return renderNetworkModificationsList();
+        }
+    };
+
     return (
         <>
             <Toolbar className={classes.toolbar}>
@@ -505,64 +587,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     }}
                 />
             </Typography>
-            <DragDropContext
-                onDragEnd={commit}
-                onDragStart={() => setIsDragging(true)}
-            >
-                <Droppable
-                    droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding}
-                >
-                    {(provided) => (
-                        <div
-                            className={classes.list}
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            <CheckboxList
-                                className={classes.list}
-                                onChecked={setSelectedItems}
-                                values={modifications}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        network={network}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
-                                        disabled={isLoading()}
-                                    />
-                                )}
-                                toggleSelectAll={toggleSelectAll}
-                            />
-
-                            {isLoading() && (
-                                <div className={classes.notification}>
-                                    <CircularProgress
-                                        className={classes.circularProgress}
-                                    />
-                                    <FormattedMessage id={messageId} />
-                                </div>
-                            )}
-                            {provided.placeholder}
-                            {launchLoader && (
-                                <div className={classes.notification}>
-                                    <LinearProgress
-                                        className={classes.linearProgress}
-                                    />
-                                    <FormattedMessage
-                                        id={
-                                            'network_modifications/modifications'
-                                        }
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
-
+            {renderPaneContent()}
             <Fab
                 className={classes.addButton}
                 color="primary"
