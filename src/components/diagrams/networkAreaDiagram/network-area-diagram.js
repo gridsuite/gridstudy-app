@@ -27,7 +27,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchNADSvg } from '../../../utils/rest-api';
 
-import { fullScreenNetworkAreaDiagram } from '../../../redux/actions';
+import { fullScreenNetworkAreaDiagramId } from '../../../redux/actions';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -188,7 +188,7 @@ const SizedNetworkAreaDiagram = (props) => {
 
     const network = useSelector((state) => state.network);
 
-    const fullScreen = useSelector((state) => state.fullScreenNad);
+    const fullScreenNadId = useSelector((state) => state.fullScreenNadId);
 
     const [forceState, updateState] = useState(false);
 
@@ -212,7 +212,7 @@ const SizedNetworkAreaDiagram = (props) => {
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
-            fullScreen,
+            fullScreenNadId,
             totalWidth,
             totalHeight,
             svgPreferredWidth,
@@ -226,7 +226,7 @@ const SizedNetworkAreaDiagram = (props) => {
             setFinalPaperHeight(sizes.paperHeight);
         }
     }, [
-        fullScreen,
+        fullScreenNadId,
         totalWidth,
         totalHeight,
         svgPreferredWidth,
@@ -306,17 +306,17 @@ const SizedNetworkAreaDiagram = (props) => {
                 if (svgEl != null) {
                     svgEl.setAttribute(
                         'width',
-                        fullScreen ? totalWidth : svgFinalWidth
+                        fullScreenNadId ? totalWidth : svgFinalWidth
                     );
                     svgEl.setAttribute(
                         'height',
-                        fullScreen ? totalHeight - 40 : svgFinalHeight
+                        fullScreenNadId ? totalHeight - 40 : svgFinalHeight
                     );
                 }
             }
         }
     }, [
-        fullScreen,
+        fullScreenNadId,
         svgFinalWidth,
         svgFinalHeight,
         svgPreferredWidth,
@@ -329,18 +329,18 @@ const SizedNetworkAreaDiagram = (props) => {
 
     const onCloseHandler = () => {
         if (onClose !== null) {
-            dispatch(fullScreenNetworkAreaDiagram(undefined));
+            dispatch(fullScreenNetworkAreaDiagramId(null));
             onClose(nadId);
             setDepth(0);
         }
     };
 
     const showFullScreen = () => {
-        dispatch(fullScreenNetworkAreaDiagram(nadId));
+        dispatch(fullScreenNetworkAreaDiagramId(nadId));
     };
 
     const hideFullScreen = () => {
-        dispatch(fullScreenNetworkAreaDiagram(undefined));
+        dispatch(fullScreenNetworkAreaDiagramId(null));
     };
 
     let sizeWidth, sizeHeight;
@@ -433,7 +433,7 @@ const SizedNetworkAreaDiagram = (props) => {
                             }
                             className={classes.lessIcon}
                         />
-                        {fullScreen ? (
+                        {fullScreenNadId ? (
                             <FullscreenExitIcon
                                 onClick={hideFullScreen}
                                 className={classes.fullScreenIcon}

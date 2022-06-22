@@ -51,7 +51,7 @@ import {
     ADD_NOTIFICATION,
     REMOVE_NOTIFICATION_BY_NODE,
     OPEN_NETWORK_AREA_DIAGRAM,
-    FULLSCREEN_NETWORK_AREA_DIAGRAM,
+    FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -115,7 +115,7 @@ const initialState = {
     saNotif: false,
     filteredNominalVoltages: null,
     fullScreenSldId: null,
-    fullScreenNad: false,
+    fullScreenNadId: null,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
     isExplorerDrawerOpen: true,
@@ -298,8 +298,8 @@ export const reducer = createReducer(initialState, {
         state.fullScreenSldId = action.fullScreenSldId;
     },
 
-    [FULLSCREEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
-        state.fullScreenNad = action.fullScreenNad;
+    [FULLSCREEN_NETWORK_AREA_DIAGRAM_ID]: (state, action) => {
+        state.fullScreenNadId = action.fullScreenNadId;
     },
 
     [CHANGE_DISPLAYED_COLUMNS_NAMES]: (state, action) => {

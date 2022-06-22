@@ -291,13 +291,13 @@ export function fullScreenSingleLineDiagramId(fullScreenSldId) {
     };
 }
 
-export const FULLSCREEN_NETWORK_AREA_DIAGRAM =
-    'FULLSCREEN_NETWORK_AREA_DIAGRAM';
+export const FULLSCREEN_NETWORK_AREA_DIAGRAM_ID =
+    'FULLSCREEN_NETWORK_AREA_DIAGRAM_ID';
 
-export function fullScreenNetworkAreaDiagram(fullScreenNad) {
+export function fullScreenNetworkAreaDiagramId(fullScreenNadId) {
     return {
-        type: FULLSCREEN_NETWORK_AREA_DIAGRAM,
-        fullScreenNad: fullScreenNad,
+        type: FULLSCREEN_NETWORK_AREA_DIAGRAM_ID,
+        fullScreenNadId: fullScreenNadId,
     };
 }
 
