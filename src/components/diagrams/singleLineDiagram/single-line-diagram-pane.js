@@ -399,7 +399,7 @@ export function SingleLineDiagramPane({
                     style={{
                         flexGrow: 1,
                         flexShrink: 1,
-                        width: 100 / displayedSLD + '%',
+                        // width: '100%',
                         position: 'relative',
                         display:
                             !fullScreen || sld.id === fullScreen
