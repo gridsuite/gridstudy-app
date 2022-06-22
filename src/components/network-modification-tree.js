@@ -284,8 +284,8 @@ const NetworkModificationTree = ({
                                   })
                         }
                         arrow
-                        enterDelay={DELAY}
-                        enterNextDelay={DELAY}
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
                     >
                         <span>
                             <ControlButton onClick={() => toggleMinimap()}>
