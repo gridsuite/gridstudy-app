@@ -26,9 +26,9 @@ export function NetworkAreaDiagramPane({
         (state) => state.voltageLevelsIdsForNad
     );
 
-    const fullScreen = useSelector((state) => state.fullScreenNad);
+    const fullScreenNad = useSelector((state) => state.fullScreenNad);
 
-    const fullScreenSld = useSelector((state) => state.fullScreen);
+    const fullScreenSld = useSelector((state) => state.fullScreenSld);
 
     const displayedVoltageLevelIdRef = useRef();
     displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
@@ -69,7 +69,7 @@ export function NetworkAreaDiagramPane({
                         pointerEvents: 'none',
                         flexDirection: 'column',
                         direction: align === 'right' ? 'rtl' : undefined,
-                        width: fullScreen ? '100%' : '',
+                        width: fullScreenNad ? '100%' : '',
                     }}
                 >
                     <NetworkAreaDiagram

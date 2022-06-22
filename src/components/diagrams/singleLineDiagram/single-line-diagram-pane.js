@@ -212,7 +212,7 @@ export function SingleLineDiagramPane({
     const [updateSwitchMsg, setUpdateSwitchMsg] = useState('');
 
     const [views, setViews] = useState([]);
-    const fullScreen = useSelector((state) => state.fullScreen);
+    const fullScreenSld = useSelector((state) => state.fullScreenSld);
 
     const [viewState, setViewState] = useState(new Map());
 
@@ -402,7 +402,7 @@ export function SingleLineDiagramPane({
                         // width: '100%',
                         position: 'relative',
                         display:
-                            !fullScreen || sld.id === fullScreen
+                            !fullScreenSld || sld.id === fullScreenSld
                                 ? 'inline-flex'
                                 : 'none',
                         pointerEvents: 'none',

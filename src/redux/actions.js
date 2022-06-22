@@ -283,8 +283,11 @@ export function selectComponentLibrary(componentLibrary) {
 
 export const FULLSCREEN_SINGLE_LINE_DIAGRAM = 'FULLSCREEN_SINGLE_LINE_DIAGRAM';
 
-export function fullScreenSingleLineDiagram(fullScreen) {
-    return { type: FULLSCREEN_SINGLE_LINE_DIAGRAM, fullScreen: fullScreen };
+export function fullScreenSingleLineDiagram(fullScreenSld) {
+    return {
+        type: FULLSCREEN_SINGLE_LINE_DIAGRAM,
+        fullScreenSld: fullScreenSld,
+    };
 }
 
 export const FULLSCREEN_NETWORK_AREA_DIAGRAM =

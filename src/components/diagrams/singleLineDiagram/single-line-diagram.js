@@ -268,7 +268,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     const network = useSelector((state) => state.network);
 
-    const fullScreen = useSelector((state) => state.fullScreen);
+    const fullScreenSld = useSelector((state) => state.fullScreenSld);
 
     const [forceState, updateState] = useState(false);
 
@@ -337,7 +337,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
 
     useLayoutEffect(() => {
         const sizes = computePaperAndSvgSizesIfReady(
-            fullScreen,
+            fullScreenSld,
             svgType,
             totalWidth,
             totalHeight,
@@ -353,7 +353,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             setFinalPaperHeight(sizes.paperHeight);
         }
     }, [
-        fullScreen,
+        fullScreenSld,
         totalWidth,
         totalHeight,
         svgType,
@@ -1033,7 +1033,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 )}
 
                 {!loadingState &&
-                    (fullScreen ? (
+                    (fullScreenSld ? (
                         <FullscreenExitIcon
                             onClick={hideFullScreen}
                             className={classes.fullScreenIcon}

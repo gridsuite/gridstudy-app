@@ -114,7 +114,8 @@ const initialState = {
     loadflowNotif: false,
     saNotif: false,
     filteredNominalVoltages: null,
-    fullScreen: false,
+    fullScreenSld: false,
+    fullScreenNad: false,
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
     isExplorerDrawerOpen: true,
@@ -294,7 +295,7 @@ export const reducer = createReducer(initialState, {
     },
 
     [FULLSCREEN_SINGLE_LINE_DIAGRAM]: (state, action) => {
-        state.fullScreen = action.fullScreen;
+        state.fullScreenSld = action.fullScreenSld;
     },
 
     [FULLSCREEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
