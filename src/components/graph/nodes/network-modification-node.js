@@ -10,7 +10,6 @@ import { Handle } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -104,7 +103,7 @@ const NetworkModificationNode = (props) => {
                 <Button
                     className={
                         isSelectedNode()
-                            ? classes.networkModificationVisualized
+                            ? classes.networkModificationSelected
                             : classes.networkModification
                     }
                 >
@@ -142,7 +141,6 @@ const NetworkModificationNode = (props) => {
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-                {isSelectedNode() && <VisibilityIcon />}
             </div>
         </>
     );
