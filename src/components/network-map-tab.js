@@ -172,10 +172,10 @@ export const NetworkMapTab = ({
 
         const substationPositions = fetchSubstationPositions(
             studyUuid,
-            workingNode?.id
+            currentNode?.id
         );
         const linePositions = lineFullPath
-            ? fetchLinePositions(studyUuid, workingNode?.id)
+            ? fetchLinePositions(studyUuid, currentNode?.id)
             : [];
         setWaitingLoadGeoData(true);
 
@@ -200,7 +200,7 @@ export const NetworkMapTab = ({
         // Note: studyUuid and dispatch don't change
     }, [
         studyUuid,
-        workingNode,
+        currentNode,
         lineFullPath,
         setWaitingLoadGeoData,
         setErrorMessage,
