@@ -36,17 +36,3 @@ export function isNodeValid(currentNode) {
 
     return !readOnlyNode && builtCurrentNode;
 }
-
-export function getRootNode(elements) {
-    if (elements.type === 'ROOT')
-        return {
-            id: elements.id,
-            type: elements.type,
-            data: {
-                label: elements.name,
-                description: elements.description,
-                buildStatus: elements.buildStatus,
-                readOnly: elements.readOnly,
-            },
-        };
-}

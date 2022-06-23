@@ -151,7 +151,7 @@ const ConnectivityEdition = ({
                 setBusOrBusbarSectionOptions
             );
         }
-    }, [voltageLevel, voltageLevelBusOrBBSCallback]); //, studyUuid, currentNodeUuid]);
+    }, [voltageLevel, voltageLevelBusOrBBSCallback]);
 
     useEffect(() => {
         setCurrentBBS(
