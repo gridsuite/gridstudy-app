@@ -11,7 +11,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -19,7 +18,7 @@ const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
 
 const useStyles = makeStyles((theme) => ({
-    networkModificationVisualized: {
+    networkModificationSelected: {
         position: 'relative',
         variant: 'contained',
         background: theme.palette.primary.main,
@@ -81,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
 const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
+    const selectedNode = useSelector((state) => state.selectedTreeNode);
     const workingNode = useSelector((state) => state.workingTreeNode);
 
     return (
@@ -100,8 +100,8 @@ const NetworkModificationNode = (props) => {
             <Tooltip title={props.data.label} placement="top">
                 <Button
                     className={
-                        props.selected
-                            ? classes.networkModificationVisualized
+                        props.id === selectedNode.id
+                            ? classes.networkModificationSelected
                             : classes.networkModification
                     }
                 >
@@ -112,16 +112,13 @@ const NetworkModificationNode = (props) => {
                                 : classes.buildBannerInvalid
                         }
                     >
-                        {(props.data.buildStatus === 'BUILDING' && (
+                        {props.data.buildStatus === 'BUILDING' && (
                             <CircularProgress
                                 size={20}
                                 color="primary"
                                 style={{ margin: 'auto' }}
                             />
-                        )) ||
-                            (props.data.buildStatus === 'NOT_BUILT' && (
-                                <VisibilityOffIcon style={{ margin: 'auto' }} />
-                            ))}
+                        )}
                     </div>
 
                     <div className={classes.labelWrapper}>

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import ReactFlow, {
     Controls,
     useStoreState,
@@ -21,18 +21,16 @@ import {
     setModificationsDrawerOpen,
     workingTreeNode,
 } from '../redux/actions';
-import { buildNode } from '../utils/rest-api';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
-import { useSnackbar } from 'notistack';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
 import PropTypes from 'prop-types';
-
+import { useIntl } from 'react-intl';
+import CropFreeIcon from '@mui/icons-material/CropFree';
+import { TOOLTIP_DELAY } from '../utils/UIconstants';
 const nodeTypes = {
     ROOT: RootNode,
     NETWORK_MODIFICATION: NetworkModificationNode,
@@ -62,8 +60,6 @@ const NetworkModificationTree = ({
     isModificationsDrawerOpen,
 }) => {
     const dispatch = useDispatch();
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
 
     const selectedNode = useSelector((state) => state.selectedTreeNode);
@@ -86,8 +82,6 @@ const NetworkModificationTree = ({
             switch (node.data.buildStatus) {
                 case 'BUILT':
                     return '#70d136';
-                case 'BUILT_INVALID':
-                    return '#9196a1';
                 case 'NOT_BUILT':
                     return '#9196a1';
                 default:
@@ -105,51 +99,20 @@ const NetworkModificationTree = ({
             );
             dispatch(selectTreeNode(element));
             if (
-                element.type === 'ROOT' ||
-                (element.type === 'NETWORK_MODIFICATION' &&
-                    (element.data.buildStatus === 'BUILT' ||
-                        element.data.buildStatus === 'BUILT_INVALID'))
+                (element.type === 'ROOT' ||
+                    (element.type === 'NETWORK_MODIFICATION' &&
+                        element.data.buildStatus === 'BUILT')) &&
+                element.id !== workingNode?.id
             ) {
                 dispatch(workingTreeNode(element));
             }
         },
-        [dispatch]
-    );
-
-    const onNodeDoubleClick = useCallback(
-        (event, node) => {
-            if (
-                node.type === 'NETWORK_MODIFICATION' &&
-                node.data.buildStatus !== 'BUILT' &&
-                node.data.buildStatus !== 'BUILDING'
-            ) {
-                buildNode(studyUuid, node.id).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeBuildingError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
-        },
-        [studyUuid, enqueueSnackbar, intlRef]
+        [dispatch, workingNode]
     );
 
     const toggleMinimap = useCallback(() => {
         setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
     }, []);
-
-    const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
-        onElementClick,
-        onNodeDoubleClick
-    );
-
-    const onPaneClick = useCallback(() => {
-        dispatch(selectTreeNode(null));
-    }, [dispatch]);
 
     const onMove = useCallback((flowTransform) => {
         setIsMoving(true);
@@ -161,7 +124,11 @@ const NetworkModificationTree = ({
 
     const [x, y, zoom] = useStoreState((state) => state.transform);
 
-    const { transform } = useZoomPanHelper();
+    const { transform, fitView } = useZoomPanHelper();
+
+    const onLoad = useCallback((reactFlowInstance) => {
+        reactFlowInstance.fitView();
+    }, []);
 
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
@@ -173,6 +140,8 @@ const NetworkModificationTree = ({
         transform,
         prevTreeDisplay,
     };
+
+    const intl = useIntl();
 
     useEffect(() => {
         const nodeEditorShift = isModificationsDrawerOpen
@@ -219,10 +188,6 @@ const NetworkModificationTree = ({
         }
     }, [isModificationsDrawerOpen]);
 
-    const onLoad = useCallback((reactFlowInstance) => {
-        reactFlowInstance.fitView();
-    }, []);
-
     return (
         <Box flexGrow={1}>
             <ReactFlow
@@ -231,8 +196,7 @@ const NetworkModificationTree = ({
                 }}
                 elements={treeModel ? treeModel.treeElements : []}
                 onNodeContextMenu={onNodeContextMenu}
-                onElementClick={nodeSingleOrDoubleClick}
-                onPaneClick={onPaneClick}
+                onElementClick={onElementClick}
                 onMove={onMove}
                 onLoad={onLoad}
                 onMoveEnd={onMoveEnd}
@@ -251,11 +215,43 @@ const NetworkModificationTree = ({
                     className={classes.controls}
                     showZoom={false}
                     showInteractive={false}
+                    showFitView={false}
                 >
+                    <Tooltip
+                        placement="left"
+                        title={intl.formatMessage({
+                            id: 'DisplayTheWholeTree',
+                        })}
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                    >
+                        <span>
+                            <ControlButton onClick={fitView}>
+                                <CropFreeIcon />
+                            </ControlButton>
+                        </span>
+                    </Tooltip>
                     <CenterGraphButton selectedNode={selectedNode} />
-                    <ControlButton onClick={() => toggleMinimap()}>
-                        <MapIcon />
-                    </ControlButton>
+                    <Tooltip
+                        placement="left"
+                        title={
+                            isMinimapOpen
+                                ? intl.formatMessage({ id: 'HideMinimap' })
+                                : intl.formatMessage({
+                                      id: 'DisplayMinimap',
+                                  })
+                        }
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                    >
+                        <span>
+                            <ControlButton onClick={() => toggleMinimap()}>
+                                <MapIcon />
+                            </ControlButton>
+                        </span>
+                    </Tooltip>
                 </Controls>
 
                 {isMinimapOpen && (
