@@ -114,10 +114,6 @@ const NetworkModificationTree = ({
         setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
     }, []);
 
-    const onPaneClick = useCallback(() => {
-        dispatch(selectTreeNode(null));
-    }, [dispatch]);
-
     const onMove = useCallback((flowTransform) => {
         setIsMoving(true);
     }, []);
@@ -201,7 +197,6 @@ const NetworkModificationTree = ({
                 elements={treeModel ? treeModel.treeElements : []}
                 onNodeContextMenu={onNodeContextMenu}
                 onElementClick={onElementClick}
-                onPaneClick={onPaneClick}
                 onMove={onMove}
                 onLoad={onLoad}
                 onMoveEnd={onMoveEnd}
