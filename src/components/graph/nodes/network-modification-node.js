@@ -18,7 +18,7 @@ const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
 
 const useStyles = makeStyles((theme) => ({
-    networkModificationVisualized: {
+    networkModificationSelected: {
         position: 'relative',
         variant: 'contained',
         background: theme.palette.primary.main,

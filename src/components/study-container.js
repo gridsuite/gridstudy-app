@@ -40,7 +40,7 @@ import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, getRootNode, isNodeValid } from './graph/util/model-functions';
+import { getFirstNodeOfType, isNodeValid } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -301,6 +301,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     'NETWORK_MODIFICATION',
                     'BUILT'
                 );
+
                 dispatch(
                     setCurrentTreeNode(
                         firstBuiltNode

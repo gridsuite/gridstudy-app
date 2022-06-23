@@ -29,7 +29,9 @@ const RootNode = (props) => {
     const classes = useStyles();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-
+    const isSelectedNode = () => {
+        return props.id === currentNode?.id;
+    };
     return (
         <>
             <Handle
@@ -49,12 +51,12 @@ const RootNode = (props) => {
                 <IconButton
                     variant="outlined"
                     className={
-                        props.selected ? classes.rootSelected : classes.root
+                        isSelectedNode() ? classes.rootSelected : classes.root
                     }
                 >
                     {props.data.buildStatus === 'BUILDING' ? (
                         <CircularProgress size={24} />
-                    ) : props.id === currentNode?.id ? (
+                    ) : isSelectedNode() ? (
                         <VisibilityIcon />
                     ) : (
                         props.data.readOnly && <PhotoIcon />
