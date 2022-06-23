@@ -365,7 +365,6 @@ const NetworkMap = (props) => {
 
     return (
         <>
-            {props.waitingLoadGeoData && renderOverlay()}
             <DeckGL
                 onViewStateChange={onViewStateChange}
                 ref={(ref) => {
@@ -383,6 +382,7 @@ const NetworkMap = (props) => {
                 getCursor={cursorHandler}
                 pickingRadius={5}
             >
+                {props.waitingLoadGeoData && renderOverlay()}
                 <StaticMap
                     mapStyle={theme.mapboxStyle}
                     preventStyleDiffing={true}
