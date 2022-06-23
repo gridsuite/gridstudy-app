@@ -237,7 +237,6 @@ const ContingencyListSelector = (props) => {
                                 label={(item) => item.name}
                                 id={(item) => item.id}
                                 selection={checkedContingencyListUuids}
-                                initialSelection={checkedContingencyListUuids}
                                 itemRenderer={({
                                     item,
                                     checked,
