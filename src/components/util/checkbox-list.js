@@ -7,6 +7,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import List from '@mui/material/List';
 import PropTypes from 'prop-types';
+import { isEqual } from './is-object-equals';
 
 const CheckboxList = ({
     itemRenderer,
@@ -20,9 +21,17 @@ const CheckboxList = ({
 
     /* remove non absent selected items */
     useEffect(() => {
+        console.log('useEffect existingValues:', values);
         const existingValues = new Set(values);
         const newChecked = new Set(
-            [...checked].filter((id) => existingValues.has(id))
+            [...checked].filter((element) => {
+                for (const existingValue of existingValues) {
+                    if (isEqual(element, existingValue)) {
+                        return true;
+                    }
+                }
+                return false;
+            })
         );
         if (newChecked.size !== checked.size) {
             setChecked(newChecked);
@@ -44,7 +53,15 @@ const CheckboxList = ({
     const handleToggle = useCallback(
         (value) => {
             const newChecked = new Set(checked);
-            if (!newChecked.delete(value)) {
+            let valueToDelete = undefined;
+            for (const e of newChecked) {
+                if (isEqual(e, value)) {
+                    valueToDelete = e;
+                    break;
+                }
+            }
+
+            if (!newChecked.delete(valueToDelete)) {
                 newChecked.add(value);
             }
             setChecked(newChecked);
@@ -58,13 +75,22 @@ const CheckboxList = ({
 
     useEffect(() => onChecked && onChecked(checked), [checked, onChecked]);
 
+    const isCheckboxInCheckedSet = (checkedSet, checkBoxToCheck) => {
+        for (const element of checkedSet) {
+            if (isEqual(element, checkBoxToCheck)) {
+                return true;
+            }
+        }
+        return false;
+    };
+
     return (
         <List {...props}>
             {values?.map((item, index) =>
                 itemRenderer({
                     item,
                     index,
-                    checked: checked.has(item),
+                    checked: isCheckboxInCheckedSet(checked, item),
                     handleToggle,
                 })
             )}
