@@ -25,7 +25,6 @@ import Paper from '@mui/material/Paper';
 import { useTheme } from '@mui/material/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { fetchSvg } from '../../../utils/rest-api';
