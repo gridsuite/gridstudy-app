@@ -29,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
             background: theme.palette.primary.main,
         },
         overflow: 'hidden',
+        border: 'solid',
+        borderColor: theme.palette.primary.main,
     },
     networkModification: {
         background: theme.palette.text.secondary,
