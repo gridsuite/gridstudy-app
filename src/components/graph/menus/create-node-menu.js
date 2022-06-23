@@ -66,7 +66,9 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => buildNode(),
             id: 'buildNode',
-            disabled: activeNode?.data?.buildStatus === 'BUILT',
+            disabled:
+                activeNode?.data?.buildStatus === 'BUILT' ||
+                activeNode?.data?.buildStatus === 'BUILDING',
         },
         CREATE_MODIFICATION_NODE: {
             onRoot: true,

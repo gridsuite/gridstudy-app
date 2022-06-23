@@ -200,22 +200,16 @@ export const NetworkModificationTreePane = ({
 
     const handleBuildNode = useCallback(
         (element) => {
-            if (
-                element.type === 'NETWORK_MODIFICATION' &&
-                element.data.buildStatus !== 'BUILT' &&
-                element.data.buildStatus !== 'BUILDING'
-            ) {
-                buildNode(studyUuid, element.id).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeBuildingError',
-                            intlRef: intlRef,
-                        },
-                    });
+            buildNode(studyUuid, element.id).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeBuildingError',
+                        intlRef: intlRef,
+                    },
                 });
-            }
+            });
         },
         [studyUuid, enqueueSnackbar, intlRef]
     );
