@@ -27,7 +27,6 @@ import {
     Checkbox,
     CircularProgress,
     Fab,
-    LinearProgress,
     Toolbar,
     Typography,
 } from '@mui/material';
@@ -55,9 +54,15 @@ import {
 import { UPDATE_TYPE } from '../../network/constants';
 
 const useStyles = makeStyles((theme) => ({
+    listContainer: {
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+    },
     list: {
         paddingTop: theme.spacing(0),
-        overflowY: 'auto',
+        flexGrow: 1,
     },
     addButton: {
         position: 'absolute',
@@ -65,7 +70,9 @@ const useStyles = makeStyles((theme) => ({
         right: 0,
         margin: theme.spacing(3),
     },
-    modificationCount: {
+    modificationsTitle: {
+        display: 'flex',
+        alignItems: 'center',
         margin: theme.spacing(0),
         padding: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
@@ -93,12 +100,7 @@ const useStyles = makeStyles((theme) => ({
     },
     circularProgress: {
         marginRight: theme.spacing(2),
-        color: theme.palette.primary.main,
-    },
-    linearProgress: {
-        marginTop: theme.spacing(2),
-        marginRight: theme.spacing(2),
-        color: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
     },
     formattedMessageProgress: {
         marginTop: theme.spacing(2),
@@ -472,6 +474,90 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         );
     };
 
+    const renderNetworkModificationsList = () => {
+        return (
+            <DragDropContext
+                onDragEnd={commit}
+                onDragStart={() => setIsDragging(true)}
+            >
+                <Droppable
+                    droppableId="network-modification-list"
+                    isDropDisabled={isLoading() || isAnyNodeBuilding}
+                >
+                    {(provided) => (
+                        <div
+                            className={classes.listContainer}
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                        >
+                            <CheckboxList
+                                className={classes.list}
+                                onChecked={setSelectedItems}
+                                values={modifications}
+                                itemRenderer={(props) => (
+                                    <ModificationListItem
+                                        key={props.item.uuid}
+                                        onEdit={doEditModification}
+                                        isDragging={isDragging}
+                                        network={network}
+                                        isOneNodeBuilding={isAnyNodeBuilding}
+                                        {...props}
+                                        disabled={isLoading()}
+                                    />
+                                )}
+                                toggleSelectAll={toggleSelectAll}
+                            />
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
+        );
+    };
+
+    const renderNetworkModificationsListTitleLoading = () => {
+        return (
+            <Typography className={classes.modificationsTitle}>
+                <CircularProgress
+                    size={'1em'}
+                    className={classes.circularProgress}
+                />
+                <FormattedMessage id={messageId} />
+            </Typography>
+        );
+    };
+
+    const renderNetworkModificationsListTitleUpdating = () => {
+        return (
+            <Typography className={classes.modificationsTitle}>
+                <CircularProgress
+                    size={'1em'}
+                    className={classes.circularProgress}
+                />
+                <FormattedMessage id={'network_modifications/modifications'} />
+            </Typography>
+        );
+    };
+
+    const renderNetworkModificationsListTitle = () => {
+        return (
+            <Typography className={classes.modificationsTitle}>
+                <FormattedMessage
+                    id={'network_modification/modificationsCount'}
+                    values={{
+                        count: modifications ? modifications?.length : '',
+                    }}
+                />
+            </Typography>
+        );
+    };
+
+    const renderPaneSubtitle = () => {
+        if (isLoading()) return renderNetworkModificationsListTitleLoading();
+        if (launchLoader) return renderNetworkModificationsListTitleUpdating();
+        return renderNetworkModificationsListTitle();
+    };
+
     return (
         <>
             <Toolbar className={classes.toolbar}>
@@ -497,72 +583,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     <DeleteIcon />
                 </IconButton>
             </Toolbar>
-            <Typography className={classes.modificationCount}>
-                <FormattedMessage
-                    id={'network_modification/modificationsCount'}
-                    values={{
-                        count: modifications ? modifications?.length : '',
-                    }}
-                />
-            </Typography>
-            <DragDropContext
-                onDragEnd={commit}
-                onDragStart={() => setIsDragging(true)}
-            >
-                <Droppable
-                    droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding}
-                >
-                    {(provided) => (
-                        <div
-                            className={classes.list}
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            <CheckboxList
-                                className={classes.list}
-                                onChecked={setSelectedItems}
-                                values={modifications}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        network={network}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        {...props}
-                                        disabled={isLoading()}
-                                    />
-                                )}
-                                toggleSelectAll={toggleSelectAll}
-                            />
+            {renderPaneSubtitle()}
 
-                            {isLoading() && (
-                                <div className={classes.notification}>
-                                    <CircularProgress
-                                        className={classes.circularProgress}
-                                    />
-                                    <FormattedMessage id={messageId} />
-                                </div>
-                            )}
-                            {provided.placeholder}
-                            {launchLoader && (
-                                <div className={classes.notification}>
-                                    <LinearProgress
-                                        className={classes.linearProgress}
-                                    />
-                                    <FormattedMessage
-                                        id={
-                                            'network_modifications/modifications'
-                                        }
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </Droppable>
-            </DragDropContext>
-
+            {renderNetworkModificationsList()}
             <Fab
                 className={classes.addButton}
                 color="primary"
