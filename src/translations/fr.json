@@ -282,6 +282,7 @@
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
+    "buildNode": "Réaliser le nœud",
     "createNetworkModificationNode": "Créer un nœud dans une nouvelle branche",
     "removeNode": "Supprimer le nœud",
     "exportCaseOnNode": "Exporter la situation",
