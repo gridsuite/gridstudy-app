@@ -21,13 +21,9 @@ import {
     setModificationsDrawerOpen,
     workingTreeNode,
 } from '../redux/actions';
-import { buildNode } from '../utils/rest-api';
-import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
-import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
-import { useSnackbar } from 'notistack';
 import makeStyles from '@mui/styles/makeStyles';
 import { DRAWER_NODE_EDITOR_WIDTH } from './map-lateral-drawers';
 import { StudyDisplayMode } from './study-pane';
@@ -64,8 +60,6 @@ const NetworkModificationTree = ({
     isModificationsDrawerOpen,
 }) => {
     const dispatch = useDispatch();
-    const intlRef = useIntlRef();
-    const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
 
     const selectedNode = useSelector((state) => state.selectedTreeNode);
@@ -88,8 +82,6 @@ const NetworkModificationTree = ({
             switch (node.data.buildStatus) {
                 case 'BUILT':
                     return '#70d136';
-                case 'BUILT_INVALID':
-                    return '#9196a1';
                 case 'NOT_BUILT':
                     return '#9196a1';
                 default:
@@ -109,8 +101,7 @@ const NetworkModificationTree = ({
             if (
                 (element.type === 'ROOT' ||
                     (element.type === 'NETWORK_MODIFICATION' &&
-                        (element.data.buildStatus === 'BUILT' ||
-                            element.data.buildStatus === 'BUILT_INVALID'))) &&
+                        element.data.buildStatus === 'BUILT')) &&
                 element.id !== workingNode?.id
             ) {
                 dispatch(workingTreeNode(element));
@@ -119,36 +110,9 @@ const NetworkModificationTree = ({
         [dispatch, workingNode]
     );
 
-    const onNodeDoubleClick = useCallback(
-        (event, node) => {
-            if (
-                node.type === 'NETWORK_MODIFICATION' &&
-                node.data.buildStatus !== 'BUILT' &&
-                node.data.buildStatus !== 'BUILDING'
-            ) {
-                buildNode(studyUuid, node.id).catch((errorMessage) => {
-                    displayErrorMessageWithSnackbar({
-                        errorMessage: errorMessage,
-                        enqueueSnackbar: enqueueSnackbar,
-                        headerMessage: {
-                            headerMessageId: 'NodeBuildingError',
-                            intlRef: intlRef,
-                        },
-                    });
-                });
-            }
-        },
-        [studyUuid, enqueueSnackbar, intlRef]
-    );
-
     const toggleMinimap = useCallback(() => {
         setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
     }, []);
-
-    const nodeSingleOrDoubleClick = useNodeSingleAndDoubleClick(
-        onElementClick,
-        onNodeDoubleClick
-    );
 
     const onPaneClick = useCallback(() => {
         dispatch(selectTreeNode(null));
@@ -236,7 +200,7 @@ const NetworkModificationTree = ({
                 }}
                 elements={treeModel ? treeModel.treeElements : []}
                 onNodeContextMenu={onNodeContextMenu}
-                onElementClick={nodeSingleOrDoubleClick}
+                onElementClick={onElementClick}
                 onPaneClick={onPaneClick}
                 onMove={onMove}
                 onLoad={onLoad}
