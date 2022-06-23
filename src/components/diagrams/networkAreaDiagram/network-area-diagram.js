@@ -417,7 +417,7 @@ const SizedNetworkAreaDiagram = (props) => {
                         })}
                     />
                 )}
-                {!loadingState && (
+                {!loadingState && !disabled && (
                     <div style={{ display: 'flex' }}>
                         <Typography className={classes.depth}>
                             {intl.formatMessage({
