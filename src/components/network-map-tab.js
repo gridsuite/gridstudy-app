@@ -53,8 +53,7 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     network,
-    workingNode,
-    selectedNode,
+    currentNode,
     /* results*/
     securityAnalysisStatus,
     runnable,
@@ -217,8 +216,7 @@ export const NetworkMapTab = ({
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
                     withEquipment(MenuLine, {
-                        workingNode: workingNode,
-                        selectedNode: selectedNode,
+                        currentNode,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
@@ -323,8 +321,7 @@ export const NetworkMapTab = ({
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}

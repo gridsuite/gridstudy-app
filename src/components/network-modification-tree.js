@@ -16,11 +16,7 @@ import ReactFlow, {
 import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    selectTreeNode,
-    setModificationsDrawerOpen,
-    workingTreeNode,
-} from '../redux/actions';
+import { setModificationsDrawerOpen, currentTreeNode } from '../redux/actions';
 import { buildNode } from '../utils/rest-api';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import { useNodeSingleAndDoubleClick } from './graph/util/node-single-double-click-hook';
@@ -66,8 +62,7 @@ const NetworkModificationTree = ({
     const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
 
-    const selectedNode = useSelector((state) => state.selectedTreeNode);
-    const workingNode = useSelector((state) => state.workingTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
@@ -80,7 +75,7 @@ const NetworkModificationTree = ({
         if (node.type === 'ROOT') {
             return 'rgba(0, 0, 0, 0.0)';
         } else {
-            if (node.id === workingNode?.id) {
+            if (node.id === currentNode?.id) {
                 return '#4287f5';
             }
             switch (node.data.buildStatus) {
@@ -103,15 +98,7 @@ const NetworkModificationTree = ({
                     element.type === 'NETWORK_MODIFICATION'
                 )
             );
-            dispatch(selectTreeNode(element));
-            if (
-                element.type === 'ROOT' ||
-                (element.type === 'NETWORK_MODIFICATION' &&
-                    (element.data.buildStatus === 'BUILT' ||
-                        element.data.buildStatus === 'BUILT_INVALID'))
-            ) {
-                dispatch(workingTreeNode(element));
-            }
+            dispatch(currentTreeNode(element));
         },
         [dispatch]
     );
@@ -148,7 +135,7 @@ const NetworkModificationTree = ({
     );
 
     const onPaneClick = useCallback(() => {
-        dispatch(selectTreeNode(null));
+        dispatch(currentTreeNode(null));
     }, [dispatch]);
 
     const onMove = useCallback((flowTransform) => {
@@ -252,7 +239,7 @@ const NetworkModificationTree = ({
                     showZoom={false}
                     showInteractive={false}
                 >
-                    <CenterGraphButton selectedNode={selectedNode} />
+                    <CenterGraphButton currentNode={currentNode} />
                     <ControlButton onClick={() => toggleMinimap()}>
                         <MapIcon />
                     </ControlButton>

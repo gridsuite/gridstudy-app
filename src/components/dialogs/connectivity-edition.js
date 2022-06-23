@@ -38,19 +38,19 @@ const useStyles = makeStyles((theme) => ({
  * Creates a callback for _getting_ bus or busbar section for a given voltage level.
  * Usable firstly for giving to hereunder ConnectivityEdition.
  * @param studyUuid uuid of the study where to look for the voltage level bus(bar section)s.
- * @param workingNodeUuid uuid of the node of the study where to look for the voltage level bus(bar section)s.
+ * @param currentNodeUuid uuid of the node of the study where to look for the voltage level bus(bar section)s.
  * @returns {(function(*, *): void)|*}
  */
 export function makeRefreshBusOrBusbarSectionsCallback(
     studyUuid,
-    workingNodeUuid
+    currentNodeUuid
 ) {
     return (voltageLevel, putter) => {
         switch (voltageLevel?.topologyKind) {
             case 'NODE_BREAKER':
                 fetchBusbarSectionsForVoltageLevel(
                     studyUuid,
-                    workingNodeUuid,
+                    currentNodeUuid,
                     voltageLevel.id
                 ).then((busbarSections) => {
                     putter(busbarSections);
@@ -60,7 +60,7 @@ export function makeRefreshBusOrBusbarSectionsCallback(
             case 'BUS_BREAKER':
                 fetchBusesForVoltageLevel(
                     studyUuid,
-                    workingNodeUuid,
+                    currentNodeUuid,
                     voltageLevel.id
                 ).then((buses) => putter(buses));
                 break;
@@ -151,7 +151,7 @@ const ConnectivityEdition = ({
                 setBusOrBusbarSectionOptions
             );
         }
-    }, [voltageLevel, voltageLevelBusOrBBSCallback]); //, studyUuid, workingNodeUuid]);
+    }, [voltageLevel, voltageLevelBusOrBBSCallback]); //, studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         setCurrentBBS(
@@ -324,7 +324,7 @@ ConnectivityEdition.propTypes = {
     helperTextVoltageLevel: PropTypes.string,
     errorBusOrBusBarSection: PropTypes.bool,
     helperTextBusOrBusBarSection: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default ConnectivityEdition;

@@ -33,14 +33,14 @@ const useEquipmentStyles = makeStyles(equipmentStyles);
  * @param {Function} onClose: callback to call when closing the dialog
  * @param {Function} onSelectionChange: callback when the selection changes
  * @param {String} equipmentType: the type of equipment we want to search
- * @param {String} selectedNodeUuid: the node selected
+ * @param {String} currentNodeUuid: the node selected
  */
 const EquipmentSearchDialog = ({
     open,
     onClose,
     onSelectionChange,
     equipmentType,
-    selectedNodeUuid,
+    currentNodeUuid,
 }) => {
     const equipmentClasses = useEquipmentStyles();
 
@@ -55,7 +55,7 @@ const EquipmentSearchDialog = ({
         (searchTerm) => {
             fetchEquipmentsInfos(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 searchTerm,
                 useNameLocal,
                 true,
@@ -79,7 +79,7 @@ const EquipmentSearchDialog = ({
         },
         [
             studyUuid,
-            selectedNodeUuid,
+            currentNodeUuid,
             useNameLocal,
             enqueueSnackbar,
             intlRef,
@@ -115,7 +115,7 @@ EquipmentSearchDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onSelectionChange: PropTypes.func.isRequired,
     equipmentType: PropTypes.string.isRequired,
-    selectedNodeUuid: PropTypes.string.isRequired,
+    currentNodeUuid: PropTypes.string.isRequired,
 };
 
 export default EquipmentSearchDialog;

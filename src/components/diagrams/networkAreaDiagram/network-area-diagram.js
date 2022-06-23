@@ -175,8 +175,7 @@ const SizedNetworkAreaDiagram = (props) => {
     const {
         totalWidth,
         totalHeight,
-        workingNode,
-        selectedNode,
+        currentNode,
         nadId,
         diagramTitle,
         svgUrl,
@@ -293,7 +292,7 @@ const SizedNetworkAreaDiagram = (props) => {
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
         }
-    }, [network, svg, workingNode, theme, nadId, svgUrl]);
+    }, [network, svg, currentNode, theme, nadId, svgUrl]);
 
     useLayoutEffect(() => {
         if (
@@ -399,8 +398,8 @@ const SizedNetworkAreaDiagram = (props) => {
                             <LinearProgress />
                         </Box>
                     )}
-                    {!isNodeValid(workingNode, selectedNode) &&
-                        selectedNode?.type !== 'ROOT' && (
+                    {!isNodeValid(currentNode) &&
+                        currentNode?.type !== 'ROOT' && (
                             <AlertInvalidNode noMargin={true} />
                         )}
                 </Box>
@@ -470,8 +469,7 @@ NetworkAreaDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
     nadId: PropTypes.string,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,

@@ -258,7 +258,7 @@ export const useConnectivityValue = ({
     disabled = false,
     inputForm,
     voltageLevelOptions,
-    workingNodeUuid,
+    currentNodeUuid,
     direction = 'row',
     voltageLevelIdDefaultValue,
     voltageLevelPreviousValue,
@@ -358,7 +358,7 @@ export const useConnectivityValue = ({
                 direction={direction}
                 voltageLevelBusOrBBSCallback={makeRefreshBusOrBusbarSectionsCallback(
                     studyUuid,
-                    workingNodeUuid
+                    currentNodeUuid
                 )}
             />
         );
@@ -373,7 +373,7 @@ export const useConnectivityValue = ({
         setVoltageLevel,
         voltageLevelOptions,
         studyUuid,
-        workingNodeUuid,
+        currentNodeUuid,
         voltageLevelPreviousValue,
         busOrBusbarSectionPreviousValue,
     ]);

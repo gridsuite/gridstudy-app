@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
 const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
-    const workingNode = useSelector((state) => state.workingTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     return (
         <>
@@ -142,7 +142,7 @@ const NetworkModificationNode = (props) => {
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-                {props.id === workingNode?.id && <VisibilityIcon />}
+                {props.id === currentNode?.id && <VisibilityIcon />}
             </div>
         </>
     );
