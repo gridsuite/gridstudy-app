@@ -52,6 +52,7 @@ const maxHeight = 650;
 const minWidth = 500;
 const minHeight = 400;
 const errorWidth = maxWidth;
+let initialWidth, initialHeight;
 
 const useStyles = makeStyles((theme) => ({
     divNad: {
@@ -344,15 +345,24 @@ const SizedNetworkAreaDiagram = (props) => {
         dispatch(fullScreenNetworkAreaDiagram(undefined));
     };
 
-    let sizeWidth, sizeHeight;
+    let sizeWidth = initialWidth;
+    let sizeHeight = initialHeight;
+
     if (svg.error) {
-        sizeWidth = errorWidth; // height is not set so height is auto;
+        sizeWidth = errorWidth;
     } else if (
         typeof finalPaperWidth != 'undefined' &&
         typeof finalPaperHeight != 'undefined'
     ) {
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
+    }
+
+    if (sizeHeight !== undefined) {
+        initialHeight = sizeHeight;
+    }
+    if (sizeWidth !== undefined) {
+        initialWidth = sizeWidth;
     }
 
     return svg.error ? (
