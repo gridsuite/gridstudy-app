@@ -266,8 +266,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
-                    border={'1px'}
-                    borderColor={'green'}
+                    borderColor={'#123456'}
                 >
                     {currentNode && (
                         <OverflowableText
@@ -313,13 +312,12 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         })}
                     </Tabs>
                 )}
-                <Parameters
+            </TopBar>
+            <Parameters
                 showParameters={showParameters}
                 hideParameters={hideParameters}
                 user={user}
             />
-            </TopBar>
-            
         </>
     );
 };
