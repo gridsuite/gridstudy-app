@@ -301,7 +301,6 @@ export function StudyContainer({ view, onChangeTab }) {
                     'NETWORK_MODIFICATION',
                     'BUILT'
                 );
-                console.log("firstBuiltNode",firstBuiltNode)
                 dispatch(
                     currentTreeNode(
                         firstBuiltNode

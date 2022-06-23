@@ -124,7 +124,6 @@ function isPartial(s1, s2) {
 
 const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
     const network = useSelector((state) => state.network);
-    const currentNode = useSelector((state) => state.currentTreeNode);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
@@ -305,7 +304,6 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
             // loader when opening a modification panel (current user only)
             setLaunchLoader(true);
             currentNodeRef.current = currentTreeNode;
-            console.log("currentNodeRef",currentTreeNode)
             if (!currentTreeNode.networkModification) {
                 setModifications([]);
                 setLaunchLoader(false);
