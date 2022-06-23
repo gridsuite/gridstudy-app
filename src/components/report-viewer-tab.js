@@ -45,6 +45,7 @@ export const ReportViewerTab = ({
     visible,
     workingNode,
     selectedNode,
+    nodeDisabled,
 }) => {
     const intl = useIntl();
     const classes = useStyles();
@@ -125,6 +126,7 @@ export const ReportViewerTab = ({
                                         'aria-label': 'primary checkbox',
                                     }}
                                     onChange={(e) => handleChangeValue(e)}
+                                    disabled={nodeDisabled}
                                 />
                             }
                             label={intl.formatMessage({
@@ -136,7 +138,7 @@ export const ReportViewerTab = ({
                                 <AlertInvalidNode />
                             )}
                     </div>
-                    <ReportViewer jsonReport={report} />
+                    {!nodeDisabled && (<ReportViewer jsonReport={report} />)}
                 </Paper>
             )}
         </WaitingLoader>
@@ -148,4 +150,5 @@ ReportViewerTab.propTypes = {
     visible: PropTypes.bool,
     workingNode: PropTypes.object,
     selectedNodeNode: PropTypes.object,
+    nodeDisabled: PropTypes.bool,
 };

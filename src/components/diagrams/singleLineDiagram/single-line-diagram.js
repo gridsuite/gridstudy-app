@@ -263,7 +263,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         sldId,
         pinned,
         toggleState,
-        disabled,
+        nodeDisabled,
     } = props;
 
     const network = useSelector((state) => state.network);
@@ -365,7 +365,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     ]);
 
     useEffect(() => {
-        if (props.svgUrl && !disabled) {
+        if (props.svgUrl && !nodeDisabled) {
             updateLoadingState(true);
             fetchSvg(props.svgUrl)
                 .then((data) => {
@@ -391,7 +391,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         } else {
             setSvg(noSvg);
         }
-    }, [props.svgUrl, forceState, snackError, intlRef, disabled]);
+    }, [props.svgUrl, forceState, snackError, intlRef, nodeDisabled]);
 
     const { onNextVoltageLevelClick, onBreakerClick, isComputationRunning } =
         props;
@@ -477,7 +477,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, []);
 
     useLayoutEffect(() => {
-        if (disabled) return;
+        if (nodeDisabled) return;
         function createSvgArrow(element, position, x, highestY, lowestY) {
             let svgInsert = document.getElementById(element.id).parentElement;
             let group = document.createElementNS(SVG_NS, 'g');
@@ -812,7 +812,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         ref,
         svgFinalHeight,
         svgFinalWidth,
-        disabled,
+        nodeDisabled,
     ]);
 
     useLayoutEffect(() => {
@@ -983,7 +983,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     <LinearProgress />
                 </Box>
             )}
-            {disabled ? (
+            {nodeDisabled ? (
                 <Box position="relative" left={0} right={0} top={0}>
                     <AlertInvalidNode noMargin={true} />
                 </Box>
