@@ -153,6 +153,12 @@ class SubstationLayer extends CompositeLayer {
                     visible: this.props.filteredNominalVoltages.includes(
                         e.nominalVoltage
                     ),
+                    updateTriggers: {
+                        getPosition: [
+                            this.props.geoData.substationPositionsById,
+                            this.props.network.substations,
+                        ],
+                    },
                 })
             );
             layers.push(substationsLayer);
@@ -176,8 +182,12 @@ class SubstationLayer extends CompositeLayer {
                 getPixelOffset: [20 / 1.5, 0],
                 visible: this.props.labelsVisible,
                 updateTriggers: {
-                    getText: this.props.useName,
-                    getPosition: this.props.useName,
+                    getText: [this.props.useName],
+                    getPosition: [
+                        this.props.useName,
+                        this.props.geoData.substationPositionsById,
+                        this.props.network.substations,
+                    ],
                 },
             })
         );
