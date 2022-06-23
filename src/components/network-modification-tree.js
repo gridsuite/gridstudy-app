@@ -16,7 +16,10 @@ import ReactFlow, {
 import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { setModificationsDrawerOpen, currentTreeNode } from '../redux/actions';
+import {
+    setModificationsDrawerOpen,
+    setCurrentTreeNode,
+} from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
 import NetworkModificationNode from './graph/nodes/network-modification-node';
@@ -92,7 +95,7 @@ const NetworkModificationTree = ({
                     element.type === 'NETWORK_MODIFICATION'
                 )
             );
-            dispatch(currentTreeNode(element));
+            dispatch(setCurrentTreeNode(element));
         },
         [dispatch]
     );
@@ -100,10 +103,6 @@ const NetworkModificationTree = ({
     const toggleMinimap = useCallback(() => {
         setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
     }, []);
-
-    const onPaneClick = useCallback(() => {
-        dispatch(currentTreeNode(null));
-    }, [dispatch]);
 
     const onMove = useCallback((flowTransform) => {
         setIsMoving(true);
@@ -188,7 +187,6 @@ const NetworkModificationTree = ({
                 elements={treeModel ? treeModel.treeElements : []}
                 onNodeContextMenu={onNodeContextMenu}
                 onElementClick={onElementClick}
-                onPaneClick={onPaneClick}
                 onMove={onMove}
                 onLoad={onLoad}
                 onMoveEnd={onMoveEnd}
@@ -224,7 +222,7 @@ const NetworkModificationTree = ({
                             </ControlButton>
                         </span>
                     </Tooltip>
-                    <CenterGraphButton selectedNode={currentNode} />
+                    <CenterGraphButton currentNode={currentNode} />
                     <Tooltip
                         placement="left"
                         title={

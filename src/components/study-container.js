@@ -33,14 +33,14 @@ import {
     networkCreated,
     openStudy,
     studyUpdated,
-    currentTreeNode,
+    setCurrentTreeNode,
 } from '../redux/actions';
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType } from './graph/util/model-functions';
+import { getFirstNodeOfType, getRootNode, isNodeValid } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -302,7 +302,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     'BUILT'
                 );
                 dispatch(
-                    currentTreeNode(
+                    setCurrentTreeNode(
                         firstBuiltNode
                             ? firstBuiltNode
                             : getFirstNodeOfType(tree, 'ROOT')
@@ -338,6 +338,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
+        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
         loadNetwork(currentNode?.id === currentNodeIdRef.current);
     }, [loadNetwork, currentNode]);
     currentNodeIdRef.current = currentNode?.id;

@@ -82,6 +82,10 @@ const NetworkModificationNode = (props) => {
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
+    const isSelectedNode = () => {
+        return props.id === currentNode?.id;
+    };
+
     return (
         <>
             <Handle
@@ -99,7 +103,7 @@ const NetworkModificationNode = (props) => {
             <Tooltip title={props.data.label} placement="top">
                 <Button
                     className={
-                        props.selected
+                        isSelectedNode()
                             ? classes.networkModificationVisualized
                             : classes.networkModification
                     }
@@ -138,7 +142,7 @@ const NetworkModificationNode = (props) => {
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-                {props.id === currentNode?.id && <VisibilityIcon />}
+                {isSelectedNode() && <VisibilityIcon />}
             </div>
         </>
     );

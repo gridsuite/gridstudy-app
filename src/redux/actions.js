@@ -326,7 +326,7 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists) {
 
 export const CURRENT_TREE_NODE = 'CURRENT_NODE';
 
-export function currentTreeNode(currentTreeNode) {
+export function setCurrentTreeNode(currentTreeNode) {
     return {
         type: CURRENT_TREE_NODE,
         currentTreeNode: currentTreeNode,

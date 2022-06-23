@@ -151,7 +151,7 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
             <Dialog
                 open={true}
                 onClose={closeDialog}
-                currentNodeUuid={currentTreeNode?.id}
+                currentNodeUuid={currentTreeNode.id}
                 editData={editData}
                 {...props}
             />
@@ -311,7 +311,7 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
                 fetchNetworkModifications(currentTreeNode.networkModification)
                     .then((res) => {
                         if (
-                            currentTreeNode !== currentNodeRef.current &&
+                            currentTreeNode === currentNodeRef.current &&
                             !discardResult
                         )
                             setModifications(res.status ? [] : res);
@@ -325,7 +325,7 @@ const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
         return () => {
             discardResult = true;
         };
-    }, [setModifications, snackError, dispatch, currentTreeNode]);
+    }, [currentTreeNode, setModifications, snackError]);
 
     const fillNotification = useCallback(
         (study, messageId) => {
