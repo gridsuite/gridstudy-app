@@ -27,7 +27,6 @@ import {
     Checkbox,
     CircularProgress,
     Fab,
-    LinearProgress,
     Toolbar,
     Typography,
 } from '@mui/material';
@@ -71,7 +70,9 @@ const useStyles = makeStyles((theme) => ({
         right: 0,
         margin: theme.spacing(3),
     },
-    modificationCount: {
+    modificationsTitle: {
+        display: 'flex',
+        alignItems: 'center',
         margin: theme.spacing(0),
         padding: theme.spacing(1),
         backgroundColor: theme.palette.primary.main,
@@ -99,12 +100,7 @@ const useStyles = makeStyles((theme) => ({
     },
     circularProgress: {
         marginRight: theme.spacing(2),
-        color: theme.palette.primary.main,
-    },
-    linearProgress: {
-        marginTop: theme.spacing(2),
-        marginRight: theme.spacing(2),
-        color: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
     },
     formattedMessageProgress: {
         marginTop: theme.spacing(2),
@@ -478,24 +474,6 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         );
     };
 
-    const renderNetworkModificationsListLoading = () => {
-        return (
-            <div className={classes.notification}>
-                <CircularProgress className={classes.circularProgress} />
-                <FormattedMessage id={messageId} />
-            </div>
-        );
-    };
-
-    const renderNetworkModificationsListUpdating = () => {
-        return (
-            <div className={classes.notification}>
-                <LinearProgress className={classes.linearProgress} />
-                <FormattedMessage id={'network_modifications/modifications'} />
-            </div>
-        );
-    };
-
     const renderNetworkModificationsList = () => {
         return (
             <DragDropContext
@@ -537,14 +515,47 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         );
     };
 
-    const renderPaneContent = () => {
-        if (isLoading()) {
-            return renderNetworkModificationsListLoading();
-        } else if (launchLoader) {
-            return renderNetworkModificationsListUpdating();
-        } else {
-            return renderNetworkModificationsList();
-        }
+    const renderNetworkModificationsListTitleLoading = () => {
+        return (
+            <Typography className={classes.modificationsTitle}>
+                <CircularProgress
+                    size={'1em'}
+                    className={classes.circularProgress}
+                />
+                <FormattedMessage id={messageId} />
+            </Typography>
+        );
+    };
+
+    const renderNetworkModificationsListTitleUpdating = () => {
+        return (
+            <Typography className={classes.modificationsTitle}>
+                <CircularProgress
+                    size={'1em'}
+                    className={classes.circularProgress}
+                />
+                <FormattedMessage id={'network_modifications/modifications'} />
+            </Typography>
+        );
+    };
+
+    const renderNetworkModificationsListTitle = () => {
+        return (
+            <Typography className={classes.modificationsTitle}>
+                <FormattedMessage
+                    id={'network_modification/modificationsCount'}
+                    values={{
+                        count: modifications ? modifications?.length : '',
+                    }}
+                />
+            </Typography>
+        );
+    };
+
+    const renderPaneSubtitle = () => {
+        if (isLoading()) return renderNetworkModificationsListTitleLoading();
+        if (launchLoader) return renderNetworkModificationsListTitleUpdating();
+        return renderNetworkModificationsListTitle();
     };
 
     return (
@@ -572,15 +583,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                     <DeleteIcon />
                 </IconButton>
             </Toolbar>
-            <Typography className={classes.modificationCount}>
-                <FormattedMessage
-                    id={'network_modification/modificationsCount'}
-                    values={{
-                        count: modifications ? modifications?.length : '',
-                    }}
-                />
-            </Typography>
-            {renderPaneContent()}
+            {renderPaneSubtitle()}
+
+            {renderNetworkModificationsList()}
             <Fab
                 className={classes.addButton}
                 color="primary"
