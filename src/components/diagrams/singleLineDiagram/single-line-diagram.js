@@ -973,13 +973,13 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     </IconButton>
                 </Box>
             </Box>
+            {loadingState && (
+                <Box height={2}>
+                    <LinearProgress />
+                </Box>
+            )}
             <Box position="relative">
                 <Box position="absolute" left={0} right={0} top={0}>
-                    {loadingState && (
-                        <Box height={2}>
-                            <LinearProgress />
-                        </Box>
-                    )}
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}

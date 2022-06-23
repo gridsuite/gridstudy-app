@@ -557,7 +557,18 @@ const NetworkTable = (props) => {
                                 rowData[key] = oldValue;
                             }
                         );
-                        // TODO Same here, maybe a visual clue that something went wrong ?
+
+                        let message = intl.formatMessage({
+                            id: 'paramsChangingDenied',
+                        });
+                        displayErrorMessageWithSnackbar({
+                            errorMessage: message,
+                            enqueueSnackbar: enqueueSnackbar,
+                            headerMessage: {
+                                headerMessageId: 'paramsChangingError',
+                                intlRef: intlRef,
+                            },
+                        });
                     }
                     setLineEdit({});
                 });
@@ -611,13 +622,16 @@ const NetworkTable = (props) => {
             }
         },
         [
-            classes.editCell,
             isLineOnEditMode,
             lineEdit,
+            tabIndex,
             props.studyUuid,
             props.currentNode?.id,
-            tabIndex,
+            intl,
+            enqueueSnackbar,
+            intlRef,
             isAnyNodeBuilding,
+            classes.editCell,
             isModifyingRow,
         ]
     );

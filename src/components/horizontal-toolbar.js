@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StudyDisplayMode } from './study-pane';
 import Divider from '@mui/material/Divider';
 import { setModificationsDrawerOpen } from '../redux/actions';
-
+import { TOOLTIP_DELAY } from '../utils/UIconstants';
 const useStyles = makeStyles((theme) => ({
     selected: {
         color: theme.palette.action.active,
@@ -33,8 +33,6 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
     },
 }));
-
-const DELAY = 1000;
 
 export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
     const classes = useStyles();
@@ -76,8 +74,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 title={intl.formatMessage({ id: 'NetworkModifications' })}
                 placement="right"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '20px',
@@ -108,8 +106,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 title={intl.formatMessage({ id: 'NetworkModificationTree' })}
                 placement="right"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginLeft: '20px',
@@ -133,8 +131,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 title={intl.formatMessage({ id: 'HybridDisplay' })}
                 placement="right"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '8px',
@@ -158,8 +156,8 @@ export function HorizontalToolbar({ setStudyDisplayMode, studyDisplayMode }) {
                 title={intl.formatMessage({ id: 'Map' })}
                 placement="right"
                 arrow
-                enterDelay={DELAY}
-                enterNextDelay={DELAY}
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
                 classes={{ tooltip: classes.tooltip }}
                 style={{
                     marginRight: '8px',
