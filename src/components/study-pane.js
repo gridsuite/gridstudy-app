@@ -338,7 +338,7 @@ const StudyPane = ({
                                         onClose={() =>
                                             dispatch(openNetworkAreaDiagram([]))
                                         }
-                                        align="right"
+                                        align="left"
                                     />
                                 )}
                         </div>

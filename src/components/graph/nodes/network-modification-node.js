@@ -11,7 +11,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -112,16 +111,13 @@ const NetworkModificationNode = (props) => {
                                 : classes.buildBannerInvalid
                         }
                     >
-                        {(props.data.buildStatus === 'BUILDING' && (
+                        {props.data.buildStatus === 'BUILDING' && (
                             <CircularProgress
                                 size={20}
                                 color="primary"
                                 style={{ margin: 'auto' }}
                             />
-                        )) ||
-                            (props.data.buildStatus === 'NOT_BUILT' && (
-                                <VisibilityOffIcon style={{ margin: 'auto' }} />
-                            ))}
+                        )}
                     </div>
 
                     <div className={classes.labelWrapper}>
