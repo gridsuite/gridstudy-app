@@ -267,7 +267,7 @@
     "CenterSelectedNode": "Center on selected node",
     "DisplayMinimap": "Display minimap",
     "HideMinimap": "Hide minimap",
-    "DisplayTHeWholeTree": "Display the whole tree",
+    "DisplayTheWholeTree": "Display the whole tree",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
@@ -281,6 +281,7 @@
 
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
+    "buildNode": "Build node",
     "createNetworkModificationNode": "Create a node in a new branch",
     "removeNode": "Remove node",
     "exportCaseOnNode": "Export case",
