@@ -265,6 +265,10 @@
     "NetworkModificationTree": "Arbre de modification de réseau",
     "HybridDisplay": "Affichage hybride",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+    "CenterSelectedNode": "Centrer sur le noeud sélectionné",
+    "DisplayMinimap": "Afficher la mini-carte",
+    "HideMinimap": "Masquer la mini-carte",
+    "DisplayTheWholeTree": "Visualiser l'arbre en entier",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
@@ -278,6 +282,7 @@
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
+    "buildNode": "Réaliser le nœud",
     "createNetworkModificationNode": "Créer un nœud dans une nouvelle branche",
     "removeNode": "Supprimer le nœud",
     "exportCaseOnNode": "Exporter la situation",

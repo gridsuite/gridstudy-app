@@ -5,12 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
+import { Tooltip } from '@mui/material';
 import React, { useCallback } from 'react';
 import {
     ControlButton,
     useStoreState,
     useZoomPanHelper,
 } from 'react-flow-renderer';
+import { useIntl } from 'react-intl';
+import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 
 const CenterGraphButton = ({ selectedNode }) => {
     const { setCenter } = useZoomPanHelper();
@@ -18,6 +21,7 @@ const CenterGraphButton = ({ selectedNode }) => {
     // Use of hook useStoreState to get tree internal state and retrieve current zoom
     // Must be used inside a child component of the ReactFlow component
     const [, , zoom] = useStoreState((state) => state.transform);
+    const intl = useIntl();
 
     const focusNode = useCallback(() => {
         // if no selected node, center on Root
@@ -27,13 +31,23 @@ const CenterGraphButton = ({ selectedNode }) => {
     }, [setCenter, selectedNode, zoom]);
 
     return (
-        <ControlButton
-            onClick={() => {
-                focusNode();
-            }}
+        <Tooltip
+            placement="left"
+            title={intl.formatMessage({ id: 'CenterSelectedNode' })}
+            arrow
+            enterDelay={TOOLTIP_DELAY}
+            enterNextDelay={TOOLTIP_DELAY}
         >
-            <CenterFocusIcon />
-        </ControlButton>
+            <span>
+                <ControlButton
+                    onClick={() => {
+                        focusNode();
+                    }}
+                >
+                    <CenterFocusIcon />
+                </ControlButton>
+            </span>
+        </Tooltip>
     );
 };
 

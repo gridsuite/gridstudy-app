@@ -11,6 +11,7 @@ import {
     deleteTreeNode,
     fetchNetworkModificationTreeNode,
     getUniqueNodeName,
+    buildNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -197,6 +198,22 @@ export const NetworkModificationTreePane = ({
         [studyUuid, enqueueSnackbar, intlRef]
     );
 
+    const handleBuildNode = useCallback(
+        (element) => {
+            buildNode(studyUuid, element.id).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeBuildingError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        },
+        [studyUuid, enqueueSnackbar, intlRef]
+    );
+
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
     const handleClickExportStudy = (url) => {
@@ -262,6 +279,7 @@ export const NetworkModificationTreePane = ({
                 <CreateNodeMenu
                     position={createNodeMenu.position}
                     activeNode={activeNode}
+                    handleBuildNode={handleBuildNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
