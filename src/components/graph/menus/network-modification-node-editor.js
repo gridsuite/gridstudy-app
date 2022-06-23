@@ -318,9 +318,9 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                             selectedNodeRef.current === selectedNode &&
                             !discardResult
                         )
-                            setModifications(res.status ? [] : res);
+                            setModifications(res);
                     })
-                    .catch((err) => snackError(err.message))
+                    .catch((errorMessage) => snackError(errorMessage))
                     .finally(() => {
                         setLaunchLoader(false);
                     });
@@ -418,17 +418,19 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     const doEditModification = (modificationUuid) => {
         const modification = fetchNetworkModification(modificationUuid);
-        modification.then((res) => {
-            res.json().then((data) => {
-                //remove all null values to avoid showing a "null" in the forms
-                Object.keys(data[0]).forEach((key) => {
-                    if (data[0][key] === null) {
-                        delete data[0][key];
-                    }
+        modification
+            .then((res) => {
+                res.json().then((data) => {
+                    //remove all null values to avoid showing a "null" in the forms
+                    Object.keys(data[0]).forEach((key) => {
+                        if (data[0][key] === null) {
+                            delete data[0][key];
+                        }
+                    });
+                    setEditData(data[0]);
                 });
-                setEditData(data[0]);
-            });
-        });
+            })
+            .catch((errorMessage) => snackError(errorMessage));
     };
 
     const renderDialog = () => {
