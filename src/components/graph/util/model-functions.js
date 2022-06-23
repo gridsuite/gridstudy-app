@@ -44,7 +44,7 @@ export function isNodeValid(workingNode, selectedNode) {
 export function isNodeDisabled(node) {
     // only one node can be named like this... maybe it should be mark as built from backend
     if (node?.name === 'Root') return false;
-    return node?.buildStatus !== 'BUILT';
+    return !(node?.buildStatus === 'BUILT');
 }
 
 export function getRootNode(elements) {

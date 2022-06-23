@@ -223,7 +223,6 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     function hideParameters() {
         setShowParameters(false);
     }
-
     return (
         <>
             <TopBar
@@ -246,7 +245,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 withElementsSearch={true}
-                searchDisalbed={isNodeDisabled(workingNode)}
+                searchDisabled={isNodeDisabled(workingNode)}
                 searchingLabel={intl.formatMessage({
                     id: 'equipment_search/label',
                 })}
