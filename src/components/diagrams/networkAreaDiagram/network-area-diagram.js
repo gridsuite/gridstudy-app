@@ -60,6 +60,7 @@ const useStyles = makeStyles((theme) => ({
             // to our otherwise pixel accurate computations (this makes a
             // scrollbar appear in fullscreen mode)
             display: 'block',
+            width: '100%',
         },
         '&  .nad-text-nodes': {
             fill: theme.palette.text.primary,
@@ -124,7 +125,7 @@ const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
-const mapRightOffset = 120;
+const mapRightOffset = 0; // Set as 0 for the moment as to not remove entirely the possibility
 const mapBottomOffset = 80;
 const borders = 2; // we use content-size: border-box so this needs to be included..
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
@@ -236,7 +237,6 @@ const SizedNetworkAreaDiagram = (props) => {
         nadId,
     ]);
 
-    console.info('JBO', disabled);
     useEffect(() => {
         if (!disabled && svgUrl) {
             updateLoadingState(true);
@@ -366,7 +366,7 @@ const SizedNetworkAreaDiagram = (props) => {
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,
-                minWidth: loadingWidth,
+                minWidth: loadingState ? loadingWidth : 0,
                 height: sizeHeight,
                 position: 'relative',
                 direction: 'ltr',
