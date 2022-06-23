@@ -11,6 +11,7 @@ import {
     deleteTreeNode,
     fetchNetworkModificationTreeNode,
     getUniqueNodeName,
+    buildNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -137,11 +138,11 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) => nodeId === selectedNodeRef.current.id
+                        (nodeId) => nodeId === selectedNodeRef.current?.id
                     )
                 ) {
                     dispatch(
-                        removeNotificationByNode(selectedNodeRef.current.id)
+                        removeNotificationByNode(selectedNodeRef.current?.id)
                     );
                 }
             }
@@ -189,6 +190,22 @@ export const NetworkModificationTreePane = ({
                     enqueueSnackbar: enqueueSnackbar,
                     headerMessage: {
                         headerMessageId: 'NodeDeleteError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        },
+        [studyUuid, enqueueSnackbar, intlRef]
+    );
+
+    const handleBuildNode = useCallback(
+        (element) => {
+            buildNode(studyUuid, element.id).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeBuildingError',
                         intlRef: intlRef,
                     },
                 });
@@ -262,6 +279,7 @@ export const NetworkModificationTreePane = ({
                 <CreateNodeMenu
                     position={createNodeMenu.position}
                     activeNode={activeNode}
+                    handleBuildNode={handleBuildNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
