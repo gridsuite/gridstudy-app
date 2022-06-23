@@ -345,8 +345,9 @@ const SizedNetworkAreaDiagram = (props) => {
         dispatch(fullScreenNetworkAreaDiagram(undefined));
     };
 
-    let sizeWidth = initialWidth,
-        sizeHeight = initialHeight;
+    let sizeWidth = initialWidth;
+    let sizeHeight = initialHeight;
+
     if (svg.error) {
         sizeWidth = errorWidth;
     } else if (
