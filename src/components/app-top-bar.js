@@ -245,7 +245,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 theme={themeLocal}
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
-                withElementsSearch={!isNodeDisabled(workingNode)}
+                withElementsSearch={true}
+                searchDisalbed={isNodeDisabled(workingNode)}
                 searchingLabel={intl.formatMessage({
                     id: 'equipment_search/label',
                 })}
