@@ -10,7 +10,6 @@ import React, { useRef, useState } from 'react';
 import { getNetworkAreaDiagramUrl } from '../../../utils/rest-api';
 import NetworkAreaDiagram from './network-area-diagram';
 import PropTypes from 'prop-types';
-import { isNodeDisabled } from '../../graph/util/model-functions';
 
 export function NetworkAreaDiagramPane({
     studyUuid,
@@ -20,6 +19,7 @@ export function NetworkAreaDiagramPane({
     loadFlowStatus,
     onClose,
     align,
+    nodeDisabled,
 }) {
     const [depth, setDepth] = useState(0);
 
@@ -55,8 +55,6 @@ export function NetworkAreaDiagramPane({
         );
     }
 
-    const disabled = isNodeDisabled(workingNode);
-
     return (
         <>
             {voltageLevelsIds?.length && (
@@ -81,7 +79,7 @@ export function NetworkAreaDiagramPane({
                         setDepth={setDepth}
                         studyUuid={studyUuid}
                         loadFlowStatus={loadFlowStatus}
-                        disabled={disabled}
+                        nodeDisabled={nodeDisabled}
                     />
                 </div>
             )}
@@ -97,4 +95,5 @@ NetworkAreaDiagramPane.propTypes = {
     selectedNode: PropTypes.object,
     onClose: PropTypes.func,
     align: PropTypes.string,
+    nodeDisabled: PropTypes.bool,
 };

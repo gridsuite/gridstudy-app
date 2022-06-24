@@ -27,7 +27,6 @@ import { Chip, Stack } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
 import { getArray, useSingleLineDiagram, ViewState } from './utils';
-import { isNodeDisabled } from '../../graph/util/model-functions';
 
 function removeFromMap(oldMap, ids) {
     let removed = false;
@@ -207,6 +206,7 @@ export function SingleLineDiagramPane({
     loadFlowStatus,
     workingNode,
     selectedNode,
+    nodeDisabled,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -220,7 +220,7 @@ export function SingleLineDiagramPane({
     const [displayedSLD, setDisplayedSld] = useState([]);
 
     const createView = useDisplayView(network, studyUuid, workingNode);
-    const disabled = isNodeDisabled(workingNode);
+
     const dispatch = useDispatch();
 
     const [closeView, openVoltageLevel, openSubstation] =
@@ -429,7 +429,7 @@ export function SingleLineDiagramPane({
                         numberToDisplay={displayedSLD.length}
                         toggleState={toggleState}
                         pinned={viewState.get(sld.id) === ViewState.PINNED}
-                        disabled={disabled}
+                        nodeDisabled={nodeDisabled}
                     />
                 </div>
             ))}
@@ -460,7 +460,7 @@ SingleLineDiagramPane.propTypes = {
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,
     loadFlowStatus: PropTypes.any,
-
     onClose: PropTypes.func,
     onNextVoltageLevelClick: PropTypes.func,
+    nodeDisabled: PropTypes.bool,
 };

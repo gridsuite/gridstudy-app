@@ -150,6 +150,8 @@ const StudyPane = ({
         (state) => state.voltageLevelsIdsForNad
     );
 
+    const nodeDisabled = isNodeDisabled(selectedNode);
+
     useEffect(() => {
         if (
             network &&
@@ -324,6 +326,7 @@ const StudyPane = ({
                                     )}
                                     workingNode={workingNode}
                                     selectedNode={selectedNode}
+                                    nodeDisabled={nodeDisabled}
                                 />
                             )}
                             {props.view === StudyView.MAP &&
@@ -339,6 +342,7 @@ const StudyPane = ({
                                         onClose={() =>
                                             dispatch(openNetworkAreaDiagram([]))
                                         }
+                                        nodeDisabled={nodeDisabled}
                                         align="left"
                                     />
                                 )}
@@ -363,7 +367,7 @@ const StudyPane = ({
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
-                    disabled={isNodeDisabled(workingNode)}
+                    nodeDisabled={nodeDisabled}
                 />
             </Paper>
         );
@@ -415,6 +419,7 @@ const StudyPane = ({
                     visible={props.view === StudyView.LOGS}
                     workingNode={workingNode}
                     selectedNode={selectedNode}
+                    nodeDisabled={nodeDisabled}
                 />
             </div>
         </>

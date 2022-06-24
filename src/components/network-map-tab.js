@@ -292,7 +292,7 @@ export const NetworkMapTab = ({
                 showEquipmentMenu(equipment, x, y, equipments.substations)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
-            disabled={nodeDisabled}
+            nodeDisabled={nodeDisabled}
         />
     );
 
