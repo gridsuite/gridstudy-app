@@ -6,7 +6,6 @@
  */
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import PhotoIcon from '@mui/icons-material/Photo';
 import React from 'react';
 import { Handle } from 'react-flow-renderer';
@@ -25,10 +24,16 @@ const useStyles = makeStyles((theme) => ({
             ' 0px 0px 25px,' +
             theme.node.networkModification.border +
             ' 0px 0px 5px',
+        '&:hover': {
+            background: theme.node.networkModification.background,
+        },
     },
     root: {
         background: 'darkseagreen',
         borderRadius: '30%',
+        '&:hover': {
+            background: theme.node.networkModification.hover,
+        },
     },
 }));
 
