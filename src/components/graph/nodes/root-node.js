@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 const RootNode = (props) => {
     const classes = useStyles();
 
+    const selectedNode = useSelector((state) => state.selectedTreeNode);
     const workingNode = useSelector((state) => state.workingTreeNode);
 
     return (
@@ -49,7 +50,9 @@ const RootNode = (props) => {
                 <IconButton
                     variant="outlined"
                     className={
-                        props.selected ? classes.rootSelected : classes.root
+                        props.id === selectedNode.id
+                            ? classes.rootSelected
+                            : classes.root
                     }
                 >
                     {props.data.buildStatus === 'BUILDING' ? (

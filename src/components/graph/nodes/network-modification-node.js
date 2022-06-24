@@ -18,7 +18,7 @@ const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
 
 const useStyles = makeStyles((theme) => ({
-    networkModificationVisualized: {
+    networkModificationSelected: {
         position: 'relative',
         variant: 'contained',
         //background: theme.palette.primary.main,
@@ -83,6 +83,7 @@ const useStyles = makeStyles((theme) => ({
 const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
+    const selectedNode = useSelector((state) => state.selectedTreeNode);
     const workingNode = useSelector((state) => state.workingTreeNode);
 
     return (
@@ -102,8 +103,8 @@ const NetworkModificationNode = (props) => {
             <Tooltip title={props.data.label} placement="top">
                 <Button
                     className={
-                        props.selected
-                            ? classes.networkModificationVisualized
+                        props.id === selectedNode.id
+                            ? classes.networkModificationSelected
                             : classes.networkModification
                     }
                 >
