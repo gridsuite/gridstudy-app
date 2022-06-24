@@ -124,14 +124,13 @@ function isPartial(s1, s2) {
     return s1 !== s2;
 }
 
-const NetworkModificationNodeEditor = ({ selectedNode }) => {
+const NetworkModificationNodeEditor = ({ currentTreeNode }) => {
     const network = useSelector((state) => state.network);
-    const workingNode = useSelector((state) => state.workingTreeNode);
     const notificationIdList = useSelector((state) => state.notificationIdList);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const { snackError } = useSnackMessage();
     const [modifications, setModifications] = useState(undefined);
-    const selectedNodeRef = useRef(); // initial empty to get first update
+    const currentNodeRef = useRef(); // initial empty to get first update
 
     const [selectedItems, setSelectedItems] = useState(new Set());
     const [toggleSelectAll, setToggleSelectAll] = useState();
@@ -154,8 +153,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             <Dialog
                 open={true}
                 onClose={closeDialog}
-                selectedNodeUuid={selectedNode.id}
-                workingNodeUuid={workingNode.id}
+                currentNodeUuid={currentTreeNode.id}
                 editData={editData}
                 {...props}
             />
@@ -196,7 +194,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     ) {
         const fetchedEquipmentOptions = fetchEquipments(
             studyUuid,
-            selectedNode?.id,
+            currentTreeNode?.id,
             [],
             resourceType,
             resource,
@@ -304,18 +302,18 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 
     useEffect(() => {
         var discardResult = false;
-        if (selectedNode !== selectedNodeRef.current) {
+        if (currentTreeNode !== currentNodeRef.current) {
             // loader when opening a modification panel (current user only)
             setLaunchLoader(true);
-            selectedNodeRef.current = selectedNode;
-            if (!selectedNode.networkModification) {
+            currentNodeRef.current = currentTreeNode;
+            if (!currentTreeNode.networkModification) {
                 setModifications([]);
                 setLaunchLoader(false);
             } else {
-                fetchNetworkModifications(selectedNode.networkModification)
+                fetchNetworkModifications(currentTreeNode.networkModification)
                     .then((res) => {
                         if (
-                            selectedNodeRef.current === selectedNode &&
+                            currentTreeNode === currentNodeRef.current &&
                             !discardResult
                         )
                             setModifications(res);
@@ -329,7 +327,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
         return () => {
             discardResult = true;
         };
-    }, [selectedNode, setModifications, snackError, dispatch]);
+    }, [currentTreeNode, setModifications, snackError]);
 
     const fillNotification = useCallback(
         (study, messageId) => {
@@ -365,7 +363,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                selectedNodeRef.current?.id !==
+                currentNodeRef.current?.id !==
                 studyUpdatedForce.eventData.headers['parentNode']
             )
                 return;
@@ -411,7 +409,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
     const doDeleteModification = () => {
         deleteModifications(
             studyUuid,
-            selectedNode,
+            currentTreeNode,
             [...selectedItems.values()].map((item) => item.uuid)
         ).then();
     };
@@ -455,7 +453,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
             setModifications(res);
             changeNetworkModificationOrder(
                 studyUuid,
-                selectedNode.id,
+                currentTreeNode?.id,
                 item.uuid,
                 before
             ).catch((errorMessage) => {
@@ -463,15 +461,13 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 setModifications(modifications); // rollback
             });
         },
-        [modifications, studyUuid, selectedNode.id, snackError]
+        [modifications, studyUuid, currentTreeNode?.id, snackError]
     );
 
     const isLoading = () => {
-        if (notificationIdList.length === 0) return false;
-
         return (
             notificationIdList.filter(
-                (notification) => notification === selectedNode?.id
+                (notification) => notification === currentTreeNode?.id
             ).length > 0
         );
     };
@@ -601,8 +597,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
                 open={openNetworkModificationsDialog}
                 onClose={closeNetworkModificationConfiguration}
                 network={network}
-                selectedNodeUuid={selectedNode.id}
-                workingNodeUuid={workingNode?.id}
+                currentNodeUuid={currentTreeNode?.id}
                 onOpenDialog={setEditDialogOpen}
                 dialogs={dialogs}
             />
@@ -612,7 +607,7 @@ const NetworkModificationNodeEditor = ({ selectedNode }) => {
 };
 
 NetworkModificationNodeEditor.propTypes = {
-    selectedNode: PropTypes.object.isRequired,
+    currentTreeNode: PropTypes.object.isRequired,
 };
 
 export default NetworkModificationNodeEditor;

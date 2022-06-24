@@ -55,16 +55,14 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
- * @param selectedNodeUuid : the currently selected tree node
- * @param workingNodeUuid : the node we are currently working on
+ * @param currentNodeUuid : the currently selected tree node
  * @param editData the data to edit
  */
 const GeneratorCreationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
-    selectedNodeUuid,
-    workingNodeUuid,
+    currentNodeUuid,
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -103,7 +101,7 @@ const GeneratorCreationDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        selectedNodeUuid,
+        currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
@@ -233,7 +231,7 @@ const GeneratorCreationDialog = ({
         label: 'Connectivity',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        workingNodeUuid: workingNodeUuid,
+        currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
@@ -243,7 +241,7 @@ const GeneratorCreationDialog = ({
         if (inputForm.validate()) {
             createGenerator(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 generatorId,
                 generatorName ? generatorName : null,
                 !energySource ? 'OTHER' : energySource,
@@ -365,7 +363,7 @@ const GeneratorCreationDialog = ({
                 onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'GENERATOR'}
                 onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
+                currentNodeUuid={currentNodeUuid}
             />
         </>
     );
@@ -376,8 +374,7 @@ GeneratorCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default GeneratorCreationDialog;

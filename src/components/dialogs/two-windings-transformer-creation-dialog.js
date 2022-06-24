@@ -50,8 +50,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
- * @param selectedNodeUuid : the currently selected tree node
- * @param workingNodeUuid : the node we are currently working on
+ * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
 const TwoWindingsTransformerCreationDialog = ({
@@ -59,8 +58,7 @@ const TwoWindingsTransformerCreationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
-    selectedNodeUuid,
-    workingNodeUuid,
+    currentNodeUuid,
 }) => {
     const classes = useStyles();
 
@@ -99,7 +97,7 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        selectedNodeUuid,
+        currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
@@ -192,7 +190,7 @@ const TwoWindingsTransformerCreationDialog = ({
         id: 'Connectivity1',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        workingNodeUuid: workingNodeUuid,
+        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
@@ -204,7 +202,7 @@ const TwoWindingsTransformerCreationDialog = ({
         id: 'Connectivity2',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        workingNodeUuid: workingNodeUuid,
+        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:
@@ -215,7 +213,7 @@ const TwoWindingsTransformerCreationDialog = ({
         if (inputForm.validate()) {
             createTwoWindingsTransformer(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 twoWindingsTransformerId,
                 twoWindingsTransformerName,
                 seriesResistance,
@@ -365,7 +363,7 @@ const TwoWindingsTransformerCreationDialog = ({
                 onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'TWO_WINDINGS_TRANSFORMER'}
                 onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
+                currentNodeUuid={currentNodeUuid}
             />
         </>
     );
@@ -376,8 +374,7 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default TwoWindingsTransformerCreationDialog;

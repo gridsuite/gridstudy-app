@@ -26,8 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 export function RunButtonContainer({
     studyUuid,
-    workingNode,
-    selectedNode,
+    currentNode,
     loadFlowStatus,
     securityAnalysisStatus,
     setIsComputationRunning,
@@ -68,7 +67,7 @@ export function RunButtonContainer({
         text: intl.formatMessage({ id: 'StopComputation' }),
         action: (action) => {
             if (action === runnable.SECURITY_ANALYSIS) {
-                stopSecurityAnalysis(studyUuid, workingNode?.id);
+                stopSecurityAnalysis(studyUuid, currentNode?.id);
                 setComputationStopped(!computationStopped);
             }
         },
@@ -81,12 +80,12 @@ export function RunButtonContainer({
         setComputationStopped(false);
 
         // start server side security analysis
-        startSecurityAnalysis(studyUuid, workingNode?.id, contingencyListNames);
+        startSecurityAnalysis(studyUuid, currentNode?.id, contingencyListNames);
     };
 
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
-            startLoadFlow(studyUuid, workingNode?.id);
+            startLoadFlow(studyUuid, currentNode?.id);
             setRanLoadflow(true);
         } else if (action === runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
@@ -146,13 +145,13 @@ export function RunButtonContainer({
                 getText={getRunningText}
                 getStartIcon={getRunningIcon}
                 computationStopped={computationStopped}
-                disabled={!isNodeValid(workingNode, selectedNode)}
+                disabled={!isNodeValid(currentNode)}
             />
             <ContingencyListSelector
                 open={showContingencyListSelector}
                 onClose={() => setShowContingencyListSelector(false)}
                 onStart={handleStartSecurityAnalysis}
-                selectedNodeUuid={workingNode?.id}
+                currentNodeUuid={currentNode?.id}
             />
         </>
     );
@@ -164,8 +163,7 @@ RunButtonContainer.propTypes = {
         action: PropTypes.func,
         text: PropTypes.string,
     }),
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     status: PropTypes.func,
     onStartClick: PropTypes.func,
     text: PropTypes.func,

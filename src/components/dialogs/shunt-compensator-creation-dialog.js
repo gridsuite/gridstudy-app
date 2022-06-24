@@ -46,16 +46,14 @@ const disabledChecked = { disabled: true };
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
- * @param selectedNodeUuid : the currently selected tree node
- * @param workingNodeUuid : the node we are currently working on
+ * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
 const ShuntCompensatorCreationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
-    selectedNodeUuid,
-    workingNodeUuid,
+    currentNodeUuid,
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -88,7 +86,7 @@ const ShuntCompensatorCreationDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        selectedNodeUuid,
+        currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
@@ -169,7 +167,7 @@ const ShuntCompensatorCreationDialog = ({
         label: 'Connectivity',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        workingNodeUuid: workingNodeUuid,
+        currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
@@ -179,7 +177,7 @@ const ShuntCompensatorCreationDialog = ({
         if (inputForm.validate()) {
             createShuntCompensator(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 shuntCompensatorId,
                 shuntCompensatorName ? shuntCompensatorName : null,
                 maximumNumberOfSections,
@@ -266,7 +264,7 @@ const ShuntCompensatorCreationDialog = ({
                 onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'SHUNT_COMPENSATOR'}
                 onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
+                currentNodeUuid={currentNodeUuid}
             />
         </>
     );
@@ -277,8 +275,7 @@ ShuntCompensatorCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default ShuntCompensatorCreationDialog;

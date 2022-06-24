@@ -427,28 +427,27 @@ export default class Network {
         });
     }
 
-    constructor(studyUuid, selectedNodeUuid, errHandler, dispatch, prefetch) {
+    constructor(studyUuid, currentNodeUuid, errHandler, dispatch, prefetch) {
         this.generateEquipementHandler({
-            substations: () => fetchSubstations(studyUuid, selectedNodeUuid),
-            loads: () => fetchLoads(studyUuid, selectedNodeUuid),
-            lines: () => fetchLines(studyUuid, selectedNodeUuid),
+            substations: () => fetchSubstations(studyUuid, currentNodeUuid),
+            loads: () => fetchLoads(studyUuid, currentNodeUuid),
+            lines: () => fetchLines(studyUuid, currentNodeUuid),
             twoWindingsTransformers: () =>
-                fetchTwoWindingsTransformers(studyUuid, selectedNodeUuid),
+                fetchTwoWindingsTransformers(studyUuid, currentNodeUuid),
             threeWindingsTransformers: () =>
-                fetchThreeWindingsTransformers(studyUuid, selectedNodeUuid),
-            generators: () => fetchGenerators(studyUuid, selectedNodeUuid),
-            batteries: () => fetchBatteries(studyUuid, selectedNodeUuid),
-            danglingLines: () =>
-                fetchDanglingLines(studyUuid, selectedNodeUuid),
-            hvdcLines: () => fetchHvdcLines(studyUuid, selectedNodeUuid),
+                fetchThreeWindingsTransformers(studyUuid, currentNodeUuid),
+            generators: () => fetchGenerators(studyUuid, currentNodeUuid),
+            batteries: () => fetchBatteries(studyUuid, currentNodeUuid),
+            danglingLines: () => fetchDanglingLines(studyUuid, currentNodeUuid),
+            hvdcLines: () => fetchHvdcLines(studyUuid, currentNodeUuid),
             lccConverterStations: () =>
-                fetchLccConverterStations(studyUuid, selectedNodeUuid),
+                fetchLccConverterStations(studyUuid, currentNodeUuid),
             vscConverterStations: () =>
-                fetchVscConverterStations(studyUuid, selectedNodeUuid),
+                fetchVscConverterStations(studyUuid, currentNodeUuid),
             shuntCompensators: () =>
-                fetchShuntCompensators(studyUuid, selectedNodeUuid),
+                fetchShuntCompensators(studyUuid, currentNodeUuid),
             staticVarCompensators: () =>
-                fetchStaticVarCompensators(studyUuid, selectedNodeUuid),
+                fetchStaticVarCompensators(studyUuid, currentNodeUuid),
             errHandler,
         });
         this.lazyLoaders.set(
