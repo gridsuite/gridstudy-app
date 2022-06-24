@@ -87,7 +87,6 @@ NetworkModificationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     network: PropTypes.object.isRequired,
-    currentNodeUuid: PropTypes.string,
 };
 
 export default NetworkModificationDialog;
