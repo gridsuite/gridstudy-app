@@ -23,7 +23,9 @@ import { StudyView } from './study-pane';
 import { Badge, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
-import Parameters, { useParameterState } from './parameters';
+import Parameters, {
+    useParameterState,
+} from '../components/dialog-parameters/parameters';
 import {
     PARAM_LANGUAGE,
     PARAM_THEME,

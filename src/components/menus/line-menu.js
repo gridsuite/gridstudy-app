@@ -19,7 +19,7 @@ import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import EnergiseOneSideIcon from '@mui/icons-material/LastPage';
 import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import { useIntl } from 'react-intl';
-import { useParameterState } from '../parameters';
+import { useParameterState } from '../dialog-parameters/parameters';
 import { PARAM_USE_NAME } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { useSnackbar } from 'notistack';

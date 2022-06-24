@@ -45,7 +45,7 @@ import {
     useStyles,
 } from './dialogUtils';
 import { getComputedLanguage } from '../../utils/language';
-import { useParameterState } from '../parameters';
+import { useParameterState } from '../dialog-parameters/parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useSelector } from 'react-redux';
