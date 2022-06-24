@@ -240,6 +240,7 @@ const SizedNetworkAreaDiagram = (props) => {
         if (svgUrl) {
             updateLoadingState(true);
             setSvg(noSvg);
+            svgRef.current.innerHTML = ''; // clear the previous svg before replacing
             fetchNADSvg(svgUrl)
                 .then((svg) => {
                     setSvg({
