@@ -29,8 +29,13 @@ const useStyles = makeStyles((theme) => ({
             background: theme.node.networkModification.background,
         },
         overflow: 'hidden',
-        border: 'solid',
+        border: '2px outset',
         borderColor: theme.node.networkModification.border,
+        boxShadow:
+            theme.node.networkModification.border +
+            ' 0px 0px 25px,' +
+            theme.node.networkModification.border +
+            ' 0px 0px 5px 1px',
     },
     networkModification: {
         background: theme.palette.text.secondary,
@@ -65,6 +70,7 @@ const useStyles = makeStyles((theme) => ({
         top: '0px',
         left: '0px',
         background: VALID_NODE_BANNER_COLOR,
+        backgroundSize: 'contain',
     },
     buildBannerInvalid: {
         display: 'flex',
@@ -74,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
         top: '0px',
         left: '0px',
         background: INVALID_NODE_BANNER_COLOR,
+        backgroundSize: 'contain',
     },
     margin: {
         marginLeft: theme.spacing(1.25),
