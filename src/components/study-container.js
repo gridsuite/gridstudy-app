@@ -32,6 +32,7 @@ import {
     loadNetworkModificationTreeSuccess,
     networkCreated,
     openStudy,
+    selectTreeNode,
     studyUpdated,
     workingTreeNode,
 } from '../redux/actions';
@@ -302,13 +303,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     'NETWORK_MODIFICATION',
                     'BUILT'
                 );
-                dispatch(
-                    workingTreeNode(
-                        firstBuiltNode
-                            ? firstBuiltNode
-                            : getFirstNodeOfType(tree, 'ROOT')
-                    )
-                );
+                const workingSelectedNode = firstBuiltNode
+                    ? firstBuiltNode
+                    : getFirstNodeOfType(tree, 'ROOT');
+                dispatch(workingTreeNode(workingSelectedNode));
+                dispatch(selectTreeNode(workingSelectedNode));
 
                 dispatch(
                     loadNetworkModificationTreeSuccess(
