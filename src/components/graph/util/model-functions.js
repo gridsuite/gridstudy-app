@@ -30,29 +30,9 @@ export function getFirstNodeOfType(elements, nodeType, buildStatus) {
     }
 }
 
-export function isNodeValid(workingNode, selectedNode) {
-    const readOnlyNode = workingNode?.readOnly;
-    const builtWorkingNode = workingNode?.buildStatus === 'BUILT';
-    const workingNodeIsSelectedNode =
-        selectedNode === null ||
-        selectedNode === undefined ||
-        workingNode?.id === selectedNode?.id;
+export function isNodeValid(currentNode) {
+    const readOnlyNode = currentNode?.data?.readOnly;
+    const builtCurrentNode = currentNode?.data?.buildStatus === 'BUILT';
 
-    return !readOnlyNode && builtWorkingNode && workingNodeIsSelectedNode;
-}
-
-export function getRootNode(elements) {
-    if (elements.type === 'ROOT')
-        return {
-            id: elements.id,
-            type: elements.type,
-            data: {
-                label: elements.data.label,
-                description: elements.data.description,
-                buildStatus: elements.data.buildStatus,
-                readOnly: elements.data.readOnly,
-            },
-            targetPosition: elements?.targetPosition,
-            position: elements?.position,
-        };
+    return !readOnlyNode && builtCurrentNode;
 }
