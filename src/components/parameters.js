@@ -448,7 +448,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function MakeButton(callback, label) {
         return (
-            <Grid item>
+            <Grid item paddingTop={1}>
                 <Button
                     onClick={callback}
                     variant="contained"
