@@ -20,7 +20,6 @@ const CheckboxList = ({
     const [checked, setChecked] = useState(new Set(initialSelection));
 
     useEffect(() => {
-        console.log('useEffect existingValues:', values);
         const existingValues = new Set(values);
         const newChecked = new Set(
             [...checked].filter((element) => {
