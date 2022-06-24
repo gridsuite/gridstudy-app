@@ -353,7 +353,6 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
             <>
                 <Grid item xs={12} className={classes.advancedParameterButton}>
                     <Button
-                        variant="outlined"
                         startIcon={<SettingsIcon />}
                         endIcon={
                             showOpenIcon ? (
@@ -449,11 +448,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
     function MakeButton(callback, label) {
         return (
             <Grid item paddingTop={1}>
-                <Button
-                    onClick={callback}
-                    variant="contained"
-                    className={classes.button}
-                >
+                <Button onClick={callback} className={classes.button}>
                     <FormattedMessage id={label} />
                 </Button>
             </Grid>
@@ -592,13 +587,8 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     function NetworkParameters() {
         return (
-            <Grid
-                container
-                spacing={2}
-                className={classes.grid}
-                justifyContent="flex-end"
-            >
-                <Grid container spacing={1}>
+            <Grid container spacing={1} className={classes.grid}>
+                <Grid item container spacing={1}>
                     <Grid item xs={8}>
                         <Typography component="span" variant="body1">
                             <Box fontWeight="fontWeightBold" m={1}>
@@ -821,7 +811,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
 
     const LoadFlow = () => {
         return (
-            <Grid container className={classes.grid} justifyContent="flex-end">
+            <Grid container className={classes.grid}>
                 <Grid container key="lfProvider">
                     {MakeDropDown(
                         lfProvider,
@@ -1000,11 +990,10 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     <TabPanel value={tabIndex} index={3}>
                         <NetworkParameters />
                     </TabPanel>
-                    <Grid item xs={12}>
+                    <Grid container justifyContent={'flex-end'}>
                         <Button
                             onClick={hideParameters}
-                            variant="contained"
-                            className={classes.button}
+                            justifyContent="flex-end"
                         >
                             <FormattedMessage id="close" />
                         </Button>
