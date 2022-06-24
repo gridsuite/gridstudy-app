@@ -6,7 +6,7 @@ import { displayErrorMessageWithSnackbar } from '../../utils/messages';
 
 export const useFormSearchCopy = ({
     studyUuid,
-    selectedNodeUuid,
+    currentNodeUuid,
     equipmentPath,
     toFormValues,
     setFormValues,
@@ -22,7 +22,7 @@ export const useFormSearchCopy = ({
         let msg;
         return fetchEquipmentInfos(
             studyUuid,
-            selectedNodeUuid,
+            currentNodeUuid,
             equipmentPath,
             element.id,
             true
