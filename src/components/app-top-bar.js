@@ -281,11 +281,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                                     ? intl.formatMessage({
                                           id: 'root',
                                       })
-<<<<<<< HEAD
-                                    : formatTreeNodeLabel(selectedTreeNode)
-=======
-                                    : currentNode?.data?.label
->>>>>>> main
+                                    : formatTreeNodeLabel(currentNode)
                             }
                         />
                     )}
