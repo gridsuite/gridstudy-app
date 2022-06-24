@@ -32,16 +32,15 @@ import {
     loadNetworkModificationTreeSuccess,
     networkCreated,
     openStudy,
-    selectTreeNode,
     studyUpdated,
-    workingTreeNode,
+    setCurrentTreeNode,
 } from '../redux/actions';
 import Network from './network/network';
 import { equipments } from './network/network-equipments';
 import WaitingLoader from './util/waiting-loader';
 import { displayErrorMessageWithSnackbar, useIntlRef } from '../utils/messages';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType } from './graph/util/model-functions';
+import { getFirstNodeOfType, isNodeValid } from './graph/util/model-functions';
 import { useSnackbar } from 'notistack';
 import {
     getSecurityAnalysisRunningStatus,
@@ -148,21 +147,20 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const dispatch = useDispatch();
 
-    const workingNode = useSelector((state) => state.workingTreeNode);
-    const selectedNode = useSelector((state) => state.selectedTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const workingNodeIdRef = useRef();
+    const currentNodeIdRef = useRef();
 
     const [loadFlowInfos] = useNodeData(
         studyUuid,
-        workingNode?.id,
+        currentNode?.id,
         fetchLoadFlowInfos,
         loadFlowStatusInvalidations
     );
 
     const [securityAnalysisStatus] = useNodeData(
         studyUuid,
-        workingNode?.id,
+        currentNode?.id,
         fetchSecurityAnalysisStatus,
         securityAnalysisStatusInvalidations,
         RunningStatus.IDLE,
@@ -207,9 +205,9 @@ export function StudyContainer({ view, onChangeTab }) {
             console.info(`Loading network of study '${studyUuid}'...`);
 
             if (
-                !workingNode ||
+                !currentNode ||
                 !studyUuid ||
-                workingNode.buildStatus === 'BUILDING'
+                currentNode.buildStatus === 'BUILDING'
             )
                 return;
 
@@ -220,7 +218,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 // Network creation event is dispatched directly in the network constructor
                 new Network(
                     studyUuid,
-                    workingNode?.id,
+                    currentNode?.id,
                     (error) => {
                         console.error(error.message);
                         setNetworkLoadingFailMessage(error.message);
@@ -234,7 +232,7 @@ export function StudyContainer({ view, onChangeTab }) {
             } else {
                 const network = new Network(
                     studyUuid,
-                    workingNode?.id,
+                    currentNode?.id,
                     (error) => {
                         console.error(error.message);
                         setNetworkLoadingFailMessage(error.message);
@@ -247,7 +245,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 dispatch(networkCreated(network));
             }
         },
-        [studyUuid, workingNode, dispatch]
+        [studyUuid, currentNode, dispatch]
     );
     loadNetworkRef.current = loadNetwork;
 
@@ -303,11 +301,14 @@ export function StudyContainer({ view, onChangeTab }) {
                     'NETWORK_MODIFICATION',
                     'BUILT'
                 );
-                const workingSelectedNode = firstBuiltNode
-                    ? firstBuiltNode
-                    : getFirstNodeOfType(tree, 'ROOT');
-                dispatch(workingTreeNode(workingSelectedNode));
-                dispatch(selectTreeNode(workingSelectedNode));
+
+                dispatch(
+                    setCurrentTreeNode(
+                        firstBuiltNode
+                            ? firstBuiltNode
+                            : getFirstNodeOfType(tree, 'ROOT')
+                    )
+                );
 
                 dispatch(
                     loadNetworkModificationTreeSuccess(
@@ -338,9 +339,10 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        loadNetwork(workingNode?.id === workingNodeIdRef.current);
-    }, [loadNetwork, workingNode]);
-    workingNodeIdRef.current = workingNode?.id;
+        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
+        loadNetwork(currentNode?.id === currentNodeIdRef.current);
+    }, [loadNetwork, currentNode]);
+    currentNodeIdRef.current = currentNode?.id;
 
     useEffect(() => {
         if (!studyUuid) {
@@ -399,7 +401,7 @@ export function StudyContainer({ view, onChangeTab }) {
         (substationsIds) => {
             const updatedEquipments = fetchAllEquipments(
                 studyUuid,
-                workingNode?.id,
+                currentNode?.id,
                 substationsIds
             );
             console.info('network update');
@@ -440,7 +442,7 @@ export function StudyContainer({ view, onChangeTab }) {
             //.finally(() => setIsNetworkPending(false));
             // Note: studyUuid don't change
         },
-        [studyUuid, workingNode, network]
+        [studyUuid, currentNode, network]
     );
 
     useEffect(() => {
@@ -511,8 +513,7 @@ export function StudyContainer({ view, onChangeTab }) {
             <StudyPane
                 studyUuid={studyUuid}
                 network={network}
-                workingNode={workingNode}
-                selectedNode={selectedNode}
+                currentNode={currentNode}
                 view={view}
                 onChangeTab={onChangeTab}
                 updatedLines={updatedLines}

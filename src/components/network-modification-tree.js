@@ -17,9 +17,8 @@ import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    selectTreeNode,
     setModificationsDrawerOpen,
-    workingTreeNode,
+    setCurrentTreeNode,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import RootNode from './graph/nodes/root-node';
@@ -63,8 +62,7 @@ const NetworkModificationTree = ({
     const dispatch = useDispatch();
     const classes = useStyles();
 
-    const selectedNode = useSelector((state) => state.selectedTreeNode);
-    const workingNode = useSelector((state) => state.workingTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const treeModel = useSelector(
         (state) => state.networkModificationTreeModel
@@ -77,7 +75,7 @@ const NetworkModificationTree = ({
         if (node.type === 'ROOT') {
             return 'rgba(0, 0, 0, 0.0)';
         } else {
-            if (node.id === workingNode?.id) {
+            if (node.id === currentNode?.id) {
                 return '#4287f5';
             }
             switch (node.data.buildStatus) {
@@ -98,17 +96,9 @@ const NetworkModificationTree = ({
                     element.type === 'NETWORK_MODIFICATION'
                 )
             );
-            dispatch(selectTreeNode(element));
-            if (
-                (element.type === 'ROOT' ||
-                    (element.type === 'NETWORK_MODIFICATION' &&
-                        element.data.buildStatus === 'BUILT')) &&
-                element.id !== workingNode?.id
-            ) {
-                dispatch(workingTreeNode(element));
-            }
+            dispatch(setCurrentTreeNode(element));
         },
-        [dispatch, workingNode]
+        [dispatch]
     );
 
     const toggleMinimap = useCallback(() => {
@@ -258,7 +248,7 @@ const NetworkModificationTree = ({
                             </ControlButton>
                         </span>
                     </Tooltip>
-                    <CenterGraphButton selectedNode={selectedNode} />
+                    <CenterGraphButton currentNode={currentNode} />
                     <Tooltip
                         placement="left"
                         title={
