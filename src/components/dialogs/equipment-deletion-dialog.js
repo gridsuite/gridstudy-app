@@ -54,9 +54,9 @@ const useStyles = makeStyles(() => ({
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param {String} title Title of the dialog
- * @param selectedNodeUuid : the currently selected tree node
+ * @param currentNodeUuid : the currently selected tree node
  */
-const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
+const EquipmentDeletionDialog = ({ open, onClose, currentNodeUuid }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
     const classes = useStyles();
@@ -115,7 +115,7 @@ const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
         if (isValid) {
             deleteEquipment(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 equipmentType,
                 equipmentId
             ).then((response) => {
@@ -228,7 +228,7 @@ const EquipmentDeletionDialog = ({ open, onClose, selectedNodeUuid }) => {
 EquipmentDeletionDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    selectedNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default EquipmentDeletionDialog;

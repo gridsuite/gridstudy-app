@@ -28,9 +28,10 @@ const useStyles = makeStyles((theme) => ({
 const RootNode = (props) => {
     const classes = useStyles();
 
-    const selectedNode = useSelector((state) => state.selectedTreeNode);
-    const workingNode = useSelector((state) => state.workingTreeNode);
-
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const isSelectedNode = () => {
+        return props.id === currentNode?.id;
+    };
     return (
         <>
             <Handle
@@ -50,14 +51,12 @@ const RootNode = (props) => {
                 <IconButton
                     variant="outlined"
                     className={
-                        props.id === selectedNode.id
-                            ? classes.rootSelected
-                            : classes.root
+                        isSelectedNode() ? classes.rootSelected : classes.root
                     }
                 >
                     {props.data.buildStatus === 'BUILDING' ? (
                         <CircularProgress size={24} />
-                    ) : props.id === workingNode?.id ? (
+                    ) : isSelectedNode() ? (
                         <VisibilityIcon />
                     ) : (
                         props.data.readOnly && <PhotoIcon />
