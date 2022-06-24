@@ -231,13 +231,13 @@ function validateConnection(values) {
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param substationOptions the available network sites
- * @param selectedNodeUuid the currently selected tree node
+ * @param currentNodeUuid the currently selected tree node
  * @param editData the data to edit
  * @param onCreateVoltageLevel callback when OK is triggered,
  *   defaults to create creation hypothesis on server side.
  *   Called with : {
  *     studyUuid,
- *     selectedNodeUuid,
+ *     currentNodeUuid,
  *     voltageLevelId,
  *     voltageLevelName,
  *     nominalVoltage,
@@ -251,7 +251,7 @@ const VoltageLevelCreationDialog = ({
     open,
     onClose,
     substationOptions,
-    selectedNodeUuid,
+    currentNodeUuid,
     onCreateVoltageLevel = createVoltageLevel,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -283,7 +283,7 @@ const VoltageLevelCreationDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        selectedNodeUuid,
+        currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
@@ -374,7 +374,7 @@ const VoltageLevelCreationDialog = ({
 
             onCreateVoltageLevel({
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 voltageLevelId,
                 voltageLevelName: voltageLevelName ? voltageLevelName : null,
                 nominalVoltage,
@@ -457,7 +457,7 @@ const VoltageLevelCreationDialog = ({
                 onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'VOLTAGE_LEVEL'}
                 onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
+                currentNodeUuid={currentNodeUuid}
             />
         </>
     );
@@ -468,7 +468,7 @@ VoltageLevelCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     substationOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default VoltageLevelCreationDialog;
