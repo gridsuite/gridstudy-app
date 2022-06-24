@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     networkModificationSelected: {
         position: 'relative',
         variant: 'contained',
-        //background: theme.palette.primary.main,
         background: theme.node.networkModification.background,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
@@ -28,9 +27,9 @@ const useStyles = makeStyles((theme) => ({
             background: theme.node.networkModification.background,
         },
         overflow: 'hidden',
-        border: '2px outset',
-        borderColor: theme.node.networkModification.border,
         boxShadow:
+            theme.node.networkModification.border +
+            ' 0px 0px 3px 3px,' +
             theme.node.networkModification.border +
             ' 0px 0px 25px,' +
             theme.node.networkModification.border +

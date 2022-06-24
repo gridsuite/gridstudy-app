@@ -52,7 +52,6 @@ const lightTheme = createTheme({
         networkModification: {
             background: '#1976d2',
             hover: '#8ec3ee',
-            color: 'white',
             border: '#0f3d68',
         },
     },
@@ -70,7 +69,6 @@ const darkTheme = createTheme({
         networkModification: {
             background: '#1976d2',
             hover: '#90caf9',
-            color: 'white',
             border: '#cce3f9',
         },
     },

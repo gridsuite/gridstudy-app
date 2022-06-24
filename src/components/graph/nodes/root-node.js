@@ -18,6 +18,13 @@ const useStyles = makeStyles((theme) => ({
     rootSelected: {
         background: theme.node.networkModification.background,
         borderRadius: '30%',
+        boxShadow:
+            theme.node.networkModification.border +
+            ' 0px 0px 3px 3px,' +
+            theme.node.networkModification.border +
+            ' 0px 0px 25px,' +
+            theme.node.networkModification.border +
+            ' 0px 0px 5px',
     },
     root: {
         background: 'darkseagreen',
@@ -54,13 +61,9 @@ const RootNode = (props) => {
                         isSelectedNode() ? classes.rootSelected : classes.root
                     }
                 >
-                    {props.data.buildStatus === 'BUILDING' ? (
+                    {(props.data.buildStatus === 'BUILDING' && (
                         <CircularProgress size={24} />
-                    ) : isSelectedNode() ? (
-                        <VisibilityIcon />
-                    ) : (
-                        props.data.readOnly && <PhotoIcon />
-                    )}
+                    )) || <PhotoIcon />}
                 </IconButton>
             </Tooltip>
         </>
