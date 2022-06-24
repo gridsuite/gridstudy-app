@@ -993,6 +993,7 @@ const Parameters = ({ showParameters, hideParameters, user }) => {
                     <Grid container justifyContent={'flex-end'}>
                         <Button
                             onClick={hideParameters}
+                            className={classes.button}
                             justifyContent="flex-end"
                         >
                             <FormattedMessage id="close" />
