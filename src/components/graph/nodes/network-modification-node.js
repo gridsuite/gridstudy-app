@@ -20,19 +20,19 @@ const useStyles = makeStyles((theme) => ({
     networkModificationSelected: {
         position: 'relative',
         variant: 'contained',
-        background: theme.node.networkModification.background,
+        background: theme.node.background,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
-            background: theme.node.networkModification.background,
+            background: theme.node.background,
         },
         overflow: 'hidden',
         boxShadow:
-            theme.node.networkModification.border +
+            theme.node.border +
             ' 0px 0px 3px 3px,' +
-            theme.node.networkModification.border +
+            theme.node.border +
             ' 0px 0px 25px,' +
-            theme.node.networkModification.border +
+            theme.node.border +
             ' 0px 0px 5px 1px',
     },
     networkModification: {
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
-            background: theme.node.networkModification.hover,
+            background: theme.node.hover,
         },
         overflow: 'hidden',
     },

@@ -49,11 +49,9 @@ const lightTheme = createTheme({
         color: 'blue',
     },
     node: {
-        networkModification: {
-            background: '#1976d2',
-            hover: '#8ec3ee',
-            border: '#0f3d68',
-        },
+        background: '#1976d2',
+        hover: '#84adce',
+        border: '#0f3d68',
     },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
@@ -66,11 +64,9 @@ const darkTheme = createTheme({
         color: 'green',
     },
     node: {
-        networkModification: {
-            background: '#1976d2',
-            hover: '#90caf9',
-            border: '#cce3f9',
-        },
+        background: '#1976d2',
+        hover: '#90caf9',
+        border: '#cce3f9',
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });
