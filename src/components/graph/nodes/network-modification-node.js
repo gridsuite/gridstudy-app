@@ -68,7 +68,6 @@ const useStyles = makeStyles((theme) => ({
         top: '0px',
         left: '0px',
         background: VALID_NODE_BANNER_COLOR,
-        backgroundSize: 'contain',
     },
     buildBannerInvalid: {
         display: 'flex',
@@ -78,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
         top: '0px',
         left: '0px',
         background: INVALID_NODE_BANNER_COLOR,
-        backgroundSize: 'contain',
     },
     margin: {
         marginLeft: theme.spacing(1.25),
