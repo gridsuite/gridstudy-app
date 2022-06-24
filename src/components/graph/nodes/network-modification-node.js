@@ -21,22 +21,23 @@ const useStyles = makeStyles((theme) => ({
     networkModificationVisualized: {
         position: 'relative',
         variant: 'contained',
-        background: theme.palette.primary.main,
+        //background: theme.palette.primary.main,
+        background: theme.node.networkModification.background,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
-            background: theme.palette.primary.main,
+            background: theme.node.networkModification.background,
         },
         overflow: 'hidden',
         border: 'solid',
-        borderColor: theme.palette.primary.main,
+        borderColor: theme.node.networkModification.border,
     },
     networkModification: {
         background: theme.palette.text.secondary,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
         '&:hover': {
-            background: theme.palette.primary.main,
+            background: theme.node.networkModification.hover,
         },
         overflow: 'hidden',
     },

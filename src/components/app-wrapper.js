@@ -48,6 +48,14 @@ const lightTheme = createTheme({
     link: {
         color: 'blue',
     },
+    node: {
+        networkModification: {
+            background: '#1976d2',
+            hover: '#8ec3ee',
+            color: 'white',
+            border: '#0f3d68',
+        },
+    },
     mapboxStyle: 'mapbox://styles/mapbox/light-v9',
 });
 
@@ -57,6 +65,14 @@ const darkTheme = createTheme({
     },
     link: {
         color: 'green',
+    },
+    node: {
+        networkModification: {
+            background: '#1976d2',
+            hover: '#90caf9',
+            color: 'white',
+            border: '#cce3f9',
+        },
     },
     mapboxStyle: 'mapbox://styles/mapbox/dark-v9',
 });

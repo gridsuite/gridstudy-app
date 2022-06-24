@@ -16,7 +16,7 @@ import Tooltip from '@mui/material/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
     rootSelected: {
-        background: 'lightseagreen',
+        background: theme.node.networkModification.background,
         borderRadius: '30%',
     },
     root: {
