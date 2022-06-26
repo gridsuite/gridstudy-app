@@ -48,7 +48,7 @@ import { getComputedLanguage } from '../../utils/language';
 import { useParameterState } from '../parameters';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     displayErrorMessageWithSnackbar,
     useIntlRef,
@@ -56,6 +56,7 @@ import {
 import { useSnackbar } from 'notistack';
 import { isNodeExists } from '../../utils/rest-api';
 import { TOOLTIP_DELAY } from '../../utils/UIconstants';
+import { setFirstBuildNode } from '../../redux/actions';
 export const useInputForm = () => {
     const validationMap = useRef(new Map());
     const [toggleClear, setToggleClear] = useState(false);
@@ -273,6 +274,8 @@ export const useConnectivityValue = ({
     const [errorBusBarSection, setErrorBusBarSection] = useState();
     const intl = useIntl();
     const studyUuid = useSelector((state) => state.studyUuid);
+    const firstBuiltNode = useSelector((state) => state.firstBuiltNode);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setConnectivity({
@@ -282,6 +285,7 @@ export const useConnectivityValue = ({
     }, [inputForm.toggleClear]);
 
     useEffect(() => {
+        dispatch(setFirstBuildNode());
         setConnectivity({
             voltageLevel: voltageLevelIdDefaultValue
                 ? voltageLevelOptions.find(
@@ -298,6 +302,7 @@ export const useConnectivityValue = ({
         voltageLevelOptions,
         busOrBusbarSectionIdDefaultValue,
         voltageLevelIdDefaultValue,
+        dispatch,
     ]);
 
     useEffect(() => {
@@ -358,7 +363,7 @@ export const useConnectivityValue = ({
                 direction={direction}
                 voltageLevelBusOrBBSCallback={makeRefreshBusOrBusbarSectionsCallback(
                     studyUuid,
-                    currentNodeUuid
+                    firstBuiltNode?.id
                 )}
             />
         );
@@ -373,7 +378,7 @@ export const useConnectivityValue = ({
         setVoltageLevel,
         voltageLevelOptions,
         studyUuid,
-        currentNodeUuid,
+        firstBuiltNode,
         voltageLevelPreviousValue,
         busOrBusbarSectionPreviousValue,
     ]);

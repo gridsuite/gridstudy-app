@@ -258,7 +258,6 @@ const GeneratorModificationDialog = ({
         disabled: true,
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue:
             getValue(formValues?.voltageLevelId) || null,
         voltageLevelPreviousValue: generatorInfos?.voltageLevelId,

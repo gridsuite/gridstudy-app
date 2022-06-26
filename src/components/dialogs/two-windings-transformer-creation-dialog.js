@@ -190,7 +190,6 @@ const TwoWindingsTransformerCreationDialog = ({
         id: 'Connectivity1',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
@@ -202,7 +201,6 @@ const TwoWindingsTransformerCreationDialog = ({
         id: 'Connectivity2',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:

@@ -377,3 +377,11 @@ export function openNetworkAreaDiagram(voltageLevelsIds) {
         voltageLevelsIdsForNad: voltageLevelsIds,
     };
 }
+
+export const FIRST_BUILT_NODE = 'FIRST_BUILT_NODE';
+
+export function setFirstBuildNode() {
+    return {
+        type: FIRST_BUILT_NODE,
+    };
+}

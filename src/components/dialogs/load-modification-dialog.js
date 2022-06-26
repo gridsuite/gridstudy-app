@@ -164,7 +164,6 @@ const LoadModificationDialog = ({
         disabled: true,
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId?.value || null,
         voltageLevelPreviousValue: loadInfos?.voltageLevelId,
         busOrBusbarSectionIdDefaultValue:

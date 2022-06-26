@@ -207,7 +207,6 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId1 || null,
         busOrBusbarSectionIdDefaultValue:
@@ -220,7 +219,6 @@ const LineCreationDialog = ({
         validation: { isFieldRequired: displayConnectivity },
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        currentNodeUuid: currentNodeUuid,
         direction: 'column',
         voltageLevelIdDefaultValue: formValues?.voltageLevelId2 || null,
         busOrBusbarSectionIdDefaultValue:

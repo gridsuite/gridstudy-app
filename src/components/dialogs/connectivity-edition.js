@@ -43,14 +43,14 @@ const useStyles = makeStyles((theme) => ({
  */
 export function makeRefreshBusOrBusbarSectionsCallback(
     studyUuid,
-    currentNodeUuid
+    firstBuiltNodeUuid
 ) {
     return (voltageLevel, putter) => {
         switch (voltageLevel?.topologyKind) {
             case 'NODE_BREAKER':
                 fetchBusbarSectionsForVoltageLevel(
                     studyUuid,
-                    currentNodeUuid,
+                    firstBuiltNodeUuid,
                     voltageLevel.id
                 ).then((busbarSections) => {
                     putter(busbarSections);
@@ -60,7 +60,7 @@ export function makeRefreshBusOrBusbarSectionsCallback(
             case 'BUS_BREAKER':
                 fetchBusesForVoltageLevel(
                     studyUuid,
-                    currentNodeUuid,
+                    firstBuiltNodeUuid,
                     voltageLevel.id
                 ).then((buses) => putter(buses));
                 break;
@@ -324,7 +324,6 @@ ConnectivityEdition.propTypes = {
     helperTextVoltageLevel: PropTypes.string,
     errorBusOrBusBarSection: PropTypes.bool,
     helperTextBusOrBusBarSection: PropTypes.string,
-    currentNodeUuid: PropTypes.string,
 };
 
 export default ConnectivityEdition;
