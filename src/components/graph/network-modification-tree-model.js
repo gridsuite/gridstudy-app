@@ -153,7 +153,6 @@ export default class NetworkModificationTreeModel {
     }
 
     setBuildingStatus() {
-        // TODO CHARLY what is the purpose of this function ?
         this.isAnyNodeBuilding =
             this.treeElements.find(
                 (node) => node?.data?.buildStatus === 'BUILDING'

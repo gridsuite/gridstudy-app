@@ -362,7 +362,7 @@ const StudyPane = ({
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
-                    nodeDisabled={nodeDisabled} // TODO CHARLY erreur vendredi soir ReferenceError: nodeDisabled is not defined
+                    nodeDisabled={nodeDisabled}
                 />
             </Paper>
         );

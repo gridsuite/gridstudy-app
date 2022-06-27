@@ -274,11 +274,14 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        setViews((oldVal) => oldVal.map(createView));
-    }, [createView]);
+        if (!nodeDisabled) {
+            setViews((oldVal) => oldVal.map(createView));
+        }
+    }, [nodeDisabled, createView]);
 
     // set single line diagram voltage level id, contained in url query parameters
     useEffect(() => {
+        if (nodeDisabled) return;
         // parse query parameter
         const queryParams = parse(location.search, {
             parseArrays: true,
@@ -291,7 +294,7 @@ export function SingleLineDiagramPane({
         );
 
         setUpdateSwitchMsg('');
-    }, [createView, location]);
+    }, [createView, location, nodeDisabled]);
 
     const toggleState = useCallback(
         (id, type, state) => {

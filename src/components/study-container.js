@@ -213,7 +213,7 @@ export function StudyContainer({ view, onChangeTab }) {
             if (
                 !currentNode ||
                 !studyUuid ||
-                currentNode.buildStatus === 'BUILDING' // TODO CHARLY check si c'est pertinant.
+                currentNode.buildStatus === 'BUILDING'
             )
                 return;
 
@@ -345,10 +345,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, loadTree]);
 
     useEffect(() => {
-        //console.error('CHARLY 2 : check maybe en trop ici ? ==> OUI, FONCTIONNE MIEUX SANS LE IF');
-        //if (currentNode && !isNodeDisabled(currentNode)) {
         loadNetwork(currentNode?.id === currentNodeIdRef.current);
-        //}
     }, [loadNetwork, currentNode]);
 
     currentNodeIdRef.current = currentNode?.id;

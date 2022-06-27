@@ -755,11 +755,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             }
 
             // handling the click on a switch
-            if (
-                !isComputationRunning &&
-                //!nodeDisabled && // TODO CHARLY theoriquement on a plus besoin de cette ligne commentée
-                !isAnyNodeBuilding
-            ) {
+            if (!isComputationRunning && !isAnyNodeBuilding) {
                 const switches = svg.metadata.nodes.filter((element) =>
                     SWITCH_COMPONENT_TYPES.has(element.componentType)
                 );
