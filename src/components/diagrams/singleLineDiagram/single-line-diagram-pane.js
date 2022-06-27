@@ -28,6 +28,28 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import makeStyles from '@mui/styles/makeStyles';
 import { getArray, useSingleLineDiagram, ViewState } from './utils';
 
+/* a SLD instance looks like :
+{
+    id: vlId,
+    ref: React.createRef(),
+    lastOpen,
+    name,
+    svgUrl,
+    type: SvgType.VOLTAGE_LEVEL,
+    substationId: substation?.id,
+};
+ */
+function extractSubstationIdsFromNotif(eventData) {
+    let asStr = eventData?.headers?.['substationsIds'];
+    if (!asStr) return undefined;
+    if (asStr[0] !== '[' && asStr.substr(-1, 1) !== ']') return asStr;
+
+    asStr = asStr.slice(1, -1);
+
+    let ret = asStr.split(',').map((s) => s.trim());
+    return ret;
+}
+
 function removeFromMap(oldMap, ids) {
     let removed = false;
     const newMap = new Map(oldMap);
@@ -148,8 +170,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     ref: React.createRef(),
                     lastOpen,
                     name,
-                    type: SvgType.SUBSTATION,
                     svgUrl,
+                    type: SvgType.SUBSTATION,
                 };
             }
 
@@ -158,7 +180,8 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                 if (!vl) return;
                 let name = useName ? vl.name : vlId;
 
-                const substation = network.getSubstation(vlId);
+                let substationId = vl?.substationId;
+                const substation = network.getSubstation(substationId);
                 const countryName = substation?.countryName;
                 if (countryName) {
                     name += ' \u002D ' + countryName;
@@ -172,7 +195,7 @@ const useDisplayView = (network, studyUuid, currentNode) => {
                     name,
                     svgUrl,
                     type: SvgType.VOLTAGE_LEVEL,
-                    substationId: substation?.id,
+                    substationId: substationId,
                 };
             }
 
@@ -228,12 +251,16 @@ export function SingleLineDiagramPane({
     const viewsRef = useRef();
     viewsRef.current = views;
 
-    const updateSld = useCallback((id) => {
-        if (id)
+    const updateSld = useCallback((ids) => {
+        if (!ids?.length) {
+            viewsRef.current.forEach((sld) => sld?.ref?.current?.reloadSvg());
+        } else {
             viewsRef.current
-                .find((sld) => sld.id === id)
+                .find((sld) =>
+                    ids.find((id) => id === sld.id || id === sld.substationId)
+                )
                 ?.ref?.current?.reloadSvg();
-        else viewsRef.current.forEach((sld) => sld?.ref?.current?.reloadSvg());
+        }
     }, []);
 
     const classes = useStyles();
@@ -334,21 +361,16 @@ export function SingleLineDiagramPane({
     );
 
     useEffect(() => {
-        if (studyUpdatedForce.eventData.headers && viewsRef.current) {
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'loadflow'
-            ) {
+        let headers = studyUpdatedForce.eventData.headers;
+        let eventData = studyUpdatedForce.eventData;
+        if (headers && viewsRef.current) {
+            if (headers['updateType'] === 'loadflow') {
                 //TODO reload data more intelligently
-                updateSld();
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] === 'study'
-            ) {
+                updateSld(extractSubstationIdsFromNotif(eventData));
+            } else if (headers['updateType'] === 'study') {
                 //If the SLD of the deleted substation is open, we close it
-                if (studyUpdatedForce.eventData.headers['deletedEquipmentId']) {
-                    const deletedId =
-                        studyUpdatedForce.eventData.headers[
-                            'deletedEquipmentId'
-                        ];
+                if (headers['deletedEquipmentId']) {
+                    const deletedId = headers['deletedEquipmentId'];
                     const vlToClose = viewsRef.current.filter(
                         (vl) =>
                             vl.substationId === deletedId || vl.id === deletedId
@@ -356,13 +378,10 @@ export function SingleLineDiagramPane({
                     if (vlToClose.length > 0)
                         closeView([...vlToClose, deletedId]);
                 } else {
-                    updateSld();
+                    updateSld(extractSubstationIdsFromNotif(eventData));
                 }
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'buildCompleted'
-            ) {
-                updateSld();
+            } else if (headers['updateType'] === 'buildCompleted') {
+                updateSld(extractSubstationIdsFromNotif(eventData));
             }
         }
         // Note: studyUuid, and loadNetwork don't change
