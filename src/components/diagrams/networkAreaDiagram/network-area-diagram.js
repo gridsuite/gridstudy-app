@@ -52,6 +52,7 @@ const maxHeight = 650;
 const minWidth = 500;
 const minHeight = 400;
 const errorWidth = maxWidth;
+let initialWidth, initialHeight;
 
 const useStyles = makeStyles((theme) => ({
     divNad: {
@@ -60,6 +61,7 @@ const useStyles = makeStyles((theme) => ({
             // to our otherwise pixel accurate computations (this makes a
             // scrollbar appear in fullscreen mode)
             display: 'block',
+            width: '100%',
         },
         '&  .nad-text-nodes': {
             fill: theme.palette.text.primary,
@@ -124,7 +126,7 @@ const noSvg = { svg: null, metadata: null, error: null, svgUrl: null };
 
 // To allow controls that are in the corners of the map to not be hidden in normal mode
 // (but they are still hidden in fullscreen mode)
-const mapRightOffset = 120;
+const mapRightOffset = 0; // Set as 0 for the moment as to not remove entirely the possibility
 const mapBottomOffset = 80;
 const borders = 2; // we use content-size: border-box so this needs to be included..
 // Compute the paper and svg sizes. Returns undefined if the preferred sizes are undefined.
@@ -175,8 +177,7 @@ const SizedNetworkAreaDiagram = (props) => {
     const {
         totalWidth,
         totalHeight,
-        workingNode,
-        selectedNode,
+        currentNode,
         nadId,
         diagramTitle,
         svgUrl,
@@ -239,6 +240,7 @@ const SizedNetworkAreaDiagram = (props) => {
         if (svgUrl) {
             updateLoadingState(true);
             setSvg(noSvg);
+            svgRef.current.innerHTML = ''; // clear the previous svg before replacing
             fetchNADSvg(svgUrl)
                 .then((svg) => {
                     setSvg({
@@ -293,7 +295,7 @@ const SizedNetworkAreaDiagram = (props) => {
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
         }
-    }, [network, svg, workingNode, theme, nadId, svgUrl]);
+    }, [network, svg, currentNode, theme, nadId, svgUrl]);
 
     useLayoutEffect(() => {
         if (
@@ -343,15 +345,24 @@ const SizedNetworkAreaDiagram = (props) => {
         dispatch(fullScreenNetworkAreaDiagram(undefined));
     };
 
-    let sizeWidth, sizeHeight;
+    let sizeWidth = initialWidth;
+    let sizeHeight = initialHeight;
+
     if (svg.error) {
-        sizeWidth = errorWidth; // height is not set so height is auto;
+        sizeWidth = errorWidth;
     } else if (
         typeof finalPaperWidth != 'undefined' &&
         typeof finalPaperHeight != 'undefined'
     ) {
         sizeWidth = finalPaperWidth;
         sizeHeight = finalPaperHeight;
+    }
+
+    if (sizeHeight !== undefined) {
+        initialHeight = sizeHeight;
+    }
+    if (sizeWidth !== undefined) {
+        initialWidth = sizeWidth;
     }
 
     return svg.error ? (
@@ -364,7 +375,7 @@ const SizedNetworkAreaDiagram = (props) => {
             style={{
                 pointerEvents: 'auto',
                 width: sizeWidth,
-                minWidth: loadingWidth,
+                minWidth: loadingState ? loadingWidth : 0,
                 height: sizeHeight,
                 position: 'relative',
                 direction: 'ltr',
@@ -392,6 +403,11 @@ const SizedNetworkAreaDiagram = (props) => {
                     </IconButton>
                 </Box>
             </Box>
+            {loadingState && (
+                <Box height={2}>
+                    <LinearProgress />
+                </Box>
+            )}
             <Box position="relative">
                 <Box position="absolute" left={0} right={0} top={0}>
                     {loadingState && (
@@ -399,8 +415,8 @@ const SizedNetworkAreaDiagram = (props) => {
                             <LinearProgress />
                         </Box>
                     )}
-                    {!isNodeValid(workingNode, selectedNode) &&
-                        selectedNode?.type !== 'ROOT' && (
+                    {!isNodeValid(currentNode) &&
+                        currentNode?.type !== 'ROOT' && (
                             <AlertInvalidNode noMargin={true} />
                         )}
                 </Box>
@@ -470,8 +486,7 @@ NetworkAreaDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
     nadId: PropTypes.string,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,

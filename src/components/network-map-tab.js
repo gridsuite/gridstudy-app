@@ -11,7 +11,6 @@ import withLineMenu from './menus/line-menu';
 import BaseEquipmentMenu from './menus/base-equipment-menu';
 import withEquipmentMenu from './menus/equipment-menu';
 import VoltageLevelChoice from './voltage-level-choice';
-import LoaderWithOverlay from './util/loader-with-overlay';
 import NominalVoltageFilter from './network/nominal-voltage-filter';
 import makeStyles from '@mui/styles/makeStyles';
 import OverloadedLinesView from './network/overloaded-lines-view';
@@ -20,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
+import { isNodeValid } from './graph/util/model-functions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -53,8 +53,7 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     network,
-    workingNode,
-    selectedNode,
+    currentNode,
     /* results*/
     securityAnalysisStatus,
     runnable,
@@ -171,9 +170,14 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
-
-        const substationPositions = fetchSubstationPositions(studyUuid);
-        const linePositions = fetchLinePositions(studyUuid);
+        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
+        const substationPositions = fetchSubstationPositions(
+            studyUuid,
+            currentNode?.id
+        );
+        const linePositions = lineFullPath
+            ? fetchLinePositions(studyUuid, currentNode?.id)
+            : [];
         setWaitingLoadGeoData(true);
 
         Promise.all([substationPositions, linePositions])
@@ -197,6 +201,8 @@ export const NetworkMapTab = ({
         // Note: studyUuid and dispatch don't change
     }, [
         studyUuid,
+        currentNode,
+        lineFullPath,
         setWaitingLoadGeoData,
         setErrorMessage,
         setGeoData,
@@ -211,14 +217,15 @@ export const NetworkMapTab = ({
     }
 
     const renderEquipmentMenu = () => {
+        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
+
         if (equipmentMenu.equipment === null || !equipmentMenu.display)
             return <></>;
         return (
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
                     withEquipment(MenuLine, {
-                        workingNode: workingNode,
-                        selectedNode: selectedNode,
+                        currentNode,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
@@ -238,15 +245,6 @@ export const NetworkMapTab = ({
             />
         );
     }
-
-    const renderOverlay = () => (
-        <LoaderWithOverlay
-            color="inherit"
-            loaderSize={70}
-            isFixed={true}
-            loadingMessageText={'loadingGeoData'}
-        />
-    );
 
     const linesNearOverload = useCallback(() => {
         if (network) {
@@ -268,6 +266,7 @@ export const NetworkMapTab = ({
             lines={network ? network.lines : []}
             updatedLines={updatedLines}
             geoData={geoData}
+            waitingLoadGeoData={waitingLoadGeoData}
             useName={useName}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={9}
@@ -305,7 +304,6 @@ export const NetworkMapTab = ({
 
     return (
         <>
-            {waitingLoadGeoData && renderOverlay()}
             {renderMap()}
             {renderEquipmentMenu()}
             {choiceVoltageLevelsSubstationId && renderVoltageLevelChoice()}
@@ -323,8 +321,7 @@ export const NetworkMapTab = ({
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}

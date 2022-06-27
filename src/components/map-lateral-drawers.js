@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 export function MapLateralDrawers({ studyDisplayMode }) {
     const classes = useStyles();
 
-    const selectedTreeNode = useSelector((state) => state.selectedTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
@@ -47,8 +47,8 @@ export function MapLateralDrawers({ studyDisplayMode }) {
 
     return (
         <>
-            {selectedTreeNode !== null &&
-                selectedTreeNode.type === 'NETWORK_MODIFICATION' && (
+            {currentNode !== null &&
+                currentNode.type === 'NETWORK_MODIFICATION' && (
                     <StudyDrawer
                         open={
                             isModificationsDrawerOpen &&

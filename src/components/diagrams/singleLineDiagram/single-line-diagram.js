@@ -258,8 +258,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         totalHeight,
         svgType,
         loadFlowStatus,
-        workingNode,
-        selectedNode,
+        currentNode,
         numberToDisplay,
         sldId,
         pinned,
@@ -757,7 +756,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the click on a switch
             if (
                 !isComputationRunning &&
-                isNodeValid(workingNode, selectedNode) &&
+                isNodeValid(currentNode) &&
                 !isAnyNodeBuilding
             ) {
                 const switches = svg.metadata.nodes.filter((element) =>
@@ -795,8 +794,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, [
         network,
         svg,
-        workingNode,
-        selectedNode,
+        currentNode,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -868,8 +866,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                 />
             )
         );
@@ -976,18 +973,18 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     </IconButton>
                 </Box>
             </Box>
+            {loadingState && (
+                <Box height={2}>
+                    <LinearProgress />
+                </Box>
+            )}
             <Box position="relative">
                 <Box position="absolute" left={0} right={0} top={0}>
-                    {loadingState && (
-                        <Box height={2}>
-                            <LinearProgress />
-                        </Box>
-                    )}
                     {props.updateSwitchMsg && (
                         <Alert severity="error">{props.updateSwitchMsg}</Alert>
                     )}
-                    {!isNodeValid(workingNode, selectedNode) &&
-                        selectedNode?.type !== 'ROOT' && (
+                    {!isNodeValid(currentNode) &&
+                        currentNode?.type !== 'ROOT' && (
                             <AlertInvalidNode noMargin={true} />
                         )}
                 </Box>
@@ -1077,8 +1074,7 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     pinned: PropTypes.bool,
     pin: PropTypes.func,
     minimize: PropTypes.func,

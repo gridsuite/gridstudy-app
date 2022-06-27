@@ -11,6 +11,7 @@ import {
     deleteTreeNode,
     fetchNetworkModificationTreeNode,
     getUniqueNodeName,
+    buildNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
@@ -79,9 +80,9 @@ export const NetworkModificationTreePane = ({
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
-    const selectedNode = useSelector((state) => state.selectedTreeNode);
-    const selectedNodeRef = useRef();
-    selectedNodeRef.current = selectedNode;
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentNodeRef = useRef();
+    currentNodeRef.current = currentNode;
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
@@ -137,11 +138,11 @@ export const NetworkModificationTreePane = ({
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
-                        (nodeId) => nodeId === selectedNodeRef.current?.id
+                        (nodeId) => nodeId === currentNodeRef.current?.id
                     )
                 ) {
                     dispatch(
-                        removeNotificationByNode(selectedNodeRef.current?.id)
+                        removeNotificationByNode(currentNodeRef.current?.id)
                     );
                 }
             }
@@ -197,6 +198,22 @@ export const NetworkModificationTreePane = ({
         [studyUuid, enqueueSnackbar, intlRef]
     );
 
+    const handleBuildNode = useCallback(
+        (element) => {
+            buildNode(studyUuid, element.id).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeBuildingError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        },
+        [studyUuid, enqueueSnackbar, intlRef]
+    );
+
     const [openExportDialog, setOpenExportDialog] = useState(false);
 
     const handleClickExportStudy = (url) => {
@@ -243,7 +260,7 @@ export const NetworkModificationTreePane = ({
                     prevTreeDisplay={prevTreeDisplay}
                 />
 
-                {selectedNode && selectedNode.type === 'NETWORK_MODIFICATION' && (
+                {currentNode && currentNode.type === 'NETWORK_MODIFICATION' && (
                     <StudyDrawer
                         open={isModificationsDrawerOpen}
                         drawerClassName={classes.nodeEditor}
@@ -262,6 +279,7 @@ export const NetworkModificationTreePane = ({
                 <CreateNodeMenu
                     position={createNodeMenu.position}
                     activeNode={activeNode}
+                    handleBuildNode={handleBuildNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}
