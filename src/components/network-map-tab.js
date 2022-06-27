@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { PARAM_DISPLAY_OVERLOAD_TABLE } from '../utils/config-params';
 import { getLineLoadingZone, LineLoadingZone } from './network/line-layer';
 import { useIntlRef } from '../utils/messages';
+import { isNodeValid } from './graph/util/model-functions';
 
 const INITIAL_POSITION = [0, 0];
 
@@ -52,8 +53,7 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     network,
-    workingNode,
-    selectedNode,
+    currentNode,
     /* results*/
     securityAnalysisStatus,
     runnable,
@@ -170,13 +170,13 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
-
+        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
         const substationPositions = fetchSubstationPositions(
             studyUuid,
-            workingNode?.id
+            currentNode?.id
         );
         const linePositions = lineFullPath
-            ? fetchLinePositions(studyUuid, workingNode?.id)
+            ? fetchLinePositions(studyUuid, currentNode?.id)
             : [];
         setWaitingLoadGeoData(true);
 
@@ -201,7 +201,7 @@ export const NetworkMapTab = ({
         // Note: studyUuid and dispatch don't change
     }, [
         studyUuid,
-        workingNode,
+        currentNode,
         lineFullPath,
         setWaitingLoadGeoData,
         setErrorMessage,
@@ -217,14 +217,15 @@ export const NetworkMapTab = ({
     }
 
     const renderEquipmentMenu = () => {
+        if (!isNodeValid(currentNode) && currentNode?.type !== 'ROOT') return;
+
         if (equipmentMenu.equipment === null || !equipmentMenu.display)
             return <></>;
         return (
             <>
                 {equipmentMenu.equipmentType === equipments.lines &&
                     withEquipment(MenuLine, {
-                        workingNode: workingNode,
-                        selectedNode: selectedNode,
+                        currentNode,
                     })}
                 {equipmentMenu.equipmentType === equipments.substations &&
                     withEquipment(MenuSubstation)}
@@ -320,8 +321,7 @@ export const NetworkMapTab = ({
             <div className={classes.divRunButton}>
                 <RunButtonContainer
                     studyUuid={studyUuid}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                     loadFlowStatus={loadFlowStatus}
                     securityAnalysisStatus={securityAnalysisStatus}
                     setIsComputationRunning={setIsComputationRunning}

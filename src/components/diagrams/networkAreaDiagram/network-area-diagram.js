@@ -177,8 +177,7 @@ const SizedNetworkAreaDiagram = (props) => {
     const {
         totalWidth,
         totalHeight,
-        workingNode,
-        selectedNode,
+        currentNode,
         nadId,
         diagramTitle,
         svgUrl,
@@ -241,6 +240,7 @@ const SizedNetworkAreaDiagram = (props) => {
         if (svgUrl) {
             updateLoadingState(true);
             setSvg(noSvg);
+            svgRef.current.innerHTML = ''; // clear the previous svg before replacing
             fetchNADSvg(svgUrl)
                 .then((svg) => {
                     setSvg({
@@ -295,7 +295,7 @@ const SizedNetworkAreaDiagram = (props) => {
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
         }
-    }, [network, svg, workingNode, theme, nadId, svgUrl]);
+    }, [network, svg, currentNode, theme, nadId, svgUrl]);
 
     useLayoutEffect(() => {
         if (
@@ -410,8 +410,13 @@ const SizedNetworkAreaDiagram = (props) => {
             )}
             <Box position="relative">
                 <Box position="absolute" left={0} right={0} top={0}>
-                    {!isNodeValid(workingNode, selectedNode) &&
-                        selectedNode?.type !== 'ROOT' && (
+                    {loadingState && (
+                        <Box height={2}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    {!isNodeValid(currentNode) &&
+                        currentNode?.type !== 'ROOT' && (
                             <AlertInvalidNode noMargin={true} />
                         )}
                 </Box>
@@ -481,8 +486,7 @@ NetworkAreaDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
     nadId: PropTypes.string,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,

@@ -14,8 +14,7 @@ import PropTypes from 'prop-types';
 export function NetworkAreaDiagramPane({
     studyUuid,
     network,
-    workingNode,
-    selectedNode,
+    currentNode,
     loadFlowStatus,
     onClose,
     align,
@@ -52,7 +51,7 @@ export function NetworkAreaDiagramPane({
 
         svgUrl = getNetworkAreaDiagramUrl(
             studyUuid,
-            workingNode?.id,
+            currentNode?.id,
             voltageLevelsIds,
             depth
         );
@@ -77,8 +76,7 @@ export function NetworkAreaDiagramPane({
                         diagramTitle={nadTitle}
                         svgUrl={svgUrl}
                         nadId={voltageLevelsIds[0]}
-                        workingNode={workingNode}
-                        selectedNode={selectedNode}
+                        currentNode={currentNode}
                         depth={depth}
                         setDepth={setDepth}
                         studyUuid={studyUuid}
@@ -94,8 +92,7 @@ NetworkAreaDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
     loadFlowStatus: PropTypes.any,
     network: PropTypes.object,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     onClose: PropTypes.func,
     align: PropTypes.string,
 };

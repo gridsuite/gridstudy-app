@@ -15,7 +15,7 @@ import {
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 
-const CenterGraphButton = ({ selectedNode }) => {
+const CenterGraphButton = ({ currentNode }) => {
     const { setCenter } = useZoomPanHelper();
 
     // Use of hook useStoreState to get tree internal state and retrieve current zoom
@@ -25,10 +25,10 @@ const CenterGraphButton = ({ selectedNode }) => {
 
     const focusNode = useCallback(() => {
         // if no selected node, center on Root
-        const x = selectedNode ? selectedNode.position.x : 0;
-        const y = selectedNode ? selectedNode.position.y : 0;
+        const x = currentNode ? currentNode.position.x : 0;
+        const y = currentNode ? currentNode.position.y : 0;
         setCenter(x, y, zoom);
-    }, [setCenter, selectedNode, zoom]);
+    }, [setCenter, currentNode, zoom]);
 
     return (
         <Tooltip
