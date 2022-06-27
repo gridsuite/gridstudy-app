@@ -172,7 +172,8 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 studyUuid,
                 currentNode?.id,
                 searchTerm,
-                useNameLocal
+                useNameLocal,
+                true
             )
                 .then((infos) =>
                     setEquipmentsFound(
