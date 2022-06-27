@@ -30,6 +30,8 @@ export function getFirstNodeOfType(elements, nodeType, buildStatus) {
     }
 }
 
+/*
+// TODO CHARLY ANCIENNE FONCTION
 export function isNodeValid(workingNode, selectedNode) {
     const readOnlyNode = workingNode?.readOnly;
     const builtWorkingNode = workingNode?.buildStatus === 'BUILT';
@@ -39,26 +41,22 @@ export function isNodeValid(workingNode, selectedNode) {
         workingNode?.id === selectedNode?.id;
 
     return !readOnlyNode && builtWorkingNode && workingNodeIsSelectedNode;
+}*/
+
+/*export function isNodeValid(currentNode) {
+    const readOnlyNode = currentNode?.data?.readOnly;
+    const builtCurrentNode = currentNode?.data?.buildStatus === 'BUILT';
+
+    return !readOnlyNode && builtCurrentNode;
+}*/
+
+export function isNodeReadOnly(node) {
+    if (node?.name === 'Root') return true;
+    return node?.data?.readOnly ? true : false;
 }
 
 export function isNodeDisabled(node) {
     // only one node can be named like this... maybe it should be mark as built from backend
     if (node?.name === 'Root') return false;
     return !(node?.buildStatus === 'BUILT');
-}
-
-export function getRootNode(elements) {
-    if (elements.type === 'ROOT')
-        return {
-            id: elements.id,
-            type: elements.type,
-            data: {
-                label: elements.data.label,
-                description: elements.data.description,
-                buildStatus: elements.data.buildStatus,
-                readOnly: elements.data.readOnly,
-            },
-            targetPosition: elements?.targetPosition,
-            position: elements?.position,
-        };
 }

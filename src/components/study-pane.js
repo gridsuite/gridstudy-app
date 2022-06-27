@@ -95,8 +95,7 @@ export const StudyDisplayMode = {
 const StudyPane = ({
     studyUuid,
     network,
-    workingNode,
-    selectedNode,
+    currentNode,
     updatedLines,
     loadFlowInfos,
     securityAnalysisStatus,
@@ -150,7 +149,7 @@ const StudyPane = ({
         (state) => state.voltageLevelsIdsForNad
     );
 
-    const nodeDisabled = isNodeDisabled(selectedNode);
+    const nodeDisabled = isNodeDisabled(currentNode);
 
     useEffect(() => {
         if (
@@ -289,8 +288,7 @@ const StudyPane = ({
                                     }
                                     openVoltageLevel={openVoltageLevel}
                                     /* TODO verif tableEquipment*/
-                                    workingNode={workingNode}
-                                    selectedNode={selectedNode}
+                                    currentNode={currentNode}
                                     onChangeTab={props.onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     loadFlowStatus={getLoadFlowRunningStatus(
@@ -324,8 +322,7 @@ const StudyPane = ({
                                     loadFlowStatus={getLoadFlowRunningStatus(
                                         loadFlowInfos?.loadFlowStatus
                                     )}
-                                    workingNode={workingNode}
-                                    selectedNode={selectedNode}
+                                    currentNode={currentNode}
                                     nodeDisabled={nodeDisabled}
                                 />
                             )}
@@ -334,8 +331,7 @@ const StudyPane = ({
                                     <NetworkAreaDiagramPane
                                         studyUuid={studyUuid}
                                         network={network}
-                                        workingNode={workingNode}
-                                        selectedNode={selectedNode}
+                                        currentNode={currentNode}
                                         loadFlowStatus={getLoadFlowRunningStatus(
                                             loadFlowInfos?.loadFlowStatus
                                         )}
@@ -359,15 +355,14 @@ const StudyPane = ({
                 <NetworkTable
                     network={network}
                     studyUuid={studyUuid}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                     equipmentId={tableEquipment.id}
                     equipmentType={tableEquipment.type}
                     equipmentChanged={tableEquipment.changed}
                     loadFlowStatus={getLoadFlowRunningStatus(
                         loadFlowInfos?.loadFlowStatus
                     )}
-                    nodeDisabled={nodeDisabled}
+                    nodeDisabled={nodeDisabled} // TODO CHARLY erreur vendredi soir ReferenceError: nodeDisabled is not defined
                 />
             </Paper>
         );
@@ -401,11 +396,11 @@ const StudyPane = ({
             >
                 <ResultViewTab
                     studyUuid={studyUuid}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                     loadFlowInfos={loadFlowInfos}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
+                    nodeDisabled={nodeDisabled}
                 />
             </div>
             <div
@@ -417,8 +412,7 @@ const StudyPane = ({
                 <ReportViewerTab
                     studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                     nodeDisabled={nodeDisabled}
                 />
             </div>

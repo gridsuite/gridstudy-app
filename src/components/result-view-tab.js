@@ -8,7 +8,6 @@ import { useIntl } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { SecurityAnalysisResultTab } from './security-analysis-result-tab';
-import { isNodeValid } from './graph/util/model-functions';
 import AlertInvalidNode from './util/alert-invalid-node';
 
 const useStyles = makeStyles((theme) => ({
@@ -25,8 +24,7 @@ const useStyles = makeStyles((theme) => ({
 /**
  * control results views
  * @param studyUuid : string uuid of study
- * @param workingNode : object working node
- * @param selectedNode : object selected node
+ * @param currentNode : object current node
  * @param loadFlowInfos : object result of load flow
  * @param network : object network
  * @param openVoltageLevelDiagram : function
@@ -35,11 +33,11 @@ const useStyles = makeStyles((theme) => ({
  */
 export const ResultViewTab = ({
     studyUuid,
-    workingNode,
-    selectedNode,
+    currentNode,
     loadFlowInfos,
     network,
     openVoltageLevelDiagram,
+    nodeDisabled,
 }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -60,7 +58,7 @@ export const ResultViewTab = ({
             <Paper className={classes.table}>
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
-                    nodeUuid={workingNode?.id}
+                    nodeUuid={currentNode?.id}
                     network={network}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
@@ -79,18 +77,19 @@ export const ResultViewTab = ({
                         label={intl.formatMessage({
                             id: 'loadFlowResults',
                         })}
+                        disabled={nodeDisabled}
                     />
                     <Tab
                         label={intl.formatMessage({
                             id: 'securityAnalysisResults',
                         })}
+                        disabled={nodeDisabled}
                     />
                 </Tabs>
-                {!isNodeValid(workingNode, selectedNode) &&
-                    selectedNode?.type !== 'ROOT' && <AlertInvalidNode />}
+                {nodeDisabled && <AlertInvalidNode />}
             </div>
-            {tabIndex === 0 && renderLoadFlowResult()}
-            {tabIndex === 1 && renderSecurityAnalysisResult()}
+            {tabIndex === 0 && !nodeDisabled && renderLoadFlowResult()}
+            {tabIndex === 1 && !nodeDisabled && renderSecurityAnalysisResult()}
         </Paper>
     );
 };
@@ -99,7 +98,7 @@ ResultViewTab.propTypes = {
     loadFlowInfos: PropTypes.object,
     network: PropTypes.object.isRequired,
     openVoltageLevelDiagram: PropTypes.func.isRequired,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     studyUuid: PropTypes.string.isRequired,
+    nodeDisabled: PropTypes.bool,
 };

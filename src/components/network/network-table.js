@@ -59,7 +59,6 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import clsx from 'clsx';
 import { RunningStatus } from '../util/running-status';
 import { INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
-import { isNodeValid } from '../graph/util/model-functions';
 import AlertInvalidNode from '../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../util/is-any-node-building-hook';
 
@@ -550,7 +549,7 @@ const NetworkTable = (props) => {
                 });
                 requestNetworkChange(
                     props.studyUuid,
-                    props.workingNode?.id,
+                    props.currentNode?.id,
                     groovyCr
                 ).then((response) => {
                     if (response.ok) {
@@ -636,7 +635,7 @@ const NetworkTable = (props) => {
             lineEdit,
             tabIndex,
             props.studyUuid,
-            props.workingNode?.id,
+            props.currentNode?.id,
             intl,
             enqueueSnackbar,
             intlRef,
@@ -803,9 +802,9 @@ const NetworkTable = (props) => {
 
         function isEditColumnVisible() {
             return (
+                !props.nodeDisabled &&
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .modifiableEquipmentType &&
-                isNodeValid(props.workingNode, props.selectedNode) &&
                 TABLES_DEFINITION_INDEXES.get(tabIndex)
                     .columns.filter((c) => c.editor)
                     .filter((c) => selectedColumnsNames.has(c.id)).length > 0
@@ -837,8 +836,7 @@ const NetworkTable = (props) => {
         const columns = generateTableColumns(tabIndex);
         return (
             <EquipmentTable
-                workingNode={props.workingNode}
-                selectedNode={props.selectedNode}
+                currentNode={props.currentNode}
                 rows={rows}
                 columns={columns}
                 fetched={props.network.isResourceFetched(resource)}
@@ -1149,10 +1147,7 @@ const NetworkTable = (props) => {
                                 child={checkListColumnsNames()}
                             />
                         </Grid>
-                        {!isNodeValid(props.workingNode, props.selectedNode) &&
-                            props.selectedNode?.type !== 'ROOT' && (
-                                <AlertInvalidNode />
-                            )}
+                        {props.nodeDisabled && <AlertInvalidNode />}
                         <Grid item className={classes.exportCsv}>
                             <span
                                 className={clsx({
@@ -1197,8 +1192,7 @@ const NetworkTable = (props) => {
 NetworkTable.defaultProps = {
     network: null,
     studyUuid: '',
-    workingNode: null,
-    selectedNode: null,
+    currentNode: null,
     equipmentId: null,
     equipmentType: null,
     equipmentChanged: false,
@@ -1209,8 +1203,7 @@ NetworkTable.defaultProps = {
 NetworkTable.propTypes = {
     network: PropTypes.instanceOf(Network),
     studyUuid: PropTypes.string,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     equipmentChanged: PropTypes.bool,

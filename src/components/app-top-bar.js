@@ -160,9 +160,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const workingNode = useSelector((state) => state.workingTreeNode);
-
-    const selectedTreeNode = useSelector((state) => state.selectedTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [showParameters, setShowParameters] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
@@ -173,7 +171,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (searchTerm) => {
             fetchEquipmentsInfos(
                 studyUuid,
-                workingNode?.id,
+                currentNode?.id,
                 searchTerm,
                 useNameLocal
             )
@@ -193,7 +191,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     })
                 );
         },
-        [studyUuid, workingNode, useNameLocal, enqueueSnackbar, intlRef]
+        [studyUuid, currentNode, useNameLocal, enqueueSnackbar, intlRef]
     );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -245,7 +243,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                 onEquipmentLabellingClick={handleChangeUseName}
                 equipmentLabelling={useNameLocal}
                 withElementsSearch={true}
-                searchDisabled={isNodeDisabled(workingNode)}
+                searchDisabled={isNodeDisabled(currentNode)}
                 searchingLabel={intl.formatMessage({
                     id: 'equipment_search/label',
                 })}
@@ -269,16 +267,17 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
+                    borderColor={'#123456'}
                 >
-                    {selectedTreeNode && (
+                    {currentNode && (
                         <OverflowableText
                             className={classes.label}
                             text={
-                                selectedTreeNode?.data?.label === 'Root'
+                                currentNode?.data?.label === 'Root'
                                     ? intl.formatMessage({
                                           id: 'root',
                                       })
-                                    : selectedTreeNode?.data?.label
+                                    : currentNode?.data?.label
                             }
                         />
                     )}

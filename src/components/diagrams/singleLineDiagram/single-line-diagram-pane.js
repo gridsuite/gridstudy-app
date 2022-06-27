@@ -76,7 +76,7 @@ const mergeDisplayed = (oldValue, sldToDisplay, createSLD) => {
     return newValue.filter((n) => n);
 };
 
-const useDisplayView = (network, studyUuid, workingNode) => {
+const useDisplayView = (network, studyUuid, currentNode) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
     const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
@@ -92,7 +92,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
         (voltageLevelId) =>
             getVoltageLevelSingleLineDiagram(
                 studyUuid,
-                workingNode?.id,
+                currentNode?.id,
                 voltageLevelId,
                 useName,
                 centerName,
@@ -105,7 +105,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
             diagonalName,
             studyUuid,
             useName,
-            workingNode?.id,
+            currentNode?.id,
         ]
     );
 
@@ -113,7 +113,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
         (voltageLevelId) =>
             getSubstationSingleLineDiagram(
                 studyUuid,
-                workingNode?.id,
+                currentNode?.id,
                 voltageLevelId,
                 useName,
                 centerName,
@@ -128,7 +128,7 @@ const useDisplayView = (network, studyUuid, workingNode) => {
             studyUuid,
             substationLayout,
             useName,
-            workingNode?.id,
+            currentNode?.id,
         ]
     );
 
@@ -204,8 +204,7 @@ export function SingleLineDiagramPane({
     isComputationRunning,
     showInSpreadsheet,
     loadFlowStatus,
-    workingNode,
-    selectedNode,
+    currentNode,
     nodeDisabled,
 }) {
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -219,7 +218,7 @@ export function SingleLineDiagramPane({
 
     const [displayedSLD, setDisplayedSld] = useState([]);
 
-    const createView = useDisplayView(network, studyUuid, workingNode);
+    const createView = useDisplayView(network, studyUuid, currentNode);
 
     const dispatch = useDispatch();
 
@@ -248,7 +247,7 @@ export function SingleLineDiagramPane({
                 switchElement.classList.replace('sld-open', 'sld-closed');
             }
 
-            updateSwitchState(studyUuid, workingNode?.id, breakerId, open).then(
+            updateSwitchState(studyUuid, currentNode?.id, breakerId, open).then(
                 (response) => {
                     if (!response.ok) {
                         console.error(response);
@@ -271,7 +270,7 @@ export function SingleLineDiagramPane({
                 }
             );
         },
-        [studyUuid, workingNode]
+        [studyUuid, currentNode]
     );
 
     useEffect(() => {
@@ -424,8 +423,7 @@ export function SingleLineDiagramPane({
                         isComputationRunning={isComputationRunning}
                         showInSpreadsheet={showInSpreadsheet}
                         loadFlowStatus={loadFlowStatus}
-                        workingNode={workingNode}
-                        selectedNode={selectedNode}
+                        currentNode={currentNode}
                         numberToDisplay={displayedSLD.length}
                         toggleState={toggleState}
                         pinned={viewState.get(sld.id) === ViewState.PINNED}
@@ -454,8 +452,7 @@ export function SingleLineDiagramPane({
 
 SingleLineDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     network: PropTypes.object,
     showInSpreadsheet: PropTypes.func,
     isComputationRunning: PropTypes.bool,

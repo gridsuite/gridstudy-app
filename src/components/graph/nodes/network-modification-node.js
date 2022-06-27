@@ -10,7 +10,6 @@ import { Handle } from 'react-flow-renderer';
 import makeStyles from '@mui/styles/makeStyles';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import LockIcon from '@mui/icons-material/Lock';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -18,7 +17,7 @@ const VALID_NODE_BANNER_COLOR = '#74a358';
 const INVALID_NODE_BANNER_COLOR = '#9196a1';
 
 const useStyles = makeStyles((theme) => ({
-    networkModificationVisualized: {
+    networkModificationSelected: {
         position: 'relative',
         variant: 'contained',
         background: theme.palette.primary.main,
@@ -80,7 +79,12 @@ const useStyles = makeStyles((theme) => ({
 const NetworkModificationNode = (props) => {
     const classes = useStyles();
 
-    const workingNode = useSelector((state) => state.workingTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+
+    const isSelectedNode = () => {
+        // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
+        return props.id === currentNode?.id;
+    };
 
     return (
         <>
@@ -99,8 +103,8 @@ const NetworkModificationNode = (props) => {
             <Tooltip title={props.data.label} placement="top">
                 <Button
                     className={
-                        props.selected
-                            ? classes.networkModificationVisualized
+                        isSelectedNode()
+                            ? classes.networkModificationSelected
                             : classes.networkModification
                     }
                 >
@@ -138,7 +142,6 @@ const NetworkModificationNode = (props) => {
 
             <div className={classes.outOfBoundIcons}>
                 {props.data.readOnly && <LockIcon />}
-                {props.id === workingNode?.id && <VisibilityIcon />}
             </div>
         </>
     );

@@ -18,7 +18,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import makeStyles from '@mui/styles/makeStyles';
-import { isNodeValid } from './graph/util/model-functions';
 
 const useStyles = makeStyles((theme) => ({
     div: {
@@ -35,16 +34,15 @@ const NETWORK_MODIFICATION = 'NetworkModification';
  * control the ReportViewer (fetch and waiting)
  * @param studyId : string study id
  * @param visible : boolean window visible
- * @param workingNode : object visualized node
- * @param selectedNode : object selected node
+ * @param currentNode : object visualized node
+ * @param nodeDisabled : boolean node disabled
  * @returns {*} node
  * @constructor
  */
 export const ReportViewerTab = ({
     studyId,
     visible,
-    workingNode,
-    selectedNode,
+    currentNode,
     nodeDisabled,
 }) => {
     const intl = useIntl();
@@ -82,8 +80,10 @@ export const ReportViewerTab = ({
 
     useEffect(() => {
         if (visible) {
+            if (nodeDisabled) return;
+
             setWaitingLoadReport(true);
-            fetchReport(studyId, workingNode.id, nodeOnlyReport)
+            fetchReport(studyId, currentNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {
                     if (fetchedReport.length === 1) {
                         setReport(condenseReport(fetchedReport[0]));
@@ -110,7 +110,7 @@ export const ReportViewerTab = ({
                     setWaitingLoadReport(false);
                 });
         }
-    }, [visible, studyId, workingNode, nodeOnlyReport, enqueueSnackbar]);
+    }, [visible, studyId, currentNode, nodeOnlyReport, enqueueSnackbar]);
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
@@ -133,12 +133,9 @@ export const ReportViewerTab = ({
                                 id: 'LogOnlySingleNode',
                             })}
                         />
-                        {!isNodeValid(workingNode, selectedNode) &&
-                            selectedNode?.type !== 'ROOT' && (
-                                <AlertInvalidNode />
-                            )}
+                        {nodeDisabled && <AlertInvalidNode />}
                     </div>
-                    {!nodeDisabled && (<ReportViewer jsonReport={report} />)}
+                    {!nodeDisabled && <ReportViewer jsonReport={report} />}
                 </Paper>
             )}
         </WaitingLoader>
@@ -148,7 +145,6 @@ export const ReportViewerTab = ({
 ReportViewerTab.propTypes = {
     studyId: PropTypes.string,
     visible: PropTypes.bool,
-    workingNode: PropTypes.object,
-    selectedNodeNode: PropTypes.object,
+    currentNode: PropTypes.object,
     nodeDisabled: PropTypes.bool,
 };
