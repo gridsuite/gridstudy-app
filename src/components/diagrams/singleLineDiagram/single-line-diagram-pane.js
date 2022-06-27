@@ -372,11 +372,13 @@ export function SingleLineDiagramPane({
         setDisplayedSld((oldSld) => {
             const configuredViewsIds = new Set(views.map((view) => view.id));
             // remove view no longer present, keep order
-            let newDisplayed = oldSld.filter(
-                (view) =>
-                    configuredViewsIds.has(view.id) &&
-                    viewState.get(view.id) === ViewState.PINNED
-            );
+            let newDisplayed = oldSld
+                .filter(
+                    (view) =>
+                        configuredViewsIds.has(view.id) &&
+                        viewState.get(view.id) === ViewState.PINNED
+                )
+                .map((old) => views.find((v) => v.id === old.id));
             // there is place for one more
             let more = views.find(
                 ({ id, lastOpen }) =>
