@@ -17,6 +17,7 @@ import { addLoadflowNotif, addSANotif } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { isNodeValid } from './graph/util/model-functions';
+import { useSnackMessage } from '../utils/messages';
 
 const useStyles = makeStyles((theme) => ({
     rotate: {
@@ -43,6 +44,8 @@ export function RunButtonContainer({
     const [ranSA, setRanSA] = useState(false);
 
     const intl = useIntl();
+
+    const { snackError } = useSnackMessage();
 
     const classes = useStyles();
 
@@ -85,8 +88,11 @@ export function RunButtonContainer({
 
     const startComputation = (action) => {
         if (action === runnable.LOADFLOW) {
-            startLoadFlow(studyUuid, currentNode?.id);
-            setRanLoadflow(true);
+            startLoadFlow(studyUuid, currentNode?.id)
+                .then(setRanLoadflow(true))
+                .catch((errorMessage) => {
+                    snackError(errorMessage, 'startLoadFlowError');
+                });
         } else if (action === runnable.SECURITY_ANALYSIS) {
             setShowContingencyListSelector(true);
             setRanSA(true);

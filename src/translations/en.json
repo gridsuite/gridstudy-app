@@ -180,6 +180,7 @@
 
     "securityAnalysisResults": "Security analysis results",
     "loadFlowResults": "Loadflow results",
+    "startLoadFlowError": "An error occurred while starting the load flow",
 
     "connectedComponentNum": "Connected component number",
     "synchronousComponentNum": "Synchronous component number",
