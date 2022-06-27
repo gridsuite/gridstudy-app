@@ -451,7 +451,7 @@ const SizedNetworkAreaDiagram = (props) => {
                                 }
                                 className={classes.lessIcon}
                             />
-                        {fullScreenNadId ? (
+                            {fullScreenNadId ? (
                                 <FullscreenExitIcon
                                     onClick={hideFullScreen}
                                     className={classes.fullScreenIcon}

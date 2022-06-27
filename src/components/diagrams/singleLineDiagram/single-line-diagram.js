@@ -1029,18 +1029,18 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                         'vsc-converter-station-menus'
                     )}
 
-                {!loadingState &&
-                    (fullScreenSldId ? (
-                        <FullscreenExitIcon
-                            onClick={hideFullScreen}
-                            className={classes.fullScreenIcon}
-                        />
-                    ) : (
-                        <FullscreenIcon
-                            onClick={showFullScreen}
-                            className={classes.fullScreenIcon}
-                        />
-                    ))}
+                    {!loadingState &&
+                        (fullScreenSldId ? (
+                            <FullscreenExitIcon
+                                onClick={hideFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ) : (
+                            <FullscreenIcon
+                                onClick={showFullScreen}
+                                className={classes.fullScreenIcon}
+                            />
+                        ))}
                 </Box>
             )}
         </Paper>
