@@ -108,7 +108,14 @@ export const ReportViewerTab = ({
                     setWaitingLoadReport(false);
                 });
         }
-    }, [visible, studyId, currentNode, nodeOnlyReport, enqueueSnackbar]);
+    }, [
+        visible,
+        studyId,
+        currentNode,
+        nodeOnlyReport,
+        enqueueSnackbar,
+        nodeDisabled,
+    ]);
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>

@@ -205,6 +205,9 @@ export function StudyContainer({ view, onChangeTab }) {
 
     const loadNetwork = useCallback(
         (isUpdate) => {
+            if (isNodeDisabled(currentNode)) {
+                return;
+            }
             console.info(`Loading network of study '${studyUuid}'...`);
 
             if (
