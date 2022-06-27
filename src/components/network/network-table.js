@@ -220,6 +220,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NetworkTable = (props) => {
+    console.error('CHARLY networkTable => DESACTIVED ?', props.nodeDisabled);
     const classes = useStyles();
 
     const { enqueueSnackbar } = useSnackbar();

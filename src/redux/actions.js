@@ -327,7 +327,6 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists) {
 export const CURRENT_TREE_NODE = 'CURRENT_NODE';
 
 export function setCurrentTreeNode(currentTreeNode) {
-    console.error('CHARLY setCurrentTreeNode => ', currentTreeNode);
     return {
         type: CURRENT_TREE_NODE,
         currentTreeNode: currentTreeNode,

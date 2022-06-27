@@ -79,9 +79,7 @@ export const ReportViewerTab = ({
     }
 
     useEffect(() => {
-        if (visible) {
-            if (nodeDisabled) return;
-
+        if (visible && !nodeDisabled) {
             setWaitingLoadReport(true);
             fetchReport(studyId, currentNode.id, nodeOnlyReport)
                 .then((fetchedReport) => {

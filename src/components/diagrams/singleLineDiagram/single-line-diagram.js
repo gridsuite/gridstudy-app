@@ -55,6 +55,7 @@ import { ViewState } from './utils';
 import clsx from 'clsx';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
+import Alert from '@mui/material/Alert';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -985,6 +986,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 </Box>
             ) : (
                 <Box position="relative">
+                    {props.updateSwitchMsg && (
+                        <Alert severity="error">{props.updateSwitchMsg}</Alert>
+                    )}
                     {
                         <div
                             ref={svgRef}

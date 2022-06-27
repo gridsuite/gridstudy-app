@@ -304,7 +304,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     'NETWORK_MODIFICATION',
                     'BUILT'
                 );
-                console.error('CHARLY DISPATCH AVEC ELEMENT CHELOU');
+
                 dispatch(
                     setCurrentTreeNode(
                         firstBuiltNode
