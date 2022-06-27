@@ -11,11 +11,13 @@ import {
     deleteTreeNode,
     fetchNetworkModificationTreeNode,
     getUniqueNodeName,
+    buildNode,
 } from '../utils/rest-api';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodesRemoved,
     networkModificationTreeNodesUpdated,
+    removeNotificationByNode,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -78,8 +80,9 @@ export const NetworkModificationTreePane = ({
     const DownloadIframe = 'downloadIframe';
 
     const [activeNode, setActiveNode] = useState(null);
-    const selectedNode = useSelector((state) => state.selectedTreeNode);
-
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentNodeRef = useRef();
+    currentNodeRef.current = currentNode;
     const isModificationsDrawerOpen = useSelector(
         (state) => state.isModificationsDrawerOpen
     );
@@ -133,6 +136,15 @@ export const NetworkModificationTreePane = ({
                 'nodeUpdated'
             ) {
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
+                if (
+                    studyUpdatedForce.eventData.headers['nodes'].some(
+                        (nodeId) => nodeId === currentNodeRef.current?.id
+                    )
+                ) {
+                    dispatch(
+                        removeNotificationByNode(currentNodeRef.current?.id)
+                    );
+                }
             }
         }
     }, [studyUuid, studyUpdatedForce, updateNodes, dispatch]);
@@ -178,6 +190,22 @@ export const NetworkModificationTreePane = ({
                     enqueueSnackbar: enqueueSnackbar,
                     headerMessage: {
                         headerMessageId: 'NodeDeleteError',
+                        intlRef: intlRef,
+                    },
+                });
+            });
+        },
+        [studyUuid, enqueueSnackbar, intlRef]
+    );
+
+    const handleBuildNode = useCallback(
+        (element) => {
+            buildNode(studyUuid, element.id).catch((errorMessage) => {
+                displayErrorMessageWithSnackbar({
+                    errorMessage: errorMessage,
+                    enqueueSnackbar: enqueueSnackbar,
+                    headerMessage: {
+                        headerMessageId: 'NodeBuildingError',
                         intlRef: intlRef,
                     },
                 });
@@ -232,7 +260,7 @@ export const NetworkModificationTreePane = ({
                     prevTreeDisplay={prevTreeDisplay}
                 />
 
-                {selectedNode && selectedNode.type === 'NETWORK_MODIFICATION' && (
+                {currentNode && currentNode.type === 'NETWORK_MODIFICATION' && (
                     <StudyDrawer
                         open={isModificationsDrawerOpen}
                         drawerClassName={classes.nodeEditor}
@@ -251,6 +279,7 @@ export const NetworkModificationTreePane = ({
                 <CreateNodeMenu
                     position={createNodeMenu.position}
                     activeNode={activeNode}
+                    handleBuildNode={handleBuildNode}
                     handleNodeCreation={handleCreateNode}
                     handleNodeRemoval={handleRemoveNode}
                     handleExportCaseOnNode={handleExportCaseOnNode}

@@ -176,13 +176,13 @@ code {
     fill: var(--sld-background-color, transparent);
 }
 .sld-breaker.sld-fictitious {
-    stroke: maroon
+    stroke: maroon;
 }
 .sld-disconnector.sld-fictitious {
-    stroke: maroon
+    stroke: maroon;
 }
 .sld-load-break-switch.sld-fictitious {
-    stroke: maroon
+    stroke: maroon;
 }
 .sld-cell-shape-flat .sld-bus-connection {
     visibility: hidden

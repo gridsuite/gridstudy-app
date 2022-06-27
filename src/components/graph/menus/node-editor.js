@@ -42,12 +42,12 @@ const NodeEditor = () => {
     const intlRef = useIntlRef();
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
-    const [selectedNode, setSelectedNode] = useState();
+    const [currentNode, setCurrentNode] = useState();
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
-    const selectedNodeUuid = useSelector((state) => state.selectedTreeNode)?.id;
+    const currentNodeUuid = useSelector((state) => state.currentTreeNode)?.id;
 
-    const selectedNodeUuidRef = useRef();
+    const currentNodeUuidRef = useRef();
 
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -56,20 +56,20 @@ const NodeEditor = () => {
     };
 
     useEffect(() => {
-        if (!selectedNodeUuid) return;
+        if (!currentNodeUuid) return;
         const headers = studyUpdatedForce?.eventData?.headers;
         const updateType = headers?.updateType;
         if (
-            selectedNodeUuidRef.current !== selectedNodeUuid ||
+            currentNodeUuidRef.current !== currentNodeUuid ||
             (updateType === 'nodeUpdated' &&
-                headers.nodes.indexOf(selectedNodeUuid) !== -1) ||
-            (updateType === 'study' && headers.node === selectedNodeUuid)
+                headers.nodes.indexOf(currentNodeUuid) !== -1) ||
+            (updateType === 'study' && headers.node === currentNodeUuid)
         ) {
-            selectedNodeUuidRef.current = selectedNodeUuid;
-            fetchNetworkModificationTreeNode(studyUuid, selectedNodeUuid)
+            currentNodeUuidRef.current = currentNodeUuid;
+            fetchNetworkModificationTreeNode(studyUuid, currentNodeUuid)
                 .then((res) => {
-                    if (selectedNodeUuid === selectedNodeUuidRef.current)
-                        setSelectedNode(res);
+                    if (currentNodeUuid === currentNodeUuidRef.current)
+                        setCurrentNode(res);
                 })
                 .catch((err) =>
                     displayErrorMessageWithSnackbar({
@@ -79,19 +79,19 @@ const NodeEditor = () => {
                 );
         }
     }, [
-        setSelectedNode,
+        setCurrentNode,
         enqueueSnackbar,
-        selectedNodeUuid,
-        selectedNodeUuidRef,
+        currentNodeUuid,
+        currentNodeUuidRef,
         studyUpdatedForce,
         studyUuid,
     ]);
 
     const changeNodeName = (newName) => {
-        if (!selectedNode) return;
+        if (!currentNode) return;
         updateTreeNode(studyUuid, {
-            id: selectedNode.id,
-            type: selectedNode.type,
+            id: currentNode.id,
+            type: currentNode.type,
             name: newName,
         }).catch((errorMessage) => {
             displayErrorMessageWithSnackbar({
@@ -107,17 +107,17 @@ const NodeEditor = () => {
 
     return (
         <>
-            {selectedNode !== undefined && (
+            {currentNode !== undefined && (
                 <div className={classes.paper}>
                     <EditableTitle
-                        name={selectedNode.name}
+                        name={currentNode.name}
                         onClose={closeModificationsDrawer}
                         onChange={changeNodeName}
                     />
                     <>
-                        {selectedNode && (
+                        {currentNode && (
                             <NetworkModificationNodeEditor
-                                selectedNode={selectedNode}
+                                currentTreeNode={currentNode}
                             />
                         )}
                     </>

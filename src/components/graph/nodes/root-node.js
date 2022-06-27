@@ -6,7 +6,6 @@
  */
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import PhotoIcon from '@mui/icons-material/Photo';
 import React from 'react';
 import { Handle } from 'react-flow-renderer';
@@ -16,20 +15,35 @@ import Tooltip from '@mui/material/Tooltip';
 
 const useStyles = makeStyles((theme) => ({
     rootSelected: {
-        background: 'lightseagreen',
+        background: theme.node.background,
         borderRadius: '30%',
+        boxShadow:
+            theme.node.border +
+            ' 0px 0px 3px 3px,' +
+            theme.node.border +
+            ' 0px 0px 25px,' +
+            theme.node.border +
+            ' 0px 0px 5px',
+        '&:hover': {
+            background: theme.node.background,
+        },
     },
     root: {
         background: 'darkseagreen',
         borderRadius: '30%',
+        '&:hover': {
+            background: theme.node.hover,
+        },
     },
 }));
 
 const RootNode = (props) => {
     const classes = useStyles();
 
-    const workingNode = useSelector((state) => state.workingTreeNode);
-
+    const currentNode = useSelector((state) => state.currentTreeNode);
+    const isSelectedNode = () => {
+        return props.id === currentNode?.id;
+    };
     return (
         <>
             <Handle
@@ -49,16 +63,12 @@ const RootNode = (props) => {
                 <IconButton
                     variant="outlined"
                     className={
-                        props.selected ? classes.rootSelected : classes.root
+                        isSelectedNode() ? classes.rootSelected : classes.root
                     }
                 >
-                    {props.data.buildStatus === 'BUILDING' ? (
+                    {(props.data.buildStatus === 'BUILDING' && (
                         <CircularProgress size={24} />
-                    ) : props.id === workingNode?.id ? (
-                        <VisibilityIcon />
-                    ) : (
-                        props.data.readOnly && <PhotoIcon />
-                    )}
+                    )) || <PhotoIcon />}
                 </IconButton>
             </Tooltip>
         </>

@@ -45,8 +45,7 @@ import { useFormSearchCopy } from './form-search-copy-hook';
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
  * @param voltageLevelOptions : the network voltageLevels available
- * @param selectedNodeUuid : the currently selected tree node
- * @param workingNodeUuid : the node we are currently working on
+ * @param currentNodeUuid : the node we are currently working on
  * @param editData the data to edit
  */
 const LoadCreationDialog = ({
@@ -54,8 +53,7 @@ const LoadCreationDialog = ({
     open,
     onClose,
     voltageLevelOptions,
-    selectedNodeUuid,
-    workingNodeUuid,
+    currentNodeUuid,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
 
@@ -87,7 +85,7 @@ const LoadCreationDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        selectedNodeUuid,
+        currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
@@ -156,7 +154,7 @@ const LoadCreationDialog = ({
         label: 'Connectivity',
         inputForm: inputForm,
         voltageLevelOptions: voltageLevelOptions,
-        workingNodeUuid: workingNodeUuid,
+        currentNodeUuid: currentNodeUuid,
         voltageLevelIdDefaultValue: formValues?.voltageLevelId || null,
         busOrBusbarSectionIdDefaultValue:
             formValues?.busOrBusbarSectionId || null,
@@ -166,7 +164,7 @@ const LoadCreationDialog = ({
         if (inputForm.validate()) {
             createLoad(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 loadId,
                 loadName ? loadName : null,
                 !loadType ? 'UNDEFINED' : loadType,
@@ -253,7 +251,7 @@ const LoadCreationDialog = ({
                 onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'LOAD'}
                 onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
+                currentNodeUuid={currentNodeUuid}
             />
         </>
     );
@@ -264,8 +262,7 @@ LoadCreationDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     voltageLevelOptions: PropTypes.arrayOf(PropTypes.object),
-    selectedNodeUuid: PropTypes.string,
-    workingNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default LoadCreationDialog;

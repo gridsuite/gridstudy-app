@@ -14,48 +14,48 @@ import PropTypes from 'prop-types';
 export function NetworkAreaDiagramPane({
     studyUuid,
     network,
-    workingNode,
-    selectedNode,
+    currentNode,
     loadFlowStatus,
     onClose,
     align,
 }) {
     const [depth, setDepth] = useState(0);
 
-    const openNetworkAreaDiagram = useSelector(
-        (state) => state.openNetworkAreaDiagram
+    const voltageLevelsIds = useSelector(
+        (state) => state.voltageLevelsIdsForNad
     );
 
-    const displayedVoltageLevelId = openNetworkAreaDiagram?.voltageLevelId;
-
     const displayedVoltageLevelIdRef = useRef();
-    displayedVoltageLevelIdRef.current = displayedVoltageLevelId;
+    displayedVoltageLevelIdRef.current = voltageLevelsIds[0];
 
-    let displayedVoltageLevel;
+    let displayedVoltageLevels = [];
     if (network) {
-        if (displayedVoltageLevelId) {
-            displayedVoltageLevel = network.getVoltageLevel(
-                displayedVoltageLevelId
+        if (voltageLevelsIds) {
+            voltageLevelsIds.forEach((id) =>
+                displayedVoltageLevels.push(network.getVoltageLevel(id))
             );
         }
     }
 
     let nadTitle = '';
     let svgUrl = '';
-    if (displayedVoltageLevel) {
-        nadTitle = displayedVoltageLevel.name;
+    if (displayedVoltageLevels) {
+        displayedVoltageLevels.forEach(
+            (vl) =>
+                (nadTitle = nadTitle + (nadTitle !== '' ? ' + ' : '') + vl.name)
+        );
 
         svgUrl = getNetworkAreaDiagramUrl(
             studyUuid,
-            workingNode?.id,
-            [displayedVoltageLevelId],
+            currentNode?.id,
+            voltageLevelsIds,
             depth
         );
     }
 
     return (
         <>
-            {displayedVoltageLevelId && (
+            {voltageLevelsIds?.length && (
                 <div
                     style={{
                         flexGrow: 1,
@@ -70,9 +70,8 @@ export function NetworkAreaDiagramPane({
                         onClose={onClose}
                         diagramTitle={nadTitle}
                         svgUrl={svgUrl}
-                        nadId={displayedVoltageLevel?.id}
-                        workingNode={workingNode}
-                        selectedNode={selectedNode}
+                        nadId={voltageLevelsIds[0]}
+                        currentNode={currentNode}
                         depth={depth}
                         setDepth={setDepth}
                         studyUuid={studyUuid}
@@ -88,8 +87,7 @@ NetworkAreaDiagramPane.propTypes = {
     studyUuid: PropTypes.string,
     loadFlowStatus: PropTypes.any,
     network: PropTypes.object,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     onClose: PropTypes.func,
     align: PropTypes.string,
 };

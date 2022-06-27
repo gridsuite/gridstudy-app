@@ -324,26 +324,12 @@ export function selectFavoriteContingencyLists(favoriteContingencyLists) {
     };
 }
 
-export const SELECTED_TREE_NODE = 'SELECTED_TREE_NODE';
+export const CURRENT_TREE_NODE = 'CURRENT_NODE';
 
-export function selectTreeNode(selectedTreeNode) {
+export function setCurrentTreeNode(currentTreeNode) {
     return {
-        type: SELECTED_TREE_NODE,
-        selectedTreeNode: selectedTreeNode,
-    };
-}
-
-export const WORKING_TREE_NODE = 'WORKING_TREE_NODE';
-
-export function workingTreeNode(workingTreeNode) {
-    return {
-        type: WORKING_TREE_NODE,
-        workingTreeNode: {
-            id: workingTreeNode?.id,
-            readOnly: workingTreeNode?.data?.readOnly,
-            buildStatus: workingTreeNode?.data?.buildStatus,
-            name: workingTreeNode?.data?.label,
-        },
+        type: CURRENT_TREE_NODE,
+        currentTreeNode: currentTreeNode,
     };
 }
 
@@ -365,11 +351,29 @@ export function centerOnSubstation(substationId) {
     };
 }
 
+export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
+
+export function addNotification(notificationId) {
+    return {
+        type: ADD_NOTIFICATION,
+        notificationId: notificationId,
+    };
+}
+
+export const REMOVE_NOTIFICATION_BY_NODE = 'REMOVE_NOTIFICATION_BY_NODE';
+
+export function removeNotificationByNode(notificationId) {
+    return {
+        type: REMOVE_NOTIFICATION_BY_NODE,
+        notificationId: notificationId,
+    };
+}
+
 export const OPEN_NETWORK_AREA_DIAGRAM = 'OPEN_NETWORK_AREA_DIAGRAM';
 
-export function openNetworkAreaDiagram(voltageLevelId) {
+export function openNetworkAreaDiagram(voltageLevelsIds) {
     return {
         type: OPEN_NETWORK_AREA_DIAGRAM,
-        openNetworkAreaDiagram: { voltageLevelId: voltageLevelId },
+        voltageLevelsIdsForNad: voltageLevelsIds,
     };
 }

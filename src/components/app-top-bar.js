@@ -66,6 +66,10 @@ const CustomSuffixRenderer = ({ props, element }) => {
     const equipmentClasses = useEquipmentStyles();
     const network = useSelector((state) => state.network);
 
+    const voltageLevelsIdsForNad = useSelector(
+        (state) => state.voltageLevelsIdsForNad
+    );
+
     const enterOnSubstationCB = useCallback(
         (e, element) => {
             const substationId =
@@ -81,11 +85,15 @@ const CustomSuffixRenderer = ({ props, element }) => {
 
     const openNetworkAreaDiagramCB = useCallback(
         (e, element) => {
-            dispatch(openNetworkAreaDiagram(element.id));
+            dispatch(
+                openNetworkAreaDiagram(
+                    voltageLevelsIdsForNad.concat([element.id])
+                )
+            );
             props.onClose && props.onClose();
             e.stopPropagation();
         },
-        [dispatch, props]
+        [dispatch, props, voltageLevelsIdsForNad]
     );
 
     if (
@@ -151,9 +159,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
 
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const workingNode = useSelector((state) => state.workingTreeNode);
-
-    const selectedTreeNode = useSelector((state) => state.selectedTreeNode);
+    const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [showParameters, setShowParameters] = useState(false);
     const [, showVoltageLevel, showSubstation] = useSingleLineDiagram();
@@ -164,7 +170,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
         (searchTerm) => {
             fetchEquipmentsInfos(
                 studyUuid,
-                workingNode?.id,
+                currentNode?.id,
                 searchTerm,
                 useNameLocal
             )
@@ -184,7 +190,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     })
                 );
         },
-        [studyUuid, workingNode, useNameLocal, enqueueSnackbar, intlRef]
+        [studyUuid, currentNode, useNameLocal, enqueueSnackbar, intlRef]
     );
     const showVoltageLevelDiagram = useCallback(
         // TODO code factorization for displaying a VL via a hook
@@ -260,16 +266,17 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
+                    borderColor={'#123456'}
                 >
-                    {selectedTreeNode && (
+                    {currentNode && (
                         <OverflowableText
                             className={classes.label}
                             text={
-                                selectedTreeNode?.data?.label === 'Root'
+                                currentNode?.data?.label === 'Root'
                                     ? intl.formatMessage({
                                           id: 'root',
                                       })
-                                    : selectedTreeNode?.data?.label
+                                    : currentNode?.data?.label
                             }
                         />
                     )}

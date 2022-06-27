@@ -43,13 +43,14 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_ADDED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    SELECTED_TREE_NODE,
-    WORKING_TREE_NODE,
     SET_MODIFICATIONS_DRAWER_OPEN,
     FLUX_CONVENTION,
     CENTER_ON_SUBSTATION,
+    ADD_NOTIFICATION,
+    REMOVE_NOTIFICATION_BY_NODE,
     OPEN_NETWORK_AREA_DIAGRAM,
     FULLSCREEN_NETWORK_AREA_DIAGRAM,
+    CURRENT_TREE_NODE,
 } from './actions';
 import {
     getLocalStorageTheme,
@@ -78,7 +79,6 @@ import {
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/parameters';
-import { getRootNode } from '../components/graph/util/model-functions';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -100,8 +100,7 @@ const paramsInitialState = {
 
 const initialState = {
     studyUuid: null,
-    selectedTreeNode: null,
-    workingTreeNode: null,
+    currentTreeNode: null,
     network: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -117,7 +116,9 @@ const initialState = {
     allLockedColumnsNames: [],
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
+    voltageLevelsIdsForNad: [],
     centerOnSubstation: null,
+    notificationIdList: [],
     ...paramsInitialState,
 };
 
@@ -151,6 +152,7 @@ export const reducer = createReducer(initialState, {
     [LOAD_NETWORK_MODIFICATION_TREE_SUCCESS]: (state, action) => {
         state.networkModificationTreeModel =
             action.networkModificationTreeModel;
+        state.networkModificationTreeModel.setBuildingStatus();
     },
 
     [NETWORK_MODIFICATION_TREE_NODE_ADDED]: (state, action) => {
@@ -174,7 +176,7 @@ export const reducer = createReducer(initialState, {
             newModel.removeNodes(action.networkModificationTreeNodes);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
-            synchWorkingNodeAndSelectedNode(state);
+            synchCurrentTreeNode(state);
         }
     },
 
@@ -184,7 +186,8 @@ export const reducer = createReducer(initialState, {
                 state.networkModificationTreeModel.newSharedForUpdate();
             newModel.updateNodes(action.networkModificationTreeNodes);
             state.networkModificationTreeModel = newModel;
-            synchWorkingNodeAndSelectedNode(state);
+            state.networkModificationTreeModel.setBuildingStatus();
+            synchCurrentTreeNode(state);
         }
     },
 
@@ -317,11 +320,8 @@ export const reducer = createReducer(initialState, {
         state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
             action[PARAM_FAVORITE_CONTINGENCY_LISTS];
     },
-    [SELECTED_TREE_NODE]: (state, action) => {
-        state.selectedTreeNode = action.selectedTreeNode;
-    },
-    [WORKING_TREE_NODE]: (state, action) => {
-        state.workingTreeNode = action.workingTreeNode;
+    [CURRENT_TREE_NODE]: (state, action) => {
+        state.currentTreeNode = action.currentTreeNode;
     },
     [SET_MODIFICATIONS_DRAWER_OPEN]: (state, action) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
@@ -329,39 +329,31 @@ export const reducer = createReducer(initialState, {
     [CENTER_ON_SUBSTATION]: (state, action) => {
         state.centerOnSubstation = action.centerOnSubstation;
     },
+    [ADD_NOTIFICATION]: (state, action) => {
+        state.notificationIdList = [
+            ...state.notificationIdList,
+            action.notificationId,
+        ];
+    },
+    [REMOVE_NOTIFICATION_BY_NODE]: (state, action) => {
+        state.notificationIdList = [
+            ...state.notificationIdList.filter(
+                (nodeId) => nodeId !== action.notificationId
+            ),
+        ];
+    },
     [OPEN_NETWORK_AREA_DIAGRAM]: (state, action) => {
-        state.openNetworkAreaDiagram = action.openNetworkAreaDiagram;
+        state.voltageLevelsIdsForNad = action.voltageLevelsIdsForNad;
     },
 });
 
-function synchWorkingNodeAndSelectedNode(state) {
-    const workingNode = state.networkModificationTreeModel?.treeElements.find(
-        (entry) => entry?.id === state.workingTreeNode?.id
+function synchCurrentTreeNode(state) {
+    const currentNode = state.networkModificationTreeModel?.treeElements.find(
+        (entry) => entry?.id === state.currentTreeNode?.id
     );
-    const selectedNode = state.networkModificationTreeModel?.treeElements.find(
-        (entry) => entry?.id === state.selectedTreeNode?.id
-    );
-
-    if (workingNode === undefined) {
-        // handle the case of workingNode not in the TreeModel anymore.
-        let rootNode = getRootNode(
-            ...state.networkModificationTreeModel.treeElements
-        );
-        state.workingTreeNode = rootNode ? rootNode : null;
-    } else {
-        state.workingTreeNode = {
-            type: workingNode?.type,
-            id: workingNode?.id,
-            readOnly: workingNode?.data?.readOnly,
-            name: workingNode?.data?.label,
-            targetPosition: workingNode?.targetPosition,
-            position: workingNode?.position,
-            buildStatus: workingNode?.buildStatus,
-        };
-    }
-    // handle the case of selectedNode not in the TreeModel anymore.
-    if (selectedNode === undefined) state.selectedTreeNode = null;
+    // handle the case of currentTreeNode not in the TreeModel anymore.
+    if (currentNode === undefined) state.currentTreeNode = null;
     else {
-        state.selectedTreeNode = { ...selectedNode };
+        state.currentTreeNode = { ...currentNode };
     }
 }

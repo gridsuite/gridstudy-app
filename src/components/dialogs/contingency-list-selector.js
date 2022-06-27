@@ -96,10 +96,10 @@ const ContingencyListSelector = (props) => {
     useEffect(() => {
         setSimulatedContingencyCount(null);
         var discardResult = false;
-        if (props.selectedNodeUuid !== null) {
+        if (props.currentNodeUuid !== null) {
             fetchContingencyCount(
                 studyUuid,
-                props.selectedNodeUuid,
+                props.currentNodeUuid,
                 checkedContingencyListUuids
             ).then((contingencyCount) => {
                 if (!discardResult) {
@@ -110,7 +110,7 @@ const ContingencyListSelector = (props) => {
         return () => {
             discardResult = true;
         };
-    }, [studyUuid, props.selectedNodeUuid, checkedContingencyListUuids]);
+    }, [studyUuid, props.currentNodeUuid, checkedContingencyListUuids]);
 
     useEffect(() => {
         if (
@@ -199,6 +199,7 @@ const ContingencyListSelector = (props) => {
     const renderButtons = () => {
         return (
             <Grid container spacing={1} item justifyContent={'center'}>
+                {makeButton(handleClose, 'close', false)}
                 {makeButton(handleAddFavorite, 'AddContingencyList', false)}
                 {makeButton(
                     () => removeFromFavorite(checkedContingencyListUuids),
@@ -283,7 +284,7 @@ ContingencyListSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onStart: PropTypes.func.isRequired,
-    selectedNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default ContingencyListSelector;

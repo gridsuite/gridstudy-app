@@ -46,6 +46,7 @@
 
     "parameters": "Parameters",
     "paramsChangingError": "An error occured when changing the parameters",
+    "paramsChangingDenied": "The requested changes have been rejected",
     "paramsRetrievingError": "An error occurred while retrieving the parameters",
     "defaultLoadflowRetrievingError": "An error occurred while retrieving the default load flow provider",
 
@@ -263,6 +264,10 @@
     "NetworkModificationTree": "Network modification tree",
     "HybridDisplay": "Hybrid display",
     "MinMax": "Min:\u202F{min} Max:\u202F{max}",
+    "CenterSelectedNode": "Center on selected node",
+    "DisplayMinimap": "Display minimap",
+    "HideMinimap": "Hide minimap",
+    "DisplayTheWholeTree": "Display the whole tree",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
@@ -276,6 +281,7 @@
 
     "Optional": " (optional)",
     "loadingOptions": "Loading...",
+    "buildNode": "Build node",
     "createNetworkModificationNode": "Create a node in a new branch",
     "removeNode": "Remove node",
     "exportCaseOnNode": "Export case",
