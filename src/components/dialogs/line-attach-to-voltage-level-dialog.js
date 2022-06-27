@@ -482,8 +482,8 @@ const LineAttachToVoltageLevelDialog = ({
                     </Grid>
                     <GridSection title="VoltageLevel" />
                     <Grid container spacing={2}>
-                        {gridItem(voltageLevelIdField, 6)}
-                        {gridItem(bbsOrNodeIdField, 6)}
+                        {gridItem(voltageLevelIdField)}
+                        {gridItem(bbsOrNodeIdField)}
                         {gridItem(
                             <Button
                                 onClick={openVoltageLevelDialog}
@@ -494,13 +494,12 @@ const LineAttachToVoltageLevelDialog = ({
                                 <Typography align="left">
                                     <FormattedMessage id="NewVoltageLevel" />
                                 </Typography>
-                            </Button>,
-                            6
+                            </Button>
                         )}
                     </Grid>
                     <GridSection title="AttachedLine" />
                     <Grid container spacing={2}>
-                        {gridItem(lineToIdField, 6)}
+                        {gridItem(lineToIdField)}
                         <Box width="100%" />
                         {gridItem(
                             <Button
@@ -512,8 +511,7 @@ const LineAttachToVoltageLevelDialog = ({
                                 <Typography align="left">
                                     <FormattedMessage id="AttachedLine" />
                                 </Typography>
-                            </Button>,
-                            6
+                            </Button>
                         )}
                     </Grid>
                     <GridSection title="Line1" />
