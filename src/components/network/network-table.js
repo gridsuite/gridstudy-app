@@ -309,6 +309,21 @@ const NetworkTable = (props) => {
         [fluxConvention, props.network]
     );
 
+    const areRowsEmpty = (index) => {
+        const tableDef = TABLES_DEFINITION_INDEXES.get(index);
+        const datasourceRows = tableDef.getter
+            ? tableDef.getter(props.network)
+            : props.network[TABLES_DEFINITION_INDEXES.get(index).resource];
+        if (!datasourceRows) return true;
+        for (let i = 0; i < datasourceRows.length; i++) {
+            const row = datasourceRows[i];
+            if (!rowFilter || filter(row)) {
+                return false;
+            }
+        }
+        return true;
+    };
+
     const getRows = useCallback(
         (index) => {
             if (props.disabled) {
@@ -1173,7 +1188,7 @@ const NetworkTable = (props) => {
                             <span
                                 className={clsx({
                                     [classes.disabledLabel]:
-                                        isModifyingRow() || props.disabled,
+                                        isModifyingRow() || props.disabled || areRowsEmpty(tabIndex),
                                 })}
                             >
                                 <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
@@ -1184,12 +1199,12 @@ const NetworkTable = (props) => {
                                     columns={getCSVColumnNames()}
                                     filename={getCSVFilename()}
                                     disabled={
-                                        isModifyingRow() || props.disabled
+                                        isModifyingRow() || props.disabled || areRowsEmpty(tabIndex)
                                     }
                                 >
                                     <IconButton
                                         disabled={
-                                            isModifyingRow() || props.disabled
+                                            isModifyingRow() || props.disabled || areRowsEmpty(tabIndex)
                                         }
                                         aria-label="exportCSVButton"
                                     >
