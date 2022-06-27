@@ -30,7 +30,7 @@ import {
 } from '../../utils/messages';
 import { useSnackbar } from 'notistack';
 import { useSelector } from 'react-redux';
-import { MakeSwitch, MakeButton } from './parameters';
+import { LabelledSwitch, LabelledButton } from './parameters';
 const LF_PROVIDER_VALUES = {
     OpenLoadFlow: 'OpenLoadFlow',
     Hades2: 'Hades2',
@@ -339,7 +339,7 @@ export const LoadFlow = () => {
 
     function makeComponentFor(defParam, key, lfParams, setter) {
         if (defParam.type === TYPES.bool) {
-            return MakeSwitch(lfParams[key], defParam.description, (ev) =>
+            return LabelledSwitch(lfParams[key], defParam.description, (ev) =>
                 setter({ ...lfParams, [key]: ev.target.checked })
             );
         } else if (defParam.type === TYPES.enum) {
@@ -453,7 +453,7 @@ export const LoadFlow = () => {
                 <BasicLoadFlowParameters />
                 <AdvancedLoadFlowParameters />
             </Grid>
-            {MakeButton(resetLfParameters, 'resetToDefault')}
+            {LabelledButton(resetLfParameters, 'resetToDefault')}
         </Grid>
     );
 };

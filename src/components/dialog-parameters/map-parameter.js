@@ -14,10 +14,10 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
 } from '../../utils/config-params';
-import { MakeSwitch, useParameterState } from './parameters';
+import { LabelledSwitch, useParameterState } from './parameters';
 import { LineSeparator } from './make-line-separator';
 import { useStyles } from './parameters';
-import { MakeSlider } from './make-slider';
+import { LabelledSilder } from './make-slider';
 
 export const MapParameters = () => {
     const classes = useStyles();
@@ -66,11 +66,11 @@ export const MapParameters = () => {
 
     return (
         <Grid container spacing={1} className={classes.grid}>
-            {MakeSwitch(lineFullPathLocal, 'lineFullPath', () => {
+            {LabelledSwitch(lineFullPathLocal, 'lineFullPath', () => {
                 handleChangeLineFullPath(!lineFullPathLocal);
             })}
             <LineSeparator />
-            {MakeSwitch(lineParallelPathLocal, 'lineParallelPath', () => {
+            {LabelledSwitch(lineParallelPathLocal, 'lineParallelPath', () => {
                 handleChangeLineParallelPath(!lineParallelPathLocal);
             })}
             <LineSeparator />
@@ -127,7 +127,7 @@ export const MapParameters = () => {
                 </Select>
             </Grid>
             <LineSeparator />
-            {MakeSlider(
+            {LabelledSilder(
                 Number(lineFlowAlertThresholdLocal),
                 'AlertThresholdLabel',
                 disabledFlowAlertThreshold,
@@ -137,7 +137,7 @@ export const MapParameters = () => {
                 alertThresholdMarks
             )}
             <LineSeparator />
-            {MakeSwitch(
+            {LabelledSwitch(
                 displayOverloadTableLocal,
                 'displayOverloadTable',
                 () => {

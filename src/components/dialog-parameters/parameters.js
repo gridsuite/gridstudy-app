@@ -92,7 +92,7 @@ export function useParameterState(paramName) {
     return [paramLocalState, handleChangeParamLocalState];
 }
 
-export const MakeSwitch = ({ prop, label, callback }) => {
+export const LabelledSwitch = ({ prop, label, callback }) => {
     const classes = useStyles();
     return (
         <>
@@ -115,7 +115,7 @@ export const MakeSwitch = ({ prop, label, callback }) => {
     );
 };
 
-export const MakeButton = ({ callback, label }) => {
+export const LabelledButton = ({ callback, label }) => {
     const classes = useStyles();
     return (
         <Grid item paddingTop={1}>

@@ -18,7 +18,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../utils/config-params';
-import { MakeSwitch, useParameterState } from './parameters';
+import { LabelledSwitch, useParameterState } from './parameters';
 import { LineSeparator } from './make-line-separator';
 import { useStyles } from './parameters';
 
@@ -44,11 +44,11 @@ export const SingleLineDiagramParameters = ({ user }) => {
 
     return (
         <Grid container spacing={1} className={classes.grid}>
-            {MakeSwitch(diagonalLabelLocal, 'diagonalLabel', () => {
+            {LabelledSwitch(diagonalLabelLocal, 'diagonalLabel', () => {
                 handleChangeDiagonalLabel(!diagonalLabelLocal);
             })}
             <LineSeparator />
-            {MakeSwitch(centerLabelLocal, 'centerLabel', () => {
+            {LabelledSwitch(centerLabelLocal, 'centerLabel', () => {
                 handleChangeCenterLabel(!centerLabelLocal);
             })}
             <LineSeparator />
