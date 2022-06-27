@@ -124,11 +124,10 @@ const LoadModificationDialog = ({
         formProps: filledTextField,
         enumValues: LOAD_TYPES,
         defaultValue: formValues?.loadType ? formValues.loadType.value : '',
-        previousValue: loadInfos?.type ? (
-            <FormattedMessage
-                id={LOAD_TYPES.find((lt) => lt.id === loadInfos.type).label}
-            />
-        ) : undefined,
+        doTranslation: true,
+        previousValue: loadInfos?.type
+            ? LOAD_TYPES.find((lt) => lt.id === loadInfos.type)
+            : undefined,
     });
 
     const [activePower, activePowerField] = useDoubleValue({
