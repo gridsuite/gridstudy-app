@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import CheckIcon from '@mui/icons-material/Check';
-import { MakeLineSeparator } from './make-line-separator';
+import { LineSeparator } from './make-line-separator';
 import { useStyles } from './parameters';
 import {
     getDefaultLoadFlowProvider,
@@ -332,7 +332,7 @@ export const LoadFlow = () => {
         return Object.keys(defParams).map((key) => (
             <Grid container spacing={1} paddingTop={1} key={key}>
                 {makeComponentFor(defParams[key], key, params, setter)}
-                <MakeLineSeparator />
+                <LineSeparator />
             </Grid>
         ));
     }
@@ -448,7 +448,7 @@ export const LoadFlow = () => {
                 )}
 
                 <Grid container paddingTop={1}>
-                    <MakeLineSeparator />
+                    <LineSeparator />
                 </Grid>
                 <BasicLoadFlowParameters />
                 <AdvancedLoadFlowParameters />

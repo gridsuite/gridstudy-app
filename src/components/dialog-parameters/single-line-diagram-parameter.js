@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import { Grid, MenuItem, Box, Select, Switch, Typography } from '@mui/material';
+import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 
 import { getAvailableComponentLibraries } from '../../utils/rest-api';
 import { SubstationLayout } from '../diagrams/singleLineDiagram/single-line-diagram';
@@ -18,8 +18,8 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_COMPONENT_LIBRARY,
 } from '../../utils/config-params';
-import { useParameterState } from './parameters';
-import { MakeLineSeparator } from './make-line-separator';
+import { MakeSwitch, useParameterState } from './parameters';
+import { LineSeparator } from './make-line-separator';
 import { useStyles } from './parameters';
 
 export const SingleLineDiagramParameters = ({ user }) => {
@@ -42,38 +42,16 @@ export const SingleLineDiagramParameters = ({ user }) => {
         }
     }, [user]);
 
-    function MakeSwitch(prop, label, callback) {
-        return (
-            <>
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Switch
-                        checked={prop}
-                        onChange={callback}
-                        value={prop}
-                        inputProps={{ 'aria-label': 'primary checkbox' }}
-                    />
-                </Grid>
-            </>
-        );
-    }
-
     return (
         <Grid container spacing={1} className={classes.grid}>
             {MakeSwitch(diagonalLabelLocal, 'diagonalLabel', () => {
                 handleChangeDiagonalLabel(!diagonalLabelLocal);
             })}
-            <MakeLineSeparator />
+            <LineSeparator />
             {MakeSwitch(centerLabelLocal, 'centerLabel', () => {
                 handleChangeCenterLabel(!centerLabelLocal);
             })}
-            <MakeLineSeparator />
+            <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -110,7 +88,7 @@ export const SingleLineDiagramParameters = ({ user }) => {
                 </Select>
             </Grid>
 
-            <MakeLineSeparator />
+            <LineSeparator />
 
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">

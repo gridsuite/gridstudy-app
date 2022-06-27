@@ -7,7 +7,7 @@ import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 import { fetchDefaultParametersValues } from '../../utils/rest-api';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { MakeButton, useParameterState, useStyles } from './parameters';
-import { MakeLineSeparator } from './make-line-separator';
+import { LineSeparator } from './make-line-separator';
 export const FluxConventions = {
     IIDM: 'iidm',
     TARGET: 'target',
@@ -60,7 +60,7 @@ export const NetworkParameters = () => {
                         </MenuItem>
                     </Select>
                 </Grid>
-                <MakeLineSeparator />
+                <LineSeparator />
             </Grid>
             {MakeButton(resetNetworkParameters, 'resetToDefault')}
         </Grid>

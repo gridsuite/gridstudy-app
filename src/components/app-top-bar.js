@@ -23,9 +23,6 @@ import { StudyView } from './study-pane';
 import { Badge, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Tab from '@mui/material/Tab';
-import Parameters, {
-    useParameterState,
-} from '../components/dialog-parameters/parameters';
 import {
     PARAM_LANGUAGE,
     PARAM_THEME,
@@ -42,6 +39,7 @@ import IconButton from '@mui/material/IconButton';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { useSingleLineDiagram } from './diagrams/singleLineDiagram/utils';
+import Parameters, { useParameterState } from './dialog-parameters/parameters';
 
 const useStyles = makeStyles((theme) => ({
     tabs: {

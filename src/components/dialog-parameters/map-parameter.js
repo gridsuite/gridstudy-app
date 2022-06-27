@@ -2,15 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
-import {
-    Grid,
-    MenuItem,
-    Box,
-    Select,
-    Switch,
-    Typography,
-    Slider,
-} from '@mui/material';
+import { Grid, MenuItem, Box, Select, Typography } from '@mui/material';
 
 import { LineFlowMode } from '../network/line-layer';
 import { LineFlowColorMode } from '../network/line-layer';
@@ -22,9 +14,10 @@ import {
     PARAM_DISPLAY_OVERLOAD_TABLE,
     PARAM_LINE_PARALLEL_PATH,
 } from '../../utils/config-params';
-import { useParameterState } from './parameters';
-import { MakeLineSeparator } from './make-line-separator';
+import { MakeSwitch, useParameterState } from './parameters';
+import { LineSeparator } from './make-line-separator';
 import { useStyles } from './parameters';
+import { MakeSlider } from './make-slider';
 
 export const MapParameters = () => {
     const classes = useStyles();
@@ -71,75 +64,16 @@ export const MapParameters = () => {
         );
     }, [lineFlowColorModeLocal, displayOverloadTableLocal]);
 
-    function MakeSlider(
-        threshold,
-        label,
-        disabled,
-        onCommitCallback,
-        thresholdMarks
-    ) {
-        const [sliderValue, setSliderValue] = useState(threshold);
-
-        const handleValueChanged = (event, newValue) => {
-            setSliderValue(newValue);
-        };
-
-        return (
-            <>
-                <Grid item xs={7}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={5} className={classes.controlItem}>
-                    <Slider
-                        min={0}
-                        max={100}
-                        valueLabelDisplay="auto"
-                        onChange={handleValueChanged}
-                        onChangeCommitted={onCommitCallback}
-                        value={sliderValue}
-                        disabled={disabled}
-                        marks={thresholdMarks}
-                    />
-                </Grid>
-            </>
-        );
-    }
-
-    function MakeSwitch(prop, label, callback) {
-        return (
-            <>
-                <Grid item xs={8}>
-                    <Typography component="span" variant="body1">
-                        <Box fontWeight="fontWeightBold" m={1}>
-                            <FormattedMessage id={label} />
-                        </Box>
-                    </Typography>
-                </Grid>
-                <Grid item container xs={4} className={classes.controlItem}>
-                    <Switch
-                        checked={prop}
-                        onChange={callback}
-                        value={prop}
-                        inputProps={{ 'aria-label': 'primary checkbox' }}
-                    />
-                </Grid>
-            </>
-        );
-    }
     return (
         <Grid container spacing={1} className={classes.grid}>
             {MakeSwitch(lineFullPathLocal, 'lineFullPath', () => {
                 handleChangeLineFullPath(!lineFullPathLocal);
             })}
-            <MakeLineSeparator />
+            <LineSeparator />
             {MakeSwitch(lineParallelPathLocal, 'lineParallelPath', () => {
                 handleChangeLineParallelPath(!lineParallelPathLocal);
             })}
-            <MakeLineSeparator />
+            <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -167,7 +101,7 @@ export const MapParameters = () => {
                     </MenuItem>
                 </Select>
             </Grid>
-            <MakeLineSeparator />
+            <LineSeparator />
             <Grid item xs={8}>
                 <Typography component="span" variant="body1">
                     <Box fontWeight="fontWeightBold" m={1}>
@@ -192,7 +126,7 @@ export const MapParameters = () => {
                     </MenuItem>
                 </Select>
             </Grid>
-            <MakeLineSeparator />
+            <LineSeparator />
             {MakeSlider(
                 Number(lineFlowAlertThresholdLocal),
                 'AlertThresholdLabel',
@@ -202,7 +136,7 @@ export const MapParameters = () => {
                 },
                 alertThresholdMarks
             )}
-            <MakeLineSeparator />
+            <LineSeparator />
             {MakeSwitch(
                 displayOverloadTableLocal,
                 'displayOverloadTable',
