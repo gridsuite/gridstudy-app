@@ -34,13 +34,13 @@ import { useFormSearchCopy } from './form-search-copy-hook';
  * Dialog to create a substation in the network
  * @param {Boolean} open Is the dialog open ?
  * @param {EventListener} onClose Event to close the dialog
- * @param selectedNodeUuid : the currently selected tree node
+ * @param currentNodeUuid : the currently selected tree node
  * @param editData the data to edit
  */
 const SubstationCreationDialog = ({
     open,
     onClose,
-    selectedNodeUuid,
+    currentNodeUuid,
     editData,
 }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -70,7 +70,7 @@ const SubstationCreationDialog = ({
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
-        selectedNodeUuid,
+        currentNodeUuid,
         equipmentPath,
         toFormValues,
         setFormValues,
@@ -119,7 +119,7 @@ const SubstationCreationDialog = ({
         if (inputForm.validate()) {
             createSubstation(
                 studyUuid,
-                selectedNodeUuid,
+                currentNodeUuid,
                 substationId,
                 substationName,
                 substationCountry,
@@ -192,7 +192,7 @@ const SubstationCreationDialog = ({
                 onClose={searchCopy.handleCloseSearchDialog}
                 equipmentType={'SUBSTATION'}
                 onSelectionChange={searchCopy.handleSelectionChange}
-                selectedNodeUuid={selectedNodeUuid}
+                currentNodeUuid={currentNodeUuid}
             />
         </>
     );
@@ -202,7 +202,7 @@ SubstationCreationDialog.propTypes = {
     editData: PropTypes.object,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    selectedNodeUuid: PropTypes.string,
+    currentNodeUuid: PropTypes.string,
 };
 
 export default SubstationCreationDialog;

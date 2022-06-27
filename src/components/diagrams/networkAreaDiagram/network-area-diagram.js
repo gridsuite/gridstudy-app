@@ -43,7 +43,6 @@ import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
 import { NAD_INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 import clsx from 'clsx';
 import { RunningStatus } from '../../util/running-status';
-import { isNodeValid } from '../../graph/util/model-functions';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 
 const loadingWidth = 150;
@@ -177,8 +176,7 @@ const SizedNetworkAreaDiagram = (props) => {
     const {
         totalWidth,
         totalHeight,
-        workingNode,
-        selectedNode,
+        currentNode,
         nadId,
         diagramTitle,
         svgUrl,
@@ -242,6 +240,7 @@ const SizedNetworkAreaDiagram = (props) => {
         if (!nodeDisabled && svgUrl) {
             updateLoadingState(true);
             setSvg(noSvg);
+            svgRef.current.innerHTML = ''; // clear the previous svg before replacing
             fetchNADSvg(svgUrl)
                 .then((svg) => {
                     setSvg({
@@ -296,7 +295,7 @@ const SizedNetworkAreaDiagram = (props) => {
             setSvgPreferredHeight(nad.getHeight());
             setSvgPreferredWidth(nad.getWidth());
         }
-    }, [network, svg, workingNode, theme, nadId, svgUrl]);
+    }, [network, svg, currentNode, theme, nadId, svgUrl]);
 
     useLayoutEffect(() => {
         if (
@@ -410,7 +409,41 @@ const SizedNetworkAreaDiagram = (props) => {
                 </Box>
             )}
             <Box position="relative">
-                {nodeDisabled ? (
+                {/* // TODO CHARLY code Ahmed original
+                <Box position="absolute" left={0} right={0} top={0}>
+                    {loadingState && (
+                        <Box height={2}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    {!isNodeValid(currentNode) &&
+                        currentNode?.type !== 'ROOT' && (
+                            <AlertInvalidNode noMargin={true} />
+                        )}
+                </Box>
+                {
+                */}
+
+                <Box position="relative" left={0} right={0} top={0}>
+                    {loadingState && (
+                        <Box height={2}>
+                            <LinearProgress />
+                        </Box>
+                    )}
+                    {nodeDisabled && <AlertInvalidNode noMargin={true} />}
+                </Box>
+                {
+                    <div
+                        id="nad-svg"
+                        ref={svgRef}
+                        className={clsx(classes.divNad, {
+                            [classes.divInvalid]:
+                                loadFlowStatus !== RunningStatus.SUCCEED,
+                        })}
+                    />
+                }
+
+                {/*{nodeDisabled ? (
                     <Box position="relative" left={0} right={0} top={0}>
                         {!isNodeValid(workingNode, selectedNode) &&
                             selectedNode?.type !== 'ROOT' && (
@@ -426,7 +459,7 @@ const SizedNetworkAreaDiagram = (props) => {
                                 loadFlowStatus !== RunningStatus.SUCCEED,
                         })}
                     />
-                )}
+                )}*/}
                 {!loadingState && !nodeDisabled && (
                     <div style={{ display: 'flex' }}>
                         <Typography className={classes.depth}>
@@ -483,8 +516,7 @@ NetworkAreaDiagram.propTypes = {
     diagramTitle: PropTypes.string.isRequired,
     svgUrl: PropTypes.string.isRequired,
     nadId: PropTypes.string,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     depth: PropTypes.number.isRequired,
     setDepth: PropTypes.func.isRequired,
     loadFlowStatus: PropTypes.any,

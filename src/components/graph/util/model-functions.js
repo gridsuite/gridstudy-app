@@ -30,35 +30,13 @@ export function getFirstNodeOfType(elements, nodeType, buildStatus) {
     }
 }
 
-export function isNodeValid(workingNode, selectedNode) {
-    const readOnlyNode = workingNode?.readOnly;
-    const builtWorkingNode = workingNode?.buildStatus === 'BUILT';
-    const workingNodeIsSelectedNode =
-        selectedNode === null ||
-        selectedNode === undefined ||
-        workingNode?.id === selectedNode?.id;
-
-    return !readOnlyNode && builtWorkingNode && workingNodeIsSelectedNode;
+export function isNodeReadOnly(node) {
+    if (node?.type === 'ROOT') return true;
+    return node?.data?.readOnly ? true : false;
 }
 
 export function isNodeDisabled(node) {
     // only one node can be named like this... maybe it should be mark as built from backend
-    if (node?.name === 'Root') return false;
-    return !(node?.buildStatus === 'BUILT');
-}
-
-export function getRootNode(elements) {
-    if (elements.type === 'ROOT')
-        return {
-            id: elements.id,
-            type: elements.type,
-            data: {
-                label: elements.data.label,
-                description: elements.data.description,
-                buildStatus: elements.data.buildStatus,
-                readOnly: elements.data.readOnly,
-            },
-            targetPosition: elements?.targetPosition,
-            position: elements?.position,
-        };
+    if (node?.type === 'ROOT') return false;
+    return !(node?.data?.buildStatus === 'BUILT');
 }

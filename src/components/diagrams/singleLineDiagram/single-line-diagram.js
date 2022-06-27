@@ -53,9 +53,9 @@ import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import MinimizeIcon from '@mui/icons-material/Minimize';
 import { ViewState } from './utils';
 import clsx from 'clsx';
-import { isNodeValid } from '../../graph/util/model-functions';
 import AlertInvalidNode from '../../util/alert-invalid-node';
 import { useIsAnyNodeBuilding } from '../../util/is-any-node-building-hook';
+import Alert from '@mui/material/Alert';
 
 export const SubstationLayout = {
     HORIZONTAL: 'horizontal',
@@ -257,8 +257,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
         totalHeight,
         svgType,
         loadFlowStatus,
-        workingNode,
-        selectedNode,
+        currentNode,
         numberToDisplay,
         sldId,
         pinned,
@@ -758,7 +757,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
             // handling the click on a switch
             if (
                 !isComputationRunning &&
-                isNodeValid(workingNode, selectedNode) &&
+                //!nodeDisabled && // TODO CHARLY theoriquement on a plus besoin de cette ligne commentée
                 !isAnyNodeBuilding
             ) {
                 const switches = svg.metadata.nodes.filter((element) =>
@@ -796,8 +795,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
     }, [
         network,
         svg,
-        workingNode,
-        selectedNode,
+        currentNode,
         onNextVoltageLevelClick,
         onBreakerClick,
         isComputationRunning,
@@ -870,8 +868,7 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    workingNode={workingNode}
-                    selectedNode={selectedNode}
+                    currentNode={currentNode}
                 />
             )
         );
@@ -989,6 +986,9 @@ const SizedSingleLineDiagram = forwardRef((props, ref) => {
                 </Box>
             ) : (
                 <Box position="relative">
+                    {props.updateSwitchMsg && (
+                        <Alert severity="error">{props.updateSwitchMsg}</Alert>
+                    )}
                     {
                         <div
                             ref={svgRef}
@@ -1079,11 +1079,11 @@ SingleLineDiagram.propTypes = {
     svgType: PropTypes.string.isRequired,
     onNextVoltageLevelClick: PropTypes.func,
     onBreakerClick: PropTypes.func,
-    workingNode: PropTypes.object,
-    selectedNode: PropTypes.object,
+    currentNode: PropTypes.object,
     pinned: PropTypes.bool,
     pin: PropTypes.func,
     minimize: PropTypes.func,
+    nodeDisabled: PropTypes.bool,
 };
 
 export default SingleLineDiagram;
