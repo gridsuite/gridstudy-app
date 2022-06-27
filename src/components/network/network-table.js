@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import Network from './network';
@@ -243,6 +243,8 @@ const NetworkTable = (props) => {
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
     const [selectedDataKey, setSelectedDataKey] = useState(new Set());
 
+    const searchTextInput = useRef(null);
+
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const isLineOnEditMode = useCallback(
@@ -358,6 +360,21 @@ const NetworkTable = (props) => {
             formatCell,
             props.disabled,
         ]
+    );
+
+    const onTabChange = useCallback(
+        (index) => {
+            console.debug('onTabChange from ' + tabIndex + ' to ' + index);
+            // when we change Tab, we dont want to keep/apply the search criteria
+            if (
+                !searchTextInput.current.value ||
+                searchTextInput.current.value !== ''
+            ) {
+                searchTextInput.current.value = '';
+                setFilterValue('');
+            }
+        },
+        [tabIndex]
     );
 
     function getTabIndexFromEquipementType(equipmentType) {
@@ -847,15 +864,20 @@ const NetworkTable = (props) => {
     }
 
     function setFilter(event) {
-        const value = event.target.value; // Value from the user's input
-        const sanitizedValue = value
-            .trim()
-            .replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'); // No more Regexp sensible characters
-        const everyWords = sanitizedValue.split(' ').filter((n) => n); // We split the user input by words
-        const regExp = '(' + everyWords.join('|') + ')'; // For each word, we do a "OR" research
-        setRowFilter(
-            !value || value === '' ? undefined : new RegExp(regExp, 'i')
-        );
+        setFilterValue(event.target.value); // Value from the user's input
+    }
+
+    function setFilterValue(userInputValue) {
+        if (!userInputValue || userInputValue === '') {
+            setRowFilter(undefined);
+        } else {
+            const sanitizedValue = userInputValue
+                .trim()
+                .replace(/[#-.]|[[-^]|[?|{}]/g, '\\$&'); // No more Regexp sensible characters
+            const everyWords = sanitizedValue.split(' ').filter((n) => n); // We split the user input by words
+            const regExp = '(' + everyWords.join('|') + ')'; // For each word, we do a "OR" research
+            setRowFilter(new RegExp(regExp, 'i'));
+        }
     }
 
     useEffect(() => {
@@ -1067,6 +1089,7 @@ const NetworkTable = (props) => {
                                 setTabIndex(newValue);
                                 setManualTabSwitch(true);
                                 setColumnSort(undefined);
+                                onTabChange(newValue);
                             }}
                             aria-label="tables"
                         >
@@ -1093,6 +1116,7 @@ const NetworkTable = (props) => {
                                     intl.formatMessage({ id: 'filter' }) + '...'
                                 }
                                 onChange={setFilter}
+                                inputRef={searchTextInput}
                                 fullWidth
                                 InputProps={{
                                     classes: {
